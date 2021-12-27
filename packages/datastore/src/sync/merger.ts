@@ -53,6 +53,12 @@ class ModelMerger {
 			// } else {
 			// 	modelId = element.id;
 			// }
+
+			// TODO get model def from modelConstructor
+			// pass through schema?
+			// or getModelDefinition (only used in DS, may not be best solution)
+			// roll your own?
+			// reduce into single string for all pks?
 			debugger;
 			itemsMap.set(item.id, item);
 		}

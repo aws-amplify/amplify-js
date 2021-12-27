@@ -46,13 +46,16 @@ class MutationEventOutbox {
 						.id('ne', this.inProgressMutationEventId)
 			);
 
+			// Here, we check if there are any other records with same id
 			const [first] = await s.query(this.MutationEvent, predicate);
 
+			// No other record with same modelId, so enqueue
 			if (first === undefined) {
 				await s.save(mutationEvent, undefined, this.ownSymbol);
 				return;
 			}
 
+			// Was not first record, so continue
 			const { operation: incomingMutationType } = mutationEvent;
 
 			if (first.operation === TransformerMutationType.CREATE) {
@@ -139,7 +142,9 @@ class MutationEventOutbox {
 				c => c.modelId('eq', model.id)
 			)
 		);
-		// debugger;
+		console.log(model);
+		console.log('model id above updated?');
+		debugger;
 
 		return mutationEvents;
 	}
@@ -168,7 +173,8 @@ class MutationEventOutbox {
 		head: PersistentModel,
 		recordOp: string
 	): Promise<void> {
-		// debugger;
+		// T
+		debugger;
 		if (head.operation !== recordOp) {
 			return;
 		}

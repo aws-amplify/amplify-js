@@ -554,6 +554,9 @@ export class SyncEngine {
 											return false;
 										});
 
+										// console.log('check page prior to calling mergePage');
+										// debugger;
+
 										const opTypeCount: [any, OpType][] = [];
 
 										for (const item of oneByOne) {
