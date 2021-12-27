@@ -39,11 +39,52 @@ class AsyncStorageDatabase {
 		return monotonicFactoriesMap.get(storeName);
 	}
 
+	// private getNamespaceAndModelFromStorename(storeName: string) {
+	// 	const [namespaceName, ...modelNameArr] = storeName.split('_');
+	// 	return {
+	// 		namespaceName,
+	// 		modelName: modelNameArr.join('_'),
+	// 	};
+	// }
+
+	// private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
+	// 	const keyPath =
+	// 		this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
+
+	// 	if (keyPath) {
+	// 		return keyPath;
+	// 	}
+
+	// 	return ['id'];
+	// }
+
+	// private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
+	// 	const modelConstructor = Object.getPrototypeOf(model)
+	// 		.constructor as PersistentModelConstructor<T>;
+	// 	const namespaceName = this.namespaceResolver(modelConstructor);
+	// 	const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
+
+	// 	const keyValues = keys.map(field => model[field]);
+	// 	return keyValues;
+	// }
+
+	// private keysEqual(keysA, keysB): boolean {
+	// 	if (keysA.length !== keysB.length) {
+	// 		return false;
+	// 	}
+
+	// 	if (keysA.length === 1) {
+	// 		return keysA[0] === keysB[0];
+	// 	}
+
+	// 	return keysA.every((key, idx) => key === keysB[idx]);
+	// }
+
 	async init(): Promise<void> {
 		this._collectionInMemoryIndex.clear();
 
-		// What needs to be done here?
-		// Create indices by PK here?
+		// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcL82
+		// STEP THROUGH THIS, WHAT IS HAPPENING HERE?
 		debugger;
 
 		const allKeys: string[] = await this.storage.getAllKeys();
@@ -52,6 +93,8 @@ class AsyncStorageDatabase {
 
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
+			// TODO: Retrieve by PK instead of ID, push to collection?
+			debugger;
 
 			if (dbName === DB_NAME) {
 				if (recordType === DATA) {
@@ -210,8 +253,12 @@ class AsyncStorageDatabase {
 
 	async get<T extends PersistentModel>(
 		id: string,
+		// keyArr: string[]
 		storeName: string
 	): Promise<T> {
+		// https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcR253
+		// Retrieve by PK instead of ID
+		debugger;
 		const ulid = this.getCollectionIndex(storeName).get(id);
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
@@ -254,9 +301,9 @@ class AsyncStorageDatabase {
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		// What needs to be done here?
-		debugger;
 		const collection = this.getCollectionIndex(storeName);
+		// What is in collection? ids are used below
+		debugger;
 
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;

@@ -557,6 +557,12 @@ export class AsyncStorageAdapter implements Adapter {
 			for await (const item of items) {
 				if (item) {
 					if (typeof item === 'object') {
+						// IndexedDB:
+						// const keyValues = this.getIndexKeyValues(item as T);
+						// key = await store.index('byPk').getKey(keyValues);
+						// TODO: inspect item, retrieve key for deletion
+						// await this.db.delete(key, storeName);
+						debugger;
 						const id = item['id'];
 						await this.db.delete(id, storeName);
 					}
@@ -601,9 +607,16 @@ export class AsyncStorageAdapter implements Adapter {
 				case 'HAS_ONE':
 					for await (const model of models) {
 						const hasOneIndex = index || 'byId';
+						// const hasOneIndex = index || 'byPk';
+						debugger;
 
 						const hasOneCustomField = targetName in model;
+
 						const value = hasOneCustomField ? model[targetName] : model.id;
+						// const keyValues = this.getIndexKeyValues(model);
+						// const value = hasOneCustomField ? model[targetName] : keyValues;
+						debugger;
+
 						if (!value) break;
 
 						const allRecords = await this.db.getAll(storeName);
@@ -623,10 +636,15 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
+						// ADD:
+						// const keyValues = this.getIndexKeyValues(model);
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
 							childItem => childItem[index] === model.id
 						);
+
+						// Update childrenArray: .getAll(keyValues);
+						debugger;
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -673,22 +691,45 @@ export class AsyncStorageAdapter implements Adapter {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const storeName = this.getStorename(namespaceName, modelName);
 
+		// const namespaceName = this.namespaceResolver(modelConstructor);
+		// const modelName = modelConstructor.name;
+		// const model = this.modelInstanceCreator(modelConstructor, item);
+		debugger;
+
 		const batch: ModelInstanceMetadata[] = [];
 
 		for (const item of items) {
 			const { id } = item;
 
+			// something like:
+			// const keyValues = this.getIndexKeyValues(model);
+			// const { _deleted } = item;
+
+			// const index = store.index('byPk');
+			// const key = await index.getKey(keyValues);
+
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
 				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				// replace above 3 lines with below:
+				// modelName,
+				// model,
+				// this.schema.namespaces[namespaceName],
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
 
+			debugger;
+
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id
 			);
+			// const { instance } = connectedModels.find(({ instance }) => {
+			// 	const instanceKeyValues = this.getIndexKeyValues(instance);
+			// 	return this.keysEqual(instanceKeyValues, keyValues);
+			// });
+			debugger;
 
 			batch.push(instance);
 		}
