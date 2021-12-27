@@ -567,6 +567,8 @@ export class SyncEngine {
 											}
 										}
 
+										// debugger;
+
 										opTypeCount.push(
 											...(await this.modelMerger.mergePage(
 												storage,

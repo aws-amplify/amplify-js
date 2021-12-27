@@ -30,9 +30,11 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
+		// debugger;
 		storage.runExclusive(async s => {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
+			// debugger;
 
 			// modelid is the id of the record in the mutationEvent store/table
 			// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
@@ -97,6 +99,7 @@ class MutationEventOutbox {
 		recordOp?: TransformerMutationType
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
+		// debugger;
 
 		if (record) {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
@@ -165,6 +168,7 @@ class MutationEventOutbox {
 		head: PersistentModel,
 		recordOp: string
 	): Promise<void> {
+		// debugger;
 		if (head.operation !== recordOp) {
 			return;
 		}
@@ -235,6 +239,7 @@ class MutationEventOutbox {
 		previous: MutationEvent,
 		current: MutationEvent
 	): MutationEvent {
+		// debugger;
 		const { _version, id, _lastChangedAt, _deleted, ...previousData } =
 			JSON.parse(previous.data);
 

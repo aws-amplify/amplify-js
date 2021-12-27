@@ -1,5 +1,6 @@
 import { Storage } from '../storage/storage';
 import {
+	extractPrimaryKeyFieldNames,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModelConstructor,
@@ -16,6 +17,7 @@ class ModelMerger {
 		model: T
 	): Promise<OpType> {
 		let result: OpType;
+		// debugger;
 		const mutationsForModel = await this.outbox.getForModel(storage, model);
 
 		const isDelete = model._deleted;
@@ -38,9 +40,20 @@ class ModelMerger {
 		items: ModelInstanceMetadata[]
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
+		// debugger;
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
+
+			// const pk = extractPrimaryKeyFieldNames(item);
+
+			// if (!element.id) {
+			// 	// TODO:
+			// 	modelId = element[pk[0]];
+			// } else {
+			// 	modelId = element.id;
+			// }
+			debugger;
 			itemsMap.set(item.id, item);
 		}
 
