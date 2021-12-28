@@ -122,9 +122,6 @@ class MutationEventOutbox {
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
 
-		// head.id is mutation event id, which is correct
-		// debugger;
-
 		return head;
 	}
 
@@ -135,8 +132,6 @@ class MutationEventOutbox {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models.MutationEvent;
 
-		console.log('check user model def');
-		debugger;
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[model.constructor.name];
 		// TODO: create util for this
@@ -161,9 +156,6 @@ class MutationEventOutbox {
 				c => c.modelId('eq', modelId)
 			)
 		);
-
-		// Check modelId
-		debugger;
 
 		return mutationEvents;
 	}
@@ -227,8 +219,6 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[head.model];
 
-		console.log('make sure this is correct ^');
-		debugger;
 		let recordId;
 		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
 
@@ -245,9 +235,6 @@ class MutationEventOutbox {
 			mutationEventModelDefinition,
 			c => c.modelId('eq', recordId).id('ne', this.inProgressMutationEventId)
 		);
-
-		// Check updated predicate
-		debugger;
 
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,
