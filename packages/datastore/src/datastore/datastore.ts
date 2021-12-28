@@ -452,7 +452,7 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			);
 
-			console.log(instance);
+			// console.log(instance);
 			// debugger;
 			return instance;
 		}

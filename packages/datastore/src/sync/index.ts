@@ -538,7 +538,10 @@ export class SyncEngine {
 											let itemId;
 											const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
-											if (!item.id) {
+											const test = item?.id;
+											// debugger;
+
+											if (!test) {
 												// TODO
 												itemId = item[pk[0]];
 											} else {

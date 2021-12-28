@@ -422,7 +422,10 @@ export function createMutationInstanceFromModelOperation<
 
 	const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
-	if (!element.id) {
+	const test = element?.id;
+	debugger;
+
+	if (!test) {
 		// TODO:
 		modelId = element[pk[0]];
 	} else {

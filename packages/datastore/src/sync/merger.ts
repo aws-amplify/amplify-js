@@ -6,6 +6,8 @@ import {
 	PersistentModelConstructor,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
+import { InternalSchema, PersistentModel } from '../types';
+import { Patch } from 'immer';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
@@ -40,30 +42,28 @@ class ModelMerger {
 		items: ModelInstanceMetadata[]
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
-		// debugger;
+
+		// TODO: may need to extract schema another way
+		const test =
+			storage.schema.namespaces['user'].models[modelConstructor.name];
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
 
-			// const pk = extractPrimaryKeyFieldNames(item);
+			let modelId; // TODO rename
+			const pk = extractPrimaryKeyFieldNames(test);
 
-			// if (!element.id) {
-			// 	// TODO:
-			// 	modelId = element[pk[0]];
-			// } else {
-			// 	modelId = element.id;
-			// }
+			const itemId = item?.id;
 
-			// TODO get model def from modelConstructor
-			// pass through schema?
-			// or getModelDefinition (only used in DS, may not be best solution)
-			// roll your own?
-			// reduce into single string for all pks?
-			debugger;
-			itemsMap.set(item.id, item);
+			if (!itemId) {
+				// TODO: extract all keys
+				modelId = item[pk[0]];
+			} else {
+				modelId = item.id;
+			}
+
+			itemsMap.set(modelId, item);
 		}
-
-		// debugger;
 
 		const page = [...itemsMap.values()];
 
