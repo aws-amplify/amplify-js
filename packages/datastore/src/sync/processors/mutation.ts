@@ -347,9 +347,6 @@ class MutationProcessor {
 										authToken,
 									});
 
-									// TODO: double check
-									// debugger;
-
 									return [serverData, opName, modelDefinition];
 								}
 
@@ -368,8 +365,6 @@ class MutationProcessor {
 										this.modelInstanceCreator,
 										mutationEvent.id
 									);
-
-								// debugger;
 
 								await this.storage.save(updatedMutation);
 
@@ -449,9 +444,6 @@ class MutationProcessor {
 		} else {
 			deleteInput['id'] = parsedData.id;
 		}
-
-		// TODO: double check
-		// debugger;
 
 		const filteredData =
 			operation === TransformerMutationType.DELETE

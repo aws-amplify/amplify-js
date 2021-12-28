@@ -165,7 +165,6 @@ export class SyncEngine {
 	start(params: StartParams) {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
-			// debugger;
 
 			let subscriptions: ZenObservable.Subscription[] = [];
 
@@ -378,8 +377,6 @@ export class SyncEngine {
 								this.modelInstanceCreator
 							);
 
-							// debugger;
-
 							await this.outbox.enqueue(this.storage, mutationEvent);
 
 							observer.next({
@@ -531,7 +528,6 @@ export class SyncEngine {
 									await this.storage.runExclusive(async storage => {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
 										console.log(items);
-										// debugger;
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
@@ -539,7 +535,6 @@ export class SyncEngine {
 											const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
 											const test = item?.id;
-											// debugger;
 
 											if (!test) {
 												// TODO
@@ -548,7 +543,6 @@ export class SyncEngine {
 												itemId = item.id;
 											}
 
-											// debugger;
 											if (!idsInOutbox.has(itemId)) {
 												return true;
 											}
@@ -556,9 +550,6 @@ export class SyncEngine {
 											oneByOne.push(item);
 											return false;
 										});
-
-										// console.log('check page prior to calling mergePage');
-										// debugger;
 
 										const opTypeCount: [any, OpType][] = [];
 
@@ -572,8 +563,6 @@ export class SyncEngine {
 												opTypeCount.push([item, opType]);
 											}
 										}
-
-										// debugger;
 
 										opTypeCount.push(
 											...(await this.modelMerger.mergePage(

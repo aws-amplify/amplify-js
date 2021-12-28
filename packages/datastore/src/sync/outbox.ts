@@ -30,11 +30,9 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		// debugger;
 		storage.runExclusive(async s => {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
-			// debugger;
 
 			// modelid is the id of the record in the mutationEvent store/table
 			// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
@@ -102,7 +100,6 @@ class MutationEventOutbox {
 		recordOp?: TransformerMutationType
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
-		// debugger;
 
 		if (record) {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
@@ -123,7 +120,6 @@ class MutationEventOutbox {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
-		// debugger;
 
 		return head;
 	}
@@ -142,9 +138,6 @@ class MutationEventOutbox {
 				c => c.modelId('eq', model.id)
 			)
 		);
-		console.log(model);
-		console.log('model id above updated?');
-		debugger;
 
 		return mutationEvents;
 	}
@@ -160,7 +153,6 @@ class MutationEventOutbox {
 
 		// console.log('custom id should now be included in the mutation events');
 		// console.log(result);
-		// debugger;
 		return result;
 	}
 
@@ -174,7 +166,6 @@ class MutationEventOutbox {
 		recordOp: string
 	): Promise<void> {
 		// T
-		debugger;
 		if (head.operation !== recordOp) {
 			return;
 		}
@@ -210,9 +201,6 @@ class MutationEventOutbox {
 			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
 		);
 
-		// TODO: double check ids here
-		// debugger;
-
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,
 			predicate
@@ -245,7 +233,6 @@ class MutationEventOutbox {
 		previous: MutationEvent,
 		current: MutationEvent
 	): MutationEvent {
-		// debugger;
 		const { _version, id, _lastChangedAt, _deleted, ...previousData } =
 			JSON.parse(previous.data);
 
@@ -265,9 +252,6 @@ class MutationEventOutbox {
 			...previousData,
 			...currentData,
 		});
-
-		// TODO: double check ids here
-		// debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,

@@ -18,7 +18,6 @@ class ModelMerger {
 		model: T
 	): Promise<OpType> {
 		let result: OpType;
-		// debugger;
 		const mutationsForModel = await this.outbox.getForModel(storage, model);
 
 		const isDelete = model._deleted;

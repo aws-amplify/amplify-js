@@ -383,9 +383,6 @@ export function createMutationInstanceFromModelOperation<
 ): MutationEvent {
 	let operation: TransformerMutationType;
 
-	// Start here
-	// debugger;
-
 	switch (opType) {
 		case OpType.INSERT:
 			operation = TransformerMutationType.CREATE;
@@ -422,17 +419,14 @@ export function createMutationInstanceFromModelOperation<
 
 	const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const test = element?.id;
-	debugger;
+	const elementId = element?.id;
 
-	if (!test) {
+	if (!elementId) {
 		// TODO:
 		modelId = element[pk[0]];
 	} else {
 		modelId = element.id;
 	}
-
-	// debugger;
 
 	// TODO: create util to identify custom PK - for now, using hardcoded 'customId`
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
@@ -443,8 +437,6 @@ export function createMutationInstanceFromModelOperation<
 		operation,
 		condition: JSON.stringify(condition),
 	});
-
-	// debugger;
 
 	return mutationEvent;
 }

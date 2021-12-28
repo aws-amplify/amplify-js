@@ -447,13 +447,9 @@ const createModelClass = <T extends PersistentModel>(
 						draft._lastChangedAt = _lastChangedAt;
 						draft._deleted = _deleted;
 					}
-
-					// debugger;
 				}
 			);
 
-			// console.log(instance);
-			// debugger;
 			return instance;
 		}
 
@@ -725,7 +721,6 @@ class DataStore {
 	}
 
 	start = async (): Promise<void> => {
-		// debugger;
 		if (this.initialized === undefined) {
 			logger.debug('Starting DataStore');
 			this.initialized = new Promise((res, rej) => {
@@ -831,7 +826,6 @@ class DataStore {
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
-		// debugger;
 
 		//#region Input validation
 
@@ -907,7 +901,6 @@ class DataStore {
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
 		await this.start();
-		// debugger;
 
 		// Immer patches for constructing a correct update mutation input
 		// Allows us to only include changed fields for updates
@@ -993,7 +986,6 @@ class DataStore {
 		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 	) => {
 		await this.start();
-		// debugger;
 
 		let condition: ModelPredicate<T>;
 
@@ -1098,7 +1090,6 @@ class DataStore {
 		idOrCriteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
-		// debugger;
 
 		const modelConstructor: PersistentModelConstructor<T> =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
@@ -1120,7 +1111,6 @@ class DataStore {
 
 				return this.observe(modelConstructor, model.id);
 			} else {
-				// debugger;
 				const msg =
 					'The model is not an instance of a PersistentModelConstructor';
 				logger.error(msg, { model });
