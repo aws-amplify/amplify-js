@@ -46,7 +46,7 @@ class StorageClass implements StorageFacade {
 	>;
 
 	constructor(
-		readonly schema: InternalSchema,
+		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
 		private readonly getModelConstructorByModelName: (
 			namsespaceName: string,

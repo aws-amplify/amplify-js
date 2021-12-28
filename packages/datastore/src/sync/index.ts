@@ -579,7 +579,8 @@ export class SyncEngine {
 											...(await this.modelMerger.mergePage(
 												storage,
 												modelConstructor,
-												page
+												page,
+												modelDefinition
 											))
 										);
 

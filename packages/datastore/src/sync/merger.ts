@@ -6,8 +6,7 @@ import {
 	PersistentModelConstructor,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
-import { InternalSchema, PersistentModel } from '../types';
-import { Patch } from 'immer';
+import { SchemaModel } from '../types';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
@@ -36,22 +35,19 @@ class ModelMerger {
 		return result;
 	}
 
+	// TODO: explain mergePage
 	public async mergePage(
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadata[],
+		modelDefinition: SchemaModel
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
 
-		// TODO: may need to extract schema another way
-		const test =
-			storage.schema.namespaces['user'].models[modelConstructor.name];
-
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
-
 			let modelId; // TODO rename
-			const pk = extractPrimaryKeyFieldNames(test);
+			const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
 			const itemId = item?.id;
 
