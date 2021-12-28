@@ -533,6 +533,8 @@ export class SyncEngine {
 										const page = items.filter(item => {
 											let itemId;
 											const pk = extractPrimaryKeyFieldNames(modelDefinition);
+											console.log(pk);
+											debugger;
 
 											const test = item?.id;
 

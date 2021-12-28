@@ -418,6 +418,8 @@ export function createMutationInstanceFromModelOperation<
 	let modelId;
 
 	const pk = extractPrimaryKeyFieldNames(modelDefinition);
+	console.log(pk);
+	debugger;
 
 	const elementId = element?.id;
 
@@ -626,4 +628,26 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id or the custom primary key(s)
+export function getIdOrPkFromModel(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata
+): string {
+	let idOrPk;
+
+	const pkOrId = extractPrimaryKeyFieldNames(modelDefinition);
+
+	if (pkOrId.length > 1) {
+		idOrPk = pkOrId.reduce((acc, curr) => {
+			if (curr) {
+				return `${acc}::${curr}`;
+			}
+		});
+	} else {
+		idOrPk = model.id;
+	}
+
+	return idOrPk;
 }

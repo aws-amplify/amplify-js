@@ -49,6 +49,8 @@ class ModelMerger {
 			// TODO: create util fn to get model id
 			let modelId; // TODO rename
 			const pk = extractPrimaryKeyFieldNames(modelDefinition);
+			console.log(pk);
+			debugger;
 
 			const itemId = item?.id;
 

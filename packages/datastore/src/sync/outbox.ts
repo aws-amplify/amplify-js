@@ -36,7 +36,7 @@ class MutationEventOutbox {
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
 			// modelid is the id of the record in the mutationEvent store/table
-			// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
+			// id is the id of the actual record that was mutated
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
 				c =>
@@ -45,7 +45,7 @@ class MutationEventOutbox {
 						.id('ne', this.inProgressMutationEventId)
 			);
 
-			// Here, we check if there are any other records with same id
+			// Check if there are any other records with same id
 			const [first] = await s.query(this.MutationEvent, predicate);
 
 			// No other record with same modelId, so enqueue
@@ -135,10 +135,11 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[model.constructor.name];
 		// TODO: create util for this
+
 		let modelId;
-		const pk = extractPrimaryKeyFieldNames(
-			this.schema.namespaces['user'].models[model.constructor.name]
-		);
+		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
+		console.log(pk);
+		debugger;
 
 		const test = model?.id;
 
@@ -160,8 +161,6 @@ class MutationEventOutbox {
 		return mutationEvents;
 	}
 
-	// modelid is the id of the record in the mutationEvent store/table
-	// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
 	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
 		const mutationEvents = await storage.query(this.MutationEvent);
 
@@ -169,8 +168,6 @@ class MutationEventOutbox {
 
 		mutationEvents.forEach(({ modelId }) => result.add(modelId));
 
-		// console.log('custom id should now be included in the mutation events');
-		// console.log(result);
 		return result;
 	}
 
@@ -221,6 +218,8 @@ class MutationEventOutbox {
 
 		let recordId;
 		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
+		console.log(pk);
+		debugger;
 
 		const testId = record?.id;
 
@@ -287,6 +286,9 @@ class MutationEventOutbox {
 			...previousData,
 			...currentData,
 		});
+
+		console.log('double check ids');
+		debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,
