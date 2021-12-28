@@ -7,12 +7,13 @@ import {
 } from '../storage/storage';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
+	extractPrimaryKeyFieldNames,
 	InternalSchema,
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
 } from '../types';
-import { USER, SYNC, valuesEqual } from '../util';
+import { USER, SYNC, valuesEqual, isModelConstructor } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -121,6 +122,9 @@ class MutationEventOutbox {
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
 
+		// head.id is mutation event id, which is correct
+		// debugger;
+
 		return head;
 	}
 
@@ -131,13 +135,35 @@ class MutationEventOutbox {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models.MutationEvent;
 
+		console.log('check user model def');
+		debugger;
+		const userModelDefinition =
+			this.schema.namespaces['user'].models[model.constructor.name];
+		// TODO: create util for this
+		let modelId;
+		const pk = extractPrimaryKeyFieldNames(
+			this.schema.namespaces['user'].models[model.constructor.name]
+		);
+
+		const test = model?.id;
+
+		if (!test) {
+			// TODO: extract all keys
+			modelId = model[pk[0]];
+		} else {
+			modelId = model.id;
+		}
+
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
 			ModelPredicateCreator.createFromExisting(
 				mutationEventModelDefinition,
-				c => c.modelId('eq', model.id)
+				c => c.modelId('eq', modelId)
 			)
 		);
+
+		// Check modelId
+		debugger;
 
 		return mutationEvents;
 	}
@@ -196,10 +222,32 @@ class MutationEventOutbox {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models['MutationEvent'];
 
+		// TODO: create util fn
+
+		const userModelDefinition =
+			this.schema.namespaces['user'].models[head.model];
+
+		console.log('make sure this is correct ^');
+		debugger;
+		let recordId;
+		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
+
+		const testId = record?.id;
+
+		if (!testId) {
+			// TODO: extract all keys
+			recordId = record[pk[0]];
+		} else {
+			recordId = record.id;
+		}
+
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
-			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
+			c => c.modelId('eq', recordId).id('ne', this.inProgressMutationEventId)
 		);
+
+		// Check updated predicate
+		debugger;
 
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,

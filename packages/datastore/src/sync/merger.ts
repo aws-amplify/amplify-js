@@ -45,6 +45,8 @@ class ModelMerger {
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
+
+			// TODO: create util fn to get model id
 			let modelId; // TODO rename
 			const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
