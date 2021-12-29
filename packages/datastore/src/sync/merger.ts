@@ -46,24 +46,7 @@ class ModelMerger {
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
-
-			// TODO: create util fn to get model id
-			// let modelId; // TODO rename
-			// const pk = extractPrimaryKeyFieldNames(modelDefinition);
-			// console.log(pk);
-			// debugger;
-
-			// const itemId = item?.id;
-
-			// if (!itemId) {
-			// 	// TODO: extract all keys
-			// 	modelId = item[pk[0]];
-			// } else {
-			// 	modelId = item.id;
-			// }
-
 			const modelId = getIdOrPkFromModel(modelDefinition, item);
-			debugger;
 
 			itemsMap.set(modelId, item);
 		}

@@ -414,23 +414,7 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
-	// TODO: explain
-	// let modelId;
-
-	// const pk = extractPrimaryKeyFieldNames(modelDefinition);
-	// // console.log(pk);
-	// // debugger;
-
-	// const elementId = element?.id;
-
-	// if (!elementId) {
-	// 	// TODO:
-	// 	modelId = element[pk[0]];
-	// } else {
-	// 	modelId = element.id;
-	// }
 	const modelId = getIdOrPkFromModel(modelDefinition, element);
-	debugger;
 
 	// TODO: create util to identify custom PK - for now, using hardcoded 'customId`
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
@@ -639,7 +623,6 @@ export function getIdOrPkFromModel(
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	// if (pkOrId.length > 1) {
 	const idOrPk = pkFieldNames.reduce((acc, cur, idx) => {
 		if (idx === 0) {
 			return `${cur}`;
@@ -649,19 +632,17 @@ export function getIdOrPkFromModel(
 			return `${acc}-${cur}`;
 		}
 	});
-	// } else {
-	// 	idOrPk = model.id;
-	// }
 
 	return idOrPk;
 }
 
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
 export function getIdOrPkValueStringFromModel(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata
 ): string {
 	const pkOrId = extractPrimaryKeyFieldNames(modelDefinition);
-	debugger;
+
 	const pkString = pkOrId.reduce((prev, cur, idx) => {
 		const keyValue = model[cur];
 		if (idx === 0) {
@@ -673,11 +654,13 @@ export function getIdOrPkValueStringFromModel(
 	return pkString;
 }
 
+// Util that returns a tuple containing the custom primary key(s) / id(s), and their values
 export function getIdOrPkKeyValuePairFromModel(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata
 ): String[] {
 	const key = getIdOrPkFromModel(modelDefinition, model);
 	const value = getIdOrPkValueStringFromModel(modelDefinition, model);
+
 	return [key, value];
 }

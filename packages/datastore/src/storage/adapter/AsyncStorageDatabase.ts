@@ -86,7 +86,6 @@ class AsyncStorageDatabase {
 		// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcL82
 
 		const allKeys: string[] = await this.storage.getAllKeys();
-		debugger;
 
 		const keysForCollectionEntries = [];
 

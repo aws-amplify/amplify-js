@@ -134,24 +134,8 @@ class MutationEventOutbox {
 
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[model.constructor.name];
-		// TODO: create util for this
-
-		// let modelId;
-		// const pk = extractPrimaryKeyFieldNames(userModelDefinition);
-		// // console.log(pk);
-		// // debugger;
-
-		// const test = model?.id;
-
-		// if (!test) {
-		// 	// TODO: extract all keys
-		// 	modelId = model[pk[0]];
-		// } else {
-		// 	modelId = model.id;
-		// }
 
 		const modelId = getIdOrPkFromModel(userModelDefinition, model);
-		debugger;
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
@@ -219,21 +203,7 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[head.model];
 
-		// let recordId;
-		// const pk = extractPrimaryKeyFieldNames(userModelDefinition);
-		// // console.log(pk);
-		// // debugger;
-
-		// const testId = record?.id;
-
-		// if (!testId) {
-		// 	// TODO: extract all keys
-		// 	recordId = record[pk[0]];
-		// } else {
-		// 	recordId = record.id;
-		// }
 		const recordId = getIdOrPkFromModel(userModelDefinition, record);
-		debugger;
 
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
@@ -291,9 +261,6 @@ class MutationEventOutbox {
 			...previousData,
 			...currentData,
 		});
-
-		// console.log('double check ids');
-		// debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,

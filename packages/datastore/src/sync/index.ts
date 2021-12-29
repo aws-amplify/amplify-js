@@ -532,21 +532,7 @@ export class SyncEngine {
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
-											// let itemId;
-											// const pk = extractPrimaryKeyFieldNames(modelDefinition);
-											// // console.log(pk);
-											// // debugger;
-
-											// const test = item?.id;
-
-											// if (!test) {
-											// 	// TODO
-											// 	itemId = item[pk[0]];
-											// } else {
-											// 	itemId = item.id;
-											// }
 											const itemId = getIdOrPkFromModel(modelDefinition, item);
-											debugger;
 
 											if (!idsInOutbox.has(itemId)) {
 												return true;
