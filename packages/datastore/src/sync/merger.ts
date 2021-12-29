@@ -7,7 +7,7 @@ import {
 } from '../types';
 import { MutationEventOutbox } from './outbox';
 import { SchemaModel } from '../types';
-import { getIdOrPkValueStringFromModel } from './utils';
+import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
@@ -46,7 +46,7 @@ class ModelMerger {
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
-			const modelId = getIdOrPkValueStringFromModel(modelDefinition, item);
+			const modelId = getIdentifierValue(modelDefinition, item);
 
 			itemsMap.set(modelId, item);
 		}

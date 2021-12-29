@@ -414,7 +414,7 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
-	const modelId = getIdOrPkValueStringFromModel(modelDefinition, element);
+	const modelId = getIdentifierValue(modelDefinition, element);
 
 	// TODO: create util to identify custom PK - for now, using hardcoded 'customId`
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
@@ -617,7 +617,7 @@ export async function getTokenForCustomAuth(
 }
 
 // Util that takes a modelDefinition and model and returns either the id or the custom primary key(s)
-export function getIdOrPkFromModel(
+export function getIdentifierKey(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata | PersistentModel
 ): string {
@@ -635,7 +635,7 @@ export function getIdOrPkFromModel(
 }
 
 // Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
-export function getIdOrPkValueStringFromModel(
+export function getIdentifierValue(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata | PersistentModel
 ): string {
@@ -658,8 +658,8 @@ export function getIdOrPkKeyValuePairFromModel(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata | PersistentModel
 ): String[] {
-	const key = getIdOrPkFromModel(modelDefinition, model);
-	const value = getIdOrPkValueStringFromModel(modelDefinition, model);
+	const key = getIdentifierKey(modelDefinition, model);
+	const value = getIdentifierValue(modelDefinition, model);
 
 	return [key, value];
 }

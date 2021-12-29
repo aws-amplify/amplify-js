@@ -14,10 +14,7 @@ import {
 	QueryOne,
 } from '../types';
 import { USER, SYNC, valuesEqual, isModelConstructor } from '../util';
-import {
-	getIdOrPkValueStringFromModel,
-	TransformerMutationType,
-} from './utils';
+import { getIdentifierValue, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
 class MutationEventOutbox {
@@ -138,7 +135,7 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[model.constructor.name];
 
-		const modelId = getIdOrPkValueStringFromModel(userModelDefinition, model);
+		const modelId = getIdentifierValue(userModelDefinition, model);
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
@@ -204,7 +201,7 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[head.model];
 
-		const recordId = getIdOrPkValueStringFromModel(userModelDefinition, record);
+		const recordId = getIdentifierValue(userModelDefinition, record);
 
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
