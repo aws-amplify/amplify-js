@@ -628,10 +628,8 @@ export function getIdOrPkFromModel(
 			return `${cur}`;
 		}
 
-		if (cur) {
-			return `${acc}-${cur}`;
-		}
-	});
+		return `${acc}-${cur}`;
+	}, '');
 
 	return idOrPk;
 }
@@ -641,17 +639,18 @@ export function getIdOrPkValueStringFromModel(
 	modelDefinition: SchemaModel,
 	model: ModelInstanceMetadata | PersistentModel
 ): string {
-	const pkOrId = extractPrimaryKeyFieldNames(modelDefinition);
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const pkString = pkOrId.reduce((prev, cur, idx) => {
-		const keyValue = model[cur];
+	const idOrPk = pkFieldNames.reduce((acc, cur, idx) => {
+		const value = model[cur];
 		if (idx === 0) {
-			return `${keyValue}`;
+			return `${value}`;
 		}
-		return `${prev}-${keyValue}`;
-	});
 
-	return pkString;
+		return `${acc}-${value}`;
+	}, '');
+
+	return idOrPk;
 }
 
 // Util that returns a tuple containing the custom primary key(s) / id(s), and their values
