@@ -32,6 +32,7 @@ import { CONTROL_MSG, SubscriptionProcessor } from './processors/subscription';
 import { SyncProcessor } from './processors/sync';
 import {
 	createMutationInstanceFromModelOperation,
+	getIdOrPkFromModel,
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
@@ -531,19 +532,21 @@ export class SyncEngine {
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
-											let itemId;
-											const pk = extractPrimaryKeyFieldNames(modelDefinition);
-											console.log(pk);
+											// let itemId;
+											// const pk = extractPrimaryKeyFieldNames(modelDefinition);
+											// // console.log(pk);
+											// // debugger;
+
+											// const test = item?.id;
+
+											// if (!test) {
+											// 	// TODO
+											// 	itemId = item[pk[0]];
+											// } else {
+											// 	itemId = item.id;
+											// }
+											const itemId = getIdOrPkFromModel(modelDefinition, item);
 											debugger;
-
-											const test = item?.id;
-
-											if (!test) {
-												// TODO
-												itemId = item[pk[0]];
-											} else {
-												itemId = item.id;
-											}
 
 											if (!idsInOutbox.has(itemId)) {
 												return true;

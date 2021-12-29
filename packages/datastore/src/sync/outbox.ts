@@ -14,7 +14,7 @@ import {
 	QueryOne,
 } from '../types';
 import { USER, SYNC, valuesEqual, isModelConstructor } from '../util';
-import { TransformerMutationType } from './utils';
+import { getIdOrPkFromModel, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
 class MutationEventOutbox {
@@ -35,8 +35,8 @@ class MutationEventOutbox {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
-			// modelid is the id of the record in the mutationEvent store/table
-			// id is the id of the actual record that was mutated
+			// `id` is the id of the record in the mutationEvent store/table
+			// `modelId` is the id of the actual record that was mutated that we're sending to AppSync
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
 				c =>
@@ -136,19 +136,22 @@ class MutationEventOutbox {
 			this.schema.namespaces['user'].models[model.constructor.name];
 		// TODO: create util for this
 
-		let modelId;
-		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
-		console.log(pk);
+		// let modelId;
+		// const pk = extractPrimaryKeyFieldNames(userModelDefinition);
+		// // console.log(pk);
+		// // debugger;
+
+		// const test = model?.id;
+
+		// if (!test) {
+		// 	// TODO: extract all keys
+		// 	modelId = model[pk[0]];
+		// } else {
+		// 	modelId = model.id;
+		// }
+
+		const modelId = getIdOrPkFromModel(userModelDefinition, model);
 		debugger;
-
-		const test = model?.id;
-
-		if (!test) {
-			// TODO: extract all keys
-			modelId = model[pk[0]];
-		} else {
-			modelId = model.id;
-		}
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
@@ -216,19 +219,21 @@ class MutationEventOutbox {
 		const userModelDefinition =
 			this.schema.namespaces['user'].models[head.model];
 
-		let recordId;
-		const pk = extractPrimaryKeyFieldNames(userModelDefinition);
-		console.log(pk);
+		// let recordId;
+		// const pk = extractPrimaryKeyFieldNames(userModelDefinition);
+		// // console.log(pk);
+		// // debugger;
+
+		// const testId = record?.id;
+
+		// if (!testId) {
+		// 	// TODO: extract all keys
+		// 	recordId = record[pk[0]];
+		// } else {
+		// 	recordId = record.id;
+		// }
+		const recordId = getIdOrPkFromModel(userModelDefinition, record);
 		debugger;
-
-		const testId = record?.id;
-
-		if (!testId) {
-			// TODO: extract all keys
-			recordId = record[pk[0]];
-		} else {
-			recordId = record.id;
-		}
 
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
@@ -287,8 +292,8 @@ class MutationEventOutbox {
 			...currentData,
 		});
 
-		console.log('double check ids');
-		debugger;
+		// console.log('double check ids');
+		// debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,

@@ -415,20 +415,22 @@ export function createMutationInstanceFromModelOperation<
 	};
 
 	// TODO: explain
-	let modelId;
+	// let modelId;
 
-	const pk = extractPrimaryKeyFieldNames(modelDefinition);
-	console.log(pk);
+	// const pk = extractPrimaryKeyFieldNames(modelDefinition);
+	// // console.log(pk);
+	// // debugger;
+
+	// const elementId = element?.id;
+
+	// if (!elementId) {
+	// 	// TODO:
+	// 	modelId = element[pk[0]];
+	// } else {
+	// 	modelId = element.id;
+	// }
+	const modelId = getIdOrPkFromModel(modelDefinition, element);
 	debugger;
-
-	const elementId = element?.id;
-
-	if (!elementId) {
-		// TODO:
-		modelId = element[pk[0]];
-	} else {
-		modelId = element.id;
-	}
 
 	// TODO: create util to identify custom PK - for now, using hardcoded 'customId`
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
@@ -633,21 +635,49 @@ export async function getTokenForCustomAuth(
 // Util that takes a modelDefinition and model and returns either the id or the custom primary key(s)
 export function getIdOrPkFromModel(
 	modelDefinition: SchemaModel,
-	model: ModelInstanceMetadata
+	model: ModelInstanceMetadata | PersistentModel
 ): string {
-	let idOrPk;
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const pkOrId = extractPrimaryKeyFieldNames(modelDefinition);
+	// if (pkOrId.length > 1) {
+	const idOrPk = pkFieldNames.reduce((acc, cur, idx) => {
+		if (idx === 0) {
+			return `${cur}`;
+		}
 
-	if (pkOrId.length > 1) {
-		idOrPk = pkOrId.reduce((acc, curr) => {
-			if (curr) {
-				return `${acc}::${curr}`;
-			}
-		});
-	} else {
-		idOrPk = model.id;
-	}
+		if (cur) {
+			return `${acc}-${cur}`;
+		}
+	});
+	// } else {
+	// 	idOrPk = model.id;
+	// }
 
 	return idOrPk;
+}
+
+export function getIdOrPkValueStringFromModel(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata
+): string {
+	const pkOrId = extractPrimaryKeyFieldNames(modelDefinition);
+	debugger;
+	const pkString = pkOrId.reduce((prev, cur, idx) => {
+		const keyValue = model[cur];
+		if (idx === 0) {
+			return `${keyValue}`;
+		}
+		return `${prev}-${keyValue}`;
+	});
+
+	return pkString;
+}
+
+export function getIdOrPkKeyValuePairFromModel(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata
+): String[] {
+	const key = getIdOrPkFromModel(modelDefinition, model);
+	const value = getIdOrPkValueStringFromModel(modelDefinition, model);
+	return [key, value];
 }
