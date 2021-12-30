@@ -27,7 +27,6 @@ import {
 	InternalSchema,
 	AuthModeStrategy,
 	extractPrimaryKeyFieldNames,
-	// isPrimaryKeyId,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -430,7 +429,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -438,17 +438,27 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 	predicate.predicates.forEach(p => {
 		if (isPredicateObj(p)) {
 			const { field, operator, operand } = p;
 
-			if (field === 'id') {
+			// This is compatible with how the GQL Transform currently generates the Condition Input,
+			// i.e. any PK and SK fields are omitted and can't be used as conditions.
+			// However, I think this limits usability.
+			// What if we want to delete all records where SK > some value
+			// Or all records where PK = some value but SKs are different values
+
+			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
+			// key fields from the predicate when ALL of the keyFields are present and using `eq` operators
+			if (typeof field === 'string' && keyFields.includes(field)) {
 				return;
 			}
 
 			result[field] = { [operator]: operand };
 		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
+			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
 		}
 	});
 

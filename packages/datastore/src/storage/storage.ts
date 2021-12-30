@@ -25,6 +25,7 @@ import {
 	validatePredicate,
 	valuesEqual,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -175,7 +176,21 @@ class StorageClass implements StorageFacade {
 			condition
 		);
 
-		const modelIds = new Set(models.map(({ id }) => id));
+		const modelConstructor = isModelConstructor(modelOrModelConstructor)
+			? modelOrModelConstructor
+			: (Object.getPrototypeOf(modelOrModelConstructor || {})
+					.constructor as PersistentModelConstructor<T>);
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
+
+		const modelIds = new Set(
+			models.map(model => {
+				const modelId = getIdentifierValue(modelDefinition, model);
+				return modelId;
+			})
+		);
 
 		if (
 			!isModelConstructor(modelOrModelConstructor) &&
@@ -191,7 +206,8 @@ class StorageClass implements StorageFacade {
 			let theCondition: PredicatesGroup<any>;
 
 			if (!isModelConstructor(modelOrModelConstructor)) {
-				theCondition = modelIds.has(model.id)
+				const modelId = getIdentifierValue(modelDefinition, model);
+				theCondition = modelIds.has(modelId)
 					? ModelPredicateCreator.getPredicates(condition, false)
 					: undefined;
 			}
