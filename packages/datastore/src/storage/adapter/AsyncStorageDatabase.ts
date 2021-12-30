@@ -39,59 +39,32 @@ class AsyncStorageDatabase {
 		return monotonicFactoriesMap.get(storeName);
 	}
 
-	// private getNamespaceAndModelFromStorename(storeName: string) {
-	// 	const [namespaceName, ...modelNameArr] = storeName.split('_');
-	// 	return {
-	// 		namespaceName,
-	// 		modelName: modelNameArr.join('_'),
-	// 	};
-	// }
+	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
+		console.log('inspect storage to see how to grab the pk');
+		debugger;
+		// const keyPath =
+		// 	this.storage.namespaces[namespaceName].keys[modelName].primaryKey;
 
-	// private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
-	// 	const keyPath =
-	// 		this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
+		// if (keyPath) {
+		// 	return keyPath;
+		// }
 
-	// 	if (keyPath) {
-	// 		return keyPath;
-	// 	}
+		return ['id'];
+	}
 
-	// 	return ['id'];
-	// }
-
-	// private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
-	// 	const modelConstructor = Object.getPrototypeOf(model)
-	// 		.constructor as PersistentModelConstructor<T>;
-	// 	const namespaceName = this.namespaceResolver(modelConstructor);
-	// 	const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
-
-	// 	const keyValues = keys.map(field => model[field]);
-	// 	return keyValues;
-	// }
-
-	// private keysEqual(keysA, keysB): boolean {
-	// 	if (keysA.length !== keysB.length) {
-	// 		return false;
-	// 	}
-
-	// 	if (keysA.length === 1) {
-	// 		return keysA[0] === keysB[0];
-	// 	}
-
-	// 	return keysA.every((key, idx) => key === keysB[idx]);
-	// }
-
-	async init(): Promise<void> {
+	async init(schema: any): Promise<void> {
 		this._collectionInMemoryIndex.clear();
 
 		// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcL82
 
 		const allKeys: string[] = await this.storage.getAllKeys();
+		console.log(schema);
+		debugger;
 
 		const keysForCollectionEntries = [];
 
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
-			// TODO: Retrieve by PK instead of ID, push to collection?
 			debugger;
 
 			if (dbName === DB_NAME) {
@@ -259,15 +232,13 @@ class AsyncStorageDatabase {
 	}
 
 	async get<T extends PersistentModel>(
-		id: string,
-		// keyArr: string[]
+		// id: string,
+		keyArr: string[],
 		storeName: string
 	): Promise<T> {
-		// https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcR253
-		// Retrieve by PK instead of ID
 		debugger;
-		const ulid = this.getCollectionIndex(storeName).get(id);
-		const itemKey = this.getKeyForItem(storeName, id, ulid);
+		const ulid = this.getCollectionIndex(storeName).get(keyArr.join('-'));
+		const itemKey = this.getKeyForItem(storeName, keyArr.join('-'), ulid);
 		debugger;
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);

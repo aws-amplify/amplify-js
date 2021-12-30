@@ -451,7 +451,7 @@ export function predicateToGraphQLCondition(
 			// Or all records where PK = some value but SKs are different values
 
 			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
-			// key fields from the predicate when ALL of the keyFields are present and using `eq` operators
+			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
 			if (typeof field === 'string' && keyFields.includes(field)) {
 				return;
 			}

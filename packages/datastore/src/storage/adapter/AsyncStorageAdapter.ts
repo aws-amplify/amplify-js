@@ -61,46 +61,46 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
-	// private getNamespaceAndModelFromStorename(storeName: string) {
-	// 	const [namespaceName, ...modelNameArr] = storeName.split('_');
-	// 	return {
-	// 		namespaceName,
-	// 		modelName: modelNameArr.join('_'),
-	// 	};
-	// }
+	private getNamespaceAndModelFromStorename(storeName: string) {
+		const [namespaceName, ...modelNameArr] = storeName.split('_');
+		return {
+			namespaceName,
+			modelName: modelNameArr.join('_'),
+		};
+	}
 
-	// private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
-	// 	const keyPath =
-	// 		this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
+	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
+		const keyPath =
+			this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
 
-	// 	if (keyPath) {
-	// 		return keyPath;
-	// 	}
+		if (keyPath) {
+			return keyPath;
+		}
 
-	// 	return ['id'];
-	// }
+		return ['id'];
+	}
 
-	// private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
-	// 	const modelConstructor = Object.getPrototypeOf(model)
-	// 		.constructor as PersistentModelConstructor<T>;
-	// 	const namespaceName = this.namespaceResolver(modelConstructor);
-	// 	const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
+	private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
+		const modelConstructor = Object.getPrototypeOf(model)
+			.constructor as PersistentModelConstructor<T>;
+		const namespaceName = this.namespaceResolver(modelConstructor);
+		const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
 
-	// 	const keyValues = keys.map(field => model[field]);
-	// 	return keyValues;
-	// }
+		const keyValues = keys.map(field => model[field]);
+		return keyValues;
+	}
 
-	// private keysEqual(keysA, keysB): boolean {
-	// 	if (keysA.length !== keysB.length) {
-	// 		return false;
-	// 	}
+	private keysEqual(keysA, keysB): boolean {
+		if (keysA.length !== keysB.length) {
+			return false;
+		}
 
-	// 	if (keysA.length === 1) {
-	// 		return keysA[0] === keysB[0];
-	// 	}
+		if (keysA.length === 1) {
+			return keysA[0] === keysB[0];
+		}
 
-	// 	return keysA.every((key, idx) => key === keysB[idx]);
-	// }
+		return keysA.every((key, idx) => key === keysB[idx]);
+	}
 
 	async setUp(
 		theSchema: InternalSchema,
@@ -130,7 +130,9 @@ export class AsyncStorageAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				this.db = new AsyncStorageDatabase();
-				await this.db.init();
+				console.log('pass schema for keys?', this.schema);
+				debugger;
+				await this.db.init(this.schema);
 				this.resolve();
 			}
 		} catch (error) {
@@ -152,30 +154,29 @@ export class AsyncStorageAdapter implements Adapter {
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+			// this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+			this.schema.namespaces[namespaceName],
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
 
 		// replace above with
-		// this.schema.namespaces[namespaceName],
 		debugger;
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				const storeName = this.getStorename(namespaceName, modelName);
 				set.add(storeName);
-				// replace return below with:
-				// const keys = this.getIndexKeyPath(namespaceName, modelName);
-				// return { storeName, item, instance, keys };
+				const keys = this.getIndexKeyPath(namespaceName, modelName);
 				debugger;
-				return { storeName, item, instance };
+				return { storeName, item, instance, keys };
+				// return { storeName, item, instance };
 			}
 		);
-		const fromDB = await this.db.get(model.id, storeName);
-		// const keyValues = this.getIndexKeyValues(model);
-		// const fromDB = await this._get(store, keyValues);
+		// const fromDB = await this.db.get(model.id, storeName);
+		const keyValues = this.getIndexKeyValues(model);
 		debugger;
+		const fromDB = await this.db.get(keyValues, storeName);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -194,14 +195,15 @@ export class AsyncStorageAdapter implements Adapter {
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance } = resItem;
-			// const { storeName, item, instance, keys } = resItem;
+			// const { storeName, item, instance } = resItem;
+			const { storeName, item, instance, keys } = resItem;
 			debugger;
-			const { id } = item;
-			// const itemKeyValues = keys.map(key => item[key]);
+			// const { id } = item;
+			const itemKeyValues = keys.map(key => item[key]);
 
-			const fromDB = <T>await this.db.get(id, storeName);
+			// DO 205 or use itemKeyValues?!?!?!?
 			// const keyValues = this.getIndexKeyValues(model);
+			const fromDB = <T>await this.db.get(itemKeyValues, storeName);
 			// const fromDB = await this._get(store, keyValues);
 			debugger;
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
@@ -312,7 +314,6 @@ export class AsyncStorageAdapter implements Adapter {
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
 		const queryById = predicates && this.idFromPredicate(predicates);
-		debugger;
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
@@ -332,11 +333,9 @@ export class AsyncStorageAdapter implements Adapter {
 				return this.inMemoryPagination(all, pagination);
 			}
 
-			debugger;
 			return this.getAll(storeName);
 		})();
 
-		debugger;
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
@@ -369,7 +368,6 @@ export class AsyncStorageAdapter implements Adapter {
 				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
-		debugger;
 		return idPredicate && idPredicate.operand;
 	}
 
