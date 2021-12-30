@@ -356,7 +356,6 @@ export class SyncEngine {
 					.observe(null, null, ownSymbol)
 					.filter(({ model }) => {
 						const modelDefinition = this.getModelDefinition(model);
-
 						return modelDefinition.syncable === true;
 					})
 					.subscribe({
@@ -366,7 +365,11 @@ export class SyncEngine {
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
-							const graphQLCondition = predicateToGraphQLCondition(condition);
+							const modelDefinition = this.getModelDefinition(model);
+							const graphQLCondition = predicateToGraphQLCondition(
+								condition,
+								modelDefinition
+							);
 							const mutationEvent = createMutationInstanceFromModelOperation(
 								namespace.relationships,
 								this.getModelDefinition(model),
