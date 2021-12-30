@@ -119,12 +119,14 @@ export class AsyncStorageAdapter implements Adapter {
 			});
 		} else {
 			await this.initPromise;
+			debugger;
 			return;
 		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
+		debugger;
 		try {
 			if (!this.db) {
 				this.db = new AsyncStorageDatabase();
@@ -140,6 +142,7 @@ export class AsyncStorageAdapter implements Adapter {
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		debugger;
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -156,6 +159,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 		// replace above with
 		// this.schema.namespaces[namespaceName],
+		debugger;
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
@@ -164,12 +168,14 @@ export class AsyncStorageAdapter implements Adapter {
 				// replace return below with:
 				// const keys = this.getIndexKeyPath(namespaceName, modelName);
 				// return { storeName, item, instance, keys };
+				debugger;
 				return { storeName, item, instance };
 			}
 		);
 		const fromDB = await this.db.get(model.id, storeName);
 		// const keyValues = this.getIndexKeyValues(model);
 		// const fromDB = await this._get(store, keyValues);
+		debugger;
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -190,22 +196,26 @@ export class AsyncStorageAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			// const { storeName, item, instance, keys } = resItem;
+			debugger;
 			const { id } = item;
 			// const itemKeyValues = keys.map(key => item[key]);
 
 			const fromDB = <T>await this.db.get(id, storeName);
 			// const keyValues = this.getIndexKeyValues(model);
 			// const fromDB = await this._get(store, keyValues);
+			debugger;
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
 			// No replacement:
 			// const modelKeyValues = this.getIndexKeyValues(model);
 			// const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
+			debugger;
 
 			if (id === model.id || opType === OpType.INSERT) {
 				// if (keysEqual || opType === OpType.INSERT) {
 				// Replace condition, but is anything needed to adjust how we save, as in below?
 				// const key = await store.index('byPk').getKey(itemKeyValues);
+				debugger;
 				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
@@ -302,6 +312,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
 		const queryById = predicates && this.idFromPredicate(predicates);
+		debugger;
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
@@ -321,9 +332,11 @@ export class AsyncStorageAdapter implements Adapter {
 				return this.inMemoryPagination(all, pagination);
 			}
 
+			debugger;
 			return this.getAll(storeName);
 		})();
 
+		debugger;
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
@@ -336,6 +349,7 @@ export class AsyncStorageAdapter implements Adapter {
 		// const record = <T>await this._get(storeName, [id]);
 		// so try:
 		// const record = <T>awaait this.db.get([id], storeName);
+		debugger;
 		return record;
 	}
 
@@ -355,6 +369,7 @@ export class AsyncStorageAdapter implements Adapter {
 				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
+		debugger;
 		return idPredicate && idPredicate.operand;
 	}
 
@@ -393,8 +408,10 @@ export class AsyncStorageAdapter implements Adapter {
 
 			const end = limit > 0 ? start + limit : records.length;
 
+			debugger;
 			return records.slice(start, end);
 		}
+		debugger;
 		return records;
 	}
 
@@ -404,6 +421,7 @@ export class AsyncStorageAdapter implements Adapter {
 	): Promise<T | undefined> {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const result = <T>await this.db.getOne(firstOrLast, storeName);
+		debugger;
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
@@ -439,6 +457,7 @@ export class AsyncStorageAdapter implements Adapter {
 					(acc, { items }) => acc.concat(items),
 					<T[]>[]
 				);
+				debugger;
 				return [models, deletedModels];
 			} else {
 				await this.deleteTraverse(
@@ -456,6 +475,7 @@ export class AsyncStorageAdapter implements Adapter {
 					<T[]>[]
 				);
 
+				debugger;
 				return [models, deletedModels];
 			}
 		} else {
@@ -467,7 +487,9 @@ export class AsyncStorageAdapter implements Adapter {
 			// const namespaceName = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
+			debugger;
 			if (condition) {
+				debugger;
 				const fromDB = await this.db.get(model.id, storeName);
 				// const keyValues = this.getIndexKeyValues(model);
 				// const fromDB = await this.db.get(keyValues, storeName);
@@ -513,6 +535,7 @@ export class AsyncStorageAdapter implements Adapter {
 				// this.schema.namespaces[namespaceName].relationships[
 				// 	modelConstructor.name
 				// ].relationTypes;
+				debugger;
 
 				await this.deleteTraverse(
 					relations,
@@ -540,6 +563,7 @@ export class AsyncStorageAdapter implements Adapter {
 	) {
 		for await (const deleteItem of deleteQueue) {
 			const { storeName, items } = deleteItem;
+			debugger;
 
 			for await (const item of items) {
 				if (item) {
@@ -549,6 +573,7 @@ export class AsyncStorageAdapter implements Adapter {
 						// key = await store.index('byPk').getKey(keyValues);
 						// TODO: inspect item, retrieve key for deletion
 						// await this.db.delete(key, storeName);
+						debugger;
 						const id = item['id'];
 						await this.db.delete(id, storeName);
 					}
@@ -600,6 +625,7 @@ export class AsyncStorageAdapter implements Adapter {
 						const value = hasOneCustomField ? model[targetName] : model.id;
 						// const keyValues = this.getIndexKeyValues(model);
 						// const value = hasOneCustomField ? model[targetName] : keyValues;
+						debugger;
 
 						if (!value) break;
 
@@ -622,6 +648,7 @@ export class AsyncStorageAdapter implements Adapter {
 					for await (const model of models) {
 						// ADD:
 						// const keyValues = this.getIndexKeyValues(model);
+						debugger;
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
 							childItem => childItem[index] === model.id
@@ -677,6 +704,7 @@ export class AsyncStorageAdapter implements Adapter {
 		// const namespaceName = this.namespaceResolver(modelConstructor);
 		// const modelName = modelConstructor.name;
 		// const model = this.modelInstanceCreator(modelConstructor, item);
+		debugger;
 
 		const batch: ModelInstanceMetadata[] = [];
 
@@ -689,6 +717,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 			// const index = store.index('byPk');
 			// const key = await index.getKey(keyValues);
+			debugger;
 
 			const connectedModels = traverseModel(
 				modelConstructor.name,
@@ -701,6 +730,7 @@ export class AsyncStorageAdapter implements Adapter {
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
+			debugger;
 
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id
@@ -709,6 +739,7 @@ export class AsyncStorageAdapter implements Adapter {
 			// 	const instanceKeyValues = this.getIndexKeyValues(instance);
 			// 	return this.keysEqual(instanceKeyValues, keyValues);
 			// });
+			debugger;
 
 			batch.push(instance);
 		}

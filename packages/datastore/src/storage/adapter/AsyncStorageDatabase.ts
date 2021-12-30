@@ -92,6 +92,7 @@ class AsyncStorageDatabase {
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
 			// TODO: Retrieve by PK instead of ID, push to collection?
+			debugger;
 
 			if (dbName === DB_NAME) {
 				if (recordType === DATA) {
@@ -106,6 +107,7 @@ class AsyncStorageDatabase {
 
 						const oldKey = this.getLegacyKeyForItem(storeName, id);
 						const newKey = this.getKeyForItem(storeName, id, newUlid);
+						debugger;
 
 						const item = await this.storage.getItem(oldKey);
 
@@ -131,13 +133,17 @@ class AsyncStorageDatabase {
 
 	async save<T extends PersistentModel>(item: T, storeName: string) {
 		// What needs to be done here?
+		debugger;
 		const ulid =
 			this.getCollectionIndex(storeName).get(item.id) ||
 			this.getMonotonicFactory(storeName)();
 
 		const itemKey = this.getKeyForItem(storeName, item.id, ulid);
+		debugger;
 
 		this.getCollectionIndex(storeName).set(item.id, ulid);
+
+		console.log(this.storage);
 
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
@@ -146,7 +152,8 @@ class AsyncStorageDatabase {
 		storeName: string,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
-		// What needs to be done here?
+		console.log(this.storage);
+		debugger;
 		if (items.length === 0) {
 			return [];
 		}
@@ -164,6 +171,7 @@ class AsyncStorageDatabase {
 			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
 
 			const key = this.getKeyForItem(storeName, id, ulid);
+			debugger;
 
 			allItemsKeys.push(key);
 			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
@@ -193,6 +201,7 @@ class AsyncStorageDatabase {
 			keysToDeleteArray.forEach(key =>
 				collection.delete(itemsMap[key].model.id)
 			);
+			debugger;
 
 			this.storage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
 				if (errors && errors.length > 0) {
@@ -233,6 +242,7 @@ class AsyncStorageDatabase {
 		});
 
 		for (const key of allItemsKeys) {
+			debugger;
 			if (keysToDelete.has(key) && existingRecordsKeys.has(key)) {
 				result.push([itemsMap[key].model, OpType.DELETE]);
 			} else if (keysToSave.has(key)) {
@@ -242,6 +252,8 @@ class AsyncStorageDatabase {
 				]);
 			}
 		}
+
+		console.log(this.storage);
 
 		return result;
 	}
@@ -253,17 +265,20 @@ class AsyncStorageDatabase {
 	): Promise<T> {
 		// https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcR253
 		// Retrieve by PK instead of ID
+		debugger;
 		const ulid = this.getCollectionIndex(storeName).get(id);
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
+		debugger;
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
 		// What needs to be done here?
+		console.log(this.storage);
 		return record;
 	}
 
 	async getOne(firstOrLast: QueryOne, storeName: string) {
-		// What needs to be done here?
 		const collection = this.getCollectionIndex(storeName);
+		debugger;
 
 		const [itemId, ulid] =
 			firstOrLast === QueryOne.FIRST
@@ -281,7 +296,8 @@ class AsyncStorageDatabase {
 		const itemString = itemKey && (await this.storage.getItem(itemKey));
 
 		const result = itemString ? JSON.parse(itemString) || undefined : undefined;
-
+		console.log(this.storage);
+		debugger;
 		return result;
 	}
 
@@ -294,8 +310,8 @@ class AsyncStorageDatabase {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName);
-		// What is in collection? ids are used below
 
+		debugger;
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
 		const end = limit > 0 ? start + limit : undefined;
@@ -320,7 +336,7 @@ class AsyncStorageDatabase {
 		const records = storeRecordStrings
 			.filter(([, value]) => value)
 			.map(([, value]) => JSON.parse(value));
-
+		console.log(this.storage);
 		return records;
 	}
 
@@ -330,6 +346,7 @@ class AsyncStorageDatabase {
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 
 		this.getCollectionIndex(storeName).delete(id);
+		debugger;
 		await this.storage.removeItem(itemKey);
 	}
 
@@ -337,7 +354,6 @@ class AsyncStorageDatabase {
 	 * Clear the AsyncStorage of all DataStore entries
 	 */
 	async clear() {
-		// What needs to be done here?
 		const allKeys = await this.storage.getAllKeys();
 		const allDataStoreKeys = allKeys.filter(key => key.startsWith(DB_NAME));
 		await this.storage.multiRemove(allDataStoreKeys);
@@ -345,7 +361,7 @@ class AsyncStorageDatabase {
 	}
 
 	private getKeyForItem(storeName: string, id: string, ulid: string): string {
-		// What needs to be done here?
+		debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${ulid}::${id}`;
 	}
 
