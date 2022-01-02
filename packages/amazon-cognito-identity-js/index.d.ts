@@ -24,6 +24,7 @@ declare module 'amazon-cognito-identity-js' {
 			userAttributes: any,
 			requiredAttributes: any
 		) => void;
+		associateSecretCode?: (challengeName: any, challengeParameters: any) => void;
 		mfaRequired?: (challengeName: any, challengeParameters: any) => void;
 		totpRequired?: (challengeName: any, challengeParameters: any) => void;
 		customChallenge?: (challengeParameters: any) => void;
