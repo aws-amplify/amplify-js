@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.1...aws-amplify-react-native@6.0.2) (2021-12-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/aws-amplify-react-native:** fix dev build for Windows ([#9341](https://github.com/aws-amplify/amplify-js/issues/9341)) ([5c8496f](https://github.com/aws-amplify/amplify-js/commit/5c8496fe8b448f19ebba8911e8f1c3d498b9ade7))
+
+
+
+
+
 ## [6.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.5...aws-amplify-react-native@6.0.1) (2021-11-12)
 
 
