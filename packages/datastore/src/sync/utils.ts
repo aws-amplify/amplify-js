@@ -310,8 +310,8 @@ export function buildGraphQLOperation(
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	let operation: string;
-	let documentArgs: string = ' ';
-	let operationArgs: string = ' ';
+	let documentArgs: string;
+	let operationArgs: string;
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -350,7 +350,6 @@ export function buildGraphQLOperation(
 			operationArgs = '(id: $id)';
 			transformerMutationType = TransformerMutationType.GET;
 			break;
-
 		default:
 			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
