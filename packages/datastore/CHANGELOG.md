@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.2...@aws-amplify/datastore@3.7.3) (2021-12-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fixes observeQuery in local-only mode ([#9300](https://github.com/aws-amplify/amplify-js/issues/9300)) ([b0b57fb](https://github.com/aws-amplify/amplify-js/commit/b0b57fb1ba81d8ad190c4e67efb878ef4c6a2344))
+
+
+
+
+
 ## [3.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.1...@aws-amplify/datastore@3.7.2) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/datastore
