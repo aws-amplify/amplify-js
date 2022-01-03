@@ -21,6 +21,8 @@ import {
 	isModelConstructor,
 } from './util';
 
+export { NAMESPACES } from './util';
+
 export const utils = {
 	USER,
 	traverseModel,

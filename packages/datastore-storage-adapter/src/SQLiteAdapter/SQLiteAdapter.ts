@@ -22,6 +22,7 @@ import {
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
+	NAMESPACES,
 	OpType,
 	PaginationInput,
 	PersistentModel,
@@ -40,7 +41,7 @@ export class SQLiteAdapter implements StorageAdapter {
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;
 	private getModelConstructorByModelName: (
-		namsespaceName: string,
+		namsespaceName: NAMESPACES,
 		modelName: string
 	) => PersistentModelConstructor<any>;
 	private db: SQLiteDatabase;
@@ -53,7 +54,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
@@ -105,7 +106,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 		);
 		const connectionStoreNames = Object.values(connectedModels).map(
-			({ modelName, item, instance }) => {
+			({ modelName, item, instance }: any) => {
 				return { modelName, item, instance };
 			}
 		);
@@ -156,7 +157,7 @@ export class SQLiteAdapter implements StorageAdapter {
 	}
 
 	private async load<T>(
-		namespaceName: string,
+		namespaceName: NAMESPACES,
 		srcModelName: string,
 		records: T[]
 	): Promise<T[]> {
@@ -232,9 +233,7 @@ export class SQLiteAdapter implements StorageAdapter {
 					// TODO: Lazy loading
 					break;
 				default:
-					const _: never = relationType as never;
 					throw new Error(`invalid relation type ${relationType}`);
-					break;
 			}
 		}
 
@@ -249,7 +248,9 @@ export class SQLiteAdapter implements StorageAdapter {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const { name: tableName } = modelConstructor;
-		const namespaceName = this.namespaceResolver(modelConstructor);
+		const namespaceName = this.namespaceResolver(
+			modelConstructor
+		) as NAMESPACES;
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
@@ -328,7 +329,9 @@ export class SQLiteAdapter implements StorageAdapter {
 	): Promise<[T[], T[]]> {
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
-			const namespaceName = this.namespaceResolver(modelConstructor);
+			const namespaceName = this.namespaceResolver(
+				modelConstructor
+			) as NAMESPACES;
 			const { name: tableName } = modelConstructor;
 
 			const predicates =
