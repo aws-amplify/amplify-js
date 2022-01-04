@@ -1160,6 +1160,12 @@ export class AuthClass {
 									rej(err);
 								} else {
 									user.signOut();
+									dispatchAuthEvent(
+										'signOut',
+										this.user,
+										`A user has been signed out`
+									);
+									this.user = null;
 									logger.debug(result);
 									res();
 								}
