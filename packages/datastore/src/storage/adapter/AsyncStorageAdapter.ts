@@ -198,7 +198,7 @@ export class AsyncStorageAdapter implements Adapter {
 			// const { storeName, item, instance } = resItem;
 			const { storeName, item, instance, keys } = resItem;
 			debugger;
-			// const { id } = item;
+			const { id } = item;
 			const itemKeyValues = keys.map(key => item[key]);
 
 			// DO 205 or use itemKeyValues?!?!?!?
@@ -343,11 +343,8 @@ export class AsyncStorageAdapter implements Adapter {
 		storeName: string,
 		id: string
 	): Promise<T> {
-		const record = <T>await this.db.get(id, storeName);
-		// IndexedDB is:
-		// const record = <T>await this._get(storeName, [id]);
-		// so try:
-		// const record = <T>awaait this.db.get([id], storeName);
+		const record = <T>await this.db.get([id], storeName);
+
 		debugger;
 		return record;
 	}
@@ -477,7 +474,7 @@ export class AsyncStorageAdapter implements Adapter {
 				return [models, deletedModels];
 			}
 		} else {
-			const model = modelOrModelConstructor;
+			const model = modelOrModelConstructor as any;
 
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;
@@ -488,7 +485,7 @@ export class AsyncStorageAdapter implements Adapter {
 			debugger;
 			if (condition) {
 				debugger;
-				const fromDB = await this.db.get(model.id, storeName);
+				const fromDB = await this.db.get([model.id], storeName);
 				// const keyValues = this.getIndexKeyValues(model);
 				// const fromDB = await this.db.get(keyValues, storeName);
 

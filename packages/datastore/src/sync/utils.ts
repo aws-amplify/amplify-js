@@ -660,6 +660,11 @@ export function getIdentifierValue(
 		return `${acc}-${value}`;
 	}, '');
 
+	// if ((modelDefinition.name = 'Todo6')) {
+	// 	console.log(idOrPk);
+	// 	// debugger;
+	// }
+
 	return idOrPk;
 }
 
