@@ -1,12 +1,11 @@
 import { Storage } from '../storage/storage';
 import {
-	extractPrimaryKeyFieldNames,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModelConstructor,
+	SchemaModel,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
-import { SchemaModel } from '../types';
 import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(

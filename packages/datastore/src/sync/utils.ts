@@ -419,7 +419,7 @@ export function createMutationInstanceFromModelOperation<
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
 		data: JSON.stringify(element, replacer),
-		modelId: modelId,
+		modelId,
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
