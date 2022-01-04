@@ -35,10 +35,6 @@ const logger = new Logger('DataStore');
 const DB_NAME = 'amplify-datastore';
 
 class IndexedDBAdapter implements Adapter {
-	// Non-null assertions (bang operators) added to most properties to make TS happy.
-	// For now, we can be reasonably sure they're available when they're needed, because
-	// the adapter is not used directly outside the library boundary.
-	// TODO: rejigger for DI?
 	private schema!: InternalSchema;
 	private namespaceResolver!: NamespaceResolver;
 	private modelInstanceCreator!: ModelInstanceCreator;
@@ -250,14 +246,6 @@ class IndexedDBAdapter implements Adapter {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
 			const { predicates: predicateObjs, type } = predicates || {};
 
-			//
-			// yes. `as any` is gross.
-			// i'm not sure what the right alternative is here.
-			// need to audit usage of `validatePredicate()` to see if its signature can
-			// reasonably be changed -- I'm not confident the type restrictions are helpful,
-			// as this is internal code, and the point of the method is validation.
-			//
-			// TBD.
 			const isValid = validatePredicate(
 				fromDB,
 				type as any,
