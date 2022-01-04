@@ -78,14 +78,14 @@ export class I18n {
 
 		const lang = this._lang;
 		let val = this.getByLanguage(key, lang);
-		if (val != null) {
+		if (val) {
 			return val;
 		}
 
 		if (lang.indexOf('-') > 0) {
 			val = this.getByLanguage(key, lang.split('-')[0]);
 		}
-		if (val != null) {
+		if (val) {
 			return val;
 		}
 
