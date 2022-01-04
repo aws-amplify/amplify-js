@@ -433,15 +433,18 @@ class IndexedDBAdapter implements Adapter {
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
-		const queryById = predicates && this.idFromPredicate(predicates);
+		const keyPath = this.getIndexKeyPath(namespaceName, modelConstructor.name);
+		const queryByKey =
+			predicates && this.keyValueFromPredicate(predicates, keyPath);
+
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
 		// debugger;
 
 		const records: T[] = await (async () => {
-			if (queryById) {
-				const record = await this.getById(storeName, queryById);
+			if (queryByKey) {
+				const record = await this.getByKey(storeName, queryByKey);
 				return record ? [record] : [];
 			}
 
@@ -465,11 +468,11 @@ class IndexedDBAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getById<T extends PersistentModel>(
+	private async getByKey<T extends PersistentModel>(
 		storeName: string,
-		id: string
+		keyValue: string[]
 	): Promise<T> {
-		const record = <T>await this._get(storeName, [id]);
+		const record = <T>await this._get(storeName, keyValue);
 		return record;
 	}
 
@@ -479,17 +482,27 @@ class IndexedDBAdapter implements Adapter {
 		return await this.db.getAll(storeName);
 	}
 
-	private idFromPredicate<T extends PersistentModel>(
-		predicates: PredicatesGroup<T>
-	) {
+	private keyValueFromPredicate<T extends PersistentModel>(
+		predicates: PredicatesGroup<T>,
+		keyPath: string[]
+	): string[] | undefined {
 		const { predicates: predicateObjs } = predicates;
-		const idPredicate =
-			predicateObjs.length === 1 &&
-			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-			) as PredicateObject<T>);
 
-		return idPredicate && idPredicate.operand;
+		if (predicateObjs.length !== keyPath.length) {
+			return;
+		}
+
+		const keyValues = [];
+
+		for (const key of keyPath) {
+			const predicateObj = predicateObjs.find(
+				p => isPredicateObj(p) && p.field === key && p.operator === 'eq'
+			) as PredicateObject<T>;
+
+			predicateObj && keyValues.push(predicateObj.operand);
+		}
+
+		return keyValues.length === keyPath.length && keyValues;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
