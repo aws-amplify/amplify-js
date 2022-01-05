@@ -92,17 +92,19 @@ class AsyncStorageDatabase {
 		item: T,
 		storeName: string,
 		keys: any,
-		keyValues: any,
-		keyPath: any
+		keyValues: any
 	) {
 		const ulid =
 			this.getCollectionIndex(storeName).get(keys[0]) ||
 			this.getMonotonicFactory(storeName)();
 
+		// Retrieve "long key" for item
 		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
 
+		// Set key in collection index
 		this.getCollectionIndex(storeName).set(keyValues[0], ulid);
 
+		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
 
@@ -123,7 +125,7 @@ class AsyncStorageDatabase {
 		const allItemsKeys = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
 
-		// Explain
+		/* Populate allItemKeys, keysToDelete, and keysToSave */
 		for (const item of items) {
 			const keyValues = keyPath.map(field => item[field]);
 			const { _deleted } = item;
@@ -152,6 +154,7 @@ class AsyncStorageDatabase {
 			.filter(([, v]) => !!v)
 			.reduce((set, [k]) => set.add(k), new Set<string>());
 
+		// Delete
 		await new Promise((resolve, reject) => {
 			if (keysToDelete.size === 0) {
 				resolve();
@@ -173,6 +176,7 @@ class AsyncStorageDatabase {
 			});
 		});
 
+		// Save
 		await new Promise((resolve, reject) => {
 			if (keysToSave.size === 0) {
 				resolve();
@@ -213,12 +217,10 @@ class AsyncStorageDatabase {
 		return result;
 	}
 
-	// TODO: proper implementation of retrieving the record here with keyArr
 	async get<T extends PersistentModel>(
 		keyArr: string[],
 		storeName: string
 	): Promise<T> {
-		const test = this.getCollectionIndex(storeName);
 		const ulid = this.getCollectionIndex(storeName).get(keyArr[0]);
 		const itemKey = this.getKeyForItem(storeName, keyArr[0], ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
@@ -287,11 +289,9 @@ class AsyncStorageDatabase {
 		return records;
 	}
 
-	// TODO: replace id
 	async delete(key: string, storeName: string) {
 		const ulid = this.getCollectionIndex(storeName).get(key);
 		const itemKey = this.getKeyForItem(storeName, key, ulid);
-
 		this.getCollectionIndex(storeName).delete(key);
 		await this.storage.removeItem(itemKey);
 	}
