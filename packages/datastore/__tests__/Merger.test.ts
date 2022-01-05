@@ -14,8 +14,8 @@ const ownSymbol = Symbol('sync');
 describe('ModelMerger tests', () => {
 	let modelMerger: ModelMerger;
 	let Model: PersistentModelConstructor<InstanceType<typeof ModelType>>;
-	let testUserSchema = testSchema();
-	let modelDefinition = testUserSchema.models.Model;
+	const testUserSchema = testSchema();
+	const modelDefinition = testUserSchema.models.Model;
 	describe('mergePage', () => {
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
