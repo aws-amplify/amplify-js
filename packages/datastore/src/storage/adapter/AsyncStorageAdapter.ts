@@ -61,13 +61,14 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
-	private getNamespaceAndModelFromStorename(storeName: string) {
-		const [namespaceName, ...modelNameArr] = storeName.split('_');
-		return {
-			namespaceName,
-			modelName: modelNameArr.join('_'),
-		};
-	}
+	// Used in IndexedDBAdapter init stage, probably not needed here?
+	// private getNamespaceAndModelFromStorename(storeName: string) {
+	// 	const [namespaceName, ...modelNameArr] = storeName.split('_');
+	// 	return {
+	// 		namespaceName,
+	// 		modelName: modelNameArr.join('_'),
+	// 	};
+	// }
 
 	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
 		const keyPath =
@@ -128,7 +129,7 @@ export class AsyncStorageAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				this.db = new AsyncStorageDatabase();
-				await this.db.init(this.schema);
+				await this.db.init();
 				this.resolve();
 			}
 		} catch (error) {
@@ -161,12 +162,15 @@ export class AsyncStorageAdapter implements Adapter {
 				const storeName = this.getStorename(namespaceName, modelName);
 				set.add(storeName);
 				const keys = this.getIndexKeyPath(namespaceName, modelName);
+				debugger;
 				return { storeName, item, instance, keys };
 				// return { storeName, item, instance };
 			}
 		);
 		// const fromDB = await this.db.get(model.id, storeName);
 		const keyValues = this.getIndexKeyValues(model);
+		console.log('key or value?');
+		debugger;
 		const fromDB = await this.db.get(keyValues, storeName);
 
 		if (condition && fromDB) {
@@ -188,7 +192,6 @@ export class AsyncStorageAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			// const { storeName, item, instance } = resItem;
 			const { storeName, item, instance, keys } = resItem;
-			// debugger;
 			// const { id } = item;
 			const itemKeyValues = keys.map(key => item[key]);
 
@@ -201,9 +204,10 @@ export class AsyncStorageAdapter implements Adapter {
 
 			if (keysEqual || opType === OpType.INSERT) {
 				// const key = await store.index('byPk').getKey(itemKeyValues);
-				console.log('above should not be needed, but check');
+				// TODO: what else needs to be passed to the save function to create key path?
+				// What key values are available here?
 				debugger;
-				await this.db.save(item, storeName);
+				await this.db.save(item, storeName, keys, keyValues);
 
 				result.push([instance, opType]);
 			}
@@ -253,6 +257,8 @@ export class AsyncStorageAdapter implements Adapter {
 						// );
 
 						const key = [recordItem[getByfield]];
+						// Are we sending the key or value?
+						debugger;
 						const connectionRecord = await this.db.get(key, storeName);
 
 						recordItem[fieldName] =
@@ -270,6 +276,8 @@ export class AsyncStorageAdapter implements Adapter {
 							// );
 
 							const key = [recordItem[targetName]];
+							// Key or value?
+							debugger;
 							const connectionRecord = await this.db.get(key, storeName);
 
 							recordItem[fieldName] =
@@ -345,6 +353,8 @@ export class AsyncStorageAdapter implements Adapter {
 		keyValue: string[]
 	): Promise<T> {
 		// const record = <T>await this.db.get([id], storeName);
+		console.log('key or value?');
+		debugger;
 		const record = <T>await this.db.get(keyValue, storeName);
 
 		return record;
@@ -504,6 +514,8 @@ export class AsyncStorageAdapter implements Adapter {
 
 				const keyValues = this.getIndexKeyValues(model);
 
+				console.log('key or value?');
+				debugger;
 				const fromDB = await this.db.get(keyValues, storeName);
 
 				if (fromDB === undefined) {
@@ -578,7 +590,7 @@ export class AsyncStorageAdapter implements Adapter {
 						const keyValues = this.getIndexKeyValues(item as T);
 						console.log(keyValues);
 						console.log('retrieve key from item', item);
-						debugger;
+						// debugger;
 						const key = item['key'];
 						await this.db.delete(key, storeName);
 					}
@@ -622,15 +634,18 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const hasOneIndex = index || 'byId';
-						// const hasOneIndex = index || 'byPk';
+						// const hasOneIndex = index || 'byId';
+						const hasOneIndex = index || 'byPk';
+
+						console.log('check byPk above', hasOneIndex);
+						// debugger;
 
 						const hasOneCustomField = targetName in model;
 
-						const value = hasOneCustomField ? model[targetName] : model.id;
-						// const keyValues = this.getIndexKeyValues(model);
-						// const value = hasOneCustomField ? model[targetName] : keyValues;
-						debugger;
+						// const value = hasOneCustomField ? model[targetName] : model.id;
+						const keyValues = this.getIndexKeyValues(model);
+						const value = hasOneCustomField ? model[targetName] : keyValues[0];
+						// debugger;
 
 						if (!value) break;
 
@@ -651,15 +666,16 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						// ADD:
-						// const keyValues = this.getIndexKeyValues(model);
-						debugger;
+						const keyValues = this.getIndexKeyValues(model);
+
+						// debugger;
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === model.id
+							childItem => childItem[index] === keyValues[0]
 						);
 
-						// Update childrenArray: .getAll(keyValues);
+						console.log('is index correct?', allRecords);
+						// debugger;
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -714,37 +730,41 @@ export class AsyncStorageAdapter implements Adapter {
 		const batch: ModelInstanceMetadata[] = [];
 
 		for (const item of items) {
-			const { id } = item;
+			// const { id } = item;
 
-			// something like:
-			// const keyValues = this.getIndexKeyValues(model);
-			// const { _deleted } = item;
-
-			// const index = store.index('byPk');
-			// const key = await index.getKey(keyValues);
-			debugger;
+			const namespaceName = this.namespaceResolver(modelConstructor);
+			const modelName = modelConstructor.name;
+			const model = this.modelInstanceCreator(modelConstructor, item);
 
 			const connectedModels = traverseModel(
-				modelConstructor.name,
-				this.modelInstanceCreator(modelConstructor, item),
-				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-				// replace above 3 lines with below:
-				// modelName,
-				// model,
-				// this.schema.namespaces[namespaceName],
+				// modelConstructor.name,
+				// this.modelInstanceCreator(modelConstructor, item),
+				// this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				modelName,
+				model,
+				this.schema.namespaces[namespaceName],
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
-			debugger;
 
-			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === id
-			);
+			const keyValues = this.getIndexKeyValues(model);
+			const { _deleted } = item;
+
+			console.log('is _deleted on the item?', item);
+			// const index = store.index('byPk');
+			// const key = await index.getKey(keyValues);
+			console.log('check instances in connectedModels', connectedModels);
 			// const { instance } = connectedModels.find(({ instance }) => {
 			// 	const instanceKeyValues = this.getIndexKeyValues(instance);
 			// 	return this.keysEqual(instanceKeyValues, keyValues);
 			// });
-			debugger;
+			console.log('perhaps use keysEqual');
+			// debugger;
+
+			// TEMP use of keyValues[0]
+			const { instance } = connectedModels.find(
+				({ instance }) => instance.id === keyValues[0]
+			);
 
 			batch.push(instance);
 		}

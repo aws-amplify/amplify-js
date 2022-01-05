@@ -23,50 +23,39 @@ class AsyncStorageDatabase {
 
 	private storage = createInMemoryStore();
 
+	// TODO: description of this
 	private getCollectionIndex(storeName: string) {
 		if (!this._collectionInMemoryIndex.has(storeName)) {
 			this._collectionInMemoryIndex.set(storeName, new Map());
 		}
 
+		console.log('collection index', this._collectionInMemoryIndex);
+
 		return this._collectionInMemoryIndex.get(storeName);
 	}
 
+	// TODO: description of this
 	private getMonotonicFactory(storeName: string): ULID {
 		if (!monotonicFactoriesMap.has(storeName)) {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());
 		}
 
+		console.log('monotonicFactoriesMap', monotonicFactoriesMap);
+
 		return monotonicFactoriesMap.get(storeName);
 	}
 
-	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
-		console.log('inspect storage to see how to grab the pk');
+	async init(): Promise<void> {
+		// TODO: I'm not yet sure what needs to be done here
 		debugger;
-		// const keyPath =
-		// 	this.storage.namespaces[namespaceName].keys[modelName].primaryKey;
-
-		// if (keyPath) {
-		// 	return keyPath;
-		// }
-
-		return ['id'];
-	}
-
-	async init(schema: any): Promise<void> {
 		this._collectionInMemoryIndex.clear();
 
-		// tslint:disable-next-line
-		// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcL82
-
 		const allKeys: string[] = await this.storage.getAllKeys();
-		console.log(schema);
-		debugger;
 
 		const keysForCollectionEntries = [];
 
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
-			debugger;
 
 			if (dbName === DB_NAME) {
 				if (recordType === DATA) {
@@ -81,7 +70,6 @@ class AsyncStorageDatabase {
 
 						const oldKey = this.getLegacyKeyForItem(storeName, id);
 						const newKey = this.getKeyForItem(storeName, id, newUlid);
-						debugger;
 
 						const item = await this.storage.getItem(oldKey);
 
@@ -105,17 +93,23 @@ class AsyncStorageDatabase {
 		}
 	}
 
-	async save<T extends PersistentModel>(item: T, storeName: string) {
-		// What needs to be done here?
+	async save<T extends PersistentModel>(
+		item: T,
+		storeName: string,
+		keys: any,
+		keyValues: any
+	) {
+		// TODO: I'm not yet sure what needs to be done here
 		debugger;
 		const ulid =
-			this.getCollectionIndex(storeName).get(item.id) ||
+			this.getCollectionIndex(storeName).get(keys[0]) ||
 			this.getMonotonicFactory(storeName)();
 
-		const itemKey = this.getKeyForItem(storeName, item.id, ulid);
+		// TODO: trying with single key here
+		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
 		debugger;
 
-		this.getCollectionIndex(storeName).set(item.id, ulid);
+		this.getCollectionIndex(storeName).set(keys[0], ulid);
 
 		console.log(this.storage);
 
@@ -145,7 +139,7 @@ class AsyncStorageDatabase {
 			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
 
 			const key = this.getKeyForItem(storeName, id, ulid);
-			debugger;
+			// debugger;
 
 			allItemsKeys.push(key);
 			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
@@ -172,10 +166,12 @@ class AsyncStorageDatabase {
 
 			const keysToDeleteArray = Array.from(keysToDelete);
 
+			console.log('id');
+			// debugger;
 			keysToDeleteArray.forEach(key =>
 				collection.delete(itemsMap[key].model.id)
 			);
-			debugger;
+			// debugger;
 
 			this.storage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
 				if (errors && errors.length > 0) {
@@ -216,7 +212,7 @@ class AsyncStorageDatabase {
 		});
 
 		for (const key of allItemsKeys) {
-			debugger;
+			// debugger;
 			if (keysToDelete.has(key) && existingRecordsKeys.has(key)) {
 				result.push([itemsMap[key].model, OpType.DELETE]);
 			} else if (keysToSave.has(key)) {
@@ -237,13 +233,14 @@ class AsyncStorageDatabase {
 		keyArr: string[],
 		storeName: string
 	): Promise<T> {
-		debugger;
-		const ulid = this.getCollectionIndex(storeName).get(keyArr.join('-'));
-		const itemKey = this.getKeyForItem(storeName, keyArr.join('-'), ulid);
-		debugger;
+		// debugger;
+		const test = this.getCollectionIndex(storeName);
+		const ulid = this.getCollectionIndex(storeName).get(keyArr[0]);
+		const itemKey = this.getKeyForItem(storeName, keyArr[0], ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
 		// What needs to be done here?
+		debugger;
 		console.log(this.storage);
 		return record;
 	}
@@ -269,7 +266,7 @@ class AsyncStorageDatabase {
 
 		const result = itemString ? JSON.parse(itemString) || undefined : undefined;
 		console.log(this.storage);
-		debugger;
+		// debugger;
 		return result;
 	}
 
@@ -283,7 +280,7 @@ class AsyncStorageDatabase {
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName);
 
-		debugger;
+		// debugger;
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
 		const end = limit > 0 ? start + limit : undefined;
@@ -318,7 +315,7 @@ class AsyncStorageDatabase {
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 
 		this.getCollectionIndex(storeName).delete(id);
-		debugger;
+		// debugger;
 		await this.storage.removeItem(itemKey);
 	}
 
@@ -333,7 +330,7 @@ class AsyncStorageDatabase {
 	}
 
 	private getKeyForItem(storeName: string, id: string, ulid: string): string {
-		debugger;
+		// debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${ulid}::${id}`;
 	}
 
