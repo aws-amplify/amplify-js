@@ -1156,7 +1156,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - ci-upgrade-node-mac
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1520,54 +1519,54 @@ workflows:
           filters:
             <<: *releasable_branches
           browser: chrome
-      # - deploy:
-      #     filters:
-      #       <<: *releasable_branches
-      #     requires:
-      #       - unit_test
-      #       - integ_react_predictions
-      #       - integ_react_datastore
-      #       - integ_react_datastore_v2
-      #       - integ_react_datastore_multi_auth_one_rule
-      #       - integ_react_datastore_multi_auth_one_rule_v2
-      #       - integ_react_datastore_multi_auth_two_rules
-      #       - integ_react_datastore_multi_auth_two_rules_v2
-      #       - integ_react_datastore_multi_auth_three_plus_rules
-      #       - integ_react_datastore_multi_auth_three_plus_rules_v2
-      #       - integ_react_datastore_subs_disabled
-      #       - integ_react_datastore_subs_disabled_v2
-      #       - integ_react_datastore_consecutive_saves
-      #       - integ_react_datastore_consecutive_saves_v2
-      #       - integ_react_datastore_observe_query
-      #       - integ_react_datastore_observe_query_v2
-      #       - integ_react_storage
-      #       - integ_react_storage_multipart_progress
-      #       - integ_react_storage_copy
-      #       - integ_react_storage_ui
-      #       - integ_react_interactions
-      #       - integ_angular_interactions
-      #       - integ_vue_interactions
-      #       - integ_react_amazon_cognito_identity_js_cookie_storage
-      #       - integ_react_amazon_cognito_identity_js
-      #       - integ_node_amazon_cognito_identity_js
-      #       - integ_react_auth
-      #       - integ_angular_auth
-      #       - integ_vue_auth
-      #       - integ_rn_ios_storage
-      #       - integ_rn_ios_storage_multipart_progress
-      #       # - integ_rn_android_storage_multipart_progress
-      #       - integ_rn_ios_push_notifications
-      #       - integ_rn_android_storage
-      #       - integ_rn_ios_datastore_sqlite_adapter
-      #       - integ_datastore_auth
-      #       - integ_datastore_auth_v2
-      #       - integ_duplicate_packages
-      #       - integ_auth_test_cypress_no_ui
-      #       - integ_react_geo
-      # - post_release:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - release
-      #     requires:
-      #       - deploy
+      - deploy:
+          filters:
+            <<: *releasable_branches
+          requires:
+            - unit_test
+            - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_datastore_v2
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_one_rule_v2
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_two_rules_v2
+            - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_multi_auth_three_plus_rules_v2
+            - integ_react_datastore_subs_disabled
+            - integ_react_datastore_subs_disabled_v2
+            - integ_react_datastore_consecutive_saves
+            - integ_react_datastore_consecutive_saves_v2
+            - integ_react_datastore_observe_query
+            - integ_react_datastore_observe_query_v2
+            - integ_react_storage
+            - integ_react_storage_multipart_progress
+            - integ_react_storage_copy
+            - integ_react_storage_ui
+            - integ_react_interactions
+            - integ_angular_interactions
+            - integ_vue_interactions
+            - integ_react_amazon_cognito_identity_js_cookie_storage
+            - integ_react_amazon_cognito_identity_js
+            - integ_node_amazon_cognito_identity_js
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
+            - integ_rn_ios_storage
+            - integ_rn_ios_storage_multipart_progress
+            # - integ_rn_android_storage_multipart_progress
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+            - integ_rn_ios_datastore_sqlite_adapter
+            - integ_datastore_auth
+            - integ_datastore_auth_v2
+            - integ_duplicate_packages
+            - integ_auth_test_cypress_no_ui
+            - integ_react_geo
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
