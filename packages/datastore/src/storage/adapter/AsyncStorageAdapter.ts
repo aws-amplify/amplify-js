@@ -116,7 +116,6 @@ export class AsyncStorageAdapter implements Adapter {
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
-		// AsyncStorageAdapter setup
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -480,7 +479,7 @@ export class AsyncStorageAdapter implements Adapter {
 				return [models, deletedModels];
 			}
 		} else {
-			const model = modelOrModelConstructor as any;
+			const model = modelOrModelConstructor;
 
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;

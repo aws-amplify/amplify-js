@@ -34,7 +34,6 @@ class ModelMerger {
 		return result;
 	}
 
-	// TODO: explain mergePage
 	public async mergePage(
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,

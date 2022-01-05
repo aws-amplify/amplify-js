@@ -33,7 +33,7 @@ class AsyncStorageDatabase {
 		return this._collectionInMemoryIndex.get(storeName);
 	}
 
-	// Generates ulids for each store
+	// Return ULID for store if it exists, otherwise create a new one
 	private getMonotonicFactory(storeName: string): ULID {
 		if (!monotonicFactoriesMap.has(storeName)) {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());
@@ -91,14 +91,14 @@ class AsyncStorageDatabase {
 	async save<T extends PersistentModel>(
 		item: T,
 		storeName: string,
-		keys: any,
-		keyValues: any
+		keys: string[],
+		keyValues: string[]
 	) {
 		const ulid =
 			this.getCollectionIndex(storeName).get(keys[0]) ||
 			this.getMonotonicFactory(storeName)();
 
-		// Retrieve "long key" for item
+		// Retrieve db key for item
 		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
 
 		// Set key in collection index
@@ -130,7 +130,7 @@ class AsyncStorageDatabase {
 			const keyValues = keyPath.map(field => item[field]);
 			const { _deleted } = item;
 
-			// If id is in the store, retrieve, otherwise generate new ULID?
+			// If id is in the store, retrieve, otherwise generate new ULID
 			const ulid =
 				collection.get(keyValues[0]) || this.getMonotonicFactory(storeName)();
 

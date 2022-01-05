@@ -20,7 +20,9 @@ export class InMemoryStore {
 			this.setItem(key, value);
 		});
 
-		callback();
+		if (callback && typeof callback === 'function') {
+			callback();
+		}
 	};
 
 	setItem = async (key: string, value: string) => {
