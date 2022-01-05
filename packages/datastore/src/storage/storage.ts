@@ -231,8 +231,6 @@ class StorageClass implements StorageFacade {
 	): Promise<T[]> {
 		await this.init();
 
-		// debugger;
-
 		return await this.adapter.query(modelConstructor, predicate, pagination);
 	}
 
@@ -241,8 +239,6 @@ class StorageClass implements StorageFacade {
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T> {
 		await this.init();
-
-		// debugger;
 
 		const record = await this.adapter.queryOne(modelConstructor, firstOrLast);
 		return record;

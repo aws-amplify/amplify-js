@@ -440,8 +440,6 @@ class IndexedDBAdapter implements Adapter {
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
-		// debugger;
-
 		const records: T[] = await (async () => {
 			if (queryByKey) {
 				const record = await this.getByKey(storeName, queryByKey);
@@ -592,8 +590,6 @@ class IndexedDBAdapter implements Adapter {
 	): Promise<T | undefined> {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
-
-		// debugger;
 
 		const cursor = await this.db
 			.transaction([storeName], 'readonly')

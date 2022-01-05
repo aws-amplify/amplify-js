@@ -531,7 +531,6 @@ export class SyncEngine {
 									 */
 									await this.storage.runExclusive(async storage => {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
-										console.log(items);
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
