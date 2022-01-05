@@ -34,7 +34,14 @@ executors:
 
   macos-executor:
     macos:
+      xcode: 13.2.1
+    resource_class: large
+
+  # For RN apps that need to be upgraded before using latest iOS/macOS
+  macos-executor-legacy:
+    macos:
       xcode: 11.5.0
+    resource_class: large
 
 test_env_vars: &test_env_vars
   environment:
@@ -945,7 +952,7 @@ jobs:
           spec: device-tracking
           browser: << parameters.browser >>
   integ_rn_ios_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -959,21 +966,21 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_ios_push_notifications:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
     steps:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   integ_rn_android_storage_multipart_progress:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
