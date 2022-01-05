@@ -102,32 +102,36 @@ class AsyncStorageDatabase {
 		// TODO: first attempting with single key
 		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
 
-		this.getCollectionIndex(storeName).set(keys[0], ulid);
+		this.getCollectionIndex(storeName).set(keyValues[0], ulid);
 
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
 
 	async batchSave<T extends PersistentModel>(
 		storeName: string,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadata[],
+		keyPath: string[]
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {
 			return [];
 		}
 
 		const result: [T, OpType][] = [];
-
 		const collection = this.getCollectionIndex(storeName);
 
 		const keysToDelete = new Set<string>();
 		const keysToSave = new Set<string>();
 		const allItemsKeys = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
-		for (const item of items) {
-			const { id, _deleted } = item;
-			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
 
-			const key = this.getKeyForItem(storeName, id, ulid);
+		for (const item of items) {
+			const keyValues = keyPath.map(field => item[field]);
+			const { _deleted } = item;
+
+			const ulid =
+				collection.get(keyValues[0]) || this.getMonotonicFactory(storeName)();
+
+			const key = this.getKeyForItem(storeName, keyValues[0], ulid);
 
 			allItemsKeys.push(key);
 			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
@@ -155,7 +159,7 @@ class AsyncStorageDatabase {
 			const keysToDeleteArray = Array.from(keysToDelete);
 
 			keysToDeleteArray.forEach(key =>
-				collection.delete(itemsMap[key].model.id)
+				collection.delete(itemsMap[key].model[keyPath[0]])
 			);
 
 			this.storage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
@@ -179,12 +183,9 @@ class AsyncStorageDatabase {
 			]);
 
 			keysToSave.forEach(key => {
-				const {
-					model: { id },
-					ulid,
-				} = itemsMap[key];
+				const { model, ulid } = itemsMap[key];
 
-				collection.set(id, ulid);
+				collection.set(model[keyPath[0]], ulid);
 			});
 
 			this.storage.multiSet(entriesToSet, (errors?: Error[]) => {

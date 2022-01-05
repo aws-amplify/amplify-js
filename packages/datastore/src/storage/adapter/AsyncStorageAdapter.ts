@@ -695,20 +695,13 @@ export class AsyncStorageAdapter implements Adapter {
 		const { name: modelName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const storeName = this.getStorename(namespaceName, modelName);
-
+		const keyPath = this.getIndexKeyPath(namespaceName, modelName);
 		const batch: ModelInstanceMetadata[] = [];
 
 		for (const item of items) {
-			// const { id } = item;
-
-			const namespaceName = this.namespaceResolver(modelConstructor);
-			const modelName = modelConstructor.name;
 			const model = this.modelInstanceCreator(modelConstructor, item);
 
 			const connectedModels = traverseModel(
-				// modelConstructor.name,
-				// this.modelInstanceCreator(modelConstructor, item),
-				// this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 				modelName,
 				model,
 				this.schema.namespaces[namespaceName],
@@ -717,17 +710,16 @@ export class AsyncStorageAdapter implements Adapter {
 			);
 
 			const keyValues = this.getIndexKeyValues(model);
-			const { _deleted } = item;
 
-			// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcR897
-			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === keyValues[0]
-			);
+			const { instance } = connectedModels.find(({ instance }) => {
+				const instanceKeyValues = [this.getIndexKeyValues(instance)[0]];
+				return this.keysEqual(instanceKeyValues, [keyValues[0]]);
+			});
 
 			batch.push(instance);
 		}
 
-		return await this.db.batchSave(storeName, batch);
+		return await this.db.batchSave(storeName, batch, keyPath);
 	}
 }
 
