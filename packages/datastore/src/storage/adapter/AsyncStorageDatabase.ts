@@ -92,14 +92,13 @@ class AsyncStorageDatabase {
 		item: T,
 		storeName: string,
 		keys: any,
-		keyValues: any
+		keyValues: any,
+		keyPath: any
 	) {
-		// TODO: this may be where I'm incorrectly setting the same ULID for each record
 		const ulid =
 			this.getCollectionIndex(storeName).get(keys[0]) ||
 			this.getMonotonicFactory(storeName)();
 
-		// TODO: first attempting with single key
 		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
 
 		this.getCollectionIndex(storeName).set(keyValues[0], ulid);
@@ -124,13 +123,16 @@ class AsyncStorageDatabase {
 		const allItemsKeys = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
 
+		// Explain
 		for (const item of items) {
 			const keyValues = keyPath.map(field => item[field]);
 			const { _deleted } = item;
 
+			// If id is in the store, retrieve, otherwise generate new ULID?
 			const ulid =
 				collection.get(keyValues[0]) || this.getMonotonicFactory(storeName)();
 
+			// Generate the "longer key" for the item
 			const key = this.getKeyForItem(storeName, keyValues[0], ulid);
 
 			allItemsKeys.push(key);
@@ -286,11 +288,11 @@ class AsyncStorageDatabase {
 	}
 
 	// TODO: replace id
-	async delete(id: string, storeName: string) {
-		const ulid = this.getCollectionIndex(storeName).get(id);
-		const itemKey = this.getKeyForItem(storeName, id, ulid);
+	async delete(key: string, storeName: string) {
+		const ulid = this.getCollectionIndex(storeName).get(key);
+		const itemKey = this.getKeyForItem(storeName, key, ulid);
 
-		this.getCollectionIndex(storeName).delete(id);
+		this.getCollectionIndex(storeName).delete(key);
 		await this.storage.removeItem(itemKey);
 	}
 
