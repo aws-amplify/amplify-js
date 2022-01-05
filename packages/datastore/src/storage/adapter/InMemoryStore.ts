@@ -1,5 +1,11 @@
 export class InMemoryStore {
-	db = new Map<string, string>();
+	db: Map<string, string>;
+
+	constructor() {
+		this.db = new Map<string, string>();
+		// TODO: delete next line before merging. Added for debugging purposes
+		(window as any).db = this.db;
+	}
 
 	getAllKeys = async () => {
 		return Array.from(this.db.keys());
