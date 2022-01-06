@@ -187,8 +187,6 @@ export class AsyncStorageAdapter implements Adapter {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
-		const { name: modelName } = modelConstructor;
-
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance, keys } = resItem;
 
