@@ -346,7 +346,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: yarn install --non-interactive
+          name: yarn install --non-interactive --ignore-optional
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
           command: |
             mv .yarnrc ._yarnrc
