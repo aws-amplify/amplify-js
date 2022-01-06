@@ -35,6 +35,9 @@ const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 const INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT =
 	'CREATE TABLE IF NOT EXISTS "PostEditor" ("id" PRIMARY KEY NOT NULL, "post" TEXT, "postID" TEXT NOT NULL, "editor" TEXT, "editorID" TEXT NOT NULL, "createdAt" TEXT, "updatedAt" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);';
 
+const INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT =
+	'CREATE TABLE IF NOT EXISTS "Post" ("id" PRIMARY KEY NOT NULL, "title" TEXT NOT NULL, "comments" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);';
+
 describe('SQLiteUtils tests', () => {
 	let Model: PersistentModelConstructor<Model>;
 
@@ -59,15 +62,21 @@ describe('SQLiteUtils tests', () => {
 	});
 
 	describe('modelCreateTableStatement', () => {
-		it('should generate valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
+		it('should generate a valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(
 				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
 			);
 		});
 
-		it('should generate valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
+		it('should generate a valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
 				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
+			);
+		});
+
+		it('should generate a valid CREATE TABLE statement from a 1:M join table model', () => {
+			expect(modelCreateTableStatement(postWithRequiredComments, true)).toEqual(
+				INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT
 			);
 		});
 	});
@@ -653,6 +662,47 @@ const groupsAuthExplicit: SchemaModel = {
 					},
 				],
 			},
+		},
+	],
+};
+
+const postWithRequiredComments: SchemaModel = {
+	name: 'Post',
+	pluralName: 'Posts',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		title: {
+			name: 'title',
+			isArray: false,
+			type: 'String',
+			isRequired: true,
+			attributes: [],
+		},
+		comments: {
+			name: 'comments',
+			isArray: true,
+			type: {
+				model: 'Comment',
+			},
+			isRequired: true,
+			attributes: [],
+			isArrayNullable: true,
+			association: {
+				connectionType: 'HAS_MANY',
+				associatedWith: 'post',
+			},
+		},
+	},
+	attributes: [
+		{
+			type: 'model',
+			properties: {},
 		},
 	],
 };

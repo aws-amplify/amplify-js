@@ -121,8 +121,10 @@ class IndexedDBAdapter implements Adapter {
 										autoIncrement: true,
 									});
 
-									const indexes = this.schema.namespaces[namespaceName]
-										.relationships[modelName].indexes;
+									const indexes =
+										this.schema.namespaces[namespaceName].relationships[
+											modelName
+										].indexes;
 									indexes.forEach(index => store.createIndex(index, index));
 
 									store.createIndex('byId', 'id', { unique: true });
@@ -310,16 +312,17 @@ class IndexedDBAdapter implements Adapter {
 			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[fieldName]
-							);
+						const getByfield = recordItem[targetName] ? targetName : fieldName;
+						if (!recordItem[getByfield]) break;
 
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
+						const connectionRecord = await this._get(
+							store,
+							recordItem[getByfield]
+						);
+
+						recordItem[fieldName] =
+							connectionRecord &&
+							this.modelInstanceCreator(modelConstructor, connectionRecord);
 					}
 
 					break;
@@ -533,9 +536,9 @@ class IndexedDBAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 
 			const models = await this.query(modelConstructor, condition);
-			const relations = this.schema.namespaces[nameSpace].relationships[
-				modelConstructor.name
-			].relationTypes;
+			const relations =
+				this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+					.relationTypes;
 
 			if (condition !== undefined) {
 				await this.deleteTraverse(
@@ -611,9 +614,9 @@ class IndexedDBAdapter implements Adapter {
 				}
 				await tx.done;
 
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -623,9 +626,9 @@ class IndexedDBAdapter implements Adapter {
 					deleteQueue
 				);
 			} else {
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -709,12 +712,15 @@ class IndexedDBAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 						const value = hasOneCustomField ? model[targetName] : model.id;
+						if (!value) break;
 
-						const recordToDelete = <T>await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(hasOneIndex)
-							.get(value);
+						const recordToDelete = <T>(
+							await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex)
+								.get(value)
+						);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]

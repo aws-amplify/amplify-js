@@ -180,13 +180,7 @@ declare module 'amazon-cognito-identity-js' {
 		public completeNewPasswordChallenge(
 			newPassword: string,
 			requiredAttributeData: any,
-			callbacks: {
-				onSuccess: (session: CognitoUserSession) => void;
-				onFailure: (err: any) => void;
-				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-				customChallenge?: (challengeParameters: any) => void;
-				mfaSetup?: (challengeName: any, challengeParameters: any) => void;
-			},
+			callbacks: IAuthenticationCallback,
 			clientMetadata?: ClientMetadata
 		): void;
 		public signOut(callback?: () => void): void;
@@ -207,7 +201,8 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string>
+			callback: NodeCallback<Error, string>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(
 			attributeList: string[],

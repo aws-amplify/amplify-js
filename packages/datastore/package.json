@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "3.5.0",
+	"version": "3.7.3",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -43,20 +43,20 @@
 	"devDependencies": {
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/uuid": "3.4.5",
-		"dexie": "3.0.3",
-		"dexie-export-import": "1.0.0-rc.2",
+		"dexie": "3.2.0",
+		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api": "4.0.21",
-		"@aws-amplify/auth": "4.3.11",
-		"@aws-amplify/core": "4.3.3",
-		"@aws-amplify/pubsub": "4.1.13",
-		"amazon-cognito-identity-js": "5.2.1",
+		"@aws-amplify/api": "4.0.29",
+		"@aws-amplify/auth": "4.3.19",
+		"@aws-amplify/core": "4.3.11",
+		"@aws-amplify/pubsub": "4.2.5",
+		"amazon-cognito-identity-js": "5.2.3",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
 		"ulid": "2.3.0",
-		"uuid": "^8.3.2",
+		"uuid": "3.3.2",
 		"zen-observable-ts": "0.8.19",
 		"zen-push": "0.2.1"
 	},
