@@ -7,13 +7,12 @@ import {
 } from '../storage/storage';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
-	extractPrimaryKeyFieldNames,
 	InternalSchema,
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
 } from '../types';
-import { USER, SYNC, valuesEqual, isModelConstructor } from '../util';
+import { USER, SYNC, valuesEqual } from '../util';
 import { getIdentifierValue, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids

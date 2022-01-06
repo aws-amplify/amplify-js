@@ -21,7 +21,6 @@ import {
 	TypeConstructorMap,
 	ModelPredicate,
 	AuthModeStrategy,
-	extractPrimaryKeyFieldNames,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';

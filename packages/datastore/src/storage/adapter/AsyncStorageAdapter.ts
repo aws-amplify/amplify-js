@@ -188,7 +188,6 @@ export class AsyncStorageAdapter implements Adapter {
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		const { name: modelName } = modelConstructor;
-		const keyPath = this.getIndexKeyPath(namespaceName, modelName);
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance, keys } = resItem;
