@@ -66,7 +66,7 @@ import {
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
-import { default as urlListener } from './urlListener';
+import urlListener from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
 import {
 	AuthErrorTypes,
@@ -80,10 +80,11 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -773,7 +774,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -793,7 +794,7 @@ export class AuthClass {
 				};
 				break;
 			case 'SMS':
-			case 'SMS_MFA':	
+			case 'SMS_MFA':
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -1120,24 +1121,20 @@ export class AuthClass {
 	 **/
 	public deleteUserAttributes(
 		user: CognitoUser | any,
-		attributeNames: string[],
+		attributeNames: string[]
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
 			that.userSession(user).then(session => {
-				user.deleteAttributes(
-					attributeNames,
-					(err, result) => {
-						if (err) {
-							return reject(err);
-						} else {
-							return resolve(result);
-						}
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
 					}
-				);
+				});
 			});
 		});
-
 	}
 
 	/**
@@ -1841,7 +1838,7 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: (success) => {
+					onSuccess: success => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
@@ -2053,12 +2050,8 @@ export class AuthClass {
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
-					const {
-						accessToken,
-						idToken,
-						refreshToken,
-						state,
-					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
+					const { accessToken, idToken, refreshToken, state } =
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -2076,7 +2069,7 @@ export class AuthClass {
 						logger.debug('AWS credentials', credentials);
 					}
 
-					/* 
+					/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained
 				then there is custom state present on the state string.
@@ -2115,10 +2108,7 @@ export class AuthClass {
 					);
 
 					if (isCustomStateIncluded) {
-						const customState = state
-							.split('-')
-							.splice(1)
-							.join('-');
+						const customState = state.split('-').splice(1).join('-');
 
 						dispatchAuthEvent(
 							'customOAuthState',
@@ -2352,4 +2342,3 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
-
