@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.3...amazon-cognito-identity-js@5.2.4) (2022-01-07)
+
+### Bug Fixes
+
+- **amazon-cognito-identity-js:** added missing method param ([#9276](https://github.com/aws-amplify/amplify-js/issues/9276)) ([6c4d4b5](https://github.com/aws-amplify/amplify-js/commit/6c4d4b5fc737652f88dcdfa26bdb02a1defdfa2e)), closes [#9275](https://github.com/aws-amplify/amplify-js/issues/9275)
+
 ## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.2...amazon-cognito-identity-js@5.2.3) (2021-11-09)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-vue
 
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.4...aws-amplify-vue@2.1.5) (2021-01-29)
+
+**Note:** Version bump only for package aws-amplify-vue
+
 ## [2.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.3...aws-amplify-vue@2.1.4) (2021-01-07)
 
 **Note:** Version bump only for package aws-amplify-vue
