@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/ui-components",
 	"private": "true",
-	"version": "1.9.9",
+	"version": "1.9.10",
 	"description": "Core Amplify UI Component Library",
 	"module": "dist/index.mjs",
 	"main": "dist/index.js",
@@ -43,7 +43,7 @@
 		"uuid": "^8.2.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/auth": "4.3.19",
+		"@aws-amplify/auth": "4.3.20",
 		"@stencil/angular-output-target": "^0.0.2",
 		"@stencil/core": "1.15.0",
 		"@stencil/eslint-plugin": "0.2.1",
