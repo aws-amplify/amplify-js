@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.30](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.29...aws-amplify-angular@6.0.30) (2022-01-07)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** removed old zone package ([#9437](https://github.com/aws-amplify/amplify-js/issues/9437)) ([418725f](https://github.com/aws-amplify/amplify-js/commit/418725fa3bda44d431d0304afa639ed48df5927c))
+
+
+
+
+
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.28...aws-amplify-angular@6.0.29) (2021-12-16)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.27...aws-amplify-angular@6.0.28) (2021-12-03)
 
 **Note:** Version bump only for package aws-amplify-angular

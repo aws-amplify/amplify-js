@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
