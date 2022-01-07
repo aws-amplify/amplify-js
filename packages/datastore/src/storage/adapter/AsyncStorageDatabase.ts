@@ -15,6 +15,8 @@ const DATA = 'Data';
 
 const monotonicFactoriesMap = new Map<string, ULID>();
 
+const DEFAULT_PRIMARY_KEY_SEPARATOR = ':::';
+
 class AsyncStorageDatabase {
 	/**
 	 * Maps storeNames to a map of ulid->id
@@ -127,7 +129,11 @@ class AsyncStorageDatabase {
 
 		/* Populate allItemKeys, keysToDelete, and keysToSave */
 		for (const item of items) {
-			const keyValues = keyPath.map(field => item[field]);
+			// Extract keys from concatenated key path, map to item values
+			const keyValues = keyPath[0]
+				.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
+				.map(field => item[field]);
+
 			const { _deleted } = item;
 
 			// If id is in the store, retrieve, otherwise generate new ULID
