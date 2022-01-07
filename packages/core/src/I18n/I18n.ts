@@ -78,14 +78,14 @@ export class I18n {
 
 		const lang = this._lang;
 		let val = this.getByLanguage(key, lang);
-		if (val) {
+		if (val != null) {
 			return val;
 		}
 
 		if (lang.indexOf('-') > 0) {
 			val = this.getByLanguage(key, lang.split('-')[0]);
 		}
-		if (val) {
+		if (val != null) {
 			return val;
 		}
 
@@ -105,11 +105,11 @@ export class I18n {
 		}
 
 		const lang_dict = this._dict[language];
-		if (!lang_dict) {
+		if (typeof lang_dict === 'undefined') {
 			return defVal;
+		} else {
+			return lang_dict[key];
 		}
-
-		return lang_dict[key];
 	}
 
 	/**

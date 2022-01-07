@@ -59,6 +59,16 @@ describe('I18n test', () => {
 
 			spyon.mockClear();
 		});
+
+		test('empty string should be returned', () => {
+			const i18n = new I18n(null);
+			i18n._dict = {
+				en: {
+					empty_string: '',
+				},
+			};
+			expect(i18n.get('empty_string')).toBe('');
+		});
 	});
 
 	describe('getByLangurage test', () => {
