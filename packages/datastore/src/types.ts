@@ -166,6 +166,7 @@ export function extractKeyIfExists(
 	modelDefinition: SchemaModel
 ): ModelAttribute | undefined {
 	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
+
 	return keyAttribute;
 }
 
