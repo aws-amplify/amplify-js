@@ -250,7 +250,7 @@ class MutationEventOutbox {
 		} = JSON.parse(current.data);
 
 		const data = JSON.stringify({
-			id,
+			...(id && { id }),
 			_version,
 			_lastChangedAt,
 			_deleted,
