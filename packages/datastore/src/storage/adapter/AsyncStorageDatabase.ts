@@ -113,7 +113,7 @@ class AsyncStorageDatabase {
 	async batchSave<T extends PersistentModel>(
 		storeName: string,
 		items: ModelInstanceMetadata[],
-		keyPath: string[]
+		keys: string[]
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {
 			return [];
@@ -130,7 +130,7 @@ class AsyncStorageDatabase {
 		/* Populate allItemKeys, keysToDelete, and keysToSave */
 		for (const item of items) {
 			// Extract keys from concatenated key path, map to item values
-			const keyValues = keyPath[0]
+			const keyValues = keys[0]
 				.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
 				.map(field => item[field]);
 
@@ -170,7 +170,7 @@ class AsyncStorageDatabase {
 			const keysToDeleteArray = Array.from(keysToDelete);
 
 			keysToDeleteArray.forEach(key =>
-				collection.delete(itemsMap[key].model[keyPath[0]])
+				collection.delete(itemsMap[key].model[keys[0]])
 			);
 
 			this.storage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
@@ -197,7 +197,7 @@ class AsyncStorageDatabase {
 			keysToSave.forEach(key => {
 				const { model, ulid } = itemsMap[key];
 
-				collection.set(model[keyPath[0]], ulid);
+				collection.set(model[keys[0]], ulid);
 			});
 
 			this.storage.multiSet(entriesToSet, (errors?: Error[]) => {

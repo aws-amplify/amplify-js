@@ -12,7 +12,9 @@ export class InMemoryStore {
 	multiRemove = async (keys: string[], callback?) => {
 		keys.forEach(k => this.db.delete(k));
 
-		callback ? callback() : null;
+		if (callback && typeof callback === 'function') {
+			callback();
+		}
 	};
 
 	multiSet = async (entries: string[][], callback?) => {
