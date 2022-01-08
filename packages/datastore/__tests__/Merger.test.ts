@@ -14,11 +14,12 @@ const ownSymbol = Symbol('sync');
 describe('ModelMerger tests', () => {
 	let modelMerger: ModelMerger;
 	let Model: PersistentModelConstructor<InstanceType<typeof ModelType>>;
-
+	const testUserSchema = testSchema();
+	const modelDefinition = testUserSchema.models.Model;
 	describe('mergePage', () => {
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-			({ Model } = initSchema(testSchema()) as {
+			({ Model } = initSchema(testUserSchema) as {
 				Model: PersistentModelConstructor<ModelType>;
 			});
 
@@ -54,7 +55,7 @@ describe('ModelMerger tests', () => {
 			];
 
 			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+				await modelMerger.mergePage(storage, Model, items, modelDefinition);
 			});
 
 			const record = await DataStore.query(Model, modelId);
@@ -93,7 +94,7 @@ describe('ModelMerger tests', () => {
 			];
 
 			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+				await modelMerger.mergePage(storage, Model, items, modelDefinition);
 			});
 
 			const record = await DataStore.query(Model, modelId);
@@ -133,7 +134,7 @@ describe('ModelMerger tests', () => {
 			];
 
 			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+				await modelMerger.mergePage(storage, Model, items, modelDefinition);
 			});
 
 			const record = await DataStore.query(Model, modelId);

@@ -26,6 +26,7 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	extractPrimaryKeyFieldNames,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -412,10 +413,12 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	const modelId = getIdentifierValue(modelDefinition, element);
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
@@ -425,7 +428,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -433,17 +437,27 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 	predicate.predicates.forEach(p => {
 		if (isPredicateObj(p)) {
 			const { field, operator, operand } = p;
 
-			if (field === 'id') {
+			// This is compatible with how the GQL Transform currently generates the Condition Input,
+			// i.e. any PK and SK fields are omitted and can't be used as conditions.
+			// However, I think this limits usability.
+			// What if we want to delete all records where SK > some value
+			// Or all records where PK = some value but SKs are different values
+
+			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
+			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
+			if (typeof field === 'string' && keyFields.includes(field)) {
 				return;
 			}
 
 			result[field] = { [operator]: operand };
 		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
+			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
 		}
 	});
 
@@ -515,11 +529,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
@@ -611,4 +623,16 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
+export function getIdentifierValue(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata | PersistentModel
+): string {
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
+       const idOrPk = pkFieldNames.map(f => model[f]).join('-');
+
+	return idOrPk;
 }

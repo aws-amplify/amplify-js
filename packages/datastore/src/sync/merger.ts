@@ -3,8 +3,10 @@ import {
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModelConstructor,
+	SchemaModel,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
+import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
@@ -35,13 +37,16 @@ class ModelMerger {
 	public async mergePage(
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadata[],
+		modelDefinition: SchemaModel
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
-			itemsMap.set(item.id, item);
+			const modelId = getIdentifierValue(modelDefinition, item);
+
+			itemsMap.set(modelId, item);
 		}
 
 		const page = [...itemsMap.values()];

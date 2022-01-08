@@ -13,7 +13,7 @@ import {
 	QueryOne,
 } from '../types';
 import { USER, SYNC, valuesEqual } from '../util';
-import { TransformerMutationType } from './utils';
+import { getIdentifierValue, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
 class MutationEventOutbox {
@@ -34,6 +34,8 @@ class MutationEventOutbox {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
+			// `id` is the id of the record in the mutationEvent
+			// `modelId` is the id of the actual record that was mutated
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
 				c =>
@@ -42,13 +44,16 @@ class MutationEventOutbox {
 						.id('ne', this.inProgressMutationEventId)
 			);
 
+			// Check if there are any other records with same id
 			const [first] = await s.query(this.MutationEvent, predicate);
 
+			// No other record with same modelId, so enqueue
 			if (first === undefined) {
 				await s.save(mutationEvent, undefined, this.ownSymbol);
 				return;
 			}
 
+			// Was not first record, so continue
 			const { operation: incomingMutationType } = mutationEvent;
 
 			if (first.operation === TransformerMutationType.CREATE) {
@@ -126,11 +131,16 @@ class MutationEventOutbox {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models.MutationEvent;
 
+		const userModelDefinition =
+			this.schema.namespaces['user'].models[model.constructor.name];
+
+		const modelId = getIdentifierValue(userModelDefinition, model);
+
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
 			ModelPredicateCreator.createFromExisting(
 				mutationEventModelDefinition,
-				c => c.modelId('eq', model.id)
+				c => c.modelId('eq', modelId)
 			)
 		);
 
@@ -186,9 +196,14 @@ class MutationEventOutbox {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models['MutationEvent'];
 
+		const userModelDefinition =
+			this.schema.namespaces['user'].models[head.model];
+
+		const recordId = getIdentifierValue(userModelDefinition, record);
+
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
-			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
+			c => c.modelId('eq', recordId).id('ne', this.inProgressMutationEventId)
 		);
 
 		const outdatedMutations = await storage.query(
@@ -235,7 +250,7 @@ class MutationEventOutbox {
 		} = JSON.parse(current.data);
 
 		const data = JSON.stringify({
-			id,
+			...(id && { id }),
 			_version,
 			_lastChangedAt,
 			_deleted,

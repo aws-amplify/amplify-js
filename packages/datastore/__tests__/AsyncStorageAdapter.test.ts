@@ -20,7 +20,7 @@ describe('AsyncStorageAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGetOne = jest.spyOn(ASAdapter, 'getById');
+		const spyOnGetOne = jest.spyOn(ASAdapter, 'getByKey');
 		const spyOnGetAll = jest.spyOn(ASAdapter, 'getAll');
 		const spyOnMemory = jest.spyOn(ASAdapter, 'inMemoryPagination');
 
@@ -60,7 +60,7 @@ describe('AsyncStorageAdapter tests', () => {
 			);
 		});
 
-		it('Should call getById for query by id', async () => {
+		it('Should call getByKey for query by key', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('Some value');
