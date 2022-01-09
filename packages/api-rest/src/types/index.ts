@@ -63,6 +63,10 @@ export interface apiOptions {
 	headers: object;
 	endpoints: object;
 	credentials?: object;
+	retry?: {
+		retries: number;
+		retryDelay?: (retryCount: number) => number;
+	};
 }
 
 export type ApiInfo = {

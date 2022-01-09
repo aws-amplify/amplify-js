@@ -21,6 +21,7 @@ import {
 
 import { apiOptions, ApiInfo } from './types';
 import axios, { CancelTokenSource } from 'axios';
+import axiosRetry from 'axios-retry';
 import { parse, format } from 'url';
 
 const logger = new Logger('RestClient');
@@ -70,6 +71,14 @@ export class RestClient {
 		logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
+		}
+
+		if (this._options.retry?.retries > 0) {
+			axiosRetry(axios, {
+				retries: this._options.retry.retries,
+				retryDelay:
+					this._options.retry.retryDelay || axiosRetry.exponentialDelay,
+			});
 		}
 	}
 
@@ -366,10 +375,8 @@ export class RestClient {
 	/** private methods **/
 
 	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;
