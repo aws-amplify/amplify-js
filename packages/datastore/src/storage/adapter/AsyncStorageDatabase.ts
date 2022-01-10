@@ -211,7 +211,6 @@ class AsyncStorageDatabase {
 				const { model, ulid } = itemsMap[key];
 
 				// Extract keys, retrieve values from model, use as key for collection index
-
 				const keyValues: string = keys[0]
 					.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
 					.map(field => model[field])
