@@ -54,9 +54,6 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
-	extractPrimaryKeyFieldNames,
-	isIdManaged,
-	isIdOptionallyManaged,
 } from '../types';
 import {
 	DATASTORE,
@@ -72,6 +69,9 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	extractPrimaryKeyFieldNames,
+	isIdManaged,
+	isIdOptionallyManaged,
 } from '../util';
 
 setAutoFreeze(true);
@@ -467,12 +467,10 @@ const createModelClass = <T extends PersistentModel>(
 				draft => {
 					fn(<MutableModel<T>>(draft as unknown));
 
-					const [pk, ...sortKey] = extractPrimaryKeyFieldNames(modelDefinition);
+					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
 					// @ts-ignore TODO: fix type
-					draft[pk] = source[pk];
-					// @ts-ignore TODO: fix type TODO: double check if SK should be immutable
-					sortKey.forEach(key => (draft[key] = source[key]));
+					keyNames.forEach(key => (draft[key] = source[key]));
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
@@ -812,8 +810,7 @@ class DataStore {
 	query: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			// @manuelig - should we rename this to primaryKey here and elsewhere?
-			id: string
+			identifier: string
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -822,7 +819,10 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
+		identifierOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
@@ -836,7 +836,7 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (typeof idOrCriteria === 'string') {
+		if (typeof identifierOrCriteria === 'string') {
 			if (paginationProducer !== undefined) {
 				logger.warn('Pagination is ignored when querying by id');
 			}
@@ -847,20 +847,20 @@ class DataStore {
 
 		let predicate: ModelPredicate<T>;
 
-		if (isQueryOne(idOrCriteria)) {
+		if (isQueryOne(identifierOrCriteria)) {
 			predicate = ModelPredicateCreator.createForSingleField<T>(
 				modelDefinition,
 				keyFields[0],
-				idOrCriteria
+				identifierOrCriteria
 			);
 		} else {
-			if (isPredicatesAll(idOrCriteria)) {
+			if (isPredicatesAll(identifierOrCriteria)) {
 				// Predicates.ALL means "all records", so no predicate (undefined)
 				predicate = undefined;
 			} else {
 				predicate = ModelPredicateCreator.createFromExisting(
 					modelDefinition,
-					idOrCriteria
+					identifierOrCriteria
 				);
 			}
 		}
@@ -890,8 +890,9 @@ class DataStore {
 			pagination
 		);
 
-		const isPkUnique = keyFields.length === 1;
-		const returnOne = isQueryOne(idOrCriteria) && isPkUnique;
+		const isSingleFieldIdentifier = keyFields.length === 1;
+		const returnOne =
+			isSingleFieldIdentifier && isQueryOne(identifierOrCriteria);
 
 		return returnOne ? result[0] : result;
 	};
@@ -975,7 +976,7 @@ class DataStore {
 		): Promise<T>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			id: string
+			identifier: string
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -983,7 +984,10 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
+		identifierOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
 	) => {
 		await this.start();
 
@@ -999,22 +1003,22 @@ class DataStore {
 		if (isValidModelConstructor(modelOrConstructor)) {
 			const modelConstructor = modelOrConstructor;
 
-			if (!idOrCriteria) {
+			if (!identifierOrCriteria) {
 				const msg =
 					'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL';
-				logger.error(msg, { idOrCriteria });
+				logger.error(msg, { identifierOrCriteria });
 
 				throw new Error(msg);
 			}
 
-			if (typeof idOrCriteria === 'string') {
+			if (typeof identifierOrCriteria === 'string') {
 				const modelDefinition = getModelDefinition(modelConstructor);
 				const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
 
 				condition = ModelPredicateCreator.createForSingleField<T>(
 					getModelDefinition(modelConstructor),
 					keyField,
-					idOrCriteria
+					identifierOrCriteria
 				);
 			} else {
 				condition = ModelPredicateCreator.createFromExisting(
@@ -1023,7 +1027,7 @@ class DataStore {
 					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
 					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
 					 */
-					idOrCriteria as ProducerModelPredicate<T>
+					identifierOrCriteria as ProducerModelPredicate<T>
 				);
 
 				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
@@ -1057,15 +1061,15 @@ class DataStore {
 				model
 			);
 
-			if (idOrCriteria) {
-				if (typeof idOrCriteria !== 'function') {
+			if (identifierOrCriteria) {
+				if (typeof identifierOrCriteria !== 'function') {
 					const msg = 'Invalid criteria';
-					logger.error(msg, { idOrCriteria });
+					logger.error(msg, { identifierOrCriteria });
 
 					throw new Error(msg);
 				}
 
-				condition = idOrCriteria(pkPredicate);
+				condition = identifierOrCriteria(pkPredicate);
 			} else {
 				condition = pkPredicate;
 			}
@@ -1087,7 +1091,7 @@ class DataStore {
 		): Observable<SubscriptionMessage<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T>
+		identifierOrCriteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
@@ -1102,10 +1106,10 @@ class DataStore {
 				model && (<Object>Object.getPrototypeOf(model)).constructor;
 
 			if (isValidModelConstructor<T>(modelConstructor)) {
-				if (idOrCriteria) {
+				if (identifierOrCriteria) {
 					logger.warn('idOrCriteria is ignored when using a model instance', {
 						model,
-						idOrCriteria,
+						identifierOrCriteria,
 					});
 				}
 
@@ -1119,9 +1123,9 @@ class DataStore {
 			}
 		}
 
-		if (idOrCriteria !== undefined && modelConstructor === undefined) {
+		if (identifierOrCriteria !== undefined && modelConstructor === undefined) {
 			const msg = 'Cannot provide criteria without a modelConstructor';
-			logger.error(msg, idOrCriteria);
+			logger.error(msg, identifierOrCriteria);
 			throw new Error(msg);
 		}
 
@@ -1132,21 +1136,21 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (typeof idOrCriteria === 'string') {
+		if (typeof identifierOrCriteria === 'string') {
 			const modelDefinition = getModelDefinition(modelConstructor);
 			const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
 
 			predicate = ModelPredicateCreator.createForSingleField<T>(
 				getModelDefinition(modelConstructor),
 				keyField,
-				idOrCriteria
+				identifierOrCriteria
 			);
 		} else {
 			predicate =
 				modelConstructor &&
 				ModelPredicateCreator.createFromExisting<T>(
 					getModelDefinition(modelConstructor),
-					idOrCriteria
+					identifierOrCriteria
 				);
 		}
 

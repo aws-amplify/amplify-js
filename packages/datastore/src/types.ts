@@ -15,8 +15,6 @@ import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Adapter } from './storage/adapter';
 
-const ID = 'id';
-
 //#region Schema types
 export type Schema = UserSchema & {
 	version: string;
@@ -80,7 +78,7 @@ export function isTargetNameAssociation(
 }
 
 export type ModelAttributes = ModelAttribute[];
-type ModelAttribute = { type: string; properties?: Record<string, any> };
+export type ModelAttribute = { type: string; properties?: Record<string, any> };
 
 export type ModelAuthRule = {
 	allow: string;
@@ -160,59 +158,6 @@ export function isModelAttributeCompositeKey(
 		attr.properties.name !== undefined &&
 		attr.properties.fields.length > 2
 	);
-}
-
-export function extractKeyIfExists(
-	modelDefinition: SchemaModel
-): ModelAttribute | undefined {
-	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
-
-	return keyAttribute;
-}
-
-export function extractPrimaryKeyFieldNames(
-	modelDefinition: SchemaModel
-): string[] {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return keyAttribute.properties.fields;
-	}
-
-	return [ID];
-}
-
-export function extractPrimaryKeyValues<T extends PersistentModel>(
-	model: T,
-	keyFields: string[]
-): string[] {
-	return keyFields.map(key => model[key]);
-}
-
-// IdentifierFields<ManagedIdentifier>
-// Default behavior without explicit @primaryKey defined
-export function isIdManaged(modelDefinition: SchemaModel): boolean {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return false;
-	}
-
-	return true;
-}
-
-// IdentifierFields<OptionallyManagedIdentifier>
-// @primaryKey with `id` either in the PK or SK
-export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		const idInKey = !!keyAttribute.properties.fields.find(
-			field => field === ID
-		);
-		return idInKey;
-	}
-
-	return false;
 }
 
 export type ModelAttributeAuthProperty = {

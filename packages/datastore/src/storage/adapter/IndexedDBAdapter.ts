@@ -112,10 +112,6 @@ class IndexedDBAdapter implements Adapter {
 			return false;
 		}
 
-		if (keysA.length === 1) {
-			return keysA[0] === keysB[0];
-		}
-
 		return keysA.every((key, idx) => key === keysB[idx]);
 	}
 
@@ -500,7 +496,7 @@ class IndexedDBAdapter implements Adapter {
 			predicateObj && keyValues.push(predicateObj.operand);
 		}
 
-		return keyValues.length === keyPath.length && keyValues;
+		return keyValues.length === keyPath.length ? keyValues : undefined;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(

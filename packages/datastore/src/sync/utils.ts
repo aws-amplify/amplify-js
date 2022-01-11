@@ -26,9 +26,8 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
-	extractPrimaryKeyFieldNames,
 } from '../types';
-import { exhaustiveCheck } from '../util';
+import { exhaustiveCheck, extractPrimaryKeyFieldNames } from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -451,7 +450,7 @@ export function predicateToGraphQLCondition(
 
 			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
 			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
-			if (typeof field === 'string' && keyFields.includes(field)) {
+			if (keyFields.includes(field as string)) {
 				return;
 			}
 
@@ -631,8 +630,7 @@ export function getIdentifierValue(
 	model: ModelInstanceMetadata | PersistentModel
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
-
-       const idOrPk = pkFieldNames.map(f => model[f]).join('-');
+	const idOrPk = pkFieldNames.map(f => model[f]).join('-');
 
 	return idOrPk;
 }

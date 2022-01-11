@@ -53,7 +53,7 @@ class MutationEventOutbox {
 				return;
 			}
 
-			// Was not first record, so continue
+			// There was an enqueued mutation for the modelId, so continue
 			const { operation: incomingMutationType } = mutationEvent;
 
 			if (first.operation === TransformerMutationType.CREATE) {
@@ -132,7 +132,7 @@ class MutationEventOutbox {
 			this.schema.namespaces[SYNC].models.MutationEvent;
 
 		const userModelDefinition =
-			this.schema.namespaces['user'].models[model.constructor.name];
+			this.schema.namespaces[USER].models[model.constructor.name];
 
 		const modelId = getIdentifierValue(userModelDefinition, model);
 
@@ -250,7 +250,9 @@ class MutationEventOutbox {
 		} = JSON.parse(current.data);
 
 		const data = JSON.stringify({
-			...(id && { id }),
+			// stringify will omit fields with undefined values,
+			// so `id` will be removed when using a custom PK
+			id,
 			_version,
 			_lastChangedAt,
 			_deleted,
