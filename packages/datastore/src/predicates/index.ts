@@ -7,10 +7,12 @@ import {
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
+} from '../types';
+import {
+	exhaustiveCheck,
 	extractPrimaryKeyFieldNames,
 	extractPrimaryKeyValues,
-} from '../types';
-import { exhaustiveCheck } from '../util';
+} from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 

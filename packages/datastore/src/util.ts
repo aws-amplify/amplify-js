@@ -25,8 +25,64 @@ import {
 	NonModelTypeConstructor,
 	DeferredCallbackResolverOptions,
 	LimitTimerRaceResolvedValues,
+	SchemaModel,
+	ModelAttribute,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+const ID = 'id';
+
+export function extractKeyIfExists(
+	modelDefinition: SchemaModel
+): ModelAttribute | undefined {
+	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
+
+	return keyAttribute;
+}
+
+export function extractPrimaryKeyFieldNames(
+	modelDefinition: SchemaModel
+): string[] {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return keyAttribute.properties.fields;
+	}
+
+	return [ID];
+}
+
+export function extractPrimaryKeyValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): string[] {
+	return keyFields.map(key => model[key]);
+}
+
+// IdentifierFields<ManagedIdentifier>
+// Default behavior without explicit @primaryKey defined
+export function isIdManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return false;
+	}
+
+	return true;
+}
+
+// IdentifierFields<OptionallyManagedIdentifier>
+// @primaryKey with `id` either in the PK or SK
+export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		const idInKey = !!keyAttribute.properties.fields.find(
+			field => field === ID
+		);
+		return idInKey;
+	}
+
+	return false;
+}
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {

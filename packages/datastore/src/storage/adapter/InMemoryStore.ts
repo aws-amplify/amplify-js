@@ -12,7 +12,7 @@ export class InMemoryStore {
 	multiRemove = async (keys: string[], callback?) => {
 		keys.forEach(k => this.db.delete(k));
 
-		if (callback && typeof callback === 'function') {
+		if (typeof callback === 'function') {
 			callback();
 		}
 	};
@@ -22,7 +22,7 @@ export class InMemoryStore {
 			this.setItem(key, value);
 		});
 
-		if (callback && typeof callback === 'function') {
+		if (typeof callback === 'function') {
 			callback();
 		}
 	};
