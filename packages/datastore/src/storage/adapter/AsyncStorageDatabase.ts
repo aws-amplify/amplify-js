@@ -94,17 +94,17 @@ class AsyncStorageDatabase {
 		item: T,
 		storeName: string,
 		keys: string[],
-		keyValues: string[]
+		keyValuesPath: string
 	) {
 		const ulid =
 			this.getCollectionIndex(storeName).get(keys[0]) ||
 			this.getMonotonicFactory(storeName)();
 
 		// Retrieve db key for item
-		const itemKey = this.getKeyForItem(storeName, keyValues[0], ulid);
+		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
 
 		// Set key in collection index
-		this.getCollectionIndex(storeName).set(keyValues[0], ulid);
+		this.getCollectionIndex(storeName).set(keyValuesPath, ulid);
 
 		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));

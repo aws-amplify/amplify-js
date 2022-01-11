@@ -88,7 +88,7 @@ export class AsyncStorageAdapter implements Adapter {
 	}
 
 	// Retrieves concatenated primary key values from a model
-	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string[] {
+	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
@@ -98,18 +98,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const keyValues = keys.map(field => model[field]);
 
 		// Return concatenated key values
-		return [keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)];
-	}
-
-	// Retrieves primary key values from a model
-	private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
-		const namespaceName = this.namespaceResolver(modelConstructor);
-		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
-
-		// Retrieve key values from model
-		return keys.map(field => model[field]);
+		return keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 	}
 
 	private keysEqual(keysA, keysB): boolean {
@@ -184,9 +173,9 @@ export class AsyncStorageAdapter implements Adapter {
 				return { storeName, item, instance, keys };
 			}
 		);
-		const keyValuesPath = this.getIndexKeyValuesPath(model);
+		const keyValues = [this.getIndexKeyValuesPath(model)];
 
-		const fromDB = await this.db.get(keyValuesPath, storeName);
+		const fromDB = await this.db.get(keyValues, storeName);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -208,11 +197,11 @@ export class AsyncStorageAdapter implements Adapter {
 			const { storeName, item, instance, keys } = resItem;
 
 			/* Find the key values in the item, and concatenate them */
-			const itemKeyValues = [
-				keys.map(key => item[key]).join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-			];
+			const itemKeyValues: string = keys
+				.map(key => item[key])
+				.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 
-			const fromDB = <T>await this.db.get(itemKeyValues, storeName);
+			const fromDB = <T>await this.db.get([itemKeyValues], storeName);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 			const modelKeyValues = this.getIndexKeyValuesPath(model);
 			const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
@@ -564,8 +553,8 @@ export class AsyncStorageAdapter implements Adapter {
 			for await (const item of items) {
 				if (item) {
 					if (typeof item === 'object') {
-						const keyValues = this.getIndexKeyValuesPath(item as T);
-						await this.db.delete(keyValues[0], storeName);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(item as T);
+						await this.db.delete(keyValuesPath, storeName);
 					}
 				}
 			}
@@ -611,9 +600,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 
-						const keyValues = this.getIndexKeyValuesPath(model);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
-						const value = hasOneCustomField ? model[targetName] : keyValues[0];
+						const value = hasOneCustomField ? model[targetName] : keyValuesPath;
 
 						if (!value) break;
 
@@ -635,11 +624,11 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const keyValues = this.getIndexKeyValuesPath(model);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === keyValues[0]
+							childItem => childItem[index] === keyValuesPath
 						);
 
 						await this.deleteTraverse(
@@ -700,11 +689,11 @@ export class AsyncStorageAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
-			const keyValues = this.getIndexKeyValuesPath(model);
+			const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
 			const { instance } = connectedModels.find(({ instance }) => {
-				const instanceKeyValues = [this.getIndexKeyValuesPath(instance)[0]];
-				return this.keysEqual(instanceKeyValues, [keyValues[0]]);
+				const instanceKeyValues = [this.getIndexKeyValuesPath(instance)];
+				return this.keysEqual(instanceKeyValues, keyValuesPath);
 			});
 
 			batch.push(instance);
