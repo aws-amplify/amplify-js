@@ -321,7 +321,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		await DataStore.clear();
 
 		// Fully faking or mocking the sync engine would be pretty significant.
-		// Instead, we're going to mocking a few sync engine methods we happen know
+		// Instead, we're going to be mocking a few sync engine methods we happen know
 		// `observeQuery()` depends on.
 		(DataStore as any).sync = {
 			// default to report that models are NOT synced.
