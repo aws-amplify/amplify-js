@@ -238,11 +238,11 @@ class AsyncStorageDatabase {
 	}
 
 	async get<T extends PersistentModel>(
-		keyArr: string[],
+		keyValuePath: string,
 		storeName: string
 	): Promise<T> {
-		const ulid = this.getCollectionIndex(storeName).get(keyArr[0]);
-		const itemKey = this.getKeyForItem(storeName, keyArr[0], ulid);
+		const ulid = this.getCollectionIndex(storeName).get(keyValuePath);
+		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
 		return record;

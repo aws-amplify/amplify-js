@@ -63,18 +63,6 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
-	// Returns concatenated primary key path for a model
-	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
-		const keyPath =
-			this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
-
-		if (keyPath) {
-			return [keyPath.join(DEFAULT_PRIMARY_KEY_SEPARATOR)];
-		}
-
-		return ['id'];
-	}
-
 	// Returns primary keys for a model
 	private getIndexKeys(namespaceName: string, modelName: string): string[] {
 		const keyPath =
@@ -99,6 +87,17 @@ export class AsyncStorageAdapter implements Adapter {
 
 		// Return concatenated key values
 		return keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+	}
+
+	// Retrieves concatenated primary key values from a model
+	private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
+		const modelConstructor = Object.getPrototypeOf(model)
+			.constructor as PersistentModelConstructor<T>;
+		const namespaceName = this.namespaceResolver(modelConstructor);
+		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
+
+		// Retrieve key values from model
+		return keys.map(field => model[field]);
 	}
 
 	private keysEqual(keysA, keysB): boolean {
@@ -173,9 +172,9 @@ export class AsyncStorageAdapter implements Adapter {
 				return { storeName, item, instance, keys };
 			}
 		);
-		const keyValues = [this.getIndexKeyValuesPath(model)];
+		const keyValuesPath = this.getIndexKeyValuesPath(model);
 
-		const fromDB = await this.db.get(keyValues, storeName);
+		const fromDB = await this.db.get(keyValuesPath, storeName);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -197,18 +196,19 @@ export class AsyncStorageAdapter implements Adapter {
 			const { storeName, item, instance, keys } = resItem;
 
 			/* Find the key values in the item, and concatenate them */
-			const itemKeyValues: string = keys
-				.map(key => item[key])
-				.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+			const itemKeyValues: string[] = keys.map(key => item[key]);
+			const itemKeyValuesPath: string = itemKeyValues.join(
+				DEFAULT_PRIMARY_KEY_SEPARATOR
+			);
 
-			const fromDB = <T>await this.db.get([itemKeyValues], storeName);
+			const fromDB = <T>await this.db.get(itemKeyValuesPath, storeName);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
-			const modelKeyValues = this.getIndexKeyValuesPath(model);
+			const modelKeyValues = this.getIndexKeyValues(model);
 			const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
 
 			// If item key values and model key values are equal, save to db
 			if (keysEqual || opType === OpType.INSERT) {
-				await this.db.save(item, storeName, keys, itemKeyValues);
+				await this.db.save(item, storeName, keys, itemKeyValuesPath);
 
 				result.push([instance, opType]);
 			}
@@ -252,7 +252,7 @@ export class AsyncStorageAdapter implements Adapter {
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
 						if (!recordItem[getByfield]) break;
 
-						const key = [recordItem[getByfield]];
+						const key = recordItem[getByfield];
 
 						const connectionRecord = await this.db.get(key, storeName);
 
@@ -265,7 +265,7 @@ export class AsyncStorageAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const key = [recordItem[targetName]];
+							const key = recordItem[targetName];
 
 							const connectionRecord = await this.db.get(key, storeName);
 
@@ -332,9 +332,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 	private async getByKey<T extends PersistentModel>(
 		storeName: string,
-		keyValue: string[]
+		keyValuePath: string
 	): Promise<T> {
-		const record = <T>await this.db.get(keyValue, storeName);
+		const record = <T>await this.db.get(keyValuePath, storeName);
 		return record;
 	}
 
@@ -347,7 +347,7 @@ export class AsyncStorageAdapter implements Adapter {
 	private keyValueFromPredicate<T extends PersistentModel>(
 		predicates: PredicatesGroup<T>,
 		keys: string[]
-	): string[] | undefined {
+	): string {
 		const { predicates: predicateObjs } = predicates;
 
 		if (predicateObjs.length !== keys.length) {
@@ -365,9 +365,8 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 
 		return (
-			keyValues.length === keys.length && [
-				keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-			]
+			keyValues.length === keys.length &&
+			keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
 		);
 	}
 
@@ -484,9 +483,9 @@ export class AsyncStorageAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 
 			if (condition) {
-				const keyValues = this.getIndexKeyValuesPath(model);
+				const keyValuePath = this.getIndexKeyValuesPath(model);
 
-				const fromDB = await this.db.get(keyValues, storeName);
+				const fromDB = await this.db.get(keyValuePath, storeName);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -689,11 +688,11 @@ export class AsyncStorageAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
-			const keyValuesPath: string = this.getIndexKeyValuesPath(model);
+			const keyValuesPath = this.getIndexKeyValuesPath(model);
 
 			const { instance } = connectedModels.find(({ instance }) => {
-				const instanceKeyValues = [this.getIndexKeyValuesPath(instance)];
-				return this.keysEqual(instanceKeyValues, keyValuesPath);
+				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
+				return this.keysEqual([instanceKeyValuesPath], [keyValuesPath]);
 			});
 
 			batch.push(instance);
