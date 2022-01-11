@@ -1186,9 +1186,9 @@ workflows:
       - integ_setup:
           filters:
             <<: *releasable_branches
-      # - unit_test:
-      #     requires:
-      #       - build
+      - unit_test:
+          requires:
+            - build
       # - integ_react_auth:
       #     requires:
       #       - integ_setup
