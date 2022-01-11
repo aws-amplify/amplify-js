@@ -154,7 +154,6 @@ describe('CustomId - multi field', () => {
 	};
 	const PostCustomId = createDummyModelInstance(
 		class PostCustomId {
-			// readonly id: string;
 			readonly tenantId: string;
 			readonly postId: string;
 			readonly title: string;

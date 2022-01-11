@@ -423,7 +423,7 @@ const createModelClass = <T extends PersistentModel>(
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
-					const { id: _id } = modelInstanceMetadata; // TODO: Here
+					const { id: _id } = modelInstanceMetadata;
 
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
