@@ -130,9 +130,7 @@ class AsyncStorageDatabase {
 		/* Populate allItemKeys, keysToDelete, and keysToSave */
 		for (const item of items) {
 			// Extract keys from concatenated key path, map to item values
-			const keyValues = keys[0]
-				.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
-				.map(field => item[field]);
+			const keyValues = keys.map(field => item[field]);
 
 			const { _deleted } = item;
 
@@ -177,9 +175,7 @@ class AsyncStorageDatabase {
 			keysToDeleteArray.forEach(key => {
 				// key: full db key
 				// keys: PK and/or SK keys
-
-				const primaryKeyValues: string = keys[0]
-					.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
+				const primaryKeyValues: string = keys
 					.map(field => itemsMap[key].model[field])
 					.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 
@@ -210,9 +206,8 @@ class AsyncStorageDatabase {
 			keysToSave.forEach(key => {
 				const { model, ulid } = itemsMap[key];
 
-				// Extract keys, retrieve values from model, use as key for collection index
-				const keyValues: string = keys[0]
-					.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
+				// Retrieve values from model, use as key for collection index
+				const keyValues: string = keys
 					.map(field => model[field])
 					.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 

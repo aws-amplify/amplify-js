@@ -307,6 +307,7 @@ export const traverseModel = <T extends PersistentModel>(
 	) => PersistentModelConstructor<any>
 ) => {
 	const relationships = namespace.relationships;
+
 	const modelConstructor = getModelConstructorByModelName(
 		namespace.name,
 		srcModelName

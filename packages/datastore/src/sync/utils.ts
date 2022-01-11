@@ -632,7 +632,7 @@ export function getIdentifierValue(
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-       const idOrPk = pkFieldNames.map(f => model[f]).join('-');
+	const idOrPk = pkFieldNames.map(f => model[f]).join('-');
 
 	return idOrPk;
 }
