@@ -15,10 +15,15 @@ class ModelMerger {
 
 	public async merge<T extends ModelInstanceMetadata>(
 		storage: Storage,
-		model: T
+		model: T,
+		modelDefinition: SchemaModel
 	): Promise<OpType> {
 		let result: OpType;
-		const mutationsForModel = await this.outbox.getForModel(storage, model);
+		const mutationsForModel = await this.outbox.getForModel(
+			storage,
+			model,
+			modelDefinition
+		);
 
 		const isDelete = model._deleted;
 
