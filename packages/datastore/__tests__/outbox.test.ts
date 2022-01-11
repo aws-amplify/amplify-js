@@ -18,6 +18,7 @@ import {
 	SchemaModel,
 } from '../src/types';
 import { MutationEvent } from '../src/sync/';
+import { USER } from '../src/util';
 
 let initSchema: typeof initSchemaType;
 // using <any> to access private members
@@ -34,13 +35,7 @@ const schema: InternalSchema = internalTestSchema();
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
 ): SchemaModel => {
-	const namespaceResolver =
-		anyStorage.storage.namespaceResolver.bind(anyStorage);
-	const namespaceName = namespaceResolver(modelConstructor);
-
-	const modelDefinition =
-		schema.namespaces[namespaceName].models[modelConstructor.name];
-
+	const modelDefinition = schema.namespaces[USER].models[modelConstructor.name];
 	return modelDefinition;
 };
 
