@@ -289,7 +289,7 @@ export class SyncEngine {
 										);
 
 										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
+											this.modelMerger.merge(storage, model, modelDefinition)
 										);
 
 										observer.next({
@@ -326,7 +326,7 @@ export class SyncEngine {
 											);
 
 											this.storage.runExclusive(storage =>
-												this.modelMerger.merge(storage, model)
+												this.modelMerger.merge(storage, model, modelDefinition)
 											);
 										}
 									)
@@ -548,7 +548,8 @@ export class SyncEngine {
 										for (const item of oneByOne) {
 											const opType = await this.modelMerger.merge(
 												storage,
-												item
+												item,
+												modelDefinition
 											);
 
 											if (opType !== undefined) {

@@ -11,6 +11,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
+	SchemaModel,
 } from '../types';
 import { USER, SYNC, valuesEqual } from '../util';
 import { getIdentifierValue, TransformerMutationType } from './utils';
@@ -126,13 +127,11 @@ class MutationEventOutbox {
 
 	public async getForModel<T extends PersistentModel>(
 		storage: StorageFacade,
-		model: T
+		model: T,
+		userModelDefinition: SchemaModel
 	): Promise<MutationEvent[]> {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models.MutationEvent;
-
-		const userModelDefinition =
-			this.schema.namespaces[USER].models[model.constructor.name];
 
 		const modelId = getIdentifierValue(userModelDefinition, model);
 
@@ -238,11 +237,11 @@ class MutationEventOutbox {
 		previous: MutationEvent,
 		current: MutationEvent
 	): MutationEvent {
-		const { _version, id, _lastChangedAt, _deleted, ...previousData } =
-			JSON.parse(previous.data);
+		const { _version, _lastChangedAt, _deleted, ...previousData } = JSON.parse(
+			previous.data
+		);
 
 		const {
-			id: __id,
 			_version: __version,
 			_lastChangedAt: __lastChangedAt,
 			_deleted: __deleted,
@@ -250,9 +249,6 @@ class MutationEventOutbox {
 		} = JSON.parse(current.data);
 
 		const data = JSON.stringify({
-			// stringify will omit fields with undefined values,
-			// so `id` will be removed when using a custom PK
-			id,
 			_version,
 			_lastChangedAt,
 			_deleted,
