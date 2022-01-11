@@ -347,7 +347,7 @@ export class AsyncStorageAdapter implements Adapter {
 	private keyValueFromPredicate<T extends PersistentModel>(
 		predicates: PredicatesGroup<T>,
 		keys: string[]
-	): string {
+	): string | undefined {
 		const { predicates: predicateObjs } = predicates;
 
 		if (predicateObjs.length !== keys.length) {
@@ -364,10 +364,9 @@ export class AsyncStorageAdapter implements Adapter {
 			predicateObj && keyValues.push(predicateObj.operand);
 		}
 
-		return (
-			keyValues.length === keys.length &&
-			keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
-		);
+		return keyValues.length === keys.length
+			? keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
+			: undefined;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
