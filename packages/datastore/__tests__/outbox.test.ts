@@ -31,6 +31,19 @@ let Model: PersistentModelConstructor<ModelType>;
 
 const schema: InternalSchema = internalTestSchema();
 
+const getModelDefinition = (
+	modelConstructor: PersistentModelConstructor<any>
+): SchemaModel => {
+	const namespaceResolver =
+		anyStorage.storage.namespaceResolver.bind(anyStorage);
+	const namespaceName = namespaceResolver(modelConstructor);
+
+	const modelDefinition =
+		schema.namespaces[namespaceName].models[modelConstructor.name];
+
+	return modelDefinition;
+};
+
 describe('Outbox tests', () => {
 	let modelId: string;
 
@@ -105,8 +118,12 @@ describe('Outbox tests', () => {
 			expect(head.modelId).toEqual(modelId);
 			expect(head.operation).toEqual(TransformerMutationType.UPDATE);
 			expect(modelData.field1).toEqual('another value');
-
-			const mutationsForModel = await outbox.getForModel(s, last);
+			const modelDefinition = getModelDefinition(last);
+			const mutationsForModel = await outbox.getForModel(
+				s,
+				last,
+				modelDefinition
+			);
 			expect(mutationsForModel.length).toEqual(1);
 		});
 
@@ -125,9 +142,15 @@ describe('Outbox tests', () => {
 
 		await outbox.enqueue(Storage, await createMutationEvent(updatedModel3));
 
+		const modelDefinition = getModelDefinition(last);
+
 		// model2 should get deleted when model3 is enqueued, so we're expecting to see
 		// 2 items in the queue for this Model total (including the in progress record - updatedModel1)
-		const mutationsForModel = await outbox.getForModel(Storage, last);
+		const mutationsForModel = await outbox.getForModel(
+			Storage,
+			last,
+			modelDefinition
+		);
 		expect(mutationsForModel.length).toEqual(2);
 
 		const [_inProgress, nextMutation] = mutationsForModel;
@@ -207,7 +230,12 @@ describe('Outbox tests', () => {
 			expect(head.operation).toEqual(TransformerMutationType.UPDATE);
 			expect(modelData.field1).toEqual('another value');
 
-			const mutationsForModel = await outbox.getForModel(s, last);
+			const modelDefinition = getModelDefinition(last);
+			const mutationsForModel = await outbox.getForModel(
+				s,
+				last,
+				modelDefinition
+			);
 			expect(mutationsForModel.length).toEqual(1);
 		});
 
@@ -218,9 +246,14 @@ describe('Outbox tests', () => {
 		});
 
 		await outbox.enqueue(Storage, await createMutationEvent(updatedModel2));
+		const modelDefinition = getModelDefinition(last);
 
 		// 2 items in the queue for this Model total (including the in progress record - updatedModel1)
-		const mutationsForModel = await outbox.getForModel(Storage, last);
+		const mutationsForModel = await outbox.getForModel(
+			Storage,
+			last,
+			modelDefinition
+		);
 		expect(mutationsForModel.length).toEqual(2);
 
 		const [_inProgress, nextMutation] = mutationsForModel;
@@ -324,21 +357,7 @@ async function instantiateOutbox(): Promise<void> {
 	Storage = <StorageType>DataStore.storage;
 	anyStorage = Storage;
 
-	const namespaceResolver =
-		anyStorage.storage.namespaceResolver.bind(anyStorage);
-
 	({ modelInstanceCreator } = anyStorage.storage);
-
-	const getModelDefinition = (
-		modelConstructor: PersistentModelConstructor<any>
-	): SchemaModel => {
-		const namespaceName = namespaceResolver(modelConstructor);
-
-		const modelDefinition =
-			schema.namespaces[namespaceName].models[modelConstructor.name];
-
-		return modelDefinition;
-	};
 
 	const userClasses = {};
 	userClasses['Model'] = Model;
@@ -383,6 +402,6 @@ async function processMutationResponse(
 
 	const modelConstructor = Model as PersistentModelConstructor<any>;
 	const model = modelInstanceCreator(modelConstructor, record);
-
-	await merger.merge(storage, model);
+	const modelDefinition = getModelDefinition(model);
+	await merger.merge(storage, model, modelDefinition);
 }
