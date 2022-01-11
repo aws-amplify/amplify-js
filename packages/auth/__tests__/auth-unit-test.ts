@@ -658,9 +658,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username');
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { foo: 'bar' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
 			spyon.mockClear();
 		});
 
@@ -670,9 +671,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username', { custom: 'value' });
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { custom: 'value' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -2698,20 +2700,20 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			const attributeNames = [
-				'email', 'phone_number'
-			];
+			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
 				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
-					return new Promise((res) => {
+					return new Promise(res => {
 						res(session);
 					});
 				});
 
 			expect.assertions(1);
-			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe('SUCCESS');
+			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe(
+				'SUCCESS'
+			);
 
 			spyon.mockClear();
 		});
@@ -2728,11 +2730,10 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function),
+				jasmine.any(Function)
 			);
 			spyon.mockClear();
 		});
-
 	});
 
 	describe('federatedSignIn test', () => {
@@ -3009,6 +3010,71 @@ describe('auth unit test', () => {
 			  ],
 			  Array [
 			    "Hub.dispatch('auth', { data: ..., event: 'cognitoHostedUI' })",
+			  ],
+			]
+		`);
+		});
+
+		test.only('User Pools Code Flow where the redirect paths dont match', async () => {
+			const options: AuthOptions = {
+				region: 'region',
+				userPoolId: 'userPoolId',
+				oauth: {
+					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
+					scope: ['aws.cognito.signin.user.admin'],
+					redirectSignIn: 'http://localhost:3000/extrapath',
+					redirectSignOut: 'http://localhost:3000/',
+					responseType: 'code',
+				},
+			};
+
+			const auth = new Auth(options);
+			console.log('\n\n\n\n\n\n\n\n#######');
+			const handleAuthResponseSpy = jest
+				.spyOn(OAuth.prototype, 'handleAuthResponse')
+				.mockReturnValueOnce({ idToken: '' } as any);
+			jest
+				.spyOn(CognitoUserSession.prototype, 'getIdToken')
+				.mockReturnValueOnce({ decodePayload: () => ({}) } as any);
+			jest.spyOn(Credentials, 'set').mockImplementationOnce(c => c);
+			(auth as any).createCognitoUser = jest.fn(() => ({
+				getUsername: jest.fn(),
+				setSignInUserSession: jest.fn(),
+			}));
+			// Mock to help assert invocation order of other spies
+			const trackSpies = jest.fn();
+			const replaceStateSpy = jest
+				.spyOn(window.history, 'replaceState')
+				.mockImplementation((stateObj, title, url) => {
+					trackSpies(
+						`window.history.replaceState(${JSON.stringify(
+							stateObj
+						)}, ${JSON.stringify(title)}, '${url}')`
+					);
+					return this;
+				});
+			const hubSpy = jest
+				.spyOn(Hub, 'dispatch')
+				.mockImplementation((channel, { event }) =>
+					// payload.data isn't necessary for tracking order of dispatch events
+					trackSpies(
+						`Hub.dispatch('${channel}', { data: ..., event: '${event}' })`
+					)
+				);
+
+			const code = 'XXXX-YYY-ZZZ';
+			const state = 'STATEABC';
+			const url = `http://localhost:3000?code=${code}&state=${state}`;
+
+			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
+			await (auth as any)._handleAuthResponse(url);
+
+			// replaceState should be called *prior* to `signIn` dispatch,
+			// so that customers can override with a new value
+			expect(trackSpies.mock.calls).toMatchInlineSnapshot(`
+			Array [
+			  Array [
+			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
 			]
 		`);
