@@ -2,7 +2,9 @@ import { MutationProcessor } from '../src/sync/processors/mutation';
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
+	PostCustomPKMetaData as PostCustomPKMetaDataType,
 	PostCustomPKSort as PostCustomPKSortType,
+	PostCustomPKSortMetaData as PostCustomPKSortMetaDataType,
 	testSchema,
 	internalTestSchema,
 } from './helpers';
@@ -17,8 +19,14 @@ import { MutationEvent } from '../src/sync/';
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
-let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
+let PostCustomPK: PersistentModelConstructor<
+	PostCustomPKType,
+	PostCustomPKMetaDataType
+>;
+let PostCustomPKSort: PersistentModelConstructor<
+	PostCustomPKSortType,
+	PostCustomPKSortMetaDataType
+>;
 
 describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
@@ -52,7 +60,7 @@ describe('MutationProcessor', () => {
 		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
 			// custom PK @key(fields: ["postId"])
 			const deletePost = new PostCustomPK({
-				postId: 100,
+				postId: '100',
 				title: 'Title',
 			});
 
@@ -66,14 +74,14 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.postId).toEqual(100);
+			expect(input.postId).toEqual('100');
 			expect(input.id).toBeUndefined();
 		});
 
 		it('Should correctly generate delete mutation input for models with a custom PK - multi-field', async () => {
-			// multi-key PK @key(fields: ["id", "postId"])
+			// multi-key PK @key(fields: ["postId", "title"])
 			const deletePost = new PostCustomPKSort({
-				postId: 100,
+				postId: '100',
 				title: 'Title',
 			});
 
@@ -87,8 +95,8 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).toEqual(deletePost.id);
-			expect(input.postId).toEqual(100);
+			expect(input.id).toBeUndefined();
+			expect(input.postId).toEqual('100');
 		});
 	});
 	afterAll(() => {
@@ -168,8 +176,14 @@ async function instantiateMutationProcessor() {
 
 	({ Model, PostCustomPK, PostCustomPKSort } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
-		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
+		PostCustomPK: PersistentModelConstructor<
+			PostCustomPKType,
+			PostCustomPKMetaDataType
+		>;
+		PostCustomPKSort: PersistentModelConstructor<
+			PostCustomPKSortType,
+			PostCustomPKSortMetaDataType
+		>;
 	});
 
 	const userClasses = {};
@@ -254,11 +268,9 @@ const axiosError = {
 	stack:
 		'Error: timeout of 0ms exceeded\n    at createError (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265622:17)\n    at EventTarget.handleTimeout (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265537:16)\n    at EventTarget.dispatchEvent (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:32460:27)\n    at EventTarget.setReadyState (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31623:20)\n    at EventTarget.__didCompleteResponse (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31443:16)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31553:47\n    at RCTDeviceEventEmitter.emit (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:7202:37)\n    at MessageQueue.__callFunction (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2813:31)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2545:17\n    at MessageQueue.__guard (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2767:13)',
 	config: {
-		url:
-			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+		url: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 		method: 'post',
-		data:
-			'{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
+		data: '{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
 		headers: {
 			Accept: 'application/json, text/plain, */*',
 			'Content-Type': 'application/json; charset=UTF-8',

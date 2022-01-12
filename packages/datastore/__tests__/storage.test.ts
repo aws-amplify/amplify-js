@@ -12,6 +12,7 @@ import {
 	PostCustomPK,
 	PostCustomPKMetaData,
 	PostCustomPKSort,
+	PostCustomPKSortMetaData,
 	PostCustomPKComposite,
 	testSchema,
 } from './helpers';
@@ -569,15 +570,18 @@ describe('Storage tests', () => {
 			test('custom pk - with sort', async () => {
 				const classes = initSchema(testSchema());
 
-				// model has a custom pk (hk + sort key) defined via @key(fields: ["id", "postId"])
+				// model has a custom pk (hk + sort key) defined via @key(fields: ["postId", "title"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKSort } = classes as {
-					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
+					PostCustomPKSort: PersistentModelConstructor<
+						PostCustomPKSort,
+						PostCustomPKSortMetaData
+					>;
 				};
 
 				const post = await DataStore.save(
 					new PostCustomPKSort({
-						postId: 100,
+						postId: '100',
 						title: 'New Post',
 						description: 'Desc',
 					})
@@ -585,15 +589,15 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					PostCustomPKSort.copyOf(post, updated => {
-						updated.title = 'Updated';
+						updated.description = 'Updated';
 					})
 				);
 
 				const [, [postUpdate]] = zenNext.mock.calls;
 
-				expect(postUpdate.element.postId).toEqual(100);
-				expect(postUpdate.element.title).toEqual('Updated');
-				expect(postUpdate.element.description).toBeUndefined();
+				expect(postUpdate.element.postId).toEqual('100');
+				expect(postUpdate.element.title).toEqual('New Post');
+				expect(postUpdate.element.description).toEqual('Updated');
 			});
 
 			test('custom pk - with composite', async () => {

@@ -71,6 +71,11 @@ export type PostCustomPKMetaData = {
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
+export type PostCustomPKSortMetaData = {
+	identifier: CustomIdentifier<'postId'>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
 export declare class PostCustomPK {
 	public readonly postId: string;
 	public readonly title: string;
@@ -78,8 +83,7 @@ export declare class PostCustomPK {
 }
 
 export declare class PostCustomPKSort {
-	public readonly id: string;
-	public readonly postId: number;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 }
@@ -455,17 +459,10 @@ export function testSchema(): Schema {
 			PostCustomPKSort: {
 				name: 'PostCustomPKSort',
 				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-						attributes: [],
-					},
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'ID',
 						isRequired: true,
 						attributes: [],
 					},
@@ -494,7 +491,7 @@ export function testSchema(): Schema {
 					{
 						type: 'key',
 						properties: {
-							fields: ['id', 'postId'],
+							fields: ['postId', 'title'],
 						},
 					},
 				],
