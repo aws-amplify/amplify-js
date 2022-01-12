@@ -425,7 +425,6 @@ export type MutableModel<
 	Readonly<IdentifierFields<M['identifier']> & Pick<T, M['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
-	id: string;
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;
