@@ -54,6 +54,7 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
+	ManagedIdentifier,
 } from '../types';
 import {
 	DATASTORE,
@@ -82,11 +83,15 @@ const logger = new Logger('DataStore');
 const ulid = monotonicUlidFactory(Date.now());
 const { isNode } = JS.browserOrNode();
 
+type SettingMetaData = {
+	identifier: ManagedIdentifier;
+	readOnlyFields: never;
+};
 declare class Setting {
-	constructor(init: ModelInit<Setting>);
+	constructor(init: ModelInit<Setting, SettingMetaData>);
 	static copyOf(
 		src: Setting,
-		mutator: (draft: MutableModel<Setting>) => void | Setting
+		mutator: (draft: MutableModel<Setting, SettingMetaData>) => void | Setting
 	): Setting;
 	public readonly id: string;
 	public readonly key: string;
@@ -386,7 +391,7 @@ const castInstanceType = (
 	return v;
 };
 
-const initializeInstance = <T>(
+const initializeInstance = <T extends PersistentModel>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
@@ -545,7 +550,9 @@ const checkReadOnlyPropertyOnUpdate = (
 	});
 };
 
-const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
+const createNonModelClass = <T extends PersistentModel>(
+	typeDefinition: SchemaNonModel
+) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
