@@ -388,7 +388,7 @@ export type PersistentModelMetaData = {
 };
 
 export type DefaultPersistentModelMetaData = {
-	identifier: Identifier;
+	identifier: ManagedIdentifier;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
