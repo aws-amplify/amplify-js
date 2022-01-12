@@ -544,7 +544,6 @@ describe('Storage tests', () => {
 						PostCustomPKMetaData
 					>;
 				};
-				// const { PostCustomPK } = classes;
 
 				const post = await DataStore.save(
 					new PostCustomPK({
@@ -562,7 +561,7 @@ describe('Storage tests', () => {
 
 				const [, [postUpdate]] = zenNext.mock.calls;
 
-				expect(postUpdate.element.postId).toEqual(100);
+				expect(postUpdate.element.postId).toEqual('100');
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();
 			});

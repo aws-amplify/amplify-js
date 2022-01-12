@@ -75,13 +75,6 @@ export declare class PostCustomPK {
 	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
-	constructor(init: ModelInit<PostCustomPK, PostCustomPKMetaData>);
-	// static copyOf(
-	// 	source: PostCustomPK,
-	// 	mutator: (
-	// 		draft: MutableModel<PostCustomPK, PostCustomPKMetaData>
-	// 	) => MutableModel<PostCustomPK, PostCustomPKMetaData> | void
-	// ): PostCustomPK;
 }
 
 export declare class PostCustomPKSort {

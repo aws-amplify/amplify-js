@@ -55,6 +55,7 @@ import {
 	isModelFieldType,
 	ObserveQueryOptions,
 	ManagedIdentifier,
+	PersistentModelMetaData,
 } from '../types';
 import {
 	DATASTORE,
@@ -904,7 +905,7 @@ class DataStore {
 		return returnOne ? result[0] : result;
 	};
 
-	save = async <T extends PersistentModel>(
+	save = async <T extends PersistentModel<M>, M extends PersistentModelMetaData>(
 		model: T,
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
