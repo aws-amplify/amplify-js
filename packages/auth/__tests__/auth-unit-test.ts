@@ -207,6 +207,9 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.deleteAttributes = (attributeList, callback) => {
 		callback(null, 'SUCCESS');
 	};
+	CognitoUser.prototype.deleteUser = (callback, {}) => {
+		callback(null, 'SUCCESS');
+	};
 
 	CognitoUser.prototype.setAuthenticationFlowType = type => {};
 
@@ -2737,14 +2740,12 @@ describe('auth unit test', () => {
 	});
 
 	describe('delete user test suite', () => {
-		test.only('happy path should delete a user', async () => {
-			const auth = new Auth(authOptions);
-
-			const user = new CognitoUser({
-				Username: 'raz',
-				Pool: userPool,
-			});
-
+		const auth = new Auth(authOptions);
+		const user = new CognitoUser({
+			Username: 'raz',
+			Pool: userPool,
+		});
+		test('Happy path should delete a user', async () => {
 			const spy1 = jest
 				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
@@ -2756,27 +2757,84 @@ describe('auth unit test', () => {
 					return callback(null, session);
 				});
 
-			jest.spyOn(Auth.prototype, 'deleteUser').mockImplementation(async () => {
-				console.log('mocking delete user');
-			});
+			expect(await auth.deleteUser()).toBe('SUCCESS');
 
-			// jest
-			// 	.spyOn(CognitoUserSession.prototype, 'getAccessToken')
-			// 	.mockImplementationOnce(() => {
-			// 		return new CognitoAccessToken({ AccessToken: 'accessToken' });
-			// 	});
+			spy1.mockClear();
+			spy2.mockClear();
+		});
 
-			// jest
-			// 	.spyOn(CognitoAccessToken.prototype, 'decodePayload')
-			// 	.mockImplementation(() => {
-			// 		return { scope: USER_ADMIN_SCOPE };
-			// 	});
+		test('no user pool should throw error', async () => {
+			const noUserPoolAuth = new Auth(authOptionsWithNoUserPoolId);
+			try {
+				await noUserPoolAuth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(new Error('Cognito User pool does not exist'));
+			}
+		});
 
-			// jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
-			// 	return Promise.resolve(user);
-			// });
+		test('no user should throw error', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return null;
+				});
 
-			expect(await auth.deleteUser()).not.toThrowError();
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(new Error('No current user'));
+			}
+			spy1.mockClear();
+		});
+
+		test('no session should throw error', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, null);
+				});
+
+			try {
+				auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(new Error('User session does not exist.'));
+			}
+			spy1.mockClear();
+			spy2.mockClear();
+		});
+
+		// I am not sure if we need this, I just want to test that Auth.ts would return the error message back from cognito
+		test('cognito deleteUser call fails...', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, session);
+				});
+			const spy3 = jest
+				.spyOn(CognitoUser.prototype, 'deleteUser')
+				.mockImplementationOnce((callback: any) => {
+					return callback(new Error('Cognito deleteUser error'), null);
+				});
+
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(Error('Cognito deleteUser error'));
+			}
+
+			spy1.mockClear();
+			spy2.mockClear();
+			spy3.mockClear();
 		});
 	});
 

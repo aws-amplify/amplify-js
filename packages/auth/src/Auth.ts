@@ -1141,7 +1141,7 @@ export class AuthClass {
 	 * Delete the current authenticated user
 	 * @return {Promise}
 	 **/
-	public async deleteUser(): Promise<void> {
+	public async deleteUser(): Promise<void | string> {
 		// const that = this;
 		return new Promise((res, rej) => {
 			if (this.userPool) {
@@ -1153,11 +1153,9 @@ export class AuthClass {
 				} else {
 					user.getSession(async (err, session) => {
 						if (err) {
-							logger.debug('Failed to get the user session', err);
-							rej(err);
+							logger.debug('Failed to get user session', err);
+							rej(new Error('User session does not exist'));
 						} else {
-							console.log('test', user);
-
 							await user.deleteUser((err, result) => {
 								if (err) {
 									rej(err);
@@ -1170,7 +1168,7 @@ export class AuthClass {
 									);
 									this.user = null;
 									logger.debug('User was successfully deleted.');
-									res();
+									res(result);
 								}
 							});
 						}
