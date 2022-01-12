@@ -127,7 +127,7 @@ describe('OptionalId', () => {
 	test('unrecognized field is not accepted in constructor', () => {
 		new PostOptionalId({
 			title: 'asdasdasd',
-			//@ts-expect-error
+			// @ts-expect-error
 			something: 'something',
 		});
 	});
@@ -212,9 +212,9 @@ describe('CustomId - multi field', () => {
 			d => {
 				d.tenantId;
 				d.postId;
-				//@ts-expect-error
+				// @ts-expect-error
 				d.tenantId = 'aaaa';
-				//@ts-expect-error
+				// @ts-expect-error
 				d.postId = 'bbbb';
 			}
 		);
@@ -260,7 +260,7 @@ describe('CustomId - single renamed', () => {
 		new PostCustomIdRenamed({
 			myId: 'aaaaaa',
 			title: 'asdasdasd',
-			//@ts-expect-error
+			// @ts-expect-error
 			something: 'something',
 		});
 	});
