@@ -1,9 +1,10 @@
 import {
+	CustomIdentifier,
 	ModelInit,
 	MutableModel,
 	Schema,
 	InternalSchema,
-	SchemaModel,
+	// SchemaModel,
 } from '../src/types';
 
 export declare class Model {
@@ -65,11 +66,22 @@ export declare class PostComposite {
 	public readonly sort: number;
 }
 
+export type PostCustomPKMetaData = {
+	identifier: CustomIdentifier<'postId'>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
 export declare class PostCustomPK {
-	public readonly id: string;
-	public readonly postId: number;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
+	constructor(init: ModelInit<PostCustomPK, PostCustomPKMetaData>);
+	// static copyOf(
+	// 	source: PostCustomPK,
+	// 	mutator: (
+	// 		draft: MutableModel<PostCustomPK, PostCustomPKMetaData>
+	// 	) => MutableModel<PostCustomPK, PostCustomPKMetaData> | void
+	// ): PostCustomPK;
 }
 
 export declare class PostCustomPKSort {
@@ -410,17 +422,10 @@ export function testSchema(): Schema {
 			PostCustomPK: {
 				name: 'PostCustomPK',
 				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-						attributes: [],
-					},
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'ID',
 						isRequired: true,
 						attributes: [],
 					},
