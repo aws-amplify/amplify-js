@@ -658,9 +658,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username');
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { foo: 'bar' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
 			spyon.mockClear();
 		});
 
@@ -670,9 +671,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username', { custom: 'value' });
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { custom: 'value' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -2698,20 +2700,20 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			const attributeNames = [
-				'email', 'phone_number'
-			];
+			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
 				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
-					return new Promise((res) => {
+					return new Promise(res => {
 						res(session);
 					});
 				});
 
 			expect.assertions(1);
-			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe('SUCCESS');
+			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe(
+				'SUCCESS'
+			);
 
 			spyon.mockClear();
 		});
@@ -2728,11 +2730,54 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function),
+				jasmine.any(Function)
 			);
 			spyon.mockClear();
 		});
+	});
 
+	describe('delete user test suite', () => {
+		test.only('happy path should delete a user', async () => {
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'raz',
+				Pool: userPool,
+			});
+
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, session);
+				});
+
+			jest.spyOn(Auth.prototype, 'deleteUser').mockImplementation(async () => {
+				console.log('mocking delete user');
+			});
+
+			// jest
+			// 	.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+			// 	.mockImplementationOnce(() => {
+			// 		return new CognitoAccessToken({ AccessToken: 'accessToken' });
+			// 	});
+
+			// jest
+			// 	.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+			// 	.mockImplementation(() => {
+			// 		return { scope: USER_ADMIN_SCOPE };
+			// 	});
+
+			// jest.spyOn(auth, 'currentUserPoolUser').mockImplementationOnce(() => {
+			// 	return Promise.resolve(user);
+			// });
+
+			expect(await auth.deleteUser()).not.toThrowError();
+		});
 	});
 
 	describe('federatedSignIn test', () => {

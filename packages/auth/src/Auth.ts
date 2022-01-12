@@ -1138,23 +1138,26 @@ export class AuthClass {
 	}
 
 	/**
-	 * Delete an authenticated user
+	 * Delete the current authenticated user
 	 * @return {Promise}
 	 **/
 	public async deleteUser(): Promise<void> {
+		// const that = this;
 		return new Promise((res, rej) => {
 			if (this.userPool) {
 				const user = this.userPool.getCurrentUser();
 
 				if (!user) {
 					logger.debug('Failed to get user from user pool');
-					rej('No current user');
+					rej(new Error('No current user'));
 				} else {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							rej(err);
 						} else {
+							console.log('test', user);
+
 							await user.deleteUser((err, result) => {
 								if (err) {
 									rej(err);
@@ -1166,7 +1169,7 @@ export class AuthClass {
 										`A user has been signed out`
 									);
 									this.user = null;
-									logger.debug(result);
+									logger.debug('User was successfully deleted.');
 									res();
 								}
 							});
@@ -1175,6 +1178,7 @@ export class AuthClass {
 				}
 			} else {
 				logger.debug('no Congito User pool');
+				rej(new Error('Cognito User pool does not exist'));
 			}
 		});
 	}
