@@ -605,6 +605,23 @@ jobs:
           spec: many-to-many
           browser: << parameters.browser >>
 
+  integ_react_datastore_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/many-to-many-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/many-to-many-v2
+          spec: many-to-many
+          browser: << parameters.browser >>
+
   integ_react_datastore_multi_auth_one_rule:
     parameters:
       browser:
@@ -619,6 +636,23 @@ jobs:
           framework: react
           category: datastore
           sample_name: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_one_rule_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/multi-auth-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - One Rule CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/multi-auth-v2
           spec: multi-auth-one-rule
           browser: << parameters.browser >>
 
@@ -639,6 +673,23 @@ jobs:
           spec: multi-auth-two-rules
           browser: << parameters.browser >>
 
+  integ_react_datastore_multi_auth_two_rules_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/multi-auth-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/multi-auth-v2
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
   integ_react_datastore_multi_auth_three_plus_rules:
     parameters:
       browser:
@@ -653,6 +704,23 @@ jobs:
           framework: react
           category: datastore
           sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/multi-auth-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/multi-auth-v2
           spec: multi-auth-three-plus-rules
           browser: << parameters.browser >>
 
@@ -673,6 +741,23 @@ jobs:
           spec: subs-disabled
           browser: << parameters.browser >>
 
+  integ_react_datastore_subs_disabled_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/subs-disabled-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/subs-disabled-v2
+          spec: subs-disabled
+          browser: << parameters.browser >>
+
   integ_react_datastore_consecutive_saves:
     parameters:
       browser:
@@ -688,6 +773,57 @@ jobs:
           category: datastore
           sample_name: consecutive-saves
           spec: consecutive-saves
+          browser: << parameters.browser >>
+
+  integ_react_datastore_consecutive_saves_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/consecutive-saves-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/consecutive-saves-v2
+          spec: consecutive-saves
+          browser: << parameters.browser >>
+
+  integ_react_datastore_observe_query:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/observe-query
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Observe Query'
+          framework: react
+          category: datastore
+          sample_name: observe-query
+          spec: observe-query
+          browser: << parameters.browser >>
+
+  integ_react_datastore_observe_query_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/observe-query-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Observe Query CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/observe-query-v2
+          spec: observe-query
           browser: << parameters.browser >>
 
   integ_react_storage:
@@ -843,6 +979,13 @@ jobs:
     steps:
       - integ_test_rn_android
 
+  integ_rn_ios_datastore_sqlite_adapter:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
+    steps:
+      - integ_test_rn_ios
+
   integ_datastore_auth:
     parameters:
       scenario:
@@ -864,6 +1007,30 @@ jobs:
           framework: react
           category: datastore
           sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: firefox
+
+  integ_datastore_auth_v2:
+    parameters:
+      scenario:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore Auth CLI v2 - Chrome'
+          framework: react
+          category: datastore
+          sample_name: v2/<< parameters.scenario >>-v2
+          spec: << parameters.scenario >>
+          browser: chrome
+      - integ_test_js:
+          test_name: 'DataStore Auth CLI v2 - Firefox'
+          framework: react
+          category: datastore
+          sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
           browser: firefox
 
@@ -1092,7 +1259,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_one_rule_v2:
           requires:
             - integ_setup
             - build
@@ -1110,7 +1295,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_multi_auth_three_plus_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules_v2:
           requires:
             - integ_setup
             - build
@@ -1128,7 +1331,43 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_subs_disabled_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_consecutive_saves:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_consecutive_saves_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_observe_query:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_observe_query_v2:
           requires:
             - integ_setup
             - build
@@ -1233,7 +1472,22 @@ workflows:
       #       - build
       #     filters:
       #       <<: *releasable_branches
+      - integ_rn_ios_datastore_sqlite_adapter:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
+      - integ_datastore_auth_v2:
           requires:
             - integ_setup
             - build
@@ -1265,11 +1519,19 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
+            - integ_react_datastore_v2
             - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_one_rule_v2
             - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_two_rules_v2
             - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_multi_auth_three_plus_rules_v2
             - integ_react_datastore_subs_disabled
+            - integ_react_datastore_subs_disabled_v2
             - integ_react_datastore_consecutive_saves
+            - integ_react_datastore_consecutive_saves_v2
+            - integ_react_datastore_observe_query
+            - integ_react_datastore_observe_query_v2
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
@@ -1288,7 +1550,9 @@ workflows:
             # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
+            - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
+            - integ_datastore_auth_v2
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_geo

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.4...@aws-amplify/pubsub@4.2.5) (2021-12-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-graphql:** Fix webpack build ([#9358](https://github.com/aws-amplify/amplify-js/issues/9358)) ([73587d7](https://github.com/aws-amplify/amplify-js/commit/73587d78fc4feba39d5a527bfe2c790935653fd3))
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.3...@aws-amplify/pubsub@4.2.4) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.2...@aws-amplify/pubsub@4.2.3) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.1...@aws-amplify/pubsub@4.2.2) (2021-11-18)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.7...@aws-amplify/pushnotification@4.3.8) (2021-12-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** make eligible variables final ([#9301](https://github.com/aws-amplify/amplify-js/issues/9301)) ([ae11b53](https://github.com/aws-amplify/amplify-js/commit/ae11b53f837fe13fca52cae771a4cba06306bc0b))
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.6...@aws-amplify/pushnotification@4.3.7) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.5...@aws-amplify/pushnotification@4.3.6) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 ## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.4...@aws-amplify/pushnotification@4.3.5) (2021-11-18)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification
