@@ -630,6 +630,7 @@ export function getIdentifierValue(
 	model: ModelInstanceMetadata | PersistentModel
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
 	const idOrPk = pkFieldNames.map(f => model[f]).join('-');
 
 	return idOrPk;

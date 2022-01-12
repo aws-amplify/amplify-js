@@ -33,7 +33,7 @@ import {
 
 const logger = new Logger('DataStore');
 
-const DEFAULT_PRIMARY_KEY_SEPARATOR = ':::';
+const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
 export class AsyncStorageAdapter implements Adapter {
 	private schema: InternalSchema;
@@ -63,16 +63,30 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
-	// Returns concatenated primary key path for a model
-	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
+	// Returns primary keys for a model
+	private getIndexKeys(namespaceName: string, modelName: string): string[] {
 		const keyPath =
 			this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
 
 		if (keyPath) {
-			return [keyPath.join(DEFAULT_PRIMARY_KEY_SEPARATOR)];
+			return keyPath;
 		}
 
 		return ['id'];
+	}
+
+	// Retrieves concatenated primary key values from a model
+	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
+		const modelConstructor = Object.getPrototypeOf(model)
+			.constructor as PersistentModelConstructor<T>;
+		const namespaceName = this.namespaceResolver(modelConstructor);
+		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
+
+		// Retrieve key values from model
+		const keyValues = keys.map(field => model[field]);
+
+		// Return concatenated key values
+		return keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 	}
 
 	// Retrieves concatenated primary key values from a model
@@ -80,19 +94,10 @@ export class AsyncStorageAdapter implements Adapter {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
-		const indexKeyPath = this.getIndexKeyPath(
-			namespaceName,
-			modelConstructor.name
-		);
-
-		// Extract keys from concatenated key path
-		const keys = indexKeyPath[0].split(DEFAULT_PRIMARY_KEY_SEPARATOR);
+		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
 
 		// Retrieve key values from model
-		const keyValues = keys.map(field => model[field]);
-
-		// Return concatenated key values
-		return [keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)];
+		return keys.map(field => model[field]);
 	}
 
 	private keysEqual(keysA, keysB): boolean {
@@ -163,13 +168,13 @@ export class AsyncStorageAdapter implements Adapter {
 			({ modelName, item, instance }) => {
 				const storeName = this.getStorename(namespaceName, modelName);
 				set.add(storeName);
-				const keys = this.getIndexKeyPath(namespaceName, modelName);
+				const keys = this.getIndexKeys(namespaceName, modelName);
 				return { storeName, item, instance, keys };
 			}
 		);
-		const keyValues = this.getIndexKeyValues(model);
+		const keyValuesPath = this.getIndexKeyValuesPath(model);
 
-		const fromDB = await this.db.get(keyValues, storeName);
+		const fromDB = await this.db.get(keyValuesPath, storeName);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -190,23 +195,20 @@ export class AsyncStorageAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance, keys } = resItem;
 
-			/* Extract keys from concatenated key path,
-			find the values in the item, and concatenate them */
-			const itemKeyValues = [
-				keys[0]
-					.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
-					.map(key => item[key])
-					.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-			];
+			/* Find the key values in the item, and concatenate them */
+			const itemKeyValues: string[] = keys.map(key => item[key]);
+			const itemKeyValuesPath: string = itemKeyValues.join(
+				DEFAULT_PRIMARY_KEY_SEPARATOR
+			);
 
-			const fromDB = <T>await this.db.get(itemKeyValues, storeName);
+			const fromDB = <T>await this.db.get(itemKeyValuesPath, storeName);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 			const modelKeyValues = this.getIndexKeyValues(model);
 			const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
 
 			// If item key values and model key values are equal, save to db
 			if (keysEqual || opType === OpType.INSERT) {
-				await this.db.save(item, storeName, keys, itemKeyValues);
+				await this.db.save(item, storeName, keys, itemKeyValuesPath);
 
 				result.push([instance, opType]);
 			}
@@ -250,7 +252,7 @@ export class AsyncStorageAdapter implements Adapter {
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
 						if (!recordItem[getByfield]) break;
 
-						const key = [recordItem[getByfield]];
+						const key = recordItem[getByfield];
 
 						const connectionRecord = await this.db.get(key, storeName);
 
@@ -263,7 +265,7 @@ export class AsyncStorageAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const key = [recordItem[targetName]];
+							const key = recordItem[targetName];
 
 							const connectionRecord = await this.db.get(key, storeName);
 
@@ -299,9 +301,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
-		const keyPath = this.getIndexKeyPath(namespaceName, modelConstructor.name);
+		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
 		const queryByKey =
-			predicates && this.keyValueFromPredicate(predicates, keyPath);
+			predicates && this.keyValueFromPredicate(predicates, keys);
 
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
@@ -330,9 +332,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 	private async getByKey<T extends PersistentModel>(
 		storeName: string,
-		keyValue: string[]
+		keyValuePath: string
 	): Promise<T> {
-		const record = <T>await this.db.get(keyValue, storeName);
+		const record = <T>await this.db.get(keyValuePath, storeName);
 		return record;
 	}
 
@@ -344,20 +346,17 @@ export class AsyncStorageAdapter implements Adapter {
 
 	private keyValueFromPredicate<T extends PersistentModel>(
 		predicates: PredicatesGroup<T>,
-		keyPathJoined: string[]
-	): string[] | undefined {
+		keys: string[]
+	): string | undefined {
 		const { predicates: predicateObjs } = predicates;
 
-		// Extract keys from concatenated key path
-		const keyPath = keyPathJoined[0].split(DEFAULT_PRIMARY_KEY_SEPARATOR);
-
-		if (predicateObjs.length !== keyPath.length) {
+		if (predicateObjs.length !== keys.length) {
 			return;
 		}
 
 		const keyValues = [];
 
-		for (const key of keyPath) {
+		for (const key of keys) {
 			const predicateObj = predicateObjs.find(
 				p => isPredicateObj(p) && p.field === key && p.operator === 'eq'
 			) as PredicateObject<T>;
@@ -365,11 +364,9 @@ export class AsyncStorageAdapter implements Adapter {
 			predicateObj && keyValues.push(predicateObj.operand);
 		}
 
-		return (
-			keyValues.length === keyPath.length && [
-				keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-			]
-		);
+		return keyValues.length === keys.length
+			? keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
+			: undefined;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
@@ -485,9 +482,9 @@ export class AsyncStorageAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 
 			if (condition) {
-				const keyValues = this.getIndexKeyValues(model);
+				const keyValuePath = this.getIndexKeyValuesPath(model);
 
-				const fromDB = await this.db.get(keyValues, storeName);
+				const fromDB = await this.db.get(keyValuePath, storeName);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -554,8 +551,8 @@ export class AsyncStorageAdapter implements Adapter {
 			for await (const item of items) {
 				if (item) {
 					if (typeof item === 'object') {
-						const keyValues = this.getIndexKeyValues(item as T);
-						await this.db.delete(keyValues[0], storeName);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(item as T);
+						await this.db.delete(keyValuesPath, storeName);
 					}
 				}
 			}
@@ -601,9 +598,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 
-						const keyValues = this.getIndexKeyValues(model);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
-						const value = hasOneCustomField ? model[targetName] : keyValues[0];
+						const value = hasOneCustomField ? model[targetName] : keyValuesPath;
 
 						if (!value) break;
 
@@ -625,11 +622,11 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const keyValues = this.getIndexKeyValues(model);
+						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === keyValues[0]
+							childItem => childItem[index] === keyValuesPath
 						);
 
 						await this.deleteTraverse(
@@ -676,7 +673,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const { name: modelName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const storeName = this.getStorename(namespaceName, modelName);
-		const keyPath = this.getIndexKeyPath(namespaceName, modelName);
+		const keys = this.getIndexKeys(namespaceName, modelName);
 		const batch: ModelInstanceMetadata[] = [];
 
 		for (const item of items) {
@@ -690,17 +687,17 @@ export class AsyncStorageAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
-			const keyValues = this.getIndexKeyValues(model);
+			const keyValuesPath = this.getIndexKeyValuesPath(model);
 
 			const { instance } = connectedModels.find(({ instance }) => {
-				const instanceKeyValues = [this.getIndexKeyValues(instance)[0]];
-				return this.keysEqual(instanceKeyValues, [keyValues[0]]);
+				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
+				return this.keysEqual([instanceKeyValuesPath], [keyValuesPath]);
 			});
 
 			batch.push(instance);
 		}
 
-		return await this.db.batchSave(storeName, batch, keyPath);
+		return await this.db.batchSave(storeName, batch, keys);
 	}
 }
 
