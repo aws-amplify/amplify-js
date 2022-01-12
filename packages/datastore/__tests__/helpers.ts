@@ -4,7 +4,6 @@ import {
 	MutableModel,
 	Schema,
 	InternalSchema,
-	// SchemaModel,
 } from '../src/types';
 
 export declare class Model {
