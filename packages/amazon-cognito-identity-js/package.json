@@ -93,7 +93,6 @@
     "genversion": "^2.2.0",
     "jsdoc": "^3.4.0",
     "react": "^16.0.0",
-    "react-native": "^0.62.3",
     "rimraf": "^2.5.4",
     "webpack": "^3.5.5"
   }
