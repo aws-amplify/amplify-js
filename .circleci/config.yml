@@ -258,13 +258,6 @@ commands:
           key: |
             brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
       - run:
-          # React Native Android can have issues with later versions of Node:
-          # https://github.com/facebook/react-native/issues/26808
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh install-node
-          name: Install node@10
-      - run:
           # https://reactnative.dev/docs/environment-setup
           environment:
             HOMEBREW_NO_AUTO_UPDATE: '1'
