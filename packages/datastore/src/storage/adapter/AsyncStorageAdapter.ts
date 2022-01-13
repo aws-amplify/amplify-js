@@ -20,6 +20,7 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	RelationType,
+	ModelInit,
 } from '../../types';
 import {
 	exhaustiveCheck,
@@ -421,7 +422,10 @@ export class AsyncStorageAdapter implements Adapter {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const result = <T>await this.db.getOne(firstOrLast, storeName);
 
-		return result && this.modelInstanceCreator(modelConstructor, result);
+		return (
+			result &&
+			this.modelInstanceCreator(modelConstructor, <ModelInit<T>>result)
+		);
 	}
 
 	async delete<T extends PersistentModel<any>>(
