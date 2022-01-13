@@ -16,7 +16,7 @@ import {
 
 export { ModelSortPredicateCreator } from './sort';
 
-const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
+const predicatesAllSet = new WeakSet<ProducerModelPredicate<any, any>>();
 
 export function isPredicatesAll(
 	predicate: any
@@ -29,7 +29,7 @@ export const PredicateAll = Symbol('A predicate that matches all records');
 
 export class Predicates {
 	public static get ALL(): typeof PredicateAll {
-		const predicate = <ProducerModelPredicate<any>>(c => c);
+		const predicate = <ProducerModelPredicate<any, any>>(c => c);
 
 		predicatesAllSet.add(predicate);
 
@@ -151,7 +151,7 @@ export class ModelPredicateCreator {
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel<any>>(
 		modelDefinition: SchemaModel,
-		existing: ProducerModelPredicate<T>
+		existing: ProducerModelPredicate<T, any>
 	) {
 		if (!existing || !modelDefinition) {
 			return undefined;

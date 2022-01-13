@@ -402,13 +402,17 @@ export type PersistentModel<
 >;
 
 export type ModelInit<
-	T extends PersistentModel<M>,
+	T extends PersistentModel<M> | Record<string, any>,
 	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = Omit<
-	T,
-	keyof IdentifierFields<M['identifier']> | M['readOnlyFields'] | symbol
-> &
-	IdentifierFieldsInit<M['identifier']>;
+> = T extends PersistentModel<M>
+	? Omit<
+			T,
+			keyof IdentifierFields<M['identifier']> | M['readOnlyFields'] | symbol
+	  > &
+			(T extends PersistentModel<M>
+				? IdentifierFieldsInit<M['identifier']>
+				: {})
+	: T;
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -442,10 +446,13 @@ export enum OpType {
 	DELETE = 'DELETE',
 }
 
-export type SubscriptionMessage<T extends PersistentModel<any>> = {
+export type SubscriptionMessage<
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData = any
+> = {
 	opType: OpType;
 	element: T;
-	model: PersistentModelConstructor<T, any>;
+	model: PersistentModelConstructor<T, M>;
 	condition: PredicatesGroup<T> | null;
 };
 
@@ -534,9 +541,10 @@ export type ModelPredicate<M extends PersistentModel<any>> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
-export type ProducerModelPredicate<M extends PersistentModel<any>> = (
-	condition: ModelPredicate<M>
-) => ModelPredicate<M>;
+export type ProducerModelPredicate<
+	M extends PersistentModel<META>,
+	META extends PersistentModelMetaData
+> = (condition: ModelPredicate<M>) => ModelPredicate<M>;
 
 export type PredicatesGroup<T extends PersistentModel<any>> = {
 	type: keyof PredicateGroups<T>;
@@ -785,8 +793,8 @@ type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
 type Lookup<T extends PersistentModel> = {
 	0:
-		| ProducerModelPredicate<T>
-		| Promise<ProducerModelPredicate<T>>
+		| ProducerModelPredicate<T, any>
+		| Promise<ProducerModelPredicate<T, any>>
 		| typeof PredicateAll;
 	1: ModelPredicate<T> | undefined;
 };
