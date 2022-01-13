@@ -17,7 +17,7 @@ import {
 	InternalSchema,
 	SchemaModel,
 } from '../src/types';
-import { MutationEvent } from '../src/sync/';
+import { MutationEvent, MutationEventMetadata } from '../src/sync/';
 import { USER } from '../src/util';
 
 let initSchema: typeof initSchemaType;
@@ -345,7 +345,7 @@ async function instantiateOutbox(): Promise<void> {
 
 	const MutationEvent = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<any>;
+	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 
 	await DataStore.start();
 
@@ -371,7 +371,7 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 
 	const MutationEventConstructor = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent>;
+	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;
