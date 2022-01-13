@@ -177,7 +177,7 @@ export function modelCreateTableStatement(
 }
 
 export function modelInsertStatement(
-	model: PersistentModel,
+	model: PersistentModel<any>,
 	tableName: string
 ): ParameterizedStatement {
 	const keys = keysFromModel(model);
@@ -189,7 +189,7 @@ export function modelInsertStatement(
 }
 
 export function modelUpdateStatement(
-	model: PersistentModel,
+	model: PersistentModel<any>,
 	tableName: string
 ): ParameterizedStatement {
 	const [paramaterized, values] = updateSet(model);
