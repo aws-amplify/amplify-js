@@ -1,4 +1,6 @@
 import {
+	extractKeyIfExists,
+	extractPrimaryKeyFieldNames,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -12,6 +14,8 @@ import {
 	valuesEqual,
 	processCompositeKeys,
 } from '../src/util';
+
+import { testSchema } from './helpers';
 
 describe('datastore util', () => {
 	test('validatePredicateField', () => {
@@ -590,6 +594,49 @@ describe('datastore util', () => {
 		});
 		invalid.forEach(test => {
 			expect(isAWSIPAddress(test)).toBe(false);
+		});
+	});
+	describe('extractKeyIfExists', () => {
+		const testUserSchema = testSchema();
+		test('model definition with custom pk', () => {
+			const result = extractKeyIfExists(testUserSchema.models.PostCustomPK);
+			expect(result.properties.fields.length).toBe(1);
+			expect(result.properties.fields[0]).toBe('postId');
+			expect(result.type).toBe('key');
+		});
+		test('model definition with custom pk + sk', () => {
+			const result = extractKeyIfExists(testUserSchema.models.PostCustomPKSort);
+			expect(result.properties.fields.length).toBe(2);
+			expect(result.properties.fields[0]).toBe('postId');
+			expect(result.properties.fields[1]).toBe('title');
+			expect(result.type).toBe('key');
+		});
+		test('model definition with id', () => {
+			const result = extractKeyIfExists(testUserSchema.models.Model);
+			expect(result).toBeUndefined();
+		});
+	});
+	describe('extractPrimaryKeyFieldNames', () => {
+		const testUserSchema = testSchema();
+		test('model definition with custom pk', () => {
+			const result = extractPrimaryKeyFieldNames(
+				testUserSchema.models.PostCustomPK
+			);
+			expect(result.length).toBe(1);
+			expect(result[0]).toBe('postId');
+		});
+		test('model definition with custom pk + sk', () => {
+			const result = extractPrimaryKeyFieldNames(
+				testUserSchema.models.PostCustomPKSort
+			);
+			expect(result.length).toBe(2);
+			expect(result[0]).toBe('postId');
+			expect(result[1]).toBe('title');
+		});
+		test('model definition with id', () => {
+			const result = extractPrimaryKeyFieldNames(testUserSchema.models.Model);
+			expect(result.length).toBe(1);
+			expect(result[0]).toBe('id');
 		});
 	});
 });
