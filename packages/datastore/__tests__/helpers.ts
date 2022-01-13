@@ -79,6 +79,17 @@ export declare class PostCustomPK {
 	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
+	public readonly dateCreated: string;
+	public readonly optionalField1?: string;
+	public readonly emails?: string[];
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+	// static copyOf(
+	// 	src: PostCustomPK,
+	// 	mutator: (
+	// 		draft: MutableModel<PostCustomPK, PostCustomPKMetaData>
+	// 	) => MutableModel<PostCustomPK, PostCustomPKMetaData> | void
+	// ): PostCustomPK;
 }
 
 export declare class PostCustomPKSort {
@@ -437,6 +448,37 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: false,
+						attributes: [],
+					},
+					emails: {
+						name: 'emails',
+						isArray: true,
+						type: 'AWSEmail',
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: true,
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					dateCreated: {
+						name: 'dateCreated',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
 						attributes: [],
 					},
 				},

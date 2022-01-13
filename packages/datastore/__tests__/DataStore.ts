@@ -1,3 +1,4 @@
+/* tslint:disable */
 import 'fake-indexeddb/auto';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
@@ -13,7 +14,13 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Model, Metadata, testSchema } from './helpers';
+import {
+	Model,
+	Metadata,
+	PostCustomPK as PostCustomPKType,
+	PostCustomPKMetaData as PostCustomPKMetaDataType,
+	testSchema,
+} from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -51,7 +58,9 @@ describe('DataStore tests', () => {
 
 			expect(classes).toHaveProperty('Model');
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			expect(Model).toHaveProperty(
 				nameOf<PersistentModelConstructor<any>>('copyOf')
@@ -291,12 +300,14 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			const promises = [
 				DataStore.query(Model),
@@ -311,12 +322,14 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			DataStore.observe(Model).subscribe(jest.fn());
 
@@ -379,7 +392,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'Some value',
@@ -422,7 +437,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'something',
@@ -475,7 +492,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'something',
@@ -555,7 +574,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			expect(() => {
 				new Model({
@@ -1041,7 +1062,10 @@ describe('DataStore tests', () => {
 			).rejects.toThrow("Page can't be negative");
 
 			await expect(
-				DataStore.query(Model, <any>'someid', { page: 0, limit: <any>'avalue' })
+				DataStore.query(Model, <any>'someid', {
+					page: 0,
+					limit: <any>'avalue',
+				})
 			).rejects.toThrow('Limit should be a number');
 
 			await expect(
@@ -1243,6 +1267,1094 @@ describe('DataStore tests', () => {
 				).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
+				});
+			});
+		});
+	});
+	describe('DataStore Custom PK tests', () => {
+		describe('initSchema tests', () => {
+			test('PostCustomPK class is created', () => {
+				const classes = initSchema(testSchema());
+
+				expect(classes).toHaveProperty('PostCustomPK');
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				expect(PostCustomPK).toHaveProperty(
+					nameOf<PersistentModelConstructor<any>>('copyOf')
+				);
+
+				expect(typeof PostCustomPK.copyOf).toBe('function');
+			});
+
+			test('PostCustomPK class can be instantiated', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(model).toBeInstanceOf(PostCustomPK);
+
+				expect(model.postId).toBeDefined();
+			});
+
+			test('initSchema is executed only once', () => {
+				initSchema(testSchema());
+
+				const spy = jest.spyOn(console, 'warn');
+
+				expect(() => {
+					initSchema(testSchema());
+				}).not.toThrow();
+
+				expect(spy).toBeCalledWith('The schema has already been initialized');
+			});
+
+			test('Non @model class is created', () => {
+				const classes = initSchema(testSchema());
+
+				expect(classes).toHaveProperty('Metadata');
+
+				const { Metadata } = classes;
+
+				expect(Metadata).not.toHaveProperty(
+					nameOf<PersistentModelConstructor<any>>('copyOf')
+				);
+			});
+
+			test('Non @model class can be instantiated', () => {
+				const { Metadata } = initSchema(testSchema()) as {
+					Metadata: NonModelTypeConstructor<Metadata>;
+				};
+
+				const metadata = new Metadata({
+					author: 'some author',
+					tags: [],
+					rewards: [],
+					penNames: [],
+					nominations: [],
+				});
+
+				expect(metadata).toBeInstanceOf(Metadata);
+
+				expect(metadata).not.toHaveProperty('postId');
+			});
+		});
+
+		describe('Immutability', () => {
+			test('Title cannot be changed', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(() => {
+					(<any>model).title = 'edit';
+				}).toThrowError(
+					"Cannot assign to read only property 'title' of object"
+				);
+			});
+
+			test('PostCustomPK can be copied+edited by creating an edited copy', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					draft.title = 'edited';
+				});
+
+				expect(model1).not.toBe(model2);
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.title).toBe('something');
+				expect(model2.title).toBe('edited');
+			});
+
+			test('postId cannot be changed inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).postId = 'a-new-postId';
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+			});
+
+			test('Optional field can be initialized with undefined', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					description: undefined,
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(model1.description).toBeUndefined();
+			});
+
+			test('Optional field can be initialized with null', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					description: null,
+				});
+
+				expect(model1.description).toBeNull();
+			});
+
+			test('Optional field can be changed to undefined inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					description: 'something-else',
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).description = undefined;
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.description).toBe('something-else');
+				expect(model2.description).toBeUndefined();
+			});
+
+			test('Optional field can be set to null inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).description = null;
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.description).toBeUndefined();
+				expect(model2.description).toBeNull();
+			});
+
+			test('Non @model - Field cannot be changed', () => {
+				const { Metadata } = initSchema(testSchema()) as {
+					Metadata: NonModelTypeConstructor<Metadata>;
+				};
+
+				const nonPostCustomPK = new Metadata({
+					author: 'something',
+					rewards: [],
+					penNames: [],
+					nominations: [],
+				});
+
+				expect(() => {
+					(<any>nonPostCustomPK).author = 'edit';
+				}).toThrowError(
+					"Cannot assign to read only property 'author' of object"
+				);
+			});
+		});
+
+		describe('Initialization', () => {
+			let PostCustomPK;
+			test('start is called only once', async () => {
+				const storage: StorageType =
+					require('../src/storage/storage').ExclusiveStorage;
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				});
+
+				const promises = [
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+				];
+
+				await Promise.all(promises);
+
+				expect(storage).toHaveBeenCalledTimes(1);
+			});
+
+			test('It is initialized when observing (no query)', async () => {
+				const storage: StorageType =
+					require('../src/storage/storage').ExclusiveStorage;
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				});
+
+				DataStore.observe(PostCustomPK).subscribe(jest.fn());
+
+				expect(storage).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('Basic operations', () => {
+			let PostCustomPK: PersistentModelConstructor<
+				PostCustomPKType,
+				PostCustomPKMetaDataType
+			>;
+			let Metadata: NonModelTypeConstructor<Metadata>;
+
+			beforeEach(() => {
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => ({
+						init: jest.fn(),
+						runExclusive: jest.fn(() => []),
+						query: jest.fn(() => []),
+						observe: jest.fn(() => Observable.from([])),
+					}));
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK, Metadata } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+					Metadata: NonModelTypeConstructor<Metadata>;
+				});
+			});
+
+			test('Save returns the saved model', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'Some value',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const result = await DataStore.save(model);
+
+				const [settingsSave, modelCall] = <any>save.mock.calls;
+				const [_model, _condition, _mutator, patches] = modelCall;
+
+				expect(result).toMatchObject(model);
+				expect(patches).toBeUndefined();
+			});
+
+			test('Save returns the updated model and patches', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				await DataStore.save(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.title = 'edited';
+				});
+
+				const result = await DataStore.save(model);
+
+				const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
+				const [_model, _condition, _mutator, [patches]] = modelUpdate;
+
+				const expectedPatches = [
+					{ op: 'replace', path: ['title'], value: 'edited' },
+				];
+
+				expect(result).toMatchObject(model);
+				expect(patches).toMatchObject(expectedPatches);
+			});
+
+			test('Save returns the updated model and patches - list field', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					emails: ['john@doe.com', 'jane@doe.com'],
+				});
+
+				await DataStore.save(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.emails = [...draft.emails, 'joe@doe.com'];
+				});
+
+				let result = await DataStore.save(model);
+
+				expect(result).toMatchObject(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.emails.push('joe@doe.com');
+				});
+
+				result = await DataStore.save(model);
+
+				expect(result).toMatchObject(model);
+
+				const [settingsSave, modelSave, modelUpdate, modelUpdate2] = <any>(
+					save.mock.calls
+				);
+
+				const [_model, _condition, _mutator, [patches]] = modelUpdate;
+				const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
+
+				const expectedPatches = [
+					{
+						op: 'replace',
+						path: ['emails'],
+						value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com'],
+					},
+				];
+
+				const expectedPatches2 = [
+					{
+						op: 'add',
+						path: ['emails', 3],
+						value: 'joe@doe.com',
+					},
+				];
+
+				expect(patches).toMatchObject(expectedPatches);
+				expect(patches2).toMatchObject(expectedPatches2);
+			});
+
+			test('Read-only fields cannot be overwritten', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'something',
+						dateCreated: new Date().toISOString(),
+						createdAt: '2021-06-03T20:56:23.201Z',
+					} as any);
+				}).toThrow('createdAt is read-only.');
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(() => {
+					PostCustomPK.copyOf(model, draft => {
+						(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
+					});
+				}).toThrow('createdAt is read-only.');
+
+				expect(() => {
+					PostCustomPK.copyOf(model, draft => {
+						(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
+					});
+				}).toThrow('updatedAt is read-only.');
+			});
+
+			test('Instantiation validations', async () => {
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: undefined,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field title is required');
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: null,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field title is required');
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: <any>1234,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError(
+					'Field title should be of type string, number received. 1234'
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: 'not-a-date',
+					});
+				}).toThrowError(
+					'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [null],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type string, [null] received. '
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['test@example.com'],
+					});
+				}).not.toThrow();
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['not-an-email'],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				);
+
+				expect(
+					new PostCustomPK(<any>{
+						extraAttribute: 'some value',
+						title: 'some value',
+					})
+				).toHaveProperty('extraAttribute');
+
+				expect(() => {
+					PostCustomPK.copyOf(<any>undefined, d => d);
+				}).toThrow('The source object is not a valid model');
+				expect(() => {
+					const source = new PostCustomPK({
+						postId: '12345',
+						title: 'something',
+						dateCreated: new Date().toISOString(),
+					});
+					PostCustomPK.copyOf(source, d => (d.title = <any>1234));
+				}).toThrow(
+					'Field title should be of type string, number received. 1234'
+				);
+			});
+
+			test('Delete params', async () => {
+				let PostCustomPK;
+				({ PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				});
+				await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
+					'Model or Model Constructor required'
+				);
+
+				await expect(DataStore.delete(<any>PostCustomPK)).rejects.toThrow(
+					'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(
+					DataStore.delete(PostCustomPK, <any>(() => {}))
+				).rejects.toThrow(
+					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(
+					DataStore.delete(PostCustomPK, <any>(() => {}))
+				).rejects.toThrow(
+					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(DataStore.delete(<any>{})).rejects.toThrow(
+					'Object is not an instance of a valid model'
+				);
+
+				await expect(
+					DataStore.delete(
+						new PostCustomPK({
+							postId: '12345',
+							title: 'somevalue',
+							dateCreated: new Date().toISOString(),
+						}),
+						<any>{}
+					)
+				).rejects.toThrow('Invalid criteria');
+			});
+
+			test('Delete many returns many', async () => {
+				const models: PostCustomPKType[] = [];
+				const save = jest.fn(model => {
+					model instanceof PostCustomPK && models.push(model);
+				});
+				const query = jest.fn(() => models);
+				const _delete = jest.fn(() => [models, models]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new PostCustomPK({
+							postId: `${i}`,
+							title: 'someField',
+							dateCreated: new Date().toISOString(),
+						})
+					);
+				}
+
+				// @ts-ignore
+				const deleted = await DataStore.delete(PostCustomPK, m =>
+					// @ts-ignore
+					m.title('eq', 'someField')
+				);
+
+				expect(deleted.length).toEqual(10);
+				deleted.forEach(deletedItem => {
+					expect(deletedItem.title).toEqual('someField');
+				});
+			});
+
+			test('Delete one by Custom PK returns one', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(saved => (model = saved));
+				const query = jest.fn(() => [model]);
+				const _delete = jest.fn(() => [[model], [model]]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const saved = await DataStore.save(
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				// @ts-ignore
+				const deleted: PostCustomPKType[] = await DataStore.delete(
+					// @ts-ignore
+					PostCustomPK,
+					saved.postId
+				);
+
+				expect(deleted.length).toEqual(1);
+				expect(deleted[0]).toEqual(model);
+			});
+
+			test('Delete one by Custom PK with predicate returns one', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(saved => (model = saved));
+				const query = jest.fn(() => [model]);
+				const _delete = jest.fn(() => [[model], [model]]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPKType,
+						PostCustomPKMetaDataType
+					>;
+				};
+
+				const saved = await DataStore.save(
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				// @ts-ignore
+				const deleted: PostCustomPKType[] = await DataStore.delete(
+					// @ts-ignore
+					PostCustomPK,
+					// @ts-ignore
+					m => m.postId('eq', saved.postId)
+				);
+
+				expect(deleted.length).toEqual(1);
+				expect(deleted[0]).toEqual(model);
+			});
+
+			test('Query params', async () => {
+				await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+					'Constructor is not for a valid model'
+				);
+
+				await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+					'Constructor is not for a valid model'
+				);
+
+				await expect(
+					// @ts-ignore
+					DataStore.query(PostCustomPK, <any>'someid', { page: 0 })
+				).rejects.toThrow('Limit is required when requesting a page');
+
+				await expect(
+					// @ts-ignore
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: <any>'a',
+						limit: 10,
+					})
+				).rejects.toThrow('Page should be a number');
+
+				await expect(
+					// @ts-ignore
+					DataStore.query(PostCustomPK, <any>'someid', { page: -1, limit: 10 })
+				).rejects.toThrow("Page can't be negative");
+
+				await expect(
+					// @ts-ignore
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: 0,
+						limit: <any>'avalue',
+					})
+				).rejects.toThrow('Limit should be a number');
+
+				await expect(
+					// @ts-ignore
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: 0,
+						limit: -1,
+					})
+				).rejects.toThrow("Limit can't be negative");
+			});
+
+			describe('Type definitions', () => {
+				let PostCustomPK: PersistentModelConstructor<
+					PostCustomPKType,
+					PostCustomPKMetaDataType
+				>;
+
+				beforeEach(() => {
+					let model: PostCustomPKType;
+
+					jest.resetModules();
+					jest.doMock('../src/storage/storage', () => {
+						const mock = jest.fn().mockImplementation(() => ({
+							init: jest.fn(),
+							runExclusive: jest.fn(() => [model]),
+							query: jest.fn(() => [model]),
+							observe: jest.fn(() => Observable.from([])),
+						}));
+
+						(<any>mock).getNamespace = () => ({ models: {} });
+
+						return { ExclusiveStorage: mock };
+					});
+					({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+					const classes = initSchema(testSchema());
+
+					({ PostCustomPK } = classes as {
+						PostCustomPK: PersistentModelConstructor<
+							PostCustomPKType,
+							PostCustomPKMetaDataType
+						>;
+					});
+
+					model = new PostCustomPK({
+						postId: '12345',
+						title: 'Some value',
+						dateCreated: new Date().toISOString(),
+					});
+				});
+
+				describe('Query', () => {
+					test('all', async () => {
+						// @ts-ignore
+						const allPostCustomPKs = await DataStore.query(PostCustomPK);
+						// @ts-ignore
+						expectType<PostCustomPKType[]>(allPostCustomPKs);
+						// @ts-ignore
+						const [one] = allPostCustomPKs;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('one by postId', async () => {
+						const onePostCustomPKById = await DataStore.query(
+							// @ts-ignore
+							PostCustomPK,
+							'someid'
+						);
+						// @ts-ignore
+						expectType<PostCustomPKType>(onePostCustomPKById);
+						expect(onePostCustomPKById.title).toBeDefined();
+						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
+					});
+					test('with criteria', async () => {
+						const multiPostCustomPKWithCriteria = await DataStore.query(
+							// @ts-ignore
+							PostCustomPK,
+							c => c.title('contains', 'something')
+						);
+						// @ts-ignore
+						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
+						// @ts-ignore
+						const [one] = multiPostCustomPKWithCriteria;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('with pagination', async () => {
+						const allPostCustomPKsPaginated = await DataStore.query(
+							// @ts-ignore
+							PostCustomPK,
+							Predicates.ALL,
+							{ page: 0, limit: 20 }
+						);
+						// @ts-ignore
+						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
+						const [one] = allPostCustomPKsPaginated;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+				});
+
+				describe('Query with generic type', () => {
+					test('all', async () => {
+						// @ts-ignore
+						const allPostCustomPKs = await DataStore.query<PostCustomPKType>(
+							PostCustomPK
+						);
+						// @ts-ignore
+						expectType<PostCustomPK[]>(allPostCustomPKs);
+						// @ts-ignore
+						const [one] = allPostCustomPKs;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('one by postId', async () => {
+						// @ts-ignore
+						const onePostCustomPKById = await DataStore.query<PostCustomPKType>(
+							PostCustomPK,
+							'someid'
+						);
+						expectType<PostCustomPKType>(onePostCustomPKById);
+						expect(onePostCustomPKById.title).toBeDefined();
+						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
+					});
+					test('with criteria', async () => {
+						const multiPostCustomPKWithCriteria =
+							// @ts-ignore
+							await DataStore.query<PostCustomPKType>(PostCustomPK, c =>
+								c.title('contains', 'something')
+							);
+						// @ts-ignore
+						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
+						// @ts-ignore
+						const [one] = multiPostCustomPKWithCriteria;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('with pagination', async () => {
+						const allPostCustomPKsPaginated =
+							// @ts-ignore
+							await DataStore.query<PostCustomPKType>(
+								PostCustomPK,
+								Predicates.ALL,
+								{ page: 0, limit: 20 }
+							);
+						// @ts-ignore
+						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
+						const [one] = allPostCustomPKsPaginated;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
 				});
 			});
 		});
