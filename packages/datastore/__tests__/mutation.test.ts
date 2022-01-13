@@ -12,7 +12,7 @@ import {
 	OpType,
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
-import { MutationEvent } from '../src/sync/';
+import { MutationEvent, MutationEventMetadata } from '../src/sync/';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -230,7 +230,7 @@ async function instantiateMutationProcessor() {
 async function createMutationEvent(model, opType): Promise<MutationEvent> {
 	const MutationEventConstructor = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent>;
+	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 
 	const modelConstructor = (Object.getPrototypeOf(model) as Object)
 		.constructor as PersistentModelConstructor<any>;
@@ -254,11 +254,9 @@ const axiosError = {
 	stack:
 		'Error: timeout of 0ms exceeded\n    at createError (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265622:17)\n    at EventTarget.handleTimeout (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265537:16)\n    at EventTarget.dispatchEvent (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:32460:27)\n    at EventTarget.setReadyState (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31623:20)\n    at EventTarget.__didCompleteResponse (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31443:16)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31553:47\n    at RCTDeviceEventEmitter.emit (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:7202:37)\n    at MessageQueue.__callFunction (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2813:31)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2545:17\n    at MessageQueue.__guard (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2767:13)',
 	config: {
-		url:
-			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+		url: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 		method: 'post',
-		data:
-			'{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
+		data: '{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
 		headers: {
 			Accept: 'application/json, text/plain, */*',
 			'Content-Type': 'application/json; charset=UTF-8',
