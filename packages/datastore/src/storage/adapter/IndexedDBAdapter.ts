@@ -795,7 +795,13 @@ class IndexedDBAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 						const keyValues = this.getIndexKeyValues(model);
-						const value = hasOneCustomField ? model[targetName] : keyValues[0];
+						let value = hasOneCustomField ? model[targetName] : keyValues[0];
+
+						if (hasOneIndex === 'byPk') {
+							// byPk requires an array keyValue
+							value = [value];
+						}
+
 						if (!value) break;
 
 						const recordToDelete = <T>(
