@@ -28,7 +28,7 @@ import {
 	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck, extractPrimaryKeyFieldNames } from '../util';
-import { MutationEvent } from './';
+import { MutationEvent, MutationEventMetadata } from './';
 
 const logger = new Logger('DataStore');
 
@@ -367,15 +367,18 @@ export function buildGraphQLOperation(
 }
 
 export function createMutationInstanceFromModelOperation<
-	T extends PersistentModel
+	T extends PersistentModel<any>
 >(
 	relationships: RelationshipType,
 	modelDefinition: SchemaModel,
 	opType: OpType,
-	model: PersistentModelConstructor<T>,
+	model: PersistentModelConstructor<T, any>,
 	element: T,
 	condition: GraphQLCondition,
-	MutationEventConstructor: PersistentModelConstructor<MutationEvent>,
+	MutationEventConstructor: PersistentModelConstructor<
+		MutationEvent,
+		MutationEventMetadata
+	>,
 	modelInstanceCreator: ModelInstanceCreator,
 	id?: string
 ): MutationEvent {
@@ -627,7 +630,7 @@ export async function getTokenForCustomAuth(
 // Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
 export function getIdentifierValue(
 	modelDefinition: SchemaModel,
-	model: ModelInstanceMetadata | PersistentModel
+	model: ModelInstanceMetadata | PersistentModel<any>
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
