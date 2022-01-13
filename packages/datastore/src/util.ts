@@ -50,7 +50,7 @@ export function extractPrimaryKeyFieldNames(
 	return [ID];
 }
 
-export function extractPrimaryKeyValues<T extends PersistentModel>(
+export function extractPrimaryKeyValues<T extends PersistentModel<any>>(
 	model: T,
 	keyFields: string[]
 ): string[] {
@@ -182,11 +182,12 @@ export const validatePredicateField = <T>(
 	}
 };
 
-export const isModelConstructor = <T extends PersistentModel>(
+export const isModelConstructor = <T extends PersistentModel<any>>(
 	obj: any
-): obj is PersistentModelConstructor<T> => {
+): obj is PersistentModelConstructor<T, any> => {
 	return (
-		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
+		obj &&
+		typeof (<PersistentModelConstructor<T, any>>obj).copyOf === 'function'
 	);
 };
 
@@ -352,7 +353,7 @@ export const establishRelationAndKeys = (
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 
-export const traverseModel = <T extends PersistentModel>(
+export const traverseModel = <T extends PersistentModel<any>>(
 	srcModelName: string,
 	instance: T,
 	namespace: SchemaNamespace,
@@ -411,7 +412,7 @@ export const traverseModel = <T extends PersistentModel>(
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
-							delete draftInstance[rItem.fieldName];
+							delete (<any>draftInstance)[rItem.fieldName];
 						} else {
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
@@ -449,7 +450,7 @@ export const traverseModel = <T extends PersistentModel>(
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
-						delete draftInstance[rItem.fieldName];
+						delete (<any>draftInstance)[rItem.fieldName];
 					}
 
 					break;

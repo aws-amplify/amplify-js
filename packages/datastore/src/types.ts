@@ -344,7 +344,7 @@ export type PersistentModelConstructor<
 
 export type TypeConstructorMap = Record<
 	string,
-	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
+	PersistentModelConstructor<any, any> | NonModelTypeConstructor<any>
 >;
 
 export declare const __foo__: unique symbol;
@@ -378,13 +378,15 @@ type IdentifierFieldsInit<X extends Identifier = ManagedIdentifier> =
 		: X extends OptionallyManagedIdentifier
 		? { [K in X['field']]?: string }
 		: X extends CustomIdentifier<infer J>
-		? { [K in J]: string }
+		? J extends string | number | symbol
+			? { [K in J]: string }
+			: {}
 		: {};
 
 // Instance of model
 export type PersistentModelMetaData = {
 	identifier?: Identifier;
-	readOnlyFields: string;
+	readOnlyFields?: string;
 };
 
 export type DefaultPersistentModelMetaData = {
@@ -440,10 +442,10 @@ export enum OpType {
 	DELETE = 'DELETE',
 }
 
-export type SubscriptionMessage<T extends PersistentModel> = {
+export type SubscriptionMessage<T extends PersistentModel<any>> = {
 	opType: OpType;
 	element: T;
-	model: PersistentModelConstructor<T>;
+	model: PersistentModelConstructor<T, any>;
 	condition: PredicatesGroup<T> | null;
 };
 
@@ -456,7 +458,7 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 //#region Predicates
 
 export type PredicateExpression<
-	M extends PersistentModel,
+	M extends PersistentModel<any>,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
@@ -516,7 +518,7 @@ type TypeName<T> = T extends string
 	? 'boolean[]'
 	: never;
 
-export type PredicateGroups<T extends PersistentModel> = {
+export type PredicateGroups<T extends PersistentModel<any>> = {
 	and: (
 		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
 	) => ModelPredicate<T>;
@@ -528,32 +530,32 @@ export type PredicateGroups<T extends PersistentModel> = {
 	) => ModelPredicate<T>;
 };
 
-export type ModelPredicate<M extends PersistentModel> = {
+export type ModelPredicate<M extends PersistentModel<any>> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
-export type ProducerModelPredicate<M extends PersistentModel> = (
+export type ProducerModelPredicate<M extends PersistentModel<any>> = (
 	condition: ModelPredicate<M>
 ) => ModelPredicate<M>;
 
-export type PredicatesGroup<T extends PersistentModel> = {
+export type PredicatesGroup<T extends PersistentModel<any>> = {
 	type: keyof PredicateGroups<T>;
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
 };
 
-export function isPredicateObj<T extends PersistentModel>(
+export function isPredicateObj<T extends PersistentModel<any>>(
 	obj: any
 ): obj is PredicateObject<T> {
 	return obj && (<PredicateObject<T>>obj).field !== undefined;
 }
 
-export function isPredicateGroup<T extends PersistentModel>(
+export function isPredicateGroup<T extends PersistentModel<any>>(
 	obj: any
 ): obj is PredicatesGroup<T> {
 	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
 }
 
-export type PredicateObject<T extends PersistentModel> = {
+export type PredicateObject<T extends PersistentModel<any>> = {
 	field: keyof T;
 	operator: keyof AllOperators;
 	operand: any;
@@ -595,33 +597,33 @@ export type GraphQLFilter = Partial<
 
 //#region Pagination
 
-export type ProducerPaginationInput<T extends PersistentModel> = {
+export type ProducerPaginationInput<T extends PersistentModel<any>> = {
 	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ObserveQueryOptions<T extends PersistentModel> = Pick<
+export type ObserveQueryOptions<T extends PersistentModel<any>> = Pick<
 	ProducerPaginationInput<T>,
 	'sort'
 >;
 
-export type PaginationInput<T extends PersistentModel> = {
+export type PaginationInput<T extends PersistentModel<any>> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ProducerSortPredicate<M extends PersistentModel> = (
+export type ProducerSortPredicate<M extends PersistentModel<any>> = (
 	condition: SortPredicate<M>
 ) => SortPredicate<M>;
 
-export type SortPredicate<T extends PersistentModel> = {
+export type SortPredicate<T extends PersistentModel<any>> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
 export type SortPredicateExpression<
-	M extends PersistentModel,
+	M extends PersistentModel<any>,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
@@ -632,10 +634,10 @@ export enum SortDirection {
 	DESCENDING = 'DESCENDING',
 }
 
-export type SortPredicatesGroup<T extends PersistentModel> =
+export type SortPredicatesGroup<T extends PersistentModel<any>> =
 	SortPredicateObject<T>[];
 
-export type SortPredicateObject<T extends PersistentModel> = {
+export type SortPredicateObject<T extends PersistentModel<any>> = {
 	field: keyof T;
 	sortDirection: keyof typeof SortDirection;
 };
@@ -652,13 +654,13 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>,
+		) => PersistentModelConstructor<any, any>,
 		appId: string
 	): Promise<void>;
 };
 
 export type NamespaceResolver = (
-	modelConstructor: PersistentModelConstructor<any>
+	modelConstructor: PersistentModelConstructor<any, any>
 ) => string;
 
 export type ControlMessageType<T> = {
@@ -794,13 +796,14 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 
 export async function syncExpression<
-	T extends PersistentModel,
-	A extends Option<T>
+	T extends PersistentModel<M>,
+	A extends Option<T>,
+	M extends PersistentModelMetaData
 >(
-	modelConstructor: PersistentModelConstructor<T>,
+	modelConstructor: PersistentModelConstructor<T, M>,
 	conditionProducer: ConditionProducer<T, A>
 ): Promise<{
-	modelConstructor: PersistentModelConstructor<T>;
+	modelConstructor: PersistentModelConstructor<T, M>;
 	conditionProducer: ConditionProducer<T, A>;
 }> {
 	return {
@@ -810,7 +813,7 @@ export async function syncExpression<
 }
 
 export type SyncConflict = {
-	modelConstructor: PersistentModelConstructor<any>;
+	modelConstructor: PersistentModelConstructor<any, any>;
 	localModel: PersistentModel;
 	remoteModel: PersistentModel;
 	operation: OpType;

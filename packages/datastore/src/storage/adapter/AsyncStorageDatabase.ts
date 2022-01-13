@@ -90,7 +90,7 @@ class AsyncStorageDatabase {
 		}
 	}
 
-	async save<T extends PersistentModel>(
+	async save<T extends PersistentModel<any>>(
 		item: T,
 		storeName: string,
 		keys: string[],
@@ -110,7 +110,7 @@ class AsyncStorageDatabase {
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
 
-	async batchSave<T extends PersistentModel>(
+	async batchSave<T extends PersistentModel<any>>(
 		storeName: string,
 		items: ModelInstanceMetadata[],
 		keys: string[]
