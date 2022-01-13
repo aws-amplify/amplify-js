@@ -84,12 +84,6 @@ export declare class PostCustomPK {
 	public readonly emails?: string[];
 	public readonly createdAt?: string;
 	public readonly updatedAt?: string;
-	// static copyOf(
-	// 	src: PostCustomPK,
-	// 	mutator: (
-	// 		draft: MutableModel<PostCustomPK, PostCustomPKMetaData>
-	// 	) => MutableModel<PostCustomPK, PostCustomPKMetaData> | void
-	// ): PostCustomPK;
 }
 
 export declare class PostCustomPKSort {

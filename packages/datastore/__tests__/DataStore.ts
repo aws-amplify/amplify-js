@@ -1310,48 +1310,6 @@ describe('DataStore tests', () => {
 
 				expect(model.postId).toBeDefined();
 			});
-
-			test('initSchema is executed only once', () => {
-				initSchema(testSchema());
-
-				const spy = jest.spyOn(console, 'warn');
-
-				expect(() => {
-					initSchema(testSchema());
-				}).not.toThrow();
-
-				expect(spy).toBeCalledWith('The schema has already been initialized');
-			});
-
-			test('Non @model class is created', () => {
-				const classes = initSchema(testSchema());
-
-				expect(classes).toHaveProperty('Metadata');
-
-				const { Metadata } = classes;
-
-				expect(Metadata).not.toHaveProperty(
-					nameOf<PersistentModelConstructor<any>>('copyOf')
-				);
-			});
-
-			test('Non @model class can be instantiated', () => {
-				const { Metadata } = initSchema(testSchema()) as {
-					Metadata: NonModelTypeConstructor<Metadata>;
-				};
-
-				const metadata = new Metadata({
-					author: 'some author',
-					tags: [],
-					rewards: [],
-					penNames: [],
-					nominations: [],
-				});
-
-				expect(metadata).toBeInstanceOf(Metadata);
-
-				expect(metadata).not.toHaveProperty('postId');
-			});
 		});
 
 		describe('Immutability', () => {
@@ -2266,7 +2224,7 @@ describe('DataStore tests', () => {
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
 					});
-					test('one by postId', async () => {
+					test('one by custom PK', async () => {
 						const onePostCustomPKById = await DataStore.query(
 							// @ts-ignore
 							PostCustomPK,
