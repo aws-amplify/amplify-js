@@ -38,12 +38,12 @@ declare class PostMetadataType {
 	readonly rating: number;
 	readonly tags?: string[];
 	readonly nested?: NestedType;
-	constructor(init: ModelInit<PostMetadataType>);
+	constructor(init: PostMetadataType);
 }
 
 declare class NestedType {
 	readonly aField: string;
-	constructor(init: ModelInit<NestedType>);
+	constructor(init: NestedType);
 }
 
 declare class CommentModel {
