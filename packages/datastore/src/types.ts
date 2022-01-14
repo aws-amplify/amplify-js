@@ -347,41 +347,53 @@ export type TypeConstructorMap = Record<
 	PersistentModelConstructor<any, any> | NonModelTypeConstructor<any>
 >;
 
-export declare const __foo__: unique symbol;
-export type Brand<T, K> = T & { [__foo__]: K };
+export declare const __identifierBrand__: unique symbol;
+export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
-export type ManagedIdentifier = Brand<{ field: 'id' }, 'ManagedIdentifier'>; // datastore generates a uuid for you
-export type OptionallyManagedIdentifier = Brand<
+// datastore generates a uuid for you
+export type ManagedIdentifier<_ extends { id: string }> = IdentifierBrand<
 	{ field: 'id' },
-	'OptionallyManagedIdentifier'
->; // you can provide a value, if not, datastore generates a uuid for you
-export type CustomIdentifier<F extends string> = Brand<
-	{ fields: F },
+	'ManagedIdentifier'
+>;
+
+// you can provide a value, if not, datastore generates a uuid for you
+export type OptionallyManagedIdentifier<_ extends { id: string }> =
+	IdentifierBrand<{ field: 'id' }, 'OptionallyManagedIdentifier'>;
+
+// You provide the values
+export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
+	{ fields: K extends [string] ? [K] : K },
+	'CompositeIdentifier'
+>;
+
+// You provide the value
+export type CustomIdentifier<T, K extends keyof T> = IdentifierBrand<
+	CompositeIdentifier<T, [K]>,
 	'CustomIdentifier'
->; // you provide the values
+>; // you provide the value
 
 export type Identifier =
-	| ManagedIdentifier
-	| OptionallyManagedIdentifier
-	| CustomIdentifier<any>;
+	| ManagedIdentifier<any>
+	| OptionallyManagedIdentifier<any>
+	| CompositeIdentifier<any, any>
+	| CustomIdentifier<any, any>;
 
-export type IdentifierFields<X extends Identifier = ManagedIdentifier> =
-	X extends ManagedIdentifier | OptionallyManagedIdentifier
+export type IdentifierFields<X extends Identifier = ManagedIdentifier<any>> =
+	X extends ManagedIdentifier<any> | OptionallyManagedIdentifier<any>
 		? { [K in X['field']]: string }
-		: X extends CustomIdentifier<infer J>
-		? { [K in J]: string }
-		: { [K in ManagedIdentifier['field']]: string };
+		: X extends CompositeIdentifier<any, infer B> // <any, infer B> -> <infer A, infer B>
+		? { [K in B[number]]: string } // string -> A[K]
+		: { [K in ManagedIdentifier<any>['field']]: string };
 
-type IdentifierFieldsInit<X extends Identifier = ManagedIdentifier> =
-	X extends ManagedIdentifier
-		? {}
-		: X extends OptionallyManagedIdentifier
-		? { [K in X['field']]?: string }
-		: X extends CustomIdentifier<infer J>
-		? J extends string | number | symbol
-			? { [K in J]: string }
-			: {}
-		: {};
+export type IdentifierFieldsInit<
+	X extends Identifier = ManagedIdentifier<any>
+> = X extends ManagedIdentifier<any>
+	? {}
+	: X extends OptionallyManagedIdentifier<any>
+	? { [K in X['field']]?: string }
+	: X extends CompositeIdentifier<any, any>
+	? IdentifierFields<X>
+	: {};
 
 // Instance of model
 export type PersistentModelMetaData = {
@@ -390,7 +402,7 @@ export type PersistentModelMetaData = {
 };
 
 export type DefaultPersistentModelMetaData = {
-	identifier: ManagedIdentifier;
+	identifier: ManagedIdentifier<any>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
@@ -401,18 +413,28 @@ export type PersistentModel<
 		Record<META['readOnlyFields'] | string, any>
 >;
 
-export type ModelInit<
-	T extends PersistentModel<M> | Record<string, any>,
+type MetadataReadOnlyFields<
+	T extends PersistentModel<M>,
 	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = T extends PersistentModel<M>
-	? Omit<
-			T,
-			keyof IdentifierFields<M['identifier']> | M['readOnlyFields'] | symbol
-	  > &
-			(T extends PersistentModel<M>
-				? IdentifierFieldsInit<M['identifier']>
-				: {})
-	: T;
+> = Required<
+	M extends unknown
+		? Pick<T, DefaultPersistentModelMetaData['readOnlyFields']>
+		: M['readOnlyFields'] extends unknown
+		? Pick<T, DefaultPersistentModelMetaData['readOnlyFields']>
+		: Pick<T, M['readOnlyFields']>
+>;
+
+// This type omits identifier fields in the constructor
+// This type omits readOnlyFields in the constructor
+// This type allows some identifiers in the constructor (e.g. for OptionallyManagedIdentifier or CustomIdentifier)
+export type ModelInit<
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+> = Omit<
+	T,
+	keyof IdentifierFields<M['identifier']> | keyof MetadataReadOnlyFields<T, M>
+> &
+	IdentifierFieldsInit<M['identifier']>;
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
