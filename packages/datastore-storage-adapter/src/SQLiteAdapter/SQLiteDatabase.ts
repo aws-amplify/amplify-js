@@ -91,12 +91,12 @@ class SQLiteDatabase {
 	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
 		const results = [];
 
-		await this.db.readTransaction(function(tx) {
+		await this.db.readTransaction(tx => {
 			for (const [statement, params] of queryStatements) {
 				tx.executeSql(
 					statement,
 					params,
-					function(_tx, res) {
+					(_tx, res) => {
 						results.push(res.rows.raw()[0]);
 					},
 					logger.warn
@@ -111,7 +111,7 @@ class SQLiteDatabase {
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
 	) {
-		await this.db.transaction(function(tx) {
+		await this.db.transaction(tx => {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
 			}
@@ -132,11 +132,11 @@ class SQLiteDatabase {
 		const [queryStatement, queryParams] = query;
 		const [deleteStatement, deleteParams] = _delete;
 
-		await this.db.transaction(function(tx) {
+		await this.db.transaction(tx => {
 			tx.executeSql(
 				queryStatement,
 				queryParams,
-				function(_tx, res) {
+				(_tx, res) => {
 					results = res.rows.raw();
 				},
 				logger.warn
@@ -148,7 +148,7 @@ class SQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(function(tx) {
+		return await this.db.transaction(tx => {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}

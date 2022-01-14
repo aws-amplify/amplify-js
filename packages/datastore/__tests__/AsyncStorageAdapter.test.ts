@@ -4,7 +4,7 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, testSchema } from './helpers';
+import { Model, User, Profile, Post, Comment, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
 
 let initSchema: typeof initSchemaType;
@@ -61,6 +61,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getByKey for query by key', async () => {
+			expect.assertions(4);
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('Some value');
@@ -70,6 +71,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll for query with a predicate', async () => {
+			expect.assertions(3);
 			const results = await DataStore.query(Model, c =>
 				c.field1('contains', 'value')
 			);
@@ -80,6 +82,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with a predicate and sort', async () => {
+			expect.assertions(4);
 			const results = await DataStore.query(
 				Model,
 				c => c.field1('contains', 'value'),
@@ -95,6 +98,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with sort', async () => {
+			expect.assertions(4);
 			const results = await DataStore.query(Model, Predicates.ALL, {
 				sort: s => s.dateCreated(SortDirection.DESCENDING),
 			});
@@ -106,6 +110,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with pagination but no sort or predicate', async () => {
+			expect.assertions(3);
 			const results = await DataStore.query(Model, Predicates.ALL, {
 				limit: 1,
 			});
@@ -116,6 +121,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll for query without predicate and pagination', async () => {
+			expect.assertions(3);
 			const results = await DataStore.query(Model);
 
 			expect(results.length).toEqual(3);
@@ -123,11 +129,16 @@ describe('AsyncStorageAdapter tests', () => {
 			expect(spyOnMemory).not.toHaveBeenCalled();
 		});
 	});
+
 	describe('Delete', () => {
 		let User: PersistentModelConstructor<User>;
 		let Profile: PersistentModelConstructor<Profile>;
 		let profile1Id: string;
 		let user1Id: string;
+		let Post: PersistentModelConstructor<Post>;
+		let Comment: PersistentModelConstructor<Comment>;
+		let post1Id: string;
+		let comment1Id: string;
 
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -149,9 +160,25 @@ describe('AsyncStorageAdapter tests', () => {
 			({ id: user1Id } = await DataStore.save(
 				new User({ name: 'test', profileID: profile1Id })
 			));
+
+			({ Post } = classes as {
+				Post: PersistentModelConstructor<Post>;
+			});
+
+			({ Comment } = classes as {
+				Comment: PersistentModelConstructor<Comment>;
+			});
+
+			const post = await DataStore.save(new Post({ title: 'Test' }));
+			({ id: post1Id } = post);
+
+			({ id: comment1Id } = await DataStore.save(
+				new Comment({ content: 'Test Content', post })
+			));
 		});
 
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
+			expect.assertions(4);
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
 
@@ -165,8 +192,28 @@ describe('AsyncStorageAdapter tests', () => {
 			profile = await DataStore.query(Profile, profile1Id);
 
 			// both should be undefined, even though we only explicitly deleted the user
-			expect(user).toBeUndefined;
-			expect(profile).toBeUndefined;
+			expect(user).toBeUndefined();
+			expect(profile).toBeUndefined();
+		});
+
+		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
+			expect.assertions(4);
+
+			let post = await DataStore.query(Post, post1Id);
+			let comment = await DataStore.query(Comment, comment1Id);
+
+			// double-checking that both of the records exist at first
+			expect(post.id).toEqual(post1Id);
+			expect(comment.id).toEqual(comment1Id);
+
+			await DataStore.delete(Post, post.id);
+
+			post = await DataStore.query(Post, post1Id);
+			comment = await DataStore.query(Comment, comment1Id);
+
+			// both should be undefined, even though we only explicitly deleted the post
+			expect(post).toBeUndefined();
+			expect(comment).toBeUndefined();
 		});
 	});
 
@@ -194,6 +241,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via model field', async () => {
+			expect.assertions(2);
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profile })
 			);
@@ -205,6 +253,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
+			expect.assertions(2);
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profileID: profile.id })
 			);

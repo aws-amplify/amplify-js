@@ -574,7 +574,7 @@ export class AsyncStorageAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, modelName, targetName } = rel;
+			const { relationType, modelName, targetName, associatedWith } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -594,12 +594,9 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const hasOneIndex = index || 'byPk';
-
+						const hasOneIndex = index || associatedWith;
 						const hasOneCustomField = targetName in model;
-
 						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
-
 						const value = hasOneCustomField ? model[targetName] : keyValuesPath;
 
 						if (!value) break;
@@ -608,9 +605,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const recordToDelete = allRecords.filter(
 							childItem => childItem[hasOneIndex] === value
-						);
+						) as T[];
 
-						await this.deleteTraverse(
+						await this.deleteTraverse<T>(
 							this.schema.namespaces[nameSpace].relationships[modelName]
 								.relationTypes,
 							recordToDelete,
@@ -627,9 +624,9 @@ export class AsyncStorageAdapter implements Adapter {
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
 							childItem => childItem[index] === keyValuesPath
-						);
+						) as T[];
 
-						await this.deleteTraverse(
+						await this.deleteTraverse<T>(
 							this.schema.namespaces[nameSpace].relationships[modelName]
 								.relationTypes,
 							childrenArray,
