@@ -1,10 +1,6 @@
-// @ts-nocheck
-/**
- * Once we move to TypeScript 3.9 or above, above's line should be removed.
- * For now this whole file is ignored
- */
-
+// TODO: Look at ts-expect-error once we move to TypeScript 3.9 or above
 import {
+	CompositeIdentifier,
 	CustomIdentifier,
 	ManagedIdentifier,
 	ModelInit,
@@ -12,330 +8,752 @@ import {
 	OptionallyManagedIdentifier,
 } from '../src';
 
-/**
- * Returns a dummy class. This file doesn't test runtime behavior, only typings
- *
- * @param clazz
- * @returns
- */
-function createDummyModelInstance<T>(clazz: T): T {
-	const r = new Proxy(
-		class {
-			constructor() {}
-			static copyOf() {}
-		},
-		{}
-	);
+const expectType: <T>(param: T) => void = () => {};
 
-	return r as unknown as T;
+//#region Types
+
+//#region Legacy
+
+type LegacyCustomROMETA = {
+	readOnlyFields: 'createdOn' | 'updatedOn';
+};
+class LegacyCustomRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdOn?: string;
+	readonly updatedOn?: string;
+	constructor(init: ModelInit<LegacyCustomRO, LegacyCustomROMETA>) {}
+	static copyOf(
+		source: LegacyCustomRO,
+		mutator: (
+			draft: MutableModel<LegacyCustomRO, LegacyCustomROMETA>
+		) => MutableModel<LegacyCustomRO, LegacyCustomROMETA> | void
+	): LegacyCustomRO {
+		return undefined;
+	}
 }
 
-describe('ManagedId', () => {
-	type PostManagedIdMetaData = {
-		identifier: ManagedIdentifier;
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	};
-	const PostManagedId = createDummyModelInstance(
-		class PostManagedId {
-			readonly id: string;
-			readonly title: string;
-			readonly createdAt?: string;
-			readonly updatedAt?: string;
-			constructor(init: ModelInit<PostManagedId, PostManagedIdMetaData>) {}
-			static copyOf(
-				source: PostManagedId,
-				mutator: (
-					draft: MutableModel<PostManagedId, PostManagedIdMetaData>
-				) => MutableModel<PostManagedId, PostManagedIdMetaData> | void
-			): PostManagedId {
-				return new PostManagedId({} as any);
-			}
-		}
-	);
+type LegacyDefaultROMETA = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+class LegacyDefaultRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<LegacyDefaultRO, LegacyDefaultROMETA>) {}
+	static copyOf(
+		source: LegacyDefaultRO,
+		mutator: (
+			draft: MutableModel<LegacyDefaultRO, LegacyDefaultROMETA>
+		) => MutableModel<LegacyDefaultRO, LegacyDefaultROMETA> | void
+	): LegacyDefaultRO {
+		return undefined;
+	}
+}
 
-	test('id is not accepted in constructor', () => {
-		new PostManagedId({
-			// @ts-expect-error
-			id: 'sadasd',
-			title: 'aaaaaaa',
-		});
-	});
+class LegacyNoMetadata {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<LegacyNoMetadata>) {}
+	static copyOf(
+		source: LegacyNoMetadata,
+		mutator: (
+			draft: MutableModel<LegacyNoMetadata>
+		) => MutableModel<LegacyNoMetadata> | void
+	): LegacyNoMetadata {
+		return undefined;
+	}
+}
 
-	test('unrecognized field is not accepted in constructor', () => {
-		new PostManagedId({
-			// @ts-expect-error
-			tenantId: 'tenantABC',
-			title: 'aaaaaaa',
-		});
-	});
+//#endregion
 
-	test('Missing required field throws compilation error ', () => {
-		// @ts-expect-error
-		new PostManagedId({});
-	});
+//#region Managed
 
-	test('copyOf - id is present and readonly', () => {
-		PostManagedId.copyOf(
-			new PostManagedId({
-				title: 'asdasdasd',
-			}),
-			d => {
+type ManagedCustomROMETA = {
+	identifier: ManagedIdentifier<ManagedCustomRO>;
+	readOnlyFields: 'createdOn' | 'updatedOn';
+};
+class ManagedCustomRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdOn?: string;
+	readonly updatedOn?: string;
+	constructor(init: ModelInit<ManagedCustomRO, ManagedCustomROMETA>) {}
+	static copyOf(
+		source: ManagedCustomRO,
+		mutator: (
+			draft: MutableModel<ManagedCustomRO, ManagedCustomROMETA>
+		) => MutableModel<ManagedCustomRO, ManagedCustomROMETA> | void
+	): ManagedCustomRO {
+		return undefined;
+	}
+}
+
+type ManagedDefaultROMETA = {
+	identifier: ManagedIdentifier<ManagedDefaultRO>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+class ManagedDefaultRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<ManagedDefaultRO, ManagedDefaultROMETA>) {}
+	static copyOf(
+		source: ManagedDefaultRO,
+		mutator: (
+			draft: MutableModel<ManagedDefaultRO, ManagedDefaultROMETA>
+		) => MutableModel<ManagedDefaultRO, ManagedDefaultROMETA> | void
+	): ManagedDefaultRO {
+		return undefined;
+	}
+}
+
+//#endregion
+
+//#region Optionally Managed
+
+type OptionallyManagedCustomROMETA = {
+	identifier: OptionallyManagedIdentifier<OptionallyManagedCustomRO>;
+	readOnlyFields: 'createdOn' | 'updatedOn';
+};
+class OptionallyManagedCustomRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdOn?: string;
+	readonly updatedOn?: string;
+	constructor(
+		init: ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+	) {}
+	static copyOf(
+		source: OptionallyManagedCustomRO,
+		mutator: (
+			draft: MutableModel<
+				OptionallyManagedCustomRO,
+				OptionallyManagedCustomROMETA
+			>
+		) => MutableModel<
+			OptionallyManagedCustomRO,
+			OptionallyManagedCustomROMETA
+		> | void
+	): OptionallyManagedCustomRO {
+		return undefined;
+	}
+}
+
+type OptionallyManagedDefaultROMETA = {
+	identifier: OptionallyManagedIdentifier<OptionallyManagedDefaultRO>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+class OptionallyManagedDefaultRO {
+	readonly id: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(
+		init: ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+	) {}
+	static copyOf(
+		source: OptionallyManagedDefaultRO,
+		mutator: (
+			draft: MutableModel<
+				OptionallyManagedDefaultRO,
+				OptionallyManagedDefaultROMETA
+			>
+		) => MutableModel<
+			OptionallyManagedDefaultRO,
+			OptionallyManagedDefaultROMETA
+		> | void
+	): OptionallyManagedDefaultRO {
+		return undefined;
+	}
+}
+
+//#endregion
+
+//#region Composite
+
+type CompositeCustomROMETA = {
+	identifier: CompositeIdentifier<CompositeCustomRO, ['tenant', 'dob']>;
+	readOnlyFields: 'createdOn' | 'updatedOn';
+};
+
+class CompositeCustomRO {
+	readonly tenant: string;
+	readonly dob: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdOn?: string;
+	readonly updatedOn?: string;
+	constructor(init: ModelInit<CompositeCustomRO, CompositeCustomROMETA>) {}
+	static copyOf(
+		source: CompositeCustomRO,
+		mutator: (
+			draft: MutableModel<CompositeCustomRO, CompositeCustomROMETA>
+		) => MutableModel<CompositeCustomRO, CompositeCustomROMETA> | void
+	): CompositeCustomRO {
+		return undefined;
+	}
+}
+
+type CompositeDefaultROMETA = {
+	identifier: CompositeIdentifier<CompositeDefaultRO, ['tenant', 'dob']>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+class CompositeDefaultRO {
+	readonly tenant: string;
+	readonly dob: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>) {}
+	static copyOf(
+		source: CompositeDefaultRO,
+		mutator: (
+			draft: MutableModel<CompositeDefaultRO, CompositeDefaultROMETA>
+		) => MutableModel<CompositeDefaultRO, CompositeDefaultROMETA> | void
+	): CompositeDefaultRO {
+		return undefined;
+	}
+}
+
+//#endregion
+
+//#region Custom
+
+type CustomIdentifierCustomROMETA = {
+	identifier: CustomIdentifier<CustomIdentifierCustomRO, 'myId'>;
+	readOnlyFields: 'createdOn' | 'updatedOn';
+};
+
+class CustomIdentifierCustomRO {
+	readonly myId: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdOn?: string;
+	readonly updatedOn?: string;
+	constructor(
+		init: ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
+	) {}
+	static copyOf(
+		source: CustomIdentifierCustomRO,
+		mutator: (
+			draft: MutableModel<
+				CustomIdentifierCustomRO,
+				CustomIdentifierCustomROMETA
+			>
+		) => MutableModel<
+			CustomIdentifierCustomRO,
+			CustomIdentifierCustomROMETA
+		> | void
+	): CustomIdentifierCustomRO {
+		return undefined;
+	}
+}
+
+type CustomIdentifierDefaultROMETA = {
+	identifier: CustomIdentifier<CustomIdentifierDefaultRO, 'myId'>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+class CustomIdentifierDefaultRO {
+	readonly myId: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(
+		init: ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
+	) {}
+	static copyOf(
+		source: CustomIdentifierDefaultRO,
+		mutator: (
+			draft: MutableModel<
+				CustomIdentifierDefaultRO,
+				CustomIdentifierDefaultROMETA
+			>
+		) => MutableModel<
+			CustomIdentifierDefaultRO,
+			CustomIdentifierDefaultROMETA
+		> | void
+	): CustomIdentifierDefaultRO {
+		return undefined;
+	}
+}
+
+//#endregion
+
+//#endregion
+
+describe('ModelInit and MutableModel typings (no runtime validation)', () => {
+	describe('Legacy - backwards compatibility', () => {
+		test(`${LegacyNoMetadata.name}`, async () => {
+			expectType<ModelInit<LegacyNoMetadata>>({
+				// @ts-expect-error
+				// id: '234',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<LegacyNoMetadata>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			LegacyNoMetadata.copyOf({} as LegacyNoMetadata, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = 'dddd'; // This should fail with a compiler error
-			}
-		);
-	});
-});
+				// d.id = '';
 
-describe('OptionalId', () => {
-	type PostOptionalIdMetaData = {
-		identifier: OptionallyManagedIdentifier;
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	};
-	const PostOptionalId = createDummyModelInstance(
-		class PostOptionalId {
-			readonly id: string;
-			readonly title: string;
-			readonly createdAt?: string;
-			readonly updatedAt?: string;
-			constructor(init: ModelInit<PostOptionalId, PostOptionalIdMetaData>) {}
-			static copyOf(
-				source: PostOptionalId,
-				mutator: (
-					draft: MutableModel<PostOptionalId, PostOptionalIdMetaData>
-				) => MutableModel<PostOptionalId, PostOptionalIdMetaData> | void
-			): PostOptionalId {
-				return undefined;
-			}
-		}
-	);
+				d.name = '';
+				d.description = '';
 
-	test('id is not required in constructor', () => {
-		new PostOptionalId({
-			title: 'asdasdasd',
-		});
-	});
-
-	test('id is accepted in constructor', () => {
-		new PostOptionalId({
-			id: 'sadasd',
-			title: 'asdasdasd',
-		});
-	});
-
-	test('unrecognized field is not accepted in constructor', () => {
-		new PostOptionalId({
-			title: 'asdasdasd',
-			// @ts-expect-error
-			something: 'something',
-		});
-	});
-
-	test('Missing required field throws compilation error ', () => {
-		// @ts-expect-error
-		new PostOptionalId({});
-	});
-
-	test('copyOf - id is present and readonly', () => {
-		PostOptionalId.copyOf(new PostOptionalId({ title: '' }), d => {
-			d.id;
-			// @ts-expect-error
-			d.id = 'sdsdsdsds';
-			d.title = 'ffffff';
-		});
-	});
-});
-
-describe('CustomId - multi field', () => {
-	type PostCustomIdMetaData = {
-		identifier: CustomIdentifier<'tenantId' | 'postId'>;
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	};
-	const PostCustomId = createDummyModelInstance(
-		class PostCustomId {
-			readonly tenantId: string;
-			readonly postId: string;
-			readonly title: string;
-			readonly createdAt?: string;
-			readonly updatedAt?: string;
-			constructor(init: ModelInit<PostCustomId, PostCustomIdMetaData>) {}
-			static copyOf(
-				source: PostCustomId,
-				mutator: (
-					draft: MutableModel<PostCustomId, PostCustomIdMetaData>
-				) => MutableModel<PostCustomId, PostCustomIdMetaData> | void
-			): PostCustomId {
-				return undefined;
-			}
-		}
-	);
-
-	test('id is not accepted in constructor', () => {
-		new PostCustomId({
-			tenantId: 'aaaaaaa',
-			postId: 'ssssss',
-			title: 'sssss',
-			// @ts-expect-error
-			id: 'ggggg',
-		});
-	});
-
-	test('unrecognized field is not accepted in constructor', () => {
-		new PostCustomId({
-			title: 'asdasdasd',
-			tenantId: 'sssssss',
-			postId: 'eeeeee',
-			// @ts-expect-error
-			something: 'something',
-		});
-	});
-
-	test('Missing required field throws compilation error ', () => {
-		// @ts-expect-error
-		new PostCustomId({});
-	});
-
-	test('copyOf - id is not present', () => {
-		PostCustomId.copyOf(
-			new PostCustomId({ tenantId: 'a', postId: 'b', title: '' }),
-			d => {
+				d.createdAt;
 				// @ts-expect-error
+				// d.createdAt = '';
+
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
+
+		test(`${LegacyDefaultRO.name}`, async () => {
+			expectType<ModelInit<LegacyDefaultRO>>({
+				// @ts-expect-error
+				// id: '234',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<LegacyDefaultRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			LegacyDefaultRO.copyOf({} as LegacyDefaultRO, d => {
 				d.id;
-			}
-		);
-	});
-
-	test('copyOf - PK fields are present and readonly', () => {
-		PostCustomId.copyOf(
-			new PostCustomId({ tenantId: 'a', postId: 'b', title: '' }),
-			d => {
-				d.tenantId;
-				d.postId;
 				// @ts-expect-error
-				d.tenantId = 'aaaa';
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdAt;
 				// @ts-expect-error
-				d.postId = 'bbbb';
-			}
-		);
-	});
-});
+				// d.createdAt = '';
 
-describe('CustomId - single renamed', () => {
-	type PostCustomIdRenamedMetaData = {
-		identifier: CustomIdentifier<'myId'>;
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	};
-	const PostCustomIdRenamed = createDummyModelInstance(
-		class PostCustomIdRenamed {
-			readonly myId: string;
-			readonly title: string;
-			readonly createdAt?: string;
-			readonly updatedAt?: string;
-			constructor(
-				init: ModelInit<PostCustomIdRenamed, PostCustomIdRenamedMetaData>
-			) {}
-			static copyOf(
-				source: PostCustomIdRenamed,
-				mutator: (
-					draft: MutableModel<PostCustomIdRenamed, PostCustomIdRenamedMetaData>
-				) => MutableModel<
-					PostCustomIdRenamed,
-					PostCustomIdRenamedMetaData
-				> | void
-			): PostCustomIdRenamed {
-				return undefined;
-			}
-		}
-	);
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
 
-	test('custom identifier is required in constructor', () => {
-		new PostCustomIdRenamed({
-			myId: 'aaaaaa',
-			title: 'asdasdasd',
+		test(`${LegacyCustomRO.name}`, async () => {
+			expectType<ModelInit<LegacyCustomRO>>({
+				// @ts-expect-error
+				// id: '234',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<LegacyCustomRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			LegacyCustomRO.copyOf({} as LegacyCustomRO, d => {
+				d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				// @ts-expect-error
+				// d.createdAt;
+				// @ts-expect-error
+				// d.updatedAt;
+
+				d.createdOn;
+				// @ts-expect-error
+				// d.createdOn = '';
+
+				d.updatedOn;
+				// @ts-expect-error
+				// d.updatedOn = '';
+			});
 		});
 	});
 
-	test('unrecognized field is not accepted in constructor', () => {
-		new PostCustomIdRenamed({
-			myId: 'aaaaaa',
-			title: 'asdasdasd',
-			// @ts-expect-error
-			something: 'something',
+	describe('Managed Identifier', () => {
+		test(`${ManagedDefaultRO.name}`, async () => {
+			expectType<ModelInit<ManagedDefaultRO>>({
+				// @ts-expect-error
+				// id: 'eeeeeee',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<ManagedDefaultRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			expectType<ModelInit<ManagedDefaultRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			ManagedDefaultRO.copyOf({} as ManagedDefaultRO, d => {
+				d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdAt;
+				// @ts-expect-error
+				// d.createdAt = '';
+
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
+
+		test(`${ManagedCustomRO.name}`, async () => {
+			expectType<ModelInit<ManagedCustomRO>>({
+				// @ts-expect-error
+				// id: 'eeeeeee',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<ManagedCustomRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			expectType<ModelInit<ManagedCustomRO>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			ManagedCustomRO.copyOf({} as ManagedCustomRO, d => {
+				d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdOn;
+				// @ts-expect-error
+				// d.createdOn = '';
+
+				d.updatedOn;
+				// @ts-expect-error
+				// d.updatedOn = '';
+			});
 		});
 	});
 
-	test('Missing required field throws compilation error ', () => {
-		// @ts-expect-error
-		new PostCustomIdRenamed({});
+	describe('Optionally Managed Identifier', () => {
+		test(`${OptionallyManagedDefaultRO.name}`, async () => {
+			expectType<
+				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+			>({
+				id: 'eeeeeee',
+				name: '',
+				description: '',
+			});
+
+			expectType<
+				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+			>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			expectType<
+				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+			>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
+				d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdAt;
+				// @ts-expect-error
+				// d.createdAt = '';
+
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
+
+		test(`${OptionallyManagedCustomRO.name}`, async () => {
+			expectType<
+				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+			>({
+				name: '',
+				description: '',
+			});
+
+			expectType<
+				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+			>({
+				id: 'eeeeeee',
+				name: '',
+				description: '',
+			});
+
+			expectType<
+				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+			>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			expectType<
+				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+			>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
+				d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdOn;
+				// @ts-expect-error
+				// d.createdOn = '';
+
+				d.updatedOn;
+				// @ts-expect-error
+				// d.updatedOn = '';
+			});
+		});
 	});
 
-	test('copyOf - custom identifier is present and readonly', () => {
-		PostCustomIdRenamed.copyOf(
-			new PostCustomIdRenamed({ myId: 'wwwww', title: '' }),
-			d => {
+	describe('Composite Identifier', () => {
+		test(`${CompositeDefaultRO.name}`, async () => {
+			expectType<ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>>({
+				tenant: '',
+				dob: '',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>>({
+				tenant: '',
+				dob: '',
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
+				// @ts-expect-error
+				// d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.tenant;
+				// @ts-expect-error
+				// d.tenant = '';
+				d.dob;
+				// @ts-expect-error
+				// d.dob = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdAt;
+				// @ts-expect-error
+				// d.createdAt = '';
+
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
+
+		test(`${CompositeCustomRO.name}`, async () => {
+			expectType<ModelInit<CompositeCustomRO, CompositeCustomROMETA>>({
+				tenant: '',
+				dob: '',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<CompositeCustomRO, CompositeCustomROMETA>>({
+				tenant: '',
+				dob: '',
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
+				// @ts-expect-error
+				// d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.tenant;
+				// @ts-expect-error
+				// d.tenant = '';
+				d.dob;
+				// @ts-expect-error
+				// d.dob = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdOn;
+				// @ts-expect-error
+				// d.createdOn = '';
+
+				d.updatedOn;
+				// @ts-expect-error
+				// d.updatedOn = '';
+			});
+		});
+	});
+
+	describe('Custom Identifier', () => {
+		test(`${CustomIdentifierDefaultRO.name}`, async () => {
+			expectType<
+				ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
+			>({
+				myId: '',
+				name: '',
+				description: '',
+			});
+
+			expectType<
+				ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
+			>({
+				myId: '',
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
+				// @ts-expect-error
+				// d.id;
+				// @ts-expect-error
+				// d.id = '';
+
 				d.myId;
 				// @ts-expect-error
-				d.myId = 'sdsdsdsds';
-				d.title = 'ffffff';
-			}
-		);
-	});
-});
+				// d.myId = '';
 
-describe('BackwardsCompatible', () => {
-	type PostNoIdMetaData = {
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	};
-	const PostNoId = createDummyModelInstance(
-		class PostNoId {
-			readonly id: string;
-			readonly title: string;
-			readonly createdAt?: string;
-			readonly updatedAt?: string;
-			constructor(init: ModelInit<PostNoId, PostNoIdMetaData>) {}
-			static copyOf(
-				source: PostNoId,
-				mutator: (
-					draft: MutableModel<PostNoId, PostNoIdMetaData>
-				) => MutableModel<PostNoId, PostNoIdMetaData> | void
-			): PostNoId {
-				return undefined;
-			}
-		}
-	);
+				d.name = '';
+				d.description = '';
 
-	test('id is not accepted in constructor', () => {
-		new PostNoId({
-			// @ts-expect-error
-			id: 'sadasd',
-			title: 'aaaaaaa',
-		});
-	});
-
-	test('unrecognized field is not accepted in constructor', () => {
-		new PostNoId({
-			// @ts-expect-error
-			tenantId: 'tenantABC',
-			title: 'aaaaaaa',
-		});
-	});
-
-	test('Missing required field throws compilation error ', () => {
-		// @ts-expect-error
-		new PostNoId({});
-	});
-
-	test('copyOf - id is present and readonly', () => {
-		PostNoId.copyOf(
-			new PostNoId({
-				title: 'asdasdasd',
-			}),
-			d => {
-				d.id;
+				d.createdAt;
 				// @ts-expect-error
-				d.id = 'dddd'; // This should fail with a compiler error
-			}
-		);
+				// d.createdAt = '';
+
+				d.updatedAt;
+				// @ts-expect-error
+				// d.updatedAt = '';
+			});
+		});
+
+		test(`${CustomIdentifierCustomRO.name}`, async () => {
+			expectType<
+				ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
+			>({
+				myId: '',
+				name: '',
+				description: '',
+			});
+
+			expectType<
+				ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
+			>({
+				myId: '',
+				name: '',
+				description: '',
+				// @ts-expect-error
+				// x: 234,
+			});
+
+			CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
+				// @ts-expect-error
+				// d.id;
+				// @ts-expect-error
+				// d.id = '';
+
+				d.myId;
+				// @ts-expect-error
+				// d.myId = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdOn;
+				// @ts-expect-error
+				// d.createdOn = '';
+
+				d.updatedOn;
+				// @ts-expect-error
+				// d.updatedOn = '';
+			});
+		});
 	});
 });

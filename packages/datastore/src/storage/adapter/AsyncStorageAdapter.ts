@@ -422,10 +422,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const result = <T>await this.db.getOne(firstOrLast, storeName);
 
-		return (
-			result &&
-			this.modelInstanceCreator(modelConstructor, <ModelInit<T>>result)
-		);
+		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
 	async delete<T extends PersistentModel<any>>(

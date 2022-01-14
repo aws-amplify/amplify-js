@@ -47,7 +47,7 @@ type StartParams = {
 };
 
 export type MutationEventMetadata = {
-	identifier: ManagedIdentifier;
+	identifier: ManagedIdentifier<MutationEvent>;
 	readOnlyFields: '';
 };
 export declare class MutationEvent {
@@ -67,7 +67,7 @@ export declare class MutationEvent {
 }
 
 export type ModelMetadataMetadata = {
-	identifier: ManagedIdentifier;
+	identifier: ManagedIdentifier<ModelMetadata>;
 	readOnlyFields: '';
 };
 declare class ModelMetadata {

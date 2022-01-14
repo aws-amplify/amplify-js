@@ -597,10 +597,7 @@ class IndexedDBAdapter implements Adapter {
 
 		const result = cursor ? <T>cursor.value : undefined;
 
-		return (
-			result &&
-			this.modelInstanceCreator(modelConstructor, <ModelInit<T>>result)
-		);
+		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
 	async delete<T extends PersistentModel<any>>(

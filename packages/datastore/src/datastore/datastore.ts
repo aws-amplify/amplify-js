@@ -86,7 +86,7 @@ const ulid = monotonicUlidFactory(Date.now());
 const { isNode } = JS.browserOrNode();
 
 type SettingMetaData = {
-	identifier: ManagedIdentifier;
+	identifier: ManagedIdentifier<Setting>;
 	readOnlyFields: never;
 };
 declare class Setting {
@@ -507,7 +507,7 @@ const createModelClass = <T extends PersistentModel>(
 				return json.map(init => this.fromJSON(init));
 			}
 
-			const instance = modelInstanceCreator(clazz, <ModelInit<T>>json);
+			const instance = modelInstanceCreator(clazz, json);
 			const modelValidator = validateModelFields(modelDefinition);
 
 			Object.entries(instance).forEach(([k, v]) => {
