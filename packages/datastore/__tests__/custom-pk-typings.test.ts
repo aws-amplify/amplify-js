@@ -474,6 +474,79 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				// @ts-expect-error
 				// d.updatedAt = '';
 			});
+
+			// Query
+			expectType<LegacyDefaultRO>(
+				await DataStore.query(LegacyDefaultRO, 'someid')
+			);
+			expectType<LegacyDefaultRO[]>(await DataStore.query(LegacyDefaultRO));
+			expectType<LegacyDefaultRO[]>(
+				await DataStore.query(LegacyDefaultRO, Predicates.ALL)
+			);
+			expectType<LegacyDefaultRO[]>(
+				await DataStore.query(LegacyDefaultRO, c => c.createdAt('ge', '2019'))
+			);
+
+			// Save
+			expectType<LegacyDefaultRO>(
+				await DataStore.save(dummyInstance<LegacyDefaultRO>())
+			);
+			expectType<LegacyDefaultRO>(
+				await DataStore.save(dummyInstance<LegacyDefaultRO>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<LegacyDefaultRO>(
+				await DataStore.delete(dummyInstance<LegacyDefaultRO>())
+			);
+			expectType<LegacyDefaultRO>(
+				await DataStore.delete(dummyInstance<LegacyDefaultRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<LegacyDefaultRO[]>(
+				await DataStore.delete(LegacyDefaultRO, Predicates.ALL)
+			);
+			expectType<LegacyDefaultRO[]>(
+				await DataStore.delete(LegacyDefaultRO, c => c.createdAt('le', '2019'))
+			);
+
+			// Observe
+			DataStore.observe(LegacyDefaultRO).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
+				expectType<LegacyDefaultRO>(element);
+			});
+			DataStore.observe(LegacyDefaultRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
+				expectType<LegacyDefaultRO>(element);
+			});
+			DataStore.observe(dummyInstance<LegacyDefaultRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
+					expectType<LegacyDefaultRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(LegacyDefaultRO).subscribe(({ items }) => {
+				expectType<LegacyDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(LegacyDefaultRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<LegacyDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(
+				LegacyDefaultRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<LegacyDefaultRO[]>(items);
+			});
 		});
 
 		test(`${LegacyCustomRO.name}`, async () => {
@@ -511,6 +584,83 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedOn;
 				// @ts-expect-error
 				// d.updatedOn = '';
+			});
+
+			// Query
+			expectType<LegacyCustomRO>(
+				await DataStore.query(LegacyCustomRO, 'someid')
+			);
+			expectType<LegacyCustomRO[]>(await DataStore.query(LegacyCustomRO));
+			expectType<LegacyCustomRO[]>(
+				await DataStore.query(LegacyCustomRO, Predicates.ALL)
+			);
+			expectType<LegacyCustomRO[]>(
+				await DataStore.query(LegacyCustomRO, c => c.createdOn('ge', '2019'))
+			);
+
+			// Save
+			expectType<LegacyCustomRO>(
+				await DataStore.save(dummyInstance<LegacyCustomRO>())
+			);
+			expectType<LegacyCustomRO>(
+				await DataStore.save(dummyInstance<LegacyCustomRO>(), c =>
+					c.createdOn('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<LegacyCustomRO>(
+				await DataStore.delete(dummyInstance<LegacyCustomRO>())
+			);
+			expectType<LegacyCustomRO>(
+				await DataStore.delete(dummyInstance<LegacyCustomRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<LegacyCustomRO[]>(
+				await DataStore.delete(LegacyCustomRO, Predicates.ALL)
+			);
+			expectType<LegacyCustomRO[]>(
+				await DataStore.delete(LegacyCustomRO, c => c.createdOn('le', '2019'))
+			);
+
+			// Observe
+			DataStore.observe(LegacyCustomRO).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<LegacyCustomRO, LegacyCustomROMETA>
+				>(model);
+				expectType<LegacyCustomRO>(element);
+			});
+			DataStore.observe(LegacyCustomRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<LegacyCustomRO, LegacyCustomROMETA>
+				>(model);
+				expectType<LegacyCustomRO>(element);
+			});
+			DataStore.observe(dummyInstance<LegacyCustomRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
+					expectType<LegacyCustomRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(LegacyCustomRO).subscribe(({ items }) => {
+				expectType<LegacyCustomRO[]>(items);
+			});
+			DataStore.observeQuery(LegacyCustomRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<LegacyCustomRO[]>(items);
+			});
+			DataStore.observeQuery(
+				LegacyCustomRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdOn('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<LegacyCustomRO[]>(items);
 			});
 		});
 	});
@@ -554,6 +704,83 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				// @ts-expect-error
 				// d.updatedAt = '';
 			});
+
+			// Query
+			expectType<ManagedDefaultRO>(
+				await DataStore.query(ManagedDefaultRO, 'someid')
+			);
+			expectType<ManagedDefaultRO[]>(await DataStore.query(ManagedDefaultRO));
+			expectType<ManagedDefaultRO[]>(
+				await DataStore.query(ManagedDefaultRO, Predicates.ALL)
+			);
+			expectType<ManagedDefaultRO[]>(
+				await DataStore.query(ManagedDefaultRO, c => c.createdAt('ge', '2019'))
+			);
+
+			// Save
+			expectType<ManagedDefaultRO>(
+				await DataStore.save(dummyInstance<ManagedDefaultRO>())
+			);
+			expectType<ManagedDefaultRO>(
+				await DataStore.save(dummyInstance<ManagedDefaultRO>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<ManagedDefaultRO>(
+				await DataStore.delete(dummyInstance<ManagedDefaultRO>())
+			);
+			expectType<ManagedDefaultRO>(
+				await DataStore.delete(dummyInstance<ManagedDefaultRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<ManagedDefaultRO[]>(
+				await DataStore.delete(ManagedDefaultRO, Predicates.ALL)
+			);
+			expectType<ManagedDefaultRO[]>(
+				await DataStore.delete(ManagedDefaultRO, c => c.createdAt('le', '2019'))
+			);
+
+			// Observe
+			DataStore.observe(ManagedDefaultRO).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<ManagedDefaultRO, ManagedDefaultROMETA>
+				>(model);
+				expectType<ManagedDefaultRO>(element);
+			});
+			DataStore.observe(ManagedDefaultRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<ManagedDefaultRO, ManagedDefaultROMETA>
+				>(model);
+				expectType<ManagedDefaultRO>(element);
+			});
+			DataStore.observe(dummyInstance<ManagedDefaultRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<ManagedDefaultRO>>(model);
+					expectType<ManagedDefaultRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(ManagedDefaultRO).subscribe(({ items }) => {
+				expectType<ManagedDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(ManagedDefaultRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<ManagedDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(
+				ManagedDefaultRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<ManagedDefaultRO[]>(items);
+			});
 		});
 
 		test(`${ManagedCustomRO.name}`, async () => {
@@ -593,6 +820,83 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedOn;
 				// @ts-expect-error
 				// d.updatedOn = '';
+			});
+
+			// Query
+			expectType<ManagedCustomRO>(
+				await DataStore.query(ManagedCustomRO, 'someid')
+			);
+			expectType<ManagedCustomRO[]>(await DataStore.query(ManagedCustomRO));
+			expectType<ManagedCustomRO[]>(
+				await DataStore.query(ManagedCustomRO, Predicates.ALL)
+			);
+			expectType<ManagedCustomRO[]>(
+				await DataStore.query(ManagedCustomRO, c => c.createdOn('ge', '2019'))
+			);
+
+			// Save
+			expectType<ManagedCustomRO>(
+				await DataStore.save(dummyInstance<ManagedCustomRO>())
+			);
+			expectType<ManagedCustomRO>(
+				await DataStore.save(dummyInstance<ManagedCustomRO>(), c =>
+					c.createdOn('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<ManagedCustomRO>(
+				await DataStore.delete(dummyInstance<ManagedCustomRO>())
+			);
+			expectType<ManagedCustomRO>(
+				await DataStore.delete(dummyInstance<ManagedCustomRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<ManagedCustomRO[]>(
+				await DataStore.delete(ManagedCustomRO, Predicates.ALL)
+			);
+			expectType<ManagedCustomRO[]>(
+				await DataStore.delete(ManagedCustomRO, c => c.createdOn('le', '2019'))
+			);
+
+			// Observe
+			DataStore.observe(ManagedCustomRO).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<ManagedCustomRO, ManagedCustomROMETA>
+				>(model);
+				expectType<ManagedCustomRO>(element);
+			});
+			DataStore.observe(ManagedCustomRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<ManagedCustomRO, ManagedCustomROMETA>
+				>(model);
+				expectType<ManagedCustomRO>(element);
+			});
+			DataStore.observe(dummyInstance<ManagedCustomRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<ManagedCustomRO>>(model);
+					expectType<ManagedCustomRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(ManagedCustomRO).subscribe(({ items }) => {
+				expectType<ManagedCustomRO[]>(items);
+			});
+			DataStore.observeQuery(ManagedCustomRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<ManagedCustomRO[]>(items);
+			});
+			DataStore.observeQuery(
+				ManagedCustomRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdOn('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<ManagedCustomRO[]>(items);
 			});
 		});
 	});
@@ -640,6 +944,101 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedAt;
 				// @ts-expect-error
 				// d.updatedAt = '';
+			});
+
+			// Query
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.query(OptionallyManagedDefaultRO, 'someid')
+			);
+			expectType<OptionallyManagedDefaultRO[]>(
+				await DataStore.query(OptionallyManagedDefaultRO)
+			);
+			expectType<OptionallyManagedDefaultRO[]>(
+				await DataStore.query(OptionallyManagedDefaultRO, Predicates.ALL)
+			);
+			expectType<OptionallyManagedDefaultRO[]>(
+				await DataStore.query(OptionallyManagedDefaultRO, c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Save
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>())
+			);
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>())
+			);
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<OptionallyManagedDefaultRO[]>(
+				await DataStore.delete(OptionallyManagedDefaultRO, Predicates.ALL)
+			);
+			expectType<OptionallyManagedDefaultRO[]>(
+				await DataStore.delete(OptionallyManagedDefaultRO, c =>
+					c.createdAt('le', '2019')
+				)
+			);
+
+			// Observe
+			DataStore.observe(OptionallyManagedDefaultRO).subscribe(
+				({ model, element }) => {
+					expectType<
+						PersistentModelConstructor<
+							OptionallyManagedDefaultRO,
+							OptionallyManagedDefaultROMETA
+						>
+					>(model);
+					expectType<OptionallyManagedDefaultRO>(element);
+				}
+			);
+			DataStore.observe(OptionallyManagedDefaultRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<
+						OptionallyManagedDefaultRO,
+						OptionallyManagedDefaultROMETA
+					>
+				>(model);
+				expectType<OptionallyManagedDefaultRO>(element);
+			});
+			DataStore.observe(dummyInstance<OptionallyManagedDefaultRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
+						model
+					);
+					expectType<OptionallyManagedDefaultRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(OptionallyManagedDefaultRO).subscribe(
+				({ items }) => {
+					expectType<OptionallyManagedDefaultRO[]>(items);
+				}
+			);
+			DataStore.observeQuery(OptionallyManagedDefaultRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<OptionallyManagedDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(
+				OptionallyManagedDefaultRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<OptionallyManagedDefaultRO[]>(items);
 			});
 		});
 
@@ -692,6 +1091,101 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedOn;
 				// @ts-expect-error
 				// d.updatedOn = '';
+			});
+
+			// Query
+			expectType<OptionallyManagedCustomRO>(
+				await DataStore.query(OptionallyManagedCustomRO, 'someid')
+			);
+			expectType<OptionallyManagedCustomRO[]>(
+				await DataStore.query(OptionallyManagedCustomRO)
+			);
+			expectType<OptionallyManagedCustomRO[]>(
+				await DataStore.query(OptionallyManagedCustomRO, Predicates.ALL)
+			);
+			expectType<OptionallyManagedCustomRO[]>(
+				await DataStore.query(OptionallyManagedCustomRO, c =>
+					c.createdOn('ge', '2019')
+				)
+			);
+
+			// Save
+			expectType<OptionallyManagedCustomRO>(
+				await DataStore.save(dummyInstance<OptionallyManagedCustomRO>())
+			);
+			expectType<OptionallyManagedCustomRO>(
+				await DataStore.save(dummyInstance<OptionallyManagedCustomRO>(), c =>
+					c.createdOn('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<OptionallyManagedCustomRO>(
+				await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>())
+			);
+			expectType<OptionallyManagedCustomRO>(
+				await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<OptionallyManagedCustomRO[]>(
+				await DataStore.delete(OptionallyManagedCustomRO, Predicates.ALL)
+			);
+			expectType<OptionallyManagedCustomRO[]>(
+				await DataStore.delete(OptionallyManagedCustomRO, c =>
+					c.createdOn('le', '2019')
+				)
+			);
+
+			// Observe
+			DataStore.observe(OptionallyManagedCustomRO).subscribe(
+				({ model, element }) => {
+					expectType<
+						PersistentModelConstructor<
+							OptionallyManagedCustomRO,
+							OptionallyManagedCustomROMETA
+						>
+					>(model);
+					expectType<OptionallyManagedCustomRO>(element);
+				}
+			);
+			DataStore.observe(OptionallyManagedCustomRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<
+						OptionallyManagedCustomRO,
+						OptionallyManagedCustomROMETA
+					>
+				>(model);
+				expectType<OptionallyManagedCustomRO>(element);
+			});
+			DataStore.observe(dummyInstance<OptionallyManagedCustomRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
+						model
+					);
+					expectType<OptionallyManagedCustomRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(OptionallyManagedCustomRO).subscribe(
+				({ items }) => {
+					expectType<OptionallyManagedCustomRO[]>(items);
+				}
+			);
+			DataStore.observeQuery(OptionallyManagedCustomRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<OptionallyManagedCustomRO[]>(items);
+			});
+			DataStore.observeQuery(
+				OptionallyManagedCustomRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdOn('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<OptionallyManagedCustomRO[]>(items);
 			});
 		});
 	});
