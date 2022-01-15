@@ -6,9 +6,42 @@ import {
 	ModelInit,
 	MutableModel,
 	OptionallyManagedIdentifier,
+	DataStore as DS,
+	Predicates,
+	PersistentModel,
+	PersistentModelConstructor,
 } from '../src';
+import Observable from 'zen-observable-ts';
 
-const expectType: <T>(param: T) => void = () => {};
+function expectType<T>(param: T): param is T {
+	return true;
+}
+
+function dummyInstance<T>(): T {
+	return undefined;
+}
+
+const DataStore: typeof DS = (function (): typeof DS {
+	class clazz {}
+
+	const proxy = new Proxy(clazz, {
+		get: function (_, prop) {
+			const p = prop as keyof typeof DS;
+
+			switch (p) {
+				case 'query':
+				case 'save':
+				case 'delete':
+					return () => new Proxy({}, {});
+				case 'observe':
+				case 'observeQuery':
+					return () => Observable.of();
+			}
+		},
+	}) as unknown as typeof DS;
+
+	return proxy;
+})();
 
 //#region Types
 
@@ -296,6 +329,13 @@ class CustomIdentifierDefaultRO {
 //#endregion
 
 describe('ModelInit and MutableModel typings (no runtime validation)', () => {
+	test('Observe all', () => {
+		DataStore.observe().subscribe(({ model, element }) => {
+			expectType<PersistentModelConstructor<any>>(model);
+			expectType<PersistentModel<any>>(element);
+		});
+	});
+
 	describe('Legacy - backwards compatibility', () => {
 		test(`${LegacyNoMetadata.name}`, async () => {
 			expectType<ModelInit<LegacyNoMetadata>>({
@@ -327,6 +367,79 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedAt;
 				// @ts-expect-error
 				// d.updatedAt = '';
+			});
+
+			// Query
+			expectType<LegacyNoMetadata>(
+				await DataStore.query(LegacyNoMetadata, 'someid')
+			);
+			expectType<LegacyNoMetadata[]>(await DataStore.query(LegacyNoMetadata));
+			expectType<LegacyNoMetadata[]>(
+				await DataStore.query(LegacyNoMetadata, Predicates.ALL)
+			);
+			expectType<LegacyNoMetadata[]>(
+				await DataStore.query(LegacyNoMetadata, c => c.createdAt('ge', '2019'))
+			);
+
+			// Save
+			expectType<LegacyNoMetadata>(
+				await DataStore.save(dummyInstance<LegacyNoMetadata>())
+			);
+			expectType<LegacyNoMetadata>(
+				await DataStore.save(dummyInstance<LegacyNoMetadata>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<LegacyNoMetadata>(
+				await DataStore.delete(dummyInstance<LegacyNoMetadata>())
+			);
+			expectType<LegacyNoMetadata>(
+				await DataStore.delete(dummyInstance<LegacyNoMetadata>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<LegacyNoMetadata[]>(
+				await DataStore.delete(LegacyNoMetadata, Predicates.ALL)
+			);
+			expectType<LegacyNoMetadata[]>(
+				await DataStore.delete(LegacyNoMetadata, c => c.createdAt('le', '2019'))
+			);
+
+			// Observe
+			DataStore.observe(LegacyNoMetadata).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
+				expectType<LegacyNoMetadata>(element);
+			});
+			DataStore.observe(LegacyNoMetadata, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
+				expectType<LegacyNoMetadata>(element);
+			});
+			DataStore.observe(dummyInstance<LegacyNoMetadata>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
+					expectType<LegacyNoMetadata>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(LegacyNoMetadata).subscribe(({ items }) => {
+				expectType<LegacyNoMetadata[]>(items);
+			});
+			DataStore.observeQuery(LegacyNoMetadata, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<LegacyNoMetadata[]>(items);
+			});
+			DataStore.observeQuery(
+				LegacyNoMetadata,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<LegacyNoMetadata[]>(items);
 			});
 		});
 
