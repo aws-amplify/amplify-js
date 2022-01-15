@@ -1405,7 +1405,7 @@ export class AuthClass {
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
-				return Promise.reject('The user is not authenticated');
+				return Promise.reject(Error('The user is not authenticated'));
 			}
 			this.user = user;
 			return this.user;
@@ -1684,7 +1684,7 @@ export class AuthClass {
 		this._oAuthHandler.signOut(); // this method redirects url
 
 		// App should be redirected to another url otherwise it will reject
-		setTimeout(() => reject('Signout timeout fail'), 3000);
+		setTimeout(() => reject(Error('Signout timeout fail')), 3000);
 	}
 
 	/**
@@ -2245,7 +2245,7 @@ export class AuthClass {
 			currUser = await this.currentUserPoolUser();
 		} catch (error) {
 			logger.debug('The user is not authenticated by the error', error);
-			return Promise.reject('The user is not authenticated');
+			return Promise.reject(Error('The user is not authenticated'));
 		}
 
 		currUser.getCachedDeviceKeyAndPassword();
