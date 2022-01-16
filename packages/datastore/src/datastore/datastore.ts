@@ -57,6 +57,7 @@ import {
 	ManagedIdentifier,
 	PersistentModelMetaData,
 	DefaultPersistentModelMetaData,
+	IdentifierFields,
 } from '../types';
 import {
 	DATASTORE,
@@ -259,12 +260,13 @@ export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 const instancesMetadata = new WeakSet<
 	ModelInit<PersistentModel & Partial<ModelInstanceMetadata>>
 >();
+
 function modelInstanceCreator<
-	M extends PersistentModelMetaData,
-	T extends PersistentModel<M> = PersistentModel<M>
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData
 >(
 	modelConstructor: PersistentModelConstructor<T, M>,
-	init: ModelInit<T, M> & Partial<ModelInstanceMetadata>
+	init: ModelInit<T, M> & Partial<ModelInstanceMetadata<M>>
 ): T {
 	instancesMetadata.add(init);
 
@@ -428,7 +430,10 @@ const createModelClass = <T extends PersistentModel>(
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
-					const { id: _id } = modelInstanceMetadata;
+					const { id: _id } =
+						modelInstanceMetadata as unknown as IdentifierFields<
+							ManagedIdentifier<any>
+						>;
 
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
@@ -998,30 +1003,21 @@ class DataStore {
 	};
 
 	delete: {
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			model: T,
-			condition?: ProducerModelPredicate<T, M>
-		): Promise<T>;
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
+		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			identifier: string
-		): Promise<T[]>;
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
+		): Promise<T>;
+		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			condition: ProducerModelPredicate<T, M> | typeof PredicateAll
 		): Promise<T[]>;
+		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+			model: T,
+			condition?: ProducerModelPredicate<T, M>
+		): Promise<T>;
 	} = async <
 		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+		M extends PersistentModelMetaData = unknown
 	>(
 		modelOrConstructor: T | PersistentModelConstructor<T, M>,
 		identifierOrCriteria?:
@@ -1121,7 +1117,17 @@ class DataStore {
 	};
 
 	observe: {
-		(): Observable<SubscriptionMessage<PersistentModel>>;
+		(): Observable<SubscriptionMessage<PersistentModel<unknown>, unknown>>;
+
+		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+			modelConstructor: PersistentModelConstructor<T, M>,
+			identifier: string
+		): Observable<SubscriptionMessage<T, M>>;
+
+		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+			modelConstructor: PersistentModelConstructor<T, M>,
+			criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll
+		): Observable<SubscriptionMessage<T, M>>;
 
 		<
 			T extends PersistentModel<M>,
@@ -1129,20 +1135,15 @@ class DataStore {
 		>(
 			model: T
 		): Observable<SubscriptionMessage<T, M>>;
-
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			criteria?: string | ProducerModelPredicate<T, M>
-		): Observable<SubscriptionMessage<T, M>>;
 	} = <
 		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+		M extends PersistentModelMetaData = unknown
 	>(
 		modelOrConstructor?: T | PersistentModelConstructor<T, M>,
-		identifierOrCriteria?: string | ProducerModelPredicate<T, M>
+		identifierOrCriteria?:
+			| string
+			| ProducerModelPredicate<T, M>
+			| typeof PredicateAll
 	): Observable<SubscriptionMessage<T, M>> => {
 		let predicate: ModelPredicate<T>;
 
@@ -1197,15 +1198,19 @@ class DataStore {
 				identifierOrCriteria
 			);
 		} else {
-			predicate =
-				modelConstructor &&
-				ModelPredicateCreator.createFromExisting<T>(
-					getModelDefinition(modelConstructor),
-					identifierOrCriteria
-				);
+			if (isPredicatesAll(identifierOrCriteria)) {
+				predicate = undefined;
+			} else {
+				predicate =
+					modelConstructor &&
+					ModelPredicateCreator.createFromExisting<T>(
+						getModelDefinition(modelConstructor),
+						identifierOrCriteria
+					);
+			}
 		}
 
-		return new Observable<SubscriptionMessage<T>>(observer => {
+		return new Observable<SubscriptionMessage<T, M>>(observer => {
 			let handle: ZenObservable.Subscription;
 
 			(async () => {

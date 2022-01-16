@@ -124,7 +124,7 @@ export const validatePredicate = <T extends PersistentModel<any>>(
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
 		if (isPredicateObj(predicateOrGroup)) {
 			const { field, operator, operand } = predicateOrGroup;
-			const value = model[field];
+			const value = model[<any>field];
 
 			return validatePredicateField(value, operator, operand);
 		}
@@ -597,7 +597,7 @@ export function getNow() {
 	}
 }
 
-export function sortCompareFunction<T extends PersistentModel>(
+export function sortCompareFunction<T extends PersistentModel<unknown>>(
 	sortPredicates: SortPredicatesGroup<T>
 ) {
 	return function compareFunction(a, b) {

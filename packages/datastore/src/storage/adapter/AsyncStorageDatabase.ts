@@ -237,7 +237,7 @@ class AsyncStorageDatabase {
 		return result;
 	}
 
-	async get<T extends PersistentModel>(
+	async get<T extends PersistentModel<unknown>>(
 		keyValuePath: string,
 		storeName: string
 	): Promise<T> {
@@ -276,7 +276,7 @@ class AsyncStorageDatabase {
 	 * This function gets all the records stored in async storage for a particular storeName
 	 * It then loads all the records for that filtered set of keys using multiGet()
 	 */
-	async getAll<T extends PersistentModel>(
+	async getAll<T extends PersistentModel<unknown>>(
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {

@@ -29,8 +29,8 @@ import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
-export type StorageSubscriptionMessage<T extends PersistentModel<any>> =
-	SubscriptionMessage<T> & {
+export type StorageSubscriptionMessage<T extends PersistentModel<unknown>> =
+	SubscriptionMessage<T, unknown> & {
 		mutator?: Symbol;
 	};
 
@@ -244,11 +244,11 @@ class StorageClass implements StorageFacade {
 		return record;
 	}
 
-	observe<T extends PersistentModel<any>>(
-		modelConstructor?: PersistentModelConstructor<T, any>,
+	observe<T extends PersistentModel<unknown>>(
+		modelConstructor?: PersistentModelConstructor<T, unknown>,
 		predicate?: ModelPredicate<T>,
 		skipOwn?: Symbol
-	): Observable<SubscriptionMessage<T>> {
+	): Observable<SubscriptionMessage<T, unknown>> {
 		const listenToAll = !modelConstructor;
 		const { predicates, type } =
 			ModelPredicateCreator.getPredicates(predicate, false) || {};
@@ -259,7 +259,8 @@ class StorageClass implements StorageFacade {
 				return !skipOwn || mutator !== skipOwn;
 			})
 			.map(
-				({ mutator: _mutator, ...message }) => message as SubscriptionMessage<T>
+				({ mutator: _mutator, ...message }) =>
+					message as SubscriptionMessage<T, unknown>
 			);
 
 		if (!listenToAll) {
@@ -483,7 +484,7 @@ class ExclusiveStorage implements StorageFacade {
 		modelConstructor?: PersistentModelConstructor<T, any>,
 		predicate?: ModelPredicate<T>,
 		skipOwn?: Symbol
-	): Observable<SubscriptionMessage<T>> {
+	): Observable<SubscriptionMessage<T, any>> {
 		return this.storage.observe(modelConstructor, predicate, skipOwn);
 	}
 

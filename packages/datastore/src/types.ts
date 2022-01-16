@@ -335,16 +335,17 @@ export type NonModelTypeConstructor<T> = {
 
 // Class for model
 export type PersistentModelConstructor<
-	T extends PersistentModel<K>,
-	K extends PersistentModelMetaData = DefaultPersistentModelMetaData
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
 > = {
-	new (init: ModelInit<T, K>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
+	new (init: ModelInit<T, M>): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T, M>) => void): T;
 };
 
 export type TypeConstructorMap = Record<
 	string,
-	PersistentModelConstructor<any, any> | NonModelTypeConstructor<any>
+	| PersistentModelConstructor<unknown, unknown>
+	| NonModelTypeConstructor<unknown>
 >;
 
 export declare const __identifierBrand__: unique symbol;
@@ -378,12 +379,13 @@ export type Identifier =
 	| CompositeIdentifier<any, any>
 	| CustomIdentifier<any, any>;
 
-export type IdentifierFields<X extends Identifier = ManagedIdentifier<any>> =
-	X extends ManagedIdentifier<any> | OptionallyManagedIdentifier<any>
-		? { [K in X['field']]: string }
-		: X extends CompositeIdentifier<any, infer B> // <any, infer B> -> <infer A, infer B>
-		? { [K in B[number]]: string } // string -> A[K]
-		: { [K in ManagedIdentifier<any>['field']]: string };
+export type IdentifierFields<X extends Identifier> = X extends
+	| ManagedIdentifier<any>
+	| OptionallyManagedIdentifier<any>
+	? { [K in X['field']]: string }
+	: X extends CompositeIdentifier<any, infer B> // <any, infer B> -> <infer A, infer B>
+	? { [K in B[number]]: string } // string -> A[K]
+	: {};
 
 export type IdentifierFieldsInit<
 	X extends Identifier = ManagedIdentifier<any>
@@ -397,12 +399,12 @@ export type IdentifierFieldsInit<
 
 // Instance of model
 export type PersistentModelMetaData = {
-	identifier?: Identifier;
-	readOnlyFields?: string;
+	identifier?: Identifier | undefined;
+	readOnlyFields?: string | undefined;
 };
 
 export type DefaultPersistentModelMetaData = {
-	identifier: ManagedIdentifier<any>;
+	identifier: ManagedIdentifier<{ id: string }>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
@@ -452,12 +454,12 @@ export type MutableModel<
 > &
 	Readonly<IdentifierFields<M['identifier']> & Pick<T, M['readOnlyFields']>>;
 
-export type ModelInstanceMetadata = {
-	id: string;
-	_version: number;
-	_lastChangedAt: number;
-	_deleted: boolean;
-};
+export type ModelInstanceMetadata<M extends PersistentModelMetaData = unknown> =
+	{
+		_version: number;
+		_lastChangedAt: number;
+		_deleted: boolean;
+	} & IdentifierFields<M['identifier']>;
 
 //#endregion
 
@@ -470,7 +472,7 @@ export enum OpType {
 
 export type SubscriptionMessage<
 	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = any
+	M extends PersistentModelMetaData = unknown
 > = {
 	opType: OpType;
 	element: T;
@@ -487,7 +489,7 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 //#region Predicates
 
 export type PredicateExpression<
-	M extends PersistentModel<any>,
+	M extends PersistentModel<unknown>,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
@@ -547,7 +549,7 @@ type TypeName<T> = T extends string
 	? 'boolean[]'
 	: never;
 
-export type PredicateGroups<T extends PersistentModel<any>> = {
+export type PredicateGroups<T extends PersistentModel<unknown>> = {
 	and: (
 		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
 	) => ModelPredicate<T>;
@@ -559,33 +561,33 @@ export type PredicateGroups<T extends PersistentModel<any>> = {
 	) => ModelPredicate<T>;
 };
 
-export type ModelPredicate<M extends PersistentModel<any>> = {
+export type ModelPredicate<M extends PersistentModel<unknown>> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
 export type ProducerModelPredicate<
 	M extends PersistentModel<META>,
-	META extends PersistentModelMetaData
+	META extends PersistentModelMetaData = DefaultPersistentModelMetaData
 > = (condition: ModelPredicate<M>) => ModelPredicate<M>;
 
-export type PredicatesGroup<T extends PersistentModel<any>> = {
+export type PredicatesGroup<T extends PersistentModel<unknown>> = {
 	type: keyof PredicateGroups<T>;
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
 };
 
-export function isPredicateObj<T extends PersistentModel<any>>(
+export function isPredicateObj<T extends PersistentModel<unknown>>(
 	obj: any
 ): obj is PredicateObject<T> {
 	return obj && (<PredicateObject<T>>obj).field !== undefined;
 }
 
-export function isPredicateGroup<T extends PersistentModel<any>>(
+export function isPredicateGroup<T extends PersistentModel<unknown>>(
 	obj: any
 ): obj is PredicatesGroup<T> {
 	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
 }
 
-export type PredicateObject<T extends PersistentModel<any>> = {
+export type PredicateObject<T extends PersistentModel<unknown>> = {
 	field: keyof T;
 	operator: keyof AllOperators;
 	operand: any;
@@ -627,33 +629,33 @@ export type GraphQLFilter = Partial<
 
 //#region Pagination
 
-export type ProducerPaginationInput<T extends PersistentModel<any>> = {
+export type ProducerPaginationInput<T extends PersistentModel<unknown>> = {
 	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ObserveQueryOptions<T extends PersistentModel<any>> = Pick<
+export type ObserveQueryOptions<T extends PersistentModel<unknown>> = Pick<
 	ProducerPaginationInput<T>,
 	'sort'
 >;
 
-export type PaginationInput<T extends PersistentModel<any>> = {
+export type PaginationInput<T extends PersistentModel<unknown>> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ProducerSortPredicate<M extends PersistentModel<any>> = (
+export type ProducerSortPredicate<M extends PersistentModel<unknown>> = (
 	condition: SortPredicate<M>
 ) => SortPredicate<M>;
 
-export type SortPredicate<T extends PersistentModel<any>> = {
+export type SortPredicate<T extends PersistentModel<unknown>> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
 export type SortPredicateExpression<
-	M extends PersistentModel<any>,
+	M extends PersistentModel<unknown>,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
@@ -664,10 +666,10 @@ export enum SortDirection {
 	DESCENDING = 'DESCENDING',
 }
 
-export type SortPredicatesGroup<T extends PersistentModel<any>> =
+export type SortPredicatesGroup<T extends PersistentModel<unknown>> =
 	SortPredicateObject<T>[];
 
-export type SortPredicateObject<T extends PersistentModel<any>> = {
+export type SortPredicateObject<T extends PersistentModel<unknown>> = {
 	field: keyof T;
 	sortDirection: keyof typeof SortDirection;
 };
