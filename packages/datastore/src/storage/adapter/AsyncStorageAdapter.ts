@@ -343,7 +343,7 @@ export class AsyncStorageAdapter implements Adapter {
 		return record;
 	}
 
-	private async getAll<T extends PersistentModel>(
+	private async getAll<T extends PersistentModel<unknown>>(
 		storeName: string
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
@@ -389,7 +389,7 @@ export class AsyncStorageAdapter implements Adapter {
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel>(
+	private inMemoryPagination<T extends PersistentModel<unknown>>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {

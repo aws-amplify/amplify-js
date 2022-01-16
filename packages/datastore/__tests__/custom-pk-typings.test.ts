@@ -10,6 +10,8 @@ import {
 	Predicates,
 	PersistentModel,
 	PersistentModelConstructor,
+	DefaultPersistentModelMetaData,
+	PersistentModelMetaData,
 } from '../src';
 import Observable from 'zen-observable-ts';
 
@@ -17,15 +19,20 @@ function expectType<T>(param: T): param is T {
 	return true;
 }
 
-function dummyInstance<T>(): T {
+function dummyInstance<
+	T extends PersistentModel<
+		M extends never ? DefaultPersistentModelMetaData : M
+	>,
+	M extends PersistentModelMetaData = unknown
+>(): T {
 	return undefined;
 }
 
-const DataStore: typeof DS = (function (): typeof DS {
+const DataStore: typeof DS = (() => {
 	class clazz {}
 
 	const proxy = new Proxy(clazz, {
-		get: function (_, prop) {
+		get: (_, prop) => {
 			const p = prop as keyof typeof DS;
 
 			switch (p) {
@@ -331,8 +338,11 @@ class CustomIdentifierDefaultRO {
 describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	test('Observe all', () => {
 		DataStore.observe().subscribe(({ model, element }) => {
-			expectType<PersistentModelConstructor<any>>(model);
+			expectType<PersistentModelConstructor<unknown, unknown>>(model);
 			expectType<PersistentModel<any>>(element);
+
+			// @ts-expect-error
+			// element.id;
 		});
 	});
 
@@ -393,6 +403,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Delete
 			expectType<LegacyNoMetadata>(
+				await DataStore.delete(LegacyNoMetadata, '')
+			);
+			expectType<LegacyNoMetadata>(
 				await DataStore.delete(dummyInstance<LegacyNoMetadata>())
 			);
 			expectType<LegacyNoMetadata>(
@@ -420,6 +433,10 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 			DataStore.observe(dummyInstance<LegacyNoMetadata>()).subscribe(
 				({ model, element }) => {
+					new model({
+						name: '',
+						description: '',
+					});
 					expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
 					expectType<LegacyNoMetadata>(element);
 				}
@@ -498,6 +515,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
+			expectType<LegacyDefaultRO>(await DataStore.delete(LegacyDefaultRO, ''));
 			expectType<LegacyDefaultRO>(
 				await DataStore.delete(dummyInstance<LegacyDefaultRO>())
 			);
@@ -609,6 +627,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
+			expectType<LegacyCustomRO>(await DataStore.delete(LegacyCustomRO, ''));
 			expectType<LegacyCustomRO>(
 				await DataStore.delete(dummyInstance<LegacyCustomRO>())
 			);
@@ -729,6 +748,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Delete
 			expectType<ManagedDefaultRO>(
+				await DataStore.delete(ManagedDefaultRO, '')
+			);
+			expectType<ManagedDefaultRO>(
 				await DataStore.delete(dummyInstance<ManagedDefaultRO>())
 			);
 			expectType<ManagedDefaultRO>(
@@ -845,6 +867,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
+			expectType<ManagedCustomRO>(await DataStore.delete(ManagedCustomRO, ''));
 			expectType<ManagedCustomRO>(
 				await DataStore.delete(dummyInstance<ManagedCustomRO>())
 			);
@@ -973,6 +996,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
+			expectType<OptionallyManagedDefaultRO>(
+				await DataStore.delete(OptionallyManagedDefaultRO, '')
+			);
 			expectType<OptionallyManagedDefaultRO>(
 				await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>())
 			);
@@ -1121,6 +1147,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Delete
 			expectType<OptionallyManagedCustomRO>(
+				await DataStore.delete(OptionallyManagedCustomRO, '')
+			);
+			expectType<OptionallyManagedCustomRO>(
 				await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>())
 			);
 			expectType<OptionallyManagedCustomRO>(
@@ -1231,6 +1260,75 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				d.updatedAt;
 				// @ts-expect-error
 				// d.updatedAt = '';
+			});
+
+			// Save
+			expectType<CompositeDefaultRO>(
+				await DataStore.save(dummyInstance<CompositeDefaultRO>())
+			);
+			expectType<CompositeDefaultRO>(
+				await DataStore.save(dummyInstance<CompositeDefaultRO>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<CompositeDefaultRO>(
+				await DataStore.delete(CompositeDefaultRO, '')
+			);
+			expectType<CompositeDefaultRO>(
+				await DataStore.delete(dummyInstance<CompositeDefaultRO>())
+			);
+			expectType<CompositeDefaultRO>(
+				await DataStore.delete(dummyInstance<CompositeDefaultRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<CompositeDefaultRO[]>(
+				await DataStore.delete(CompositeDefaultRO, Predicates.ALL)
+			);
+			expectType<CompositeDefaultRO[]>(
+				await DataStore.delete(CompositeDefaultRO, c =>
+					c.createdAt('le', '2019')
+				)
+			);
+
+			// Observe
+			DataStore.observe(CompositeDefaultRO).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<CompositeDefaultRO, CompositeDefaultROMETA>
+				>(model);
+				expectType<CompositeDefaultRO>(element);
+			});
+			DataStore.observe(CompositeDefaultRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<
+					PersistentModelConstructor<CompositeDefaultRO, CompositeDefaultROMETA>
+				>(model);
+				expectType<CompositeDefaultRO>(element);
+			});
+			let instance = dummyInstance<CompositeDefaultRO>();
+			DataStore.observe(instance).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
+				expectType<CompositeDefaultRO>(element);
+			});
+
+			// Observe query
+			DataStore.observeQuery(CompositeDefaultRO).subscribe(({ items }) => {
+				expectType<CompositeDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(CompositeDefaultRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<CompositeDefaultRO[]>(items);
+			});
+			DataStore.observeQuery(
+				CompositeDefaultRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<CompositeDefaultRO[]>(items);
 			});
 		});
 

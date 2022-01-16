@@ -465,7 +465,7 @@ class IndexedDBAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getByKey<T extends PersistentModel>(
+	private async getByKey<T extends PersistentModel<unknown>>(
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
@@ -473,13 +473,13 @@ class IndexedDBAdapter implements Adapter {
 		return record;
 	}
 
-	private async getAll<T extends PersistentModel>(
+	private async getAll<T extends PersistentModel<unknown>>(
 		storeName: string
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
 
-	private keyValueFromPredicate<T extends PersistentModel>(
+	private keyValueFromPredicate<T extends PersistentModel<unknown>>(
 		predicates: PredicatesGroup<T>,
 		keyPath: string[]
 	): string[] | undefined {
@@ -502,7 +502,7 @@ class IndexedDBAdapter implements Adapter {
 		return keyValues.length === keyPath.length ? keyValues : undefined;
 	}
 
-	private async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel<unknown>>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
@@ -517,7 +517,7 @@ class IndexedDBAdapter implements Adapter {
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel>(
+	private inMemoryPagination<T extends PersistentModel<unknown>>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
@@ -543,7 +543,7 @@ class IndexedDBAdapter implements Adapter {
 		return records;
 	}
 
-	private async enginePagination<T extends PersistentModel>(
+	private async enginePagination<T extends PersistentModel<unknown>>(
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {

@@ -13,7 +13,7 @@ export class ModelSortPredicateCreator {
 		SortPredicatesGroup<any>
 	>();
 
-	private static createPredicateBuilder<T extends PersistentModel>(
+	private static createPredicateBuilder<T extends PersistentModel<any>>(
 		modelDefinition: SchemaModel
 	) {
 		const { name: modelName } = modelDefinition;
@@ -49,13 +49,13 @@ export class ModelSortPredicateCreator {
 		return predicate;
 	}
 
-	static isValidPredicate<T extends PersistentModel>(
+	static isValidPredicate<T extends PersistentModel<any>>(
 		predicate: any
 	): predicate is SortPredicate<T> {
 		return ModelSortPredicateCreator.sortPredicateGroupsMap.has(predicate);
 	}
 
-	static getPredicates<T extends PersistentModel>(
+	static getPredicates<T extends PersistentModel<any>>(
 		predicate: SortPredicate<T>,
 		throwOnInvalid: boolean = true
 	): SortPredicatesGroup<T> {
@@ -70,7 +70,7 @@ export class ModelSortPredicateCreator {
 	}
 
 	// transforms cb-style predicate into Proxy
-	static createFromExisting<T extends PersistentModel>(
+	static createFromExisting<T extends PersistentModel<any>>(
 		modelDefinition: SchemaModel,
 		existing: ProducerSortPredicate<T>
 	) {
