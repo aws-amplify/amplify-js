@@ -105,7 +105,7 @@ class StorageClass implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol,
-		patchesTuple?: [Patch[], PersistentModel]
+		patchesTuple?: [Patch[], PersistentModel<any>]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
 
@@ -316,7 +316,7 @@ class StorageClass implements StorageFacade {
 	private getUpdateMutationInput<T extends PersistentModel<any>>(
 		model: T,
 		originalElement: T,
-		patchesTuple?: [Patch[], PersistentModel]
+		patchesTuple?: [Patch[], PersistentModel<any>]
 	): PersistentModel | null {
 		const containsPatches = patchesTuple && patchesTuple.length;
 		if (!containsPatches) {

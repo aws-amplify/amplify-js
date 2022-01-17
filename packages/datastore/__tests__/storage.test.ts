@@ -13,6 +13,7 @@ import {
 	PostCustomPKSort,
 	PostCustomPKComposite,
 	testSchema,
+	PostCustomPKMETA,
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
@@ -513,12 +514,8 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [
-					,
-					[postUpdate1],
-					[postUpdate2],
-					[postUpdate3],
-				] = zenNext.mock.calls;
+				const [, [postUpdate1], [postUpdate2], [postUpdate3]] =
+					zenNext.mock.calls;
 
 				expect(postUpdate1.element.title).toBeUndefined();
 				expect(postUpdate1.element.created).toEqual(createdTimestamp);
@@ -542,7 +539,10 @@ describe('Storage tests', () => {
 				// model has a custom pk defined via @key(fields: ["postId"])
 				// the PK should always be included in the mutation input
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<PostCustomPK>;
+					PostCustomPK: PersistentModelConstructor<
+						PostCustomPK,
+						PostCustomPKMETA
+					>;
 				};
 
 				const post = await DataStore.save(
@@ -602,9 +602,7 @@ describe('Storage tests', () => {
 				// model has a custom pk (hk + composite key) defined via @key(fields: ["id", "postId", "sort"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKComposite } = classes as {
-					PostCustomPKComposite: PersistentModelConstructor<
-						PostCustomPKComposite
-					>;
+					PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
 				};
 
 				const post = await DataStore.save(

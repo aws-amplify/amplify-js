@@ -363,7 +363,7 @@ export type OptionallyManagedIdentifier<_ extends { id: string }> =
 
 // You provide the values
 export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
-	{ fields: K extends [string] ? [K] : K },
+	{ fields: K extends [string] ? [K] : K; type: T },
 	'CompositeIdentifier'
 >;
 
@@ -383,8 +383,8 @@ export type IdentifierFields<X extends Identifier> = X extends
 	| ManagedIdentifier<any>
 	| OptionallyManagedIdentifier<any>
 	? { [K in X['field']]: string }
-	: X extends CompositeIdentifier<any, infer B> // <any, infer B> -> <infer A, infer B>
-	? { [K in B[number]]: string } // string -> A[K]
+	: X extends CompositeIdentifier<any, infer B>
+	? Pick<X['type'], B[number]>
 	: {};
 
 export type IdentifierFieldsInit<
@@ -450,9 +450,19 @@ export type MutableModel<
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
-	Omit<T, keyof IdentifierFields<M['identifier']> | M['readOnlyFields']>
+	Omit<
+		T,
+		| keyof IdentifierFields<M['identifier']>
+		| (M['readOnlyFields'] extends unknown ? never : M['readOnlyFields'])
+	>
 > &
-	Readonly<IdentifierFields<M['identifier']> & Pick<T, M['readOnlyFields']>>;
+	Readonly<
+		Pick<
+			T,
+			| keyof IdentifierFields<M['identifier']>
+			| (M['readOnlyFields'] extends unknown ? never : M['readOnlyFields'])
+		>
+	>;
 
 export type ModelInstanceMetadata<M extends PersistentModelMetaData = unknown> =
 	{
@@ -480,7 +490,7 @@ export type SubscriptionMessage<
 	condition: PredicatesGroup<T> | null;
 };
 
-export type DataStoreSnapshot<T extends PersistentModel> = {
+export type DataStoreSnapshot<T extends PersistentModel<unknown>> = {
 	items: T[];
 	isSynced: boolean;
 };
@@ -812,10 +822,12 @@ syncExpressions: [
 ]
 */
 type Option0 = [];
-type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
-type Option<T extends PersistentModel> = Option0 | Option1<T>;
+type Option1<T extends PersistentModel<unknown>> = [
+	ModelPredicate<T> | undefined
+];
+type Option<T extends PersistentModel<unknown>> = Option0 | Option1<T>;
 
-type Lookup<T extends PersistentModel> = {
+type Lookup<T extends PersistentModel<unknown>> = {
 	0:
 		| ProducerModelPredicate<T, any>
 		| Promise<ProducerModelPredicate<T, any>>
@@ -823,7 +835,10 @@ type Lookup<T extends PersistentModel> = {
 	1: ModelPredicate<T> | undefined;
 };
 
-type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
+type ConditionProducer<
+	T extends PersistentModel<unknown>,
+	A extends Option<T>
+> = (
 	...args: A
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 

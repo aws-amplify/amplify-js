@@ -18,7 +18,7 @@ import {
 	SchemaModel,
 } from '../src/types';
 import { MutationEvent, MutationEventMetadata } from '../src/sync/';
-import { USER } from '../src/util';
+import { USER, extractPrimaryKeyFieldNames } from '../src/util';
 
 let initSchema: typeof initSchemaType;
 // using <any> to access private members
@@ -376,6 +376,10 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;
 
+	const modelDefinition = testSchema().models[modelConstructor.name];
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+	const xxx = keyFields.map(f => model[f]).join('#');
+
 	return createMutationInstanceFromModelOperation(
 		undefined,
 		undefined,
@@ -384,7 +388,8 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		originalElement,
 		{},
 		MutationEventConstructor,
-		modelInstanceCreator
+		modelInstanceCreator,
+		xxx // TODO: not cool
 	);
 }
 
