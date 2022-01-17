@@ -124,7 +124,7 @@ export const validatePredicate = <T extends PersistentModel<any>>(
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
 		if (isPredicateObj(predicateOrGroup)) {
 			const { field, operator, operand } = predicateOrGroup;
-			const value = model[<any>field];
+			const value = model[<keyof T>field];
 
 			return validatePredicateField(value, operator, operand);
 		}
@@ -412,7 +412,7 @@ export const traverseModel = <T extends PersistentModel<any>>(
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
-							delete (<any>draftInstance)[rItem.fieldName];
+							delete draftInstance[rItem.fieldName];
 						} else {
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
@@ -450,7 +450,7 @@ export const traverseModel = <T extends PersistentModel<any>>(
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
-						delete (<any>draftInstance)[rItem.fieldName];
+						delete draftInstance[rItem.fieldName];
 					}
 
 					break;
