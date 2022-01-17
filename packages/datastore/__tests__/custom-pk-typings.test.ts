@@ -13,7 +13,6 @@ import {
 	DefaultPersistentModelMetaData,
 	PersistentModelMetaData,
 	IdentifierFields,
-	IdentifierFieldsInit,
 } from '../src';
 import Observable from 'zen-observable-ts';
 
