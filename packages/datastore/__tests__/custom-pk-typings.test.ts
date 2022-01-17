@@ -13,6 +13,7 @@ import {
 	DefaultPersistentModelMetaData,
 	PersistentModelMetaData,
 	IdentifierFields,
+	IdentifierFieldsInit,
 } from '../src';
 import Observable from 'zen-observable-ts';
 
@@ -117,7 +118,7 @@ class LegacyNoMetadata {
 //#region Managed
 
 type ManagedCustomROMETA = {
-	identifier: ManagedIdentifier<ManagedCustomRO>;
+	identifier: ManagedIdentifier<ManagedCustomRO, 'id'>;
 	readOnlyFields: 'createdOn' | 'updatedOn';
 };
 class ManagedCustomRO {
@@ -138,7 +139,7 @@ class ManagedCustomRO {
 }
 
 type ManagedDefaultROMETA = {
-	identifier: ManagedIdentifier<ManagedDefaultRO>;
+	identifier: ManagedIdentifier<ManagedDefaultRO, 'id'>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 class ManagedDefaultRO {
@@ -163,7 +164,7 @@ class ManagedDefaultRO {
 //#region Optionally Managed
 
 type OptionallyManagedCustomROMETA = {
-	identifier: OptionallyManagedIdentifier<OptionallyManagedCustomRO>;
+	identifier: OptionallyManagedIdentifier<OptionallyManagedCustomRO, 'id'>;
 	readOnlyFields: 'createdOn' | 'updatedOn';
 };
 class OptionallyManagedCustomRO {
@@ -192,7 +193,7 @@ class OptionallyManagedCustomRO {
 }
 
 type OptionallyManagedDefaultROMETA = {
-	identifier: OptionallyManagedIdentifier<OptionallyManagedDefaultRO>;
+	identifier: OptionallyManagedIdentifier<OptionallyManagedDefaultRO, 'id'>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 class OptionallyManagedDefaultRO {
@@ -338,16 +339,18 @@ class CustomIdentifierDefaultRO {
 
 describe('IdentifierFields', () => {
 	test('Types for identifiers match model definition', () => {
-		expectType<{ id: string }>({} as IdentifierFields<ManagedIdentifier<any>>);
 		expectType<{ id: string }>(
-			{} as IdentifierFields<ManagedIdentifier<{ id: string }>>
+			{} as IdentifierFields<ManagedIdentifier<{ id: string }, 'id'>>
+		);
+		expectType<{ id: string }>(
+			{} as IdentifierFields<ManagedIdentifier<{ id: string }, 'id'>>
 		);
 
-		expectType<{ id?: string }>(
-			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }>>
+		expectType<{ id: string }>(
+			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }, 'id'>>
 		);
-		expectType<{ id?: string }>(
-			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }>>
+		expectType<{ id: string }>(
+			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }, 'id'>>
 		);
 
 		expectType<{ id: string }>(

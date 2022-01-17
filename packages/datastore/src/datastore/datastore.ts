@@ -87,7 +87,7 @@ const ulid = monotonicUlidFactory(Date.now());
 const { isNode } = JS.browserOrNode();
 
 type SettingMetaData = {
-	identifier: ManagedIdentifier<Setting>;
+	identifier: ManagedIdentifier<Setting, 'id'>;
 	readOnlyFields: never;
 };
 declare class Setting {
@@ -266,7 +266,9 @@ function modelInstanceCreator<
 	M extends PersistentModelMetaData
 >(
 	modelConstructor: PersistentModelConstructor<T, M>,
-	init: ModelInit<T, M> & Partial<ModelInstanceMetadata<M>>
+	init: ModelInit<T, M> &
+		Partial<ModelInstanceMetadata<M>> &
+		Partial<IdentifierFields<M['identifier']>>
 ): T {
 	instancesMetadata.add(init);
 
@@ -430,9 +432,11 @@ const createModelClass = <T extends PersistentModel>(
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
+					type ModelWithIDIdentifier = { id: string };
+
 					const { id: _id } =
 						modelInstanceMetadata as unknown as IdentifierFields<
-							ManagedIdentifier<any>
+							ManagedIdentifier<ModelWithIDIdentifier, 'id'>
 						>;
 
 					if (isIdManaged(modelDefinition)) {
@@ -444,11 +448,11 @@ const createModelClass = <T extends PersistentModel>(
 							? uuid4()
 							: ulid();
 
-						draft.id = id;
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
 						const id = _id || uuid4();
-						draft.id = id;
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					}
 
 					if (!isInternallyInitialized) {

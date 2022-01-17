@@ -352,14 +352,16 @@ export declare const __identifierBrand__: unique symbol;
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
 // datastore generates a uuid for you
-export type ManagedIdentifier<_ extends { id: string }> = IdentifierBrand<
-	{ field: 'id' },
+export type ManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
+	{ field: F extends string ? F : never; type: T },
 	'ManagedIdentifier'
 >;
 
 // you can provide a value, if not, datastore generates a uuid for you
-export type OptionallyManagedIdentifier<_ extends { id: string }> =
-	IdentifierBrand<{ field: 'id' }, 'OptionallyManagedIdentifier'>;
+export type OptionallyManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
+	{ field: F extends string ? F : never; type: T },
+	'OptionallyManagedIdentifier'
+>;
 
 // You provide the values
 export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
@@ -374,37 +376,38 @@ export type CustomIdentifier<T, K extends keyof T> = IdentifierBrand<
 >; // you provide the value
 
 export type Identifier =
-	| ManagedIdentifier<any>
-	| OptionallyManagedIdentifier<any>
+	| ManagedIdentifier<any, any>
+	| OptionallyManagedIdentifier<any, any>
 	| CompositeIdentifier<any, any>
 	| CustomIdentifier<any, any>;
 
-export type IdentifierFields<X extends Identifier> = X extends
-	| ManagedIdentifier<any>
-	| OptionallyManagedIdentifier<any>
-	? { [K in X['field']]: string }
+export type IdentifierFields<X = unknown> = X extends
+	| ManagedIdentifier<any, any>
+	| OptionallyManagedIdentifier<any, any>
+	? Pick<X['type'], X['field']>
 	: X extends CompositeIdentifier<any, infer B>
 	? Pick<X['type'], B[number]>
 	: {};
 
 export type IdentifierFieldsInit<
-	X extends Identifier = ManagedIdentifier<any>
-> = X extends ManagedIdentifier<any>
+	T extends PersistentModel<unknown> = unknown,
+	X = unknown
+> = X extends ManagedIdentifier<T, any>
 	? {}
-	: X extends OptionallyManagedIdentifier<any>
-	? { [K in X['field']]?: string }
-	: X extends CompositeIdentifier<any, any>
+	: X extends OptionallyManagedIdentifier<T, any>
+	? Partial<IdentifierFields<X>>
+	: X extends CompositeIdentifier<T, any>
 	? IdentifierFields<X>
 	: {};
 
 // Instance of model
 export type PersistentModelMetaData = {
-	identifier?: Identifier | undefined;
-	readOnlyFields?: string | undefined;
+	identifier?: Identifier;
+	readOnlyFields?: string;
 };
 
 export type DefaultPersistentModelMetaData = {
-	identifier: ManagedIdentifier<{ id: string }>;
+	identifier: ManagedIdentifier<{ id: string }, 'id'>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
@@ -434,9 +437,14 @@ export type ModelInit<
 	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
 > = Omit<
 	T,
-	keyof IdentifierFields<M['identifier']> | keyof MetadataReadOnlyFields<T, M>
+	| keyof IdentifierFields<
+			M['identifier'] extends unknown
+				? DefaultPersistentModelMetaData['identifier']
+				: M['identifier']
+	  >
+	| keyof MetadataReadOnlyFields<T, M>
 > &
-	IdentifierFieldsInit<M['identifier']>;
+	IdentifierFieldsInit<T, M['identifier']>;
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -452,15 +460,23 @@ export type MutableModel<
 > = DeepWritable<
 	Omit<
 		T,
-		| keyof IdentifierFields<M['identifier']>
-		| (M['readOnlyFields'] extends unknown ? never : M['readOnlyFields'])
+		| keyof IdentifierFields<
+				M['identifier'] extends unknown
+					? DefaultPersistentModelMetaData['identifier']
+					: M['identifier']
+		  >
+		| keyof MetadataReadOnlyFields<T, M>
 	>
 > &
 	Readonly<
 		Pick<
 			T,
-			| keyof IdentifierFields<M['identifier']>
-			| (M['readOnlyFields'] extends unknown ? never : M['readOnlyFields'])
+			| keyof IdentifierFields<
+					M['identifier'] extends unknown
+						? DefaultPersistentModelMetaData['identifier']
+						: M['identifier']
+			  >
+			| M['readOnlyFields']
 		>
 	>;
 
