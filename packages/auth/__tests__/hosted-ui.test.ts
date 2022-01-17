@@ -298,12 +298,13 @@ describe('Hosted UI tests', () => {
 			},
 		};
 
-		expect.assertions(2);
+		expect.assertions(3);
 
 		try {
 			await auth.signOut({ global: true });
 		} catch (err) {
-			expect(err).toEqual('Signout timeout fail');
+			expect(err).toBeInstanceOf(Error);
+			expect(err.message).toEqual('Signout timeout fail');
 		}
 
 		expect(spyGlobalSignOut).toBeCalled();
@@ -448,12 +449,13 @@ describe('Hosted UI tests', () => {
 			},
 		};
 
-		expect.assertions(1);
+		expect.assertions(2);
 
 		try {
 			await auth.signOut({ global: false });
 		} catch (err) {
-			expect(err).toEqual('Signout timeout fail');
+			expect(err).toBeInstanceOf(Error);
+			expect(err.message).toEqual('Signout timeout fail');
 		}
 	});
 
@@ -519,17 +521,15 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const urlOpener = jest.fn(
-			(url: string): Promise<any> => {
-				return new Promise(() => {
-					expect(url).toEqual(
-						'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
-					);
+		const urlOpener = jest.fn((url: string): Promise<any> => {
+			return new Promise(() => {
+				expect(url).toEqual(
+					'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
+				);
 
-					done();
-				});
-			}
-		);
+				done();
+			});
+		});
 		const options = {
 			...authOptionsWithOAuth,
 		};
