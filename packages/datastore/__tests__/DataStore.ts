@@ -1174,8 +1174,10 @@ describe('DataStore tests', () => {
 		describe('Observe', () => {
 			test('subscribe to all models', async () => {
 				DataStore.observe().subscribe(({ element, model }) => {
-					expectType<PersistentModelConstructor<PersistentModel>>(model);
-					expectType<PersistentModel>(element);
+					expectType<
+						PersistentModelConstructor<PersistentModel<unknown>, unknown>
+					>(model);
+					expectType<PersistentModel<unknown>>(element);
 				});
 			});
 			test('subscribe to model instance', async () => {

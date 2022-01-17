@@ -112,8 +112,8 @@ const modelNamespaceMap = new WeakMap<
 // Patch[] - array of changed fields and metadata
 // PersistentModel - the source model, used for diffing object-type fields
 const modelPatchesMap = new WeakMap<
-	PersistentModel,
-	[Patch[], PersistentModel]
+	PersistentModel<any>,
+	[Patch[], PersistentModel<any>]
 >();
 
 const getModelDefinition = (
@@ -1006,7 +1006,7 @@ class DataStore {
 		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			identifier: string
-		): Promise<T>;
+		): Promise<T[]>;
 		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			condition: ProducerModelPredicate<T, M> | typeof PredicateAll
@@ -1119,12 +1119,18 @@ class DataStore {
 	observe: {
 		(): Observable<SubscriptionMessage<PersistentModel<unknown>, unknown>>;
 
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+		<
+			T extends PersistentModel<M>,
+			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+		>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			identifier: string
 		): Observable<SubscriptionMessage<T, M>>;
 
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+		<
+			T extends PersistentModel<M>,
+			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+		>(
 			modelConstructor: PersistentModelConstructor<T, M>,
 			criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll
 		): Observable<SubscriptionMessage<T, M>>;
@@ -1137,7 +1143,7 @@ class DataStore {
 		): Observable<SubscriptionMessage<T, M>>;
 	} = <
 		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = unknown
+		M extends PersistentModelMetaData = DefaultPersistentModelMetaData
 	>(
 		modelOrConstructor?: T | PersistentModelConstructor<T, M>,
 		identifierOrCriteria?:
@@ -1492,7 +1498,7 @@ class DataStore {
 		this.sync = undefined;
 	};
 
-	private processPagination<T extends PersistentModel>(
+	private processPagination<T extends PersistentModel<unknown>>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
 	): PaginationInput<T> | undefined {

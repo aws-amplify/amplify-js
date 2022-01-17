@@ -12,6 +12,7 @@ import {
 	PersistentModelConstructor,
 	DefaultPersistentModelMetaData,
 	PersistentModelMetaData,
+	IdentifierFields,
 } from '../src';
 import Observable from 'zen-observable-ts';
 
@@ -335,6 +336,50 @@ class CustomIdentifierDefaultRO {
 
 //#endregion
 
+describe('IdentifierFields', () => {
+	test('Types for identifiers match model definition', () => {
+		expectType<{ id: string }>({} as IdentifierFields<ManagedIdentifier<any>>);
+		expectType<{ id: string }>(
+			{} as IdentifierFields<ManagedIdentifier<{ id: string }>>
+		);
+
+		expectType<{ id?: string }>(
+			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }>>
+		);
+		expectType<{ id?: string }>(
+			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }>>
+		);
+
+		expectType<{ id: string }>(
+			{} as IdentifierFields<CustomIdentifier<any, 'id'>>
+		);
+		expectType<{ id: string }>(
+			{} as IdentifierFields<CustomIdentifier<{ id: string }, 'id'>>
+		);
+		expectType<{ myId: string }>(
+			{} as IdentifierFields<CustomIdentifier<{ myId: string }, 'myId'>>
+		);
+
+		expectType<{ tenant: string; company: number }>(
+			{} as IdentifierFields<
+				CompositeIdentifier<
+					{ tenant: string; company: number; someOtherField: boolean },
+					['tenant', 'company']
+				>
+			>
+		);
+
+		expectType<{ tenant: string; company: string }>(
+			{} as IdentifierFields<
+				CompositeIdentifier<
+					{ tenant: string; company: string; someOtherField: boolean },
+					['tenant', 'company']
+				>
+			>
+		);
+	});
+});
+
 describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	test('Observe all', () => {
 		DataStore.observe().subscribe(({ model, element }) => {
@@ -402,7 +447,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<LegacyNoMetadata>(
+			expectType<LegacyNoMetadata[]>(
 				await DataStore.delete(LegacyNoMetadata, '')
 			);
 			expectType<LegacyNoMetadata>(
@@ -515,7 +560,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<LegacyDefaultRO>(await DataStore.delete(LegacyDefaultRO, ''));
+			expectType<LegacyDefaultRO[]>(
+				await DataStore.delete(LegacyDefaultRO, '')
+			);
 			expectType<LegacyDefaultRO>(
 				await DataStore.delete(dummyInstance<LegacyDefaultRO>())
 			);
@@ -627,7 +674,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<LegacyCustomRO>(await DataStore.delete(LegacyCustomRO, ''));
+			expectType<LegacyCustomRO[]>(await DataStore.delete(LegacyCustomRO, ''));
 			expectType<LegacyCustomRO>(
 				await DataStore.delete(dummyInstance<LegacyCustomRO>())
 			);
@@ -747,7 +794,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<ManagedDefaultRO>(
+			expectType<ManagedDefaultRO[]>(
 				await DataStore.delete(ManagedDefaultRO, '')
 			);
 			expectType<ManagedDefaultRO>(
@@ -867,7 +914,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<ManagedCustomRO>(await DataStore.delete(ManagedCustomRO, ''));
+			expectType<ManagedCustomRO[]>(
+				await DataStore.delete(ManagedCustomRO, '')
+			);
 			expectType<ManagedCustomRO>(
 				await DataStore.delete(dummyInstance<ManagedCustomRO>())
 			);
@@ -996,7 +1045,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<OptionallyManagedDefaultRO>(
+			expectType<OptionallyManagedDefaultRO[]>(
 				await DataStore.delete(OptionallyManagedDefaultRO, '')
 			);
 			expectType<OptionallyManagedDefaultRO>(
@@ -1146,7 +1195,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<OptionallyManagedCustomRO>(
+			expectType<OptionallyManagedCustomRO[]>(
 				await DataStore.delete(OptionallyManagedCustomRO, '')
 			);
 			expectType<OptionallyManagedCustomRO>(
@@ -1273,7 +1322,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
-			expectType<CompositeDefaultRO>(
+			expectType<CompositeDefaultRO[]>(
 				await DataStore.delete(CompositeDefaultRO, '')
 			);
 			expectType<CompositeDefaultRO>(
@@ -1306,11 +1355,6 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<
 					PersistentModelConstructor<CompositeDefaultRO, CompositeDefaultROMETA>
 				>(model);
-				expectType<CompositeDefaultRO>(element);
-			});
-			let instance = dummyInstance<CompositeDefaultRO>();
-			DataStore.observe(instance).subscribe(({ model, element }) => {
-				expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
 				expectType<CompositeDefaultRO>(element);
 			});
 

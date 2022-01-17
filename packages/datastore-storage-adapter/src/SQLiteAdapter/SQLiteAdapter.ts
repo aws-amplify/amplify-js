@@ -427,7 +427,7 @@ export class SQLiteAdapter implements StorageAdapter {
 				this.getModelConstructorByModelName
 			);
 
-			const { id, _deleted } = item;
+			const { id, _deleted } = item as ModelInstanceMetadata & { id: string }; // TODO: not cool
 
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id

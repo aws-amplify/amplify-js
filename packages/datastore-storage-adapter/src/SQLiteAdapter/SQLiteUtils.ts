@@ -318,8 +318,9 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
 			);
 		} else if (isPredicateObj(predicate)) {
-			const [condition, conditionParams] =
-				whereConditionFromPredicateObject(predicate);
+			const [condition, conditionParams] = whereConditionFromPredicateObject(
+				<any>predicate
+			); // TODO: not cool
 
 			result.push(condition);
 			params.push(...conditionParams);
