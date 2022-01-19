@@ -959,7 +959,7 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_ios_push_notifications:
-    executor: macos-executor-legacy
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
     steps:
