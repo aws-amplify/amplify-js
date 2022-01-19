@@ -4,6 +4,7 @@ import {
 	MutableModel,
 	Schema,
 	InternalSchema,
+	CompositeIdentifier,
 } from '../src/types';
 
 export declare class Model {
@@ -37,12 +38,26 @@ export declare class Metadata {
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
+
+	constructor(init: ModelInit<Post>);
+
+	static copyOf(
+		src: Post,
+		mutator: (draft: MutableModel<Post>) => void | Post
+	): Post;
 }
 
 export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
 	public readonly post: Post;
+
+	constructor(init: ModelInit<Comment>);
+
+	static copyOf(
+		src: Comment,
+		mutator: (draft: MutableModel<Comment>) => void | Comment
+	): Comment;
 }
 
 export declare class User {
@@ -50,11 +65,25 @@ export declare class User {
 	public readonly name: string;
 	public readonly profile?: Profile;
 	public readonly profileID?: string;
+
+	constructor(init: ModelInit<User>);
+
+	static copyOf(
+		src: User,
+		mutator: (draft: MutableModel<User>) => void | User
+	): User;
 }
 export declare class Profile {
 	public readonly id: string;
 	public readonly firstName: string;
 	public readonly lastName: string;
+
+	constructor(init: ModelInit<Profile>);
+
+	static copyOf(
+		src: Profile,
+		mutator: (draft: MutableModel<Profile>) => void | Profile
+	): Profile;
 }
 
 export declare class PostComposite {
@@ -63,20 +92,21 @@ export declare class PostComposite {
 	public readonly description: string;
 	public readonly created: string;
 	public readonly sort: number;
+
+	constructor(init: ModelInit<PostComposite>);
+
+	static copyOf(
+		src: PostComposite,
+		mutator: (draft: MutableModel<PostComposite>) => void | PostComposite
+	): PostComposite;
 }
 
-export type PostCustomPKMetaData = {
-	identifier: CustomIdentifier<'postId'>;
+export type PostCustomPKMETA = {
+	identifier: CustomIdentifier<PostCustomPK, 'postId'>;
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
-
-export type PostCustomPKSortMetaData = {
-	identifier: CustomIdentifier<'postId'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
-
 export declare class PostCustomPK {
-	public readonly postId: string;
+	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly dateCreated: string;
@@ -84,19 +114,56 @@ export declare class PostCustomPK {
 	public readonly emails?: string[];
 	public readonly createdAt?: string;
 	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<PostCustomPK, PostCustomPKMETA>);
+
+	static copyOf(
+		src: PostCustomPK,
+		mutator: (
+			draft: MutableModel<PostCustomPK, PostCustomPKMETA>
+		) => void | PostCustomPK
+	): PostCustomPK;
 }
 
+type PostCustomPKSortMETA = {
+	identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
 export declare class PostCustomPKSort {
 	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
+
+	constructor(init: ModelInit<PostCustomPKSort, PostCustomPKSortMETA>);
+
+	static copyOf(
+		src: PostCustomPKSort,
+		mutator: (
+			draft: MutableModel<PostCustomPKSort, PostCustomPKSortMETA>
+		) => void | PostCustomPKSort
+	): PostCustomPKSort;
 }
+
+type PostCustomPKCompositeMETA = {
+	identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
+};
 export declare class PostCustomPKComposite {
 	public readonly id: string;
 	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly sort: number;
+
+	constructor(
+		init: ModelInit<PostCustomPKComposite, PostCustomPKCompositeMETA>
+	);
+
+	static copyOf(
+		src: PostCustomPKComposite,
+		mutator: (
+			draft: MutableModel<PostCustomPKComposite, PostCustomPKCompositeMETA>
+		) => void | PostCustomPKComposite
+	): PostCustomPKComposite;
 }
 
 export function testSchema(): Schema {

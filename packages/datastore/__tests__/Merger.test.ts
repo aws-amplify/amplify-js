@@ -7,7 +7,7 @@ import {
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
-	PostCustomPKMetaData as PostCustomPKMetaDataType,
+	PostCustomPKMETA as PostCustomPKMETAType,
 	testSchema,
 } from './helpers';
 
@@ -162,7 +162,7 @@ describe('Merger', () => {
 				({ PostCustomPK } = initSchema(testUserSchema) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				});
 

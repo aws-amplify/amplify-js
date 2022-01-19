@@ -50,7 +50,7 @@ export function extractPrimaryKeyFieldNames(
 	return [ID];
 }
 
-export function extractPrimaryKeyValues<T extends PersistentModel>(
+export function extractPrimaryKeyValues<T extends PersistentModel<any>>(
 	model: T,
 	keyFields: string[]
 ): string[] {
@@ -94,7 +94,7 @@ export const isNullOrUndefined = (val: any): boolean => {
 	return typeof val === 'undefined' || val === undefined || val === null;
 };
 
-export const validatePredicate = <T extends PersistentModel>(
+export const validatePredicate = <T extends PersistentModel<any>>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
 	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[]
@@ -124,7 +124,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
 		if (isPredicateObj(predicateOrGroup)) {
 			const { field, operator, operand } = predicateOrGroup;
-			const value = model[field];
+			const value = model[<keyof T>field];
 
 			return validatePredicateField(value, operator, operand);
 		}
@@ -182,11 +182,12 @@ export const validatePredicateField = <T>(
 	}
 };
 
-export const isModelConstructor = <T extends PersistentModel>(
+export const isModelConstructor = <T extends PersistentModel<any>>(
 	obj: any
-): obj is PersistentModelConstructor<T> => {
+): obj is PersistentModelConstructor<T, any> => {
 	return (
-		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
+		obj &&
+		typeof (<PersistentModelConstructor<T, any>>obj).copyOf === 'function'
 	);
 };
 
@@ -352,7 +353,7 @@ export const establishRelationAndKeys = (
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 
-export const traverseModel = <T extends PersistentModel>(
+export const traverseModel = <T extends PersistentModel<any>>(
 	srcModelName: string,
 	instance: T,
 	namespace: SchemaNamespace,
@@ -596,7 +597,7 @@ export function getNow() {
 	}
 }
 
-export function sortCompareFunction<T extends PersistentModel>(
+export function sortCompareFunction<T extends PersistentModel<unknown>>(
 	sortPredicates: SortPredicatesGroup<T>
 ) {
 	return function compareFunction(a, b) {

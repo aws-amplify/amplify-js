@@ -19,6 +19,7 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	RelationType,
+	ModelInit,
 } from '../../types';
 import {
 	exhaustiveCheck,
@@ -42,7 +43,7 @@ class IndexedDBAdapter implements Adapter {
 	private getModelConstructorByModelName: (
 		namsespaceName: string,
 		modelName: string
-	) => PersistentModelConstructor<any>;
+	) => PersistentModelConstructor<any, any>;
 	private db: idb.IDBPDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
@@ -64,7 +65,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private getStorenameForModel(
-		modelConstructor: PersistentModelConstructor<any>
+		modelConstructor: PersistentModelConstructor<any, any>
 	) {
 		const namespace = this.namespaceResolver(modelConstructor);
 		const { name: modelName } = modelConstructor;
@@ -97,9 +98,11 @@ class IndexedDBAdapter implements Adapter {
 		return ['id'];
 	}
 
-	private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
+	private getIndexKeyValues<T extends PersistentModel<any>>(
+		model: T
+	): string[] {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+			.constructor as PersistentModelConstructor<T, any>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
 
@@ -122,7 +125,7 @@ class IndexedDBAdapter implements Adapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>,
+		) => PersistentModelConstructor<any, any>,
 		sessionId?: string
 	) {
 		await this.checkPrivate();
@@ -265,13 +268,13 @@ class IndexedDBAdapter implements Adapter {
 		return result;
 	}
 
-	async save<T extends PersistentModel>(
+	async save<T extends PersistentModel<any>>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
+			.constructor as PersistentModelConstructor<T, any>;
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -418,8 +421,8 @@ class IndexedDBAdapter implements Adapter {
 		);
 	}
 
-	async query<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
+	async query<T extends PersistentModel<any>>(
+		modelConstructor: PersistentModelConstructor<T, any>,
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
@@ -462,7 +465,7 @@ class IndexedDBAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getByKey<T extends PersistentModel>(
+	private async getByKey<T extends PersistentModel<unknown>>(
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
@@ -470,13 +473,13 @@ class IndexedDBAdapter implements Adapter {
 		return record;
 	}
 
-	private async getAll<T extends PersistentModel>(
+	private async getAll<T extends PersistentModel<unknown>>(
 		storeName: string
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
 
-	private keyValueFromPredicate<T extends PersistentModel>(
+	private keyValueFromPredicate<T extends PersistentModel<unknown>>(
 		predicates: PredicatesGroup<T>,
 		keyPath: string[]
 	): string[] | undefined {
@@ -499,7 +502,7 @@ class IndexedDBAdapter implements Adapter {
 		return keyValues.length === keyPath.length ? keyValues : undefined;
 	}
 
-	private async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel<unknown>>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
@@ -514,7 +517,7 @@ class IndexedDBAdapter implements Adapter {
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel>(
+	private inMemoryPagination<T extends PersistentModel<unknown>>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
@@ -540,7 +543,7 @@ class IndexedDBAdapter implements Adapter {
 		return records;
 	}
 
-	private async enginePagination<T extends PersistentModel>(
+	private async enginePagination<T extends PersistentModel<unknown>>(
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
@@ -580,8 +583,8 @@ class IndexedDBAdapter implements Adapter {
 		return result;
 	}
 
-	async queryOne<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
+	async queryOne<T extends PersistentModel<any>>(
+		modelConstructor: PersistentModelConstructor<T, any>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		await this.checkPrivate();
@@ -597,8 +600,8 @@ class IndexedDBAdapter implements Adapter {
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
-	async delete<T extends PersistentModel>(
-		modelOrModelConstructor: T | PersistentModelConstructor<T>,
+	async delete<T extends PersistentModel<any>>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T, any>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
 		await this.checkPrivate();
@@ -658,7 +661,7 @@ class IndexedDBAdapter implements Adapter {
 			const model = modelOrModelConstructor;
 
 			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T>;
+				.constructor as PersistentModelConstructor<T, any>;
 			const namespaceName = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
@@ -728,7 +731,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
-	private async deleteItem<T extends PersistentModel>(
+	private async deleteItem<T extends PersistentModel<any>>(
 		deleteQueue?: {
 			storeName: string;
 			items: T[] | IDBValidKey[];
@@ -763,7 +766,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
-	private async deleteTraverse<T extends PersistentModel>(
+	private async deleteTraverse<T extends PersistentModel<any>>(
 		relations: RelationType[],
 		models: T[],
 		srcModel: string,
@@ -873,8 +876,8 @@ class IndexedDBAdapter implements Adapter {
 		this.initPromise = undefined;
 	}
 
-	async batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<any>,
+	async batchSave<T extends PersistentModel<any>>(
+		modelConstructor: PersistentModelConstructor<any, any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {

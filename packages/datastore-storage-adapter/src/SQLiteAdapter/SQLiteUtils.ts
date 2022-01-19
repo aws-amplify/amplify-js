@@ -177,7 +177,7 @@ export function modelCreateTableStatement(
 }
 
 export function modelInsertStatement(
-	model: PersistentModel,
+	model: PersistentModel<any>,
 	tableName: string
 ): ParameterizedStatement {
 	const keys = keysFromModel(model);
@@ -189,7 +189,7 @@ export function modelInsertStatement(
 }
 
 export function modelUpdateStatement(
-	model: PersistentModel,
+	model: PersistentModel<any>,
 	tableName: string
 ): ParameterizedStatement {
 	const [paramaterized, values] = updateSet(model);
@@ -318,8 +318,9 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
 			);
 		} else if (isPredicateObj(predicate)) {
-			const [condition, conditionParams] =
-				whereConditionFromPredicateObject(predicate);
+			const [condition, conditionParams] = whereConditionFromPredicateObject(
+				<any>predicate
+			); // TODO: not cool
 
 			result.push(condition);
 			params.push(...conditionParams);

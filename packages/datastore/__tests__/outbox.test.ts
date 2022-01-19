@@ -17,8 +17,8 @@ import {
 	InternalSchema,
 	SchemaModel,
 } from '../src/types';
-import { MutationEvent } from '../src/sync/';
-import { USER } from '../src/util';
+import { MutationEvent, MutationEventMetadata } from '../src/sync/';
+import { USER, extractPrimaryKeyFieldNames } from '../src/util';
 
 let initSchema: typeof initSchemaType;
 // using <any> to access private members
@@ -345,7 +345,7 @@ async function instantiateOutbox(): Promise<void> {
 
 	const MutationEvent = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<any>;
+	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 
 	await DataStore.start();
 
@@ -371,10 +371,14 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 
 	const MutationEventConstructor = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent>;
+	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;
+
+	const modelDefinition = testSchema().models[modelConstructor.name];
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+	const xxx = keyFields.map(f => model[f]).join('#');
 
 	return createMutationInstanceFromModelOperation(
 		undefined,
@@ -384,7 +388,8 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		originalElement,
 		{},
 		MutationEventConstructor,
-		modelInstanceCreator
+		modelInstanceCreator,
+		xxx // TODO: not cool
 	);
 }
 

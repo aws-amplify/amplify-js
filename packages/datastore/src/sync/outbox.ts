@@ -1,4 +1,4 @@
-import { MutationEvent } from './index';
+import { MutationEvent, MutationEventMetadata } from './index';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	ExclusiveStorage as Storage,
@@ -22,7 +22,10 @@ class MutationEventOutbox {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly MutationEvent: PersistentModelConstructor<
+			MutationEvent,
+			MutationEventMetadata
+		>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly ownSymbol: Symbol
 	) {}
@@ -125,7 +128,7 @@ class MutationEventOutbox {
 		return head;
 	}
 
-	public async getForModel<T extends PersistentModel>(
+	public async getForModel<T extends PersistentModel<any>>(
 		storage: StorageFacade,
 		model: T,
 		userModelDefinition: SchemaModel

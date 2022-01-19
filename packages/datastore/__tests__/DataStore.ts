@@ -18,7 +18,7 @@ import {
 	Model,
 	Metadata,
 	PostCustomPK as PostCustomPKType,
-	PostCustomPKMetaData as PostCustomPKMetaDataType,
+	PostCustomPKMETA as PostCustomPKMETAType,
 	testSchema,
 } from './helpers';
 
@@ -1198,8 +1198,10 @@ describe('DataStore tests', () => {
 		describe('Observe', () => {
 			test('subscribe to all models', async () => {
 				DataStore.observe().subscribe(({ element, model }) => {
-					expectType<PersistentModelConstructor<PersistentModel>>(model);
-					expectType<PersistentModel>(element);
+					expectType<
+						PersistentModelConstructor<PersistentModel<unknown>, unknown>
+					>(model);
+					expectType<PersistentModel<unknown>>(element);
 				});
 			});
 			test('subscribe to model instance', async () => {
@@ -1209,13 +1211,13 @@ describe('DataStore tests', () => {
 				});
 
 				DataStore.observe(model).subscribe(({ element, model }) => {
-					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<PersistentModelConstructor<Model, any>>(model);
 					expectType<Model>(element);
 				});
 			});
 			test('subscribe to model', async () => {
 				DataStore.observe(Model).subscribe(({ element, model }) => {
-					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<PersistentModelConstructor<Model, any>>(model);
 					expectType<Model>(element);
 				});
 			});
@@ -1281,7 +1283,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1296,7 +1298,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1317,7 +1319,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1338,7 +1340,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1365,7 +1367,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1387,7 +1389,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1405,7 +1407,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1423,7 +1425,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1449,7 +1451,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1501,7 +1503,7 @@ describe('DataStore tests', () => {
 				({ PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				});
 
@@ -1526,7 +1528,7 @@ describe('DataStore tests', () => {
 				({ PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				});
 
@@ -1539,7 +1541,7 @@ describe('DataStore tests', () => {
 		describe('Basic operations', () => {
 			let PostCustomPK: PersistentModelConstructor<
 				PostCustomPKType,
-				PostCustomPKMetaDataType
+				PostCustomPKMETAType
 			>;
 			let Metadata: NonModelTypeConstructor<Metadata>;
 
@@ -1564,7 +1566,7 @@ describe('DataStore tests', () => {
 				({ PostCustomPK, Metadata } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 					Metadata: NonModelTypeConstructor<Metadata>;
 				});
@@ -1600,7 +1602,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1649,7 +1651,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1708,7 +1710,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1794,7 +1796,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -1921,7 +1923,7 @@ describe('DataStore tests', () => {
 				({ PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				});
 				await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
@@ -1994,7 +1996,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -2051,7 +2053,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -2105,7 +2107,7 @@ describe('DataStore tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPKType,
-						PostCustomPKMetaDataType
+						PostCustomPKMETAType
 					>;
 				};
 
@@ -2176,7 +2178,7 @@ describe('DataStore tests', () => {
 			describe('Type definitions', () => {
 				let PostCustomPK: PersistentModelConstructor<
 					PostCustomPKType,
-					PostCustomPKMetaDataType
+					PostCustomPKMETAType
 				>;
 
 				beforeEach(() => {
@@ -2202,7 +2204,7 @@ describe('DataStore tests', () => {
 					({ PostCustomPK } = classes as {
 						PostCustomPK: PersistentModelConstructor<
 							PostCustomPKType,
-							PostCustomPKMetaDataType
+							PostCustomPKMETAType
 						>;
 					});
 

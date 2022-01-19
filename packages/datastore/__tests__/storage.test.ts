@@ -10,11 +10,12 @@ import {
 	Comment,
 	PostComposite,
 	PostCustomPK,
-	PostCustomPKMetaData,
+	PostCustomPKMETA,
 	PostCustomPKSort,
-	PostCustomPKSortMetaData,
+	PostCustomPKSortMETA,
 	PostCustomPKComposite,
 	testSchema,
+	PostCustomPKMETA,
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
@@ -542,7 +543,7 @@ describe('Storage tests', () => {
 				const { PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<
 						PostCustomPK,
-						PostCustomPKMetaData
+						PostCustomPKMETA
 					>;
 				};
 
@@ -575,7 +576,7 @@ describe('Storage tests', () => {
 				const { PostCustomPKSort } = classes as {
 					PostCustomPKSort: PersistentModelConstructor<
 						PostCustomPKSort,
-						PostCustomPKSortMetaData
+						PostCustomPKSortMETA
 					>;
 				};
 

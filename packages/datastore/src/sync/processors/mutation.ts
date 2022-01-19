@@ -5,7 +5,7 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
-import { MutationEvent } from '../';
+import { MutationEvent, MutationEventMetadata } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
@@ -59,7 +59,10 @@ class MutationProcessor {
 		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly MutationEvent: PersistentModelConstructor<
+			MutationEvent,
+			MutationEventMetadata
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly conflictHandler?: ConflictHandler,
@@ -133,7 +136,7 @@ class MutationProcessor {
 			const { model, operation, data, condition } = head;
 			const modelConstructor = this.userClasses[
 				model
-			] as PersistentModelConstructor<MutationEvent>;
+			] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
 			let result: GraphQLResult<Record<string, PersistentModel>>;
 			let opName: string;
 			let modelDefinition: SchemaModel;
@@ -234,8 +237,11 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<PersistentModel>,
-		MutationEvent: PersistentModelConstructor<MutationEvent>,
+		modelConstructor: PersistentModelConstructor<PersistentModel, any>,
+		MutationEvent: PersistentModelConstructor<
+			MutationEvent,
+			MutationEventMetadata
+		>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE
 	): Promise<
@@ -247,8 +253,11 @@ class MutationProcessor {
 				operation: TransformerMutationType,
 				data: string,
 				condition: string,
-				modelConstructor: PersistentModelConstructor<PersistentModel>,
-				MutationEvent: PersistentModelConstructor<MutationEvent>,
+				modelConstructor: PersistentModelConstructor<PersistentModel, any>,
+				MutationEvent: PersistentModelConstructor<
+					MutationEvent,
+					MutationEventMetadata
+				>,
 				mutationEvent: MutationEvent
 			) => {
 				const [query, variables, graphQLCondition, opName, modelDefinition] =
@@ -442,7 +451,8 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			deleteInput['id'] = parsedData.id;
+			// TODO: what if it was renamed?
+			deleteInput['id'] = (<any>parsedData).id;
 		}
 
 		const filteredData =
