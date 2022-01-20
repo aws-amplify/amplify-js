@@ -1149,7 +1149,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - rn-tests-fix
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1548,7 +1547,7 @@ workflows:
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
-            # - integ_rn_android_storage_multipart_progress
+            - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
             - integ_rn_ios_datastore_sqlite_adapter
@@ -1557,10 +1556,10 @@ workflows:
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_geo
-      # - post_release:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - release
-      #     requires:
-      #       - deploy
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
