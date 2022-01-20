@@ -229,7 +229,7 @@ commands:
             yarn global add detox-cli
       - run:
           name: Detox Build
-          command: ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox build -c ios.sim.debug' -n 3
+          command: detox build -c ios.sim.debug
       - run:
           environment:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
