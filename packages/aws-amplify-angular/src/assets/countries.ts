@@ -168,6 +168,7 @@ const countrylist = [
 	{ countryCode: 'NP', value: '670', label: 'Northern Marianas (+670)' },
 	{ countryCode: 'NO', value: '47', label: 'Norway (+47)' },
 	{ countryCode: 'OM', value: '968', label: 'Oman (+968)' },
+	{ countryCode: 'PK', value: '92', label: 'Pakistan (+92)' },
 	{ countryCode: 'PW', value: '680', label: 'Palau (+680)' },
 	{ countryCode: 'PA', value: '507', label: 'Panama (+507)' },
 	{ countryCode: 'PG', value: '675', label: 'Papua New Guinea (+675)' },
