@@ -32,4 +32,5 @@ export interface Adapter extends SystemComponent {
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]>;
+	getDebugInfo?(): Promise<any>;
 }

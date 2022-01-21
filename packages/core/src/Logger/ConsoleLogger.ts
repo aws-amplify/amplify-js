@@ -15,6 +15,7 @@ import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
+import { Amplify } from '../Amplify';
 
 const LOG_LEVELS = {
 	VERBOSE: 1,
@@ -24,6 +25,8 @@ const LOG_LEVELS = {
 	ERROR: 5,
 };
 
+const COMPATIBLE_PLUGINS = [AWS_CLOUDWATCH_CATEGORY];
+
 export enum LOG_TYPE {
 	DEBUG = 'DEBUG',
 	ERROR = 'ERROR',
@@ -31,6 +34,14 @@ export enum LOG_TYPE {
 	WARN = 'WARN',
 	VERBOSE = 'VERBOSE',
 }
+
+const cloudWatchExcludeList = [
+	'AWSCloudWatch',
+	'Amplify',
+	'Credentials',
+	'AuthClass',
+	'CloudLogger',
+];
 
 /**
  * Write logs
@@ -41,6 +52,7 @@ export class ConsoleLogger implements Logger {
 	level: LOG_TYPE | string;
 	private _pluggables: LoggingProvider[];
 	private _config: object;
+	private static _globalpluggables: LoggingProvider[] = [];
 
 	/**
 	 * @constructor
@@ -50,9 +62,21 @@ export class ConsoleLogger implements Logger {
 		this.name = name;
 		this.level = level;
 		this._pluggables = [];
+		this.addPluggable = this.addPluggable.bind(this);
 	}
 
 	static LOG_LEVEL = null;
+	static CLOUD_LOG_LEVEL = null;
+	static globalPluggables(pluggable: LoggingProvider) {
+		if (pluggable && COMPATIBLE_PLUGINS.includes(pluggable.getCategoryName())) {
+			ConsoleLogger._globalpluggables.push(pluggable);
+		}
+	}
+
+	static clearGlobalPluggables() {
+		ConsoleLogger._globalpluggables = [];
+	}
+	static connectivity;
 
 	_padding(n) {
 		return n < 10 ? '0' + n : '' + n;
@@ -77,6 +101,20 @@ export class ConsoleLogger implements Logger {
 		return this._config;
 	}
 
+	_checkPluggables() {
+		if (this._pluggables.length !== ConsoleLogger._globalpluggables.length) {
+			if (ConsoleLogger._globalpluggables.length > 0) {
+				Amplify.register(this);
+				ConsoleLogger._globalpluggables.forEach(this.addPluggable);
+				return;
+			}
+
+			if (ConsoleLogger._globalpluggables.length === 0) {
+				this._pluggables = [];
+			}
+		}
+	}
+
 	/**
 	 * Write log
 	 * @method
@@ -85,6 +123,39 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	_log(type: LOG_TYPE | string, ...msg) {
+		if (!cloudWatchExcludeList.includes(this.name)) {
+			this._checkPluggables();
+		}
+
+		const generateMessage = (msg: any[]): void => {};
+
+		const generateCloudMessage = (msg: any[]) => {
+			let message = '';
+			let data;
+
+			if (msg.length === 1 && typeof msg[0] === 'string') {
+				message = msg[0];
+			} else if (msg.length === 1) {
+				data = msg[0];
+			} else if (typeof msg[0] === 'string') {
+				let obj = msg.slice(1);
+				if (obj.length === 1) {
+					obj = obj[0];
+				}
+				message = msg[0];
+				data = obj;
+			} else {
+				data = msg;
+			}
+
+			return JSON.stringify({
+				level: type,
+				class: this.name,
+				message,
+				data,
+			});
+		};
+
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -94,43 +165,60 @@ export class ConsoleLogger implements Logger {
 		}
 		const logger_level = LOG_LEVELS[logger_level_name];
 		const type_level = LOG_LEVELS[type];
-		if (!(type_level >= logger_level)) {
-			// Do nothing if type is not greater than or equal to logger level (handle undefined)
-			return;
-		}
+		if (type_level >= logger_level) {
+			let log = console.log.bind(console);
 
-		let log = console.log.bind(console);
-		if (type === LOG_TYPE.ERROR && console.error) {
-			log = console.error.bind(console);
-		}
-		if (type === LOG_TYPE.WARN && console.warn) {
-			log = console.warn.bind(console);
-		}
-
-		const prefix = `[${type}] ${this._ts()} ${this.name}`;
-		let message = '';
-
-		if (msg.length === 1 && typeof msg[0] === 'string') {
-			message = `${prefix} - ${msg[0]}`;
-			log(message);
-		} else if (msg.length === 1) {
-			message = `${prefix} ${msg[0]}`;
-			log(prefix, msg[0]);
-		} else if (typeof msg[0] === 'string') {
-			let obj = msg.slice(1);
-			if (obj.length === 1) {
-				obj = obj[0];
+			if (type === LOG_TYPE.ERROR && console.error) {
+				log = console.error.bind(console);
 			}
-			message = `${prefix} - ${msg[0]} ${obj}`;
-			log(`${prefix} - ${msg[0]}`, obj);
-		} else {
-			message = `${prefix} ${msg}`;
-			log(prefix, msg);
+			if (type === LOG_TYPE.WARN && console.warn) {
+				log = console.warn.bind(console);
+			}
+
+			const prefix = `[${type}] ${this._ts()} ${this.name}`;
+			let message = '';
+			let data;
+
+			if (msg.length === 1 && typeof msg[0] === 'string') {
+				message = msg[0];
+				log(`${prefix} - ${message}`);
+			} else if (msg.length === 1) {
+				data = msg[0];
+				log(prefix, data);
+			} else if (typeof msg[0] === 'string') {
+				let obj = msg.slice(1);
+				if (obj.length === 1) {
+					obj = obj[0];
+				}
+				message = msg[0];
+				data = obj;
+				log(`${prefix} - ${message}`, data);
+			} else {
+				data = msg;
+				log(prefix, data);
+			}
 		}
 
-		for (const plugin of this._pluggables) {
-			const logEvent: InputLogEvent = { message, timestamp: Date.now() };
-			plugin.pushLogs([logEvent]);
+		if (
+			ConsoleLogger.CLOUD_LOG_LEVEL != null &&
+			!cloudWatchExcludeList.includes(this.name)
+		) {
+			const cloudMessage = generateCloudMessage(msg);
+			for (const plugin of this._pluggables) {
+				const logger_level = LOG_LEVELS[ConsoleLogger.CLOUD_LOG_LEVEL];
+				const type_level = LOG_LEVELS[type];
+
+				const logEvent: InputLogEvent = {
+					message: cloudMessage,
+					timestamp: Date.now(),
+				};
+
+				if (type_level >= logger_level) {
+					plugin.pushLogs([logEvent]);
+				} else {
+					plugin.pushLogs([]);
+				}
+			}
 		}
 	}
 
@@ -195,9 +283,8 @@ export class ConsoleLogger implements Logger {
 	}
 
 	addPluggable(pluggable: LoggingProvider) {
-		if (pluggable && pluggable.getCategoryName() === AWS_CLOUDWATCH_CATEGORY) {
+		if (pluggable && COMPATIBLE_PLUGINS.includes(pluggable.getCategoryName())) {
 			this._pluggables.push(pluggable);
-			pluggable.configure(this._config);
 		}
 	}
 

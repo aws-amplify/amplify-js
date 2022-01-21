@@ -10,6 +10,7 @@ import {
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	ParameterizedStatement,
+	recordCountStatement,
 } from './SQLiteUtils';
 
 import {
@@ -31,6 +32,18 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
+
+enum NAMESPACES {
+	DATASTORE = 'datastore',
+	USER = 'user',
+	SYNC = 'sync',
+	STORAGE = 'storage',
+}
+
+const DATASTORE = NAMESPACES.DATASTORE;
+const USER = NAMESPACES.USER;
+const SYNC = NAMESPACES.SYNC;
+const STORAGE = NAMESPACES.STORAGE;
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -472,6 +485,31 @@ export class SQLiteAdapter implements StorageAdapter {
 		await this.db.batchSave(saveStatements, deleteStatements);
 
 		return result;
+	}
+
+	public async getDebugInfo(): Promise<any> {
+		/*
+		 * Model MetaData
+		 * Mutation Queue count and head
+		 * Log record count per user table
+		 */
+
+		const queryStatements = new Set<ParameterizedStatement>();
+		const queryResponses = [];
+
+		queryResponses.push(
+			...(await this.db.getAll(...queryAllStatement('ModelMetadata')))
+		);
+
+		queryStatements.add(recordCountStatement('MutationEvent'));
+		queryStatements.add(queryOneStatement(QueryOne.FIRST, 'MutationEvent'));
+
+		Object.values(this.schema.namespaces[USER].models).forEach(model => {
+			queryStatements.add(recordCountStatement(model.name));
+		});
+
+		queryResponses.push(...(await this.db.batchQuery(queryStatements)));
+		return queryResponses;
 	}
 }
 

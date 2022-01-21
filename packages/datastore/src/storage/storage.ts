@@ -371,6 +371,13 @@ class StorageClass implements StorageFacade {
 			_deleted,
 		};
 	}
+
+	async logDebugInfo() {
+		if (typeof this.adapter.getDebugInfo === 'function') {
+			const results = await this.adapter.getDebugInfo();
+			logger.debug('DB Debug Info', results);
+		}
+	}
 }
 
 class ExclusiveStorage implements StorageFacade {
@@ -480,6 +487,10 @@ class ExclusiveStorage implements StorageFacade {
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		return this.storage.batchSave(modelConstructor, items);
+	}
+
+	async logDebugInfo(): Promise<void> {
+		return this.runExclusive(storage => storage.logDebugInfo());
 	}
 
 	async init() {

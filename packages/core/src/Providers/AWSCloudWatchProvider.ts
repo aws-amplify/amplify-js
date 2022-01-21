@@ -39,6 +39,7 @@ import {
 	AWSCloudWatchProviderOptions,
 	CloudWatchDataTracker,
 	LoggingProvider,
+	AmplifyConfigure,
 } from '../types/types';
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
@@ -54,8 +55,12 @@ import {
 	RETRY_ERROR_CODES,
 } from '../Util/Constants';
 
-const logger = new Logger('AWSCloudWatch');
+if (!window || !window.TextEncoder) {
+	require('fast-text-encoding');
+}
 
+const logger = new Logger('AWSCloudWatch');
+const INTERVAL = 30000;
 class AWSCloudWatchProvider implements LoggingProvider {
 	static readonly PROVIDER_NAME = AWS_CLOUDWATCH_PROVIDER_NAME;
 	static readonly CATEGORY = AWS_CLOUDWATCH_CATEGORY;
@@ -65,16 +70,28 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	private _currentLogBatch: InputLogEvent[];
 	private _timer;
 	private _nextSequenceToken: string | undefined;
+	private _processing: boolean;
+	private _initialized = false;
+	private _preFlightCheck: () => Promise<boolean>;
 
-	constructor(config?: AWSCloudWatchProviderOptions) {
-		this.configure(config);
-		this._dataTracker = {
-			eventUploadInProgress: false,
-			logEvents: [],
-		};
-		this._currentLogBatch = [];
-		this._initiateLogPushInterval();
+	constructor(config?: AmplifyConfigure) {
+		console.log('cstr', config);
+		if (!this._initialized) {
+			this.configure(config);
+
+			this._dataTracker = {
+				eventUploadInProgress: false,
+				logEvents: [],
+				verifiedLogGroup: { logGroupName: this._config.logGroupName },
+			};
+
+			this._currentLogBatch = [];
+			this._initiateLogPushInterval();
+			this._initialized = true;
+		}
 	}
+
+	// public static instance: AWSCloudWatchProvider;
 
 	public getProviderName(): string {
 		return AWSCloudWatchProvider.PROVIDER_NAME;
@@ -88,9 +105,13 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		return this._dataTracker.logEvents;
 	}
 
-	public configure(
-		config?: AWSCloudWatchProviderOptions
-	): AWSCloudWatchProviderOptions {
+	public setPreFlightCheck(cb): void {
+		if (typeof cb === 'function') {
+			this._preFlightCheck = cb;
+		}
+	}
+
+	public configure(config?: AmplifyConfigure): AWSCloudWatchProviderOptions {
 		if (!config) return this._config || {};
 
 		const conf = Object.assign(
@@ -217,8 +238,25 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	}
 
 	public pushLogs(logs: InputLogEvent[]): void {
-		logger.debug('pushing log events to Cloudwatch...');
-		this._dataTracker.logEvents = [...this._dataTracker.logEvents, ...logs];
+		logger.debug('pushing log events to Cloudwatch buffer');
+		this._dataTracker.logEvents = this._dataTracker.logEvents.concat(logs);
+	}
+
+	public pause() {
+		this._processing = false;
+		if (this._timer) {
+			clearInterval(this._timer);
+		}
+	}
+
+	public resume() {
+		this._processing = true;
+		this._initiateLogPushInterval();
+	}
+
+	public clear() {
+		this._dataTracker.logEvents = [];
+		this._currentLogBatch = [];
 	}
 
 	private async _validateLogGroupExistsAndCreate(
@@ -394,6 +432,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			 * We also need to ensure that the logs in the batch are sorted in chronological order.
 			 * https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutLogEvents.html
 			 */
+			if (!(await this._preFlightCheck())) {
+				this.clear();
+				return;
+			}
+
 			const seqToken = await this._getNextSequenceToken();
 			const logBatch =
 				this._currentLogBatch.length === 0
@@ -509,8 +552,9 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				logger.error(
 					`error when calling _safeUploadLogEvents in the timer interval - ${err}`
 				);
+				this.pause();
 			}
-		}, 2000);
+		}, INTERVAL);
 	}
 
 	private _getDocUploadPermissibility(): boolean {

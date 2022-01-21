@@ -206,6 +206,12 @@ export function queryByIdStatement(
 	return [`SELECT * FROM "${tableName}" WHERE "id" = ?`, [id]];
 }
 
+export function recordCountStatement(
+	tableName: string
+): ParameterizedStatement {
+	return [`SELECT COUNT(*) AS "${tableName} - count" FROM "${tableName}"`, []];
+}
+
 /*
 	Predicates supported by DataStore:
 

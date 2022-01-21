@@ -728,6 +728,9 @@ class DataStore {
 
 		await this.storage.init();
 
+		logger.debug('Debug info before sync');
+		await this.storage.logDebugInfo();
+
 		await checkSchemaVersion(this.storage, schema.version);
 
 		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
@@ -767,6 +770,12 @@ class DataStore {
 							this.initResolve();
 						}
 
+						if (type === ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY) {
+							logger.debug('Debug info after sync');
+							this.storage.logDebugInfo();
+						}
+
+						logger.debug({ event: type, data });
 						Hub.dispatch('datastore', {
 							event: type,
 							data,

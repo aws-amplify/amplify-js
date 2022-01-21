@@ -45,6 +45,10 @@ export interface LoggingProvider {
 
 	// take logs and push to provider
 	pushLogs(logs: InputLogEvent[]): void;
+
+	// pause sending logs
+	pause(): void;
+	resume(): void;
 }
 
 export interface AWSCloudWatchProviderOptions {
@@ -55,8 +59,21 @@ export interface AWSCloudWatchProviderOptions {
 	endpoint?: string;
 }
 
+export interface AmplifyConfigure {
+	Logging: {
+		logGroupName: string;
+		logStreamName: string;
+	};
+}
+
 export interface CloudWatchDataTracker {
 	eventUploadInProgress: boolean;
 	logEvents: InputLogEvent[];
 	verifiedLogGroup?: LogGroup;
+}
+
+export interface AmazonKinesisLoggerOptions {
+	region?: string;
+	credentials?: Credentials;
+	endpoint?: string;
 }
