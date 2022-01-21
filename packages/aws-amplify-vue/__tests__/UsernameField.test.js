@@ -52,7 +52,7 @@ describe('UsernameField', () => {
 			wrapper
 				.findAll('input')
 				.at(0)
-				.trigger('keyup');
+				.trigger('input');
 			expect(mockEmailChanged).toBeCalled();
 		});
 	});
@@ -86,7 +86,7 @@ describe('UsernameField', () => {
 			wrapper
 				.findAll('input')
 				.at(0)
-				.trigger('keyup');
+				.trigger('input');
 			expect(mockUsernameChanged).toBeCalled();
 		});
 	});

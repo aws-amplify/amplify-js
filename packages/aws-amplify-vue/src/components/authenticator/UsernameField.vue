@@ -18,8 +18,7 @@ limitations under the License. */
 				v-model="username"
 				:placeholder="$Amplify.I18n.get(`Enter your ${getUsernameLabel()}`)"
 				autofocus
-				v-on:keyup="usernameChanged"
-				v-on:input="username = $event.target.value"
+				v-on:input="usernameChanged"
 				v-bind:data-test="auth.genericAttrs.usernameInput"
 			/>
 		</div>
@@ -32,8 +31,7 @@ limitations under the License. */
 				v-model="email"
 				:placeholder="$Amplify.I18n.get('Enter your email')"
 				autofocus
-				v-on:keyup="emailChanged"
-				v-on:input="email = $event.target.value"
+				v-on:input="emailChanged"
 				v-bind:data-test="auth.genericAttrs.emailInput"
 			/>
 		</div>
@@ -110,13 +108,15 @@ export default {
 				phoneNumber,
 			});
 		},
-		emailChanged() {
+		emailChanged(e) {
+			this.email = e.target.value;
 			this.$emit('username-field-changed', {
 				usernameField: 'email',
 				email: this.email,
 			});
 		},
-		usernameChanged() {
+		usernameChanged(e) {
+			this.username = e.target.value;
 			this.$emit('username-field-changed', {
 				usernameField: 'username',
 				username: this.username,
