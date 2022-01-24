@@ -249,11 +249,9 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints = await locationProvider.searchByText(
-				testString,
-				searchOptions
-			);
-			expect(resultsWithConstraints).rejects.toThrow(
+			await expect(
+				locationProvider.searchByText(testString, searchOptions)
+			).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});

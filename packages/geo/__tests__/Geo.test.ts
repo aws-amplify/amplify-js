@@ -287,11 +287,7 @@ describe('Geo', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints = await geo.searchByText(
-				testString,
-				searchOptions
-			);
-			expect(resultsWithConstraints).rejects.toThrow(
+			await expect(geo.searchByText(testString, searchOptions)).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});
