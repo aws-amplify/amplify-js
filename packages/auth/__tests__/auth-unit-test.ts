@@ -2808,7 +2808,6 @@ describe('auth unit test', () => {
 			spy2.mockClear();
 		});
 
-		// I am not sure if we need this, I just want to test that Auth.ts would return the error message back from cognito
 		test('cognito deleteUser call fails...', async () => {
 			const spy1 = jest
 				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')

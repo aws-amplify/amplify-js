@@ -1142,7 +1142,6 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public async deleteUser(): Promise<void | string> {
-		// const that = this;
 		return new Promise((res, rej) => {
 			if (this.userPool) {
 				const user = this.userPool.getCurrentUser();
@@ -1153,21 +1152,27 @@ export class AuthClass {
 				} else {
 					user.getSession(async (err, session) => {
 						if (err) {
-							logger.debug('Failed to get user session', err);
-							rej(new Error('User session does not exist'));
+							logger.debug(err);
+							rej(err);
 						} else {
 							await user.deleteUser((err, result) => {
 								if (err) {
 									rej(err);
 								} else {
-									user.signOut();
+									dispatchAuthEvent(
+										'userDeleted',
+										result,
+										'The authenticated user has been deleted.'
+									);
+
 									dispatchAuthEvent(
 										'signOut',
-										this.user,
+										user,
 										`A user has been signed out`
 									);
 									this.user = null;
-									logger.debug('User was successfully deleted.');
+
+									logger.debug('User deleted successfully.');
 									res(result);
 								}
 							});

@@ -951,6 +951,23 @@ jobs:
           sample_name: device-tracking
           spec: device-tracking
           browser: << parameters.browser >>
+
+  integ_react_delete_user:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'delete-user'
+          framework: react
+          category: auth
+          sample_name: delete-user
+          spec: delete-user
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor-legacy
     <<: *test_env_vars
@@ -1151,11 +1168,12 @@ jobs:
 releasable_branches: &releasable_branches
   branches:
     only:
-      - release
-      - main
-      - ui-components/main
-      - 1.0-stable
-      - geo/main
+      # - release
+      # - main
+      # - ui-components/main
+      # - 1.0-stable
+      # - geo/main
+      - delete-user
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1524,49 +1542,50 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
-            - integ_react_predictions
-            - integ_react_datastore
-            - integ_react_datastore_v2
-            - integ_react_datastore_multi_auth_one_rule
-            - integ_react_datastore_multi_auth_one_rule_v2
-            - integ_react_datastore_multi_auth_two_rules
-            - integ_react_datastore_multi_auth_two_rules_v2
-            - integ_react_datastore_multi_auth_three_plus_rules
-            - integ_react_datastore_multi_auth_three_plus_rules_v2
-            - integ_react_datastore_subs_disabled
-            - integ_react_datastore_subs_disabled_v2
-            - integ_react_datastore_consecutive_saves
-            - integ_react_datastore_consecutive_saves_v2
-            - integ_react_datastore_observe_query
-            - integ_react_datastore_observe_query_v2
-            - integ_react_storage
-            - integ_react_storage_multipart_progress
-            - integ_react_storage_copy
-            - integ_react_storage_ui
-            - integ_react_interactions
-            - integ_angular_interactions
-            - integ_vue_interactions
-            - integ_react_amazon_cognito_identity_js_cookie_storage
-            - integ_react_amazon_cognito_identity_js
-            - integ_node_amazon_cognito_identity_js
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
-            - integ_rn_ios_storage
-            - integ_rn_ios_storage_multipart_progress
+            - integ_react_delete_user
+            # - integ_react_predictions
+            # - integ_react_datastore
+            # - integ_react_datastore_v2
+            # - integ_react_datastore_multi_auth_one_rule
+            # - integ_react_datastore_multi_auth_one_rule_v2
+            # - integ_react_datastore_multi_auth_two_rules
+            # - integ_react_datastore_multi_auth_two_rules_v2
+            # - integ_react_datastore_multi_auth_three_plus_rules
+            # - integ_react_datastore_multi_auth_three_plus_rules_v2
+            # - integ_react_datastore_subs_disabled
+            # - integ_react_datastore_subs_disabled_v2
+            # - integ_react_datastore_consecutive_saves
+            # - integ_react_datastore_consecutive_saves_v2
+            # - integ_react_datastore_observe_query
+            # - integ_react_datastore_observe_query_v2
+            # - integ_react_storage
+            # - integ_react_storage_multipart_progress
+            # - integ_react_storage_copy
+            # - integ_react_storage_ui
+            # - integ_react_interactions
+            # - integ_angular_interactions
+            # - integ_vue_interactions
+            # - integ_react_amazon_cognito_identity_js_cookie_storage
+            # - integ_react_amazon_cognito_identity_js
+            # - integ_node_amazon_cognito_identity_js
+            # - integ_react_auth
+            # - integ_angular_auth
+            # - integ_vue_auth
+            # - integ_rn_ios_storage
+            # - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
-            - integ_rn_ios_push_notifications
-            - integ_rn_android_storage
-            - integ_rn_ios_datastore_sqlite_adapter
-            - integ_datastore_auth
-            - integ_datastore_auth_v2
-            - integ_duplicate_packages
-            - integ_auth_test_cypress_no_ui
-            - integ_react_geo
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+            # - integ_rn_ios_push_notifications
+            # - integ_rn_android_storage
+            # - integ_rn_ios_datastore_sqlite_adapter
+            # - integ_datastore_auth
+            # - integ_datastore_auth_v2
+            # - integ_duplicate_packages
+            # - integ_auth_test_cypress_no_ui
+            # - integ_react_geo
+      # - post_release:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #     requires:
+      #       - deploy
