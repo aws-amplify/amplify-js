@@ -1174,11 +1174,6 @@ export class AuthClass {
 										result,
 										'The authenticated user has been deleted.'
 									);
-									dispatchAuthEvent(
-										'signOut',
-										this.user,
-										`A user has been signed out`
-									);
 									user.signOut();
 									this.user = null;
 									try {
@@ -1194,6 +1189,11 @@ export class AuthClass {
 										return res(result);
 									}
 								}
+								dispatchAuthEvent(
+									'signOut',
+									this.user,
+									`A user has been signed out`
+								);
 							});
 						}
 					});
