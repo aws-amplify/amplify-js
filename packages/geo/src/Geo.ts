@@ -159,7 +159,7 @@ export class GeoClass {
 	 * Search for search term suggestions based on input text
 	 * @param  {string} text - The text string that is to be search for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
-	 * @returns {Promise<SearchForSuggestionsResults>} - Promise resolves to a list of possible search terms based on input text
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 	public async searchForSuggestions(
 		text: string,

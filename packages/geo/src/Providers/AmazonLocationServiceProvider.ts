@@ -191,9 +191,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const PascalResults: PlaceResult[] = response.Results.map(
 			result => result.Place
 		);
-		const results: Place[] = (camelcaseKeys(PascalResults, {
+		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
-		}) as undefined) as Place[];
+		}) as undefined as Place[];
 
 		return results;
 	}
@@ -202,7 +202,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Search for suggestions based on the input text
 	 * @param  {string} text - The text string that is to be searched for
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
-	 * @returns {Promise<SearchForSuggestionsResults> - Promise resolves to an array of suggestion strings that match search parameters
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 
 	public async searchForSuggestions(
@@ -326,9 +326,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults = response.Results.map(result => result.Place);
-		const results: Place = (camelcaseKeys(PascalResults[0], {
+		const results: Place = camelcaseKeys(PascalResults[0], {
 			deep: true,
-		}) as any) as Place;
+		}) as any as Place;
 
 		return results;
 	}

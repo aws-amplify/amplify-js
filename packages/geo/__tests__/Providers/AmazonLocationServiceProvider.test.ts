@@ -320,7 +320,8 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const results = await locationProvider.searchForSuggestions(testString);
-			expect(results).toEqual([testPlaceCamelCase]);
+
+			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
 			const input = spyon.mock.calls[0][0].input;
@@ -409,9 +410,9 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints =
-				await locationProvider.searchForSuggestions(testString, searchOptions);
-			expect(resultsWithConstraints).rejects.toThrow(
+			await expect(
+				locationProvider.searchForSuggestions(testString, searchOptions)
+			).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
 		});
@@ -448,7 +449,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			expect(locationProvider.searchForSuggestions(testString)).rejects.toThrow(
+			await expect(
+				locationProvider.searchForSuggestions(testString)
+			).rejects.toThrow(
 				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
 			);
 		});
