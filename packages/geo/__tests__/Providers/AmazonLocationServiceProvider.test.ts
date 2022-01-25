@@ -48,10 +48,10 @@ LocationClient.prototype.send = jest.fn(async command => {
 		return {
 			Results: [
 				{
-					Text: 'starbucks',
+					Text: 'star',
 				},
 				{
-					Text: 'not starbucks',
+					Text: 'not star',
 				},
 			],
 		};
@@ -160,7 +160,7 @@ describe('AmazonLocationServiceProvider', () => {
 	});
 
 	describe('searchByText', () => {
-		const testString = 'starbucks';
+		const testString = 'star';
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -308,8 +308,8 @@ describe('AmazonLocationServiceProvider', () => {
 	});
 
 	describe('searchForSuggestions', () => {
-		const testString = 'starbucks';
-		const testResults = ['starbucks', 'not starbucks'];
+		const testString = 'star';
+		const testResults = ['star', 'not star'];
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -378,10 +378,8 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints = await locationProvider.searchForSuggestions(
-				testString,
-				searchOptions
-			);
+			const resultsWithConstraints =
+				await locationProvider.searchForSuggestions(testString, searchOptions);
 			expect(resultsWithConstraints).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
@@ -411,10 +409,8 @@ describe('AmazonLocationServiceProvider', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
-			const resultsWithConstraints = await locationProvider.searchForSuggestions(
-				testString,
-				searchOptions
-			);
+			const resultsWithConstraints =
+				await locationProvider.searchForSuggestions(testString, searchOptions);
 			expect(resultsWithConstraints).rejects.toThrow(
 				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
 			);
