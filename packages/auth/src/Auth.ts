@@ -1142,18 +1142,28 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public async deleteUser(): Promise<void | string> {
+		try {
+			await this._storageSync;
+		} catch (e) {
+			logger.debug('Failed to sync cache info into memory', e);
+			throw e;
+		}
+		const isSignedInHostedUI =
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+
 		return new Promise((res, rej) => {
 			if (this.userPool) {
 				const user = this.userPool.getCurrentUser();
 
 				if (!user) {
 					logger.debug('Failed to get user from user pool');
-					rej(new Error('No current user'));
+					return rej(new Error('No current user.'));
 				} else {
 					user.getSession(async (err, session) => {
 						if (err) {
-							logger.debug(err);
-							rej(err);
+							logger.debug('failed to get the user session', err);
+							return rej(err);
 						} else {
 							await user.deleteUser((err, result) => {
 								if (err) {
@@ -1164,16 +1174,25 @@ export class AuthClass {
 										result,
 										'The authenticated user has been deleted.'
 									);
-
 									dispatchAuthEvent(
 										'signOut',
-										user,
+										this.user,
 										`A user has been signed out`
 									);
+									user.signOut();
 									this.user = null;
+									try {
+										this.cleanCachedItems(); // clean aws credentials
+									} catch (e) {
+										logger.debug('failed to clear cached items');
+									}
 
-									logger.debug('User deleted successfully.');
-									res(result);
+									if (isSignedInHostedUI) {
+										this.oAuthSignOutRedirect(res, rej);
+										res(result);
+									} else {
+										return res(result);
+									}
 								}
 							});
 						}
