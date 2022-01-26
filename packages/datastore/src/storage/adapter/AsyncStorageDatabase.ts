@@ -90,7 +90,7 @@ class AsyncStorageDatabase {
 		}
 	}
 
-	async save<T extends PersistentModel<any>>(
+	async save<T extends PersistentModel>(
 		item: T,
 		storeName: string,
 		keys: string[],
@@ -110,7 +110,7 @@ class AsyncStorageDatabase {
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
 
-	async batchSave<T extends PersistentModel<any>>(
+	async batchSave<T extends PersistentModel>(
 		storeName: string,
 		items: ModelInstanceMetadata[],
 		keys: string[]
@@ -237,7 +237,7 @@ class AsyncStorageDatabase {
 		return result;
 	}
 
-	async get<T extends PersistentModel<unknown>>(
+	async get<T extends PersistentModel>(
 		keyValuePath: string,
 		storeName: string
 	): Promise<T> {
@@ -276,7 +276,7 @@ class AsyncStorageDatabase {
 	 * This function gets all the records stored in async storage for a particular storeName
 	 * It then loads all the records for that filtered set of keys using multiGet()
 	 */
-	async getAll<T extends PersistentModel<unknown>>(
+	async getAll<T extends PersistentModel>(
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {

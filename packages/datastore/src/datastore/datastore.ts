@@ -56,8 +56,9 @@ import {
 	ObserveQueryOptions,
 	ManagedIdentifier,
 	PersistentModelMetaData,
-	DefaultPersistentModelMetaData,
 	IdentifierFields,
+	IdentifierFieldOrIdentifierObject,
+	__modelMeta__,
 } from '../types';
 import {
 	DATASTORE,
@@ -91,6 +92,7 @@ type SettingMetaData = {
 	readOnlyFields: never;
 };
 declare class Setting {
+	public readonly [__modelMeta__]: SettingMetaData;
 	constructor(init: ModelInit<Setting, SettingMetaData>);
 	static copyOf(
 		src: Setting,
@@ -105,28 +107,28 @@ const SETTING_SCHEMA_VERSION = 'schemaVersion';
 
 let schema: InternalSchema;
 const modelNamespaceMap = new WeakMap<
-	PersistentModelConstructor<any, any>,
+	PersistentModelConstructor<any>,
 	string
 >();
 // stores data for crafting the correct update mutation input for a model
 // Patch[] - array of changed fields and metadata
 // PersistentModel - the source model, used for diffing object-type fields
 const modelPatchesMap = new WeakMap<
-	PersistentModel<any>,
-	[Patch[], PersistentModel<any>]
+	PersistentModel,
+	[Patch[], PersistentModel]
 >();
 
 const getModelDefinition = (
-	modelConstructor: PersistentModelConstructor<any, any>
+	modelConstructor: PersistentModelConstructor<any>
 ) => {
 	const namespace = modelNamespaceMap.get(modelConstructor);
 
 	return schema.namespaces[namespace].models[modelConstructor.name];
 };
 
-const isValidModelConstructor = <T extends PersistentModel<any>>(
+const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
-): obj is PersistentModelConstructor<T, any> => {
+): obj is PersistentModelConstructor<T> => {
 	return isModelConstructor(obj) && modelNamespaceMap.has(obj);
 };
 
@@ -257,22 +259,15 @@ const createTypeClasses: (
 
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
-const instancesMetadata = new WeakSet<
-	ModelInit<PersistentModel & Partial<ModelInstanceMetadata>>
->();
+const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
 
-function modelInstanceCreator<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData
->(
-	modelConstructor: PersistentModelConstructor<T, M>,
-	init: ModelInit<T, M> &
-		Partial<ModelInstanceMetadata<M>> &
-		Partial<IdentifierFields<M['identifier']>>
+function modelInstanceCreator<T extends PersistentModel>(
+	modelConstructor: PersistentModelConstructor<T>,
+	init: ModelInit<T, PersistentModelMetaData<T>>
 ): T {
 	instancesMetadata.add(init);
 
-	return <T>new modelConstructor(init);
+	return new modelConstructor(init);
 }
 
 const validateModelFields =
@@ -417,7 +412,7 @@ const initializeInstance = <T extends PersistentModel>(
 const createModelClass = <T extends PersistentModel>(
 	modelDefinition: SchemaModel
 ) => {
-	const clazz = <PersistentModelConstructor<T, any>>(<unknown>class Model {
+	const clazz = <PersistentModelConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
 				this,
@@ -436,7 +431,10 @@ const createModelClass = <T extends PersistentModel>(
 
 					const { id: _id } =
 						modelInstanceMetadata as unknown as IdentifierFields<
-							ManagedIdentifier<ModelWithIDIdentifier, 'id'>
+							{
+								id: string;
+							},
+							any
 						>;
 
 					if (isIdManaged(modelDefinition)) {
@@ -472,7 +470,7 @@ const createModelClass = <T extends PersistentModel>(
 			return instance;
 		}
 
-		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
+		static copyOf(source: T, fn: (draft: MutableModel<T, unknown>) => T) {
 			const modelConstructor = Object.getPrototypeOf(source || {}).constructor;
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'The source object is not a valid model';
@@ -484,7 +482,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T>>(draft as unknown));
+					fn(<MutableModel<T, unknown>>draft);
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -606,10 +604,8 @@ function defaultErrorHandler(error: SyncError) {
 function getModelConstructorByModelName(
 	namespaceName: NAMESPACES,
 	modelName: string
-): PersistentModelConstructor<any, any> {
-	let result:
-		| PersistentModelConstructor<any, any>
-		| NonModelTypeConstructor<any>;
+): PersistentModelConstructor<any> {
+	let result: PersistentModelConstructor<any> | NonModelTypeConstructor<any>;
 
 	switch (namespaceName) {
 		case DATASTORE:
@@ -643,10 +639,8 @@ async function checkSchemaVersion(
 	storage: Storage,
 	version: string
 ): Promise<void> {
-	const Setting = dataStoreClasses.Setting as PersistentModelConstructor<
-		Setting,
-		SettingMetaData
-	>;
+	const Setting =
+		dataStoreClasses.Setting as PersistentModelConstructor<Setting>;
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
@@ -654,7 +648,6 @@ async function checkSchemaVersion(
 		const [schemaVersionSetting] = await s.query(
 			Setting,
 			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				// @ts-ignore Argument of type '"eq"' is not assignable to parameter of type 'never'.
 				c.key('eq', SETTING_SCHEMA_VERSION)
 			),
 			{ page: 0, limit: 1 }
@@ -833,29 +826,23 @@ class DataStore {
 	};
 
 	query: {
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			identifier: string
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T | undefined>;
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll,
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
-	} = async <
-		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-	>(
-		modelConstructor: PersistentModelConstructor<T, M>,
+	} = async <T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		identifierOrCriteria?:
-			| string
-			| ProducerModelPredicate<T, M>
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
+			| ProducerModelPredicate<T>
 			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
@@ -894,7 +881,7 @@ class DataStore {
 			} else {
 				predicate = ModelPredicateCreator.createFromExisting(
 					modelDefinition,
-					identifierOrCriteria
+					<any>identifierOrCriteria
 				);
 			}
 		}
@@ -918,7 +905,7 @@ class DataStore {
 			},
 		});
 
-		const result = await this.storage.query(
+		const result = await this.storage.query<T>(
 			modelConstructor,
 			predicate,
 			pagination
@@ -931,12 +918,9 @@ class DataStore {
 		return returnOne ? result[0] : result;
 	};
 
-	save = async <
-		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData
-	>(
+	save = async <T extends PersistentModel>(
 		model: T,
-		condition?: ProducerModelPredicate<T, M>
+		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
 		await this.start();
 
@@ -944,8 +928,8 @@ class DataStore {
 		// Allows us to only include changed fields for updates
 		const patchesTuple = modelPatchesMap.get(model);
 
-		const modelConstructor: PersistentModelConstructor<T, M> = model
-			? <PersistentModelConstructor<T, M>>model.constructor
+		const modelConstructor: PersistentModelConstructor<T> = model
+			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
 
 		if (!isValidModelConstructor(modelConstructor)) {
@@ -965,7 +949,7 @@ class DataStore {
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
-			return s.query(
+			return s.query<T>(
 				modelConstructor,
 				ModelPredicateCreator.createForPk(modelDefinition, model)
 			);
@@ -1007,26 +991,23 @@ class DataStore {
 	};
 
 	delete: {
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
-			modelConstructor: PersistentModelConstructor<T, M>,
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
 			identifier: string
 		): Promise<T[]>;
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			condition: ProducerModelPredicate<T, M> | typeof PredicateAll
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			condition: ProducerModelPredicate<T> | typeof PredicateAll
 		): Promise<T[]>;
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData = unknown>(
+		<T extends PersistentModel>(
 			model: T,
-			condition?: ProducerModelPredicate<T, M>
+			condition?: ProducerModelPredicate<T>
 		): Promise<T>;
-	} = async <
-		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = unknown
-	>(
-		modelOrConstructor: T | PersistentModelConstructor<T, M>,
+	} = async <T extends PersistentModel>(
+		modelOrConstructor: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| string
-			| ProducerModelPredicate<T, M>
+			| ProducerModelPredicate<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
 		await this.start();
@@ -1067,7 +1048,7 @@ class DataStore {
 					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
 					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
 					 */
-					identifierOrCriteria as ProducerModelPredicate<T, M>
+					identifierOrCriteria as ProducerModelPredicate<T>
 				);
 
 				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
@@ -1081,11 +1062,11 @@ class DataStore {
 
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
 
-			return deleted;
+			return <T>(<unknown>deleted);
 		} else {
 			const model = modelOrConstructor;
 			const modelConstructor = Object.getPrototypeOf(model || {})
-				.constructor as PersistentModelConstructor<T, M>;
+				.constructor as PersistentModelConstructor<T>;
 
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'Object is not an instance of a valid model';
@@ -1098,7 +1079,7 @@ class DataStore {
 
 			const pkPredicate = ModelPredicateCreator.createForPk<T>(
 				modelDefinition,
-				model
+				<T>model
 			);
 
 			if (identifierOrCriteria) {
@@ -1116,48 +1097,34 @@ class DataStore {
 
 			const [[deleted]] = await this.storage.delete(model, condition);
 
-			return deleted;
+			return <T>deleted;
 		}
 	};
 
 	observe: {
-		(): Observable<SubscriptionMessage<PersistentModel<unknown>, unknown>>;
+		(): Observable<SubscriptionMessage<PersistentModel>>;
 
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			modelConstructor: PersistentModelConstructor<T, M>,
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
 			identifier: string
-		): Observable<SubscriptionMessage<T, M>>;
+		): Observable<SubscriptionMessage<T>>;
 
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll
-		): Observable<SubscriptionMessage<T, M>>;
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll
+		): Observable<SubscriptionMessage<T>>;
 
-		<
-			T extends PersistentModel<M>,
-			M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-		>(
-			model: T
-		): Observable<SubscriptionMessage<T, M>>;
-	} = <
-		T extends PersistentModel<M>,
-		M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-	>(
-		modelOrConstructor?: T | PersistentModelConstructor<T, M>,
+		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+	} = <T extends PersistentModel>(
+		modelOrConstructor?: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| string
-			| ProducerModelPredicate<T, M>
+			| ProducerModelPredicate<T>
 			| typeof PredicateAll
-	): Observable<SubscriptionMessage<T, M>> => {
+	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
-		const modelConstructor: PersistentModelConstructor<T, M> =
+		const modelConstructor: PersistentModelConstructor<unknown> =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
@@ -1220,7 +1187,7 @@ class DataStore {
 			}
 		}
 
-		return new Observable<SubscriptionMessage<T, M>>(observer => {
+		return new Observable<SubscriptionMessage<T>>(observer => {
 			let handle: ZenObservable.Subscription;
 
 			(async () => {
@@ -1229,7 +1196,7 @@ class DataStore {
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.subscribe(observer);
+					.subscribe(<any>observer);
 			})();
 
 			return () => {
@@ -1241,14 +1208,14 @@ class DataStore {
 	};
 
 	observeQuery: {
-		<T extends PersistentModel<M>, M extends PersistentModelMetaData>(
-			modelConstructor: PersistentModelConstructor<T, M>,
-			criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll,
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
-	} = <T extends PersistentModel<M>, M extends PersistentModelMetaData>(
-		model: PersistentModelConstructor<T, M>,
-		criteria?: ProducerModelPredicate<T, M> | typeof PredicateAll,
+	} = <T extends PersistentModel>(
+		model: PersistentModelConstructor<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
@@ -1502,7 +1469,7 @@ class DataStore {
 		this.sync = undefined;
 	};
 
-	private processPagination<T extends PersistentModel<unknown>>(
+	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
 	): PaginationInput<T> | undefined {
@@ -1588,7 +1555,7 @@ class DataStore {
 
 	private createFromCondition(
 		modelDefinition: SchemaModel,
-		condition: ProducerModelPredicate<PersistentModel, any>
+		condition: ProducerModelPredicate<PersistentModel>
 	) {
 		try {
 			return ModelPredicateCreator.createFromExisting(
@@ -1603,7 +1570,7 @@ class DataStore {
 
 	private async unwrapPromise<T extends PersistentModel>(
 		conditionProducer
-	): Promise<ProducerModelPredicate<T, any>> {
+	): Promise<ProducerModelPredicate<T>> {
 		try {
 			const condition = await conditionProducer();
 			return condition;

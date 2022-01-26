@@ -11,25 +11,25 @@ import {
 
 export interface Adapter extends SystemComponent {
 	clear(): Promise<void>;
-	save<T extends PersistentModel<any>>(
+	save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]>;
-	delete: <T extends PersistentModel<any>>(
-		modelOrModelConstructor: T | PersistentModelConstructor<T, any>,
+	delete: <T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	) => Promise<[T[], T[]]>;
-	query<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]>;
-	queryOne<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne
 	): Promise<T | undefined>;
-	batchSave<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<any, any>,
+	batchSave<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]>;
 }

@@ -22,6 +22,8 @@ import {
 	ModelPredicate,
 	AuthModeStrategy,
 	ManagedIdentifier,
+	OptionallyManagedIdentifier,
+	__modelMeta__,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -47,28 +49,27 @@ type StartParams = {
 };
 
 export type MutationEventMetadata = {
-	identifier: ManagedIdentifier<MutationEvent, 'id'>;
-	readOnlyFields: '';
+	identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
+	readOnlyFields: ''; // TODO: comment this out and try it, it should work
 };
 export declare class MutationEvent {
-	constructor(init: ModelInit<MutationEvent, MutationEventMetadata>);
+	readonly [__modelMeta__]: MutationEventMetadata;
+	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
 		src: MutationEvent,
-		mutator: (
-			draft: MutableModel<MutationEvent, MutationEventMetadata>
-		) => void | MutationEvent
+		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
 	): MutationEvent;
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
 	public readonly modelId: string;
 	public readonly condition: string;
-	public data: string;
+	public readonly data: string;
 }
 
 export type ModelMetadataMetadata = {
 	identifier: ManagedIdentifier<ModelMetadata, 'id'>;
-	readOnlyFields: '';
+	// readOnlyFields: '';
 };
 declare class ModelMetadata {
 	constructor(init: ModelInit<ModelMetadata, ModelMetadataMetadata>);
@@ -110,12 +111,12 @@ export class SyncEngine {
 	private readonly outbox: MutationEventOutbox;
 	private readonly datastoreConnectivity: DataStoreConnectivity;
 	private readonly modelSyncedStatus: WeakMap<
-		PersistentModelConstructor<any, any>,
+		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
 
 	public getModelSyncedStatus(
-		modelConstructor: PersistentModelConstructor<any, any>
+		modelConstructor: PersistentModelConstructor<any>
 	): boolean {
 		return this.modelSyncedStatus.get(modelConstructor);
 	}
@@ -137,7 +138,7 @@ export class SyncEngine {
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
-		] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
+		] as PersistentModelConstructor<MutationEvent>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -294,7 +295,7 @@ export class SyncEngine {
 									.subscribe(({ modelDefinition, model: item, hasMore }) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
-										] as PersistentModelConstructor<any, any>;
+										] as PersistentModelConstructor<any>;
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
@@ -331,7 +332,7 @@ export class SyncEngine {
 										([_transformerMutationType, modelDefinition, item]) => {
 											const modelConstructor = this.userModelClasses[
 												modelDefinition.name
-											] as PersistentModelConstructor<any, any>;
+											] as PersistentModelConstructor<any>;
 
 											const model = this.modelInstanceCreator(
 												modelConstructor,
@@ -376,10 +377,7 @@ export class SyncEngine {
 								this.schema.namespaces[this.namespaceResolver(model)];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
-							] as PersistentModelConstructor<
-								MutationEvent,
-								MutationEventMetadata
-							>;
+							] as PersistentModelConstructor<MutationEvent>;
 							const modelDefinition = this.getModelDefinition(model);
 							const graphQLCondition = predicateToGraphQLCondition(
 								condition,
@@ -491,7 +489,7 @@ export class SyncEngine {
 			(async () => {
 				while (!observer.closed) {
 					const count: WeakMap<
-						PersistentModelConstructor<any, any>,
+						PersistentModelConstructor<any>,
 						{
 							new: number;
 							updated: number;
@@ -524,7 +522,7 @@ export class SyncEngine {
 								}) => {
 									const modelConstructor = this.userModelClasses[
 										modelDefinition.name
-									] as PersistentModelConstructor<any, any>;
+									] as PersistentModelConstructor<any>;
 
 									if (!count.has(modelConstructor)) {
 										count.set(modelConstructor, {
@@ -624,10 +622,7 @@ export class SyncEngine {
 
 										modelMetadata = (
 											this.modelClasses
-												.ModelMetadata as PersistentModelConstructor<
-												ModelMetadata,
-												ModelMetadataMetadata
-											>
+												.ModelMetadata as PersistentModelConstructor<ModelMetadata>
 										).copyOf(modelMetadata, draft => {
 											draft.lastSync = startedAt;
 											draft.lastFullSync = isFullSync
@@ -729,10 +724,7 @@ export class SyncEngine {
 	private async setupModels(params: StartParams) {
 		const { fullSyncInterval } = params;
 		const ModelMetadata = this.modelClasses
-			.ModelMetadata as PersistentModelConstructor<
-			ModelMetadata,
-			ModelMetadataMetadata
-		>;
+			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const models: [string, SchemaModel][] = [];
 		let savedModel;
@@ -745,7 +737,7 @@ export class SyncEngine {
 					if (namespace.name === USER) {
 						const modelConstructor = this.userModelClasses[
 							model.name
-						] as PersistentModelConstructor<any, any>;
+						] as PersistentModelConstructor<any>;
 						this.modelSyncedStatus.set(modelConstructor, false);
 					}
 				});
@@ -782,10 +774,8 @@ export class SyncEngine {
 
 				[[savedModel]] = await this.storage.save(
 					(
-						this.modelClasses.ModelMetadata as PersistentModelConstructor<
-							ModelMetadata,
-							ModelMetadataMetadata
-						>
+						this.modelClasses
+							.ModelMetadata as PersistentModelConstructor<ModelMetadata>
 					).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
@@ -814,10 +804,7 @@ export class SyncEngine {
 
 	private async getModelsMetadata(): Promise<ModelMetadata[]> {
 		const ModelMetadata = this.modelClasses
-			.ModelMetadata as PersistentModelConstructor<
-			ModelMetadata,
-			ModelMetadataMetadata
-		>;
+			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const modelsMetadata = await this.storage.query(ModelMetadata);
 
@@ -829,10 +816,7 @@ export class SyncEngine {
 		model: string
 	): Promise<ModelMetadata> {
 		const ModelMetadata = this.modelClasses
-			.ModelMetadata as PersistentModelConstructor<
-			ModelMetadata,
-			ModelMetadataMetadata
-		>;
+			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
@@ -848,7 +832,7 @@ export class SyncEngine {
 	}
 
 	private getModelDefinition(
-		modelConstructor: PersistentModelConstructor<any, any>
+		modelConstructor: PersistentModelConstructor<any>
 	): SchemaModel {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 

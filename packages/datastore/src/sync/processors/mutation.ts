@@ -59,10 +59,7 @@ class MutationProcessor {
 		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly MutationEvent: PersistentModelConstructor<
-			MutationEvent,
-			MutationEventMetadata
-		>,
+		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly conflictHandler?: ConflictHandler,
@@ -136,7 +133,7 @@ class MutationProcessor {
 			const { model, operation, data, condition } = head;
 			const modelConstructor = this.userClasses[
 				model
-			] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
+			] as PersistentModelConstructor<MutationEvent>;
 			let result: GraphQLResult<Record<string, PersistentModel>>;
 			let opName: string;
 			let modelDefinition: SchemaModel;
@@ -237,11 +234,8 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<PersistentModel, any>,
-		MutationEvent: PersistentModelConstructor<
-			MutationEvent,
-			MutationEventMetadata
-		>,
+		modelConstructor: PersistentModelConstructor<any>,
+		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE
 	): Promise<
@@ -253,11 +247,8 @@ class MutationProcessor {
 				operation: TransformerMutationType,
 				data: string,
 				condition: string,
-				modelConstructor: PersistentModelConstructor<PersistentModel, any>,
-				MutationEvent: PersistentModelConstructor<
-					MutationEvent,
-					MutationEventMetadata
-				>,
+				modelConstructor: PersistentModelConstructor<PersistentModel>,
+				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
 				const [query, variables, graphQLCondition, opName, modelDefinition] =

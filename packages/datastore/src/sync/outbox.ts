@@ -22,10 +22,7 @@ class MutationEventOutbox {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly MutationEvent: PersistentModelConstructor<
-			MutationEvent,
-			MutationEventMetadata
-		>,
+		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly ownSymbol: Symbol
 	) {}
@@ -128,7 +125,7 @@ class MutationEventOutbox {
 		return head;
 	}
 
-	public async getForModel<T extends PersistentModel<any>>(
+	public async getForModel<T extends PersistentModel>(
 		storage: StorageFacade,
 		model: T,
 		userModelDefinition: SchemaModel

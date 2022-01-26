@@ -41,7 +41,7 @@ class ModelMerger {
 
 	public async mergePage(
 		storage: Storage,
-		modelConstructor: PersistentModelConstructor<any, any>,
+		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[],
 		modelDefinition: SchemaModel
 	): Promise<[ModelInstanceMetadata, OpType][]> {

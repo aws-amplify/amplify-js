@@ -50,7 +50,7 @@ export function extractPrimaryKeyFieldNames(
 	return [ID];
 }
 
-export function extractPrimaryKeyValues<T extends PersistentModel<any>>(
+export function extractPrimaryKeyValues<T extends PersistentModel>(
 	model: T,
 	keyFields: string[]
 ): string[] {
@@ -94,7 +94,7 @@ export const isNullOrUndefined = (val: any): boolean => {
 	return typeof val === 'undefined' || val === undefined || val === null;
 };
 
-export const validatePredicate = <T extends PersistentModel<any>>(
+export const validatePredicate = <T extends PersistentModel>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
 	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[]
@@ -182,12 +182,11 @@ export const validatePredicateField = <T>(
 	}
 };
 
-export const isModelConstructor = <T extends PersistentModel<any>>(
+export const isModelConstructor = <T extends PersistentModel>(
 	obj: any
-): obj is PersistentModelConstructor<T, any> => {
+): obj is PersistentModelConstructor<T> => {
 	return (
-		obj &&
-		typeof (<PersistentModelConstructor<T, any>>obj).copyOf === 'function'
+		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
 	);
 };
 
@@ -353,7 +352,7 @@ export const establishRelationAndKeys = (
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 
-export const traverseModel = <T extends PersistentModel<any>>(
+export const traverseModel = <T extends PersistentModel>(
 	srcModelName: string,
 	instance: T,
 	namespace: SchemaNamespace,
@@ -412,7 +411,7 @@ export const traverseModel = <T extends PersistentModel<any>>(
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
-							delete draftInstance[rItem.fieldName];
+							delete (<any>draftInstance)[rItem.fieldName];
 						} else {
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
@@ -450,7 +449,7 @@ export const traverseModel = <T extends PersistentModel<any>>(
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
-						delete draftInstance[rItem.fieldName];
+						delete (<any>draftInstance)[rItem.fieldName];
 					}
 
 					break;
@@ -597,7 +596,7 @@ export function getNow() {
 	}
 }
 
-export function sortCompareFunction<T extends PersistentModel<unknown>>(
+export function sortCompareFunction<T extends PersistentModel>(
 	sortPredicates: SortPredicatesGroup<T>
 ) {
 	return function compareFunction(a, b) {

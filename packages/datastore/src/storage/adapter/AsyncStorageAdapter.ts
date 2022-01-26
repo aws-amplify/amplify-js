@@ -43,14 +43,14 @@ export class AsyncStorageAdapter implements Adapter {
 	private getModelConstructorByModelName: (
 		namsespaceName: string,
 		modelName: string
-	) => PersistentModelConstructor<any, any>;
+	) => PersistentModelConstructor<any>;
 	private db: AsyncStorageDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
 
 	private getStorenameForModel(
-		modelConstructor: PersistentModelConstructor<any, any>
+		modelConstructor: PersistentModelConstructor<any>
 	) {
 		const namespace = this.namespaceResolver(modelConstructor);
 		const { name: modelName } = modelConstructor;
@@ -77,11 +77,9 @@ export class AsyncStorageAdapter implements Adapter {
 	}
 
 	// Retrieves concatenated primary key values from a model
-	private getIndexKeyValuesPath<T extends PersistentModel<any>>(
-		model: T
-	): string {
+	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T, any>;
+			.constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
 
@@ -93,11 +91,9 @@ export class AsyncStorageAdapter implements Adapter {
 	}
 
 	// Retrieves concatenated primary key values from a model
-	private getIndexKeyValues<T extends PersistentModel<any>>(
-		model: T
-	): string[] {
+	private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T, any>;
+			.constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
 
@@ -124,7 +120,7 @@ export class AsyncStorageAdapter implements Adapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any, any>
+		) => PersistentModelConstructor<any>
 	) {
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
@@ -150,12 +146,12 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 	}
 
-	async save<T extends PersistentModel<any>>(
+	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T, any>;
+			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
 
 		const namespaceName = this.namespaceResolver(modelConstructor);
@@ -296,8 +292,8 @@ export class AsyncStorageAdapter implements Adapter {
 		);
 	}
 
-	async query<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
@@ -343,7 +339,7 @@ export class AsyncStorageAdapter implements Adapter {
 		return record;
 	}
 
-	private async getAll<T extends PersistentModel<unknown>>(
+	private async getAll<T extends PersistentModel>(
 		storeName: string
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
@@ -389,7 +385,7 @@ export class AsyncStorageAdapter implements Adapter {
 		return filtered;
 	}
 
-	private inMemoryPagination<T extends PersistentModel<unknown>>(
+	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
@@ -415,8 +411,8 @@ export class AsyncStorageAdapter implements Adapter {
 		return records;
 	}
 
-	async queryOne<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -425,13 +421,13 @@ export class AsyncStorageAdapter implements Adapter {
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
-	async delete<T extends PersistentModel<any>>(
-		modelOrModelConstructor: T | PersistentModelConstructor<T, any>,
+	async delete<T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
-		if (isModelConstructor(modelOrModelConstructor)) {
+		if (isModelConstructor<T>(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
@@ -481,7 +477,7 @@ export class AsyncStorageAdapter implements Adapter {
 			const model = modelOrModelConstructor;
 
 			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T, any>;
+				.constructor as PersistentModelConstructor<T>;
 			const namespaceName = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
@@ -547,7 +543,7 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 	}
 
-	private async deleteItem<T extends PersistentModel<any>>(
+	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
 		for await (const deleteItem of deleteQueue) {
@@ -571,7 +567,7 @@ export class AsyncStorageAdapter implements Adapter {
 	 * @param nameSpace
 	 * @param deleteQueue
 	 */
-	private async deleteTraverse<T extends PersistentModel<any>>(
+	private async deleteTraverse<T extends PersistentModel>(
 		relations: RelationType[],
 		models: T[],
 		srcModel: string,
@@ -668,8 +664,8 @@ export class AsyncStorageAdapter implements Adapter {
 		this.initPromise = undefined;
 	}
 
-	async batchSave<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<any, any>,
+	async batchSave<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		const { name: modelName } = modelConstructor;

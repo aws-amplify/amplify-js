@@ -345,7 +345,7 @@ async function instantiateOutbox(): Promise<void> {
 
 	const MutationEvent = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
+	] as PersistentModelConstructor<MutationEvent>;
 
 	await DataStore.start();
 
@@ -371,7 +371,7 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 
 	const MutationEventConstructor = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
+	] as PersistentModelConstructor<MutationEvent>;
 
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;

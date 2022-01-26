@@ -16,7 +16,7 @@ import {
 
 export { ModelSortPredicateCreator } from './sort';
 
-const predicatesAllSet = new WeakSet<ProducerModelPredicate<any, any>>();
+const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
 export function isPredicatesAll(
 	predicate: any
@@ -29,7 +29,7 @@ export const PredicateAll = Symbol('A predicate that matches all records');
 
 export class Predicates {
 	public static get ALL(): typeof PredicateAll {
-		const predicate = <ProducerModelPredicate<any, any>>(c => c);
+		const predicate = <ProducerModelPredicate<any>>(c => c);
 
 		predicatesAllSet.add(predicate);
 
@@ -43,7 +43,7 @@ export class ModelPredicateCreator {
 		PredicatesGroup<any>
 	>();
 
-	private static createPredicateBuilder<T extends PersistentModel<any>>(
+	private static createPredicateBuilder<T extends PersistentModel>(
 		modelDefinition: SchemaModel
 	) {
 		const { name: modelName } = modelDefinition;
@@ -131,13 +131,13 @@ export class ModelPredicateCreator {
 		return predicate;
 	}
 
-	static isValidPredicate<T extends PersistentModel<any>>(
+	static isValidPredicate<T extends PersistentModel>(
 		predicate: any
 	): predicate is ModelPredicate<T> {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
 
-	static getPredicates<T extends PersistentModel<any>>(
+	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
 		throwOnInvalid: boolean = true
 	) {
@@ -149,9 +149,9 @@ export class ModelPredicateCreator {
 	}
 
 	// transforms cb-style predicate into Proxy
-	static createFromExisting<T extends PersistentModel<any>>(
+	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		existing: ProducerModelPredicate<T, any>
+		existing: ProducerModelPredicate<T>
 	) {
 		if (!existing || !modelDefinition) {
 			return undefined;
@@ -162,7 +162,7 @@ export class ModelPredicateCreator {
 		);
 	}
 
-	static createForSingleField<T extends PersistentModel<any>>(
+	static createForSingleField<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		fieldName: string,
 		value: string
@@ -172,7 +172,7 @@ export class ModelPredicateCreator {
 		](<any>'eq', <any>value);
 	}
 
-	static createForPk<T extends PersistentModel<any>>(
+	static createForPk<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		model: T
 	) {

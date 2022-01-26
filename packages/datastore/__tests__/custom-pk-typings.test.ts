@@ -1,32 +1,32 @@
 // TODO: Look at ts-expect-error once we move to TypeScript 3.9 or above
+import Observable from 'zen-observable-ts';
 import {
 	CompositeIdentifier,
 	CustomIdentifier,
+	DataStore as DS,
+	IdentifierFields,
 	ManagedIdentifier,
 	ModelInit,
 	MutableModel,
 	OptionallyManagedIdentifier,
-	DataStore as DS,
-	Predicates,
 	PersistentModel,
 	PersistentModelConstructor,
-	DefaultPersistentModelMetaData,
+	Predicates,
+	__modelMeta__,
+	MetadataReadOnlyFields,
+	MetadataOrDefault,
 	PersistentModelMetaData,
-	IdentifierFields,
+	DefaultPersistentModelMetaData,
+	IdentifierFieldsForInit,
 } from '../src';
-import Observable from 'zen-observable-ts';
 
+//#region test helpers
 function expectType<T>(param: T): param is T {
 	return true;
 }
 
-function dummyInstance<
-	T extends PersistentModel<
-		M extends never ? DefaultPersistentModelMetaData : M
-	>,
-	M extends PersistentModelMetaData = unknown
->(): T {
-	return undefined;
+function dummyInstance<T extends PersistentModel>(): T {
+	return <T>{};
 }
 
 const DataStore: typeof DS = (() => {
@@ -50,6 +50,7 @@ const DataStore: typeof DS = (() => {
 
 	return proxy;
 })();
+//#endregion
 
 //#region Types
 
@@ -116,43 +117,43 @@ class LegacyNoMetadata {
 
 //#region Managed
 
-type ManagedCustomROMETA = {
-	identifier: ManagedIdentifier<ManagedCustomRO, 'id'>;
-	readOnlyFields: 'createdOn' | 'updatedOn';
-};
 class ManagedCustomRO {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<ManagedCustomRO, 'id'>;
+		readOnlyFields: 'createdOn' | 'updatedOn';
+	};
 	readonly id: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdOn?: string;
 	readonly updatedOn?: string;
-	constructor(init: ModelInit<ManagedCustomRO, ManagedCustomROMETA>) {}
+	constructor(init: ModelInit<ManagedCustomRO>) {}
 	static copyOf(
 		source: ManagedCustomRO,
 		mutator: (
-			draft: MutableModel<ManagedCustomRO, ManagedCustomROMETA>
-		) => MutableModel<ManagedCustomRO, ManagedCustomROMETA> | void
+			draft: MutableModel<ManagedCustomRO>
+		) => MutableModel<ManagedCustomRO> | void
 	): ManagedCustomRO {
 		return undefined;
 	}
 }
 
-type ManagedDefaultROMETA = {
-	identifier: ManagedIdentifier<ManagedDefaultRO, 'id'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
 class ManagedDefaultRO {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<ManagedDefaultRO, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
 	readonly id: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdAt?: string;
 	readonly updatedAt?: string;
-	constructor(init: ModelInit<ManagedDefaultRO, ManagedDefaultROMETA>) {}
+	constructor(init: ModelInit<ManagedDefaultRO>) {}
 	static copyOf(
 		source: ManagedDefaultRO,
 		mutator: (
-			draft: MutableModel<ManagedDefaultRO, ManagedDefaultROMETA>
-		) => MutableModel<ManagedDefaultRO, ManagedDefaultROMETA> | void
+			draft: MutableModel<ManagedDefaultRO>
+		) => MutableModel<ManagedDefaultRO> | void
 	): ManagedDefaultRO {
 		return undefined;
 	}
@@ -162,59 +163,43 @@ class ManagedDefaultRO {
 
 //#region Optionally Managed
 
-type OptionallyManagedCustomROMETA = {
-	identifier: OptionallyManagedIdentifier<OptionallyManagedCustomRO, 'id'>;
-	readOnlyFields: 'createdOn' | 'updatedOn';
-};
 class OptionallyManagedCustomRO {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<OptionallyManagedCustomRO, 'id'>;
+		readOnlyFields: 'createdOn' | 'updatedOn';
+	};
 	readonly id: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdOn?: string;
 	readonly updatedOn?: string;
-	constructor(
-		init: ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
-	) {}
+	constructor(init: ModelInit<OptionallyManagedCustomRO>) {}
 	static copyOf(
 		source: OptionallyManagedCustomRO,
 		mutator: (
-			draft: MutableModel<
-				OptionallyManagedCustomRO,
-				OptionallyManagedCustomROMETA
-			>
-		) => MutableModel<
-			OptionallyManagedCustomRO,
-			OptionallyManagedCustomROMETA
-		> | void
+			draft: MutableModel<OptionallyManagedCustomRO>
+		) => MutableModel<OptionallyManagedCustomRO> | void
 	): OptionallyManagedCustomRO {
 		return undefined;
 	}
 }
 
-type OptionallyManagedDefaultROMETA = {
-	identifier: OptionallyManagedIdentifier<OptionallyManagedDefaultRO, 'id'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
 class OptionallyManagedDefaultRO {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<OptionallyManagedDefaultRO, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
 	readonly id: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdAt?: string;
 	readonly updatedAt?: string;
-	constructor(
-		init: ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
-	) {}
+	constructor(init: ModelInit<OptionallyManagedDefaultRO>) {}
 	static copyOf(
 		source: OptionallyManagedDefaultRO,
 		mutator: (
-			draft: MutableModel<
-				OptionallyManagedDefaultRO,
-				OptionallyManagedDefaultROMETA
-			>
-		) => MutableModel<
-			OptionallyManagedDefaultRO,
-			OptionallyManagedDefaultROMETA
-		> | void
+			draft: MutableModel<OptionallyManagedDefaultRO>
+		) => MutableModel<OptionallyManagedDefaultRO> | void
 	): OptionallyManagedDefaultRO {
 		return undefined;
 	}
@@ -224,46 +209,45 @@ class OptionallyManagedDefaultRO {
 
 //#region Composite
 
-type CompositeCustomROMETA = {
-	identifier: CompositeIdentifier<CompositeCustomRO, ['tenant', 'dob']>;
-	readOnlyFields: 'createdOn' | 'updatedOn';
-};
-
 class CompositeCustomRO {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositeCustomRO, ['tenant', 'dob']>;
+		readOnlyFields: 'createdOn' | 'updatedOn';
+	};
 	readonly tenant: string;
 	readonly dob: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdOn?: string;
 	readonly updatedOn?: string;
-	constructor(init: ModelInit<CompositeCustomRO, CompositeCustomROMETA>) {}
+	constructor(init: ModelInit<CompositeCustomRO>) {}
 	static copyOf(
 		source: CompositeCustomRO,
 		mutator: (
-			draft: MutableModel<CompositeCustomRO, CompositeCustomROMETA>
-		) => MutableModel<CompositeCustomRO, CompositeCustomROMETA> | void
+			draft: MutableModel<CompositeCustomRO>
+		) => MutableModel<CompositeCustomRO> | void
 	): CompositeCustomRO {
 		return undefined;
 	}
 }
 
-type CompositeDefaultROMETA = {
-	identifier: CompositeIdentifier<CompositeDefaultRO, ['tenant', 'dob']>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
 class CompositeDefaultRO {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositeDefaultRO, ['tenant', 'dob']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
 	readonly tenant: string;
 	readonly dob: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdAt?: string;
 	readonly updatedAt?: string;
-	constructor(init: ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>) {}
+	constructor(init: ModelInit<CompositeDefaultRO>) {}
 	static copyOf(
 		source: CompositeDefaultRO,
 		mutator: (
-			draft: MutableModel<CompositeDefaultRO, CompositeDefaultROMETA>
-		) => MutableModel<CompositeDefaultRO, CompositeDefaultROMETA> | void
+			draft: MutableModel<CompositeDefaultRO>
+		) => MutableModel<CompositeDefaultRO> | void
 	): CompositeDefaultRO {
 		return undefined;
 	}
@@ -273,60 +257,43 @@ class CompositeDefaultRO {
 
 //#region Custom
 
-type CustomIdentifierCustomROMETA = {
-	identifier: CustomIdentifier<CustomIdentifierCustomRO, 'myId'>;
-	readOnlyFields: 'createdOn' | 'updatedOn';
-};
-
 class CustomIdentifierCustomRO {
+	readonly [__modelMeta__]: {
+		identifier: CustomIdentifier<CustomIdentifierCustomRO, 'myId'>;
+		readOnlyFields: 'createdOn' | 'updatedOn';
+	};
 	readonly myId: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdOn?: string;
 	readonly updatedOn?: string;
-	constructor(
-		init: ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
-	) {}
+	constructor(init: ModelInit<CustomIdentifierCustomRO>) {}
 	static copyOf(
 		source: CustomIdentifierCustomRO,
 		mutator: (
-			draft: MutableModel<
-				CustomIdentifierCustomRO,
-				CustomIdentifierCustomROMETA
-			>
-		) => MutableModel<
-			CustomIdentifierCustomRO,
-			CustomIdentifierCustomROMETA
-		> | void
+			draft: MutableModel<CustomIdentifierCustomRO>
+		) => MutableModel<CustomIdentifierCustomRO> | void
 	): CustomIdentifierCustomRO {
 		return undefined;
 	}
 }
 
-type CustomIdentifierDefaultROMETA = {
-	identifier: CustomIdentifier<CustomIdentifierDefaultRO, 'myId'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
 class CustomIdentifierDefaultRO {
+	readonly [__modelMeta__]: {
+		identifier: CustomIdentifier<CustomIdentifierDefaultRO, 'myId'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
 	readonly myId: string;
 	readonly name: string;
 	readonly description?: string;
 	readonly createdAt?: string;
 	readonly updatedAt?: string;
-	constructor(
-		init: ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
-	) {}
+	constructor(init: ModelInit<CustomIdentifierDefaultRO>) {}
 	static copyOf(
 		source: CustomIdentifierDefaultRO,
 		mutator: (
-			draft: MutableModel<
-				CustomIdentifierDefaultRO,
-				CustomIdentifierDefaultROMETA
-			>
-		) => MutableModel<
-			CustomIdentifierDefaultRO,
-			CustomIdentifierDefaultROMETA
-		> | void
+			draft: MutableModel<CustomIdentifierDefaultRO>
+		) => MutableModel<CustomIdentifierDefaultRO> | void
 	): CustomIdentifierDefaultRO {
 		return undefined;
 	}
@@ -339,44 +306,36 @@ class CustomIdentifierDefaultRO {
 describe('IdentifierFields', () => {
 	test('Types for identifiers match model definition', () => {
 		expectType<{ id: string }>(
-			{} as IdentifierFields<ManagedIdentifier<{ id: string }, 'id'>>
-		);
-		expectType<{ id: string }>(
-			{} as IdentifierFields<ManagedIdentifier<{ id: string }, 'id'>>
+			{} as IdentifierFields<LegacyNoMetadata, unknown>
 		);
 
-		expectType<{ id: string }>(
-			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }, 'id'>>
-		);
-		expectType<{ id: string }>(
-			{} as IdentifierFields<OptionallyManagedIdentifier<{ id: string }, 'id'>>
-		);
+		expectType<{ id: string }>({} as IdentifierFields<LegacyCustomRO, unknown>);
 
 		expectType<{ id: string }>(
-			{} as IdentifierFields<CustomIdentifier<any, 'id'>>
-		);
-		expectType<{ id: string }>(
-			{} as IdentifierFields<CustomIdentifier<{ id: string }, 'id'>>
-		);
-		expectType<{ myId: string }>(
-			{} as IdentifierFields<CustomIdentifier<{ myId: string }, 'myId'>>
-		);
-
-		expectType<{ tenant: string; company: number }>(
 			{} as IdentifierFields<
-				CompositeIdentifier<
-					{ tenant: string; company: number; someOtherField: boolean },
-					['tenant', 'company']
-				>
+				ManagedCustomRO,
+				ManagedCustomRO[typeof __modelMeta__]
 			>
 		);
 
-		expectType<{ tenant: string; company: string }>(
+		expectType<{ id: string }>(
 			{} as IdentifierFields<
-				CompositeIdentifier<
-					{ tenant: string; company: string; someOtherField: boolean },
-					['tenant', 'company']
-				>
+				OptionallyManagedCustomRO,
+				OptionallyManagedCustomRO[typeof __modelMeta__]
+			>
+		);
+
+		expectType<{ myId: string }>(
+			{} as IdentifierFields<
+				CustomIdentifierCustomRO,
+				CustomIdentifierCustomRO[typeof __modelMeta__]
+			>
+		);
+
+		expectType<{ tenant: string; dob: string }>(
+			{} as IdentifierFields<
+				CompositeCustomRO,
+				CompositeCustomRO[typeof __modelMeta__]
 			>
 		);
 	});
@@ -385,19 +344,19 @@ describe('IdentifierFields', () => {
 describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	test('Observe all', () => {
 		DataStore.observe().subscribe(({ model, element }) => {
-			expectType<PersistentModelConstructor<unknown, unknown>>(model);
-			expectType<PersistentModel<any>>(element);
+			expectType<PersistentModelConstructor<unknown>>(model);
+			expectType<PersistentModel>(element);
 
-			// @ts-expect-error
-			// element.id;
+			element.id;
+			element.anything;
 		});
 	});
 
 	describe('Legacy - backwards compatibility', () => {
-		test(`${LegacyNoMetadata.name}`, async () => {
+		test(`LegacyNoMetadata`, async () => {
 			expectType<ModelInit<LegacyNoMetadata>>({
 				// @ts-expect-error
-				// id: '234',
+				id: '234',
 				name: '',
 				description: '',
 			});
@@ -406,24 +365,31 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
+			});
+
+			expectType<ModelInit<LegacyNoMetadata>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				createdAt: '', // TODO: what?
 			});
 
 			LegacyNoMetadata.copyOf({} as LegacyNoMetadata, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 
 			// Query
@@ -507,10 +473,10 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 		});
 
-		test(`${LegacyDefaultRO.name}`, async () => {
+		test(`LegacyDefaultRO`, async () => {
 			expectType<ModelInit<LegacyDefaultRO>>({
 				// @ts-expect-error
-				// id: '234',
+				id: '234',
 				name: '',
 				description: '',
 			});
@@ -519,24 +485,24 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			LegacyDefaultRO.copyOf({} as LegacyDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 
 			// Query
@@ -616,41 +582,93 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 		});
 
-		test(`${LegacyCustomRO.name}`, async () => {
-			expectType<ModelInit<LegacyCustomRO>>({
+		test(`LegacyCustomRO`, async () => {
+			expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 				// @ts-expect-error
-				// id: '234',
+				id: '234',
 				name: '',
 				description: '',
 			});
 
-			expectType<ModelInit<LegacyCustomRO>>({
+			expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				createdOn: '', // TODO: here
+			});
+
+			type _ModelInit<
+				T extends PersistentModel,
+				M extends PersistentModelMetaData<T> = unknown
+			> =
+				| Omit<
+						T,
+						| typeof __modelMeta__
+						| keyof IdentifierFields<T, M>
+						| keyof MetadataReadOnlyFields<T, M>
+				  >
+				| IdentifierFieldsForInit<T, M>;
+
+			type SomeTest<T, V> = T extends V ? 1 : 2;
+
+			type SP1 = SomeTest<LegacyCustomROMETA, unknown>;
+			type SP3 = SomeTest<LegacyCustomROMETA, PersistentModelMetaData<unknown>>;
+			type SP4 = SomeTest<LegacyCustomROMETA, PersistentModelMetaData<any>>;
+			type SP5 = SomeTest<LegacyCustomROMETA, any>;
+
+			type SP2 = SomeTest<LegacyCustomROMETA, never>;
+			type SP6 = SomeTest<LegacyCustomROMETA, 3>;
+
+			type VV = MetadataOrDefault<LegacyCustomRO, LegacyCustomROMETA>; // TODO should be xxxxOn
+			type KK = MetadataReadOnlyFields<LegacyCustomRO, LegacyCustomROMETA>;
+			type PP = Omit<LegacyCustomRO, keyof KK>;
+
+			type ZZ = IdentifierFields<LegacyCustomRO, LegacyCustomROMETA>;
+			type DD = IdentifierFieldsForInit<LegacyCustomRO, LegacyCustomROMETA>;
+			type MI = _ModelInit<LegacyCustomRO, LegacyCustomROMETA>;
+
+			expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
+				name: '',
+				description: '',
+				// @ts-expect-error
+				createdAt: '',
 			});
 
 			LegacyCustomRO.copyOf({} as LegacyCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				// @ts-expect-error
-				// d.createdAt;
+				d.createdAt; // TODO: what?
+
 				// @ts-expect-error
-				// d.updatedAt;
+				d.updatedAt;
 
 				d.createdOn;
 				// @ts-expect-error
-				// d.createdOn = '';
+				d.createdOn = ''; // TODO: what?
 
 				d.updatedOn;
 				// @ts-expect-error
-				// d.updatedOn = '';
+				d.updatedOn = ''; // TODO: What??
+
+				// TODO: manolo
+				type QQ = MetadataOrDefault<
+					LegacyCustomRO,
+					LegacyCustomROMETA
+				>['readOnlyFields']; // should be xxxxOn
+
+				type WW = MetadataOrDefault<
+					LegacyCustomRO,
+					LegacyCustomROMETA
+				>['readOnlyFields']; // should be xxxxOn
+
+				type RR = MetadataReadOnlyFields<LegacyCustomRO, LegacyCustomROMETA>;
+				type MM = MutableModel<LegacyCustomRO, LegacyCustomROMETA>;
 			});
 
 			// Query
@@ -694,17 +712,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Observe
 			DataStore.observe(LegacyCustomRO).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<LegacyCustomRO, LegacyCustomROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
 				expectType<LegacyCustomRO>(element);
 			});
 			DataStore.observe(LegacyCustomRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<LegacyCustomRO, LegacyCustomROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
 				expectType<LegacyCustomRO>(element);
 			});
 			DataStore.observe(dummyInstance<LegacyCustomRO>()).subscribe(
@@ -734,10 +748,10 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	});
 
 	describe('Managed Identifier', () => {
-		test(`${ManagedDefaultRO.name}`, async () => {
+		test(`ManagedDefaultRO`, async () => {
 			expectType<ModelInit<ManagedDefaultRO>>({
 				// @ts-expect-error
-				// id: 'eeeeeee',
+				id: 'eeeeeee',
 				name: '',
 				description: '',
 			});
@@ -746,31 +760,31 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			expectType<ModelInit<ManagedDefaultRO>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			ManagedDefaultRO.copyOf({} as ManagedDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 
 			// Query
@@ -816,17 +830,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Observe
 			DataStore.observe(ManagedDefaultRO).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<ManagedDefaultRO, ManagedDefaultROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<ManagedDefaultRO>>(model);
 				expectType<ManagedDefaultRO>(element);
 			});
 			DataStore.observe(ManagedDefaultRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<ManagedDefaultRO, ManagedDefaultROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<ManagedDefaultRO>>(model);
 				expectType<ManagedDefaultRO>(element);
 			});
 			DataStore.observe(dummyInstance<ManagedDefaultRO>()).subscribe(
@@ -854,10 +864,10 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 		});
 
-		test(`${ManagedCustomRO.name}`, async () => {
+		test(`ManagedCustomRO`, async () => {
 			expectType<ModelInit<ManagedCustomRO>>({
 				// @ts-expect-error
-				// id: 'eeeeeee',
+				id: 'eeeeeee',
 				name: '',
 				description: '',
 			});
@@ -866,31 +876,31 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			expectType<ModelInit<ManagedCustomRO>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			ManagedCustomRO.copyOf({} as ManagedCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				// d.createdOn = '';
+				d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				// d.updatedOn = '';
+				d.updatedOn = '';
 			});
 
 			// Query
@@ -936,17 +946,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Observe
 			DataStore.observe(ManagedCustomRO).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<ManagedCustomRO, ManagedCustomROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<ManagedCustomRO>>(model);
 				expectType<ManagedCustomRO>(element);
 			});
 			DataStore.observe(ManagedCustomRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<ManagedCustomRO, ManagedCustomROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<ManagedCustomRO>>(model);
 				expectType<ManagedCustomRO>(element);
 			});
 			DataStore.observe(dummyInstance<ManagedCustomRO>()).subscribe(
@@ -976,9 +982,12 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	});
 
 	describe('Optionally Managed Identifier', () => {
-		test(`${OptionallyManagedDefaultRO.name}`, async () => {
+		test(`OptionallyManagedDefaultRO`, async () => {
 			expectType<
-				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+				ModelInit<
+					OptionallyManagedDefaultRO,
+					OptionallyManagedDefaultRO[typeof __modelMeta__]
+				>
 			>({
 				id: 'eeeeeee',
 				name: '',
@@ -986,38 +995,44 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			expectType<
-				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+				ModelInit<
+					OptionallyManagedDefaultRO,
+					OptionallyManagedDefaultRO[typeof __modelMeta__]
+				>
 			>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			expectType<
-				ModelInit<OptionallyManagedDefaultRO, OptionallyManagedDefaultROMETA>
+				ModelInit<
+					OptionallyManagedDefaultRO,
+					OptionallyManagedDefaultRO[typeof __modelMeta__]
+				>
 			>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 
 			// Query
@@ -1070,24 +1085,18 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			// Observe
 			DataStore.observe(OptionallyManagedDefaultRO).subscribe(
 				({ model, element }) => {
-					expectType<
-						PersistentModelConstructor<
-							OptionallyManagedDefaultRO,
-							OptionallyManagedDefaultROMETA
-						>
-					>(model);
+					expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
+						model
+					);
 					expectType<OptionallyManagedDefaultRO>(element);
 				}
 			);
 			DataStore.observe(OptionallyManagedDefaultRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<
-						OptionallyManagedDefaultRO,
-						OptionallyManagedDefaultROMETA
-					>
-				>(model);
+				expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
+					model
+				);
 				expectType<OptionallyManagedDefaultRO>(element);
 			});
 			DataStore.observe(dummyInstance<OptionallyManagedDefaultRO>()).subscribe(
@@ -1119,16 +1128,22 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 		});
 
-		test(`${OptionallyManagedCustomRO.name}`, async () => {
+		test(`OptionallyManagedCustomRO`, async () => {
 			expectType<
-				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+				ModelInit<
+					OptionallyManagedCustomRO,
+					OptionallyManagedCustomRO[typeof __modelMeta__]
+				>
 			>({
 				name: '',
 				description: '',
 			});
 
 			expectType<
-				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+				ModelInit<
+					OptionallyManagedCustomRO,
+					OptionallyManagedCustomRO[typeof __modelMeta__]
+				>
 			>({
 				id: 'eeeeeee',
 				name: '',
@@ -1136,38 +1151,44 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			expectType<
-				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+				ModelInit<
+					OptionallyManagedCustomRO,
+					OptionallyManagedCustomRO[typeof __modelMeta__]
+				>
 			>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			expectType<
-				ModelInit<OptionallyManagedCustomRO, OptionallyManagedCustomROMETA>
+				ModelInit<
+					OptionallyManagedCustomRO,
+					OptionallyManagedCustomRO[typeof __modelMeta__]
+				>
 			>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				// d.createdOn = '';
+				d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				// d.updatedOn = '';
+				d.updatedOn = '';
 			});
 
 			// Query
@@ -1220,24 +1241,18 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			// Observe
 			DataStore.observe(OptionallyManagedCustomRO).subscribe(
 				({ model, element }) => {
-					expectType<
-						PersistentModelConstructor<
-							OptionallyManagedCustomRO,
-							OptionallyManagedCustomROMETA
-						>
-					>(model);
+					expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
+						model
+					);
 					expectType<OptionallyManagedCustomRO>(element);
 				}
 			);
 			DataStore.observe(OptionallyManagedCustomRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<
-						OptionallyManagedCustomRO,
-						OptionallyManagedCustomROMETA
-					>
-				>(model);
+				expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
+					model
+				);
 				expectType<OptionallyManagedCustomRO>(element);
 			});
 			DataStore.observe(dummyInstance<OptionallyManagedCustomRO>()).subscribe(
@@ -1271,46 +1286,50 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	});
 
 	describe('Composite Identifier', () => {
-		test(`${CompositeDefaultRO.name}`, async () => {
-			expectType<ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>>({
+		test(`CompositeDefaultRO`, async () => {
+			expectType<
+				ModelInit<CompositeDefaultRO, CompositeDefaultRO[typeof __modelMeta__]>
+			>({
 				tenant: '',
 				dob: '',
 				name: '',
 				description: '',
 			});
 
-			expectType<ModelInit<CompositeDefaultRO, CompositeDefaultROMETA>>({
+			expectType<
+				ModelInit<CompositeDefaultRO, CompositeDefaultRO[typeof __modelMeta__]>
+			>({
 				tenant: '',
 				dob: '',
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
 				// @ts-expect-error
-				// d.id;
+				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.tenant;
 				// @ts-expect-error
-				// d.tenant = '';
+				d.tenant = '';
 				d.dob;
 				// @ts-expect-error
-				// d.dob = '';
+				d.dob = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 
 			// Save
@@ -1346,17 +1365,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 
 			// Observe
 			DataStore.observe(CompositeDefaultRO).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<CompositeDefaultRO, CompositeDefaultROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
 				expectType<CompositeDefaultRO>(element);
 			});
 			DataStore.observe(CompositeDefaultRO, c =>
 				c.description('beginsWith', 'something')
 			).subscribe(({ model, element }) => {
-				expectType<
-					PersistentModelConstructor<CompositeDefaultRO, CompositeDefaultROMETA>
-				>(model);
+				expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
 				expectType<CompositeDefaultRO>(element);
 			});
 
@@ -1378,54 +1393,61 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 		});
 
-		test(`${CompositeCustomRO.name}`, async () => {
-			expectType<ModelInit<CompositeCustomRO, CompositeCustomROMETA>>({
+		test(`CompositeCustomRO`, async () => {
+			expectType<
+				ModelInit<CompositeCustomRO, CompositeCustomRO[typeof __modelMeta__]>
+			>({
 				tenant: '',
 				dob: '',
 				name: '',
 				description: '',
 			});
 
-			expectType<ModelInit<CompositeCustomRO, CompositeCustomROMETA>>({
+			expectType<
+				ModelInit<CompositeCustomRO, CompositeCustomRO[typeof __modelMeta__]>
+			>({
 				tenant: '',
 				dob: '',
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
 				// @ts-expect-error
-				// d.id;
+				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.tenant;
 				// @ts-expect-error
-				// d.tenant = '';
+				d.tenant = '';
 				d.dob;
 				// @ts-expect-error
-				// d.dob = '';
+				d.dob = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				// d.createdOn = '';
+				d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				// d.updatedOn = '';
+				d.updatedOn = '';
 			});
 		});
 	});
 
 	describe('Custom Identifier', () => {
-		test(`${CustomIdentifierDefaultRO.name}`, async () => {
+		test(`CustomIdentifierDefaultRO`, async () => {
 			expectType<
-				ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
+				ModelInit<
+					CustomIdentifierDefaultRO,
+					CustomIdentifierDefaultRO[typeof __modelMeta__]
+				>
 			>({
 				myId: '',
 				name: '',
@@ -1433,41 +1455,47 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			expectType<
-				ModelInit<CustomIdentifierDefaultRO, CustomIdentifierDefaultROMETA>
+				ModelInit<
+					CustomIdentifierDefaultRO,
+					CustomIdentifierDefaultRO[typeof __modelMeta__]
+				>
 			>({
 				myId: '',
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
 				// @ts-expect-error
-				// d.id;
+				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.myId;
 				// @ts-expect-error
-				// d.myId = '';
+				d.myId = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				// d.createdAt = '';
+				d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				// d.updatedAt = '';
+				d.updatedAt = '';
 			});
 		});
 
-		test(`${CustomIdentifierCustomRO.name}`, async () => {
+		test(`CustomIdentifierCustomRO`, async () => {
 			expectType<
-				ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
+				ModelInit<
+					CustomIdentifierCustomRO,
+					CustomIdentifierCustomRO[typeof __modelMeta__]
+				>
 			>({
 				myId: '',
 				name: '',
@@ -1475,35 +1503,38 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			expectType<
-				ModelInit<CustomIdentifierCustomRO, CustomIdentifierCustomROMETA>
+				ModelInit<
+					CustomIdentifierCustomRO,
+					CustomIdentifierCustomRO[typeof __modelMeta__]
+				>
 			>({
 				myId: '',
 				name: '',
 				description: '',
 				// @ts-expect-error
-				// x: 234,
+				x: 234,
 			});
 
 			CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
 				// @ts-expect-error
-				// d.id;
+				d.id;
 				// @ts-expect-error
-				// d.id = '';
+				d.id = '';
 
 				d.myId;
 				// @ts-expect-error
-				// d.myId = '';
+				d.myId = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				// d.createdOn = '';
+				d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				// d.updatedOn = '';
+				d.updatedOn = '';
 			});
 		});
 	});

@@ -10,6 +10,7 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	extractPrimaryKeyFieldNames,
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
@@ -334,18 +335,17 @@ export type NonModelTypeConstructor<T> = {
 };
 
 // Class for model
-export type PersistentModelConstructor<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = {
-	new (init: ModelInit<T, M>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T, M>) => void): T;
+export type PersistentModelConstructor<T extends PersistentModel> = {
+	new (init: ModelInit<T, PersistentModelMetaData<T>>): T;
+	copyOf(
+		src: T,
+		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void
+	): T;
 };
 
 export type TypeConstructorMap = Record<
 	string,
-	| PersistentModelConstructor<unknown, unknown>
-	| NonModelTypeConstructor<unknown>
+	PersistentModelConstructor<unknown> | NonModelTypeConstructor<unknown>
 >;
 
 export declare const __identifierBrand__: unique symbol;
@@ -365,44 +365,57 @@ export type OptionallyManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 
 // You provide the values
 export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
-	{ fields: K extends [string] ? [K] : K; type: T },
+	{ fields: K; type: T },
 	'CompositeIdentifier'
 >;
 
 // You provide the value
-export type CustomIdentifier<T, K extends keyof T> = IdentifierBrand<
-	CompositeIdentifier<T, [K]>,
-	'CustomIdentifier'
->; // you provide the value
+export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
+	T,
+	[K]
+>;
 
-export type Identifier =
+export type Identifier<T> =
+	| ManagedIdentifier<T, any>
+	| OptionallyManagedIdentifier<T, any>
+	| CompositeIdentifier<T, any>
+	| CustomIdentifier<T, any>;
+
+export type IdentifierFields<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T>
+> = MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
-	| CompositeIdentifier<any, any>
-	| CustomIdentifier<any, any>;
+	? Pick<T, MetadataOrDefault<T, M>['identifier']['field']>
+	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
+			T,
+			infer B
+	  >
+	? Pick<T, B[number]> // B[number]
+	: Pick<T, MetadataOrDefault<T, M>['identifier']['field']>;
 
-export type IdentifierFields<X = unknown> = X extends
-	| ManagedIdentifier<any, any>
-	| OptionallyManagedIdentifier<any, any>
-	? Pick<X['type'], X['field']>
-	: X extends CompositeIdentifier<any, infer B>
-	? Pick<X['type'], B[number]>
-	: {};
-
-export type IdentifierFieldsInit<
-	T extends PersistentModel<unknown> = unknown,
-	X = unknown
-> = X extends ManagedIdentifier<T, any>
-	? {}
-	: X extends OptionallyManagedIdentifier<T, any>
-	? Partial<IdentifierFields<X>>
-	: X extends CompositeIdentifier<T, any>
-	? IdentifierFields<X>
-	: {};
+export type IdentifierFieldsForInit<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T>
+> = MetadataOrDefault<T, M>['identifier'] extends
+	| DefaultPersistentModelMetaData
+	| ManagedIdentifier<T, any>
+	? never
+	: MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
+			T,
+			any
+	  >
+	? Partial<IdentifierFields<T, M>>
+	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+	? IdentifierFields<T, M>
+	: never;
 
 // Instance of model
-export type PersistentModelMetaData = {
-	identifier?: Identifier;
+export declare const __modelMeta__: unique symbol;
+
+export type PersistentModelMetaData<T> = {
+	identifier?: Identifier<T>;
 	readOnlyFields?: string;
 };
 
@@ -411,40 +424,36 @@ export type DefaultPersistentModelMetaData = {
 	readOnlyFields: 'createdAt' | 'updatedAt';
 };
 
-export type PersistentModel<
-	META extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = Readonly<
-	IdentifierFields<META['identifier']> &
-		Record<META['readOnlyFields'] | string, any>
->;
+export type MetadataOrDefault<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T> = never
+> = T extends {
+	[__modelMeta__]: PersistentModelMetaData<T>;
+}
+	? T[typeof __modelMeta__]
+	: DefaultPersistentModelMetaData;
 
-type MetadataReadOnlyFields<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = Required<
-	M extends unknown
-		? Pick<T, DefaultPersistentModelMetaData['readOnlyFields']>
-		: M['readOnlyFields'] extends unknown
-		? Pick<T, DefaultPersistentModelMetaData['readOnlyFields']>
-		: Pick<T, M['readOnlyFields']>
->;
+export type PersistentModel = Readonly<Record<string, any>>;
+
+export type MetadataReadOnlyFields<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T>
+> = Required<Pick<T, MetadataOrDefault<T, M>['readOnlyFields']>>;
 
 // This type omits identifier fields in the constructor
 // This type omits readOnlyFields in the constructor
 // This type allows some identifiers in the constructor (e.g. for OptionallyManagedIdentifier or CustomIdentifier)
 export type ModelInit<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = Omit<
-	T,
-	| keyof IdentifierFields<
-			M['identifier'] extends unknown
-				? DefaultPersistentModelMetaData['identifier']
-				: M['identifier']
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T> = unknown
+> =
+	| Omit<
+			T,
+			| typeof __modelMeta__
+			| keyof IdentifierFields<T, M>
+			| keyof MetadataReadOnlyFields<T, M>
 	  >
-	| keyof MetadataReadOnlyFields<T, M>
-> &
-	IdentifierFieldsInit<T, M['identifier']>;
+	| IdentifierFieldsForInit<T, M>;
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -453,40 +462,76 @@ type DeepWritable<T> = {
 };
 
 export type MutableModel<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T> = unknown
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
-	Omit<
-		T,
-		| keyof IdentifierFields<
-				M['identifier'] extends unknown
-					? DefaultPersistentModelMetaData['identifier']
-					: M['identifier']
-		  >
-		| keyof MetadataReadOnlyFields<T, M>
-	>
+	Omit<T, keyof IdentifierFields<T, M> | keyof MetadataReadOnlyFields<T, M>>
 > &
-	Readonly<
-		Pick<
-			T,
-			| keyof IdentifierFields<
-					M['identifier'] extends unknown
-						? DefaultPersistentModelMetaData['identifier']
-						: M['identifier']
-			  >
-			| M['readOnlyFields']
-		>
-	>;
+	Readonly<IdentifierFields<T, M> & MetadataReadOnlyFields<T, M>>;
 
-export type ModelInstanceMetadata<M extends PersistentModelMetaData = unknown> =
-	{
-		_version: number;
-		_lastChangedAt: number;
-		_deleted: boolean;
-	} & IdentifierFields<M['identifier']>;
+export type ModelInstanceMetadata = {
+	_version: number;
+	_lastChangedAt: number;
+	_deleted: boolean;
+};
 
+export type IdentifierFieldValue<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T>
+> = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
+		? MetadataOrDefault<T, M>['identifier']['fields'][0]
+		: never
+	: T[MetadataOrDefault<T, M>['identifier']['field']];
+
+export type IdentifierFieldOrIdentifierObject<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T>
+> = IdentifierFields<T, M> | IdentifierFieldValue<T, M>;
+
+export function isIdentifierFieldValue<T extends PersistentModel>(
+	obj: any,
+	modelDefinition: SchemaModel
+): obj is IdentifierFieldValue<T extends PersistentModel ? T : never, any> {
+	const keys = extractPrimaryKeyFieldNames(modelDefinition);
+
+	if (keys.length === 1) {
+		const { type } = modelDefinition?.fields[keys[0]] ?? {};
+
+		if (isGraphQLScalarType(type)) {
+			const jsType = GraphQLScalarType.getJSType(type);
+
+			return typeof obj === jsType;
+		}
+
+		return false;
+	}
+
+	return false;
+}
+
+export function isIdentifierFieldOrObject<T extends PersistentModel>(
+	obj: any,
+	modelDefinition: SchemaModel
+): obj is IdentifierFieldOrIdentifierObject<T, any> {
+	return (
+		isIdentifierFieldValue<T>(obj, modelDefinition) ||
+		isIdentifierObject<T>(obj, modelDefinition)
+	);
+}
+
+export function isIdentifierObject<T extends PersistentModel>(
+	obj: any,
+	modelDefinition: SchemaModel
+): obj is IdentifierFields<T extends PersistentModel ? T : never, any> {
+	const keys = extractPrimaryKeyFieldNames(modelDefinition);
+
+	return (
+		typeof obj === 'object' && obj && keys.every(k => obj[k] !== undefined)
+	);
+}
 //#endregion
 
 //#region Subscription messages
@@ -496,17 +541,14 @@ export enum OpType {
 	DELETE = 'DELETE',
 }
 
-export type SubscriptionMessage<
-	T extends PersistentModel<M>,
-	M extends PersistentModelMetaData = unknown
-> = {
+export type SubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
-	model: PersistentModelConstructor<T, M>;
+	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
 };
 
-export type DataStoreSnapshot<T extends PersistentModel<unknown>> = {
+export type DataStoreSnapshot<T extends PersistentModel> = {
 	items: T[];
 	isSynced: boolean;
 };
@@ -515,7 +557,7 @@ export type DataStoreSnapshot<T extends PersistentModel<unknown>> = {
 //#region Predicates
 
 export type PredicateExpression<
-	M extends PersistentModel<unknown>,
+	M extends PersistentModel,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
@@ -575,7 +617,7 @@ type TypeName<T> = T extends string
 	? 'boolean[]'
 	: never;
 
-export type PredicateGroups<T extends PersistentModel<unknown>> = {
+export type PredicateGroups<T extends PersistentModel> = {
 	and: (
 		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
 	) => ModelPredicate<T>;
@@ -587,33 +629,32 @@ export type PredicateGroups<T extends PersistentModel<unknown>> = {
 	) => ModelPredicate<T>;
 };
 
-export type ModelPredicate<M extends PersistentModel<unknown>> = {
+export type ModelPredicate<M extends PersistentModel> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
-export type ProducerModelPredicate<
-	M extends PersistentModel<META>,
-	META extends PersistentModelMetaData = DefaultPersistentModelMetaData
-> = (condition: ModelPredicate<M>) => ModelPredicate<M>;
+export type ProducerModelPredicate<M extends PersistentModel> = (
+	condition: ModelPredicate<M>
+) => ModelPredicate<M>;
 
-export type PredicatesGroup<T extends PersistentModel<unknown>> = {
+export type PredicatesGroup<T extends PersistentModel> = {
 	type: keyof PredicateGroups<T>;
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
 };
 
-export function isPredicateObj<T extends PersistentModel<unknown>>(
+export function isPredicateObj<T extends PersistentModel>(
 	obj: any
 ): obj is PredicateObject<T> {
 	return obj && (<PredicateObject<T>>obj).field !== undefined;
 }
 
-export function isPredicateGroup<T extends PersistentModel<unknown>>(
+export function isPredicateGroup<T extends PersistentModel>(
 	obj: any
 ): obj is PredicatesGroup<T> {
 	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
 }
 
-export type PredicateObject<T extends PersistentModel<unknown>> = {
+export type PredicateObject<T extends PersistentModel> = {
 	field: keyof T;
 	operator: keyof AllOperators;
 	operand: any;
@@ -655,33 +696,33 @@ export type GraphQLFilter = Partial<
 
 //#region Pagination
 
-export type ProducerPaginationInput<T extends PersistentModel<unknown>> = {
+export type ProducerPaginationInput<T extends PersistentModel> = {
 	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ObserveQueryOptions<T extends PersistentModel<unknown>> = Pick<
+export type ObserveQueryOptions<T extends PersistentModel> = Pick<
 	ProducerPaginationInput<T>,
 	'sort'
 >;
 
-export type PaginationInput<T extends PersistentModel<unknown>> = {
+export type PaginationInput<T extends PersistentModel> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
 	page?: number;
 };
 
-export type ProducerSortPredicate<M extends PersistentModel<unknown>> = (
+export type ProducerSortPredicate<M extends PersistentModel> = (
 	condition: SortPredicate<M>
 ) => SortPredicate<M>;
 
-export type SortPredicate<T extends PersistentModel<unknown>> = {
+export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
 export type SortPredicateExpression<
-	M extends PersistentModel<unknown>,
+	M extends PersistentModel,
 	FT
 > = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
@@ -692,10 +733,10 @@ export enum SortDirection {
 	DESCENDING = 'DESCENDING',
 }
 
-export type SortPredicatesGroup<T extends PersistentModel<unknown>> =
+export type SortPredicatesGroup<T extends PersistentModel> =
 	SortPredicateObject<T>[];
 
-export type SortPredicateObject<T extends PersistentModel<unknown>> = {
+export type SortPredicateObject<T extends PersistentModel> = {
 	field: keyof T;
 	sortDirection: keyof typeof SortDirection;
 };
@@ -712,13 +753,13 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any, any>,
+		) => PersistentModelConstructor<any>,
 		appId: string
 	): Promise<void>;
 };
 
 export type NamespaceResolver = (
-	modelConstructor: PersistentModelConstructor<any, any>
+	modelConstructor: PersistentModelConstructor<any>
 ) => string;
 
 export type ControlMessageType<T> = {
@@ -838,35 +879,29 @@ syncExpressions: [
 ]
 */
 type Option0 = [];
-type Option1<T extends PersistentModel<unknown>> = [
-	ModelPredicate<T> | undefined
-];
-type Option<T extends PersistentModel<unknown>> = Option0 | Option1<T>;
+type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
-type Lookup<T extends PersistentModel<unknown>> = {
+type Lookup<T extends PersistentModel> = {
 	0:
-		| ProducerModelPredicate<T, any>
-		| Promise<ProducerModelPredicate<T, any>>
+		| ProducerModelPredicate<T>
+		| Promise<ProducerModelPredicate<T>>
 		| typeof PredicateAll;
 	1: ModelPredicate<T> | undefined;
 };
 
-type ConditionProducer<
-	T extends PersistentModel<unknown>,
-	A extends Option<T>
-> = (
+type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 	...args: A
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 
 export async function syncExpression<
-	T extends PersistentModel<M>,
-	A extends Option<T>,
-	M extends PersistentModelMetaData
+	T extends PersistentModel,
+	A extends Option<T>
 >(
-	modelConstructor: PersistentModelConstructor<T, M>,
+	modelConstructor: PersistentModelConstructor<T>,
 	conditionProducer: ConditionProducer<T, A>
 ): Promise<{
-	modelConstructor: PersistentModelConstructor<T, M>;
+	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer: ConditionProducer<T, A>;
 }> {
 	return {
@@ -876,7 +911,7 @@ export async function syncExpression<
 }
 
 export type SyncConflict = {
-	modelConstructor: PersistentModelConstructor<any, any>;
+	modelConstructor: PersistentModelConstructor<any>;
 	localModel: PersistentModel;
 	remoteModel: PersistentModel;
 	operation: OpType;

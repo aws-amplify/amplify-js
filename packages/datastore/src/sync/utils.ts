@@ -367,18 +367,15 @@ export function buildGraphQLOperation(
 }
 
 export function createMutationInstanceFromModelOperation<
-	T extends PersistentModel<any>
+	T extends PersistentModel
 >(
 	relationships: RelationshipType,
 	modelDefinition: SchemaModel,
 	opType: OpType,
-	model: PersistentModelConstructor<T, any>,
+	model: PersistentModelConstructor<T>,
 	element: T,
 	condition: GraphQLCondition,
-	MutationEventConstructor: PersistentModelConstructor<
-		MutationEvent,
-		MutationEventMetadata
-	>,
+	MutationEventConstructor: PersistentModelConstructor<MutationEvent>,
 	modelInstanceCreator: ModelInstanceCreator,
 	id?: string
 ): MutationEvent {
@@ -630,7 +627,7 @@ export async function getTokenForCustomAuth(
 // Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
 export function getIdentifierValue(
 	modelDefinition: SchemaModel,
-	model: ModelInstanceMetadata | PersistentModel<any>
+	model: ModelInstanceMetadata | PersistentModel
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 

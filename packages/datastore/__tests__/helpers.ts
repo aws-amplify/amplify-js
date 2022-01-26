@@ -139,7 +139,7 @@ export declare class PostCustomPKSort {
 }
 
 type PostCustomPKCompositeMETA = {
-	identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
+	identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
 };
 export declare class PostCustomPKComposite {
 	public readonly id: string;
