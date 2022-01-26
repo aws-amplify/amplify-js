@@ -54,7 +54,7 @@ class SQLiteDatabase {
 		logger.debug('Database deleted');
 	}
 
-	public async get<T extends PersistentModel<any>>(
+	public async get<T extends PersistentModel>(
 		statement: string,
 		params: any[]
 	): Promise<T> {

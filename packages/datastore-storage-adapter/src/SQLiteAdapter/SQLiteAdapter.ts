@@ -92,12 +92,12 @@ export class SQLiteAdapter implements StorageAdapter {
 		this.initPromise = undefined;
 	}
 
-	async save<T extends PersistentModel<any>>(
+	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T, any>;
+			.constructor as PersistentModelConstructor<T>;
 		const { name: tableName } = modelConstructor;
 		const connectedModels = traverseModel(
 			modelConstructor.name,
@@ -245,8 +245,8 @@ export class SQLiteAdapter implements StorageAdapter {
 		);
 	}
 
-	async query<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
@@ -306,8 +306,8 @@ export class SQLiteAdapter implements StorageAdapter {
 		return idPredicate && idPredicate.operand;
 	}
 
-	async queryOne<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		const { name: tableName } = modelConstructor;
@@ -324,8 +324,8 @@ export class SQLiteAdapter implements StorageAdapter {
 	// Currently does not cascade
 	// TODO: use FKs in relations and have `ON DELETE CASCADE` set
 	// For Has Many and Has One relations to have SQL handle cascades automatically
-	async delete<T extends PersistentModel<any>>(
-		modelOrModelConstructor: T | PersistentModelConstructor<T, any>,
+	async delete<T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
 		if (isModelConstructor(modelOrModelConstructor)) {
@@ -354,7 +354,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		} else {
 			const model = modelOrModelConstructor as T;
 			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T, any>;
+				.constructor as PersistentModelConstructor<T>;
 			const { name: tableName } = modelConstructor;
 
 			if (condition) {
@@ -363,7 +363,7 @@ export class SQLiteAdapter implements StorageAdapter {
 					tableName
 				);
 
-				const fromDB = await this.db.get(queryStatement, params);
+				const fromDB = await this.db.get<T>(queryStatement, params);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -375,7 +375,7 @@ export class SQLiteAdapter implements StorageAdapter {
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
-				const isValid = validatePredicate<T>(fromDB, type, predicateObjs);
+				const isValid = validatePredicate(fromDB, type, predicateObjs);
 
 				if (!isValid) {
 					const msg = 'Conditional update failed';
@@ -401,7 +401,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		}
 	}
 
-	async batchSave<T extends PersistentModel<any>>(
+	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
