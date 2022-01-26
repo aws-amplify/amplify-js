@@ -1149,7 +1149,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - react-native-clean-up-deps
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
