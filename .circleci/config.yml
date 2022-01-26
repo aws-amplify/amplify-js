@@ -945,22 +945,22 @@ jobs:
           spec: device-tracking
           browser: << parameters.browser >>
 
-  # integ_react_delete_user:
-  #   parameters:
-  #     browser:
-  #       type: string
-  #   executor: js-test-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
-  #   steps:
-  #     - prepare_test_env
-  #     - integ_test_js:
-  #         test_name: 'delete-user'
-  #         framework: react
-  #         category: auth
-  #         sample_name: delete-user
-  #         spec: delete-user
-  #         browser: << parameters.browser >>
+  integ_react_delete_user:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'delete-user'
+          framework: react
+          category: auth
+          sample_name: delete-user
+          spec: delete-user
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor-legacy
     <<: *test_env_vars
@@ -1544,7 +1544,7 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
-            # - integ_react_delete_user
+            - integ_react_delete_user
             - integ_react_predictions
             - integ_react_datastore
             - integ_react_datastore_v2
