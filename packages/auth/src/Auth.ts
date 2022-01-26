@@ -1155,7 +1155,7 @@ export class AuthClass {
 			this._oAuthHandler &&
 			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
-		return new Promise((res, rej) => {
+		return new Promise(async (res, rej) => {
 			if (this.userPool) {
 				const user = this.userPool.getCurrentUser();
 
@@ -1166,7 +1166,7 @@ export class AuthClass {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
-							return rej(new Error(err));
+							return rej(err);
 						} else {
 							await user.deleteUser((err, result: string) => {
 								if (err) {
@@ -1187,9 +1187,9 @@ export class AuthClass {
 
 									if (isSignedInHostedUI) {
 										this.oAuthSignOutRedirect(res, rej);
-										res();
+										res(result);
 									} else {
-										res();
+										res(result);
 									}
 								}
 								dispatchAuthEvent(
