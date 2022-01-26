@@ -1460,15 +1460,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_delete_user:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_delete_user:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
