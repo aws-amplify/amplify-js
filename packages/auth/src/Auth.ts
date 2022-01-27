@@ -1142,14 +1142,12 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public async deleteUser(): Promise<Error | string | void> {
-		await new Promise(async (res, rej) => {
-			try {
-				await this._storageSync;
-			} catch (e) {
-				logger.debug('Failed to sync cache info into memory', e);
-				return rej(new Error(e));
-			}
-		});
+		try {
+			await this._storageSync;
+		} catch (e) {
+			logger.debug('Failed to sync cache info into memory', e);
+			return Promise.reject(new Error(e));
+		}
 
 		const isSignedInHostedUI =
 			this._oAuthHandler &&
@@ -1182,12 +1180,18 @@ export class AuthClass {
 									try {
 										this.cleanCachedItems(); // clean aws credentials
 									} catch (e) {
-										rej(e);
+										//TODO: change to rejects in refactor
+										logger.debug('failed to clear cached items');
 									}
 
 									if (isSignedInHostedUI) {
 										this.oAuthSignOutRedirect(res, rej);
 									} else {
+										dispatchAuthEvent(
+											'signOut',
+											this.user,
+											`A user has been signed out`
+										);
 										res(result);
 									}
 									dispatchAuthEvent(
