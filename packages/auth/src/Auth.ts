@@ -1141,12 +1141,13 @@ export class AuthClass {
 	 * Delete the current authenticated user
 	 * @return {Promise}
 	 **/
-	public async deleteUser(): Promise<Error | string | void> {
+	//TODO: Check return type void
+	public async deleteUser(): Promise<string | void> {
 		try {
 			await this._storageSync;
 		} catch (e) {
 			logger.debug('Failed to sync cache info into memory', e);
-			return Promise.reject(new Error(e));
+			throw new Error(e);
 		}
 
 		const isSignedInHostedUI =
