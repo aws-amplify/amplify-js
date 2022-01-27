@@ -1168,7 +1168,7 @@ export class AuthClass {
 							logger.debug('Failed to get the user session', err);
 							return rej(err);
 						} else {
-							await user.deleteUser((err, result: string) => {
+							user.deleteUser((err, result: string) => {
 								if (err) {
 									rej(err);
 								} else {
@@ -1187,7 +1187,6 @@ export class AuthClass {
 
 									if (isSignedInHostedUI) {
 										this.oAuthSignOutRedirect(res, rej);
-										res(result);
 									} else {
 										res(result);
 									}

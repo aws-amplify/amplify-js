@@ -2739,7 +2739,7 @@ describe('auth unit test', () => {
 		});
 	});
 
-	describe.only('delete user test suite', () => {
+	describe('delete user test suite', () => {
 		const auth = new Auth(authOptions);
 		const user = new CognitoUser({
 			Username: 'raz',
