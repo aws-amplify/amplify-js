@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.20...@aws-amplify/auth@4.4.0) (2022-01-27)
+
+
+### Features
+
+* **@aws-amplify/auth:** Delete user API exposed ([#9428](https://github.com/aws-amplify/amplify-js/issues/9428)) ([bf3d189](https://github.com/aws-amplify/amplify-js/commit/bf3d189c9e7e14342230fca8a0cbba6972e7b42c))
+
+
+
+
+
 ## [4.3.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.19...@aws-amplify/auth@4.3.20) (2022-01-07)
 
 **Note:** Version bump only for package @aws-amplify/auth
