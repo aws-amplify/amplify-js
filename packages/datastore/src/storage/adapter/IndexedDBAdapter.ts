@@ -19,7 +19,6 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	RelationType,
-	ModelInit,
 } from '../../types';
 import {
 	exhaustiveCheck,
@@ -605,7 +604,7 @@ class IndexedDBAdapter implements Adapter {
 		await this.checkPrivate();
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
-		if (isModelConstructor<T>(modelOrModelConstructor)) {
+		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 

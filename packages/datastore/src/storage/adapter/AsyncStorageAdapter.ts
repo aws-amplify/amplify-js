@@ -20,7 +20,6 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	RelationType,
-	ModelInit,
 } from '../../types';
 import {
 	exhaustiveCheck,
@@ -427,7 +426,7 @@ export class AsyncStorageAdapter implements Adapter {
 	): Promise<[T[], T[]]> {
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
-		if (isModelConstructor<T>(modelOrModelConstructor)) {
+		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 

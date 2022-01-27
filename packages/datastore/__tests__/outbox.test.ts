@@ -378,7 +378,7 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 
 	const modelDefinition = testSchema().models[modelConstructor.name];
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-	const xxx = keyFields.map(f => model[f]).join('#');
+	const identifier = keyFields.map(f => model[f]).join('#');
 
 	return createMutationInstanceFromModelOperation(
 		undefined,
@@ -389,7 +389,7 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		{},
 		MutationEventConstructor,
 		modelInstanceCreator,
-		xxx // TODO: not cool
+		identifier // TODO: Ask about this
 	);
 }
 

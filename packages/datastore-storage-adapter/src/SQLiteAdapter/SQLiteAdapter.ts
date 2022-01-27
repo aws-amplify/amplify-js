@@ -363,7 +363,7 @@ export class SQLiteAdapter implements StorageAdapter {
 					tableName
 				);
 
-				const fromDB = await this.db.get<T>(queryStatement, params);
+				const fromDB = await this.db.get(queryStatement, params);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -427,7 +427,7 @@ export class SQLiteAdapter implements StorageAdapter {
 				this.getModelConstructorByModelName
 			);
 
-			const { id, _deleted } = item as ModelInstanceMetadata & { id: string }; // TODO: not cool
+			const { id, _deleted } = item as ModelInstanceMetadata & { id: string };
 
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id

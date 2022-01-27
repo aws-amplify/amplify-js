@@ -41,8 +41,10 @@ const logger = new Logger('DataStore');
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void>;
 	private readonly pushStream: {
-		observable: Observable<StorageSubscriptionMessage<any>>;
-	} & Required<ZenObservable.Observer<StorageSubscriptionMessage<any>>>;
+		observable: Observable<StorageSubscriptionMessage<PersistentModel>>;
+	} & Required<
+		ZenObservable.Observer<StorageSubscriptionMessage<PersistentModel>>
+	>;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -422,7 +424,7 @@ class ExclusiveStorage implements StorageFacade {
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patchesTuple)
+			storage.save(model, condition, mutator, patchesTuple)
 		);
 	}
 
@@ -442,7 +444,7 @@ class ExclusiveStorage implements StorageFacade {
 		mutator?: Symbol
 	): Promise<[T[], T[]]> {
 		return this.runExclusive<[T[], T[]]>(storage => {
-			if (isModelConstructor<T>(modelOrModelConstructor)) {
+			if (isModelConstructor(modelOrModelConstructor)) {
 				const modelConstructor = modelOrModelConstructor;
 
 				return storage.delete(modelConstructor, condition, mutator);

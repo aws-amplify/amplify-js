@@ -431,9 +431,7 @@ const createModelClass = <T extends PersistentModel>(
 
 					const { id: _id } =
 						modelInstanceMetadata as unknown as IdentifierFields<
-							{
-								id: string;
-							},
+							ModelWithIDIdentifier,
 							any
 						>;
 
@@ -470,7 +468,7 @@ const createModelClass = <T extends PersistentModel>(
 			return instance;
 		}
 
-		static copyOf(source: T, fn: (draft: MutableModel<T, unknown>) => T) {
+		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
 			const modelConstructor = Object.getPrototypeOf(source || {}).constructor;
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'The source object is not a valid model';
@@ -482,7 +480,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T, unknown>>draft);
+					fn(<MutableModel<T>>draft);
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -905,7 +903,7 @@ class DataStore {
 			},
 		});
 
-		const result = await this.storage.query<T>(
+		const result = await this.storage.query(
 			modelConstructor,
 			predicate,
 			pagination
@@ -949,7 +947,7 @@ class DataStore {
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
-			return s.query<T>(
+			return s.query(
 				modelConstructor,
 				ModelPredicateCreator.createForPk(modelDefinition, model)
 			);
@@ -1062,7 +1060,7 @@ class DataStore {
 
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
 
-			return <T>(<unknown>deleted);
+			return deleted;
 		} else {
 			const model = modelOrConstructor;
 			const modelConstructor = Object.getPrototypeOf(model || {})
@@ -1079,7 +1077,7 @@ class DataStore {
 
 			const pkPredicate = ModelPredicateCreator.createForPk<T>(
 				modelDefinition,
-				<T>model
+				model
 			);
 
 			if (identifierOrCriteria) {
@@ -1097,7 +1095,7 @@ class DataStore {
 
 			const [[deleted]] = await this.storage.delete(model, condition);
 
-			return <T>deleted;
+			return deleted;
 		}
 	};
 
@@ -1124,7 +1122,7 @@ class DataStore {
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
-		const modelConstructor: PersistentModelConstructor<unknown> =
+		const modelConstructor: PersistentModelConstructor<T> =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
@@ -1196,7 +1194,7 @@ class DataStore {
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.subscribe(<any>observer);
+					.subscribe(observer);
 			})();
 
 			return () => {
