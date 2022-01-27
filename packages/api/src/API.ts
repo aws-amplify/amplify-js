@@ -90,7 +90,11 @@ export class APIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(apiName: string, path: string, init: Record<string, any>): Promise<any> {
+	get(
+		apiName: string,
+		path: string,
+		init: { [key: string]: any }
+	): Promise<any> {
 		return this._restApi.get(apiName, path, init);
 	}
 
@@ -101,7 +105,11 @@ export class APIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(apiName: string, path: string, init: Record<string, any>): Promise<any> {
+	post(
+		apiName: string,
+		path: string,
+		init: { [key: string]: any }
+	): Promise<any> {
 		return this._restApi.post(apiName, path, init);
 	}
 
@@ -112,7 +120,11 @@ export class APIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(apiName: string, path: string, init: Record<string, any>): Promise<any> {
+	put(
+		apiName: string,
+		path: string,
+		init: { [key: string]: any }
+	): Promise<any> {
 		return this._restApi.put(apiName, path, init);
 	}
 
@@ -126,7 +138,7 @@ export class APIClass {
 	patch(
 		apiName: string,
 		path: string,
-		init: Record<string, any>
+		init: { [key: string]: any }
 	): Promise<any> {
 		return this._restApi.patch(apiName, path, init);
 	}
@@ -138,7 +150,11 @@ export class APIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(apiName: string, path: string, init: Record<string, any>): Promise<any> {
+	del(
+		apiName: string,
+		path: string,
+		init: { [key: string]: any }
+	): Promise<any> {
 		return this._restApi.del(apiName, path, init);
 	}
 
@@ -149,7 +165,11 @@ export class APIClass {
 	 * @param [init] - Request extra params
 	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(apiName: string, path: string, init: Record<string, any>): Promise<any> {
+	head(
+		apiName: string,
+		path: string,
+		init: { [key: string]: any }
+	): Promise<any> {
 		return this._restApi.head(apiName, path, init);
 	}
 
