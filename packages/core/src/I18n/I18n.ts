@@ -105,7 +105,7 @@ export class I18n {
 		}
 
 		const lang_dict = this._dict[language];
-		if (typeof lang_dict === 'undefined') {
+		if (!lang_dict) {
 			return defVal;
 		}
 
