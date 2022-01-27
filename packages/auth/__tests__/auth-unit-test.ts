@@ -2759,15 +2759,6 @@ describe('auth unit test', () => {
 
 			expect(await auth.deleteUser()).toBe('SUCCESS');
 
-			// checking if session is cleared
-			user.getSession((err, session) => {
-				const idToken = new CognitoIdToken({ IdToken: '' });
-				const accessToken = new CognitoIdToken({ IdToken: '' });
-				expect(session).toStrictEqual(
-					new CognitoUserSession({ IdToken: idToken, AccessToken: accessToken })
-				);
-			});
-
 			spy1.mockClear();
 			spy2.mockClear();
 		});

@@ -1142,7 +1142,7 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public async deleteUser(): Promise<Error | string | void> {
-		new Promise(async (res, rej) => {
+		await new Promise(async (res, rej) => {
 			try {
 				await this._storageSync;
 			} catch (e) {
@@ -1190,12 +1190,12 @@ export class AuthClass {
 									} else {
 										res(result);
 									}
+									dispatchAuthEvent(
+										'signOut',
+										this.user,
+										`A user has been signed out`
+									);
 								}
-								dispatchAuthEvent(
-									'signOut',
-									this.user,
-									`A user has been signed out`
-								);
 							});
 						}
 					});
