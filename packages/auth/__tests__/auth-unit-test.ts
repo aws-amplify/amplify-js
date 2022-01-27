@@ -2758,7 +2758,7 @@ describe('auth unit test', () => {
 				});
 
 			expect(await auth.deleteUser()).toBe('SUCCESS');
-
+			// TODO: test session cleared properly
 			spy1.mockClear();
 			spy2.mockClear();
 		});

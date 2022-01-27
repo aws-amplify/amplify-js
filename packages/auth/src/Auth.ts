@@ -1180,7 +1180,7 @@ export class AuthClass {
 									try {
 										this.cleanCachedItems(); // clean aws credentials
 									} catch (e) {
-										//TODO: change to rejects in refactor
+										// TODO: change to rejects in refactor
 										logger.debug('failed to clear cached items');
 									}
 
@@ -1194,11 +1194,6 @@ export class AuthClass {
 										);
 										res(result);
 									}
-									dispatchAuthEvent(
-										'signOut',
-										this.user,
-										`A user has been signed out`
-									);
 								}
 							});
 						}
