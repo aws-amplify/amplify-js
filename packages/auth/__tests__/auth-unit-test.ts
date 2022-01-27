@@ -2739,13 +2739,13 @@ describe('auth unit test', () => {
 		});
 	});
 
-	describe('delete user test suite', () => {
+	describe.only('delete user test suite', () => {
 		const auth = new Auth(authOptions);
 		const user = new CognitoUser({
 			Username: 'raz',
 			Pool: userPool,
 		});
-		test.only('Happy path should delete a user', async () => {
+		test('Happy path should delete a user', async () => {
 			const spy1 = jest
 				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
@@ -2805,12 +2805,14 @@ describe('auth unit test', () => {
 			const spy2 = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
-					return callback(null, null);
+					return callback(new Error('no session'), null);
 				});
 
-			console.log(await auth.deleteUser());
-
-			// expect(await auth.deleteUser()).toThrowError();
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(Error('no session'));
+			}
 
 			spy1.mockClear();
 			spy2.mockClear();
