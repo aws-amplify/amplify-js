@@ -5,7 +5,6 @@ import {
 	PostCustomPKSort as PostCustomPKSortType,
 	testSchema,
 	internalTestSchema,
-	PostCustomPKMETA,
 } from './helpers';
 import {
 	PersistentModelConstructor,
@@ -13,16 +12,13 @@ import {
 	OpType,
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
-import { MutationEvent, MutationEventMetadata } from '../src/sync/';
+import { MutationEvent } from '../src/sync/';
 import { extractPrimaryKeyFieldNames } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
-let PostCustomPK: PersistentModelConstructor<
-	PostCustomPKType,
-	PostCustomPKMETA
->;
+let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 
 describe('MutationProcessor', () => {
@@ -173,10 +169,7 @@ async function instantiateMutationProcessor() {
 
 	({ Model, PostCustomPK, PostCustomPKSort } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
-		PostCustomPK: PersistentModelConstructor<
-			PostCustomPKType,
-			PostCustomPKMETA
-		>;
+		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 	});
 
@@ -238,7 +231,7 @@ async function instantiateMutationProcessor() {
 async function createMutationEvent(model, opType): Promise<MutationEvent> {
 	const MutationEventConstructor = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<MutationEvent, MutationEventMetadata>;
+	] as PersistentModelConstructor<MutationEvent>;
 
 	const modelConstructor = (Object.getPrototypeOf(model) as Object)
 		.constructor as PersistentModelConstructor<any>;

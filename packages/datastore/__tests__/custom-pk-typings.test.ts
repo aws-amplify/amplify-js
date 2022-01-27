@@ -13,11 +13,6 @@ import {
 	PersistentModelConstructor,
 	Predicates,
 	__modelMeta__,
-	MetadataReadOnlyFields,
-	MetadataOrDefault,
-	PersistentModelMetaData,
-	DefaultPersistentModelMetaData,
-	IdentifierFieldsForInit,
 } from '../src';
 
 //#region test helpers
@@ -356,7 +351,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		test(`LegacyNoMetadata`, async () => {
 			expectType<ModelInit<LegacyNoMetadata>>({
 				// @ts-expect-error
-				id: '234',
+				// id: '234',
 				name: '',
 				description: '',
 			});
@@ -365,30 +360,27 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			expectType<ModelInit<LegacyNoMetadata>>({
 				name: '',
 				description: '',
-				// @ts-expect-error
-				createdAt: '', // TODO: what?
+				createdAt: '',
 			});
 
 			LegacyNoMetadata.copyOf({} as LegacyNoMetadata, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
-				// @ts-expect-error
 				d.createdAt = '';
 
 				d.updatedAt;
-				// @ts-expect-error
 				d.updatedAt = '';
 			});
 
@@ -476,7 +468,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		test(`LegacyDefaultRO`, async () => {
 			expectType<ModelInit<LegacyDefaultRO>>({
 				// @ts-expect-error
-				id: '234',
+				// id: '234',
 				name: '',
 				description: '',
 			});
@@ -485,24 +477,24 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			LegacyDefaultRO.copyOf({} as LegacyDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				d.createdAt = '';
+				// d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				d.updatedAt = '';
+				// d.updatedAt = '';
 			});
 
 			// Query
@@ -585,7 +577,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		test(`LegacyCustomRO`, async () => {
 			expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 				// @ts-expect-error
-				id: '234',
+				// id: '234',
 				name: '',
 				description: '',
 			});
@@ -594,81 +586,37 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				createdOn: '', // TODO: here
+				// createdOn: '',
 			});
-
-			type _ModelInit<
-				T extends PersistentModel,
-				M extends PersistentModelMetaData<T> = unknown
-			> =
-				| Omit<
-						T,
-						| typeof __modelMeta__
-						| keyof IdentifierFields<T, M>
-						| keyof MetadataReadOnlyFields<T, M>
-				  >
-				| IdentifierFieldsForInit<T, M>;
-
-			type SomeTest<T, V> = T extends V ? 1 : 2;
-
-			type SP1 = SomeTest<LegacyCustomROMETA, unknown>;
-			type SP3 = SomeTest<LegacyCustomROMETA, PersistentModelMetaData<unknown>>;
-			type SP4 = SomeTest<LegacyCustomROMETA, PersistentModelMetaData<any>>;
-			type SP5 = SomeTest<LegacyCustomROMETA, any>;
-
-			type SP2 = SomeTest<LegacyCustomROMETA, never>;
-			type SP6 = SomeTest<LegacyCustomROMETA, 3>;
-
-			type VV = MetadataOrDefault<LegacyCustomRO, LegacyCustomROMETA>; // TODO should be xxxxOn
-			type KK = MetadataReadOnlyFields<LegacyCustomRO, LegacyCustomROMETA>;
-			type PP = Omit<LegacyCustomRO, keyof KK>;
-
-			type ZZ = IdentifierFields<LegacyCustomRO, LegacyCustomROMETA>;
-			type DD = IdentifierFieldsForInit<LegacyCustomRO, LegacyCustomROMETA>;
-			type MI = _ModelInit<LegacyCustomRO, LegacyCustomROMETA>;
 
 			expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				createdAt: '',
+				// createdAt: '',
 			});
 
 			LegacyCustomRO.copyOf({} as LegacyCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				// @ts-expect-error
-				d.createdAt; // TODO: what?
+				// d.createdAt;
 
 				// @ts-expect-error
-				d.updatedAt;
+				// d.updatedAt;
 
 				d.createdOn;
 				// @ts-expect-error
-				d.createdOn = ''; // TODO: what?
+				// d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				d.updatedOn = ''; // TODO: What??
-
-				// TODO: manolo
-				type QQ = MetadataOrDefault<
-					LegacyCustomRO,
-					LegacyCustomROMETA
-				>['readOnlyFields']; // should be xxxxOn
-
-				type WW = MetadataOrDefault<
-					LegacyCustomRO,
-					LegacyCustomROMETA
-				>['readOnlyFields']; // should be xxxxOn
-
-				type RR = MetadataReadOnlyFields<LegacyCustomRO, LegacyCustomROMETA>;
-				type MM = MutableModel<LegacyCustomRO, LegacyCustomROMETA>;
+				// d.updatedOn = '';
 			});
 
 			// Query
@@ -751,7 +699,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		test(`ManagedDefaultRO`, async () => {
 			expectType<ModelInit<ManagedDefaultRO>>({
 				// @ts-expect-error
-				id: 'eeeeeee',
+				// id: 'eeeeeee',
 				name: '',
 				description: '',
 			});
@@ -760,31 +708,31 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			expectType<ModelInit<ManagedDefaultRO>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			ManagedDefaultRO.copyOf({} as ManagedDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				d.createdAt = '';
+				// d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				d.updatedAt = '';
+				// d.updatedAt = '';
 			});
 
 			// Query
@@ -867,7 +815,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		test(`ManagedCustomRO`, async () => {
 			expectType<ModelInit<ManagedCustomRO>>({
 				// @ts-expect-error
-				id: 'eeeeeee',
+				// id: 'eeeeeee',
 				name: '',
 				description: '',
 			});
@@ -876,31 +824,31 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			expectType<ModelInit<ManagedCustomRO>>({
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			ManagedCustomRO.copyOf({} as ManagedCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				d.createdOn = '';
+				// d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				d.updatedOn = '';
+				// d.updatedOn = '';
 			});
 
 			// Query
@@ -1003,7 +951,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			expectType<
@@ -1015,24 +963,24 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				d.createdAt = '';
+				// d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				d.updatedAt = '';
+				// d.updatedAt = '';
 			});
 
 			// Query
@@ -1159,7 +1107,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			expectType<
@@ -1171,24 +1119,24 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
 				d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				d.createdOn = '';
+				// d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				d.updatedOn = '';
+				// d.updatedOn = '';
 			});
 
 			// Query
@@ -1304,32 +1252,32 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
 				// @ts-expect-error
-				d.id;
+				// d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.tenant;
 				// @ts-expect-error
-				d.tenant = '';
+				// d.tenant = '';
 				d.dob;
 				// @ts-expect-error
-				d.dob = '';
+				// d.dob = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				d.createdAt = '';
+				// d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				d.updatedAt = '';
+				// d.updatedAt = '';
 			});
 
 			// Save
@@ -1411,32 +1359,32 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
 				// @ts-expect-error
-				d.id;
+				// d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.tenant;
 				// @ts-expect-error
-				d.tenant = '';
+				// d.tenant = '';
 				d.dob;
 				// @ts-expect-error
-				d.dob = '';
+				// d.dob = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				d.createdOn = '';
+				// d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				d.updatedOn = '';
+				// d.updatedOn = '';
 			});
 		});
 	});
@@ -1464,29 +1412,29 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
 				// @ts-expect-error
-				d.id;
+				// d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.myId;
 				// @ts-expect-error
-				d.myId = '';
+				// d.myId = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdAt;
 				// @ts-expect-error
-				d.createdAt = '';
+				// d.createdAt = '';
 
 				d.updatedAt;
 				// @ts-expect-error
-				d.updatedAt = '';
+				// d.updatedAt = '';
 			});
 		});
 
@@ -1512,29 +1460,29 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				name: '',
 				description: '',
 				// @ts-expect-error
-				x: 234,
+				// x: 234,
 			});
 
 			CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
 				// @ts-expect-error
-				d.id;
+				// d.id;
 				// @ts-expect-error
-				d.id = '';
+				// d.id = '';
 
 				d.myId;
 				// @ts-expect-error
-				d.myId = '';
+				// d.myId = '';
 
 				d.name = '';
 				d.description = '';
 
 				d.createdOn;
 				// @ts-expect-error
-				d.createdOn = '';
+				// d.createdOn = '';
 
 				d.updatedOn;
 				// @ts-expect-error
-				d.updatedOn = '';
+				// d.updatedOn = '';
 			});
 		});
 	});

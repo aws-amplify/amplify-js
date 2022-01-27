@@ -13,7 +13,6 @@ import {
 	PostCustomPKSort,
 	PostCustomPKComposite,
 	testSchema,
-	PostCustomPKMETA,
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
@@ -539,10 +538,7 @@ describe('Storage tests', () => {
 				// model has a custom pk defined via @key(fields: ["postId"])
 				// the PK should always be included in the mutation input
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPK,
-						PostCustomPKMETA
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPK>;
 				};
 
 				const post = await DataStore.save(

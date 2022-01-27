@@ -1,4 +1,4 @@
-import { MutationEvent, MutationEventMetadata } from './index';
+import { MutationEvent } from './index';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	ExclusiveStorage as Storage,
@@ -15,6 +15,7 @@ import {
 } from '../types';
 import { USER, SYNC, valuesEqual } from '../util';
 import { getIdentifierValue, TransformerMutationType } from './utils';
+import { __modelMeta__ } from '..';
 
 // TODO: Persist deleted ids
 class MutationEventOutbox {

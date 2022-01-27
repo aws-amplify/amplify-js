@@ -28,7 +28,7 @@ import {
 	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck, extractPrimaryKeyFieldNames } from '../util';
-import { MutationEvent, MutationEventMetadata } from './';
+import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
 

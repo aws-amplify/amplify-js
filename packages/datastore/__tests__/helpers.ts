@@ -5,6 +5,7 @@ import {
 	InternalSchema,
 	CompositeIdentifier,
 	CustomIdentifier,
+	__modelMeta__,
 } from '../src/types';
 
 export declare class Model {
@@ -101,61 +102,55 @@ export declare class PostComposite {
 	): PostComposite;
 }
 
-export type PostCustomPKMETA = {
-	identifier: CustomIdentifier<PostCustomPK, 'postId'>;
-};
 export declare class PostCustomPK {
+	readonly [__modelMeta__]: {
+		identifier: CustomIdentifier<PostCustomPK, 'postId'>;
+	};
 	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;
 
-	constructor(init: ModelInit<PostCustomPK, PostCustomPKMETA>);
+	constructor(init: ModelInit<PostCustomPK>);
 
 	static copyOf(
 		src: PostCustomPK,
-		mutator: (
-			draft: MutableModel<PostCustomPK, PostCustomPKMETA>
-		) => void | PostCustomPK
+		mutator: (draft: MutableModel<PostCustomPK>) => void | PostCustomPK
 	): PostCustomPK;
 }
 
-type PostCustomPKSortMETA = {
-	identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
-};
 export declare class PostCustomPKSort {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
+	};
 	public readonly id: string;
 	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;
 
-	constructor(init: ModelInit<PostCustomPKSort, PostCustomPKSortMETA>);
+	constructor(init: ModelInit<PostCustomPKSort>);
 
 	static copyOf(
 		src: PostCustomPKSort,
-		mutator: (
-			draft: MutableModel<PostCustomPKSort, PostCustomPKSortMETA>
-		) => void | PostCustomPKSort
+		mutator: (draft: MutableModel<PostCustomPKSort>) => void | PostCustomPKSort
 	): PostCustomPKSort;
 }
 
-type PostCustomPKCompositeMETA = {
-	identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
-};
 export declare class PostCustomPKComposite {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
+	};
 	public readonly id: string;
 	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly sort: number;
 
-	constructor(
-		init: ModelInit<PostCustomPKComposite, PostCustomPKCompositeMETA>
-	);
+	constructor(init: ModelInit<PostCustomPKComposite>);
 
 	static copyOf(
 		src: PostCustomPKComposite,
 		mutator: (
-			draft: MutableModel<PostCustomPKComposite, PostCustomPKCompositeMETA>
+			draft: MutableModel<PostCustomPKComposite>
 		) => void | PostCustomPKComposite
 	): PostCustomPKComposite;
 }

@@ -421,7 +421,7 @@ export type PersistentModelMetaData<T> = {
 
 export type DefaultPersistentModelMetaData = {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
+	readOnlyFields: never;
 };
 
 export type MetadataOrDefault<
@@ -435,23 +435,30 @@ export type MetadataOrDefault<
 
 export type PersistentModel = Readonly<Record<string, any>>;
 
-export type MetadataReadOnlyFields<
+type MetadataReadOnlyFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
-> = Required<Pick<T, MetadataOrDefault<T, M>['readOnlyFields']>>;
+> =
+	| M['readOnlyFields']
+	| MetadataOrDefault<T, M>['readOnlyFields'] extends keyof T
+	? Required<
+			Pick<T, M['readOnlyFields'] | MetadataOrDefault<T, M>['readOnlyFields']>
+	  >
+	: {};
 
 // This type omits identifier fields in the constructor
 // This type omits readOnlyFields in the constructor
 // This type allows some identifiers in the constructor (e.g. for OptionallyManagedIdentifier or CustomIdentifier)
 export type ModelInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = unknown
+	M extends PersistentModelMetaData<T> = never
 > =
 	| Omit<
 			T,
 			| typeof __modelMeta__
 			| keyof IdentifierFields<T, M>
 			| keyof MetadataReadOnlyFields<T, M>
+			| M['readOnlyFields']
 	  >
 	| IdentifierFieldsForInit<T, M>;
 
@@ -463,7 +470,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = unknown
+	M extends PersistentModelMetaData<T> = never
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<

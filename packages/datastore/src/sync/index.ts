@@ -48,37 +48,27 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
-export type MutationEventMetadata = {
-	identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
-	readOnlyFields: ''; // TODO: comment this out and try it, it should work
-};
 export declare class MutationEvent {
-	readonly [__modelMeta__]: MutationEventMetadata;
-	constructor(init: ModelInit<MutationEvent>);
-	static copyOf(
-		src: MutationEvent,
-		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
-	): MutationEvent;
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
+	};
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
 	public readonly modelId: string;
 	public readonly condition: string;
 	public readonly data: string;
+	constructor(init: ModelInit<MutationEvent>);
+	static copyOf(
+		src: MutationEvent,
+		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
+	): MutationEvent;
 }
 
-export type ModelMetadataMetadata = {
-	identifier: ManagedIdentifier<ModelMetadata, 'id'>;
-	// readOnlyFields: '';
-};
-declare class ModelMetadata {
-	constructor(init: ModelInit<ModelMetadata, ModelMetadataMetadata>);
-	static copyOf(
-		src: ModelMetadata,
-		mutator: (
-			draft: MutableModel<ModelMetadata, ModelMetadataMetadata>
-		) => void | ModelMetadata
-	): ModelMetadata;
+export declare class ModelMetadata {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<ModelMetadata, 'id'>;
+	};
 	public readonly id: string;
 	public readonly namespace: string;
 	public readonly model: string;
@@ -86,6 +76,11 @@ declare class ModelMetadata {
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
 	public readonly lastSyncPredicate?: null | string;
+	constructor(init: ModelInit<ModelMetadata>);
+	static copyOf(
+		src: ModelMetadata,
+		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
+	): ModelMetadata;
 }
 
 export enum ControlMessage {
@@ -723,7 +718,7 @@ export class SyncEngine {
 
 	private async setupModels(params: StartParams) {
 		const { fullSyncInterval } = params;
-		const ModelMetadata = this.modelClasses
+		const ModelMetadataConstructor = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const models: [string, SchemaModel][] = [];
@@ -755,7 +750,7 @@ export class SyncEngine {
 
 			if (modelMetadata === undefined) {
 				[[savedModel]] = await this.storage.save(
-					this.modelInstanceCreator(ModelMetadata, {
+					this.modelInstanceCreator(ModelMetadataConstructor, {
 						model: model.name,
 						namespace,
 						lastSync: null,
@@ -773,10 +768,7 @@ export class SyncEngine {
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
-					(
-						this.modelClasses
-							.ModelMetadata as PersistentModelConstructor<ModelMetadata>
-					).copyOf(modelMetadata, draft => {
+					ModelMetadataConstructor.copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
