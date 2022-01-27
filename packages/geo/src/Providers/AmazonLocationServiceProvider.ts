@@ -152,9 +152,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				locationServiceInput.IndexName = options.searchIndexName;
 			}
 
+			if (options['biasPosition'] && options['searchAreaConstraints']) {
+				throw new Error(
+					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				);
+			}
 			if (options['biasPosition']) {
 				locationServiceInput.BiasPosition = options['biasPosition'];
-			} else if (options['searchAreaConstraints']) {
+			}
+			if (options['searchAreaConstraints']) {
 				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
 			}
 		}
@@ -268,13 +274,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	private _verifyMapResources() {
 		if (!this._config.maps) {
 			const errorString =
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
 		if (!this._config.maps.default) {
 			const errorString =
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
@@ -286,7 +292,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			!optionalSearchIndex
 		) {
 			const errorString =
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.';
+				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.';
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
