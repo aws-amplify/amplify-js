@@ -17,7 +17,7 @@ import {
 	InternalSchema,
 	SchemaModel,
 } from '../src/types';
-import { MutationEvent, MutationEventMetadata } from '../src/sync/';
+import { MutationEvent } from '../src/sync/';
 import { USER, extractPrimaryKeyFieldNames } from '../src/util';
 
 let initSchema: typeof initSchemaType;
