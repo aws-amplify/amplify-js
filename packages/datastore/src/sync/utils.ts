@@ -413,9 +413,10 @@ export function createMutationInstanceFromModelOperation<
 	};
 
 	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
 
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		id,
+		...optionalId,
 		data: JSON.stringify(element, replacer),
 		modelId,
 		model: model.name,

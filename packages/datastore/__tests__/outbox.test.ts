@@ -376,10 +376,6 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;
 
-	const modelDefinition = testSchema().models[modelConstructor.name];
-	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-	const identifier = keyFields.map(f => model[f]).join('#');
-
 	return createMutationInstanceFromModelOperation(
 		undefined,
 		undefined,
@@ -388,8 +384,7 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		originalElement,
 		{},
 		MutationEventConstructor,
-		modelInstanceCreator,
-		identifier // TODO: Ask about this
+		modelInstanceCreator
 	);
 }
 
