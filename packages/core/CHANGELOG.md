@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.12...@aws-amplify/core@4.3.13) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
+## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.11...@aws-amplify/core@4.3.12) (2022-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use empty string as translation ([#9403](https://github.com/aws-amplify/amplify-js/issues/9403)) ([512fd99](https://github.com/aws-amplify/amplify-js/commit/512fd99a0d6751ffc3915de6a043d2e6fe01f1e4))
+
+
+### Reverts
+
+* Revert "fix(@aws-amplify/core): use empty string as translation (#9403)" (#9436) ([711259b](https://github.com/aws-amplify/amplify-js/commit/711259b482d721f66d4acc728ff96a8a26965787)), closes [#9403](https://github.com/aws-amplify/amplify-js/issues/9403) [#9436](https://github.com/aws-amplify/amplify-js/issues/9436)
+
+
+
+
+
 ## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.10...@aws-amplify/core@4.3.11) (2021-12-16)
 
 **Note:** Version bump only for package @aws-amplify/core

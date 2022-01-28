@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.9...@aws-amplify/pushnotification@4.3.10) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.8...@aws-amplify/pushnotification@4.3.9) (2022-01-07)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 ## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.7...@aws-amplify/pushnotification@4.3.8) (2021-12-16)
 
 
