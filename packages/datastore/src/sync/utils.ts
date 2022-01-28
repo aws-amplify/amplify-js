@@ -47,7 +47,7 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Omit<ModelInstanceMetadata, 'id'> = {
+const dummyMetadata: ModelInstanceMetadata = {
 	_version: undefined,
 	_lastChangedAt: undefined,
 	_deleted: undefined,
@@ -413,9 +413,10 @@ export function createMutationInstanceFromModelOperation<
 	};
 
 	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
 
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		...(id ? { id } : {}),
+		...optionalId,
 		data: JSON.stringify(element, replacer),
 		modelId,
 		model: model.name,

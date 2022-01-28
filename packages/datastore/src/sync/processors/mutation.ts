@@ -234,7 +234,7 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<PersistentModel>,
+		modelConstructor: PersistentModelConstructor<unknown>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE
@@ -442,7 +442,8 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			deleteInput['id'] = parsedData.id;
+			// TODO: what if it was renamed?
+			deleteInput['id'] = (<any>parsedData).id;
 		}
 
 		const filteredData =

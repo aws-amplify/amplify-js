@@ -55,6 +55,10 @@ import {
 	isModelFieldType,
 	ObserveQueryOptions,
 	ManagedIdentifier,
+	PersistentModelMetaData,
+	IdentifierFields,
+	IdentifierFieldOrIdentifierObject,
+	__modelMeta__,
 } from '../types';
 import {
 	DATASTORE,
@@ -84,10 +88,11 @@ const ulid = monotonicUlidFactory(Date.now());
 const { isNode } = JS.browserOrNode();
 
 type SettingMetaData = {
-	identifier: ManagedIdentifier;
+	identifier: ManagedIdentifier<Setting, 'id'>;
 	readOnlyFields: never;
 };
 declare class Setting {
+	public readonly [__modelMeta__]: SettingMetaData;
 	constructor(init: ModelInit<Setting, SettingMetaData>);
 	static copyOf(
 		src: Setting,
@@ -254,16 +259,15 @@ const createTypeClasses: (
 
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
-const instancesMetadata = new WeakSet<
-	ModelInit<PersistentModel & Partial<ModelInstanceMetadata>>
->();
-function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
+const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
+
+function modelInstanceCreator<T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	init: ModelInit<T> & Partial<ModelInstanceMetadata>
+	init: ModelInit<T, PersistentModelMetaData<T>>
 ): T {
 	instancesMetadata.add(init);
 
-	return <T>new modelConstructor(init);
+	return new modelConstructor(init);
 }
 
 const validateModelFields =
@@ -423,7 +427,13 @@ const createModelClass = <T extends PersistentModel>(
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
-					const { id: _id } = modelInstanceMetadata;
+					type ModelWithIDIdentifier = { id: string };
+
+					const { id: _id } =
+						modelInstanceMetadata as unknown as IdentifierFields<
+							ModelWithIDIdentifier,
+							any
+						>;
 
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
@@ -434,11 +444,11 @@ const createModelClass = <T extends PersistentModel>(
 							? uuid4()
 							: ulid();
 
-						draft.id = id;
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
 						const id = _id || uuid4();
-						draft.id = id;
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					}
 
 					if (!isInternallyInitialized) {
@@ -470,7 +480,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T>>(draft as unknown));
+					fn(<MutableModel<T>>draft);
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -636,7 +646,6 @@ async function checkSchemaVersion(
 		const [schemaVersionSetting] = await s.query(
 			Setting,
 			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				// @ts-ignore Argument of type '"eq"' is not assignable to parameter of type 'never'.
 				c.key('eq', SETTING_SCHEMA_VERSION)
 			),
 			{ page: 0, limit: 1 }
@@ -817,7 +826,10 @@ class DataStore {
 	query: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			identifier: string
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -827,7 +839,7 @@ class DataStore {
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		identifierOrCriteria?:
-			| string
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
@@ -867,7 +879,7 @@ class DataStore {
 			} else {
 				predicate = ModelPredicateCreator.createFromExisting(
 					modelDefinition,
-					identifierOrCriteria
+					<any>identifierOrCriteria
 				);
 			}
 		}
@@ -978,10 +990,6 @@ class DataStore {
 
 	delete: {
 		<T extends PersistentModel>(
-			model: T,
-			condition?: ProducerModelPredicate<T>
-		): Promise<T>;
-		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			identifier: string
 		): Promise<T[]>;
@@ -989,13 +997,17 @@ class DataStore {
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll
 		): Promise<T[]>;
+		<T extends PersistentModel>(
+			model: T,
+			condition?: ProducerModelPredicate<T>
+		): Promise<T>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| string
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll
-	) => {
+	): Promise<T | T[]> => {
 		await this.start();
 
 		let condition: ModelPredicate<T>;
@@ -1090,15 +1102,23 @@ class DataStore {
 	observe: {
 		(): Observable<SubscriptionMessage<PersistentModel>>;
 
-		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			identifier: string
+		): Observable<SubscriptionMessage<T>>;
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | ProducerModelPredicate<T>
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll
 		): Observable<SubscriptionMessage<T>>;
-	} = <T extends PersistentModel = PersistentModel>(
+
+		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+	} = <T extends PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		identifierOrCriteria?: string | ProducerModelPredicate<T>
+		identifierOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
@@ -1153,12 +1173,16 @@ class DataStore {
 				identifierOrCriteria
 			);
 		} else {
-			predicate =
-				modelConstructor &&
-				ModelPredicateCreator.createFromExisting<T>(
-					getModelDefinition(modelConstructor),
-					identifierOrCriteria
-				);
+			if (isPredicatesAll(identifierOrCriteria)) {
+				predicate = undefined;
+			} else {
+				predicate =
+					modelConstructor &&
+					ModelPredicateCreator.createFromExisting<T>(
+						getModelDefinition(modelConstructor),
+						identifierOrCriteria
+					);
+			}
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
@@ -1187,7 +1211,7 @@ class DataStore {
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
-	} = <T extends PersistentModel = PersistentModel>(
+	} = <T extends PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>

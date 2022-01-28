@@ -424,7 +424,7 @@ class ExclusiveStorage implements StorageFacade {
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patchesTuple)
+			storage.save(model, condition, mutator, patchesTuple)
 		);
 	}
 
@@ -492,7 +492,7 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<any>,
+		modelConstructor: PersistentModelConstructor<T>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		return this.storage.batchSave(modelConstructor, items);

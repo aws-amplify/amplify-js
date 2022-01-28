@@ -21,6 +21,9 @@ import {
 	TypeConstructorMap,
 	ModelPredicate,
 	AuthModeStrategy,
+	ManagedIdentifier,
+	OptionallyManagedIdentifier,
+	__modelMeta__,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -46,25 +49,26 @@ type StartParams = {
 };
 
 export declare class MutationEvent {
-	constructor(init: ModelInit<MutationEvent>);
-	static copyOf(
-		src: MutationEvent,
-		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
-	): MutationEvent;
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
+	};
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
 	public readonly modelId: string;
 	public readonly condition: string;
-	public data: string;
+	public readonly data: string;
+	constructor(init: ModelInit<MutationEvent>);
+	static copyOf(
+		src: MutationEvent,
+		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
+	): MutationEvent;
 }
 
-declare class ModelMetadata {
-	constructor(init: ModelInit<ModelMetadata>);
-	static copyOf(
-		src: ModelMetadata,
-		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
-	): ModelMetadata;
+export declare class ModelMetadata {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<ModelMetadata, 'id'>;
+	};
 	public readonly id: string;
 	public readonly namespace: string;
 	public readonly model: string;
@@ -72,6 +76,11 @@ declare class ModelMetadata {
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
 	public readonly lastSyncPredicate?: null | string;
+	constructor(init: ModelInit<ModelMetadata>);
+	static copyOf(
+		src: ModelMetadata,
+		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
+	): ModelMetadata;
 }
 
 export enum ControlMessage {
@@ -124,7 +133,7 @@ export class SyncEngine {
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
-		] as PersistentModelConstructor<any>;
+		] as PersistentModelConstructor<MutationEvent>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -608,7 +617,7 @@ export class SyncEngine {
 
 										modelMetadata = (
 											this.modelClasses
-												.ModelMetadata as PersistentModelConstructor<any>
+												.ModelMetadata as PersistentModelConstructor<ModelMetadata>
 										).copyOf(modelMetadata, draft => {
 											draft.lastSync = startedAt;
 											draft.lastFullSync = isFullSync
@@ -709,7 +718,7 @@ export class SyncEngine {
 
 	private async setupModels(params: StartParams) {
 		const { fullSyncInterval } = params;
-		const ModelMetadata = this.modelClasses
+		const ModelMetadataConstructor = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const models: [string, SchemaModel][] = [];
@@ -741,7 +750,7 @@ export class SyncEngine {
 
 			if (modelMetadata === undefined) {
 				[[savedModel]] = await this.storage.save(
-					this.modelInstanceCreator(ModelMetadata, {
+					this.modelInstanceCreator(ModelMetadataConstructor, {
 						model: model.name,
 						namespace,
 						lastSync: null,
@@ -759,9 +768,7 @@ export class SyncEngine {
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
-					(
-						this.modelClasses.ModelMetadata as PersistentModelConstructor<any>
-					).copyOf(modelMetadata, draft => {
+					ModelMetadataConstructor.copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
