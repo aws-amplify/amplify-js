@@ -91,7 +91,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider();
 			provider.configure();
 			expect(() => provider.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -115,7 +115,7 @@ describe('AmazonLocationServiceProvider', () => {
 			provider.configure();
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -126,7 +126,7 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -233,6 +233,29 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 		});
 
+		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			await expect(
+				locationProvider.searchByText(testString, searchOptions)
+			).rejects.toThrow(
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+			);
+		});
+
 		test('should fail if credentials are invalid', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve();
@@ -266,7 +289,7 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
 			);
 		});
 	});
@@ -357,7 +380,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(
 				locationProvider.searchByCoordinates(testCoordinates)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
 			);
 		});
 	});

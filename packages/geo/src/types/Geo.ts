@@ -34,7 +34,7 @@ export interface MapStyle {
 export type Latitude = number;
 export type Longitude = number;
 
-/// P
+// Coordinate point
 export type Coordinates = [Longitude, Latitude];
 
 // SW Longitude point for bounding box

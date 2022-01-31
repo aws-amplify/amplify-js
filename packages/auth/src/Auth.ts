@@ -80,10 +80,11 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -773,7 +774,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -793,7 +794,7 @@ export class AuthClass {
 				};
 				break;
 			case 'SMS':
-			case 'SMS_MFA':	
+			case 'SMS_MFA':
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -1120,24 +1121,90 @@ export class AuthClass {
 	 **/
 	public deleteUserAttributes(
 		user: CognitoUser | any,
-		attributeNames: string[],
+		attributeNames: string[]
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
 			that.userSession(user).then(session => {
-				user.deleteAttributes(
-					attributeNames,
-					(err, result) => {
-						if (err) {
-							return reject(err);
-						} else {
-							return resolve(result);
-						}
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
 					}
-				);
+				});
 			});
 		});
+	}
 
+	/**
+	 * Delete the current authenticated user
+	 * @return {Promise}
+	 **/
+	//TODO: Check return type void
+	public async deleteUser(): Promise<string | void> {
+		try {
+			await this._storageSync;
+		} catch (e) {
+			logger.debug('Failed to sync cache info into memory', e);
+			throw new Error(e);
+		}
+
+		const isSignedInHostedUI =
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+
+		return new Promise(async (res, rej) => {
+			if (this.userPool) {
+				const user = this.userPool.getCurrentUser();
+
+				if (!user) {
+					logger.debug('Failed to get user from user pool');
+					return rej(new Error('No current user.'));
+				} else {
+					user.getSession(async (err, session) => {
+						if (err) {
+							logger.debug('Failed to get the user session', err);
+							return rej(err);
+						} else {
+							user.deleteUser((err, result: string) => {
+								if (err) {
+									rej(err);
+								} else {
+									dispatchAuthEvent(
+										'userDeleted',
+										result,
+										'The authenticated user has been deleted.'
+									);
+									user.signOut();
+									this.user = null;
+									try {
+										this.cleanCachedItems(); // clean aws credentials
+									} catch (e) {
+										// TODO: change to rejects in refactor
+										logger.debug('failed to clear cached items');
+									}
+
+									if (isSignedInHostedUI) {
+										this.oAuthSignOutRedirect(res, rej);
+									} else {
+										dispatchAuthEvent(
+											'signOut',
+											this.user,
+											`A user has been signed out`
+										);
+										res(result);
+									}
+								}
+							});
+						}
+					});
+				}
+			} else {
+				logger.debug('no Congito User pool');
+				rej(new Error('Cognito User pool does not exist'));
+			}
+		});
 	}
 
 	/**
@@ -1841,7 +1908,7 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: (success) => {
+					onSuccess: success => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
@@ -2053,12 +2120,8 @@ export class AuthClass {
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
-					const {
-						accessToken,
-						idToken,
-						refreshToken,
-						state,
-					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
+					const { accessToken, idToken, refreshToken, state } =
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -2115,10 +2178,7 @@ export class AuthClass {
 					);
 
 					if (isCustomStateIncluded) {
-						const customState = state
-							.split('-')
-							.splice(1)
-							.join('-');
+						const customState = state.split('-').splice(1).join('-');
 
 						dispatchAuthEvent(
 							'customOAuthState',
@@ -2352,4 +2412,3 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
-

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.4...amazon-cognito-identity-js@5.2.5) (2022-01-27)
+
+### Bug Fixes
+
+- pin jsdoc version ([#9510](https://github.com/aws-amplify/amplify-js/issues/9510)) ([98aec09](https://github.com/aws-amplify/amplify-js/commit/98aec098539535c47afb117bc802eba06ae2c1b2))
+
+### Reverts
+
+- Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
 ## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.3...amazon-cognito-identity-js@5.2.4) (2022-01-07)
 
 ### Bug Fixes

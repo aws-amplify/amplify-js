@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.1.12...@aws-amplify/geo@1.1.13) (2022-01-27)
+
+### Bug Fixes
+
+- **geo:** error if mutually exclusive options are given ([67af04a](https://github.com/aws-amplify/amplify-js/commit/67af04a3a4ae6e7d727403437517f1693f672ab6))
+- **geo:** remove 'ensure to' from error message ([ce84b9b](https://github.com/aws-amplify/amplify-js/commit/ce84b9b7a99081b81ebd193bc900eb73a1554169))
+
 ## [1.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.1.11...@aws-amplify/geo@1.1.12) (2022-01-07)
 
 **Note:** Version bump only for package @aws-amplify/geo
