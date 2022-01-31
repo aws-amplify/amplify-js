@@ -831,7 +831,7 @@ describe('DataStore tests', () => {
 			expect(model1.optionalField1).toBeUndefined();
 		});
 
-		test.skip('Optional field can be initialized with null', () => {
+		test('Optional field can be initialized with null', () => {
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};

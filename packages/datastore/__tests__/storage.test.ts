@@ -390,12 +390,6 @@ describe('Storage tests', () => {
 				);
 			});
 
-			test('TENTATIVE: directly modifying nested model raises hell', () => {
-				// but NOT this one. (post is a model type)
-				// (draft.post as any).title = 'whatever';
-				// TODO ???
-			});
-
 			test('allowing nested BELONGS_TO to be set', async () => {
 				const classes = initSchema(testSchema());
 
@@ -436,7 +430,8 @@ describe('Storage tests', () => {
 				);
 			});
 
-			// TODO
+			// TODO.
+			// Uncomment this test when implementing cascading saves
 			test.skip('allowing nested HAS_MANY to be set', async () => {
 				const classes = initSchema(testSchema());
 
@@ -481,10 +476,6 @@ describe('Storage tests', () => {
 					'comment 1',
 					'comment 2',
 				]);
-			});
-
-			test('allowing nested HAS_ONE to be set', async () => {
-				// TODO
 			});
 
 			test('custom type unchanged', async () => {
