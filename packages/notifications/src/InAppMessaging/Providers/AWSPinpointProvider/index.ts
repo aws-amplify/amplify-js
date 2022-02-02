@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -311,7 +311,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		const credentialsUpdated =
 			!credentials ||
 			Object.keys(currentCredentials).some(
-				(key) => currentCredentials[key] !== credentials[key]
+				key => currentCredentials[key] !== credentials[key]
 			);
 		// If endpoint is already initialized, and nothing else is changing, just early return
 		if (
@@ -506,7 +506,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	private normalizeMessages = (
 		messages: PinpointInAppMessage[]
 	): InAppMessage[] => {
-		return messages.map((message) => {
+		return messages.map(message => {
 			const { CampaignId, InAppMessage } = message;
 			return {
 				id: CampaignId,
