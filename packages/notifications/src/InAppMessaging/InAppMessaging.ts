@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -67,7 +67,7 @@ export default class InAppMessaging {
 
 		logger.debug('configure InAppMessaging', this.config);
 
-		this.pluggables.forEach((pluggable) => {
+		this.pluggables.forEach(pluggable => {
 			pluggable.configure(this.config[pluggable.getProviderName()]);
 		});
 
@@ -98,7 +98,7 @@ export default class InAppMessaging {
 	getPluggable = (providerName: string): InAppMessagingProvider => {
 		const pluggable =
 			this.pluggables.find(
-				(pluggable) => pluggable.getProviderName() === providerName
+				pluggable => pluggable.getProviderName() === providerName
 			) ?? null;
 
 		if (!pluggable) {
@@ -134,7 +134,7 @@ export default class InAppMessaging {
 	 */
 	removePluggable = (providerName: string): void => {
 		const index = this.pluggables.findIndex(
-			(pluggable) => pluggable.getProviderName() === providerName
+			pluggable => pluggable.getProviderName() === providerName
 		);
 		if (index === -1) {
 			logger.debug(`No plugin found with name ${providerName}`);
@@ -150,7 +150,7 @@ export default class InAppMessaging {
 	 */
 	syncMessages = (): Promise<void[]> =>
 		Promise.all<void>(
-			this.pluggables.map(async (pluggable) => {
+			this.pluggables.map(async pluggable => {
 				try {
 					const messages = await pluggable.getInAppMessages();
 					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -164,7 +164,7 @@ export default class InAppMessaging {
 
 	clearMessages = (): Promise<void[]> =>
 		Promise.all<void>(
-			this.pluggables.map(async (pluggable) => {
+			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				await this.removeMessages(key);
 			})
@@ -172,7 +172,7 @@ export default class InAppMessaging {
 
 	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
-			this.pluggables.map(async (pluggable) => {
+			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				const messages = await this.getMessages(key);
 				return pluggable.processInAppMessages(messages, event);
@@ -191,7 +191,7 @@ export default class InAppMessaging {
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
 		Promise.all<void>(
-			this.pluggables.map(async (pluggable) => {
+			this.pluggables.map(async pluggable => {
 				try {
 					await pluggable.identifyUser(userId, userInfo);
 				} catch (err) {

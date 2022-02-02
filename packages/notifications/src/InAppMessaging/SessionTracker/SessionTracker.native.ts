@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -20,8 +20,8 @@ import {
 	SessionTrackerInterface,
 } from './types';
 
-const isActive = (appState) => appState === 'active';
-const isInactive = (appState) =>
+const isActive = appState => appState === 'active';
+const isInactive = appState =>
 	appState === 'inactive' || appState === 'background';
 
 const logger = new Logger('InAppMessagingSessionTracker');
@@ -53,7 +53,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 		return 'ended';
 	};
 
-	private appStateChangeHandler = (nextAppState) => {
+	private appStateChangeHandler = nextAppState => {
 		// if going from active to inactive
 		if (isActive(this.currentAppState) && isInactive(nextAppState)) {
 			logger.debug('App has gone to the background');
