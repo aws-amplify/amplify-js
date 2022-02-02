@@ -775,7 +775,9 @@ export function predicateFor<T extends PersistentModel>(
 
 						const relatedMeta = (def.type as ModelFieldType).modelConstructor;
 						if (!relatedMeta) {
-							throw new Error('Related model metadata is missing');
+							throw new Error(
+								'Related model metadata is missing. This is a bug! Please report it.'
+							);
 						}
 
 						// `Model.reletedModelField` returns a copy of the original link,
@@ -803,7 +805,7 @@ export function predicateFor<T extends PersistentModel>(
 						return newlink;
 					} else {
 						throw new Error(
-							"Oh no! Related Model definition doesn't have a typedef!"
+							"Related model definition doesn't have a typedef. This is a bug! Please report it."
 						);
 					}
 				}

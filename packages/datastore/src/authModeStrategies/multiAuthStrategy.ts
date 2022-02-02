@@ -135,11 +135,7 @@ export const multiAuthStrategy: AuthModeStrategy = async ({
 	const { attributes } = schema.namespaces.user.models[modelName];
 
 	if (attributes) {
-		const authAttribute = attributes.find((attr) => attr.type === 'auth');
-
-		if (!authAttribute) {
-			throw new Error('Invalid auth attribute');
-		}
+		const authAttribute = attributes.find((attr) => attr.type === 'auth')!;
 
 		if (authAttribute.properties && authAttribute.properties.rules) {
 			const sortedRules = sortAuthRulesWithPriority(
