@@ -70,6 +70,7 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	inMemoryPagination,
 } from '../util';
 import {
 	SingularModelPredicateExtender,
