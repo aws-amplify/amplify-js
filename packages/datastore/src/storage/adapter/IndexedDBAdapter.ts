@@ -778,9 +778,6 @@ class IndexedDBAdapter implements Adapter {
 				case 'BELONGS_TO':
 					// Intentionally blank
 					break;
-				// case 'MANY_TO_MANY':
-				// 	// TODO: implement
-				// 	throw new Error('WRITE THIS CODE');
 				default:
 					throw new Error(`Invalid relation type ${relationType}`);
 					break;

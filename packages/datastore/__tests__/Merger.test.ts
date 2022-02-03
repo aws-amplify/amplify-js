@@ -1,5 +1,5 @@
 import { ModelMerger } from '../src/sync/merger';
-import { PersistentModelConstructor, ModelInstanceMetadata } from '../src/';
+import { PersistentModelConstructor } from '../src/';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
@@ -53,7 +53,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async (storage) => {
+			await Storage.runExclusive(async storage => {
 				await modelMerger.mergePage(storage, Model, items as any);
 			});
 
@@ -92,7 +92,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async (storage) => {
+			await Storage.runExclusive(async storage => {
 				await modelMerger.mergePage(storage, Model, items as any);
 			});
 
@@ -132,7 +132,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async (storage) => {
+			await Storage.runExclusive(async storage => {
 				await modelMerger.mergePage(storage, Model, items as any);
 			});
 

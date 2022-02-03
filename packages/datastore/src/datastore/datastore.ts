@@ -1203,7 +1203,7 @@ class DataStore {
 				throw new Error(msg);
 			}
 
-			if (typeof idOrCriteria === 'string' && modelConstructor) {
+			if (typeof idOrCriteria === 'string') {
 				condition = ModelPredicateCreator.createForId<T>(
 					modelDefinition,
 					idOrCriteria
@@ -1438,7 +1438,7 @@ class DataStore {
 
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
-				const isSynced = this.sync?.getModelSyncedStatus(model) ?? true;
+				const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 				const itemsArray = [
 					...Array.from(items.values()),
 					...Array.from(itemsChanged.values()),
@@ -1524,7 +1524,7 @@ class DataStore {
 							itemsChanged.set(element.id, element);
 						}
 
-						const isSynced = this.sync?.getModelSyncedStatus(model) ?? true;
+						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 
 						if (
 							itemsChanged.size - deletedItemIds.length >= this.syncPageSize ||

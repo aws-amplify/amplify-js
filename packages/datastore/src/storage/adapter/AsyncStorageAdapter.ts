@@ -481,9 +481,6 @@ export class AsyncStorageAdapter implements Adapter {
 						);
 					}
 					break;
-				// case 'MANY_TO_MANY':
-				// 	// TODO: implement
-				// 	throw new Error('WRITE THIS CODE');
 				case 'BELONGS_TO':
 					// Intentionally blank
 					break;
