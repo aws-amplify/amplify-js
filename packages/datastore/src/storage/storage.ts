@@ -28,11 +28,10 @@ import {
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
-export type StorageSubscriptionMessage<
-	T extends PersistentModel
-> = SubscriptionMessage<T> & {
-	mutator?: Symbol;
-};
+export type StorageSubscriptionMessage<T extends PersistentModel> =
+	SubscriptionMessage<T> & {
+		mutator?: Symbol;
+	};
 
 export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
@@ -135,9 +134,9 @@ class StorageClass implements StorageFacade {
 
 			const element = updateMutationInput || originalElement;
 
-			const modelConstructor = (Object.getPrototypeOf(
-				originalElement
-			) as Object).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (
+				Object.getPrototypeOf(originalElement) as Object
+			).constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -318,12 +317,10 @@ class StorageClass implements StorageFacade {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const namespace = this.namespaceResolver(modelConstructor);
-		const { fields } = this.schema.namespaces[namespace].models[
-			modelConstructor.name
-		];
-		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[
-			namespace
-		].keys[modelConstructor.name];
+		const { fields } =
+			this.schema.namespaces[namespace].models[modelConstructor.name];
+		const { primaryKey, compositeKeys = [] } =
+			this.schema.namespaces[namespace].keys[modelConstructor.name];
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {

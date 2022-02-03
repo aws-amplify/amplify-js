@@ -15,10 +15,11 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Hub');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 interface IPattern {
 	pattern: RegExp;
 	callback: HubCallback;
@@ -208,7 +209,7 @@ export class HubClass {
 }
 
 /*We export a __default__ instance of HubClass to use it as a 
-psuedo Singleton for the main messaging bus, however you can still create
+pseudo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
 export const Hub = new HubClass('__default__');
 /**

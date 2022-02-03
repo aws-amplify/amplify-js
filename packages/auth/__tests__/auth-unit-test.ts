@@ -207,6 +207,9 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.deleteAttributes = (attributeList, callback) => {
 		callback(null, 'SUCCESS');
 	};
+	CognitoUser.prototype.deleteUser = (callback, {}) => {
+		callback(null, 'SUCCESS');
+	};
 
 	CognitoUser.prototype.setAuthenticationFlowType = type => {};
 
@@ -658,9 +661,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username');
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { foo: 'bar' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ foo: 'bar' }
+			);
 			spyon.mockClear();
 		});
 
@@ -670,9 +674,10 @@ describe('auth unit test', () => {
 
 			await auth.resendSignUp('username', { custom: 'value' });
 
-			expect(
-				await CognitoUser.prototype.resendConfirmationCode
-			).toBeCalledWith(jasmine.any(Function), { custom: 'value' });
+			expect(await CognitoUser.prototype.resendConfirmationCode).toBeCalledWith(
+				jasmine.any(Function),
+				{ custom: 'value' }
+			);
 			spyon.mockClear();
 		});
 
@@ -2245,7 +2250,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('onFailue', async () => {
+		test('onFailure', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'forgotPassword')
 				.mockImplementationOnce(callback => {
@@ -2698,20 +2703,20 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			const attributeNames = [
-				'email', 'phone_number'
-			];
+			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
 				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
-					return new Promise((res) => {
+					return new Promise(res => {
 						res(session);
 					});
 				});
 
 			expect.assertions(1);
-			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe('SUCCESS');
+			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe(
+				'SUCCESS'
+			);
 
 			spyon.mockClear();
 		});
@@ -2728,11 +2733,109 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function),
+				jasmine.any(Function)
 			);
 			spyon.mockClear();
 		});
+	});
 
+	describe('delete user test suite', () => {
+		const auth = new Auth(authOptions);
+		const user = new CognitoUser({
+			Username: 'raz',
+			Pool: userPool,
+		});
+		test('Happy path should delete a user', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, session);
+				});
+
+			expect(await auth.deleteUser()).toBe('SUCCESS');
+			// TODO: test session cleared properly
+			spy1.mockClear();
+			spy2.mockClear();
+		});
+
+		test('no user pool should throw error', async () => {
+			const noUserPoolAuth = new Auth(authOptionsWithNoUserPoolId);
+			try {
+				await noUserPoolAuth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(new Error('Cognito User pool does not exist'));
+			}
+		});
+
+		test('no user should throw error', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return null;
+				});
+
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(new Error('No current user.'));
+			}
+			spy1.mockClear();
+		});
+
+		test('no session should throw error', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(new Error('no session'), null);
+				});
+
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(Error('no session'));
+			}
+
+			spy1.mockClear();
+			spy2.mockClear();
+		});
+
+		test('cognito deleteUser call fails...', async () => {
+			const spy1 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const spy2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, session);
+				});
+			const spy3 = jest
+				.spyOn(CognitoUser.prototype, 'deleteUser')
+				.mockImplementationOnce((callback: any) => {
+					return callback(new Error('Cognito deleteUser error'), null);
+				});
+
+			try {
+				await auth.deleteUser();
+			} catch (error) {
+				expect(error).toEqual(Error('Cognito deleteUser error'));
+			}
+
+			spy1.mockClear();
+			spy2.mockClear();
+			spy3.mockClear();
+		});
 	});
 
 	describe('federatedSignIn test', () => {

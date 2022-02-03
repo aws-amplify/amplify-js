@@ -155,4 +155,50 @@ describe('IndexedDBAdapter tests', () => {
 			expect(profile).toBeUndefined;
 		});
 	});
+
+	describe('Save', () => {
+		let User: PersistentModelConstructor<User>;
+		let Profile: PersistentModelConstructor<Profile>;
+		let profile: Profile;
+
+		beforeAll(async () => {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ User } = classes as {
+				User: PersistentModelConstructor<User>;
+			});
+
+			({ Profile } = classes as {
+				Profile: PersistentModelConstructor<Profile>;
+			});
+
+			profile = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			);
+		});
+
+		it('should allow linking model via model field', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profile })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user.profileID).toEqual(profile.id);
+			expect(await user.profile).toEqual(profile);
+		});
+
+		it('should allow linking model via FK', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profileID: profile.id })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user.profileID).toEqual(profile.id);
+			expect(await user.profile).toEqual(profile);
+		});
+	});
 });
