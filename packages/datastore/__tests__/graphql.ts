@@ -135,7 +135,10 @@ describe('DataStore GraphQL generation', () => {
 				<any>graphQLOpType
 			);
 
-			expect(print(parse(query))).toStrictEqual(print(parse(expectedGraphQL)));
+			// why does it think `expectedGraphQL` is `string[] | undefined`?
+			expect(print(parse(query))).toStrictEqual(
+				print(parse(expectedGraphQL as any))
+			);
 		}
 	);
 

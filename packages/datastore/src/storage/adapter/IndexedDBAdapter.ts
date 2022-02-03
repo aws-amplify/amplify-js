@@ -49,7 +49,7 @@ class IndexedDBAdapter implements Adapter {
 	private dbName: string = DB_NAME;
 
 	private async checkPrivate() {
-		const isPrivate = await isPrivateMode().then((isPrivate) => {
+		const isPrivate = await isPrivateMode().then(isPrivate => {
 			return isPrivate;
 		});
 		if (isPrivate) {
@@ -113,27 +113,20 @@ class IndexedDBAdapter implements Adapter {
 				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
-							Object.keys(theSchema.namespaces).forEach((namespaceName) => {
+							Object.keys(theSchema.namespaces).forEach(namespaceName => {
 								const namespace = theSchema.namespaces[namespaceName];
 
-								Object.keys(namespace.models).forEach((modelName) => {
+								Object.keys(namespace.models).forEach(modelName => {
 									const storeName = this.getStorename(namespaceName, modelName);
 									const store = db.createObjectStore(storeName, {
 										autoIncrement: true,
 									});
 
 									const indexes =
-<<<<<<< HEAD
-										this.schema.namespaces[namespaceName].relationships[
-											modelName
-										].indexes;
-									indexes.forEach(index => store.createIndex(index, index));
-=======
 										this.schema?.namespaces?.[namespaceName]?.relationships?.[
 											modelName
 										].indexes || [];
-									indexes.forEach((index) => store.createIndex(index, index));
->>>>>>> 9a00447ea (stash TS strictness fixes)
+									indexes.forEach(index => store.createIndex(index, index));
 
 									store.createIndex('byId', 'id', { unique: true });
 								});
@@ -299,12 +292,12 @@ class IndexedDBAdapter implements Adapter {
 		);
 
 		if (connectionStoreNames.length === 0) {
-			return records.map((record) =>
+			return records.map(record =>
 				this.modelInstanceCreator(modelConstructor, record)
 			);
 		}
 
-		return records.map((record) =>
+		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
 	}
@@ -373,7 +366,7 @@ class IndexedDBAdapter implements Adapter {
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
-				(p) => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
@@ -414,7 +407,7 @@ class IndexedDBAdapter implements Adapter {
 		// AFAIK, this will always be a homogenous group of predicate objects at this point.
 		// but, if that ever changes, this pulls out just the predicates from the list that
 		// are field-level predicate objects we can potentially smash against an index.
-		const fieldPredicates = predicateObjs.filter((p) =>
+		const fieldPredicates = predicateObjs.filter(p =>
 			isPredicateObj(p)
 		) as PredicateObject<T>[];
 
@@ -423,7 +416,7 @@ class IndexedDBAdapter implements Adapter {
 		const txn = this.db.transaction(storeName);
 
 		// our potential indexes or lacks thereof.
-		const predicateIndexes = fieldPredicates.map((p) => {
+		const predicateIndexes = fieldPredicates.map(p => {
 			return {
 				predicate: p,
 				index: this.matchingIndex(storeName, String(p.field), txn),
@@ -435,7 +428,7 @@ class IndexedDBAdapter implements Adapter {
 			// each condition must be satsified, we can form a base set with any
 			// ONE of those conditions and then filter.
 			const actualPredicateIndexes = predicateIndexes.filter(
-				(i) => i.index && i.predicate.operator === 'eq'
+				i => i.index && i.predicate.operator === 'eq'
 			);
 			if (actualPredicateIndexes.length > 0) {
 				const predicateIndex = actualPredicateIndexes[0];
@@ -453,7 +446,7 @@ class IndexedDBAdapter implements Adapter {
 			// NOTE: results must be DISTINCT-ified if we leverage indexes.
 			if (
 				predicateIndexes.length > 0 &&
-				predicateIndexes.every((i) => i.index && i.predicate.operator === 'eq')
+				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
 			) {
 				const distinctResults = new Map<string, T>();
 				for (const predicateIndex of predicateIndexes) {
@@ -481,9 +474,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 
 		const filtered = predicateObjs
-			? candidateResults.filter((m) =>
-					validatePredicate(m, type, predicateObjs)
-			  )
+			? candidateResults.filter(m => validatePredicate(m, type, predicateObjs))
 			: candidateResults;
 
 		return filtered;
@@ -798,7 +789,7 @@ class IndexedDBAdapter implements Adapter {
 
 		deleteQueue.push({
 			storeName: this.getStorename(nameSpace, srcModel),
-			items: models.map((record) =>
+			items: models.map(record =>
 				this.modelInstanceCreator(
 					this.getModelConstructorByModelName!(nameSpace, srcModel),
 					record

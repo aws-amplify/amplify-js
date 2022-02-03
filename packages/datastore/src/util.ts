@@ -837,7 +837,7 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
-			return winner;
+			return winner!;
 		}
 	}
 
