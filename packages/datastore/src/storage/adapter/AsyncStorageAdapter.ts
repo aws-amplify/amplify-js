@@ -280,9 +280,9 @@ export class AsyncStorageAdapter implements Adapter {
 			// models to be deleted.
 			const models = await this.query(modelConstructor, condition);
 			// TODO: refactor this to use a function like getRelations()
-			const relations = this.schema.namespaces[nameSpace].relationships[
-				modelConstructor.name
-			].relationTypes;
+			const relations =
+				this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+					.relationTypes;
 
 			if (condition !== undefined) {
 				await this.deleteTraverse(
@@ -347,9 +347,9 @@ export class AsyncStorageAdapter implements Adapter {
 					throw new Error(msg);
 				}
 
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 				await this.deleteTraverse(
 					relations,
 					[model],
@@ -358,9 +358,9 @@ export class AsyncStorageAdapter implements Adapter {
 					deleteQueue
 				);
 			} else {
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -438,6 +438,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 						const value = hasOneCustomField ? model[targetName] : model.id;
+						if (!value) break;
 
 						const allRecords = await this.db.getAll(storeName);
 						const recordToDelete = allRecords.filter(

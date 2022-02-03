@@ -90,9 +90,8 @@ export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
 		return [];
 	}
 
-	const authRules: ModelAttributeAuth = model.attributes.find(
-		isModelAttributeAuth
-	);
+	const authRules: ModelAttributeAuth =
+		model.attributes.find(isModelAttributeAuth);
 
 	if (!authRules) {
 		return [];
@@ -307,7 +306,7 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 					filterType = 'OR';
 					break;
 				default:
-					const _: never = groupType;
+					const _: never = groupType as never;
 					throw new Error(`Invalid ${groupType}`);
 			}
 
@@ -319,9 +318,8 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
 			);
 		} else if (isPredicateObj(predicate)) {
-			const [condition, conditionParams] = whereConditionFromPredicateObject(
-				predicate
-			);
+			const [condition, conditionParams] =
+				whereConditionFromPredicateObject(predicate);
 
 			result.push(condition);
 			params.push(...conditionParams);
