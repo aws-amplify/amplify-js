@@ -38,6 +38,7 @@ const packageFolderMap = {
 	'aws-amplify-vue': 'aws-amplify-vue',
 	cache: '@aws-amplify/cache',
 	core: '@aws-amplify/core',
+	datastore: '@aws-amplify/datastore',
 	interactions: '@aws-amplify/interactions',
 	pubsub: '@aws-amplify/pubsub',
 	pushnotification: '@aws-amplify/pushnotification',

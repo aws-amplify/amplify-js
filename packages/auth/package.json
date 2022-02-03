@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "3.3.3",
+  "version": "4.4.1",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -8,12 +8,18 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/Auth.ts",
+    "./lib/Auth.js",
+    "./lib-esm/Auth.js",
+    "./dist/aws-amplify-auth.js",
+    "./dist/aws-amplify-auth.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test": "yarn lint --fix && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
@@ -22,7 +28,7 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -35,10 +41,10 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^3.1.21",
-    "@aws-amplify/core": "^3.4.4",
-    "amazon-cognito-identity-js": "^4.3.3",
-    "crypto-js": "^3.3.0"
+    "@aws-amplify/cache": "4.0.34",
+    "@aws-amplify/core": "4.3.14",
+    "amazon-cognito-identity-js": "5.2.6",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
@@ -46,7 +52,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+        "diagnostics": true,
         "tsConfig": {
           "lib": [
             "es5",
@@ -82,7 +88,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ],
     "testSequencer": "./testSequencer.js"
   }

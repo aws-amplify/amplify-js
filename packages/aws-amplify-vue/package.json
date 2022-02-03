@@ -1,8 +1,8 @@
 {
   "name": "aws-amplify-vue",
-  "version": "2.1.2",
+  "private": "true",
+  "version": "2.1.6",
   "license": "Apache-2.0",
-  "private": false,
   "author": "Amazon Web Services",
   "scripts": {
     "serve": "vue-cli-service serve",

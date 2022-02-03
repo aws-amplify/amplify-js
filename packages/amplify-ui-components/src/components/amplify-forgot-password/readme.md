@@ -38,6 +38,7 @@ graph TD;
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field

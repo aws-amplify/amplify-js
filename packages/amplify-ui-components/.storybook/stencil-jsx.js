@@ -10,31 +10,31 @@
  */
 
 export const h = (tag, props, ...children) => {
-  const node = document.createElement(tag);
+	const node = document.createElement(tag);
 
-  if (props) {
-    Object.entries(props).forEach(([key, value]) => {
-      if (key.match(/^on[A-Z]/)) {
-        const eventName = key.charAt(2).toLowerCase() + key.slice(3);
+	if (props) {
+		Object.entries(props).forEach(([key, value]) => {
+			if (key.match(/^on[A-Z]/)) {
+				const eventName = key.charAt(2).toLowerCase() + key.slice(3);
 
-        if (typeof value === 'function') {
-          node.addEventListener(eventName, value);
-        }
-      }
+				if (typeof value === 'function') {
+					node.addEventListener(eventName, value);
+				}
+			}
 
-      node[key] = value;
-    });
-  }
+			node[key] = value;
+		});
+	}
 
-  children.forEach(child => {
-    if (['number', 'string'].includes(typeof child)) {
-      node.appendChild(document.createTextNode(child));
-    } else if (child === null) {
-      node.appendChild(document.createComment(''));
-    } else {
-      node.appendChild(child);
-    }
-  });
+	children.forEach(child => {
+		if (['number', 'string'].includes(typeof child)) {
+			node.appendChild(document.createTextNode(child));
+		} else if (child === null) {
+			node.appendChild(document.createComment(''));
+		} else {
+			node.appendChild(child);
+		}
+	});
 
-  return node;
+	return node;
 };

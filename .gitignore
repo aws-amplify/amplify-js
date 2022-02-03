@@ -16,4 +16,6 @@ packages/**/cjs/
 *.log
 .npm/
 packages/**/cypress/videos/
-vscode/package-lock.json
+yarn.lock
+package-lock.json
+packages/*/.watchmanconfig

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 // TODO: Add more specific theme object with keys
 export type AmplifyThemeType = Record<string, any>;
@@ -19,7 +19,6 @@ export type AmplifyThemeType = Record<string, any>;
 // Colors
 export const deepSquidInk = '#152939';
 export const linkUnderlayColor = '#FFF';
-export const errorIconColor = '#DD3F5B';
 export const textInputColor = '#000000';
 export const textInputBorderColor = '#C4C4C4';
 export const placeholderColor = '#C7C7CD';
@@ -97,6 +96,10 @@ export default StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 	},
+	errorRowIcon: {
+		height: 25,
+		width: 25,
+	},
 	errorRowText: {
 		marginLeft: 10,
 	},
@@ -150,6 +153,9 @@ export default StyleSheet.create({
 	picker: {
 		flex: 1,
 		height: 44,
+		// ensure that longer text values render without truncation
+		// as the selected value of the Picker on Android
+		minWidth: Platform.OS === 'android' ? 16 : 0,
 	},
 	pickerItem: {
 		height: 44,

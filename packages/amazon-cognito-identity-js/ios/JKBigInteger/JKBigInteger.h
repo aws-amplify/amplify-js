@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 #include "tommath.h"
 
-@interface JKBigInteger : NSObject <NSCoding>
+@interface JKBigInteger : NSObject <NSSecureCoding>
 
 - (id)initWithValue:(mp_int *)value;
 - (mp_int *)value;

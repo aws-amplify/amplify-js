@@ -2712,7 +2712,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             }
           }
         >
-          Forget your password? 
+          Forgot your password? 
           <Component
             data-test="sign-in-forgot-password-link"
             onClick={[Function]}
@@ -6913,7 +6913,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             }
           }
         >
-          Forget your password? 
+          Forgot your password? 
           <Component
             data-test="sign-in-forgot-password-link"
             onClick={[Function]}
@@ -11114,7 +11114,7 @@ exports[`SignIn normal case render correctly with Props signIn, signedOut or sig
             }
           }
         >
-          Forget your password? 
+          Forgot your password? 
           <Component
             data-test="sign-in-forgot-password-link"
             onClick={[Function]}

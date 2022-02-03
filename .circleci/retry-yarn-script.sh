@@ -21,8 +21,8 @@ done
 
 # initialize counter
 n=0
-# loop until n >= first param
-until [ "$n" -ge $N ]
+# loop until n > first param
+until [ "$n" -gt $N ]
 do
 	# $1 is the argument passed in, e.g. publish:verdaccio
 	# if the publish command succeeds, `break` exits the loop
@@ -34,10 +34,18 @@ do
   	echo "Resetting git HEAD"
 		git reset --hard
 	fi
-	
+
+	if [ "$n" -eq $N ]; 
+	then
+		echo "Returning error"
+		exit 1
+	fi
+
 	# increment counter
 	n=$((n+1))
+	
 	# wait 5 seconds
 	sleep 5
 	echo "Retry $n of $N"
 done
+

@@ -31,6 +31,7 @@ graph TD;
   amplify-s3-text-picker --> amplify-s3-text
   amplify-s3-text-picker --> amplify-picker
   amplify-picker --> amplify-button
+  amplify-button --> amplify-icon
   style amplify-s3-text-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

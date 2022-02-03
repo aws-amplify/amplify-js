@@ -97,7 +97,6 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 
 	constructor(props) {
 		super(props);
-
 		if (this.props.voiceEnabled) {
 			require('./aws-lex-audio');
 			// @ts-ignore

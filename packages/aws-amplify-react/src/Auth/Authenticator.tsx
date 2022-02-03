@@ -12,7 +12,13 @@
  */
 
 import * as React from 'react';
-import { Amplify, I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import {
+	Amplify,
+	I18n,
+	ConsoleLogger as Logger,
+	Hub,
+	isEmpty,
+} from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { Greetings } from './Greetings';
 import { SignIn } from './SignIn';
@@ -134,13 +140,29 @@ export class Authenticator extends React.Component<
 			});
 	}
 
+	checkContact(user, changeState) {
+		if (!Auth || typeof Auth.verifiedContact !== 'function') {
+			throw new Error(
+				'No Auth module found, please ensure @aws-amplify/auth is imported'
+			);
+		}
+		Auth.verifiedContact(user).then(data => {
+			if (!isEmpty(data.verified)) {
+				changeState('signedIn', user);
+			} else {
+				user = Object.assign(user, data);
+				changeState('verifyContact', user);
+			}
+		});
+	}
+
 	onHubCapsule(capsule) {
 		const { channel, payload, source } = capsule;
 		if (channel === 'auth') {
 			switch (payload.event) {
 				case 'cognitoHostedUI':
 				case 'signIn':
-					this.handleStateChange('signedIn', payload.data);
+					this.checkContact(payload.data, this.handleStateChange);
 					break;
 				case 'cognitoHostedUI_failure':
 					this.handleStateChange('signIn', null);

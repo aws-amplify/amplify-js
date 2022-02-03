@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "1.1.4",
+  "version": "2.2.21",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/GraphQLAPI.ts",
+    "./lib/GraphQLAPI.js",
+    "./lib-esm/GraphQLAPI.js",
+    "./dist/aws-amplify-api-graphql.js",
+    "./dist/aws-amplify-api-graphql.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -38,17 +44,14 @@
     "@types/zen-observable": "^0.8.0"
   },
   "dependencies": {
-    "@aws-amplify/api-rest": "^1.1.4",
-    "@aws-amplify/auth": "^3.3.3",
-    "@aws-amplify/cache": "^3.1.21",
-    "@aws-amplify/core": "^3.4.4",
-    "@aws-amplify/pubsub": "^3.0.22",
-    "graphql": "14.0.0",
+    "@aws-amplify/api-rest": "2.0.32",
+    "@aws-amplify/auth": "4.4.1",
+    "@aws-amplify/cache": "4.0.34",
+    "@aws-amplify/core": "4.3.14",
+    "@aws-amplify/pubsub": "4.2.8",
+    "graphql": "15.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
-  },
-  "peerDependencies": {
-    "@aws-amplify/pubsub": "^2.1.1"
   },
   "jest": {
     "globals": {
@@ -88,7 +91,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

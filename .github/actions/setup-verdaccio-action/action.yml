@@ -1,0 +1,37 @@
+# Based on https://github.com/verdaccio/github-actions/tree/master/publish
+name: Setup Verdaccio
+description: Installs & runs Verdaccio
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: |
+        sudo npm install -g verdaccio verdaccio-auth-memory verdaccio-memory npm-auth-to-token
+      shell: bash
+
+    - name: Create temporary Verdaccio log
+      id: tmp
+      run: |
+        echo "::set-output name=dir::$(mktemp)"
+      shell: bash
+
+    - name: Create Verdaccio .config/
+      run: |
+        mkdir $HOME/.config/verdaccio
+      shell: bash
+
+    - name: Copy Verdaccio config.yaml
+      run: |
+        cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
+      shell: bash
+
+    - name: Start Verdaccio
+      run: |
+        nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>${{ steps.tmp.outputs.dir }} &
+        grep -q 'http address' <(tail -f ${{ steps.tmp.outputs.dir }})
+      shell: bash
+
+    - name: Add test user to Verdaccio
+      run: |
+        npm-auth-to-token -u test -p test -e test@test.com -r http://localhost:4873
+      shell: bash

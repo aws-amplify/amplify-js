@@ -98,6 +98,13 @@ declare class BlogOwnerModel {
 	): BlogOwnerModel;
 }
 
+declare class PersonModel {
+	readonly id: string;
+	readonly firstName: string;
+	readonly lastName: string;
+	readonly username?: string;
+}
+
 const {
 	Author,
 	Post,
@@ -105,6 +112,7 @@ const {
 	Blog,
 	BlogOwner,
 	PostAuthorJoin,
+	Person,
 	PostMetadata,
 	Nested,
 } = initSchema(newSchema) as {
@@ -114,6 +122,7 @@ const {
 	Blog: PersistentModelConstructor<BlogModel>;
 	BlogOwner: PersistentModelConstructor<BlogOwnerModel>;
 	PostAuthorJoin: PersistentModelConstructor<PostAuthorJoinModel>;
+	Person: PersistentModelConstructor<PersonModel>;
 	PostMetadata: NonModelTypeConstructor<PostMetadataType>;
 	Nested: NonModelTypeConstructor<NestedType>;
 };
@@ -125,6 +134,7 @@ export {
 	Blog,
 	BlogOwner,
 	PostAuthorJoin,
+	Person,
 	PostMetadata,
 	Nested,
 };

@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 import { RestClient } from './RestClient';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Credentials,
+} from '@aws-amplify/core';
 import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
@@ -26,13 +30,14 @@ export class RestAPIClass {
 	private _options;
 	private _api: RestClient = null;
 
+	Credentials = Credentials;
+
 	/**
 	 * Initialize Rest API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -96,12 +101,15 @@ export class RestAPIClass {
 	createInstance() {
 		logger.debug('create Rest API instance');
 		this._api = new RestClient(this._options);
+
+		// Share Amplify instance with client for SSR
+		this._api.Credentials = this.Credentials;
 		return true;
 	}
 
 	/**
 	 * Make a GET request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -127,7 +135,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a POST request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -153,7 +161,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a PUT request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -179,7 +187,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a PATCH request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -205,7 +213,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a DEL request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -231,7 +239,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a HEAD request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -328,3 +336,4 @@ export class RestAPIClass {
 }
 
 export const RestAPI = new RestAPIClass(null);
+Amplify.register(RestAPI);

@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.5...aws-amplify-vue@2.1.6) (2021-12-02)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.4...aws-amplify-vue@2.1.5) (2021-01-29)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+## [2.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.3...aws-amplify-vue@2.1.4) (2021-01-07)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.2...aws-amplify-vue@2.1.3) (2020-10-29)
+
+
+### Bug Fixes
+
+* rewrite "forget password" to "forgot password" ([#7009](https://github.com/aws-amplify/amplify-js/issues/7009)) ([fd989e4](https://github.com/aws-amplify/amplify-js/commit/fd989e405a7bc024f780cc7df552ebd489e0be60)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
+
+
+
+
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.1...aws-amplify-vue@2.1.2) (2020-07-27)
 
 

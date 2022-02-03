@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "3.0.22",
+  "version": "4.2.8",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/PubSub.ts",
+    "./lib/PubSub.js",
+    "./lib-esm/PubSub.js",
+    "./dist/aws-amplify-pubsub.min.js",
+    "./dist/aws-amplify-pubsub.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -39,10 +45,10 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^3.3.3",
-    "@aws-amplify/cache": "^3.1.21",
-    "@aws-amplify/core": "^3.4.4",
-    "graphql": "14.0.0",
+    "@aws-amplify/auth": "4.4.1",
+    "@aws-amplify/cache": "4.0.34",
+    "@aws-amplify/core": "4.3.14",
+    "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
@@ -85,7 +91,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

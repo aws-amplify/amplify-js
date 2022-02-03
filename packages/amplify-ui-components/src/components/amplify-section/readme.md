@@ -10,6 +10,14 @@
 | `role`   | `role`    | Equivalent to html section role | `string` | `'application'` |
 
 
+## CSS Custom Properties
+
+| Name                 | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `--background-color` | Background color of the container            |
+| `--font-family`      | Font family of the text within the container |
+
+
 ## Dependencies
 
 ### Used by

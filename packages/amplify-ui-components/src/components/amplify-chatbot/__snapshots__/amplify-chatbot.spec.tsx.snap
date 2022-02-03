@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-chatbot renders chatbot 1`] = `
+<amplify-chatbot>
+  <mock:shadow-root>
+    <div class="amplify-chatbot">
+      <slot name="header">
+        <div class="header" data-test="chatbot-header">
+          ChatBot Lex
+        </div>
+      </slot>
+      <div class="body" data-test="chatbot-body"></div>
+      <form>
+        <div class="footer" data-test="chatbot-footer">
+          <amplify-input description="text" disabled="" placeholder="Write a message" value=""></amplify-input>
+          <amplify-button class="icon-button" data-test="chatbot-send-button" disabled="" icon="send" variant="icon"></amplify-button>
+        </div>
+      </form>
+      <amplify-toast message="Error: Bot name must be provided to ChatBot"></amplify-toast>
+    </div>
+  </mock:shadow-root>
+</amplify-chatbot>
+`;

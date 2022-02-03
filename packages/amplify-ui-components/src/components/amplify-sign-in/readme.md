@@ -19,12 +19,23 @@
 
 ## Slots
 
-| Slot                         | Description                                     |
-| ---------------------------- | ----------------------------------------------- |
-| `"footer"`                   | Content is place in the footer of the component |
-| `"header-subtitle"`          | Subtitle content placed below header text       |
-| `"primary-footer-content"`   | Content placed on the right side of the footer  |
-| `"secondary-footer-content"` | Content placed on the left side of the footer   |
+| Slot                         | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `"federated-buttons"`        | Content above form fields used for sign in federation buttons |
+| `"footer"`                   | Content is place in the footer of the component               |
+| `"header-subtitle"`          | Subtitle content placed below header text                     |
+| `"primary-footer-content"`   | Content placed on the right side of the footer                |
+| `"secondary-footer-content"` | Content placed on the left side of the footer                 |
+
+
+## CSS Custom Properties
+
+| Name                   | Description               |
+| ---------------------- | ------------------------- |
+| `--footer-color`       | Font color of the footer  |
+| `--footer-font-family` | Font family of the footer |
+| `--footer-font-size`   | Font size of the footer   |
+| `--footer-weight`      | Font weight of the footer |
 
 
 ## Dependencies
@@ -51,6 +62,7 @@ graph TD;
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "3.1.21",
+  "version": "4.0.34",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -8,7 +8,16 @@
   "react-native": {
     "./lib/index": "./lib-esm/reactnative.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/reactnative.ts",
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib/reactnative.js",
+    "./lib-esm/index.js",
+    "./lib-esm/reactnative.js",
+    "./dist/aws-amplify-cache.js",
+    "./dist/aws-amplify-cache.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -35,7 +44,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^3.4.4"
+    "@aws-amplify/core": "4.3.14"
   },
   "jest": {
     "globals": {
@@ -79,7 +88,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }
