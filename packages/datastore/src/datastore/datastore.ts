@@ -306,7 +306,6 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
-
 		if (fieldDefinition !== undefined) {
 			const { type, isRequired, isArrayNullable, name, isArray } =
 				fieldDefinition;
@@ -592,7 +591,6 @@ const createModelClass = <T extends PersistentModel>(
 					return instanceMemos[targetName];
 				}
 				const associatedId = this[targetName];
-
 				if (!associatedId) {
 					if (association.connectionType === 'HAS_MANY') {
 						if (instanceMemos.hasOwnProperty(field)) {
@@ -1126,6 +1124,10 @@ class DataStore {
 	};
 
 	delete: {
+		(
+			model: any,
+			options: { condition?: ProducerModelPredicate<any>; cascade?: boolean }
+		): Promise<any>;
 		<T extends PersistentModel>(
 			model: T,
 			condition?: ProducerModelPredicate<T>
@@ -1140,19 +1142,26 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
+		idOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
+			| any,
+		cascade?: boolean
 	) => {
 		await this.start();
-
 		let condition: ModelPredicate<T>;
-
+		// Current work around for type issues I was having with options input for delete
+		if (typeof idOrCriteria === 'object') {
+			cascade = idOrCriteria.cascade;
+			idOrCriteria = idOrCriteria.condition;
+		}
 		if (!modelOrConstructor) {
 			const msg = 'Model or Model Constructor required';
 			logger.error(msg, { modelOrConstructor });
 
 			throw new Error(msg);
 		}
-
 		if (isValidModelConstructor(modelOrConstructor)) {
 			const modelConstructor = modelOrConstructor;
 
@@ -1187,9 +1196,53 @@ class DataStore {
 					throw new Error(msg);
 				}
 			}
-
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
-
+			// Everything below should be occuring before line 1199, but'
+			// I can't seem to get access to the child model before it's deleted
+			const childModelDefinition = getModelDefinition(modelConstructor);
+			const schemaRelationships = schema.namespaces.user.relationships;
+			for (const [parentModelName, properties] of Object.entries(
+				schemaRelationships
+			)) {
+				if (properties.relationTypes.length > 0) {
+					const [{ fieldName, modelName, targetName, associatedWith }] =
+						properties.relationTypes;
+					if (modelName === childModelDefinition.name) {
+						const parentModelConstructor = getModelConstructorByModelName(
+							USER,
+							parentModelName
+						);
+						const parentModelDefinition = getModelDefinition(
+							parentModelConstructor
+						);
+						if (parentModelDefinition.fields[fieldName].isRequired === true) {
+							if (cascade != true) {
+								const msg = 'Cascade required';
+								logger.error(msg, { cascade });
+								throw new Error();
+							} else {
+								// was not able to query with predicate
+								const parents = await this.storage.query(
+									parentModelConstructor
+								);
+								for (const parent of parents) {
+									const [child] = deleted;
+									if (targetName === undefined) {
+										if (parent.id === child[associatedWith]) {
+											const options = { condition: null, cascade };
+											this.delete(parent, options);
+										}
+									}
+									if (parent[targetName] === child[associatedWith]) {
+										const options = { condition: null, cascade };
+										this.delete(parent, options);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			return deleted;
 		} else {
 			const model = modelOrConstructor;
