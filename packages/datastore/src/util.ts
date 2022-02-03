@@ -30,12 +30,6 @@ import {
 import { WordArray } from 'amazon-cognito-identity-js';
 import { ModelSortPredicateCreator } from './predicates';
 
-export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
-	if (throwOnError) {
-		throw new Error(`Invalid ${obj}`);
-	}
-};
-
 export const isNullOrUndefined = (val: any): boolean => {
 	return typeof val === 'undefined' || val === undefined || val === null;
 };
@@ -64,7 +58,7 @@ export const validatePredicate = <T extends PersistentModel>(
 			filterType = 'some';
 			break;
 		default:
-			exhaustiveCheck(groupType);
+			throw new Error(`Invalid ${groupType}`);
 	}
 
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
@@ -123,7 +117,6 @@ export const validatePredicateField = <T>(
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
-			exhaustiveCheck(operator, false);
 			return false;
 	}
 };
@@ -250,7 +243,8 @@ export const establishRelationAndKeys = (
 			const fieldAttribute = model.fields[attr];
 			if (
 				typeof fieldAttribute.type === 'object' &&
-				'model' in fieldAttribute.type
+				'model' in fieldAttribute.type &&
+				fieldAttribute.association
 			) {
 				const connectionType = fieldAttribute.association.connectionType;
 				relationship[mKey].relationTypes.push({
@@ -261,7 +255,10 @@ export const establishRelationAndKeys = (
 					associatedWith: fieldAttribute.association['associatedWith'],
 				});
 
-				if (connectionType === 'BELONGS_TO') {
+				if (
+					connectionType === 'BELONGS_TO' &&
+					fieldAttribute.association['targetName']
+				) {
 					relationship[mKey].indexes.push(
 						fieldAttribute.association['targetName']
 					);
@@ -392,7 +389,7 @@ export const traverseModel = <T extends PersistentModel>(
 	// 				// Intentionally blank
 	// 				break;
 	// 			default:
-	// 				exhaustiveCheck(rItem.relationType);
+	// 				throw new Error(`Invalid ${rItem.relationType}`);
 	// 				break;
 	// 		}
 	// 	});
@@ -407,11 +404,11 @@ export const traverseModel = <T extends PersistentModel>(
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering.keys())
+			Array.from(namespace.modelTopologicalOrdering?.keys() || [])
 		);
 	}
 
-	const sortedModels = topologicallySortedModels.get(namespace);
+	const sortedModels = topologicallySortedModels.get(namespace) || [];
 
 	result.sort((a, b) => {
 		return (
@@ -426,7 +423,7 @@ export const getIndex = (rel: RelationType[], src: string): string => {
 	let index = '';
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
-			index = relItem.targetName;
+			index = relItem.targetName || '';
 		}
 	});
 	return index;
@@ -437,7 +434,7 @@ export const getIndexFromAssociation = (
 	src: string
 ): string => {
 	const index = indexes.find(idx => idx === src);
-	return index;
+	return index || '';
 };
 
 export enum NAMESPACES {
@@ -495,9 +492,9 @@ export const isPrivateMode = () => {
 	});
 };
 
-const randomBytes = (nBytes: number): Buffer => {
+function randomBytes(nBytes: number): Buffer {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
-};
+}
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
@@ -717,7 +714,7 @@ export async function asyncFilter<T>(
 	items: T[],
 	matches: (item: T) => Promise<boolean>
 ): Promise<T[]> {
-	const results = [];
+	const results: T[] = [];
 	for (const item of items) {
 		if (await matches(item)) {
 			results.push(item);
@@ -840,7 +837,7 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
-			return winner;
+			return winner!;
 		}
 	}
 

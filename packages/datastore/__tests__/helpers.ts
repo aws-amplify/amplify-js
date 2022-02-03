@@ -1,10 +1,5 @@
-import {
-	ModelInit,
-	MutableModel,
-	Schema,
-	InternalSchema,
-	SchemaModel,
-} from '../src/types';
+import { ModelInit, MutableModel, Schema, InternalSchema } from '../src/types';
+import { AsyncCollection } from '../src/datastore/datastore';
 
 export declare class Model {
 	public readonly id: string;
@@ -37,12 +32,13 @@ export declare class Metadata {
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
+	public readonly comments: AsyncCollection<Comment>;
 }
 
 export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
-	public readonly post: Post;
+	public readonly post: Promise<Post>;
 }
 
 export declare class User {
@@ -191,7 +187,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: 'postId',
+							associatedWith: 'post',
 						},
 					},
 				},
