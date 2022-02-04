@@ -14,6 +14,7 @@ import {
 } from '../src/predicates';
 import { validatePredicate as flatPredicateMatches } from '../src/util';
 import { schema, Author, Post, Blog, BlogOwner } from './model';
+import { AsyncCollection } from '../src';
 
 const AuthorMeta = {
 	builder: Author,
@@ -64,7 +65,7 @@ function getStorageFake(collections) {
 			if (!predicate) {
 				return baseSet;
 			} else {
-				const predicates = ModelPredicateCreator.getPredicates(predicate);
+				const predicates = ModelPredicateCreator.getPredicates(predicate)!;
 				return baseSet.filter(item =>
 					flatPredicateMatches(item, 'and', [predicates])
 				);
@@ -147,7 +148,7 @@ describe('Predicates', () => {
 	// function defineTests(f) {
 
 	describe('on local properties ', () => {
-		const getFlatAuthorsArrayFixture = function() {
+		const getFlatAuthorsArrayFixture = () => {
 			return [
 				'Adam West',
 				'Bob Jones',
@@ -592,7 +593,7 @@ describe('Predicates', () => {
 			const owner = {
 				id: `ownerId${name}`,
 				name,
-			} as ModelOf<ModelOf<typeof BlogOwner>>;
+			} as ModelOf<typeof BlogOwner>;
 			return owner;
 		});
 
@@ -600,10 +601,10 @@ describe('Predicates', () => {
 			const blog = {
 				id: `BlogID${owner.id}`,
 				name: `${owner.name}'s Blog`,
-				owner,
-				posts: [],
+				owner: Promise.resolve(owner),
+				posts: new AsyncCollection([]),
 				blogOwnerId: owner.id,
-			} as ModelOf<ModelOf<typeof Blog>>;
+			} as ModelOf<typeof Blog>;
 			(owner as any).blog = blog;
 			return blog;
 		});
@@ -615,9 +616,9 @@ describe('Predicates', () => {
 						id: `postID${blog.id}${n}`,
 						title: `${blog.name} post ${n}`,
 						postBlogId: blog.id,
-						blog,
-					} as ModelOf<typeof Post>;
-					blog.posts.push(post);
+						blog: Promise.resolve(blog),
+					} as unknown as ModelOf<typeof Post>;
+					(blog.posts.values as any).push(post);
 					return post;
 				});
 			})
@@ -701,9 +702,8 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on child collections', async () => {
-					const query = predicateFor(BlogMeta).posts.title.contains(
-						'Bob Jones'
-					);
+					const query =
+						predicateFor(BlogMeta).posts.title.contains('Bob Jones');
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(1);
@@ -847,9 +847,10 @@ describe('Predicates', () => {
 				});
 
 				test('can filter 4 levels deep to match all', async () => {
-					const query = predicateFor(
-						PostMeta
-					).reference.reference.reference.reference.title.contains('layer 4');
+					const query =
+						predicateFor(
+							PostMeta
+						).reference.reference.reference.reference.title.contains('layer 4');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
 					expect(matches.length).toBe(20);

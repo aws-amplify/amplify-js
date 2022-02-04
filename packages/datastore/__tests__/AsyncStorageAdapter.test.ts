@@ -70,7 +70,7 @@ describe('AsyncStorageAdapter tests', () => {
 		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
-			expect(result.field1).toEqual('Some value');
+			expect(result!.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
@@ -163,8 +163,8 @@ describe('AsyncStorageAdapter tests', () => {
 			let profile = await DataStore.query(Profile, profile1Id);
 
 			// double-checking that both of the records exist at first
-			expect(user.id).toEqual(user1Id);
-			expect(profile.id).toEqual(profile1Id);
+			expect(user!.id).toEqual(user1Id);
+			expect(profile!.id).toEqual(profile1Id);
 
 			await DataStore.delete(User, user1Id);
 
@@ -207,8 +207,8 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(await user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -218,8 +218,8 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(await user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 	});
 });

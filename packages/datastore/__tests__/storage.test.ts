@@ -58,7 +58,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.field1 = 'edited';
 					})
 				);
@@ -91,7 +91,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.field1 = 'Some value';
 					})
 				);
@@ -120,8 +120,8 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.optionalField1 = null;
+					Model.copyOf(model, (draft) => {
+						draft.optionalField1 = null!;
 					})
 				);
 
@@ -146,7 +146,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.optionalField1 = undefined;
 					})
 				);
@@ -172,7 +172,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.emails = [...draft.emails, 'joe@doe.com'];
 					})
 				);
@@ -206,8 +206,8 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.emails.push('joe@doe.com');
+					Model.copyOf(model, (draft) => {
+						draft.emails!.push('joe@doe.com');
 					})
 				);
 
@@ -240,7 +240,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.field1 = 'Updated value';
 						// same as above. should not be included in mutation input
 						draft.emails = ['john@doe.com', 'jane@doe.com'];
@@ -270,7 +270,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						// same as above. should not result in mutation event
 						draft.emails = ['john@doe.com', 'jane@doe.com'];
 					})
@@ -297,8 +297,8 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.emails = null;
+					Model.copyOf(model, (draft) => {
+						draft.emails = null!;
 					})
 				);
 
@@ -327,11 +327,11 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.metadata = {
 							...draft.metadata,
 							penNames: ['bob'],
-						};
+						} as any;
 					})
 				);
 
@@ -370,8 +370,8 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.metadata.penNames = ['bob'];
+					Model.copyOf(model, (draft) => {
+						draft.metadata!.penNames = ['bob'];
 					})
 				);
 
@@ -388,6 +388,94 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.metadata).toMatchObject(
 					expectedValueMetadata
 				);
+			});
+
+			test('allowing nested BELONGS_TO to be set', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Post, Comment } = classes as {
+					Post: PersistentModelConstructor<Post>;
+					Comment: PersistentModelConstructor<Comment>;
+				};
+
+				const originalPost = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const newPost = await DataStore.save(
+					new Post({
+						title: 'oops. i mean this is my best post',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'your post is not that great, actually ....',
+						post: originalPost,
+					})
+				);
+
+				await DataStore.save(
+					Comment.copyOf(comment, (draft) => {
+						draft.post = newPost;
+					})
+				);
+
+				const updatedComment = await DataStore.query(Comment, comment.id);
+
+				expect((await updatedComment!.post).title).toEqual(
+					'oops. i mean this is my best post'
+				);
+			});
+
+			// TODO.
+			// Uncomment this test when implementing cascading saves
+			test.skip('allowing nested HAS_MANY to be set', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Post, Comment } = classes as {
+					Post: PersistentModelConstructor<Post>;
+					Comment: PersistentModelConstructor<Comment>;
+				};
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'comment 1',
+						post,
+					})
+				);
+
+				new Comment({
+					content: 'comment 1',
+					post,
+				});
+
+				await DataStore.save(
+					Post.copyOf(post, (updated) => {
+						updated.comments = [
+							comment,
+							new Comment({
+								content: 'comment 2',
+							} as any),
+						];
+					})
+				);
+
+				const test = await DataStore.query(Post, post.id);
+
+				// might have to sort
+				expect((await test!.comments.toArray()).map((c) => c.content)).toEqual([
+					'comment 1',
+					'comment 2',
+				]);
 			});
 
 			test('custom type unchanged', async () => {
@@ -410,7 +498,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Model.copyOf(model, draft => {
+					Model.copyOf(model, (draft) => {
 						draft.field1 = 'Updated value';
 						draft.metadata = {
 							author: 'some author',
@@ -455,7 +543,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					Comment.copyOf(comment, updated => {
+					Comment.copyOf(comment, (updated) => {
 						updated.post = anotherPost;
 					})
 				);
@@ -494,31 +582,27 @@ describe('Storage tests', () => {
 				// `sort` is part of the key's composite sort key.
 				// `created` should also be included in the mutation input
 				const updated1 = await DataStore.save(
-					PostComposite.copyOf(post, updated => {
+					PostComposite.copyOf(post, (updated) => {
 						updated.sort = 101;
 					})
 				);
 
 				// `title` is the HK, so `sort` and `created` should NOT be included in the input
 				const updated2 = await DataStore.save(
-					PostComposite.copyOf(updated1, updated => {
+					PostComposite.copyOf(updated1, (updated) => {
 						updated.title = 'Updated Title';
 					})
 				);
 
 				// `description` does not belong to a key. No other fields should be included
 				await DataStore.save(
-					PostComposite.copyOf(updated2, updated => {
+					PostComposite.copyOf(updated2, (updated) => {
 						updated.description = 'Updated Desc';
 					})
 				);
 
-				const [
-					,
-					[postUpdate1],
-					[postUpdate2],
-					[postUpdate3],
-				] = zenNext.mock.calls;
+				const [, [postUpdate1], [postUpdate2], [postUpdate3]] =
+					zenNext.mock.calls;
 
 				expect(postUpdate1.element.title).toBeUndefined();
 				expect(postUpdate1.element.created).toEqual(createdTimestamp);
@@ -554,7 +638,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					PostCustomPK.copyOf(post, updated => {
+					PostCustomPK.copyOf(post, (updated) => {
 						updated.title = 'Updated';
 					})
 				);
@@ -584,7 +668,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					PostCustomPKSort.copyOf(post, updated => {
+					PostCustomPKSort.copyOf(post, (updated) => {
 						updated.title = 'Updated';
 					})
 				);
@@ -602,9 +686,7 @@ describe('Storage tests', () => {
 				// model has a custom pk (hk + composite key) defined via @key(fields: ["id", "postId", "sort"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKComposite } = classes as {
-					PostCustomPKComposite: PersistentModelConstructor<
-						PostCustomPKComposite
-					>;
+					PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
 				};
 
 				const post = await DataStore.save(
@@ -617,7 +699,7 @@ describe('Storage tests', () => {
 				);
 
 				await DataStore.save(
-					PostCustomPKComposite.copyOf(post, updated => {
+					PostCustomPKComposite.copyOf(post, (updated) => {
 						updated.title = 'Updated';
 					})
 				);

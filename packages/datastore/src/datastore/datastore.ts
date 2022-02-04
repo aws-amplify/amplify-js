@@ -30,6 +30,7 @@ import {
 	ModelInit,
 	ModelInstanceMetadata,
 	ModelPredicate,
+	ModelField,
 	SortPredicate,
 	MutableModel,
 	NamespaceResolver,
@@ -59,7 +60,6 @@ import {
 import {
 	DATASTORE,
 	establishRelationAndKeys,
-	exhaustiveCheck,
 	isModelConstructor,
 	monotonicUlidFactory,
 	NAMESPACES,
@@ -116,8 +116,9 @@ const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => {
 	const namespace = modelNamespaceMap.get(modelConstructor);
-
-	return schema.namespaces[namespace].models[modelConstructor.name];
+	return namespace
+		? schema.namespaces[namespace].models[modelConstructor.name]
+		: undefined;
 };
 
 const getModelPKFieldName = (
@@ -125,9 +126,9 @@ const getModelPKFieldName = (
 ) => {
 	const namespace = modelNamespaceMap.get(modelConstructor);
 	return (
-		schema.namespaces[namespace].keys[modelConstructor.name].primaryKey || [
-			'id',
-		]
+		(namespace &&
+			schema.namespaces?.[namespace]?.keys?.[modelConstructor.name]
+				.primaryKey) || ['id']
 	);
 };
 
@@ -137,8 +138,15 @@ const isValidModelConstructor = <T extends PersistentModel>(
 	return isModelConstructor(obj) && modelNamespaceMap.has(obj);
 };
 
-const namespaceResolver: NamespaceResolver = modelConstructor =>
-	modelNamespaceMap.get(modelConstructor);
+const namespaceResolver: NamespaceResolver = modelConstructor => {
+	const resolver = modelNamespaceMap.get(modelConstructor);
+	if (!resolver) {
+		throw new Error(
+			`Namespace Resolver for '${modelConstructor.name}' not found! This is probably a bug in '@amplify-js/datastore'.`
+		);
+	}
+	return resolver;
+};
 
 // exporting syncClasses for testing outbox.test.ts
 export let syncClasses: TypeConstructorMap;
@@ -255,7 +263,7 @@ const initSchema = (userSchema: Schema) => {
 			for (const modelName of Array.from(modelAssociations.keys())) {
 				const parents = modelAssociations.get(modelName);
 
-				if (parents.every(x => result.has(x))) {
+				if (parents?.every(x => result.has(x))) {
 					result.set(modelName, parents);
 				}
 			}
@@ -308,7 +316,6 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
-
 		if (fieldDefinition !== undefined) {
 			const { type, isRequired, isArrayNullable, name, isArray } =
 				fieldDefinition;
@@ -391,7 +398,7 @@ const validateModelFields =
 				} else if (
 					!isNullOrUndefined(v) &&
 					validateScalar &&
-					!validateScalar(v)
+					!validateScalar(v as never) // TODO: why never, TS ... why ...
 				) {
 					throw new Error(
 						`Field ${name} should be of type ${type}, validation failed. ${v}`
@@ -554,7 +561,7 @@ const createModelClass = <T extends PersistentModel>(
 			type,
 			association,
 			association: { targetName },
-		} = modelDefinition.fields[field];
+		} = modelDefinition.fields[field] as Required<ModelField>;
 		const relatedModelName = type['model'];
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
@@ -588,13 +595,11 @@ const createModelClass = <T extends PersistentModel>(
 					this[targetName] = model.id;
 				}
 			},
-			async get() {
+			get() {
 				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
-				if (instanceMemos.hasOwnProperty(targetName)) {
+				if (targetName && instanceMemos.hasOwnProperty(targetName)) {
 					return instanceMemos[targetName];
 				}
-				const associatedId = this[targetName];
-
 				if (!associatedId) {
 					if (association.connectionType === 'HAS_MANY') {
 						if (instanceMemos.hasOwnProperty(field)) {
@@ -606,26 +611,26 @@ const createModelClass = <T extends PersistentModel>(
 						> = getModelConstructorByModelName(USER, relatedModelName);
 						const relatedModelDefinition = getModelDefinition(relatedModel);
 						if (
-							relatedModelDefinition.fields[associatedWith].type.hasOwnProperty(
-								'model'
-							)
+							relatedModelDefinition?.fields[
+								associatedWith
+							].type.hasOwnProperty('model')
 						) {
-							const result = await instance.query(relatedModel, c =>
+							const resultPromise = instance.query(relatedModel, c =>
 								c[associatedWith].id.eq(this.id)
 							);
-							const asyncResult = new AsyncCollection(result);
+							const asyncResult = new AsyncCollection(resultPromise);
 							instanceMemos[field] = asyncResult;
 							return asyncResult;
 						}
-						const result = await instance.query(relatedModel, c =>
+						const resultPromise = instance.query(relatedModel, c =>
 							c[associatedWith].eq(this.id)
 						);
-						const asyncResult = new AsyncCollection(result);
+						const asyncResult = new AsyncCollection(resultPromise);
 						instanceMemos[field] = asyncResult;
 						return asyncResult;
 					}
 					// unable to load related model
-					instanceMemos[targetName] = undefined;
+					targetName && (instanceMemos[targetName] = undefined);
 					return;
 				}
 
@@ -634,10 +639,10 @@ const createModelClass = <T extends PersistentModel>(
 					relatedModelName
 				);
 
-				const result = await instance.query(relatedModel, associatedId);
-				instanceMemos[targetName] = result;
+				const resultPromise = instance.query(relatedModel, associatedId);
+				targetName && (instanceMemos[targetName] = resultPromise);
 				modelInstanceAssociationsMap.set(this, instanceMemos);
-				return result;
+				return resultPromise;
 			},
 		});
 	}
@@ -646,21 +651,21 @@ const createModelClass = <T extends PersistentModel>(
 };
 
 export class AsyncCollection<T> implements AsyncIterable<T> {
-	start: number;
-	end: number;
-	values: Array<any>;
-	constructor(values: Array<any>) {
-		this.start = 0;
-		this.end = values.length;
+	values: Array<any> | Promise<Array<any>>;
+
+	constructor(values: Array<any> | Promise<Array<any>>) {
 		this.values = values;
 	}
+
 	[Symbol.asyncIterator](): AsyncIterator<T> {
-		let index = this.start;
+		let values;
+		let index = 0;
 		return {
 			next: async () => {
-				if (index < this.end) {
+				if (!values) values = await this.values;
+				if (index < values.length) {
 					const result = {
-						value: this.values[index],
+						value: values[index],
 						done: false,
 					};
 					index++;
@@ -673,10 +678,11 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 			},
 		};
 	}
+
 	async toArray({
 		max = Number.MAX_SAFE_INTEGER,
 	}: { max?: number } = {}): Promise<T[]> {
-		const output = [];
+		const output: T[] = [];
 		let i = 0;
 		for await (const element of this) {
 			if (i < max) {
@@ -777,8 +783,7 @@ function getModelConstructorByModelName(
 			result = storageClasses[modelName];
 			break;
 		default:
-			exhaustiveCheck(namespaceName);
-			break;
+			throw new Error(`Invalid namespace: ${namespaceName}`);
 	}
 
 	if (isValidModelConstructor(result)) {
@@ -871,23 +876,26 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	// Non-null assertions (bang operator) have been added to most of these properties
+	// to make TS happy. These properties are all expected to be set immediately after
+	// construction.
 	private amplifyConfig: Record<string, any> = {};
-	private authModeStrategy: AuthModeStrategy;
-	private conflictHandler: ConflictHandler;
-	private errorHandler: (error: SyncError) => void;
-	private fullSyncInterval: number;
-	private initialized: Promise<void>;
-	private initReject: Function;
-	private initResolve: Function;
-	private maxRecordsToSync: number;
-	private storage: Storage;
-	private sync: SyncEngine;
-	private syncPageSize: number;
-	private syncExpressions: SyncExpression[];
+	private authModeStrategy!: AuthModeStrategy;
+	private conflictHandler!: ConflictHandler;
+	private errorHandler!: (error: SyncError) => void;
+	private fullSyncInterval!: number;
+	private initialized?: Promise<void>;
+	private initReject!: Function;
+	private initResolve!: Function;
+	private maxRecordsToSync!: number;
+	private storage?: Storage;
+	private sync?: SyncEngine;
+	private syncPageSize!: number;
+	private syncExpressions!: SyncExpression[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
-	private sessionId: string;
-	private storageAdapter: Adapter;
+	private sessionId?: string;
+	private storageAdapter!: Adapter;
 
 	getModuleName() {
 		return 'DataStore';
@@ -987,7 +995,7 @@ class DataStore {
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll,
+			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll | null,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
@@ -995,10 +1003,15 @@ class DataStore {
 		idOrCriteria?:
 			| string
 			| SingularModelPredicateExtender<T>
-			| typeof PredicateAll,
+			| typeof PredicateAll
+			| null,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
+
+		if (!this.storage) {
+			throw new Error('No storage to query');
+		}
 
 		if (!isValidModelConstructor(modelConstructor)) {
 			const msg = 'Constructor is not for a valid model';
@@ -1014,6 +1027,10 @@ class DataStore {
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
+		if (!modelDefinition) {
+			throw new Error('Invalid model definition provided!');
+		}
+
 		let result: T[];
 
 		const pagination = this.processPagination(
@@ -1031,7 +1048,7 @@ class DataStore {
 			// WARNING: this conditional does not recognize Predicates.ALL ...
 			if (!idOrCriteria || isPredicatesAll(idOrCriteria)) {
 				// Predicates.ALL means "all records", so no predicate (undefined)
-				result = await this.storage.query<T>(
+				result = await this.storage?.query<T>(
 					modelConstructor,
 					undefined,
 					pagination
@@ -1059,11 +1076,15 @@ class DataStore {
 	): Promise<T> => {
 		await this.start();
 
+		if (!this.storage) {
+			throw new Error('No storage to save to');
+		}
+
 		// Immer patches for constructing a correct update mutation input
 		// Allows us to only include changed fields for updates
 		const patchesTuple = modelPatchesMap.get(model);
 
-		const modelConstructor: PersistentModelConstructor<T> = model
+		const modelConstructor = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
 
@@ -1075,6 +1096,9 @@ class DataStore {
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
+		if (!modelDefinition) {
+			throw new Error('Model Definition could not be found for model');
+		}
 
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
@@ -1090,7 +1114,7 @@ class DataStore {
 			);
 		});
 
-		return savedModel;
+		return savedModel as T;
 	};
 
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
@@ -1126,6 +1150,10 @@ class DataStore {
 	};
 
 	delete: {
+		(
+			model: any,
+			options: { condition?: ProducerModelPredicate<any>; cascade?: boolean }
+		): Promise<any>;
 		<T extends PersistentModel>(
 			model: T,
 			condition?: ProducerModelPredicate<T>
@@ -1140,21 +1168,30 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
+		idOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
+			| any,
+		cascade?: boolean
 	) => {
 		await this.start();
-
-		let condition: ModelPredicate<T>;
-
 		if (!modelOrConstructor) {
 			const msg = 'Model or Model Constructor required';
 			logger.error(msg, { modelOrConstructor });
 
 			throw new Error(msg);
 		}
-
 		if (isValidModelConstructor(modelOrConstructor)) {
-			const modelConstructor = modelOrConstructor;
+			const modelConstructor =
+				modelOrConstructor as PersistentModelConstructor<T>;
+			const modelDefinition = getModelDefinition(modelConstructor);
+
+			if (!modelDefinition) {
+				throw new Error(
+					'Could not find model definition for modelConstructor.'
+				);
+			}
 
 			if (!idOrCriteria) {
 				const msg =
@@ -1166,12 +1203,12 @@ class DataStore {
 
 			if (typeof idOrCriteria === 'string') {
 				condition = ModelPredicateCreator.createForId<T>(
-					getModelDefinition(modelConstructor),
+					modelDefinition,
 					idOrCriteria
 				);
 			} else {
 				condition = ModelPredicateCreator.createFromExisting(
-					getModelDefinition(modelConstructor),
+					modelDefinition,
 					/**
 					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
 					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
@@ -1187,12 +1224,10 @@ class DataStore {
 					throw new Error(msg);
 				}
 			}
-
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
-
 			return deleted;
 		} else {
-			const model = modelOrConstructor;
+			const model = modelOrConstructor as T;
 			const modelConstructor = Object.getPrototypeOf(model || {})
 				.constructor as PersistentModelConstructor<T>;
 
@@ -1204,6 +1239,9 @@ class DataStore {
 			}
 
 			const modelDefinition = getModelDefinition(modelConstructor);
+			if (!modelDefinition) {
+				throw new Error('Could not find model definition for model.');
+			}
 
 			const idPredicate = ModelPredicateCreator.createForId<T>(
 				modelDefinition,
@@ -1285,12 +1323,25 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		const buildSeedPredicate = () =>
-			predicateFor<T>({
-				builder: modelOrConstructor as PersistentModelConstructor<T>,
-				schema: getModelDefinition(modelConstructor),
-				pkField: getModelPKFieldName(modelConstructor),
+		const buildSeedPredicate = () => {
+			if (!modelConstructor) throw new Error('Missing modelConstructor');
+
+			const modelSchema = getModelDefinition(
+				modelConstructor as PersistentModelConstructor<T>
+			);
+			if (!modelSchema) throw new Error('Missing modelSchema');
+
+			const pks = getModelPKFieldName(
+				modelConstructor as PersistentModelConstructor<T>
+			);
+			if (!pks) throw new Error('Could not determine PK');
+
+			return predicateFor<T>({
+				builder: modelConstructor as PersistentModelConstructor<T>,
+				schema: modelSchema,
+				pkField: pks,
 			});
+		};
 
 		if (typeof idOrCriteria === 'string') {
 			const buildIdPredicate = seed => seed.id.eq(idOrCriteria);
@@ -1307,16 +1358,33 @@ class DataStore {
 			(async () => {
 				await this.start();
 
+				if (!this.storage) {
+					throw new Error('No storage to query');
+				}
+
 				source = this.storage
 					.observe(modelConstructor)
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.subscribe({
 						next: async item => {
+							// the `element` for UPDATE events isn't an instance of `modelConstructor`.
+							// however, `executivePredicate` expects an instance that supports lazy loaded
+							// associations. customers will presumably expect the same!
+							let message = item;
+							if (
+								isModelConstructor(modelConstructor) &&
+								!(item.element instanceof modelConstructor)
+							) {
+								message = {
+									...message,
+									element: modelInstanceCreator(modelConstructor, item.element),
+								};
+							}
 							if (
 								!executivePredicate ||
-								(await executivePredicate.matches(item.element))
+								(await executivePredicate.matches(message.element))
 							) {
-								observer.next(item as SubscriptionMessage<T>);
+								observer.next(message as SubscriptionMessage<T>);
 							}
 						},
 						error: err => observer.error(err),
@@ -1365,49 +1433,6 @@ class DataStore {
 			const { sort } = options || {};
 			const sortOptions = sort ? { sort } : undefined;
 
-			(async () => {
-				try {
-					// first, query and return any locally-available records
-					(await this.query(model, criteria, options)).forEach(item =>
-						items.set(item.id, item)
-					);
-
-					// observe the model and send a stream of updates (debounced)
-					handle = this.observe(
-						model,
-						// @ts-ignore TODO: fix this TSlint error
-						criteria
-					).subscribe(({ element, model, opType }) => {
-						// Flag items which have been recently deleted
-						// NOTE: Merging of separate operations to the same model instance is handled upstream
-						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
-						// depends on the LATEST record (for a given id).
-						if (opType === 'DELETE') {
-							deletedItemIds.push(element.id);
-						} else {
-							itemsChanged.set(element.id, element);
-						}
-
-						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
-
-						const limit =
-							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
-
-						if (limit || isSynced) {
-							limitTimerRace.resolve();
-						}
-
-						// kicks off every subsequent race as results sync down
-						limitTimerRace.start();
-					});
-
-					// returns a set of initial/locally-available results
-					generateAndEmitSnapshot();
-				} catch (err) {
-					observer.error(err);
-				}
-			})();
-
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
 				const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
@@ -1443,7 +1468,12 @@ class DataStore {
 
 			const sortItems = (itemsToSort: T[]): void => {
 				const modelDefinition = getModelDefinition(model);
+				if (!modelDefinition) throw new Error('Missing model definition');
+
 				const pagination = this.processPagination(modelDefinition, options);
+				if (!(pagination && pagination.sort)) {
+					throw new Error('Pagination could not be processed');
+				}
 
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination.sort
@@ -1467,6 +1497,46 @@ class DataStore {
 				}
 			};
 			Hub.listen('datastore', hubCallback);
+
+			(async () => {
+				try {
+					// first, query and return any locally-available records
+					(await this.query(model, criteria, options)).forEach(item =>
+						items.set(item.id, item)
+					);
+
+					// observe the model and send a stream of updates (debounced)
+					handle = this.observe(
+						model,
+						// @ts-ignore TODO: fix this TSlint error
+						criteria
+					).subscribe(({ element, model, opType }) => {
+						// Flag items which have been recently deleted
+						// NOTE: Merging of separate operations to the same model instance is handled upstream
+						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+						// depends on the LATEST record (for a given id).
+						if (opType === 'DELETE') {
+							deletedItemIds.push(element.id);
+						} else {
+							itemsChanged.set(element.id, element);
+						}
+
+						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
+
+						if (
+							itemsChanged.size - deletedItemIds.length >= this.syncPageSize ||
+							isSynced
+						) {
+							generateAndEmitSnapshot();
+						}
+					});
+
+					// will return any locally-available items in the first snapshot
+					generateAndEmitSnapshot();
+				} catch (err) {
+					observer.error(err);
+				}
+			})();
 
 			return () => {
 				if (handle) {
@@ -1558,7 +1628,7 @@ class DataStore {
 		this.sessionId = this.retrieveSessionId();
 	};
 
-	clear = async function clear() {
+	clear = async () => {
 		if (this.storage === undefined) {
 			return;
 		}
@@ -1579,7 +1649,7 @@ class DataStore {
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	};
 
-	stop = async function stop() {
+	stop = async () => {
 		if (this.initialized !== undefined) {
 			await this.start();
 		}
@@ -1598,9 +1668,9 @@ class DataStore {
 
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		paginationProducer: ProducerPaginationInput<T>
+		paginationProducer?: ProducerPaginationInput<T>
 	): PaginationInput<T> | undefined {
-		let sortPredicate: SortPredicate<T>;
+		let sortPredicate: SortPredicate<T> | undefined;
 		const { limit, page, sort } = paginationProducer || {};
 
 		if (limit === undefined && page === undefined && sort === undefined) {
@@ -1634,7 +1704,7 @@ class DataStore {
 		if (sort) {
 			sortPredicate = ModelSortPredicateCreator.createFromExisting(
 				modelDefinition,
-				paginationProducer.sort
+				sort
 			);
 		}
 
@@ -1664,15 +1734,15 @@ class DataStore {
 					// OR a function/promise that returns a predicate
 					const condition = await this.unwrapPromise(conditionProducer);
 					if (isPredicatesAll(condition)) {
-						return [modelDefinition, null];
+						return [modelDefinition as any, null as any];
 					}
 
 					const predicate = this.createFromCondition(
-						modelDefinition,
+						modelDefinition as any,
 						condition
 					);
 
-					return [modelDefinition, predicate];
+					return [modelDefinition as any, predicate as any];
 				}
 			)
 		);

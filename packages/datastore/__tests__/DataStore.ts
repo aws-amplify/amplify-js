@@ -13,7 +13,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Model, Post, Metadata, testSchema } from './helpers';
+import { Comment, Model, Post, Metadata, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -26,13 +26,15 @@ const nameOf = <T>(name: keyof T) => name;
 const expectType: <T>(param: T) => void = () => {};
 
 describe('DataStore observe, unmocked, with fake-indexeddb', () => {
+	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
 	let Post: PersistentModelConstructor<Post>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
-		({ Model, Post } = classes as {
+		({ Comment, Model, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
 			Model: PersistentModelConstructor<Model>;
 			Post: PersistentModelConstructor<Post>;
 		});
@@ -40,11 +42,12 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	});
 
 	test('subscribe to all models', async done => {
-		DataStore.observe().subscribe(({ element, opType, model }) => {
+		const sub = DataStore.observe().subscribe(({ element, opType, model }) => {
 			expectType<PersistentModelConstructor<PersistentModel>>(model);
 			expectType<PersistentModel>(element);
 			expect(opType).toEqual('INSERT');
 			expect(element.field1).toEqual('Smurfs');
+			sub.unsubscribe();
 			done();
 		});
 		DataStore.save(
@@ -63,14 +66,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(original).subscribe(({ element, opType, model }) => {
-			expectType<PersistentModelConstructor<Model>>(model);
-			expectType<Model>(element);
-			expect(opType).toEqual('UPDATE');
-			expect(element.id).toEqual(original.id);
-			expect(element.field1).toEqual('new field 1 value');
-			done();
-		});
+		const sub = DataStore.observe(original).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				sub.unsubscribe();
+				done();
+			}
+		);
 
 		// decoy
 		await DataStore.save(
@@ -93,14 +99,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model).subscribe(({ element, opType, model }) => {
-			expectType<PersistentModelConstructor<Model>>(model);
-			expectType<Model>(element);
-			expect(opType).toEqual('UPDATE');
-			expect(element.id).toEqual(original.id);
-			expect(element.field1).toEqual('new field 1 value');
-			done();
-		});
+		const sub = DataStore.observe(Model).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				sub.unsubscribe();
+				done();
+			}
+		);
 
 		// decoy
 		await DataStore.save(
@@ -122,16 +131,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model, m => m.field1.contains('new field 1')).subscribe(
-			({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('UPDATE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('new field 1 value');
-				done();
-			}
-		);
+		const sub = DataStore.observe(Model, m =>
+			m.field1.contains('new field 1')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('UPDATE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('new field 1 value');
+			sub.unsubscribe();
+			done();
+		});
 
 		// decoy
 		await DataStore.save(
@@ -154,16 +164,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model, m => m.field1.contains('value')).subscribe(
-			({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('DELETE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('somevalue');
-				done();
-			}
-		);
+		const sub = DataStore.observe(Model, m =>
+			m.field1.contains('value')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('DELETE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('somevalue');
+			sub.unsubscribe();
+			done();
+		});
 
 		// decoy
 		await DataStore.save(
@@ -174,6 +185,455 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		);
 
 		await DataStore.delete(original);
+	});
+
+	test('subscribe with belongsTo criteria', async done => {
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		const sub = DataStore.observe(Comment, comment =>
+			comment.post.title.eq(targetPost.title)
+		).subscribe(({ element: comment, opType, model }) => {
+			expect(comment.content).toEqual('good comment');
+			sub.unsubscribe();
+			done();
+		});
+
+		await DataStore.save(
+			new Comment({
+				content: 'bad comment',
+				post: nonTargetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+	});
+
+	test('subscribe with hasMany criteria', async done => {
+		// want to set up a few posts and a few "non-target" comments
+		// to ensure we can observe post based on a single comment that's
+		// somewhat "buried" alongside other comments.
+
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'bad comment', post: nonTargetPost })
+		);
+		await DataStore.save(
+			new Comment({ content: 'pre good comment', post: targetPost })
+		);
+
+		const targetComment = await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'post good comment', post: targetPost })
+		);
+
+		const sub = DataStore.observe(Post, post =>
+			post.comments.content.eq(targetComment.content)
+		).subscribe(async ({ element: post, opType, model }) => {
+			expect(post.title).toEqual('expected update');
+			sub.unsubscribe();
+			done();
+		});
+
+		// should not see this one come through the subscription.
+		await DataStore.save(
+			Post.copyOf(nonTargetPost, p => (p.title = 'decoy update'))
+		);
+
+		// this is the update we expect to see come through, as it has
+		// 'good comment' in its `comments` field.
+		await DataStore.save(
+			Post.copyOf(targetPost, p => (p.title = 'expected update'))
+		);
+	});
+});
+
+describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
+	//
+	// ~~~~ OH HEY! ~~~~~
+	//
+	// Remember that `observeQuery()` always issues a first snapshot from the data
+	// already in storage. This is naturally performed async. Because of this,
+	// if you insert items immediately after `observeQuery()`, some of those items
+	// MAY show up in the initial snapshot. (Or maybe they won't!)
+	//
+	// Many of these tests should therefore include timeouts when adding records.
+	// These timeouts let `observeQuery()` sneak in and grab its first snapshot
+	// before those records hit storage, making for predictable tests.
+	//
+	// The tests should also account for that initial, empty snapshot.
+	//
+	// Remember: Snapshots are cumulative.
+	//
+	// And Also: Be careful when saving decoy records! Calling `done()` in a
+	// subscription body while any `DataStore.save()`'s are outstanding WILL
+	// result in cryptic errors that surface in subsequent tests!
+	//
+	// ("Error: An operation was called on an object on which it is not allowed ...")
+	//
+	// ~~~~ OK. Thanks! ~~~~
+	//
+	//   (That's it)
+	//
+
+	let Comment: PersistentModelConstructor<Comment>;
+	let Post: PersistentModelConstructor<Post>;
+
+	beforeEach(async () => {
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+		const classes = initSchema(testSchema());
+		({ Comment, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
+			Post: PersistentModelConstructor<Post>;
+		});
+		await DataStore.clear();
+
+		// Fully faking or mocking the sync engine would be pretty significant.
+		// Instead, we're going to be mocking a few sync engine methods we happen know
+		// `observeQuery()` depends on.
+		(DataStore as any).sync = {
+			// default to report that models are NOT synced.
+			// set to `true` to signal the model is synced.
+			// `observeQuery()` should finish up after this returns `true`.
+			getModelSyncedStatus: (model: any) => false,
+
+			// not important for this testing. but unsubscribe calls this.
+			// so, it needs to exist.
+			unsubscribeConnectivity: () => {},
+		};
+
+		// how many items to accumulate before `observeQuery()` sends the items
+		// to its subscriber.
+		(DataStore as any).syncPageSize = 10;
+	});
+
+	test('publishes preexisting local data immediately', async done => {
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+			expect(items.length).toBe(5);
+			for (let i = 0; i < 5; i++) {
+				expect(items[i].title).toEqual(`the post ${i}`);
+			}
+			sub.unsubscribe();
+			done();
+		});
+	});
+
+	test('publishes data saved after sync', async done => {
+		const expecteds = [0, 10];
+
+		const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+			const expected = expecteds.shift() || 0;
+			expect(items.length).toBe(expected);
+
+			for (let i = 0; i < expected; i++) {
+				expect(items[i].title).toEqual(`the post ${i}`);
+			}
+
+			if (expecteds.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			for (let i = 0; i < 10; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+		}, 100);
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
+		const expecteds = [5, 15];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(
+			({ items, isSynced }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (let i = 0; i < expected; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			}
+		);
+
+		setTimeout(async () => {
+			for (let i = 5; i < 15; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+		}, 100);
+	});
+
+	test('publishes received in pages data until isSynced', async done => {
+		const expecteds = [5, 15, 22];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(
+			({ items, isSynced }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (let i = 0; i < expected; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+
+				if (isSynced) {
+					sub.unsubscribe();
+					done();
+				}
+			}
+		);
+
+		setTimeout(async () => {
+			for (let i = 5; i < 21; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			// to ensure isSynced changes after the first result set comes through
+			// the subscription and BEFORE the last result, we use another timeout
+			// to change the sync status and fire off the last save.
+			setTimeout(async () => {
+				(DataStore as any).sync.getModelSyncedStatus = model => true;
+				await DataStore.save(
+					new Post({
+						title: `the post 21`,
+					})
+				);
+			}, 100);
+		}, 100);
+	});
+
+	test('publishes received records individually after isSynced', async done => {
+		const expecteds = [5, 15, 16, 17, 18];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+			const expected = expecteds.shift() || 0;
+			expect(items.length).toBe(expected);
+
+			for (let i = 0; i < expected; i++) {
+				expect(items[i].title).toEqual(`the post ${i}`);
+			}
+
+			if (expecteds.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			for (let i = 5; i < 15; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			// to ensure isSynced changes after the first result set comes through
+			// the subscription and BEFORE the last result, we use another timeout
+			// to change the sync status and fire off the last save.
+			setTimeout(async () => {
+				(DataStore as any).sync.getModelSyncedStatus = model => true;
+				for (let i = 15; i < 18; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+			}, 100);
+		}, 100);
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves with filters', async done => {
+		const expecteds = [5, 15];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+			await DataStore.save(
+				new Post({
+					title: `NOT the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post, p =>
+			p.title.beginsWith('the post')
+		).subscribe(({ items, isSynced }) => {
+			const expected = expecteds.shift() || 0;
+			expect(items.length).toBe(expected);
+
+			for (let i = 0; i < expected; i++) {
+				expect(items[i].title).toEqual(`the post ${i}`);
+			}
+
+			if (expecteds.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			for (let i = 5; i < 15; i++) {
+				await DataStore.save(
+					new Post({
+						title: `NOT the post ${i}`,
+					})
+				);
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+		}, 100);
+	});
+
+	test('publishes with hasMany criteria', async done => {
+		// want to set up a few posts and a few "non-target" comments
+		// to ensure we can observe post based on a single comment that's
+		// somewhat "buried" alongside other comments.
+
+		const expectedMessages = ['this is my post. hooray!', 'expected update'];
+
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'bad comment', post: nonTargetPost })
+		);
+		await DataStore.save(
+			new Comment({ content: 'pre good comment', post: targetPost })
+		);
+
+		const targetComment = await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'post good comment', post: targetPost })
+		);
+
+		const sub = DataStore.observeQuery(Post, post =>
+			post.comments.content.eq(targetComment.content)
+		).subscribe(async ({ items, isSynced }) => {
+			expect(items.length).toBe(1);
+			expect(items[0].title).toEqual(expectedMessages.shift());
+			if (expectedMessages.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			// ensure we get individual results through the subscription.
+			(DataStore as any).sync.getModelSyncedStatus = model => true;
+
+			// should not see this one come through the subscription.
+			await DataStore.save(
+				Post.copyOf(nonTargetPost, p => (p.title = 'decoy update'))
+			);
+
+			// this is the update we expect to see come through, as it has
+			// 'good comment' in its `comments` field.
+			await DataStore.save(
+				Post.copyOf(targetPost, p => (p.title = 'expected update'))
+			);
+		}, 100);
 	});
 });
 
@@ -374,9 +834,16 @@ describe('DataStore tests', () => {
 			const model1 = new Model({
 				field1: 'something',
 				dateCreated: new Date().toISOString(),
-				optionalField1: null,
+
+				// strict mode actually forbids assigning null to optional field **as we've defined them.**
+				// but, for customers not using strict TS and for JS developers, we need to ensure `null`
+				// is accepted and handled as expected.
+				optionalField1: null as unknown as undefined,
 			});
 
+			// strictly speaking (pun intended), the signature for optional fields is `type | undefined`.
+			// AFAIK, customers compiling exclusively in strict mode shouldn't ever see a `null` here.
+			// buuut, it looks like we have been allowing `null`s in. and so we must continue ... ?
 			expect(model1.optionalField1).toBeNull();
 		});
 
@@ -443,8 +910,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -463,8 +930,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -516,7 +983,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 
 					return _mock;
@@ -559,7 +1026,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 
 					return _mock;
@@ -612,7 +1079,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 
 					return _mock;
@@ -646,7 +1113,7 @@ describe('DataStore tests', () => {
 			expect(result).toMatchObject(model);
 
 			model = Model.copyOf(model, draft => {
-				draft.emails.push('joe@doe.com');
+				draft.emails?.push('joe@doe.com');
 			});
 
 			result = await DataStore.save(model);
@@ -692,7 +1159,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 
 					return _mock;
@@ -738,14 +1205,14 @@ describe('DataStore tests', () => {
 		test('Instantiation validations', async () => {
 			expect(() => {
 				new Model({
-					field1: undefined,
+					field1: undefined as unknown as string,
 					dateCreated: new Date().toISOString(),
 				});
 			}).toThrowError('Field field1 is required');
 
 			expect(() => {
 				new Model({
-					field1: null,
+					field1: null as unknown as string,
 					dateCreated: new Date().toISOString(),
 				});
 			}).toThrowError('Field field1 is required');
@@ -779,7 +1246,7 @@ describe('DataStore tests', () => {
 						penNames: [],
 						nominations: [],
 					}),
-				}).metadata.tags
+				}).metadata?.tags
 			).toBeUndefined();
 
 			expect(() => {
@@ -789,7 +1256,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
-						rewards: [null],
+						rewards: [null as unknown as string],
 						penNames: [],
 						nominations: [],
 					}),
@@ -802,8 +1269,8 @@ describe('DataStore tests', () => {
 				new Model({
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
-					emails: null,
-					ips: null,
+					emails: null as unknown as string[],
+					ips: null as unknown as string[],
 				});
 			}).not.toThrow();
 
@@ -811,7 +1278,7 @@ describe('DataStore tests', () => {
 				new Model({
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
-					emails: [null],
+					emails: [null as unknown as string],
 				});
 			}).toThrowError(
 				'All elements in the emails array should be of type string, [null] received. '
@@ -899,7 +1366,7 @@ describe('DataStore tests', () => {
 						tags: undefined,
 						rewards: [],
 						penNames: [],
-						nominations: null,
+						nominations: null as unknown as undefined,
 					}),
 				});
 			}).toThrowError('Field nominations is required');
@@ -912,7 +1379,7 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						tags: undefined,
 						rewards: [],
-						penNames: [undefined],
+						penNames: [undefined as unknown as string],
 						nominations: [],
 					}),
 				});
@@ -959,7 +1426,7 @@ describe('DataStore tests', () => {
 						rewards: [],
 						penNames: [],
 						nominations: [],
-						misc: [undefined],
+						misc: [undefined as unknown as string],
 					}),
 				});
 			}).not.toThrow();
@@ -973,7 +1440,7 @@ describe('DataStore tests', () => {
 						rewards: [],
 						penNames: [],
 						nominations: [],
-						misc: [undefined, null],
+						misc: [undefined as unknown as string, null],
 					}),
 				});
 			}).not.toThrow();
@@ -1074,7 +1541,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						delete: _delete,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 
 					return _mock;
@@ -1120,7 +1587,7 @@ describe('DataStore tests', () => {
 		});
 
 		test('Delete one returns one', async () => {
-			let model: Model;
+			let model: Model | undefined;
 			const save = jest.fn(saved => (model = saved));
 			const query = jest.fn(() => [model]);
 			const _delete = jest.fn(() => [[model], [model]]);
@@ -1133,7 +1600,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						delete: _delete,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn(fn => fn.bind(global, _mock)()),
 					};
 					return _mock;
 				});
@@ -1261,8 +1728,8 @@ describe('DataStore tests', () => {
 			});
 			test('one by id', async () => {
 				const oneModelById = await DataStore.query(Model, 'someid');
-				expectType<Model>(oneModelById);
-				expect(oneModelById.field1).toBeDefined();
+				expectType<Model | undefined>(oneModelById);
+				expect(oneModelById?.field1).toBeDefined();
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {
@@ -1304,8 +1771,8 @@ describe('DataStore tests', () => {
 			});
 			test('one by id', async () => {
 				const oneModelById = await DataStore.query<Model>(Model, 'someid');
-				expectType<Model>(oneModelById);
-				expect(oneModelById.field1).toBeDefined();
+				expectType<Model | undefined>(oneModelById);
+				expect(oneModelById?.field1).toBeDefined();
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {

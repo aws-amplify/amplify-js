@@ -1,6 +1,5 @@
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
-	exhaustiveCheck,
 	isAWSDate,
 	isAWSTime,
 	isAWSDateTime,
@@ -10,6 +9,7 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	NAMESPACES,
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
@@ -225,7 +225,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): 'string' | 'number' | 'boolean' | 'object' {
+	) {
 		switch (scalar) {
 			case 'Boolean':
 				return 'boolean';
@@ -246,7 +246,7 @@ export namespace GraphQLScalarType {
 			case 'AWSJSON':
 				return 'object';
 			default:
-				exhaustiveCheck(scalar as never);
+				throw new Error('Invalid scalar type');
 		}
 	}
 
@@ -255,7 +255,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): ((val: string | number) => boolean) | undefined {
+	): ((val: string) => boolean) | ((val: number) => boolean) | undefined {
 		switch (scalar) {
 			case 'AWSDate':
 				return isAWSDate;
@@ -374,16 +374,65 @@ export type PersistentModelMetaData = {
 	readOnlyFields: string;
 };
 
+export interface AsyncCollection<T> extends AsyncIterable<T> {
+	toArray(options?: { max?: number }): Promise<T[]>;
+}
+
+export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
+	? InnerPromiseType
+	: T extends AsyncCollection<infer InnerCollectionType>
+	? InnerCollectionType[] | undefined
+	: T;
+
+export type PredicateFieldType<T> = NonNullable<
+	Scalar<
+		T extends Promise<infer InnerPromiseType>
+			? InnerPromiseType
+			: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType
+			: T
+	>
+>;
+
+type KeysOfType<T, FilterType> = {
+	[P in keyof T]: T[P] extends FilterType ? P : never;
+}[keyof T];
+
+type KeysOfSuperType<T, FilterType> = {
+	[P in keyof T]: FilterType extends T[P] ? P : never;
+}[keyof T];
+
+type OptionalRelativesOf<T> =
+	| KeysOfType<T, AsyncCollection<any>>
+	| KeysOfSuperType<T, Promise<undefined>>;
+
+type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
+type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
+
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
+
 export type ModelInit<
 	T,
 	K extends PersistentModelMetaData = {
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
-> = Omit<T, 'id' | K['readOnlyFields']>;
+> = {
+	[P in keyof OmitOptionalRelatives<
+		Omit<T, 'id' | K['readOnlyFields']>
+	>]: SettableFieldType<T[P]>;
+} & {
+	[P in keyof PickOptionalRelatives<
+		Omit<T, 'id' | K['readOnlyFields']>
+	>]+?: SettableFieldType<T[P]>;
+};
+
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
+		: T[P] extends Promise<infer InnerPromiseType>
+		? InnerPromiseType
+		: T[P] extends AsyncCollection<infer InnerCollectionType>
+		? InnerCollectionType[] | undefined
 		: DeepWritable<T[P]>;
 };
 
@@ -392,8 +441,6 @@ export type MutableModel<
 	K extends PersistentModelMetaData = {
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
-	// This provides Intellisense with ALL of the properties, regardless of read-only
-	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
 	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
@@ -623,10 +670,10 @@ export type SystemComponent = {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>,
-		appId: string
+		appId?: string
 	): Promise<void>;
 };
 
