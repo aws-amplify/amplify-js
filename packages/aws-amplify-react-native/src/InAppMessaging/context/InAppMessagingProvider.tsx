@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { InAppMessage, Notifications } from '@aws-amplify/notifications';
 
 import InAppMessagingContext from './InAppMessagingContext';
@@ -33,16 +33,17 @@ export default function InAppMessagingProvider({ children, components = {}, styl
 		setInAppMessage(null);
 	}, []);
 
-	const value = useMemo(
-		() => ({
-			clearInAppMessage,
-			components,
-			displayInAppMessage: setInAppMessage,
-			inAppMessage,
-			style,
-		}),
-		[clearInAppMessage, components, inAppMessage, style]
+	return (
+		<InAppMessagingContext.Provider
+			value={{
+				clearInAppMessage,
+				components,
+				displayInAppMessage: setInAppMessage,
+				inAppMessage,
+				style,
+			}}
+		>
+			{children}
+		</InAppMessagingContext.Provider>
 	);
-
-	return <InAppMessagingContext.Provider value={value}>{children}</InAppMessagingContext.Provider>;
 }
