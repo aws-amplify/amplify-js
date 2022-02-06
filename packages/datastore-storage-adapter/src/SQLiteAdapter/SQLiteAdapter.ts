@@ -587,7 +587,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			);
 
 			// Don't need id, but what is _deleted, here?
-			const { id, _deleted } = item as ModelInstanceMetadata & { id: string }; // TODO: not cool
+			const { id, _deleted } = item as ModelInstanceMetadata & { id: string };
 
 			// REPLACE:
 			const { instance } = connectedModels.find(

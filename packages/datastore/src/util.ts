@@ -411,7 +411,7 @@ export const traverseModel = <T extends PersistentModel>(
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
-							delete draftInstance[rItem.fieldName];
+							delete (<any>draftInstance)[rItem.fieldName];
 						} else {
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
@@ -449,7 +449,7 @@ export const traverseModel = <T extends PersistentModel>(
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
-						delete draftInstance[rItem.fieldName];
+						delete (<any>draftInstance)[rItem.fieldName];
 					}
 
 					break;

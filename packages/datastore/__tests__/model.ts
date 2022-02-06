@@ -1,10 +1,10 @@
 import {
 	ModelInit,
 	MutableModel,
+	initSchema,
+	NonModelTypeConstructor,
 	PersistentModelConstructor,
-} from '@aws-amplify/datastore';
-
-import { initSchema, NonModelTypeConstructor } from '../src/index';
+} from '../src/index';
 import { newSchema } from './schema';
 
 declare class BlogModel {
@@ -103,6 +103,13 @@ declare class PersonModel {
 	readonly firstName: string;
 	readonly lastName: string;
 	readonly username?: string;
+	constructor(init: ModelInit<PersonModel>);
+	static copyOf(
+		source: PersonModel,
+		mutator: (
+			draft: MutableModel<PersonModel>
+		) => MutableModel<PersonModel> | void
+	): PersonModel;
 }
 
 const {
@@ -126,7 +133,7 @@ const {
 	PostMetadata: NonModelTypeConstructor<PostMetadataType>;
 	Nested: NonModelTypeConstructor<NestedType>;
 };
-``;
+
 export {
 	Author,
 	Post,

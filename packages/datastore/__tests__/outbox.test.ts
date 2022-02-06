@@ -18,7 +18,7 @@ import {
 	SchemaModel,
 } from '../src/types';
 import { MutationEvent } from '../src/sync/';
-import { USER } from '../src/util';
+import { USER, extractPrimaryKeyFieldNames } from '../src/util';
 
 let initSchema: typeof initSchemaType;
 // using <any> to access private members
@@ -345,7 +345,7 @@ async function instantiateOutbox(): Promise<void> {
 
 	const MutationEvent = syncClasses[
 		'MutationEvent'
-	] as PersistentModelConstructor<any>;
+	] as PersistentModelConstructor<MutationEvent>;
 
 	await DataStore.start();
 
