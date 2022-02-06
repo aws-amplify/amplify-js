@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.1.13...@aws-amplify/geo@1.2.0) (2022-02-03)
+
+
+### Features
+
+* **@aws-amplify/geo:** searchForSuggestions API ([#9516](https://github.com/aws-amplify/amplify-js/issues/9516)) ([bb60060](https://github.com/aws-amplify/amplify-js/commit/bb60060d30c7463d1893b7678ebc18e959b46990))
+
+
+
+
+
 ## [1.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.1.12...@aws-amplify/geo@1.1.13) (2022-01-27)
 
 

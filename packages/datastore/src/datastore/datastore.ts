@@ -774,8 +774,6 @@ class DataStore {
 				userClasses,
 				this.storage,
 				modelInstanceCreator,
-				this.maxRecordsToSync,
-				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
@@ -1395,12 +1393,13 @@ class DataStore {
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
-			this.syncExpressions ||
-			configSyncExpressions;
+			configSyncExpressions ||
+			this.syncExpressions;
 
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
 			configMaxRecordsToSync ||
+			this.maxRecordsToSync ||
 			10000;
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
@@ -1409,6 +1408,7 @@ class DataStore {
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
 			configSyncPageSize ||
+			this.syncPageSize ||
 			1000;
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
@@ -1416,14 +1416,14 @@ class DataStore {
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||
-			this.fullSyncInterval ||
 			configFullSyncInterval ||
+			this.fullSyncInterval ||
 			24 * 60; // 1 day
 
 		this.storageAdapter =
 			(configDataStore && configDataStore.storageAdapter) ||
-			this.storageAdapter ||
 			configStorageAdapter ||
+			this.storageAdapter ||
 			undefined;
 
 		this.sessionId = this.retrieveSessionId();
