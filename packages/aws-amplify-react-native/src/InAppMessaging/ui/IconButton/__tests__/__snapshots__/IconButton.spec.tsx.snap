@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconButton renders as expected 1`] = `
+<View
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+>
+  <Image
+    source={
+      Object {
+        "uri": "icon.png",
+      }
+    }
+    style={
+      Object {
+        "height": 16,
+        "resizeMode": "contain",
+        "tintColor": undefined,
+        "width": 16,
+      }
+    }
+  />
+</View>
+`;

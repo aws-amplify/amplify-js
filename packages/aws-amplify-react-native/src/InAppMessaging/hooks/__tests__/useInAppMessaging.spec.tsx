@@ -11,21 +11,18 @@
  * and limitations under the License.
  */
 
-import { ViewStyle } from 'react-native';
-import {
-	InAppMessageComponentBaseProps,
-	InAppMessageComponentBaseStyle,
-	InAppMessageComponentPosition,
-} from '../types';
+import React from 'react';
+import TestRenderer from 'react-test-renderer';
+import useInAppMessaging from '../useInAppMessaging';
 
-export interface BannerMessageProps extends InAppMessageComponentBaseProps {
-	position?: InAppMessageComponentPosition;
-}
+const ChildComponent = (_) => <></>;
+const TestComponent = () => {
+	const props = useInAppMessaging();
+	return <ChildComponent {...props} />;
+};
 
-export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {}
-
-export interface BannerMessagePositionStyle {
-	bottom: ViewStyle;
-	middle: ViewStyle;
-	top: ViewStyle;
-}
+describe('useInAppMessaging', () => {
+	it('throws an error when called outside an InAppMessagingProvider', () => {
+		expect(() => TestRenderer.create(<TestComponent />)).toThrowError();
+	});
+});

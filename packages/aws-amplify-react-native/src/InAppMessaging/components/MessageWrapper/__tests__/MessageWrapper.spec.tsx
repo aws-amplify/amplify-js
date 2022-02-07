@@ -11,21 +11,22 @@
  * and limitations under the License.
  */
 
-import { ViewStyle } from 'react-native';
-import {
-	InAppMessageComponentBaseProps,
-	InAppMessageComponentBaseStyle,
-	InAppMessageComponentPosition,
-} from '../types';
+import React from 'react';
+import TestRenderer from 'react-test-renderer';
+import { Text } from 'react-native';
 
-export interface BannerMessageProps extends InAppMessageComponentBaseProps {
-	position?: InAppMessageComponentPosition;
-}
+import MessageWrapper from '../MessageWrapper';
 
-export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {}
+const Children = () => <Text>Children</Text>;
 
-export interface BannerMessagePositionStyle {
-	bottom: ViewStyle;
-	middle: ViewStyle;
-	top: ViewStyle;
-}
+describe('MessageWrapper', () => {
+	it('renders as expected', () => {
+		const renderer = TestRenderer.create(
+			<MessageWrapper>
+				<Children />
+			</MessageWrapper>
+		);
+
+		expect(renderer.toJSON()).toMatchSnapshot();
+	});
+});

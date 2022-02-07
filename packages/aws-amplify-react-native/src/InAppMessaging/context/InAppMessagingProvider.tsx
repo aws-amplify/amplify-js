@@ -33,16 +33,12 @@ export default function InAppMessagingProvider({ children, components = {}, styl
 		setInAppMessage(null);
 	}, []);
 
-	const displayInAppMessage = useCallback((message: InAppMessage) => {
-		setInAppMessage(message);
-	}, []);
-
 	return (
 		<InAppMessagingContext.Provider
 			value={{
 				clearInAppMessage,
 				components,
-				displayInAppMessage,
+				displayInAppMessage: setInAppMessage,
 				inAppMessage,
 				style,
 			}}

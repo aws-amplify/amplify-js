@@ -15,6 +15,7 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 
 import icons from '../../../icons';
+import { IN_APP_MESSAGING } from '../../../AmplifyTestIDs';
 import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
@@ -44,15 +45,24 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 						size={ICON_BUTTON_SIZE}
 						source={icons.close}
 						style={styles.iconButton.container}
+						testID={IN_APP_MESSAGING.CLOSE_BUTTON}
 					/>
 					{hasRenderableImage && (
 						<View style={styles.imageContainer}>
-							<Image source={{ uri: image?.src }} style={styles.image} />
+							<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
 						</View>
 					)}
 					<View style={styles.textContainer}>
-						{header?.content && <Text style={styles.header}>{header.content}</Text>}
-						{body?.content && <Text style={styles.body}>{body.content}</Text>}
+						{header?.content && (
+							<Text style={styles.header} testID={IN_APP_MESSAGING.HEADER}>
+								{header.content}
+							</Text>
+						)}
+						{body?.content && (
+							<Text style={styles.body} testID={IN_APP_MESSAGING.BODY}>
+								{body.content}
+							</Text>
+						)}
 					</View>
 				</View>
 				{hasButtons && (
@@ -61,6 +71,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 							<Button
 								onPress={secondaryButton.onPress}
 								style={styles.secondaryButton.container}
+								testID={IN_APP_MESSAGING.SECONDARY_BUTTON}
 								textStyle={styles.secondaryButton.text}
 							>
 								{secondaryButton.title}
@@ -70,6 +81,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 							<Button
 								onPress={primaryButton.onPress}
 								style={styles.primaryButton.container}
+								testID={IN_APP_MESSAGING.PRIMARY_BUTTON}
 								textStyle={styles.primaryButton.text}
 							>
 								{primaryButton.title}
