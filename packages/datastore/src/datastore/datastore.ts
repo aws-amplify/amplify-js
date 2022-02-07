@@ -77,6 +77,7 @@ import {
 	predicateFor,
 	GroupCondition,
 } from '../predicates/next';
+import { any } from 'core-js/fn/promise';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1153,6 +1154,10 @@ class DataStore {
 	};
 
 	delete: {
+		(
+			model: any,
+			options: { condition?: ProducerModelPredicate<any>; cascade?: boolean }
+		): Promise<any>;
 		<T extends PersistentModel>(
 			model: T,
 			condition?: ProducerModelPredicate<T>
@@ -1167,33 +1172,29 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
+		idOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
+			| { cascade: boolean; condition: any }
+			| any,
+		cascade?: boolean
 	) => {
 		await this.start();
-
-		if (!this.storage) {
-			throw new Error('No storage to delete from');
-		}
-
-		let condition: ModelPredicate<T> | undefined;
-
+		let condition: ModelPredicate<T>;
+		let tempCascade: boolean;
+		let tempIdOrCriteria:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll;
 		if (!modelOrConstructor) {
 			const msg = 'Model or Model Constructor required';
 			logger.error(msg, { modelOrConstructor });
 
 			throw new Error(msg);
 		}
-
 		if (isValidModelConstructor(modelOrConstructor)) {
-			const modelConstructor =
-				modelOrConstructor as PersistentModelConstructor<T>;
-			const modelDefinition = getModelDefinition(modelConstructor);
-
-			if (!modelDefinition) {
-				throw new Error(
-					'Could not find model definition for modelConstructor.'
-				);
-			}
+			const modelConstructor = modelOrConstructor;
 
 			if (!idOrCriteria) {
 				const msg =
@@ -1202,35 +1203,114 @@ class DataStore {
 
 				throw new Error(msg);
 			}
+			// Current work around for type issues I was having with options input for delete
+			if (typeof idOrCriteria === 'object') {
+				tempCascade = idOrCriteria.cascade;
+				tempIdOrCriteria = idOrCriteria.condition;
+				if (typeof tempIdOrCriteria === 'string') {
+					condition = ModelPredicateCreator.createForId<T>(
+						getModelDefinition(modelConstructor),
+						tempIdOrCriteria
+					);
+				} else {
+					condition = ModelPredicateCreator.createFromExisting(
+						getModelDefinition(modelConstructor),
+						/**
+						 * tempIdOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+						 */
+						tempIdOrCriteria as ProducerModelPredicate<T>
+					);
 
-			if (typeof idOrCriteria === 'string') {
-				condition = ModelPredicateCreator.createForId<T>(
-					modelDefinition,
-					idOrCriteria
-				);
+					if (
+						!condition ||
+						!ModelPredicateCreator.isValidPredicate(condition)
+					) {
+						const msg =
+							'Criteria required. Do you want to delete all? Pass Predicates.ALL';
+						logger.error(msg, { condition });
+
+						throw new Error(msg);
+					}
+				}
 			} else {
-				condition = ModelPredicateCreator.createFromExisting(
-					modelDefinition,
-					/**
-					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-					 */
-					idOrCriteria as ProducerModelPredicate<T>
-				);
+				if (typeof idOrCriteria === 'string') {
+					condition = ModelPredicateCreator.createForId<T>(
+						getModelDefinition(modelConstructor),
+						idOrCriteria
+					);
+				} else {
+					condition = ModelPredicateCreator.createFromExisting(
+						getModelDefinition(modelConstructor),
+						/**
+						 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+						 */
+						idOrCriteria as ProducerModelPredicate<T>
+					);
 
-				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
-					const msg =
-						'Criteria required. Do you want to delete all? Pass Predicates.ALL';
-					logger.error(msg, { condition });
+					if (
+						!condition ||
+						!ModelPredicateCreator.isValidPredicate(condition)
+					) {
+						const msg =
+							'Criteria required. Do you want to delete all? Pass Predicates.ALL';
+						logger.error(msg, { condition });
 
-					throw new Error(msg);
+						throw new Error(msg);
+					}
 				}
 			}
-
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
+			// Everything below should be occuring before line 1199, but
+			// I can't seem to get access to the child model before it's deleted
+			const childModelDefinition = getModelDefinition(modelConstructor);
+			const schemaRelationships = schema.namespaces.user.relationships;
+			for (const [parentModelName, properties] of Object.entries(
+				schemaRelationships
+			)) {
+				if (properties.relationTypes.length > 0) {
+					const [{ fieldName, modelName, targetName, associatedWith }] =
+						properties.relationTypes;
+					if (modelName === childModelDefinition.name) {
+						const parentModelConstructor = getModelConstructorByModelName(
+							USER,
+							parentModelName
+						);
+						const parentModelDefinition = getModelDefinition(
+							parentModelConstructor
+						);
+						if (parentModelDefinition.fields[fieldName].isRequired === true) {
+							if (cascade !== true && tempCascade !== true) {
+								const msg = 'Cascade required';
+								logger.error(msg, { cascade });
+								throw new Error();
+							} else {
+								// was not able to query with predicate
+								const parents = await this.storage.query(
+									parentModelConstructor
+								);
+								for (const parent of parents) {
+									const [child] = deleted;
+									if (targetName === undefined) {
+										if (parent.id === child[associatedWith]) {
+											const options = { condition: null, cascade: true };
+											this.delete(parent, options);
+										}
+									}
+									if (parent[targetName] === child[associatedWith]) {
+										const options = { condition: null, cascade: true };
+										this.delete(parent, options);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			return deleted;
 		} else {
-			const model = modelOrConstructor as T;
+			const model = modelOrConstructor;
 			const modelConstructor = Object.getPrototypeOf(model || {})
 				.constructor as PersistentModelConstructor<T>;
 
@@ -1242,9 +1322,6 @@ class DataStore {
 			}
 
 			const modelDefinition = getModelDefinition(modelConstructor);
-			if (!modelDefinition) {
-				throw new Error('Could not find model definition for model.');
-			}
 
 			const idPredicate = ModelPredicateCreator.createForId<T>(
 				modelDefinition,
@@ -1253,13 +1330,25 @@ class DataStore {
 
 			if (idOrCriteria) {
 				if (typeof idOrCriteria !== 'function') {
-					const msg = 'Invalid criteria';
-					logger.error(msg, { idOrCriteria });
+					if (
+						(typeof idOrCriteria === 'object' &&
+							idOrCriteria.hasOwnProperty('cascade')) ||
+						idOrCriteria.hasOwnProperty('condition')
+					) {
+						if (typeof idOrCriteria?.condition === 'function') {
+							condition = idOrCriteria.condition(idPredicate);
+						} else {
+							condition = idPredicate;
+						}
+					} else {
+						const msg = 'Invalid criteria';
+						logger.error(msg, { idOrCriteria });
 
-					throw new Error(msg);
+						throw new Error(msg);
+					}
+				} else {
+					condition = idOrCriteria(idPredicate);
 				}
-
-				condition = idOrCriteria(idPredicate);
 			} else {
 				condition = idPredicate;
 			}
