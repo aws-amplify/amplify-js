@@ -1181,6 +1181,11 @@ class DataStore {
 		cascade?: boolean
 	) => {
 		await this.start();
+
+		if (!this.storage) {
+			throw new Error('No storage to delete from');
+		}
+
 		let condition: ModelPredicate<T>;
 		let tempCascade: boolean;
 		let tempIdOrCriteria:
