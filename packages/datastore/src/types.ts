@@ -345,7 +345,7 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 
 export type TypeConstructorMap = Record<
 	string,
-	PersistentModelConstructor<unknown> | NonModelTypeConstructor<unknown>
+	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
 >;
 
 export declare const __identifierBrand__: unique symbol;
@@ -383,7 +383,7 @@ export type Identifier<T> =
 
 export type IdentifierFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T> = {}
 > = MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
@@ -435,14 +435,18 @@ export type MetadataOrDefault<
 
 export type PersistentModel = Readonly<Record<string, any>>;
 
-type MetadataReadOnlyFields<
+export type MetadataReadOnlyFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
 > =
 	| M['readOnlyFields']
 	| MetadataOrDefault<T, M>['readOnlyFields'] extends keyof T
 	? Required<
-			Pick<T, M['readOnlyFields'] | MetadataOrDefault<T, M>['readOnlyFields']>
+			Pick<
+				T,
+				| NonNullable<M['readOnlyFields']>
+				| MetadataOrDefault<T, M>['readOnlyFields']
+			>
 	  >
 	: {};
 
@@ -451,14 +455,14 @@ type MetadataReadOnlyFields<
 // This type allows some identifiers in the constructor (e.g. for OptionallyManagedIdentifier or CustomIdentifier)
 export type ModelInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
+	M extends PersistentModelMetaData<T> = {}
 > =
 	| Omit<
 			T,
 			| typeof __modelMeta__
 			| keyof IdentifierFields<T, M>
 			| keyof MetadataReadOnlyFields<T, M>
-			| M['readOnlyFields']
+			| NonNullable<M['readOnlyFields']>
 	  >
 	| IdentifierFieldsForInit<T, M>;
 
@@ -470,7 +474,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
+	M extends PersistentModelMetaData<T> = {}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
@@ -489,7 +493,7 @@ export type IdentifierFieldValue<
 	M extends PersistentModelMetaData<T>
 > = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
 	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
-		? MetadataOrDefault<T, M>['identifier']['fields'][0]
+		? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
 		: never
 	: T[MetadataOrDefault<T, M>['identifier']['field']];
 

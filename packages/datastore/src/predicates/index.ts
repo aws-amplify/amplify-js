@@ -89,7 +89,7 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver)
+									.get(receiver)!
 									.predicates.push(group);
 
 								return receiver;
@@ -113,7 +113,7 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver)
+							.get(receiver)!
 							.predicates.push({ field, operator, operand });
 						return receiver;
 					};
@@ -151,7 +151,7 @@ export class ModelPredicateCreator {
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		existing: ProducerModelPredicate<T>
+		existing?: ProducerModelPredicate<T>
 	) {
 		if (!existing || !modelDefinition) {
 			return undefined;
