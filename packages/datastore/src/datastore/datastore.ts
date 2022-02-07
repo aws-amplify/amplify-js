@@ -316,6 +316,7 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
+
 		if (fieldDefinition !== undefined) {
 			const { type, isRequired, isArrayNullable, name, isArray } =
 				fieldDefinition;
@@ -600,6 +601,8 @@ const createModelClass = <T extends PersistentModel>(
 				if (targetName && instanceMemos.hasOwnProperty(targetName)) {
 					return instanceMemos[targetName];
 				}
+				const associatedId = this[targetName ?? ''] as string;
+
 				if (!associatedId) {
 					if (association.connectionType === 'HAS_MANY') {
 						if (instanceMemos.hasOwnProperty(field)) {
@@ -1150,10 +1153,6 @@ class DataStore {
 	};
 
 	delete: {
-		(
-			model: any,
-			options: { condition?: ProducerModelPredicate<any>; cascade?: boolean }
-		): Promise<any>;
 		<T extends PersistentModel>(
 			model: T,
 			condition?: ProducerModelPredicate<T>
@@ -1168,20 +1167,23 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?:
-			| string
-			| ProducerModelPredicate<T>
-			| typeof PredicateAll
-			| any,
-		cascade?: boolean
+		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 	) => {
 		await this.start();
+
+		if (!this.storage) {
+			throw new Error('No storage to delete from');
+		}
+
+		let condition: ModelPredicate<T> | undefined;
+
 		if (!modelOrConstructor) {
 			const msg = 'Model or Model Constructor required';
 			logger.error(msg, { modelOrConstructor });
 
 			throw new Error(msg);
 		}
+
 		if (isValidModelConstructor(modelOrConstructor)) {
 			const modelConstructor =
 				modelOrConstructor as PersistentModelConstructor<T>;
@@ -1224,6 +1226,7 @@ class DataStore {
 					throw new Error(msg);
 				}
 			}
+
 			const [deleted] = await this.storage.delete(modelConstructor, condition);
 			return deleted;
 		} else {
