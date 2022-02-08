@@ -43,10 +43,12 @@ class ExpoSQLiteDatabase {
 	}
 
 	public async clear() {
-		await this.closeDB();
 		logger.debug('Deleting database');
+		//delete database is not supported by expo-sqlite. alternative way is to get all table names and drop them.
 		//await SQLite.deleteDatabase(DB_NAME);
+		this.dropAllTables();
 		logger.debug('Database deleted');
+		await this.closeDB();
 	}
 
 	public async get<T extends PersistentModel>(
@@ -246,13 +248,35 @@ class ExpoSQLiteDatabase {
 	private async closeDB() {
 		if (this.db) {
 			logger.debug('Closing Database');
+
+			//closing database is not supported by expo-sqlite
 			//await this.db.close();
 			logger.debug('Database closed');
 		}
 	}
 
-	private async getTableNames() {
+	private async dropAllTables() {
 		//to be implemented. Returns array of table names.
+		const tableNames: string[] = await new Promise((resolve, reject) => {
+			this.db.transaction(tx => {
+				tx.executeSql(
+					'SHOW TABLES',
+					[],
+					(tx, results) => {
+						resolve(results.rows._array);
+					},
+					(_, error) => {
+						reject(error);
+						return true;
+					}
+				);
+			});
+		});
+
+		for (const tableName of tableNames) {
+			const statement = `DROP TABLE IF EXISTS ${tableName}`;
+			this.executeStatements([statement]);
+		}
 	}
 }
 
