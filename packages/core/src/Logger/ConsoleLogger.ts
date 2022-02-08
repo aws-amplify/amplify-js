@@ -15,7 +15,6 @@ import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
-import { Amplify } from '../Amplify';
 
 const LOG_LEVELS = {
 	VERBOSE: 1,
@@ -104,7 +103,6 @@ export class ConsoleLogger implements Logger {
 	_checkPluggables() {
 		if (this._pluggables.length !== ConsoleLogger._globalpluggables.length) {
 			if (ConsoleLogger._globalpluggables.length > 0) {
-				Amplify.register(this);
 				ConsoleLogger._globalpluggables.forEach(this.addPluggable);
 				return;
 			}

@@ -25,7 +25,7 @@
 		"build:esm": "rimraf lib-esm && node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
-		"build": "yarn clean && yarn build:esm && npm run build:cjs",
+		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",

@@ -1141,7 +1141,7 @@ export class AuthClass {
 	 * Delete the current authenticated user
 	 * @return {Promise}
 	 **/
-	//TODO: Check return type void
+	// TODO: Check return type void
 	public async deleteUser(): Promise<string | void> {
 		try {
 			await this._storageSync;

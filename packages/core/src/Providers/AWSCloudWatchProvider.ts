@@ -55,7 +55,10 @@ import {
 	RETRY_ERROR_CODES,
 } from '../Util/Constants';
 
-if (!window || !window.TextEncoder) {
+if (
+	typeof window === 'undefined' ||
+	(typeof window === 'object' && !window.TextEncoder)
+) {
 	require('fast-text-encoding');
 }
 

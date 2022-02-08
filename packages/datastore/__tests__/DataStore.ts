@@ -28,6 +28,7 @@ beforeEach(() => {
 			query: jest.fn(() => []),
 			save: jest.fn(() => []),
 			observe: jest.fn(() => Observable.of()),
+			logDebugInfo: jest.fn(() => Observable.of()),
 		}));
 
 		(<any>mock).getNamespace = () => ({ models: {} });
@@ -291,8 +292,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -311,8 +312,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -336,6 +337,7 @@ describe('DataStore tests', () => {
 					runExclusive: jest.fn(() => []),
 					query: jest.fn(() => []),
 					observe: jest.fn(() => Observable.from([])),
+					logDebugInfo: jest.fn(() => Observable.of()),
 				}));
 
 				(<any>mock).getNamespace = () => ({ models: {} });
@@ -365,6 +367,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 
 					return _mock;
@@ -408,6 +411,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 
 					return _mock;
@@ -461,6 +465,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 
 					return _mock;
@@ -541,6 +546,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 
 					return _mock;
@@ -923,6 +929,7 @@ describe('DataStore tests', () => {
 						query,
 						delete: _delete,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 
 					return _mock;
@@ -982,6 +989,7 @@ describe('DataStore tests', () => {
 						query,
 						delete: _delete,
 						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						logDebugInfo: jest.fn(() => Observable.of()),
 					};
 					return _mock;
 				});
@@ -1081,6 +1089,7 @@ describe('DataStore tests', () => {
 					runExclusive: jest.fn(() => [model]),
 					query: jest.fn(() => [model]),
 					observe: jest.fn(() => Observable.from([])),
+					logDebugInfo: jest.fn(() => Observable.of()),
 				}));
 
 				(<any>mock).getNamespace = () => ({ models: {} });
