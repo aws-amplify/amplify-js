@@ -10,7 +10,7 @@ import {
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	ParameterizedStatement,
-} from './SQLiteUtils';
+} from '../commons/SQLiteUtils';
 
 import {
 	StorageAdapter,
