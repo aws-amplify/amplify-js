@@ -1,4 +1,10 @@
-import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	JS,
+	HubCallback,
+} from '@aws-amplify/core';
 import {
 	Draft,
 	immerable,
@@ -717,12 +723,12 @@ class DataStore {
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
-	private initialized: Promise<void>;
+	private initialized?: Promise<void>;
 	private initReject: Function;
 	private initResolve: Function;
 	private maxRecordsToSync: number;
-	private storage: Storage;
-	private sync: SyncEngine;
+	private storage?: Storage;
+	private sync?: SyncEngine;
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
@@ -924,7 +930,7 @@ class DataStore {
 		// Allows us to only include changed fields for updates
 		const patchesTuple = modelPatchesMap.get(model);
 
-		const modelConstructor: PersistentModelConstructor<T> = model
+		const modelConstructor: PersistentModelConstructor<T> | undefined = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
 
@@ -939,13 +945,13 @@ class DataStore {
 
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
-			condition
+			condition!
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
-			return s.query(
+			return s.query<T>(
 				modelConstructor,
 				ModelPredicateCreator.createForPk(modelDefinition, model)
 			);
@@ -1017,7 +1023,7 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (isValidModelConstructor(modelOrConstructor)) {
+		if (isValidModelConstructor<T>(modelOrConstructor)) {
 			const modelConstructor = modelOrConstructor;
 
 			if (!identifierOrCriteria) {
@@ -1120,8 +1126,8 @@ class DataStore {
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
-		const modelConstructor: PersistentModelConstructor<T> =
-			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
+		const modelConstructor: PersistentModelConstructor<T> | undefined =
+			modelOrConstructor && isValidModelConstructor<T>(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
 
@@ -1327,7 +1333,7 @@ class DataStore {
 			};
 
 			// send one last snapshot when the model is fully synced
-			const hubCallback = ({ payload }): void => {
+			const hubCallback: HubCallback = ({ payload }): void => {
 				const { event, data } = payload;
 				if (
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
@@ -1426,10 +1432,10 @@ class DataStore {
 			this.storageAdapter ||
 			undefined;
 
-		this.sessionId = this.retrieveSessionId();
+		this.sessionId = this.retrieveSessionId()!;
 	};
 
-	clear = async function clear() {
+	clear = async function clear(this: InstanceType<typeof DataStore>) {
 		if (this.storage === undefined) {
 			return;
 		}
@@ -1450,7 +1456,7 @@ class DataStore {
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	};
 
-	stop = async function stop() {
+	stop = async function stop(this: InstanceType<typeof DataStore>) {
 		if (this.initialized !== undefined) {
 			await this.start();
 		}
@@ -1614,9 +1620,9 @@ class DataStore {
 
 				return `${sessionId}-${appSyncId}`;
 			}
-		} catch {
-			return undefined;
-		}
+		} catch {}
+
+		return undefined;
 	}
 }
 
