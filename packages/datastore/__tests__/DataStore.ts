@@ -2007,9 +2007,7 @@ describe('DataStore tests', () => {
 					);
 				}
 
-				// @ts-ignore
 				const deleted = await DataStore.delete(PostCustomPK, m =>
-					// @ts-ignore
 					m.title('eq', 'someField')
 				);
 
@@ -2062,9 +2060,7 @@ describe('DataStore tests', () => {
 					})
 				);
 
-				// @ts-ignore
 				const deleted: PostCustomPKType[] = await DataStore.delete(
-					// @ts-ignore
 					PostCustomPK,
 					saved.postId
 				);
@@ -2116,11 +2112,9 @@ describe('DataStore tests', () => {
 					})
 				);
 
-				// @ts-ignore
 				const deleted: PostCustomPKType[] = await DataStore.delete(
-					// @ts-ignore
 					PostCustomPK,
-					// @ts-ignore
+
 					m => m.postId('eq', saved.postId)
 				);
 
@@ -2138,12 +2132,10 @@ describe('DataStore tests', () => {
 				);
 
 				await expect(
-					// @ts-ignore
 					DataStore.query(PostCustomPK, <any>'someid', { page: 0 })
 				).rejects.toThrow('Limit is required when requesting a page');
 
 				await expect(
-					// @ts-ignore
 					DataStore.query(PostCustomPK, <any>'someid', {
 						page: <any>'a',
 						limit: 10,
@@ -2151,12 +2143,10 @@ describe('DataStore tests', () => {
 				).rejects.toThrow('Page should be a number');
 
 				await expect(
-					// @ts-ignore
 					DataStore.query(PostCustomPK, <any>'someid', { page: -1, limit: 10 })
 				).rejects.toThrow("Page can't be negative");
 
 				await expect(
-					// @ts-ignore
 					DataStore.query(PostCustomPK, <any>'someid', {
 						page: 0,
 						limit: <any>'avalue',
@@ -2164,7 +2154,6 @@ describe('DataStore tests', () => {
 				).rejects.toThrow('Limit should be a number');
 
 				await expect(
-					// @ts-ignore
 					DataStore.query(PostCustomPK, <any>'someid', {
 						page: 0,
 						limit: -1,
@@ -2214,47 +2203,43 @@ describe('DataStore tests', () => {
 
 				describe('Query', () => {
 					test('all', async () => {
-						// @ts-ignore
 						const allPostCustomPKs = await DataStore.query(PostCustomPK);
-						// @ts-ignore
+
 						expectType<PostCustomPKType[]>(allPostCustomPKs);
-						// @ts-ignore
+
 						const [one] = allPostCustomPKs;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
 					});
 					test('one by custom PK', async () => {
 						const onePostCustomPKById = await DataStore.query(
-							// @ts-ignore
 							PostCustomPK,
 							'someid'
 						);
-						// @ts-ignore
+
 						expectType<PostCustomPKType>(onePostCustomPKById);
 						expect(onePostCustomPKById.title).toBeDefined();
 						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
 					});
 					test('with criteria', async () => {
 						const multiPostCustomPKWithCriteria = await DataStore.query(
-							// @ts-ignore
 							PostCustomPK,
 							c => c.title('contains', 'something')
 						);
-						// @ts-ignore
+
 						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
-						// @ts-ignore
+
 						const [one] = multiPostCustomPKWithCriteria;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
 					});
 					test('with pagination', async () => {
 						const allPostCustomPKsPaginated = await DataStore.query(
-							// @ts-ignore
 							PostCustomPK,
 							Predicates.ALL,
 							{ page: 0, limit: 20 }
 						);
-						// @ts-ignore
+
 						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
 						const [one] = allPostCustomPKsPaginated;
 						expect(one.title).toBeDefined();
@@ -2264,19 +2249,17 @@ describe('DataStore tests', () => {
 
 				describe('Query with generic type', () => {
 					test('all', async () => {
-						// @ts-ignore
 						const allPostCustomPKs = await DataStore.query<PostCustomPKType>(
 							PostCustomPK
 						);
-						// @ts-ignore
+
 						expectType<PostCustomPK[]>(allPostCustomPKs);
-						// @ts-ignore
+
 						const [one] = allPostCustomPKs;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
 					});
 					test('one by postId', async () => {
-						// @ts-ignore
 						const onePostCustomPKById = await DataStore.query<PostCustomPKType>(
 							PostCustomPK,
 							'someid'
@@ -2287,26 +2270,24 @@ describe('DataStore tests', () => {
 					});
 					test('with criteria', async () => {
 						const multiPostCustomPKWithCriteria =
-							// @ts-ignore
 							await DataStore.query<PostCustomPKType>(PostCustomPK, c =>
 								c.title('contains', 'something')
 							);
-						// @ts-ignore
+
 						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
-						// @ts-ignore
+
 						const [one] = multiPostCustomPKWithCriteria;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
 					});
 					test('with pagination', async () => {
 						const allPostCustomPKsPaginated =
-							// @ts-ignore
 							await DataStore.query<PostCustomPKType>(
 								PostCustomPK,
 								Predicates.ALL,
 								{ page: 0, limit: 20 }
 							);
-						// @ts-ignore
+
 						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
 						const [one] = allPostCustomPKsPaginated;
 						expect(one.title).toBeDefined();
