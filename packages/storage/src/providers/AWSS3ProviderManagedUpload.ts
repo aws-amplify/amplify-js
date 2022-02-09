@@ -237,8 +237,7 @@ export class AWSS3ProviderManagedUpload {
 		await this.s3client.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
-		const newListParts = new ListPartsCommand(input);
-		const data = await this.s3client.send(newListParts);
+		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
 			throw new Error('Multi Part upload clean up failed');
