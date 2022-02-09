@@ -241,7 +241,7 @@ describe('multi part upload tests', () => {
 		try {
 			await uploader.upload();
 		} catch (error) {
-			expect(error).toBe('Upload was cancelled.');
+			expect(error.message).toBe('Upload was cancelled.');
 		}
 
 		// Should have called 5 times =>
