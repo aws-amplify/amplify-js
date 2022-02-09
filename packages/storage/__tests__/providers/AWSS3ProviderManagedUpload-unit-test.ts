@@ -211,20 +211,16 @@ describe('multi part upload tests', () => {
 		// Setup Spy for S3 service calls and introduce a service failure
 		const s3ServiceCallSpy = jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof CreateMultipartUploadCommand) {
-				console.log('called CreateMultipartUploadCommand!')
 				return Promise.resolve({ UploadId: testUploadId });
 			} else if (command instanceof UploadPartCommand) {
-				console.log('called UploadPartCommand!')
 				let promise = null;
 				if (command.input.PartNumber === 2) {
-					console.log('if command.input.partnumber === 2')
 					promise = new Promise((resolve, reject) => {
 						setTimeout(() => {
 							reject(new Error('Part 2 just going to fail in 100ms'));
 						}, 100);
 					});
 				} else {
-					console.log('else')
 					promise = new Promise((resolve, reject) => {
 						setTimeout(() => {
 							resolve({
@@ -235,7 +231,6 @@ describe('multi part upload tests', () => {
 				}
 				return promise;
 			} else if (command instanceof CompleteMultipartUploadCommand) {
-				console.log('called CompleteMultipartUploadCommand!', Promise.resolve({ Key: testParams.key }))
 				return Promise.resolve({ Key: testParams.key });
 			}
 		});
@@ -321,7 +316,6 @@ describe('multi part upload tests', () => {
 					],
 				});
 			} else if (command instanceof AbortMultipartUploadCommand) {
-				console.log('abort multipart upload')
 				return Promise.resolve();
 			}
 		});
@@ -355,6 +349,5 @@ describe('multi part upload tests', () => {
 			'error happened while finishing the upload. Cancelling the multipart upload',
 			'error'
 		);
-		// expect(Promise.reject(new Error())).rejects.toThrow();
 	});
 });

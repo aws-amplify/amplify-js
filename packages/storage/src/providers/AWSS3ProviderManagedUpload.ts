@@ -116,8 +116,8 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			// if any error is thrown, call cleanup
-			logger.error('Error. Cancelling the multipart upload. ', error.message);
-			await this.checkIfUploadCancelled(this.uploadId);
+			if(this.cancel) this.cleanup(this.uploadId);
+			logger.error('Error. Cancelling the multipart upload. ', error);
 			throw error;
 		}
 	}
@@ -212,21 +212,8 @@ export class AWSS3ProviderManagedUpload {
 			return data.Key;
 		} catch (error) {
 			this.cancelUpload();
-			throw new Error(
-				`Error happened while finishing the upload. ${error.message}`
-			);
-		}
-	}
-
-	private async checkIfUploadCancelled(uploadId: string) {
-		if (this.cancel) {
-			let errorMessage = 'Upload was cancelled.';
-			try {
-				await this.cleanup(uploadId);
-			} catch (error) {
-				errorMessage += ` ${error.message}`;
-			}
-			throw errorMessage;
+			logger.error(`Error happened while finishing the upload. ${error.message}`);
+			throw error;
 		}
 	}
 
@@ -235,41 +222,26 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private async cleanup(uploadId: string) {
-		try {
-			// Reset this's state
-			this.body = null;
-			this.completedParts = [];
-			this.bytesUploaded = 0;
-			this.totalBytesToUpload = 0;
-	
-			const input = {
-				Bucket: this.params.Bucket,
-				Key: this.params.Key,
-				UploadId: uploadId,
-			};
+		// Reset this's state
+		this.body = null;
+		this.completedParts = [];
+		this.bytesUploaded = 0;
+		this.totalBytesToUpload = 0;
 
-			console.log('pre abort', input)
-	
-			await this.s3client.send(new AbortMultipartUploadCommand(input));
-	
+		const input = {
+			Bucket: this.params.Bucket,
+			Key: this.params.Key,
+			UploadId: uploadId,
+		};
 
-			console.log('postabort', input)
-			const test = this.s3client.send(new ListPartsCommand(input));
-			console.log(test)
-			console.log(new ListPartsCommand(input))
-			// verify that all parts are removed.
-			await this.s3client.send(new ListPartsCommand(input));
-			console.log('banana')
-	
-			// if (data && data.Parts && data.Parts.length > 0) {
-			// 	throw new Error('Multi Part upload clean up failed');
-			// } else {
-			// 	console.log('cleanup completed')
-			// }
+		await this.s3client.send(new AbortMultipartUploadCommand(input));
 
-		} catch (error) {
-			console.log('error', error)
-			throw error;
+		// verify that all parts are removed.
+		const newListParts = new ListPartsCommand(input);
+		const data = await this.s3client.send(newListParts);
+
+		if (data && data.Parts && data.Parts.length > 0) {
+			throw new Error('Multi Part upload clean up failed');
 		}
 	}
 
