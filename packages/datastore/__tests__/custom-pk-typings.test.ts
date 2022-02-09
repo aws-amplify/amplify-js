@@ -67,7 +67,7 @@ class LegacyCustomRO {
 			draft: MutableModel<LegacyCustomRO, LegacyCustomROMETA>
 		) => MutableModel<LegacyCustomRO, LegacyCustomROMETA> | void
 	): LegacyCustomRO {
-		return undefined;
+		return <LegacyCustomRO>(<unknown>undefined);
 	}
 }
 
@@ -87,7 +87,7 @@ class LegacyDefaultRO {
 			draft: MutableModel<LegacyDefaultRO, LegacyDefaultROMETA>
 		) => MutableModel<LegacyDefaultRO, LegacyDefaultROMETA> | void
 	): LegacyDefaultRO {
-		return undefined;
+		return <LegacyDefaultRO>(<unknown>undefined);
 	}
 }
 
@@ -104,7 +104,7 @@ class LegacyNoMetadata {
 			draft: MutableModel<LegacyNoMetadata>
 		) => MutableModel<LegacyNoMetadata> | void
 	): LegacyNoMetadata {
-		return undefined;
+		return <LegacyNoMetadata>(<unknown>undefined);
 	}
 }
 
@@ -129,7 +129,7 @@ class ManagedCustomRO {
 			draft: MutableModel<ManagedCustomRO>
 		) => MutableModel<ManagedCustomRO> | void
 	): ManagedCustomRO {
-		return undefined;
+		return <ManagedCustomRO>(<unknown>undefined);
 	}
 }
 
@@ -150,7 +150,7 @@ class ManagedDefaultRO {
 			draft: MutableModel<ManagedDefaultRO>
 		) => MutableModel<ManagedDefaultRO> | void
 	): ManagedDefaultRO {
-		return undefined;
+		return <ManagedDefaultRO>(<unknown>undefined);
 	}
 }
 
@@ -175,7 +175,7 @@ class OptionallyManagedCustomRO {
 			draft: MutableModel<OptionallyManagedCustomRO>
 		) => MutableModel<OptionallyManagedCustomRO> | void
 	): OptionallyManagedCustomRO {
-		return undefined;
+		return <OptionallyManagedCustomRO>(<unknown>undefined);
 	}
 }
 
@@ -196,7 +196,7 @@ class OptionallyManagedDefaultRO {
 			draft: MutableModel<OptionallyManagedDefaultRO>
 		) => MutableModel<OptionallyManagedDefaultRO> | void
 	): OptionallyManagedDefaultRO {
-		return undefined;
+		return <OptionallyManagedDefaultRO>(<unknown>undefined);
 	}
 }
 
@@ -222,7 +222,7 @@ class CompositeCustomRO {
 			draft: MutableModel<CompositeCustomRO>
 		) => MutableModel<CompositeCustomRO> | void
 	): CompositeCustomRO {
-		return undefined;
+		return <CompositeCustomRO>(<unknown>undefined);
 	}
 }
 
@@ -244,7 +244,7 @@ class CompositeDefaultRO {
 			draft: MutableModel<CompositeDefaultRO>
 		) => MutableModel<CompositeDefaultRO> | void
 	): CompositeDefaultRO {
-		return undefined;
+		return <CompositeDefaultRO>(<unknown>undefined);
 	}
 }
 
@@ -269,7 +269,7 @@ class CustomIdentifierCustomRO {
 			draft: MutableModel<CustomIdentifierCustomRO>
 		) => MutableModel<CustomIdentifierCustomRO> | void
 	): CustomIdentifierCustomRO {
-		return undefined;
+		return <CustomIdentifierCustomRO>(<unknown>undefined);
 	}
 }
 
@@ -290,7 +290,7 @@ class CustomIdentifierDefaultRO {
 			draft: MutableModel<CustomIdentifierDefaultRO>
 		) => MutableModel<CustomIdentifierDefaultRO> | void
 	): CustomIdentifierDefaultRO {
-		return undefined;
+		return <CustomIdentifierDefaultRO>(<unknown>undefined);
 	}
 }
 
@@ -300,11 +300,9 @@ class CustomIdentifierDefaultRO {
 
 describe('IdentifierFields', () => {
 	test('Types for identifiers match model definition', () => {
-		expectType<{ id: string }>(
-			{} as IdentifierFields<LegacyNoMetadata, unknown>
-		);
+		expectType<{ id: string }>({} as IdentifierFields<LegacyNoMetadata>);
 
-		expectType<{ id: string }>({} as IdentifierFields<LegacyCustomRO, unknown>);
+		expectType<{ id: string }>({} as IdentifierFields<LegacyCustomRO>);
 
 		expectType<{ id: string }>(
 			{} as IdentifierFields<
@@ -339,7 +337,7 @@ describe('IdentifierFields', () => {
 describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 	test('Observe all', () => {
 		DataStore.observe().subscribe(({ model, element }) => {
-			expectType<PersistentModelConstructor<unknown>>(model);
+			expectType<PersistentModelConstructor<any>>(model);
 			expectType<PersistentModel>(element);
 
 			element.id;
@@ -385,7 +383,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<LegacyNoMetadata>(
+			expectType<LegacyNoMetadata | undefined>(
 				await DataStore.query(LegacyNoMetadata, 'someid')
 			);
 			expectType<LegacyNoMetadata[]>(await DataStore.query(LegacyNoMetadata));
@@ -736,7 +734,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<ManagedDefaultRO>(
+			expectType<ManagedDefaultRO | undefined>(
 				await DataStore.query(ManagedDefaultRO, 'someid')
 			);
 			expectType<ManagedDefaultRO[]>(await DataStore.query(ManagedDefaultRO));
@@ -852,7 +850,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<ManagedCustomRO>(
+			expectType<ManagedCustomRO | undefined>(
 				await DataStore.query(ManagedCustomRO, 'someid')
 			);
 			expectType<ManagedCustomRO[]>(await DataStore.query(ManagedCustomRO));
@@ -984,7 +982,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<OptionallyManagedDefaultRO>(
+			expectType<OptionallyManagedDefaultRO | undefined>(
 				await DataStore.query(OptionallyManagedDefaultRO, 'someid')
 			);
 			expectType<OptionallyManagedDefaultRO[]>(
@@ -1140,7 +1138,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<OptionallyManagedCustomRO>(
+			expectType<OptionallyManagedCustomRO | undefined>(
 				await DataStore.query(OptionallyManagedCustomRO, 'someid')
 			);
 			expectType<OptionallyManagedCustomRO[]>(
