@@ -1,4 +1,3 @@
-/* tslint:disable */
 import 'fake-indexeddb/auto';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';

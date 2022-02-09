@@ -48,59 +48,6 @@ export class SQLiteAdapter implements StorageAdapter {
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
 
-	// // Returns primary keys for a model
-	// private getIndexKeys(namespaceName: string, modelName: string): string[] {
-	// 	const keyPath =
-	// 		this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
-
-	// 	if (keyPath) {
-	// 		return keyPath;
-	// 	}
-
-	// 	return ['id'];
-	// }
-
-	// // Retrieves concatenated primary key values from a model
-	// private getIndexKeyValuesPath<T extends PersistentModel<any>>(
-	// 	model: T
-	// ): string {
-	// 	const modelConstructor = Object.getPrototypeOf(model)
-	// 		.constructor as PersistentModelConstructor<T, any>;
-	// 	const namespaceName = this.namespaceResolver(modelConstructor);
-	// 	const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
-
-	// 	// Retrieve key values from model
-	// 	const keyValues = keys.map(field => model[field]);
-
-	// 	// Return concatenated key values
-	// 	return keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
-	// }
-
-	// // Retrieves concatenated primary key values from a model
-	// private getIndexKeyValues<T extends PersistentModel<any>>(
-	// 	model: T
-	// ): string[] {
-	// 	const modelConstructor = Object.getPrototypeOf(model)
-	// 		.constructor as PersistentModelConstructor<T, any>;
-	// 	const namespaceName = this.namespaceResolver(modelConstructor);
-	// 	const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
-
-	// 	// Retrieve key values from model
-	// 	return keys.map(field => model[field]);
-	// }
-
-	// private keysEqual(keysA, keysB): boolean {
-	// 	if (keysA.length !== keysB.length) {
-	// 		return false;
-	// 	}
-
-	// 	if (keysA.length === 1) {
-	// 		return keysA[0] === keysB[0];
-	// 	}
-
-	// 	return keysA.every((key, idx) => key === keysB[idx]);
-	// }
-
 	public async setUp(
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
@@ -108,7 +55,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any, any>
+		) => PersistentModelConstructor<any>
 	) {
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
@@ -145,35 +92,26 @@ export class SQLiteAdapter implements StorageAdapter {
 		this.initPromise = undefined;
 	}
 
-	async save<T extends PersistentModel<any>>(
+	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T, any>;
-
+			.constructor as PersistentModelConstructor<T>;
 		const { name: tableName } = modelConstructor;
-
-		// const namespaceName = this.namespaceResolver(modelConstructor);
-
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			// this.schema.namespaces[namespaceName],
 			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
-				// const keys = this.getIndexKeyPath(namespaceName, modelName);
-				// return { modelName, item, instance, keys };
 				return { modelName, item, instance };
 			}
 		);
 
-		// const keyValues = this.getIndexKeyValues(model);
-		// TODO: update query by id statement
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
 		const fromDB = await this.db.get(queryStatement, params);
@@ -196,38 +134,15 @@ export class SQLiteAdapter implements StorageAdapter {
 		const saveStatements = new Set<ParameterizedStatement>();
 
 		for await (const resItem of connectionStoreNames) {
-			// TODO: remove these lines
 			const { modelName, item, instance } = resItem;
 			const { id } = item;
-			// const { storeName, item, instance, keys } = resItem;
 
-			/* Extract keys from concatenated key path,
-			find the values in the item, and concatenate them */
-			// const itemKeyValues = [
-			// 	keys[0]
-			// 		.split(DEFAULT_PRIMARY_KEY_SEPARATOR)
-			// 		.map(key => item[key])
-			// 		.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-			// ];
-
-			// const fromDB = <T>await this.db.get(itemKeyValues, storeName);
-
-			// TODO: replace
 			const [queryStatement, params] = queryByIdStatement(id, modelName);
 			const fromDB = await this.db.get(queryStatement, params);
 
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			// TODO: add
-			// const modelKeyValues = this.getIndexKeyValues(model);
-			// const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
-
-			// From Async:
-			// If item key values and model key values are equal, save to db
-			// if (keysEqual || opType === OpType.INSERT) {
-			// 	await this.db.save(item, storeName, keys, itemKeyValues);
-			// TODO: replace below:
 			const saveStatement = fromDB
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
@@ -287,12 +202,7 @@ export class SQLiteAdapter implements StorageAdapter {
 							tableName
 						);
 
-						// TODO: replace
 						const connectionRecord = await this.db.get(queryStatement, params);
-						// WITH:
-						// const key = [recordItem[getByfield]];
-
-						// const connectionRecord = await this.db.get(key, storeName);
 
 						recordItem[fieldName] =
 							connectionRecord &&
@@ -307,15 +217,10 @@ export class SQLiteAdapter implements StorageAdapter {
 								recordItem[targetName],
 								tableName
 							);
-							// REPLACE:
 							const connectionRecord = await this.db.get(
 								queryStatement,
 								params
 							);
-							// WITH:
-							// const key = [recordItem[targetName]];
-
-							// const connectionRecord = await this.db.get(key, storeName);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -340,8 +245,8 @@ export class SQLiteAdapter implements StorageAdapter {
 		);
 	}
 
-	async query<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
@@ -357,22 +262,13 @@ export class SQLiteAdapter implements StorageAdapter {
 		const limit = pagination && pagination.limit;
 		const page = limit && pagination.page;
 
-		// TODO: replace
 		const queryById = predicates && this.idFromPredicate(predicates);
-		// const keyPath = this.getIndexKeyPath(namespaceName, modelConstructor.name);
-		// const queryByKey =
-		// 	predicates && this.keyValueFromPredicate(predicates, keyPath);
 
 		const records: T[] = <T[]>await (async () => {
-			// TODO: replace
 			if (queryById) {
 				const record = await this.getById(tableName, queryById);
 				return record ? [record] : [];
 			}
-			// if (queryByKey) {
-			// 	const record = await this.getByKey(storeName, queryByKey);
-			// 	return record ? [record] : [];
-			// }
 
 			const [queryStatement, params] = queryAllStatement(
 				tableName,
@@ -388,29 +284,19 @@ export class SQLiteAdapter implements StorageAdapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	// private async getByKey<T extends PersistentModel>(
 	private async getById<T extends PersistentModel>(
 		tableName: string,
 		id: string
-		// keyValue: string[]
 	): Promise<T> {
-		// Something like:
-		// const record = <T>await this.db.get(keyValue, storeName);
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
 		return record;
 	}
 
-	// private keyValueFromPredicate<T extends PersistentModel>(
-	// 	predicates: PredicatesGroup<T>,
-	// 	keyPathJoined: string[]
-	// ): string[] | undefined {
 	private idFromPredicate<T extends PersistentModel>(
 		predicates: PredicatesGroup<T>
 	) {
 		const { predicates: predicateObjs } = predicates;
-
-		// TODO: replace:
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
@@ -418,34 +304,10 @@ export class SQLiteAdapter implements StorageAdapter {
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
-
-		// with:
-		// Extract keys from concatenated key path
-		// const keyPath = keyPathJoined[0].split(DEFAULT_PRIMARY_KEY_SEPARATOR);
-
-		// if (predicateObjs.length !== keyPath.length) {
-		// 	return;
-		// }
-
-		// const keyValues = [];
-
-		// for (const key of keyPath) {
-		// 	const predicateObj = predicateObjs.find(
-		// 		p => isPredicateObj(p) && p.field === key && p.operator === 'eq'
-		// 	) as PredicateObject<T>;
-
-		// 	predicateObj && keyValues.push(predicateObj.operand);
-		// }
-
-		// return (
-		// 	keyValues.length === keyPath.length && [
-		// 		keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
-		// 	]
-		// );
 	}
 
-	async queryOne<T extends PersistentModel<any>>(
-		modelConstructor: PersistentModelConstructor<T, any>,
+	async queryOne<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		const { name: tableName } = modelConstructor;
@@ -459,12 +321,11 @@ export class SQLiteAdapter implements StorageAdapter {
 		return modelInstance;
 	}
 
-	// TODO: resume here:
 	// Currently does not cascade
 	// TODO: use FKs in relations and have `ON DELETE CASCADE` set
 	// For Has Many and Has One relations to have SQL handle cascades automatically
-	async delete<T extends PersistentModel<any>>(
-		modelOrModelConstructor: T | PersistentModelConstructor<T, any>,
+	async delete<T extends PersistentModel>(
+		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
 		if (isModelConstructor(modelOrModelConstructor)) {
@@ -493,16 +354,10 @@ export class SQLiteAdapter implements StorageAdapter {
 		} else {
 			const model = modelOrModelConstructor as T;
 			const modelConstructor = Object.getPrototypeOf(model)
-				.constructor as PersistentModelConstructor<T, any>;
+				.constructor as PersistentModelConstructor<T>;
 			const { name: tableName } = modelConstructor;
 
-			// namespace?
-
 			if (condition) {
-				// TODO: replace with queryByKey
-				// const keyValues = this.getIndexKeyValues(model);
-				// const fromDB = await this.db.get(keyValues, storeName);
-
 				const [queryStatement, params] = queryByIdStatement(
 					model.id,
 					tableName
@@ -520,7 +375,7 @@ export class SQLiteAdapter implements StorageAdapter {
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
-				const isValid = validatePredicate<T>(fromDB, type, predicateObjs);
+				const isValid = validatePredicate(fromDB, type, predicateObjs);
 
 				if (!isValid) {
 					const msg = 'Conditional update failed';
@@ -529,9 +384,6 @@ export class SQLiteAdapter implements StorageAdapter {
 					throw new Error(msg);
 				}
 
-				// No relations?
-
-				// UPDATE:
 				const [deleteStatement, deleteParams] = deleteByIdStatement(
 					model.id,
 					tableName
@@ -539,7 +391,6 @@ export class SQLiteAdapter implements StorageAdapter {
 				await this.db.save(deleteStatement, deleteParams);
 				return [[model], [model]];
 			} else {
-				// UPDATE:
 				const [deleteStatement, params] = deleteByIdStatement(
 					model.id,
 					tableName
@@ -550,7 +401,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		}
 	}
 
-	async batchSave<T extends PersistentModel<any>>(
+	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
@@ -567,49 +418,28 @@ export class SQLiteAdapter implements StorageAdapter {
 		const deleteStatements = new Set<ParameterizedStatement>();
 		const saveStatements = new Set<ParameterizedStatement>();
 
-		// NEED THIS?
-		// const keyPath = this.getIndexKeyPath(namespaceName, modelName);
-
 		for (const item of items) {
-			// ADD:
-			// const model = this.modelInstanceCreator(modelConstructor, item);
-
-			// REPLACE:
 			const connectedModels = traverseModel(
-				// name,
 				modelConstructor.name,
-				// model,
 				this.modelInstanceCreator(modelConstructor, item),
-				// this.schema.namespaces[namespaceName],
 				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
 
-			// Don't need id, but what is _deleted, here?
 			const { id, _deleted } = item as ModelInstanceMetadata & { id: string };
 
-			// REPLACE:
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id
 			);
-			// WITH:
-			// const keyValues = this.getIndexKeyValues(model);
-
-			// const { instance } = connectedModels.find(({ instance }) => {
-			// 	const instanceKeyValues = [this.getIndexKeyValues(instance)[0]];
-			// 	return this.keysEqual(instanceKeyValues, [keyValues[0]]);
-			// });
 
 			if (_deleted) {
 				// create the delete statements right away
-				// TODO: should be deleteByKeyStatement:
 				const deleteStatement = deleteByIdStatement(instance.id, tableName);
 				deleteStatements.add(deleteStatement);
 				result.push([<T>(<unknown>item), OpType.DELETE]);
 			} else {
 				// query statements for the saves at first
-				// TODO: should be queryByKeyStatement:
 				const queryStatement = queryByIdStatement(id, tableName);
 				queryStatements.add(queryStatement);
 				// combination of insert and update items

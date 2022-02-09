@@ -62,12 +62,9 @@ import {
 	ObserveQueryOptions,
 	ManagedIdentifier,
 	PersistentModelMetaData,
-<<<<<<< HEAD
-=======
 	IdentifierFields,
 	IdentifierFieldOrIdentifierObject,
 	__modelMeta__,
->>>>>>> ds-custom-pk
 } from '../types';
 import {
 	DATASTORE,
@@ -923,7 +920,7 @@ class DataStore {
 		return returnOne ? result[0] : result;
 	};
 
-	save = async <T extends PersistentModel<M>, M extends PersistentModelMetaData>(
+	save = async <T extends PersistentModel>(
 		model: T,
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
