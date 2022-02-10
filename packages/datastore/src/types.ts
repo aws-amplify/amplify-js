@@ -497,7 +497,7 @@ export type IdentifierFieldValue<
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
-> = IdentifierFields<T, M> | IdentifierFieldValue<T, M>;
+> = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
 export function isIdentifierFieldValue<T extends PersistentModel>(
 	obj: any,

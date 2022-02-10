@@ -62,9 +62,9 @@ import {
 	ObserveQueryOptions,
 	ManagedIdentifier,
 	PersistentModelMetaData,
-	IdentifierFields,
 	IdentifierFieldOrIdentifierObject,
 	__modelMeta__,
+	isIdentifierObject,
 } from '../types';
 import {
 	DATASTORE,
@@ -993,7 +993,10 @@ class DataStore {
 	delete: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			identifier: string
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -1006,7 +1009,7 @@ class DataStore {
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
-			| string
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
@@ -1032,8 +1035,9 @@ class DataStore {
 				throw new Error(msg);
 			}
 
+			const modelDefinition = getModelDefinition(modelConstructor);
+
 			if (typeof identifierOrCriteria === 'string') {
-				const modelDefinition = getModelDefinition(modelConstructor);
 				const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
 
 				condition = ModelPredicateCreator.createForSingleField<T>(
@@ -1042,14 +1046,21 @@ class DataStore {
 					identifierOrCriteria
 				);
 			} else {
-				condition = ModelPredicateCreator.createFromExisting(
-					getModelDefinition(modelConstructor),
-					/**
-					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-					 */
-					identifierOrCriteria as ProducerModelPredicate<T>
-				);
+				if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+					condition = ModelPredicateCreator.createForPk<T>(
+						modelDefinition,
+						<T>identifierOrCriteria
+					);
+				} else {
+					condition = ModelPredicateCreator.createFromExisting(
+						modelDefinition,
+						/**
+						 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+						 */
+						identifierOrCriteria as ProducerModelPredicate<T>
+					);
+				}
 
 				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
 					const msg =
@@ -1090,7 +1101,9 @@ class DataStore {
 					throw new Error(msg);
 				}
 
-				condition = identifierOrCriteria(pkPredicate);
+				condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
+					pkPredicate
+				);
 			} else {
 				condition = pkPredicate;
 			}

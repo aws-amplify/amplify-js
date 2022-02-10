@@ -406,6 +406,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			expectType<LegacyNoMetadata | undefined>(
 				await DataStore.query(LegacyNoMetadata, 'someid')
 			);
+			expectType<LegacyNoMetadata | undefined>(
+				await DataStore.query(LegacyNoMetadata, { id: 'someid' })
+			);
 			expectType<LegacyNoMetadata[]>(await DataStore.query(LegacyNoMetadata));
 			expectType<LegacyNoMetadata[]>(
 				await DataStore.query(LegacyNoMetadata, Predicates.ALL)
@@ -760,6 +763,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			expectType<CustomIdentifierNoRO>(
 				await DataStore.query(CustomIdentifierNoRO, 'someid')
 			);
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.query(CustomIdentifierNoRO, { myId: 'someid' })
+			);
 			expectType<CustomIdentifierNoRO[]>(
 				await DataStore.query(CustomIdentifierNoRO)
 			);
@@ -885,6 +891,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			// Query
 			expectType<ManagedDefaultRO | undefined>(
 				await DataStore.query(ManagedDefaultRO, 'someid')
+			);
+			expectType<ManagedDefaultRO | undefined>(
+				await DataStore.query(ManagedDefaultRO, { id: 'someid' })
 			);
 			expectType<ManagedDefaultRO[]>(await DataStore.query(ManagedDefaultRO));
 			expectType<ManagedDefaultRO[]>(
@@ -1134,6 +1143,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			expectType<OptionallyManagedDefaultRO | undefined>(
 				await DataStore.query(OptionallyManagedDefaultRO, 'someid')
 			);
+			expectType<OptionallyManagedDefaultRO | undefined>(
+				await DataStore.query(OptionallyManagedDefaultRO, { id: 'someid' })
+			);
 			expectType<OptionallyManagedDefaultRO[]>(
 				await DataStore.query(OptionallyManagedDefaultRO)
 			);
@@ -1285,6 +1297,9 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			expectType<OptionallyManagedCustomRO | undefined>(
 				await DataStore.query(OptionallyManagedCustomRO, 'someid')
 			);
+			expectType<OptionallyManagedCustomRO | undefined>(
+				await DataStore.query(OptionallyManagedCustomRO, { id: 'someid' })
+			);
 			expectType<OptionallyManagedCustomRO[]>(
 				await DataStore.query(OptionallyManagedCustomRO)
 			);
@@ -1422,6 +1437,27 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				// d.updatedAt = '';
 			});
 
+			// Query
+			// @ts-expect-error
+			// await DataStore.query(CompositeDefaultRO, 'someid');
+			// @ts-expect-error
+			// await DataStore.query(CompositeDefaultRO, { id: 'someid' });
+
+			expectType<CompositeDefaultRO | undefined>(
+				await DataStore.query(CompositeDefaultRO, { tenant: '', dob: '' })
+			);
+			expectType<CompositeDefaultRO[]>(
+				await DataStore.query(CompositeDefaultRO)
+			);
+			expectType<CompositeDefaultRO[]>(
+				await DataStore.query(CompositeDefaultRO, Predicates.ALL)
+			);
+			expectType<CompositeDefaultRO[]>(
+				await DataStore.query(CompositeDefaultRO, c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
 			// Save
 			expectType<CompositeDefaultRO>(
 				await DataStore.save(dummyInstance<CompositeDefaultRO>())
@@ -1433,8 +1469,12 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 
 			// Delete
+
+			// @ts-expect-error
+			// await DataStore.delete(CompositeDefaultRO, '')
+
 			expectType<CompositeDefaultRO[]>(
-				await DataStore.delete(CompositeDefaultRO, '')
+				await DataStore.delete(CompositeDefaultRO, { tenant: '', dob: '' })
 			);
 			expectType<CompositeDefaultRO>(
 				await DataStore.delete(dummyInstance<CompositeDefaultRO>())
