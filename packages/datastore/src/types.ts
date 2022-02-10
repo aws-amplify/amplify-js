@@ -383,17 +383,18 @@ export type Identifier<T> =
 
 export type IdentifierFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
-> = MetadataOrDefault<T, M>['identifier'] extends
+	M extends PersistentModelMetaData<T> = never
+> = (MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
-	? Pick<T, MetadataOrDefault<T, M>['identifier']['field']>
+	? MetadataOrDefault<T, M>['identifier']['field']
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
 			T,
 			infer B
 	  >
-	? Pick<T, B[number]> // B[number]
-	: Pick<T, MetadataOrDefault<T, M>['identifier']['field']>;
+	? B[number] // B[number]
+	: MetadataOrDefault<T, M>['identifier']['field']) &
+	string;
 
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
@@ -406,7 +407,7 @@ export type IdentifierFieldsForInit<
 			T,
 			any
 	  >
-	? Partial<IdentifierFields<T, M>>
+	? IdentifierFields<T, M>
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
 	? IdentifierFields<T, M>
 	: never;
@@ -426,7 +427,7 @@ export type DefaultPersistentModelMetaData = {
 
 export type MetadataOrDefault<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
+	_ extends PersistentModelMetaData<T> = never
 > = T extends {
 	[__modelMeta__]: PersistentModelMetaData<T>;
 }
@@ -438,33 +439,29 @@ export type PersistentModel = Readonly<Record<string, any>>;
 export type MetadataReadOnlyFields<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
-> =
-	| M['readOnlyFields']
-	| MetadataOrDefault<T, M>['readOnlyFields'] extends keyof T
-	? Required<
-			Pick<
-				T,
-				| NonNullable<M['readOnlyFields']>
-				| MetadataOrDefault<T, M>['readOnlyFields']
-			>
-	  >
-	: {};
+> = Extract<
+	MetadataOrDefault<T, M>['readOnlyFields'] | M['readOnlyFields'],
+	keyof T
+>;
 
-// This type omits identifier fields in the constructor
-// This type omits readOnlyFields in the constructor
-// This type allows some identifiers in the constructor (e.g. for OptionallyManagedIdentifier or CustomIdentifier)
+// This type omits the metadata field in the constructor init object
+// This type omits identifier fields in the constructor init object
+// This type omits readOnlyFields in the constructor init object
+// This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
+// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
-> =
-	| Omit<
-			T,
-			| typeof __modelMeta__
-			| keyof IdentifierFields<T, M>
-			| keyof MetadataReadOnlyFields<T, M>
-			| NonNullable<M['readOnlyFields']>
-	  >
-	| IdentifierFieldsForInit<T, M>;
+> = Omit<
+	T,
+	typeof __modelMeta__ | IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>
+> &
+	(MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
+		T,
+		any
+	>
+		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
+		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -478,9 +475,9 @@ export type MutableModel<
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
-	Omit<T, keyof IdentifierFields<T, M> | keyof MetadataReadOnlyFields<T, M>>
+	Omit<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>
 > &
-	Readonly<IdentifierFields<T, M> & MetadataReadOnlyFields<T, M>>;
+	Readonly<Pick<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>>;
 
 export type ModelInstanceMetadata = {
 	_version: number;
@@ -500,7 +497,7 @@ export type IdentifierFieldValue<
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
-> = IdentifierFields<T, M> | IdentifierFieldValue<T, M>;
+> = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
 export function isIdentifierFieldValue<T extends PersistentModel>(
 	obj: any,

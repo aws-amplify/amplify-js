@@ -74,7 +74,8 @@ describe('MutationProcessor', () => {
 		it('Should correctly generate delete mutation input for models with a custom PK - multi-field', async () => {
 			// multi-key PK @key(fields: ["postId", "title"])
 			const deletePost = new PostCustomPKSort({
-				postId: '100',
+				id: 'abcdef',
+				postId: 100,
 				title: 'Title',
 			});
 
@@ -88,8 +89,9 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).toBeUndefined();
-			expect(input.postId).toEqual('100');
+			expect(input.id).toEqual(deletePost.id);
+			expect(input.id).toEqual('abcdef');
+			expect(input.postId).toEqual(100);
 		});
 	});
 	afterAll(() => {

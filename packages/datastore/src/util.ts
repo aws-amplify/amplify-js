@@ -70,7 +70,7 @@ export function isIdManaged(modelDefinition: SchemaModel): boolean {
 }
 
 // IdentifierFields<OptionallyManagedIdentifier>
-// @primaryKey with `id` either in the PK or SK
+// non-composite @primaryKey with `id` in the PK
 export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
@@ -78,7 +78,7 @@ export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
 		const idInKey = !!keyAttribute.properties.fields.find(
 			field => field === ID
 		);
-		return idInKey;
+		return idInKey && keyAttribute.properties.fields.length === 1;
 	}
 
 	return false;

@@ -62,9 +62,9 @@ import {
 	ObserveQueryOptions,
 	ManagedIdentifier,
 	PersistentModelMetaData,
-	IdentifierFields,
 	IdentifierFieldOrIdentifierObject,
 	__modelMeta__,
+	isIdentifierObject,
 } from '../types';
 import {
 	DATASTORE,
@@ -269,11 +269,11 @@ const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	init: ModelInit<T, PersistentModelMetaData<T>>
+	init: Partial<T>
 ): T {
 	instancesMetadata.add(init);
 
-	return new modelConstructor(init);
+	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
 const validateModelFields =
@@ -436,11 +436,9 @@ const createModelClass = <T extends PersistentModel>(
 					type ModelWithIDIdentifier = { id: string };
 
 					const { id: _id } =
-						modelInstanceMetadata as unknown as IdentifierFields<
-							ModelWithIDIdentifier,
-							any
-						>;
+						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
+					// composite where pk = id??? should take it from init
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
 
@@ -995,7 +993,10 @@ class DataStore {
 	delete: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			identifier: string
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -1008,7 +1009,7 @@ class DataStore {
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
-			| string
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
@@ -1034,8 +1035,9 @@ class DataStore {
 				throw new Error(msg);
 			}
 
+			const modelDefinition = getModelDefinition(modelConstructor);
+
 			if (typeof identifierOrCriteria === 'string') {
-				const modelDefinition = getModelDefinition(modelConstructor);
 				const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
 
 				condition = ModelPredicateCreator.createForSingleField<T>(
@@ -1044,14 +1046,21 @@ class DataStore {
 					identifierOrCriteria
 				);
 			} else {
-				condition = ModelPredicateCreator.createFromExisting(
-					getModelDefinition(modelConstructor),
-					/**
-					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-					 */
-					identifierOrCriteria as ProducerModelPredicate<T>
-				);
+				if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+					condition = ModelPredicateCreator.createForPk<T>(
+						modelDefinition,
+						<T>identifierOrCriteria
+					);
+				} else {
+					condition = ModelPredicateCreator.createFromExisting(
+						modelDefinition,
+						/**
+						 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+						 */
+						identifierOrCriteria as ProducerModelPredicate<T>
+					);
+				}
 
 				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
 					const msg =
@@ -1092,7 +1101,9 @@ class DataStore {
 					throw new Error(msg);
 				}
 
-				condition = identifierOrCriteria(pkPredicate);
+				condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
+					pkPredicate
+				);
 			} else {
 				condition = pkPredicate;
 			}
