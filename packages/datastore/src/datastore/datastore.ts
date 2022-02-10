@@ -269,11 +269,11 @@ const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	init: ModelInit<T, PersistentModelMetaData<T>>
+	init: Partial<T>
 ): T {
 	instancesMetadata.add(init);
 
-	return new modelConstructor(init);
+	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
 const validateModelFields =
@@ -436,11 +436,9 @@ const createModelClass = <T extends PersistentModel>(
 					type ModelWithIDIdentifier = { id: string };
 
 					const { id: _id } =
-						modelInstanceMetadata as unknown as IdentifierFields<
-							ModelWithIDIdentifier,
-							any
-						>;
+						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
+					// composite where pk = id??? should take it from init
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
 

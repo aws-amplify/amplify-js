@@ -16,7 +16,7 @@ import {
 } from '../src';
 
 //#region test helpers
-function expectType<T>(param: T): param is T {
+function expectType<T>(_param: T): _param is T {
 	return true;
 }
 
@@ -260,8 +260,8 @@ class CustomIdentifierCustomRO {
 	readonly myId: string;
 	readonly name: string;
 	readonly description?: string;
-	readonly createdOn?: string;
-	readonly updatedOn?: string;
+	readonly createdOn: string;
+	readonly updatedOn: string;
 	constructor(init: ModelInit<CustomIdentifierCustomRO>) {}
 	static copyOf(
 		source: CustomIdentifierCustomRO,
@@ -294,39 +294,59 @@ class CustomIdentifierDefaultRO {
 	}
 }
 
+class CustomIdentifierNoRO {
+	readonly [__modelMeta__]: {
+		identifier: CustomIdentifier<CustomIdentifierNoRO, 'myId'>;
+	};
+	readonly myId: string;
+	readonly name: string;
+	readonly description?: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<CustomIdentifierNoRO>) {}
+	static copyOf(
+		source: CustomIdentifierNoRO,
+		mutator: (
+			draft: MutableModel<CustomIdentifierNoRO>
+		) => MutableModel<CustomIdentifierNoRO> | void
+	): CustomIdentifierDefaultRO {
+		return undefined;
+	}
+}
+
 //#endregion
 
 //#endregion
 
 describe('IdentifierFields', () => {
 	test('Types for identifiers match model definition', () => {
-		expectType<{ id: string }>({} as IdentifierFields<LegacyNoMetadata>);
+		expectType<'id'>(undefined as IdentifierFields<LegacyNoMetadata>);
 
-		expectType<{ id: string }>({} as IdentifierFields<LegacyCustomRO>);
+		expectType<'id'>(undefined as IdentifierFields<LegacyCustomRO>);
 
-		expectType<{ id: string }>(
-			{} as IdentifierFields<
+		expectType<'id'>(
+			undefined as IdentifierFields<
 				ManagedCustomRO,
 				ManagedCustomRO[typeof __modelMeta__]
 			>
 		);
 
-		expectType<{ id: string }>(
-			{} as IdentifierFields<
+		expectType<'id'>(
+			undefined as IdentifierFields<
 				OptionallyManagedCustomRO,
 				OptionallyManagedCustomRO[typeof __modelMeta__]
 			>
 		);
 
-		expectType<{ myId: string }>(
-			{} as IdentifierFields<
+		expectType<'myId'>(
+			undefined as IdentifierFields<
 				CustomIdentifierCustomRO,
 				CustomIdentifierCustomRO[typeof __modelMeta__]
 			>
 		);
 
-		expectType<{ tenant: string; dob: string }>(
-			{} as IdentifierFields<
+		expectType<'tenant' | 'dob'>(
+			undefined as IdentifierFields<
 				CompositeCustomRO,
 				CompositeCustomRO[typeof __modelMeta__]
 			>
@@ -689,6 +709,135 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				{ sort: c => c.createdOn('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<LegacyCustomRO[]>(items);
+			});
+		});
+
+		test(`CustomIdentifierNoRO`, async () => {
+			expectType<ModelInit<CustomIdentifierNoRO>>({
+				// @ts-expect-error
+				// id: '234',
+				myId: '23342',
+				name: '',
+				description: '',
+			});
+
+			expectType<ModelInit<CustomIdentifierNoRO>>({
+				myId: '23342',
+				name: '',
+				description: '',
+				createdAt: '',
+			});
+
+			expectType<ModelInit<CustomIdentifierNoRO>>({
+				myId: '23342',
+				name: '',
+				description: '',
+				createdAt: '',
+			});
+
+			CustomIdentifierNoRO.copyOf({} as CustomIdentifierNoRO, d => {
+				d.myId;
+				// @ts-expect-error
+				// d.myId = '';
+
+				d.name = '';
+				d.description = '';
+
+				d.createdAt;
+				d.createdAt = '';
+
+				d.updatedAt;
+				d.updatedAt = '';
+
+				// @ts-expect-error
+				// d.createdOn;
+
+				// @ts-expect-error
+				// d.updatedOn;
+			});
+
+			// Query
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.query(CustomIdentifierNoRO, 'someid')
+			);
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.query(CustomIdentifierNoRO)
+			);
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.query(CustomIdentifierNoRO, Predicates.ALL)
+			);
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.query(CustomIdentifierNoRO, c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Save
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.save(dummyInstance<CustomIdentifierNoRO>())
+			);
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.save(dummyInstance<CustomIdentifierNoRO>(), c =>
+					c.createdAt('ge', '2019')
+				)
+			);
+
+			// Delete
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.delete(CustomIdentifierNoRO, '')
+			);
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.delete(dummyInstance<CustomIdentifierNoRO>())
+			);
+			expectType<CustomIdentifierNoRO>(
+				await DataStore.delete(dummyInstance<CustomIdentifierNoRO>(), c =>
+					c.description('contains', 'something')
+				)
+			);
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.delete(CustomIdentifierNoRO, Predicates.ALL)
+			);
+			expectType<CustomIdentifierNoRO[]>(
+				await DataStore.delete(CustomIdentifierNoRO, c =>
+					c.createdAt('le', '2019')
+				)
+			);
+
+			// Observe
+			DataStore.observe(CustomIdentifierNoRO).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
+					expectType<CustomIdentifierNoRO>(element);
+				}
+			);
+			DataStore.observe(CustomIdentifierNoRO, c =>
+				c.description('beginsWith', 'something')
+			).subscribe(({ model, element }) => {
+				expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
+				expectType<CustomIdentifierNoRO>(element);
+			});
+			DataStore.observe(dummyInstance<CustomIdentifierNoRO>()).subscribe(
+				({ model, element }) => {
+					expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
+					expectType<CustomIdentifierNoRO>(element);
+				}
+			);
+
+			// Observe query
+			DataStore.observeQuery(CustomIdentifierNoRO).subscribe(({ items }) => {
+				expectType<CustomIdentifierNoRO[]>(items);
+			});
+			DataStore.observeQuery(CustomIdentifierNoRO, c =>
+				c.description('notContains', 'something')
+			).subscribe(({ items }) => {
+				expectType<CustomIdentifierNoRO[]>(items);
+			});
+			DataStore.observeQuery(
+				CustomIdentifierNoRO,
+				c => c.description('notContains', 'something'),
+				{ sort: c => c.createdAt('ASCENDING') }
+			).subscribe(({ items }) => {
+				expectType<CustomIdentifierNoRO[]>(items);
 			});
 		});
 	});
@@ -1075,12 +1224,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 		});
 
 		test(`OptionallyManagedCustomRO`, async () => {
-			expectType<
-				ModelInit<
-					OptionallyManagedCustomRO,
-					OptionallyManagedCustomRO[typeof __modelMeta__]
-				>
-			>({
+			expectType<ModelInit<OptionallyManagedCustomRO>>({
 				name: '',
 				description: '',
 			});
