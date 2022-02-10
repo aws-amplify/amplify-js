@@ -102,16 +102,6 @@ export declare class PostComposite {
 	): PostComposite;
 }
 
-export type PostCustomPKMetaData = {
-	identifier: CustomIdentifier<'postId'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
-
-export type PostCustomPKSortMetaData = {
-	identifier: CustomIdentifier<'postId'>;
-	readOnlyFields: 'createdAt' | 'updatedAt';
-};
-
 export declare class PostCustomPK {
 	readonly [__modelMeta__]: {
 		identifier: CustomIdentifier<PostCustomPK, 'postId'>;

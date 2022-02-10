@@ -7,7 +7,6 @@ import {
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
-	PostCustomPKMetaData as PostCustomPKMetaDataType,
 	testSchema,
 } from './helpers';
 
@@ -160,10 +159,7 @@ describe('Merger', () => {
 			beforeAll(async () => {
 				({ initSchema, DataStore } = require('../src/datastore/datastore'));
 				({ PostCustomPK } = initSchema(testUserSchema) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				});
 
 				await DataStore.start();

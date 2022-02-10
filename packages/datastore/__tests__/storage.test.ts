@@ -10,9 +10,7 @@ import {
 	Comment,
 	PostComposite,
 	PostCustomPK,
-	PostCustomPKMetaData,
 	PostCustomPKSort,
-	PostCustomPKSortMetaData,
 	PostCustomPKComposite,
 	testSchema,
 } from './helpers';
@@ -573,10 +571,7 @@ describe('Storage tests', () => {
 				// model has a custom pk (hk + sort key) defined via @key(fields: ["postId", "title"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKSort } = classes as {
-					PostCustomPKSort: PersistentModelConstructor<
-						PostCustomPKSort,
-						PostCustomPKSortMetaData
-					>;
+					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
 				};
 
 				const post = await DataStore.save(

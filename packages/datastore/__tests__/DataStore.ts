@@ -17,7 +17,6 @@ import {
 	Model,
 	Metadata,
 	PostCustomPK as PostCustomPKType,
-	PostCustomPKMetaData as PostCustomPKMetaDataType,
 	testSchema,
 } from './helpers';
 
@@ -1278,10 +1277,7 @@ describe('DataStore tests', () => {
 				expect(classes).toHaveProperty('PostCustomPK');
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				expect(PostCustomPK).toHaveProperty(
@@ -1293,10 +1289,7 @@ describe('DataStore tests', () => {
 
 			test('PostCustomPK class can be instantiated', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model = new PostCustomPK({
@@ -1314,10 +1307,7 @@ describe('DataStore tests', () => {
 		describe('Immutability', () => {
 			test('Title cannot be changed', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model = new PostCustomPK({
@@ -1335,10 +1325,7 @@ describe('DataStore tests', () => {
 
 			test('PostCustomPK can be copied+edited by creating an edited copy', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1362,10 +1349,7 @@ describe('DataStore tests', () => {
 
 			test('postId cannot be changed inside copyOf', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1384,10 +1368,7 @@ describe('DataStore tests', () => {
 
 			test('Optional field can be initialized with undefined', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1402,10 +1383,7 @@ describe('DataStore tests', () => {
 
 			test('Optional field can be initialized with null', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1420,10 +1398,7 @@ describe('DataStore tests', () => {
 
 			test('Optional field can be changed to undefined inside copyOf', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1446,10 +1421,7 @@ describe('DataStore tests', () => {
 
 			test('Optional field can be set to null inside copyOf', () => {
 				const { PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const model1 = new PostCustomPK({
@@ -1498,10 +1470,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				({ PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				});
 
 				const promises = [
@@ -1523,10 +1492,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				({ PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				});
 
 				DataStore.observe(PostCustomPK).subscribe(jest.fn());
@@ -1536,10 +1502,7 @@ describe('DataStore tests', () => {
 		});
 
 		describe('Basic operations', () => {
-			let PostCustomPK: PersistentModelConstructor<
-				PostCustomPKType,
-				PostCustomPKMetaDataType
-			>;
+			let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 			let Metadata: NonModelTypeConstructor<Metadata>;
 
 			beforeEach(() => {
@@ -1561,10 +1524,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				({ PostCustomPK, Metadata } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 					Metadata: NonModelTypeConstructor<Metadata>;
 				});
 			});
@@ -1597,10 +1557,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				model = new PostCustomPK({
@@ -1646,10 +1603,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				model = new PostCustomPK({
@@ -1705,10 +1659,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				model = new PostCustomPK({
@@ -1791,10 +1742,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				expect(() => {
@@ -1918,10 +1866,7 @@ describe('DataStore tests', () => {
 			test('Delete params', async () => {
 				let PostCustomPK;
 				({ PostCustomPK } = initSchema(testSchema()) as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				});
 				await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
 					'Model or Model Constructor required'
@@ -1991,10 +1936,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				for (let i = 0; i < 10; i++) {
@@ -2046,10 +1988,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const saved = await DataStore.save(
@@ -2098,10 +2037,7 @@ describe('DataStore tests', () => {
 				const classes = initSchema(testSchema());
 
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<
-						PostCustomPKType,
-						PostCustomPKMetaDataType
-					>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const saved = await DataStore.save(
@@ -2162,10 +2098,7 @@ describe('DataStore tests', () => {
 			});
 
 			describe('Type definitions', () => {
-				let PostCustomPK: PersistentModelConstructor<
-					PostCustomPKType,
-					PostCustomPKMetaDataType
-				>;
+				let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 
 				beforeEach(() => {
 					let model: PostCustomPKType;
@@ -2188,10 +2121,7 @@ describe('DataStore tests', () => {
 					const classes = initSchema(testSchema());
 
 					({ PostCustomPK } = classes as {
-						PostCustomPK: PersistentModelConstructor<
-							PostCustomPKType,
-							PostCustomPKMetaDataType
-						>;
+						PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 					});
 
 					model = new PostCustomPK({

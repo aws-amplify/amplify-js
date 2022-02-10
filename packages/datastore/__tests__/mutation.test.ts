@@ -2,9 +2,7 @@ import { MutationProcessor } from '../src/sync/processors/mutation';
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
-	PostCustomPKMetaData as PostCustomPKMetaDataType,
 	PostCustomPKSort as PostCustomPKSortType,
-	PostCustomPKSortMetaData as PostCustomPKSortMetaDataType,
 	testSchema,
 	internalTestSchema,
 } from './helpers';
@@ -20,14 +18,8 @@ import { extractPrimaryKeyFieldNames } from '../src/util';
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
-let PostCustomPK: PersistentModelConstructor<
-	PostCustomPKType,
-	PostCustomPKMetaDataType
->;
-let PostCustomPKSort: PersistentModelConstructor<
-	PostCustomPKSortType,
-	PostCustomPKSortMetaDataType
->;
+let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 
 describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
@@ -177,14 +169,8 @@ async function instantiateMutationProcessor() {
 
 	({ Model, PostCustomPK, PostCustomPKSort } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
-		PostCustomPK: PersistentModelConstructor<
-			PostCustomPKType,
-			PostCustomPKMetaDataType
-		>;
-		PostCustomPKSort: PersistentModelConstructor<
-			PostCustomPKSortType,
-			PostCustomPKSortMetaDataType
-		>;
+		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 	});
 
 	const userClasses = {};
