@@ -235,7 +235,7 @@ export class AnalyticsClass {
 	/**
 	 * Record one analytic event and send it to Pinpoint
 	 * @deprecated Use the new syntax and pass in the event as an object instead.
-	 * @param name - The name of the event
+	 * @param eventName - The name of the event
 	 * @param [attributes] - Attributes of the event
 	 * @param [metrics] - Event metrics
 	 * @return - A promise which resolves if buffer doesn't overflow
