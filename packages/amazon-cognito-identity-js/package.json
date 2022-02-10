@@ -79,7 +79,7 @@
     "@babel/core": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.0.0",
-    "@react-native-async-storage/async-storage": "^1.13.0",
+    "@react-native-async-storage/async-storage": "1.15.17",
     "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
