@@ -130,13 +130,7 @@ To develop locally alongside a React-Native app, make sure to,
 
 1. Finish the build steps mentioned in the section: `Setting up for local development`
 
-2. Install the dev dependency package : `wml`
-
-```
-npm install wml --save-dev
-```
-
-3. Add the wml src folder to watchman.
+2. Add the wml src folder to watchman.
 
 ```
 watchman watch node_modules/wml/src
@@ -166,7 +160,7 @@ npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 
 **Debugging problems with the `setup-dev:react-native` script**
 
-- If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
+- If the WML command does not do anything after adding the links, watch it's src file using watchman. Run the below from the root of this repository:
 
   ```
   watchman watch node_modules/wml/src

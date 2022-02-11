@@ -16,9 +16,9 @@ const NPM_BASE = 'npm run';
 const PARALLEL_FLAG = '--parallel';
 
 // WML Constants
-const WML_REMOVE_ALL_LINKS = `npm-exec wml rm all`;
-const WML_START = `npm-exec wml start`;
-const WML_ADD_LINK = 'npm-exec wml add';
+const WML_REMOVE_ALL_LINKS = `npx wml rm all`;
+const WML_START = `npx wml start`;
+const WML_ADD_LINK = 'npx wml add';
 
 // OSAScript constants
 const OSA_SCRIPT_BASE = 'osascript';
@@ -54,10 +54,10 @@ const doubleQuotedFormOf = content => `"${content}"`;
 const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 
 // Constants using the utility fuctions
-const aliasWml = sanatizeCommand(
-	'alias',
-	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
-);
+// const aliasWml = sanatizeCommand(
+// 	'alias',
+// 	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
+// );
 const getDelay = seconds =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
@@ -216,7 +216,7 @@ const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 	);
 
 	// Use char ; to separate commands to be run on the same tab
-	return `${aliasWml} ; ${doubleQuotedFormOf(
+	return `${doubleQuotedFormOf(
 		WML_REMOVE_ALL_LINKS
 	)} ; ${wmlAddcommand} ; ${doubleQuotedFormOf(WML_START)}`;
 };
