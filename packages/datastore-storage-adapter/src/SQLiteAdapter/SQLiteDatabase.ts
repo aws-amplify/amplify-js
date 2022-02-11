@@ -1,8 +1,8 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { ParameterizedStatement } from '../commons/SQLiteUtils';
-import { Database } from '../commons/Database';
+import { ParameterizedStatement } from '../common/SQLiteUtils';
+import { CommonSQLiteDatabase } from '../common/types';
 
 const logger = new Logger('SQLiteDatabase');
 
@@ -32,7 +32,7 @@ get the result of an `executeSql` command inside of a transaction
 
 */
 
-class SQLiteDatabase implements Database {
+class SQLiteDatabase implements CommonSQLiteDatabase {
 	private db: SQLite.SQLiteDatabase;
 
 	public async init(): Promise<void> {

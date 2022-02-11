@@ -1,8 +1,8 @@
 import * as SQLite from 'expo-sqlite';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { ParameterizedStatement } from '../commons/SQLiteUtils';
-import { Database } from '../commons/Database';
+import { ParameterizedStatement } from '../common/SQLiteUtils';
+import { CommonSQLiteDatabase } from '../common/types';
 
 const logger = new Logger('ExpoSQLiteDatabase');
 
@@ -20,7 +20,7 @@ I purposely used arrow functions () => {} in this class as expo-sqlite library i
 
 */
 
-class ExpoSQLiteDatabase implements Database {
+class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	private db: SQLite.WebSQLDatabase;
 
 	public async init(): Promise<void> {

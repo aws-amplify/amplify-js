@@ -9,7 +9,7 @@ import {
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	ParameterizedStatement,
-} from '../commons/SQLiteUtils';
+} from '../common/SQLiteUtils';
 
 import {
 	StorageAdapter,
@@ -30,7 +30,7 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { Database } from './Database';
+import { CommonSQLiteDatabase } from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -44,7 +44,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		namsespaceName: string,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: Database;
+	private db: CommonSQLiteDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;

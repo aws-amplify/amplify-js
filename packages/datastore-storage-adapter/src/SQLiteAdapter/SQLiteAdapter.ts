@@ -1,4 +1,4 @@
-import { CommonSQLiteAdapter } from '../commons/CommonSQLiteAdapter';
+import { CommonSQLiteAdapter } from '../common/CommonSQLiteAdapter';
 import SQLiteDatabase from './SQLiteDatabase';
 
 const SQLiteAdapter: CommonSQLiteAdapter = new CommonSQLiteAdapter(
