@@ -84,4 +84,32 @@ describe('API test', () => {
 		const api = new API(null);
 		expect(await api.graphql(null)).toBe('grapqhqlResponse');
 	});
+
+	describe('cancel', () => {
+		test('cancel RestAPI request', async () => {
+			jest
+				.spyOn(GraphQLAPIClass.prototype, 'cancel')
+				.mockImplementation(() => false);
+			const restAPICancelSpy = jest
+				.spyOn(RestAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(restAPICancelSpy).toHaveBeenCalled();
+		});
+
+		test('cancel GraphQLAPI request', async () => {
+			const graphQLAPICancelSpy = jest
+				.spyOn(GraphQLAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'cancel')
+				.mockImplementation(() => false);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(graphQLAPICancelSpy).toHaveBeenCalled();
+		});
+	});
 });

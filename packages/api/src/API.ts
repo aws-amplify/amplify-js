@@ -155,12 +155,17 @@ export class APIClass {
 		return this._restApi.isCancel(error);
 	}
 	/**
-	 * Cancels an inflight request
-	 * @param {any} request - request to cancel
-	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 * Cancels an inflight request for either a GraphQL request or a Rest API request.
+	 * @param request - request to cancel
+	 * @param [message] - custom error message
+	 * @return If the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string) {
-		return this._restApi.cancel(request, message);
+	cancel(request: Promise<any>, message?: string): boolean {
+		// it's safe to potentially call both method, as 'request' refers to a reference of a request, which is unique.
+		return (
+			this._restApi.cancel(request, message) ||
+			this._graphqlApi.cancel(request, message)
+		);
 	}
 
 	/**
