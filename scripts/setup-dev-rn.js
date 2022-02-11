@@ -54,10 +54,6 @@ const doubleQuotedFormOf = content => `"${content}"`;
 const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 
 // Constants using the utility fuctions
-// const aliasWml = sanatizeCommand(
-// 	'alias',
-// 	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
-// );
 const getDelay = seconds =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
