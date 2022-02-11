@@ -151,29 +151,11 @@ class SQLiteDatabase implements Database {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		await this.db.transaction(function (tx) {
+		return await this.db.transaction(function (tx) {
 			for (const statement of statements) {
-				console.log(`executing ${statement}`);
 				tx.executeSql(statement);
 			}
 		});
-
-		let tableNames: string[];
-
-		await this.db.transaction(tx => {
-			tx.executeSql(
-				'SHOW TABLES',
-				[],
-				(tx, results) => {
-					tableNames = results.rows.raw();
-				},
-				(_, error) => {
-					return true;
-				}
-			);
-		});
-		console.log(tableNames);
-		return;
 	}
 
 	private async closeDB() {
