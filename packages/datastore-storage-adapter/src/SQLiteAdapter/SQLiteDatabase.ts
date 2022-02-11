@@ -2,6 +2,7 @@ import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { ParameterizedStatement } from '../commons/SQLiteUtils';
+import { Database } from '../commons/Database';
 
 const logger = new Logger('SQLiteDatabase');
 
@@ -31,7 +32,7 @@ get the result of an `executeSql` command inside of a transaction
 
 */
 
-class SQLiteDatabase {
+class SQLiteDatabase implements Database {
 	private db: SQLite.SQLiteDatabase;
 
 	public async init(): Promise<void> {
@@ -43,11 +44,11 @@ class SQLiteDatabase {
 		);
 	}
 
-	public async createSchema(statements: string[]) {
+	public async createSchema(statements: string[]): Promise<void> {
 		return await this.executeStatements(statements);
 	}
 
-	public async clear() {
+	public async clear(): Promise<void> {
 		await this.closeDB();
 		logger.debug('Deleting database');
 		await SQLite.deleteDatabase(DB_NAME);
@@ -88,7 +89,9 @@ class SQLiteDatabase {
 		await this.db.executeSql(statement, params);
 	}
 
-	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
+	public async batchQuery(
+		queryStatements: Set<ParameterizedStatement>
+	): Promise<any[]> {
 		const results = [];
 
 		await this.db.readTransaction(function (tx) {
@@ -110,7 +113,7 @@ class SQLiteDatabase {
 	public async batchSave(
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
-	) {
+	): Promise<void> {
 		await this.db.transaction(function (tx) {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
@@ -126,7 +129,7 @@ class SQLiteDatabase {
 	public async selectAndDelete(
 		query: ParameterizedStatement,
 		_delete: ParameterizedStatement
-	) {
+	): Promise<any[]> {
 		let results = [];
 
 		const [queryStatement, queryParams] = query;
@@ -148,11 +151,29 @@ class SQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(function (tx) {
+		await this.db.transaction(function (tx) {
 			for (const statement of statements) {
+				console.log(`executing ${statement}`);
 				tx.executeSql(statement);
 			}
 		});
+
+		let tableNames: string[];
+
+		await this.db.transaction(tx => {
+			tx.executeSql(
+				'SHOW TABLES',
+				[],
+				(tx, results) => {
+					tableNames = results.rows.raw();
+				},
+				(_, error) => {
+					return true;
+				}
+			);
+		});
+		console.log(tableNames);
+		return;
 	}
 
 	private async closeDB() {
