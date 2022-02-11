@@ -546,6 +546,7 @@ describe('Storage tests', () => {
 						postId: '100',
 						title: 'New Post',
 						description: 'Desc',
+						dateCreated: new Date().toISOString(),
 					})
 				);
 

@@ -55,6 +55,7 @@ describe('MutationProcessor', () => {
 			const deletePost = new PostCustomPK({
 				postId: '100',
 				title: 'Title',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const { data } = await createMutationEvent(deletePost, OpType.DELETE);

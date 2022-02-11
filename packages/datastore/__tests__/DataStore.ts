@@ -2157,7 +2157,7 @@ describe('DataStore tests', () => {
 							c => c.title('contains', 'something')
 						);
 
-						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
+						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
 
 						const [one] = multiPostCustomPKWithCriteria;
 						expect(one.title).toBeDefined();
@@ -2170,7 +2170,7 @@ describe('DataStore tests', () => {
 							{ page: 0, limit: 20 }
 						);
 
-						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
+						expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);
 						const [one] = allPostCustomPKsPaginated;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
@@ -2183,7 +2183,7 @@ describe('DataStore tests', () => {
 							PostCustomPK
 						);
 
-						expectType<PostCustomPK[]>(allPostCustomPKs);
+						expectType<PostCustomPKType[]>(allPostCustomPKs);
 
 						const [one] = allPostCustomPKs;
 						expect(one.title).toBeDefined();
@@ -2204,7 +2204,7 @@ describe('DataStore tests', () => {
 								c.title('contains', 'something')
 							);
 
-						expectType<PostCustomPK[]>(multiPostCustomPKWithCriteria);
+						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
 
 						const [one] = multiPostCustomPKWithCriteria;
 						expect(one.title).toBeDefined();
@@ -2218,7 +2218,7 @@ describe('DataStore tests', () => {
 								{ page: 0, limit: 20 }
 							);
 
-						expectType<PostCustomPK[]>(allPostCustomPKsPaginated);
+						expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);
 						const [one] = allPostCustomPKsPaginated;
 						expect(one.title).toBeDefined();
 						expect(one).toBeInstanceOf(PostCustomPK);
