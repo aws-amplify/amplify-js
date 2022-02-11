@@ -12,7 +12,7 @@ import {
 	deleteByPredicateStatement,
 	modelCreateTableStatement,
 	implicitAuthFieldsForModel,
-} from '../src/SQLiteAdapter/SQLiteUtils';
+} from '../src/commons/SQLiteUtils';
 import {
 	InternalSchema,
 	PersistentModelConstructor,

@@ -6,6 +6,7 @@ module.exports = {
 		'@aws-amplify/datastore',
 		'@aws-amplify/core',
 		'react-native-sqlite-storage',
+		'expo-sqlite',
 	],
 	output: {
 		filename: '[name].js',

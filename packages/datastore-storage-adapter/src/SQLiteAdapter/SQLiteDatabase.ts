@@ -1,7 +1,8 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { ParameterizedStatement } from './SQLiteUtils';
+import { ParameterizedStatement } from '../commons/SQLiteUtils';
+import { Database } from '../commons/Database';
 
 const logger = new Logger('SQLiteDatabase');
 
@@ -31,7 +32,7 @@ get the result of an `executeSql` command inside of a transaction
 
 */
 
-class SQLiteDatabase {
+class SQLiteDatabase implements Database {
 	private db: SQLite.SQLiteDatabase;
 
 	public async init(): Promise<void> {
@@ -43,11 +44,11 @@ class SQLiteDatabase {
 		);
 	}
 
-	public async createSchema(statements: string[]) {
+	public async createSchema(statements: string[]): Promise<void> {
 		return await this.executeStatements(statements);
 	}
 
-	public async clear() {
+	public async clear(): Promise<void> {
 		await this.closeDB();
 		logger.debug('Deleting database');
 		await SQLite.deleteDatabase(DB_NAME);
@@ -88,15 +89,17 @@ class SQLiteDatabase {
 		await this.db.executeSql(statement, params);
 	}
 
-	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
+	public async batchQuery(
+		queryStatements: Set<ParameterizedStatement>
+	): Promise<any[]> {
 		const results = [];
 
-		await this.db.readTransaction(function(tx) {
+		await this.db.readTransaction(function (tx) {
 			for (const [statement, params] of queryStatements) {
 				tx.executeSql(
 					statement,
 					params,
-					function(_tx, res) {
+					function (_tx, res) {
 						results.push(res.rows.raw()[0]);
 					},
 					logger.warn
@@ -110,8 +113,8 @@ class SQLiteDatabase {
 	public async batchSave(
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
-	) {
-		await this.db.transaction(function(tx) {
+	): Promise<void> {
+		await this.db.transaction(function (tx) {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
 			}
@@ -126,17 +129,17 @@ class SQLiteDatabase {
 	public async selectAndDelete(
 		query: ParameterizedStatement,
 		_delete: ParameterizedStatement
-	) {
+	): Promise<any[]> {
 		let results = [];
 
 		const [queryStatement, queryParams] = query;
 		const [deleteStatement, deleteParams] = _delete;
 
-		await this.db.transaction(function(tx) {
+		await this.db.transaction(function (tx) {
 			tx.executeSql(
 				queryStatement,
 				queryParams,
-				function(_tx, res) {
+				function (_tx, res) {
 					results = res.rows.raw();
 				},
 				logger.warn
@@ -148,7 +151,7 @@ class SQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(function(tx) {
+		return await this.db.transaction(function (tx) {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}
