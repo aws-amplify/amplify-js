@@ -294,8 +294,9 @@ export class RestClient {
 		const source = this._cancelTokenMap.get(request);
 		if (source) {
 			source.cancel(message);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**
@@ -366,10 +367,8 @@ export class RestClient {
 	/** private methods **/
 
 	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;
