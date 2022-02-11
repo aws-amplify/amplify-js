@@ -1,11 +1,10 @@
 {
+	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"prettier.requireConfig": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[typescript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"typescript.format.insertSpaceBeforeAndAfterBinaryOperators": false,
-	"javascript.format.insertSpaceBeforeAndAfterBinaryOperators": false
+	}
 }
