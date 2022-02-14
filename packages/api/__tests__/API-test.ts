@@ -88,10 +88,13 @@ describe('API test', () => {
 	describe('cancel', () => {
 		test('cancel RestAPI request', async () => {
 			jest
-				.spyOn(GraphQLAPIClass.prototype, 'cancel')
+				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
 				.mockImplementation(() => false);
 			const restAPICancelSpy = jest
 				.spyOn(RestAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
 				.mockImplementation(() => true);
 			const api = new API(null);
 			const request = Promise.resolve();
@@ -100,11 +103,14 @@ describe('API test', () => {
 		});
 
 		test('cancel GraphQLAPI request', async () => {
+			jest
+				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => true);
 			const graphQLAPICancelSpy = jest
 				.spyOn(GraphQLAPIClass.prototype, 'cancel')
 				.mockImplementation(() => true);
 			jest
-				.spyOn(RestAPIClass.prototype, 'cancel')
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
 				.mockImplementation(() => false);
 			const api = new API(null);
 			const request = Promise.resolve();

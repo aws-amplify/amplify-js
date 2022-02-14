@@ -300,6 +300,15 @@ export class RestClient {
 	}
 
 	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._cancelTokenMap.has(request);
+	}
+
+	/**
 	 * Checks to see if an error thrown is from an api request cancellation
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation

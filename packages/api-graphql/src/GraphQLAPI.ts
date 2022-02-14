@@ -124,10 +124,8 @@ export class GraphQLAPIClass {
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const {
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-		} = this._options;
+		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
+			this._options;
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 		let headers = {};
@@ -205,9 +203,8 @@ export class GraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation) {
 		const doc = parse(operation);
-		const definitions = doc.definitions as ReadonlyArray<
-			OperationDefinitionNode
-		>;
+		const definitions =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -232,9 +229,8 @@ export class GraphQLAPIClass {
 		const [operationDef = {}] = query.definitions.filter(
 			def => def.kind === 'OperationDefinition'
 		);
-		const {
-			operation: operationType,
-		} = operationDef as OperationDefinitionNode;
+		const { operation: operationType } =
+			operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
 
@@ -365,6 +361,15 @@ export class GraphQLAPIClass {
 	 */
 	cancel(request: Promise<any>, message?: string) {
 		return this._api.cancel(request, message);
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._api.hasCancelToken(request);
 	}
 
 	private _graphqlSubscribe(
