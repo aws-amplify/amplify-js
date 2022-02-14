@@ -28,6 +28,7 @@ import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
 export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
+const DEFAULT_ERROR_STATUS_CODE = 400;
 
 function isBlob(body: any): body is Blob {
 	return typeof Blob !== 'undefined' && body instanceof Blob;
@@ -49,7 +50,7 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function(data, headers) {
+	function (data, headers) {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -137,11 +138,11 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
-			axiosRequest.onUploadProgress = function(event) {
+			axiosRequest.onUploadProgress = function (event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
-			axiosRequest.onDownloadProgress = function(event) {
+			axiosRequest.onDownloadProgress = function (event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
@@ -194,7 +195,7 @@ export class AxiosHttpHandler implements HttpHandler {
 					// aws sdk middleware (e.g retry, clock skew correction, error message serializing)
 					return {
 						response: new HttpResponse({
-							statusCode: error.response?.status,
+							statusCode: error.response?.status ?? DEFAULT_ERROR_STATUS_CODE,
 							body: error.response?.data,
 							headers: error.response?.headers,
 						}),

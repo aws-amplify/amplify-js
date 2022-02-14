@@ -7,7 +7,6 @@ import { HttpRequest } from '@aws-sdk/protocol-http';
 import { Platform, Logger } from '@aws-amplify/core';
 
 jest.mock('axios');
-jest.useFakeTimers();
 
 let request: HttpRequest;
 
@@ -25,8 +24,13 @@ describe('AxiosHttpHandler', () => {
 			port: 3000,
 			query: {},
 			headers: {},
-			clone: () => (null as unknown) as HttpRequest,
+			clone: () => null as unknown as HttpRequest,
 		};
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('.handle', () => {
@@ -146,6 +150,7 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should timeout after requestTimeout', async () => {
+			jest.useFakeTimers();
 			const handler = new AxiosHttpHandler({ requestTimeout: 1000 });
 			const req = handler.handle(request, options);
 			expect(setTimeout).toHaveBeenCalledTimes(1);
@@ -176,6 +181,15 @@ describe('AxiosHttpHandler', () => {
 			await expect(handler.handle(request, options)).rejects.toThrowError(
 				'err'
 			);
+		});
+
+		it('caught error should default to a 400 status code', async () => {
+			axios.request = jest
+				.fn()
+				.mockImplementationOnce(() => Promise.reject(new Error('err')));
+			const handler = new AxiosHttpHandler();
+			const result = await handler.handle(request, options);
+			expect(result.response.statusCode).toEqual(400);
 		});
 	});
 
