@@ -50,7 +50,7 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function (data, headers) {
+	function(data, headers) {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -138,11 +138,11 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
-			axiosRequest.onUploadProgress = function (event) {
+			axiosRequest.onUploadProgress = function(event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
-			axiosRequest.onDownloadProgress = function (event) {
+			axiosRequest.onDownloadProgress = function(event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
