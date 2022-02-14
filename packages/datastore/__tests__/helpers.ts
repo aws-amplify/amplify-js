@@ -127,8 +127,8 @@ export declare class PostCustomPKSort {
 	readonly [__modelMeta__]: {
 		identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
 	};
-	public readonly id: string;
-	public readonly postId: number;
+	public readonly id: number | string;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 
@@ -144,7 +144,7 @@ export declare class PostCustomPKComposite {
 	readonly [__modelMeta__]: {
 		identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
 	};
-	public readonly id: string;
+	public readonly id: number | string;
 	public readonly postId: number;
 	public readonly title: string;
 	public readonly description?: string;

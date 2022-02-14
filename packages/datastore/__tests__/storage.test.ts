@@ -9,9 +9,9 @@ import {
 	Post,
 	Comment,
 	PostComposite,
-	PostCustomPK,
-	PostCustomPKSort,
-	PostCustomPKComposite,
+	PostCustomPK as PostCustomPKType,
+	PostCustomPKSort as PostCustomPKSortType,
+	PostCustomPKComposite as PostCustomPKCompositeType,
 	testSchema,
 } from './helpers';
 
@@ -538,7 +538,7 @@ describe('Storage tests', () => {
 				// model has a custom pk defined via @key(fields: ["postId"])
 				// the PK should always be included in the mutation input
 				const { PostCustomPK } = classes as {
-					PostCustomPK: PersistentModelConstructor<PostCustomPK>;
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
 				const post = await DataStore.save(
@@ -569,28 +569,27 @@ describe('Storage tests', () => {
 				// model has a custom pk (hk + sort key) defined via @key(fields: ["postId", "title"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKSort } = classes as {
-					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
+					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 				};
 
 				const post = await DataStore.save(
 					new PostCustomPKSort({
 						id: 'abcdef',
-						postId: 100,
+						postId: '100',
 						title: 'New Post',
-						description: 'Desc',
 					})
 				);
 
 				await DataStore.save(
 					PostCustomPKSort.copyOf(post, updated => {
-						updated.description = 'Updated';
+						updated.title = 'Updated';
 					})
 				);
 
 				const [, [postUpdate]] = zenNext.mock.calls;
 
 				expect(postUpdate.element.id).toEqual('abcdef');
-				expect(postUpdate.element.postId).toEqual(100);
+				expect(postUpdate.element.postId).toEqual('100');
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();
 			});
@@ -601,7 +600,7 @@ describe('Storage tests', () => {
 				// model has a custom pk (hk + composite key) defined via @key(fields: ["id", "postId", "sort"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKComposite } = classes as {
-					PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
+					PostCustomPKComposite: PersistentModelConstructor<PostCustomPKCompositeType>;
 				};
 
 				const post = await DataStore.save(

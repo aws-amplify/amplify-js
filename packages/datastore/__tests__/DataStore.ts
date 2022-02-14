@@ -1292,11 +1292,11 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const model = new PostCustomPK({
+				const model = {
 					postId: '12345',
 					title: 'something',
 					dateCreated: new Date().toISOString(),
-				});
+				};
 
 				expect(model).toBeInstanceOf(PostCustomPK);
 
@@ -1310,11 +1310,11 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const model = new PostCustomPK({
+				const model = {
 					postId: '12345',
 					title: 'something',
 					dateCreated: new Date().toISOString(),
-				});
+				};
 
 				expect(() => {
 					(<any>model).title = 'edit';
@@ -1371,12 +1371,12 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const model1 = new PostCustomPK({
+				const model1 = {
 					postId: '12345',
 					title: 'something',
 					description: undefined,
 					dateCreated: new Date().toISOString(),
-				});
+				};
 
 				expect(model1.description).toBeUndefined();
 			});
@@ -1386,12 +1386,12 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const model1 = new PostCustomPK({
+				const model1 = {
 					postId: '12345',
 					title: 'something',
 					dateCreated: new Date().toISOString(),
 					description: null,
-				});
+				};
 
 				expect(model1.description).toBeNull();
 			});
@@ -1746,7 +1746,7 @@ describe('DataStore tests', () => {
 				};
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: 'something',
 						dateCreated: new Date().toISOString(),
@@ -1775,7 +1775,7 @@ describe('DataStore tests', () => {
 
 			test('Instantiation validations', async () => {
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: undefined,
 						dateCreated: new Date().toISOString(),
@@ -1783,7 +1783,7 @@ describe('DataStore tests', () => {
 				}).toThrowError('Field title is required');
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: null,
 						dateCreated: new Date().toISOString(),
@@ -1791,7 +1791,7 @@ describe('DataStore tests', () => {
 				}).toThrowError('Field title is required');
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: <any>1234,
 						dateCreated: new Date().toISOString(),
@@ -1801,7 +1801,7 @@ describe('DataStore tests', () => {
 				);
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: 'someField',
 						dateCreated: 'not-a-date',
@@ -1811,7 +1811,7 @@ describe('DataStore tests', () => {
 				);
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: 'someField',
 						dateCreated: new Date().toISOString(),
@@ -1822,7 +1822,7 @@ describe('DataStore tests', () => {
 				);
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: 'someField',
 						dateCreated: new Date().toISOString(),
@@ -1831,7 +1831,7 @@ describe('DataStore tests', () => {
 				}).not.toThrow();
 
 				expect(() => {
-					new PostCustomPK({
+					({
 						postId: '12345',
 						title: 'someField',
 						dateCreated: new Date().toISOString(),
@@ -1841,12 +1841,10 @@ describe('DataStore tests', () => {
 					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
 				);
 
-				expect(
-					new PostCustomPK(<any>{
-						extraAttribute: 'some value',
-						title: 'some value',
-					})
-				).toHaveProperty('extraAttribute');
+				expect(<any>{
+					extraAttribute: 'some value',
+					title: 'some value',
+				}).toHaveProperty('extraAttribute');
 
 				expect(() => {
 					PostCustomPK.copyOf(<any>undefined, d => d);
@@ -1894,11 +1892,11 @@ describe('DataStore tests', () => {
 
 				await expect(
 					DataStore.delete(
-						new PostCustomPK({
+						{
 							postId: '12345',
 							title: 'somevalue',
 							dateCreated: new Date().toISOString(),
-						}),
+						},
 						<any>{}
 					)
 				).rejects.toThrow('Invalid criteria');
@@ -1940,13 +1938,11 @@ describe('DataStore tests', () => {
 				};
 
 				for (let i = 0; i < 10; i++) {
-					await DataStore.save(
-						new PostCustomPK({
-							postId: `${i}`,
-							title: 'someField',
-							dateCreated: new Date().toISOString(),
-						})
-					);
+					await DataStore.save({
+						postId: `${i}`,
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+					});
 				}
 
 				const deleted = await DataStore.delete(PostCustomPK, m =>
@@ -1991,13 +1987,11 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const saved = await DataStore.save(
-					new PostCustomPK({
-						postId: '12345',
-						title: 'someField',
-						dateCreated: new Date().toISOString(),
-					})
-				);
+				const saved = await DataStore.save({
+					postId: '12345',
+					title: 'someField',
+					dateCreated: new Date().toISOString(),
+				});
 
 				const deleted: PostCustomPKType[] = await DataStore.delete(
 					PostCustomPK,
@@ -2040,13 +2034,11 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				const saved = await DataStore.save(
-					new PostCustomPK({
-						postId: '12345',
-						title: 'someField',
-						dateCreated: new Date().toISOString(),
-					})
-				);
+				const saved = await DataStore.save({
+					postId: '12345',
+					title: 'someField',
+					dateCreated: new Date().toISOString(),
+				});
 
 				const deleted: PostCustomPKType[] = await DataStore.delete(
 					PostCustomPK,

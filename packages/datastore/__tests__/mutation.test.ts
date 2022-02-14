@@ -13,7 +13,7 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import { extractPrimaryKeyFieldNames } from '../src/util';
+// import { extractPrimaryKeyFieldNames } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -76,7 +76,7 @@ describe('MutationProcessor', () => {
 			// multi-key PK @key(fields: ["postId", "title"])
 			const deletePost = new PostCustomPKSort({
 				id: 'abcdef',
-				postId: 100,
+				postId: '100',
 				title: 'Title',
 			});
 
@@ -90,9 +90,9 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).toEqual(deletePost.id);
-			expect(input.id).toEqual('abcdef');
-			expect(input.postId).toEqual(100);
+			// expect(input.id).toEqual(deletePost.id);
+			expect(input.postId).toEqual(deletePost.postId);
+			expect(input.title).toEqual(deletePost.title);
 		});
 	});
 	afterAll(() => {
