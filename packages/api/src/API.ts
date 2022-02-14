@@ -161,7 +161,6 @@ export class APIClass {
 	 * @return If the request was cancelled
 	 */
 	cancel(request: Promise<any>, message?: string): boolean {
-		// it's safe to potentially call both method, as 'request' refers to a reference of a request, which is unique.
 		if (this._restApi.hasCancelToken(request)) {
 			return this._restApi.cancel(request, message);
 		} else if (this._graphqlApi.hasCancelToken(request)) {
