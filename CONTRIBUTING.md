@@ -160,7 +160,7 @@ npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 
 **Debugging problems with the `setup-dev:react-native` script**
 
-- If the WML command does not do anything after adding the links, watch it's src file using watchman. Run the below from the root of this repository:
+- If the WML command does not do anything after adding the links, watch its src file using watchman. Run the below from the root of this repository:
 
   ```
   watchman watch node_modules/wml/src
