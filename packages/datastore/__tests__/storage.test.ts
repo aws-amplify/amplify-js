@@ -566,7 +566,7 @@ describe('Storage tests', () => {
 			test('custom pk - with sort', async () => {
 				const classes = initSchema(testSchema());
 
-				// model has a custom pk (hk + sort key) defined via @key(fields: ["postId", "title"])
+				// model has a custom pk (hk + sort key) defined via @key(fields: ["id", "postId"])
 				// all of the fields in the PK should always be included in the mutation input
 				const { PostCustomPKSort } = classes as {
 					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;

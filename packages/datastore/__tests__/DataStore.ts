@@ -1503,7 +1503,6 @@ describe('DataStore tests', () => {
 
 		describe('Basic operations', () => {
 			let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-			// let Metadata: NonModelTypeConstructor<Metadata>;
 
 			beforeEach(() => {
 				jest.resetModules();
@@ -1525,7 +1524,6 @@ describe('DataStore tests', () => {
 
 				({ PostCustomPK } = classes as {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-					// Metadata: NonModelTypeConstructor<Metadata>;
 				});
 			});
 
@@ -1862,10 +1860,6 @@ describe('DataStore tests', () => {
 			});
 
 			test('Delete params', async () => {
-				// let PostCustomPK;
-				// ({ PostCustomPK } = initSchema(testSchema()) as {
-				// 	PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-				// });
 				await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
 					'Model or Model Constructor required'
 				);

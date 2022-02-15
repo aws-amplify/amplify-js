@@ -13,7 +13,6 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-// import { extractPrimaryKeyFieldNames } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
