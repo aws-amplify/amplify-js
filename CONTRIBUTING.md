@@ -128,15 +128,11 @@ These tests are only necessary if you’re looking to contribute a Pull Request.
 
 To develop locally alongside a React-Native app, make sure to,
 
-1. Finish the build steps mentioned in the section: `Setting up for local development`
+1. Finish the build steps mentioned in the section: `Setting up for local development` to set up your devlopment `amplify-js` repository.
 
-2. Add the wml src folder to watchman.
+   > Note: To setup a sample React-Native app -- configure your [development](https://reactnative.dev/docs/environment-setup) environment and [create](https://reactnative.dev/docs/environment-setup#creating-a-new-application) an app. Note down the path to the app which is required in the next step.
 
-```
-watchman watch node_modules/wml/src
-```
-
-4. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
 
 ```
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
