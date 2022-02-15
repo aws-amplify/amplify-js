@@ -606,7 +606,7 @@ describe('Storage tests', () => {
 				const post = await DataStore.save(
 					new PostCustomPKComposite({
 						id: 'abcdef',
-						postId: 100,
+						postId: '100',
 						title: 'New Post',
 						description: 'Desc',
 						sort: 1,
@@ -622,7 +622,7 @@ describe('Storage tests', () => {
 				const [, [postUpdate]] = zenNext.mock.calls;
 
 				expect(postUpdate.element.id).toEqual('abcdef');
-				expect(postUpdate.element.postId).toEqual(100);
+				expect(postUpdate.element.postId).toEqual('100');
 				expect(postUpdate.element.sort).toEqual(1);
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();

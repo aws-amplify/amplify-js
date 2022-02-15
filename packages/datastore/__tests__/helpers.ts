@@ -106,7 +106,7 @@ export declare class PostCustomPK {
 	readonly [__modelMeta__]: {
 		identifier: CustomIdentifier<PostCustomPK, 'postId'>;
 	};
-	public readonly postId: number | string;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly dateCreated: string;
@@ -144,8 +144,8 @@ export declare class PostCustomPKComposite {
 	readonly [__modelMeta__]: {
 		identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
 	};
-	public readonly id: number | string;
-	public readonly postId: number;
+	public readonly id: string;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly sort: number;
@@ -487,7 +487,7 @@ export function testSchema(): Schema {
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'ID',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},
@@ -555,10 +555,17 @@ export function testSchema(): Schema {
 			PostCustomPKSort: {
 				name: 'PostCustomPKSort',
 				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'ID',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},
@@ -587,7 +594,7 @@ export function testSchema(): Schema {
 					{
 						type: 'key',
 						properties: {
-							fields: ['postId', 'title'],
+							fields: ['id', 'postId'],
 						},
 					},
 				],
@@ -605,7 +612,7 @@ export function testSchema(): Schema {
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},

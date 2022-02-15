@@ -607,8 +607,8 @@ describe('datastore util', () => {
 		test('model definition with custom pk + sk', () => {
 			const result = extractKeyIfExists(testUserSchema.models.PostCustomPKSort);
 			expect(result.properties.fields.length).toBe(2);
-			expect(result.properties.fields[0]).toBe('postId');
-			expect(result.properties.fields[1]).toBe('title');
+			expect(result.properties.fields[0]).toBe('id');
+			expect(result.properties.fields[1]).toBe('postId');
 			expect(result.type).toBe('key');
 		});
 		test('model definition with id', () => {
@@ -630,8 +630,8 @@ describe('datastore util', () => {
 				testUserSchema.models.PostCustomPKSort
 			);
 			expect(result.length).toBe(2);
-			expect(result[0]).toBe('postId');
-			expect(result[1]).toBe('title');
+			expect(result[0]).toBe('id');
+			expect(result[1]).toBe('postId');
 		});
 		test('model definition with id', () => {
 			const result = extractPrimaryKeyFieldNames(testUserSchema.models.Model);
