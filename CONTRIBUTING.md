@@ -133,6 +133,7 @@ To develop locally alongside a React-Native app, make sure to,
    > Note: To setup a sample React-Native app -- configure your [development](https://reactnative.dev/docs/environment-setup) environment and [create](https://reactnative.dev/docs/environment-setup#creating-a-new-application) an app. Note down the path to the app which is required in the next step.
 
 2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+   > Make sure to have [watchman](https://facebook.github.io/watchman/docs/install.html) installed before running the below command
 
 ```
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
