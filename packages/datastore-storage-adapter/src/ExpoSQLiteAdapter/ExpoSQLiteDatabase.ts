@@ -1,8 +1,8 @@
-import * as SQLite from 'expo-sqlite';
+import { openDatabase, SQLResultSet, WebSQLDatabase } from 'expo-sqlite';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { ParameterizedStatement } from '../common/SQLiteUtils';
-import { CommonSQLiteDatabase } from '../common/types';
+import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
+import { table } from 'console';
 
 const logger = new Logger('ExpoSQLiteDatabase');
 
@@ -21,37 +21,34 @@ I purposely used arrow functions () => {} in this class as expo-sqlite library i
 */
 
 class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
-	private db: SQLite.WebSQLDatabase;
+	private db: WebSQLDatabase;
 
 	public async init(): Promise<void> {
 		// only open database once.
 		if (!this.db) {
-			this.db = SQLite.openDatabase(
-				DB_NAME,
-				DB_VERSION,
-				DB_DISPLAYNAME,
-				DB_SIZE
-			);
+			this.db = openDatabase(DB_NAME, DB_VERSION, DB_DISPLAYNAME, DB_SIZE);
 		}
 	}
 
 	public async createSchema(statements: string[]): Promise<void> {
-		return await this.executeStatements(statements);
+		return this.executeStatements(statements);
 	}
 
 	public async clear(): Promise<void> {
 		logger.debug('Clearing database');
 		// delete database is not supported by expo-sqlite. alternative way is to get all table names and drop them.
-		this.dropAllTables();
+		await this.dropAllTables();
 		logger.debug('Database cleared');
 		// closing db is not required as we are not deleting the db.
 	}
 
 	public async get<T extends PersistentModel>(
 		statement: string,
-		params: any[]
+		params: (string | number)[]
 	): Promise<T> {
-		const resultSet: SQLite.SQLResultSet = await new Promise(
+		const results: any[] = await this.getAll(statement, params);
+		return results.length > 0 ? results[0] : undefined;
+		/* 		const resultSet: SQLite.SQLResultSet = await new Promise(
 			(resolve, reject) => {
 				this.db.readTransaction(tx => {
 					tx.executeSql(
@@ -70,47 +67,44 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 			resultSet &&
 			resultSet.rows &&
 			resultSet.rows.length &&
-			resultSet.rows._array;
+			resultSet.rows.item(0);
 
-		return result[0] || undefined;
+		return result || undefined;
+ */
 	}
 
 	public async getAll<T extends PersistentModel>(
 		statement: string,
-		params: any[]
+		params: (string | number)[]
 	): Promise<T[]> {
-		const resultSet: SQLite.SQLResultSet = await new Promise(
-			(resolve, reject) => {
-				this.db.readTransaction(tx => {
-					tx.executeSql(
-						statement,
-						params,
-						(_, result) => {
-							resolve(result);
-						},
-						(_, err) => {
-							reject(err);
-							return true;
-						}
-					);
-				});
-			}
-		);
-		const result =
-			resultSet &&
-			resultSet.rows &&
-			resultSet.rows.length &&
-			resultSet.rows._array;
-		return result || [];
+		const resultSet: SQLResultSet = await new Promise((resolve, reject) => {
+			this.db.readTransaction(tx => {
+				tx.executeSql(
+					statement,
+					params,
+					(_, res) => {
+						resolve(res);
+					},
+					(_, err) => {
+						reject(err);
+						return true;
+					}
+				);
+			});
+		});
+		return resultSet?.rows?._array || [];
 	}
 
-	public async save(statement: string, params: any[]): Promise<void> {
-		await new Promise((resolve, reject) => {
+	public async save(
+		statement: string,
+		params: (string | number)[]
+	): Promise<void> {
+		return new Promise((resolve, reject) => {
 			this.db.transaction(tx => {
 				tx.executeSql(
 					statement,
 					params,
-					() => resolve(),
+					() => resolve(null),
 					(_, error) => {
 						reject(error);
 						return true;
@@ -120,18 +114,19 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public async batchQuery(
+	public async batchQuery<T = any>(
 		queryStatements: Set<ParameterizedStatement>
-	): Promise<any[]> {
-		const results = [];
-		await new Promise((resolve, reject) => {
-			this.db.readTransaction(function (tx) {
+	): Promise<T[]> {
+		const resultSet: T[] = await new Promise((resolve, reject) => {
+			this.db.readTransaction(tx => {
+				const results = [];
 				for (const [statement, params] of queryStatements) {
 					tx.executeSql(
 						statement,
 						params,
-						function (_tx, res) {
-							results.push(res.rows._array[0]);
+						(_, res) => {
+							const item = res.rows.item[0];
+							item && results.push(item);
 						},
 						(_, error) => {
 							reject(error);
@@ -139,10 +134,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						}
 					);
 				}
-				resolve();
+				resolve(results);
 			});
 		});
-		return results;
+		return resultSet;
 	}
 
 	public async batchSave(
@@ -150,70 +145,53 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		deleteStatements?: Set<ParameterizedStatement>
 	): Promise<void> {
 		await new Promise((resolve, reject) => {
-			this.db.transaction(function (tx) {
+			this.db.transaction(tx => {
 				for (const [statement, params] of saveStatements) {
-					tx.executeSql(
-						statement,
-						params,
-						() => {},
-						(_, error) => {
-							reject(error);
-							return true;
-						}
-					);
+					tx.executeSql(statement, params, null, (_, error) => {
+						reject(error);
+						return true;
+					});
 				}
 
 				if (deleteStatements) {
 					for (const [statement, params] of deleteStatements) {
-						tx.executeSql(
-							statement,
-							params,
-							() => {},
-							(_, error) => {
-								reject(error);
-								return true;
-							}
-						);
+						tx.executeSql(statement, params, null, (_, error) => {
+							reject(error);
+							return true;
+						});
 					}
 				}
-				resolve();
+				resolve(null);
 			});
 		});
 	}
 
-	public async selectAndDelete(
-		query: ParameterizedStatement,
-		_delete: ParameterizedStatement
-	): Promise<any[]> {
-		let results = [];
+	public async selectAndDelete<T = any>(
+		queryParameterizedStatement: ParameterizedStatement,
+		deleteParameterizedStatement: ParameterizedStatement
+	): Promise<T[]> {
+		const [queryStatement, queryParams] = queryParameterizedStatement;
+		const [deleteStatement, deleteParams] = deleteParameterizedStatement;
 
-		const [queryStatement, queryParams] = query;
-		const [deleteStatement, deleteParams] = _delete;
-
-		results = await new Promise((resolve, reject) => {
-			this.db.transaction(function (tx) {
-				let tempresults;
+		const results: T[] = await new Promise((resolve, reject) => {
+			this.db.transaction(tx => {
+				let tempResults;
 				tx.executeSql(
 					queryStatement,
 					queryParams,
 					(_tx, res) => {
-						tempresults = res.rows._array;
+						tempResults = res?.rows?._array || [];
 					},
 					(_, error) => {
 						reject(error);
 						return true;
 					}
 				);
-				tx.executeSql(
-					deleteStatement,
-					deleteParams,
-					() => {},
-					(_, error) => {
-						reject(error);
-						return true;
-					}
-				);
-				resolve(tempresults);
+				tx.executeSql(deleteStatement, deleteParams, null, (_, error) => {
+					reject(error);
+					return true;
+				});
+				resolve(tempResults);
 			});
 		});
 		return results || [];
@@ -221,19 +199,14 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	private async executeStatements(statements: string[]): Promise<void> {
 		await new Promise((resolve, reject) => {
-			this.db.transaction(function (tx) {
+			this.db.transaction(tx => {
 				for (const statement of statements) {
-					tx.executeSql(
-						statement,
-						[],
-						() => {},
-						(_, error) => {
-							reject(error);
-							return true;
-						}
-					);
+					tx.executeSql(statement, [], null, (_, error) => {
+						reject(error);
+						return true;
+					});
 				}
-				resolve();
+				resolve(null);
 			});
 		});
 	}
@@ -243,20 +216,21 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 			logger.debug('Closing Database');
 			// closing database is not supported by expo-sqlite.
 			// Workaround is to access the private db variable and call the close() method.
-			const tempdb: any = this.db;
-			await tempdb._db.close();
+			await (this.db as any)._db.close();
 			logger.debug('Database closed');
 		}
 	}
 
 	private async getAllTableNames(): Promise<string[]> {
+		const getTablesCommand =
+			"SELECT name FROM sqlite_master where type='table'";
 		const resultSet: any[] = await new Promise((resolve, reject) => {
 			this.db.transaction(tx => {
 				tx.executeSql(
-					`SELECT name FROM sqlite_master where type='table'`,
+					getTablesCommand,
 					[],
-					(tx, results) => {
-						resolve(results.rows._array);
+					(_, res) => {
+						resolve(res?.rows?._array || []);
 					},
 					(_, error) => {
 						reject(error);
@@ -266,17 +240,16 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 			});
 		});
 
-		const tableNames = resultSet.map(e => e.name);
-		return tableNames;
+		return resultSet.map(e => e.name);
 	}
 
 	private async dropAllTables() {
 		const tableNames = await this.getAllTableNames();
-
-		for (const tableName of tableNames) {
-			const statement = `DROP TABLE IF EXISTS ${tableName}`;
-			await this.executeStatements([statement]);
-		}
+		await this.executeStatements(
+			tableNames.map(tableName => {
+				return `DROP TABLE IF EXISTS ${tableName}`;
+			})
+		);
 	}
 }
 

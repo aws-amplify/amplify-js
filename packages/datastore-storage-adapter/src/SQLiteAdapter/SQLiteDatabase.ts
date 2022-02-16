@@ -1,8 +1,7 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { ParameterizedStatement } from '../common/SQLiteUtils';
-import { CommonSQLiteDatabase } from '../common/types';
+import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
 const logger = new Logger('SQLiteDatabase');
 
@@ -36,12 +35,15 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	private db: SQLite.SQLiteDatabase;
 
 	public async init(): Promise<void> {
-		this.db = await SQLite.openDatabase(
-			DB_NAME,
-			DB_VERSION,
-			DB_DISPLAYNAME,
-			DB_SIZE
-		);
+		// only open database once.
+		if (!this.db) {
+			this.db = await SQLite.openDatabase(
+				DB_NAME,
+				DB_VERSION,
+				DB_DISPLAYNAME,
+				DB_SIZE
+			);
+		}
 	}
 
 	public async createSchema(statements: string[]): Promise<void> {
@@ -57,7 +59,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async get<T extends PersistentModel>(
 		statement: string,
-		params: any[]
+		params: (string | number)[]
 	): Promise<T> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
@@ -72,7 +74,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async getAll<T extends PersistentModel>(
 		statement: string,
-		params: any[]
+		params: (string | number)[]
 	): Promise<T[]> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
@@ -85,21 +87,24 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		return result || [];
 	}
 
-	public async save(statement: string, params: any[]): Promise<void> {
+	public async save(
+		statement: string,
+		params: (string | number)[]
+	): Promise<void> {
 		await this.db.executeSql(statement, params);
 	}
 
-	public async batchQuery(
+	public async batchQuery<T = any>(
 		queryStatements: Set<ParameterizedStatement>
-	): Promise<any[]> {
+	): Promise<T[]> {
 		const results = [];
 
-		await this.db.readTransaction(function (tx) {
+		await this.db.readTransaction(tx => {
 			for (const [statement, params] of queryStatements) {
 				tx.executeSql(
 					statement,
 					params,
-					function (_tx, res) {
+					(_tx, res) => {
 						results.push(res.rows.raw()[0]);
 					},
 					logger.warn
@@ -114,7 +119,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
 	): Promise<void> {
-		await this.db.transaction(function (tx) {
+		await this.db.transaction(tx => {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
 			}
@@ -126,20 +131,20 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public async selectAndDelete(
-		query: ParameterizedStatement,
-		_delete: ParameterizedStatement
-	): Promise<any[]> {
-		let results = [];
+	public async selectAndDelete<T = any>(
+		queryParameterizedStatement: ParameterizedStatement,
+		deleteParameterizedStatement: ParameterizedStatement
+	): Promise<T[]> {
+		let results: T[] = [];
 
-		const [queryStatement, queryParams] = query;
-		const [deleteStatement, deleteParams] = _delete;
+		const [queryStatement, queryParams] = queryParameterizedStatement;
+		const [deleteStatement, deleteParams] = deleteParameterizedStatement;
 
-		await this.db.transaction(function (tx) {
+		await this.db.transaction(tx => {
 			tx.executeSql(
 				queryStatement,
 				queryParams,
-				function (_tx, res) {
+				(_tx, res) => {
 					results = res.rows.raw();
 				},
 				logger.warn
@@ -151,7 +156,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(function (tx) {
+		return await this.db.transaction(tx => {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}

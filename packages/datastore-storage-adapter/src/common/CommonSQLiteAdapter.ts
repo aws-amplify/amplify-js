@@ -8,7 +8,6 @@ import {
 	queryOneStatement,
 	deleteByIdStatement,
 	deleteByPredicateStatement,
-	ParameterizedStatement,
 } from '../common/SQLiteUtils';
 
 import {
@@ -30,7 +29,7 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase } from './types';
+import { CommonSQLiteDatabase, ParameterizedStatement } from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
