@@ -130,7 +130,7 @@ To develop locally alongside a React-Native app, make sure to,
 
 1. Finish the build steps mentioned in the section: `Setting up for local development` to set up your local `amplify-js` repository for development.
 
-   > Note: To setup a sample React-Native app -- configure your [development](https://reactnative.dev/docs/environment-setup) environment and [create](https://reactnative.dev/docs/environment-setup#creating-a-new-application) an app. Note down the path to the app which is required in the next step.
+   > Note: To set up a sample React-Native app -- configure your [development environment](https://reactnative.dev/docs/environment-setup) and [create an app](https://reactnative.dev/docs/environment-setup#creating-a-new-application). Note the path to the app as it is required in the next step.
 
 2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
 
