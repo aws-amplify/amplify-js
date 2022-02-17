@@ -2,7 +2,6 @@ import { openDatabase, SQLResultSet, WebSQLDatabase } from 'expo-sqlite';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
-import { table } from 'console';
 
 const logger = new Logger('ExpoSQLiteDatabase');
 
@@ -48,29 +47,6 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	): Promise<T> {
 		const results: any[] = await this.getAll(statement, params);
 		return results.length > 0 ? results[0] : undefined;
-		/* 		const resultSet: SQLite.SQLResultSet = await new Promise(
-			(resolve, reject) => {
-				this.db.readTransaction(tx => {
-					tx.executeSql(
-						statement,
-						params,
-						(_, result) => resolve(result),
-						(_, err) => {
-							reject(err);
-							return true;
-						}
-					);
-				});
-			}
-		);
-		const result =
-			resultSet &&
-			resultSet.rows &&
-			resultSet.rows.length &&
-			resultSet.rows.item(0);
-
-		return result || undefined;
- */
 	}
 
 	public async getAll<T extends PersistentModel>(
@@ -85,8 +61,9 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					(_, res) => {
 						resolve(res);
 					},
-					(_, err) => {
-						reject(err);
+					(_, error) => {
+						reject(error);
+						logger.warn(error);
 						return true;
 					}
 				);
@@ -107,6 +84,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					() => resolve(null),
 					(_, error) => {
 						reject(error);
+						logger.warn(error);
 						return true;
 					}
 				);
@@ -130,6 +108,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						},
 						(_, error) => {
 							reject(error);
+							logger.warn(error);
 							return true;
 						}
 					);
@@ -149,6 +128,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 				for (const [statement, params] of saveStatements) {
 					tx.executeSql(statement, params, null, (_, error) => {
 						reject(error);
+						logger.warn(error);
 						return true;
 					});
 				}
@@ -157,6 +137,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					for (const [statement, params] of deleteStatements) {
 						tx.executeSql(statement, params, null, (_, error) => {
 							reject(error);
+							logger.warn(error);
 							return true;
 						});
 					}
@@ -184,11 +165,13 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					},
 					(_, error) => {
 						reject(error);
+						logger.warn(error);
 						return true;
 					}
 				);
 				tx.executeSql(deleteStatement, deleteParams, null, (_, error) => {
 					reject(error);
+					logger.warn(error);
 					return true;
 				});
 				resolve(tempResults);
@@ -203,6 +186,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 				for (const statement of statements) {
 					tx.executeSql(statement, [], null, (_, error) => {
 						reject(error);
+						logger.warn(error);
 						return true;
 					});
 				}
@@ -234,6 +218,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					},
 					(_, error) => {
 						reject(error);
+						logger.warn(error);
 						return true;
 					}
 				);
