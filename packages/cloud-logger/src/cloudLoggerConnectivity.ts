@@ -46,6 +46,7 @@ export default class CloudLoggerConnectivity {
 		if (this.subscription) {
 			clearTimeout(this.timeout);
 			this.subscription.unsubscribe();
+			this.observer = undefined;
 		}
 	}
 

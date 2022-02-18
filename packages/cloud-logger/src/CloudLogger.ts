@@ -52,6 +52,7 @@ class CloudLogger {
 	private _online: boolean = false;
 	private _providerInstance: AWSCloudWatchProvider;
 	private _cacheKey: string;
+	private connectivitySubscribed = false;
 	private initialized = false;
 	private user;
 	private disabledStatus: DisabledStatus;
@@ -61,7 +62,7 @@ class CloudLogger {
 		this._preFlightCheck = this._preFlightCheck.bind(this);
 	}
 
-	async configure(conf) {
+	public async configure(conf) {
 		logger.debug('configure', conf);
 		if (!conf) {
 			console.error('CloudLogger requires a config object');
@@ -83,6 +84,37 @@ class CloudLogger {
 			capacityInBytes: 2 * 1000 * 1000, // 2MB
 			itemMaxSize: 500 * 1000, // 500KB
 		});
+	}
+
+	public async start() {
+		this._start();
+	}
+
+	public pause() {
+		if (this._providerInstance) {
+			this._providerInstance.pause();
+		}
+	}
+
+	public resume() {
+		if (this._providerInstance) {
+			this._providerInstance.resume();
+		}
+	}
+
+	public stop() {
+		logger.debug('Stopping CloudLogger');
+		if (this._connectivity) {
+			this._connectivity.unsubscribe();
+			this.connectivitySubscribed = false;
+			this._online = false;
+		}
+		this.cleanupRemoteLoggingResources();
+		this.initialized = false;
+	}
+
+	public clear() {
+		this.clearCache();
 	}
 
 	private async initSignInListener() {
@@ -125,29 +157,6 @@ class CloudLogger {
 		this.disabledStatus = disabledStatus;
 	};
 
-	private async checkAuth() {
-		try {
-			this.user = await Auth.currentAuthenticatedUser();
-			logger.debug('authed user', this.user);
-			this._cacheKey = `${CACHE_KEY_DEFAULT}/${this.user.username}`;
-			this.initSignOutListener();
-
-			if (!this.initialized) {
-				this.initialize();
-			} else {
-				this.resume();
-			}
-		} catch (error) {
-			if (error === 'The user is not authenticated') {
-				this.initSignInListener();
-			}
-		}
-	}
-
-	async start() {
-		this._start();
-	}
-
 	private validateLocalConfig() {
 		if (!this._config.Logging) {
 			throw new Error(
@@ -186,7 +195,14 @@ class CloudLogger {
 		try {
 			this.validateLocalConfig();
 
+			if (this.connectivitySubscribed) {
+				return;
+			}
+
+			logger.debug('Starting CloudLogger');
+
 			this._connectivity.status().subscribe(async ({ online }) => {
+				this.connectivitySubscribed = true;
 				if (online && !this._online) {
 					await this.checkAuth();
 				} else if (!online) {
@@ -200,28 +216,23 @@ class CloudLogger {
 		}
 	}
 
-	pause() {
-		if (this._providerInstance) {
-			this._providerInstance.pause();
-		}
-	}
+	private async checkAuth() {
+		try {
+			this.user = await Auth.currentAuthenticatedUser();
+			logger.debug('authed user', this.user);
+			this._cacheKey = `${CACHE_KEY_DEFAULT}/${this.user.username}`;
+			this.initSignOutListener();
 
-	resume() {
-		if (this._providerInstance) {
-			this._providerInstance.resume();
+			if (!this.initialized) {
+				this.initialize();
+			} else {
+				this.resume();
+			}
+		} catch (error) {
+			if (error === 'The user is not authenticated') {
+				this.initSignInListener();
+			}
 		}
-	}
-
-	stop() {
-		if (this._connectivity) {
-			this._connectivity.unsubscribe();
-		}
-		this.cleanupRemoteLoggingResources();
-		this.initialized = false;
-	}
-
-	clear() {
-		this.clearCache();
 	}
 
 	private async clearCache() {
@@ -327,24 +338,24 @@ class CloudLogger {
 	}
 
 	private async _preFlightCheck() {
-		logger.debug('_preFlightCheck');
+		logger.debug('preFlightCheck');
 
 		if (await this.isDisabled()) {
-			logger.debug('_preFlightCheck config disabled');
+			logger.debug('preFlightCheck config disabled');
 			return false;
 		}
 
 		if (this._remoteConfig && this._remoteConfig.expires) {
 			if (this._remoteConfig.expires > Date.now()) {
-				logger.debug('_preFlightCheck config valid');
+				logger.debug('preFlightCheck config valid');
 				return true;
 			}
 		}
 
-		logger.debug('_preFlightCheck in-memory config expired');
+		logger.debug('preFlightCheck in-memory config expired');
 		await this.initialize();
 		if (await this.isDisabled()) {
-			logger.debug('_preFlightCheck post-refresh config disabled');
+			logger.debug('preFlightCheck post-refresh config disabled');
 			return false;
 		}
 		return true;
