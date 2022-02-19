@@ -144,6 +144,7 @@ class StorageClass implements StorageFacade {
 				element,
 				mutator,
 				condition: ModelPredicateCreator.getPredicates(condition, false),
+				originalElement,
 			});
 		});
 

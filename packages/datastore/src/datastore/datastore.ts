@@ -1123,9 +1123,27 @@ class DataStore {
 			(async () => {
 				await this.start();
 
+				// Filter the events returned by Storage according to namespace,
+				// append original element data, and subscribe to the observable
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
+					.map((event: SubscriptionMessage<T>): SubscriptionMessage<T> => {
+						// Storage's `save` only returns updated fields - intercept the
+						// event to combine the updated fields with the original, so
+						// that first snapshot returned to the consumer contains all fields
+						const { opType, element, model, condition, originalElement } =
+							event;
+
+						const updated = {
+							opType,
+							element: { ...originalElement, ...element },
+							model,
+							condition,
+						};
+
+						return updated;
+					})
 					.subscribe(observer);
 			})();
 
