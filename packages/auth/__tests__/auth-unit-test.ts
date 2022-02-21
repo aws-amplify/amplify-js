@@ -3358,6 +3358,10 @@ describe('auth unit test', () => {
 	});
 
 	describe('currentUserPoolUser test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -3497,17 +3501,17 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			const spyon = jest
+			jest
 				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 				.mockImplementation(() => {
 					return user;
 				});
-			const spyon2 = jest
+			jest
 				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
-			const spyon3 = jest
+			jest
 				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
 					callback(
@@ -3519,13 +3523,13 @@ describe('auth unit test', () => {
 				});
 			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
 
-			const spyon4 = jest
+			jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 				.mockImplementationOnce(() => {
 					return new CognitoAccessToken({ AccessToken: 'accessToken' });
 				});
 
-			const spyon5 = jest
+			jest
 				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
 				.mockImplementation(() => {
 					return { scope: USER_ADMIN_SCOPE };
@@ -3539,13 +3543,6 @@ describe('auth unit test', () => {
 				Symbol.for('amplify_default')
 			);
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
-			expect.assertions(2);
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
-			spyon4.mockClear();
-			spyon5.mockClear();
 		});
 
 		test('bypass the error if the user is not deleted or disabled', async () => {
