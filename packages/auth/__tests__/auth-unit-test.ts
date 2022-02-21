@@ -3486,7 +3486,7 @@ describe('auth unit test', () => {
 			spyon3.mockClear();
 		});
 
-		test.only('get user data error because of user is deleted or disabled', async () => {
+		test('get user data error because of user is deleted or disabled', async () => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
 				.mockImplementation(() => mockLocalStorage);
