@@ -252,6 +252,21 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
+let mockLocalStorageItems = {};
+
+const mockLocalStorage = {
+	getItem: jest.fn().mockImplementation(key => mockLocalStorageItems[key]),
+	setItem: jest.fn().mockImplementation((key, value) => {
+		mockLocalStorageItems[key] = value;
+	}),
+	clear: jest.fn().mockImplementation(() => {
+		mockLocalStorageItems = {};
+	}),
+	removeItem: jest.fn().mockImplementation(key => {
+		mockLocalStorageItems[key] = undefined;
+	}),
+} as unknown as Storage;
+
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
 import Cache from '@aws-amplify/cache';
@@ -3471,7 +3486,11 @@ describe('auth unit test', () => {
 			spyon3.mockClear();
 		});
 
-		test('get user data error because of user is deleted or disabled', async () => {
+		test.only('get user data error because of user is deleted or disabled', async () => {
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => mockLocalStorage);
+
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
 				Username: 'username',
@@ -3498,6 +3517,7 @@ describe('auth unit test', () => {
 						null
 					);
 				});
+			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
 
 			const spyon4 = jest
 				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
@@ -3510,15 +3530,16 @@ describe('auth unit test', () => {
 				.mockImplementation(() => {
 					return { scope: USER_ADMIN_SCOPE };
 				});
-
-			expect.assertions(1);
-			try {
-				await auth.currentUserPoolUser();
-			} catch (e) {
-				expect(e).toEqual({
-					message: 'User is disabled.',
-				});
-			}
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			await auth.currentUserPoolUser();
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect.assertions(2);
 
 			spyon.mockClear();
 			spyon2.mockClear();
