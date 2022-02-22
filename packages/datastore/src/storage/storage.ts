@@ -111,7 +111,7 @@ class StorageClass implements StorageFacade {
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [originalElement, opType] = r;
+			const [savedElement, opType] = r;
 
 			// truthy when save is called by the Merger
 			const syncResponse = !!mutator;
@@ -122,7 +122,7 @@ class StorageClass implements StorageFacade {
 			if (opType === OpType.UPDATE && !syncResponse) {
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
-					originalElement,
+					savedElement,
 					patchesTuple
 				);
 				// // an update without changed user fields
@@ -132,10 +132,10 @@ class StorageClass implements StorageFacade {
 				}
 			}
 
-			const element = updateMutationInput || originalElement;
+			const element = updateMutationInput || savedElement;
 
 			const modelConstructor = (
-				Object.getPrototypeOf(originalElement) as Object
+				Object.getPrototypeOf(savedElement) as Object
 			).constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
@@ -144,7 +144,7 @@ class StorageClass implements StorageFacade {
 				element,
 				mutator,
 				condition: ModelPredicateCreator.getPredicates(condition, false),
-				originalElement,
+				savedElement,
 			});
 		});
 

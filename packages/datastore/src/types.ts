@@ -397,7 +397,7 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 	element: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
-	originalElement?: T;
+	savedElement?: T;
 };
 
 export type DataStoreSnapshot<T extends PersistentModel> = {

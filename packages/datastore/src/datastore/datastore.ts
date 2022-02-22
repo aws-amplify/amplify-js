@@ -1129,15 +1129,15 @@ class DataStore {
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.map((event: SubscriptionMessage<T>): SubscriptionMessage<T> => {
-						// Storage's `save` only returns updated fields - intercept the
-						// event to combine the updated fields with the original, so
-						// that first snapshot returned to the consumer contains all fields
-						const { opType, element, model, condition, originalElement } =
+						// The `element` returned by storage only contains updated fields.
+						// Intercept the event to send the `savedElement` so that the first 
+						// snapshot returned to the consumer contains all fields
+						const { opType, model, condition, savedElement } =
 							event;
 
 						const updated = {
 							opType,
-							element: { ...originalElement, ...element },
+							element: savedElement,
 							model,
 							condition,
 						};
