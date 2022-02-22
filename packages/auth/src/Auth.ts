@@ -1399,7 +1399,7 @@ export class AuthClass {
 														this.user,
 														`A user has been signed out`
 													);
-													res(user);
+													rej(err);
 												}
 											} else {
 												// the error may also be thrown when lack of permissions to get user info etc

@@ -3490,7 +3490,7 @@ describe('auth unit test', () => {
 			spyon3.mockClear();
 		});
 
-		test('get user data error because of user is deleted or disabled', async () => {
+		test('get user data error because of user is deleted, disabled or token has been revoked', async () => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
 				.mockImplementation(() => mockLocalStorage);
@@ -3514,12 +3514,7 @@ describe('auth unit test', () => {
 			jest
 				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce((callback: any) => {
-					callback(
-						{
-							message: 'User is disabled.',
-						},
-						null
-					);
+					callback(new Error('User is disabled.'), null);
 				});
 			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
 
@@ -3535,7 +3530,9 @@ describe('auth unit test', () => {
 					return { scope: USER_ADMIN_SCOPE };
 				});
 			const hubSpy = jest.spyOn(Hub, 'dispatch');
-			await auth.currentUserPoolUser();
+			await expect(auth.currentUserPoolUser()).rejects.toThrow(
+				'User is disabled.'
+			);
 			expect(hubSpy).toHaveBeenCalledWith(
 				'auth',
 				{ data: null, event: 'signOut', message: 'A user has been signed out' },
