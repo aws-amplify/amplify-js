@@ -1378,25 +1378,35 @@ export class AuthClass {
 												this._storage.getItem(
 													'amplify-signin-with-hostedUI'
 												) === 'true';
-											user.signOut();
-											this.user = null;
-											try {
-												this.cleanCachedItems(); // clean aws credentials
-											} catch (e) {
-												// TODO: change to rejects in refactor
-												logger.debug('failed to clear cached items');
-											}
-											if (isSignedInHostedUI) {
-												this.oAuthSignOutRedirect(res, rej);
-											} else {
-												dispatchAuthEvent(
-													'signOut',
-													this.user,
-													`A user has been signed out`
-												);
-												res(user);
+											if (
+												err.message === 'User is disabled.' ||
+												err.message === 'User does not exist.' ||
+												err.message === 'Access Token has been revoked' // Session revoked by another app
+											) {
+												user.signOut();
+												this.user = null;
+												try {
+													this.cleanCachedItems(); // clean aws credentials
+												} catch (e) {
+													// TODO: change to rejects in refactor
+													logger.debug('failed to clear cached items');
+												}
+												if (isSignedInHostedUI) {
+													this.oAuthSignOutRedirect(res, rej);
+												} else {
+													dispatchAuthEvent(
+														'signOut',
+														this.user,
+														`A user has been signed out`
+													);
+													res(user);
+												}
 											}
 											return;
+										} else {
+											// the error may also be thrown when lack of permissions to get user info etc
+											// in that case we just bypass the error
+											res(user);
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
