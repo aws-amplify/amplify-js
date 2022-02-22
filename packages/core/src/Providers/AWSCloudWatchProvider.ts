@@ -63,7 +63,7 @@ if (
 }
 
 const logger = new Logger('AWSCloudWatch');
-const INTERVAL = 30000;
+const INTERVAL = 10000;
 class AWSCloudWatchProvider implements LoggingProvider {
 	static readonly PROVIDER_NAME = AWS_CLOUDWATCH_PROVIDER_NAME;
 	static readonly CATEGORY = AWS_CLOUDWATCH_CATEGORY;
@@ -93,8 +93,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			this._initialized = true;
 		}
 	}
-
-	// public static instance: AWSCloudWatchProvider;
 
 	public getProviderName(): string {
 		return AWSCloudWatchProvider.PROVIDER_NAME;
@@ -241,7 +239,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	}
 
 	public pushLogs(logs: InputLogEvent[]): void {
-		logger.debug('pushing log events to Cloudwatch buffer');
+		logger.debug('pushing log events to buffer');
 		this._dataTracker.logEvents = this._dataTracker.logEvents.concat(logs);
 	}
 
@@ -477,6 +475,47 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 	}
 
+	private truncateOversizedEvent(event) {
+		const { timestamp, message } = event;
+		let messageJson;
+		try {
+			messageJson = JSON.parse(message);
+
+			const truncated = JSON.stringify({
+				level: messageJson.level,
+				class: messageJson.class,
+				message: messageJson.message.substring(0, 500),
+			});
+
+			if (messageJson.data != null) {
+				truncated[
+					'data'
+				] = `OBJECT SIZE EXCEEDS CLOUDWATCH EVENT LIMIT. Truncated: ${JSON.stringify(
+					messageJson.data
+				).substring(0, 500)}`;
+			}
+
+			return {
+				timestamp,
+				message: truncated,
+			};
+		} catch (error) {
+			logger.warn('Could not minify oversized event', error);
+
+			const truncated = JSON.stringify({
+				level: 'UNKNOWN',
+				class: 'Unknown',
+				message:
+					'OBJECT SIZE EXCEEDS CLOUDWATCH EVENT LIMIT. Could not parse event to truncate',
+			});
+
+			return {
+				timestamp,
+				message: truncated,
+			};
+		}
+	}
+
 	private _getBufferedBatchOfLogs(): InputLogEvent[] {
 		/**
 		 * CloudWatch has restrictions on the size of the log events that get sent up.
@@ -490,20 +529,28 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		let totalByteSize = 0;
 
 		while (currentEventIdx < this._dataTracker.logEvents.length) {
-			const currentEvent = this._dataTracker.logEvents[currentEventIdx];
-			const eventSize = currentEvent
+			let currentEvent = this._dataTracker.logEvents[currentEventIdx];
+
+			let eventSize = currentEvent
 				? new TextEncoder().encode(currentEvent.message).length +
 				  AWS_CLOUDWATCH_BASE_BUFFER_SIZE
 				: 0;
+
 			if (eventSize > AWS_CLOUDWATCH_MAX_EVENT_SIZE) {
 				const errString = `Log entry exceeds maximum size for CloudWatch logs. Log size: ${eventSize}. Truncating log message.`;
 				logger.warn(errString);
 
-				currentEvent.message = currentEvent.message.substring(0, eventSize);
+				currentEvent = this.truncateOversizedEvent(currentEvent);
+				this._dataTracker.logEvents[currentEventIdx] = currentEvent;
+
+				eventSize =
+					new TextEncoder().encode(currentEvent.message).length +
+					AWS_CLOUDWATCH_BASE_BUFFER_SIZE;
 			}
 
 			if (totalByteSize + eventSize > AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE)
 				break;
+
 			totalByteSize += eventSize;
 			currentEventIdx++;
 		}
