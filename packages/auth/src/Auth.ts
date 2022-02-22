@@ -1401,12 +1401,11 @@ export class AuthClass {
 													);
 													res(user);
 												}
+											} else {
+												// the error may also be thrown when lack of permissions to get user info etc
+												// in that case we just bypass the error
+												res(user);
 											}
-											return;
-										} else {
-											// the error may also be thrown when lack of permissions to get user info etc
-											// in that case we just bypass the error
-											res(user);
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
