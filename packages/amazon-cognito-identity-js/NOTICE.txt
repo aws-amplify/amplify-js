@@ -1,5 +1,5 @@
 Amazon Cognito Identity Provider SDK for JavaScript
-Copyright 2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 =========================================================================
 ==                 JavaScript BN library Notice                        ==

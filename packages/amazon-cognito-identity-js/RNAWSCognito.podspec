@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.version = package['version']
   s.requires_arc = true
   s.platforms = { :ios => "8.0" }
-  s.license = { :file => 'LICENSE.txt' }
+  s.license = { :type => 'Apache-2.0', :file => 'LICENSE.txt' }
   s.homepage = "https://github.com/aws-amplify/amplify-js/tree/main/packages/amazon-cognito-identity-js"
   s.author = "Amazon"
 
