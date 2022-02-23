@@ -26,7 +26,7 @@ import {
 	Credentials,
 } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
-import { GraphQLQuery } from './types';
+import { GraphQLQuery, GraphQLSubscription } from './types';
 
 const logger = new Logger('API');
 /**
@@ -215,12 +215,14 @@ export class APIClass {
 	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
-	graphql<T = any>(
+	graphql<T>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
-		: Observable<GraphQLResult<T>>;
+		: T extends GraphQLSubscription<T>
+		? Observable<GraphQLResult<T>>
+		: Promise<GraphQLResult> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
