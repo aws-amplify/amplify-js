@@ -75,8 +75,8 @@
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
+    "@babel/cli": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.0.0",
     "@react-native-async-storage/async-storage": "1.15.17",
