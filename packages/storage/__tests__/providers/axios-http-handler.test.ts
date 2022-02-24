@@ -3,7 +3,7 @@ import {
 	AxiosHttpHandler,
 	reactNativeRequestTransformer,
 } from '../../src/providers/axios-http-handler';
-import { HttpRequest } from '@aws-sdk/protocol-http';
+import { HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { Platform, Logger } from '@aws-amplify/core';
 
 jest.mock('axios');
@@ -196,6 +196,31 @@ describe('AxiosHttpHandler', () => {
 			await expect(handler.handle(request, options)).rejects.toThrowError(
 				'Unexpected error!'
 			);
+		});
+
+		it('error with response object should be converted to a HttpResponse', async () => {
+			const expectedHeaders = {
+				foo: 'bar',
+			};
+			const expectedStatusCode = 400;
+			const expectedBody = 'body';
+			axios.request = jest.fn().mockImplementationOnce(() =>
+				Promise.reject({
+					response: {
+						status: expectedStatusCode,
+						headers: expectedHeaders,
+						data: expectedBody,
+					},
+				})
+			);
+			const handler = new AxiosHttpHandler();
+			const result = await handler.handle(request, options);
+			expect(result.response).toBeInstanceOf(HttpResponse);
+			expect(result.response).toEqual({
+				statusCode: expectedStatusCode,
+				headers: expectedHeaders,
+				body: expectedBody,
+			});
 		});
 	});
 
