@@ -106,9 +106,14 @@ export declare class PostCustomPK {
 	readonly [__modelMeta__]: {
 		identifier: CustomIdentifier<PostCustomPK, 'postId'>;
 	};
-	public readonly postId: number;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
+	public readonly dateCreated: string;
+	public readonly optionalField1?: string;
+	public readonly emails?: string[];
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
 
 	constructor(init: ModelInit<PostCustomPK>);
 
@@ -122,8 +127,8 @@ export declare class PostCustomPKSort {
 	readonly [__modelMeta__]: {
 		identifier: CompositeIdentifier<PostCustomPKSort, ['id', 'postId']>;
 	};
-	public readonly id: string;
-	public readonly postId: number;
+	public readonly id: number | string;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 
@@ -140,7 +145,7 @@ export declare class PostCustomPKComposite {
 		identifier: CompositeIdentifier<PostCustomPKComposite, ['id', 'postId']>;
 	};
 	public readonly id: string;
-	public readonly postId: number;
+	public readonly postId: string;
 	public readonly title: string;
 	public readonly description?: string;
 	public readonly sort: number;
@@ -482,7 +487,7 @@ export function testSchema(): Schema {
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},
@@ -498,6 +503,37 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: false,
+						attributes: [],
+					},
+					emails: {
+						name: 'emails',
+						isArray: true,
+						type: 'AWSEmail',
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: true,
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					dateCreated: {
+						name: 'dateCreated',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
 						attributes: [],
 					},
 				},
@@ -529,7 +565,7 @@ export function testSchema(): Schema {
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},
@@ -576,7 +612,7 @@ export function testSchema(): Schema {
 					postId: {
 						name: 'postId',
 						isArray: false,
-						type: 'Int',
+						type: 'String',
 						isRequired: true,
 						attributes: [],
 					},

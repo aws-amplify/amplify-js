@@ -13,7 +13,6 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import { extractPrimaryKeyFieldNames } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -53,8 +52,9 @@ describe('MutationProcessor', () => {
 		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
 			// custom PK @key(fields: ["postId"])
 			const deletePost = new PostCustomPK({
-				postId: 100,
+				postId: '100',
 				title: 'Title',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
@@ -67,7 +67,7 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.postId).toEqual(100);
+			expect(input.postId).toEqual('100');
 			expect(input.id).toBeUndefined();
 		});
 
@@ -75,7 +75,7 @@ describe('MutationProcessor', () => {
 			// multi-key PK @key(fields: ["id", "postId"])
 			const deletePost = new PostCustomPKSort({
 				id: 'abcdef',
-				postId: 100,
+				postId: '100',
 				title: 'Title',
 			});
 
@@ -89,9 +89,8 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).toEqual(deletePost.id);
 			expect(input.id).toEqual('abcdef');
-			expect(input.postId).toEqual(100);
+			expect(input.postId).toEqual('100');
 		});
 	});
 	afterAll(() => {
