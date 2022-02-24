@@ -167,8 +167,11 @@ describe('AxiosHttpHandler', () => {
 				.mockImplementation(() => Promise.reject(new Error('err')));
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 			const handler = new AxiosHttpHandler();
-			await handler.handle(request, options);
-			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+			try {
+				await handler.handle(request, options);
+			} catch (_error) {
+				expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+			}
 		});
 
 		it('cancel request should throw error', async () => {
@@ -183,13 +186,16 @@ describe('AxiosHttpHandler', () => {
 			);
 		});
 
-		it('caught error should default to a 400 status code', async () => {
+		it('unexpected error without a response object should be re-thrown', async () => {
 			axios.request = jest
 				.fn()
-				.mockImplementationOnce(() => Promise.reject(new Error('err')));
+				.mockImplementationOnce(() =>
+					Promise.reject(new Error('Unexpected error!'))
+				);
 			const handler = new AxiosHttpHandler();
-			const result = await handler.handle(request, options);
-			expect(result.response.statusCode).toEqual(400);
+			await expect(handler.handle(request, options)).rejects.toThrowError(
+				'Unexpected error!'
+			);
 		});
 	});
 
