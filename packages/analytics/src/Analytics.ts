@@ -62,7 +62,7 @@ export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled: boolean;
-	private _trackers: Trackers;
+	private _trackers: Trackers | {};
 
 	/**
 	 * Initialize Analtyics
@@ -72,6 +72,7 @@ export class AnalyticsClass {
 		this._config = {};
 		this._pluggables = [];
 		this._disabled = false;
+		this._trackers = {};
 		_instance = this;
 
 		this.record = this.record.bind(this);
