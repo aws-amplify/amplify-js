@@ -24,7 +24,6 @@ import {
 	EventAttributes,
 	EventMetrics,
 	AnalyticsEvent,
-	AutoTrackOpts,
 	AutoTrackSessionOpts,
 	AutoTrackPageViewOpts,
 	AutoTrackEventOpts,

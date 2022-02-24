@@ -86,17 +86,6 @@ export interface AutoTrackEventOpts {
 	attributes?: AutoTrackAttributes;
 }
 
-export interface AutoTrackOpts {
-	enable: boolean;
-	events?: string[];
-	eventName?: string;
-	attributes?: AutoTrackAttributes;
-	provider?: string;
-	type?: string;
-	getUrl?: () => string;
-	selectorPrefix?: string;
-}
-
 export interface AnalyticsEvent {
 	name: string;
 	attributes?: EventAttributes;
