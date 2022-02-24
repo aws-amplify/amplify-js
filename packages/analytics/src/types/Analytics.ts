@@ -66,6 +66,7 @@ export type AutoTrackAttributes =
 export interface AutoTrackOpts {
 	enable: boolean;
 	events?: string[];
+	eventName?: string;
 	attributes?: AutoTrackAttributes;
 	provider?: string;
 	type?: string;
