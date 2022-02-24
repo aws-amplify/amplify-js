@@ -79,7 +79,7 @@ export interface AutoTrackPageViewOpts {
 }
 
 export interface AutoTrackEventOpts {
-	enable: true;
+	enable: boolean;
 	events?: string[];
 	selectorPrefix?: string;
 	provider?: string;
