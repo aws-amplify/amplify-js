@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { ICredentials } from '@aws-amplify/core';
+
 /**
  * Analytics instance options
  */
@@ -57,17 +58,4 @@ export interface SessionTrackOpts {
 		| EventAttributes
 		| (() => EventAttributes | Promise<EventAttributes>);
 	provider?: string;
-}
-
-export interface AutoTrackOpts {
-	enable: boolean;
-	attributes?: EventAttributes;
-	provider?: string;
-}
-
-export interface AnalyticsEvent {
-	name: string;
-	attributes?: EventAttributes;
-	metrics?: EventMetrics;
-	immediate?: boolean;
 }
