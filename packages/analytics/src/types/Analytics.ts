@@ -75,7 +75,7 @@ export interface AutoTrackPageViewOpts {
 	attributes?: AutoTrackAttributes;
 	type?: 'SPA' | 'multiPageApp';
 	provider?: string;
-	getUrl: () => string;
+	getUrl?: () => string;
 }
 
 export interface AutoTrackEventOpts {
