@@ -59,10 +59,18 @@ export interface SessionTrackOpts {
 	provider?: string;
 }
 
+export type AutoTrackAttributes =
+	| (() => EventAttributes | Promise<EventAttributes>)
+	| EventAttributes;
+
 export interface AutoTrackOpts {
 	enable: boolean;
-	attributes?: EventAttributes;
+	events?: string[];
+	attributes?: AutoTrackAttributes;
 	provider?: string;
+	type?: string;
+	getUrl?: () => string;
+	selectorPrefix?: string;
 }
 
 export interface AnalyticsEvent {
