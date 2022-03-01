@@ -16,6 +16,7 @@ import {
 	print,
 	parse,
 	GraphQLError,
+	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
@@ -28,7 +29,12 @@ import {
 import PubSub from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
+import {
+	GraphQLAuthError,
+	GraphQLOptions,
+	GraphQLResult,
+	GraphQLOperation,
+} from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -124,10 +130,8 @@ export class GraphQLAPIClass {
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const {
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-		} = this._options;
+		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
+			this._options;
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 		let headers = {};
@@ -203,11 +207,10 @@ export class GraphQLAPIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation) {
+	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions = doc.definitions as ReadonlyArray<
-			OperationDefinitionNode
-		>;
+		const definitions =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -216,25 +219,24 @@ export class GraphQLAPIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
-	 * @param {GraphQLOptions} GraphQL Options
-	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
-	 * @returns {Promise<GraphQLResult> | Observable<object>}
+	 * @param options - GraphQL Options
+	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
-	graphql(
+	graphql<T = any>(
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	) {
+	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
+			(def) => def.kind === 'OperationDefinition'
 		);
-		const {
-			operation: operationType,
-		} = operationDef as OperationDefinitionNode;
+		const { operation: operationType } =
+			operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
 
@@ -248,7 +250,7 @@ export class GraphQLAPIClass {
 			case 'mutation':
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
-				const responsePromise = this._graphql(
+				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
 					initParams
@@ -260,16 +262,16 @@ export class GraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe({ query, variables, authMode }, headers);
+			default:
+				throw new Error(`invalid operation type: ${operationType}`);
 		}
-
-		throw new Error(`invalid operation type: ${operationType}`);
 	}
 
-	private async _graphql(
+	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
-	): Promise<GraphQLResult> {
+	): Promise<GraphQLResult<T>> {
 		if (!this._api) {
 			await this.createInstance();
 		}
@@ -410,14 +412,14 @@ export class GraphQLAPIClass {
 	 */
 	_ensureCredentials() {
 		return this.Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});
