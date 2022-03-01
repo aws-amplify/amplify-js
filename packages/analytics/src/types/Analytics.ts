@@ -59,10 +59,31 @@ export interface SessionTrackOpts {
 	provider?: string;
 }
 
-export interface AutoTrackOpts {
+export type AutoTrackAttributes =
+	| (() => EventAttributes | Promise<EventAttributes>)
+	| EventAttributes;
+
+export interface AutoTrackSessionOpts {
 	enable: boolean;
-	attributes?: EventAttributes;
+	attributes?: AutoTrackAttributes;
 	provider?: string;
+}
+
+export interface AutoTrackPageViewOpts {
+	enable: boolean;
+	eventName?: string;
+	attributes?: AutoTrackAttributes;
+	type?: 'SPA' | 'multiPageApp';
+	provider?: string;
+	getUrl?: () => string;
+}
+
+export interface AutoTrackEventOpts {
+	enable: boolean;
+	events?: string[];
+	selectorPrefix?: string;
+	provider?: string;
+	attributes?: AutoTrackAttributes;
 }
 
 export interface AnalyticsEvent {

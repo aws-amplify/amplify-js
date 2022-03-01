@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.2.0...@aws-amplify/geo@1.2.1) (2022-02-28)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@1.1.13...@aws-amplify/geo@1.2.0) (2022-02-03)
 
 
