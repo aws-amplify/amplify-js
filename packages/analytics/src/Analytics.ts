@@ -24,7 +24,9 @@ import {
 	EventAttributes,
 	EventMetrics,
 	AnalyticsEvent,
-	AutoTrackOpts,
+	AutoTrackSessionOpts,
+	AutoTrackPageViewOpts,
+	AutoTrackEventOpts,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
@@ -62,7 +64,7 @@ export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled: boolean;
-	private _trackers: Trackers;
+	private _trackers: Trackers | {};
 
 	/**
 	 * Initialize Analtyics
@@ -72,6 +74,7 @@ export class AnalyticsClass {
 		this._config = {};
 		this._pluggables = [];
 		this._disabled = false;
+		this._trackers = {};
 		_instance = this;
 
 		this.record = this.record.bind(this);
@@ -298,7 +301,15 @@ export class AnalyticsClass {
 	 * @param trackerType - The type of tracker to activate.
 	 * @param [opts] - Auto tracking options.
 	 */
-	public autoTrack(trackerType: TrackerTypes, opts: AutoTrackOpts) {
+	public autoTrack(trackerType: 'session', opts: AutoTrackSessionOpts);
+	public autoTrack(trackerType: 'pageView', opts: AutoTrackPageViewOpts);
+	public autoTrack(trackerType: 'event', opts: AutoTrackEventOpts);
+	// ensures backwards compatibility for non-pinpoint provider users
+	public autoTrack(
+		trackerType: TrackerTypes,
+		opts: { provider: string; [key: string]: any }
+	);
+	public autoTrack(trackerType: TrackerTypes, opts: { [key: string]: any }) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
 			return;

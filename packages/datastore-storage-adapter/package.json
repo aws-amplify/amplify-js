@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore-storage-adapter",
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"description": "SQLite storage adapter for Amplify DataStore ",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",

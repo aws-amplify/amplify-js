@@ -10,9 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-// @ts-ignore
-import { GraphQLError } from 'graphql/error/GraphQLError';
-import { DocumentNode } from 'graphql/language/ast';
+import { Source, DocumentNode, GraphQLError } from 'graphql';
+export { OperationTypeNode } from 'graphql';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
@@ -44,3 +43,9 @@ export enum GraphQLAuthError {
 	NO_FEDERATED_JWT = 'No federated jwt',
 	NO_AUTH_TOKEN = 'No auth token specified',
 }
+
+/**
+ * GraphQLSource or string, the type of the parameter for calling graphql.parse
+ * @see: https://graphql.org/graphql-js/language/#parse
+ */
+export type GraphQLOperation = Source | string;

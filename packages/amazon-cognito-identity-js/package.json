@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "5.2.6",
+  "version": "5.2.7",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -75,8 +75,8 @@
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
+    "@babel/cli": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.0.0",
     "@react-native-async-storage/async-storage": "1.15.17",
