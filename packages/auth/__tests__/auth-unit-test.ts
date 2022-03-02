@@ -236,6 +236,14 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'data');
 	};
 
+	CognitoUser.prototype.setUserMfaPreference = (
+		smsMfaSettings,
+		softwareTokenMfaSettings,
+		callback
+	) => {
+		callback(null, 'success');
+	};
+
 	CognitoUser.prototype.getCachedDeviceKeyAndPassword = () => {
 		return 'success';
 	};
@@ -4070,6 +4078,76 @@ describe('auth unit test', () => {
 
 			await expect(
 				auth.getPreferredMFA(user, { bypassCache: true })
+			).rejects.toThrow('Access Token has been revoked');
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+		});
+	});
+
+	describe.only('setPreferredMFA test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.resetAllMocks();
+		});
+
+		beforeEach(() => {
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => mockLocalStorage);
+		});
+
+		it('happy path', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const getUserDataSpy = jest.spyOn(user, 'getUserData');
+			const setUserMfaPreferenceSpy = jest.spyOn(user, 'setUserMfaPreference');
+			const res = await auth.setPreferredMFA(user, 'SOFTWARE_TOKEN_MFA');
+			expect(setUserMfaPreferenceSpy).toHaveBeenCalledWith(
+				null,
+				{ Enabled: true, PreferredMfa: true },
+				expect.any(Function)
+			);
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
+			// once at the beginning, once after calling setUserMfaPreference
+			expect(getUserDataSpy).toHaveBeenCalledTimes(2);
+			expect(res).toStrictEqual('success');
+		});
+
+		test('get user data error because user is deleted, disabled or token has been revoked', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => user);
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					callback(new Error('Access Token has been revoked'), null);
+				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			await expect(
+				auth.setPreferredMFA(user, 'SOFTWARE_TOKEN_MFA')
 			).rejects.toThrow('Access Token has been revoked');
 			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
 				bypassCache: true,

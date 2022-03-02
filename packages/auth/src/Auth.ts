@@ -858,6 +858,7 @@ export class AuthClass {
 						(err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
+								this.handleGetUserDataError({ err, res, rej });
 								return rej(err);
 							} else {
 								return res(result);
