@@ -48,7 +48,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
 
-	constructor(db) {
+	constructor(db: CommonSQLiteDatabase) {
 		this.db = db;
 	}
 
@@ -79,6 +79,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			await this.db.init();
 			const statements = generateSchemaStatements(this.schema);
 			await this.db.createSchema(statements);
+
 			this.resolve();
 		} catch (error) {
 			this.reject(error);
@@ -88,7 +89,6 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	async clear(): Promise<void> {
 		await this.db.clear();
 
-		this.db = undefined;
 		this.initPromise = undefined;
 	}
 
@@ -290,6 +290,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	): Promise<T> {
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
+
 		return record;
 	}
 
@@ -389,6 +390,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 					tableName
 				);
 				await this.db.save(deleteStatement, deleteParams);
+
 				return [[model], [model]];
 			} else {
 				const [deleteStatement, params] = deleteByIdStatement(
@@ -396,6 +398,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 					tableName
 				);
 				await this.db.save(deleteStatement, params);
+
 				return [[model], [model]];
 			}
 		}
@@ -406,7 +409,6 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
-
 		const result: [T, OpType][] = [];
 
 		const itemsToSave: T[] = [];

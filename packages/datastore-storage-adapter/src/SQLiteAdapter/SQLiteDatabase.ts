@@ -37,12 +37,10 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	public async init(): Promise<void> {
 		// only open database once.
 		if (!this.db) {
-			this.db = await SQLite.openDatabase(
-				DB_NAME,
-				DB_VERSION,
-				DB_DISPLAYNAME,
-				DB_SIZE
-			);
+			this.db = await SQLite.openDatabase({
+				name: DB_NAME,
+				location: 'default',
+			});
 		}
 	}
 
@@ -53,7 +51,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	public async clear(): Promise<void> {
 		await this.closeDB();
 		logger.debug('Deleting database');
-		await SQLite.deleteDatabase(DB_NAME);
+		await SQLite.deleteDatabase({ name: DB_NAME, location: 'default' });
 		logger.debug('Database deleted');
 	}
 
@@ -61,15 +59,8 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		statement: string,
 		params: (string | number)[]
 	): Promise<T> {
-		const [resultSet] = await this.db.executeSql(statement, params);
-		const result =
-			resultSet &&
-			resultSet.rows &&
-			resultSet.rows.length &&
-			resultSet.rows.raw &&
-			resultSet.rows.raw();
-
-		return result[0] || undefined;
+		const results: T[] = await this.getAll(statement, params);
+		return results[0];
 	}
 
 	public async getAll<T extends PersistentModel>(
@@ -156,7 +147,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(tx => {
+		this.db.transaction(tx => {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}
@@ -168,6 +159,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 			logger.debug('Closing Database');
 			await this.db.close();
 			logger.debug('Database closed');
+			this.db = undefined;
 		}
 	}
 }
