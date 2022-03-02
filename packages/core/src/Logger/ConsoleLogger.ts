@@ -125,8 +125,6 @@ export class ConsoleLogger implements Logger {
 			this._checkPluggables();
 		}
 
-		const generateMessage = (msg: any[]): void => {};
-
 		const generateCloudMessage = (msg: any[]) => {
 			let message = '';
 			let data;

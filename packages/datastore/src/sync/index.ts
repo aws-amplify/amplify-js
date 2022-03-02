@@ -303,6 +303,11 @@ export class SyncEngine {
 												isEmpty: !hasMore,
 											},
 										});
+
+										if (!hasMore) {
+											logger.debug('Debug info after queue drained');
+											this.storage.logDebugInfo();
+										}
 									})
 							);
 							//#endregion
@@ -339,6 +344,9 @@ export class SyncEngine {
 									active: this.online,
 								},
 							});
+
+							logger.debug('Debug info after offline');
+							await this.storage.logDebugInfo();
 
 							subscriptions.forEach(sub => sub.unsubscribe());
 							subscriptions = [];

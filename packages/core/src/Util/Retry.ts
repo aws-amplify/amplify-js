@@ -28,9 +28,8 @@ export async function retry(
 		throw Error('functionToRetry must be a function');
 	}
 	logger.debug(
-		`${
-			functionToRetry.name
-		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
+		`${functionToRetry.name} attempt #${attempt} with this vars:`,
+		args
 	);
 
 	try {

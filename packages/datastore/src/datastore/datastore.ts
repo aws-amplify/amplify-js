@@ -565,7 +565,7 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 }
 
 function defaultErrorHandler(error: SyncError) {
-	logger.warn(error);
+	logger.warn('DataStore Mutation Error', error);
 }
 
 function getModelConstructorByModelName(

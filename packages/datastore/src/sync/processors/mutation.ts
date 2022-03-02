@@ -251,19 +251,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -358,17 +353,18 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
 
 								await this.storage.save(updatedMutation);
 
@@ -380,6 +376,7 @@ class MutationProcessor {
 											modelConstructor,
 											variables.input
 										),
+										modelName: model,
 										message: error.message,
 										operation,
 										errorType: error.errorType,
