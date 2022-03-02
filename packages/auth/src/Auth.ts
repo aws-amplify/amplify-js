@@ -703,8 +703,8 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
+						this.handleGetUserDataError({ err, res, rej });
 						rej(err);
-						return;
 					}
 
 					const mfaType = that._getMfaTypeFromUserData(data);
@@ -756,11 +756,10 @@ export class AuthClass {
 			user.getUserData((err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
+					this.handleGetUserDataError({ err, res, rej });
 					rej(err);
-					return;
 				} else {
 					res(data);
-					return;
 				}
 			}, params);
 		});
@@ -1292,6 +1291,78 @@ export class AuthClass {
 		});
 	}
 
+	private isErrorWithMessage(err: any): err is { message: string } {
+		return (
+			typeof err === 'object' &&
+			Object.prototype.hasOwnProperty.call(err, 'message')
+		);
+	}
+
+	// Session revoked by another app
+	private isTokenRevokedError(err: any) {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Access Token has been revoked'
+		);
+	}
+
+	private isUserDisabledError(err: any) {
+		return this.isErrorWithMessage(err) && err.message === 'User is disabled.';
+	}
+
+	private isUserDoesNotExistError(err: any) {
+		return (
+			this.isErrorWithMessage(err) && err.message === 'User does not exist.'
+		);
+	}
+
+	private isSignedInHostedUI() {
+		return (
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true'
+		);
+	}
+
+	private handleGetUserDataError({
+		err,
+		res,
+		rej,
+	}: {
+		err: any;
+		res: (value?: any) => void;
+		rej: (reason?: any) => void;
+	}) {
+		const user = this.userPool.getCurrentUser();
+		if (!user) {
+			logger.debug('Failed to get user from user pool');
+			rej(Error('No current user'));
+		}
+		if (
+			this.isUserDisabledError(err) ||
+			this.isUserDoesNotExistError(err) ||
+			this.isTokenRevokedError(err)
+		) {
+			user.signOut();
+			this.user = null;
+			try {
+				this.cleanCachedItems(); // clean aws credentials
+			} catch (e) {
+				// TODO: change to rejects in refactor
+				logger.debug('failed to clear cached items');
+			}
+			if (this.isSignedInHostedUI()) {
+				this.oAuthSignOutRedirect(res, rej);
+			} else {
+				dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
+			}
+			rej(err);
+		} else {
+			// the error may also be thrown when lack of permissions to get user info etc
+			// in that case we just bypass the error
+			res(user);
+		}
+	}
+
 	/**
 	 * Get current authenticated user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
@@ -1373,39 +1444,7 @@ export class AuthClass {
 									(err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
-											const isSignedInHostedUI =
-												this._oAuthHandler &&
-												this._storage.getItem(
-													'amplify-signin-with-hostedUI'
-												) === 'true';
-											if (
-												err.message === 'User is disabled.' ||
-												err.message === 'User does not exist.' ||
-												err.message === 'Access Token has been revoked' // Session revoked by another app
-											) {
-												user.signOut();
-												this.user = null;
-												try {
-													this.cleanCachedItems(); // clean aws credentials
-												} catch (e) {
-													// TODO: change to rejects in refactor
-													logger.debug('failed to clear cached items');
-												}
-												if (isSignedInHostedUI) {
-													this.oAuthSignOutRedirect(res, rej);
-												} else {
-													dispatchAuthEvent(
-														'signOut',
-														this.user,
-														`A user has been signed out`
-													);
-													rej(err);
-												}
-											} else {
-												// the error may also be thrown when lack of permissions to get user info etc
-												// in that case we just bypass the error
-												res(user);
-											}
+											this.handleGetUserDataError({ err, res, rej });
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
@@ -2159,7 +2198,7 @@ export class AuthClass {
 						logger.debug('AWS credentials', credentials);
 					}
 
-					/* 
+					/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained
 				then there is custom state present on the state string.
