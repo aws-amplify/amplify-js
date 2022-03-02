@@ -3995,4 +3995,93 @@ describe('auth unit test', () => {
 			spyOnCognito.mockClear();
 		});
 	});
+
+	describe('getPreferredMFA test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.resetAllMocks();
+		});
+
+		beforeEach(() => {
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => mockLocalStorage);
+		});
+
+		test('happy path', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					const data = {
+						PreferredMfaSetting: 'SMS',
+					};
+					callback(null, data);
+				});
+			const res = await auth.getPreferredMFA(user);
+			expect(res).toEqual('SMS');
+			expect(getUserDataSpy).toHaveBeenCalledTimes(1);
+		});
+
+		test('should allow bypassCache', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					const data = {
+						PreferredMfaSetting: 'SMS',
+					};
+					callback(null, data);
+				});
+			const res = await auth.getPreferredMFA(user, { bypassCache: true });
+			expect(res).toEqual('SMS');
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
+		});
+
+		test('get user data error because user is deleted, disabled or token has been revoked', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => user);
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					callback(new Error('Access Token has been revoked'), null);
+				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+
+			await expect(
+				auth.getPreferredMFA(user, { bypassCache: true })
+			).rejects.toThrow('Access Token has been revoked');
+			expect(getUserDataSpy).toHaveBeenCalledWith(expect.any(Function), {
+				bypassCache: true,
+			});
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+		});
+	});
 });
