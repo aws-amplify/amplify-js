@@ -39,12 +39,18 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public async clear(): Promise<void> {
-		logger.debug('Clearing database');
-		await this.closeDB();
-		// delete database is not supported by expo-sqlite.
-		// Database file needs to be deleted using deleteAsync from expo-file-system
-		await deleteAsync(documentDirectory + 'SQLite/' + DB_NAME);
-		logger.debug('Database cleared');
+		try {
+			logger.debug('Clearing database');
+			await this.closeDB();
+			// delete database is not supported by expo-sqlite.
+			// Database file needs to be deleted using deleteAsync from expo-file-system
+			await deleteAsync(documentDirectory + 'SQLite/' + DB_NAME);
+			logger.debug('Database cleared');
+		} catch (error) {
+			logger.warn('Error clearing the database.', error);
+			// open database if it was closed earlier and this.db was set to undefined.
+			this.init();
+		}
 	}
 
 	public async get<T extends PersistentModel>(
@@ -103,9 +109,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		return new Promise((resolveTx, rejectTx) => {
 			this.db.transaction(async tx => {
 				try {
-					const results = [];
-					// await to push all statement result into the results array.
-					await Promise.all(
+					const results: T[] = await Promise.all(
 						[...queryStatements].map(
 							([statement, params]) =>
 								new Promise((resolve, reject) => {
@@ -113,8 +117,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 										statement,
 										params,
 										(_, res) => {
-											results.push(res.rows._array[0]);
-											resolve(null);
+											resolve(res.rows._array[0]);
 										},
 										(_, error) => {
 											reject(error);
@@ -140,52 +143,48 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		return new Promise((resolveTx, rejectTx) => {
 			try {
 				this.db.transaction(async tx => {
-					if (saveStatements) {
-						// await for all sql statments promises to resolve
-						await Promise.all(
-							[...saveStatements].map(
-								([statement, params]) =>
-									new Promise((resolve, reject) =>
-										tx.executeSql(
-											statement,
-											params,
-											(_, result) => {
-												resolve(null);
-											},
-											(_, error) => {
-												reject(error);
-												logger.warn(error);
-												return true;
-											}
-										)
+					// await for all sql statments promises to resolve
+					await Promise.all(
+						[...(saveStatements ?? [])].map(
+							([statement, params]) =>
+								new Promise((resolve, reject) =>
+									tx.executeSql(
+										statement,
+										params,
+										(_, result) => {
+											resolve(null);
+										},
+										(_, error) => {
+											reject(error);
+											logger.warn(error);
+											return true;
+										}
 									)
-							)
-						);
-					}
+								)
+						)
+					);
 				});
-				if (deleteStatements) {
-					this.db.transaction(async tx => {
-						await Promise.all(
-							[...deleteStatements].map(
-								([statement, params]) =>
-									new Promise((resolve, reject) =>
-										tx.executeSql(
-											statement,
-											params,
-											(_, result) => {
-												resolve(null);
-											},
-											(_, error) => {
-												reject(error);
-												logger.warn(error);
-												return true;
-											}
-										)
+				this.db.transaction(async tx => {
+					await Promise.all(
+						[...(deleteStatements ?? [])].map(
+							([statement, params]) =>
+								new Promise((resolve, reject) =>
+									tx.executeSql(
+										statement,
+										params,
+										(_, result) => {
+											resolve(null);
+										},
+										(_, error) => {
+											reject(error);
+											logger.warn(error);
+											return true;
+										}
 									)
-							)
-						);
-					});
-				}
+								)
+						)
+					);
+				});
 				resolveTx(null);
 			} catch (error) {
 				rejectTx(error);
@@ -276,7 +275,6 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 			// Workaround is to access the private db variable and call the close() method.
 			await (this.db as any)._db.close();
 			logger.debug('Database closed');
-
 			this.db = undefined;
 		}
 	}

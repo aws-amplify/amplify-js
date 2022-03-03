@@ -95,7 +95,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 				tx.executeSql(
 					statement,
 					params,
-					(_tx, res) => {
+					(_, res) => {
 						results.push(res.rows.raw()[0]);
 					},
 					logger.warn
@@ -135,7 +135,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 			tx.executeSql(
 				queryStatement,
 				queryParams,
-				(_tx, res) => {
+				(_, res) => {
 					results = res.rows.raw();
 				},
 				logger.warn
@@ -147,7 +147,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		this.db.transaction(tx => {
+		await this.db.transaction(tx => {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}
