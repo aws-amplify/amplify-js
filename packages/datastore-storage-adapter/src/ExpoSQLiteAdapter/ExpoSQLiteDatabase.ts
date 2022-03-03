@@ -109,7 +109,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		return new Promise((resolveTx, rejectTx) => {
 			this.db.transaction(async tx => {
 				try {
-					const results: T[] = await Promise.all(
+					const results: any[] = await Promise.all(
 						[...queryStatements].map(
 							([statement, params]) =>
 								new Promise((resolve, reject) => {
