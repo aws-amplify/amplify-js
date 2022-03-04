@@ -703,15 +703,16 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
-						const errorOrUser = this.handleSessionError({
+						const handleErrorResult = this.handleSessionError({
 							err,
 							resolutionFunc: res,
 							rejectionFunc: rej,
 						});
-						if (errorOrUser && errorOrUser instanceof Error) {
-							rej(errorOrUser);
+						if (handleErrorResult && handleErrorResult instanceof Error) {
+							rej(handleErrorResult);
 						}
 						rej(err);
+						return;
 					}
 
 					const mfaType = that._getMfaTypeFromUserData(data);
@@ -770,10 +771,11 @@ export class AuthClass {
 					});
 					if (errorOrUser && errorOrUser instanceof Error) {
 						rej(errorOrUser);
-					} else if (errorOrUser && !(errorOrUser instanceof Error)) {
-						res(errorOrUser);
+					} else {
+						res(user);
 					}
 					rej(err);
+					return;
 				} else {
 					res(data);
 				}
@@ -1379,7 +1381,7 @@ export class AuthClass {
 		resolutionFunc: (value?: any) => void;
 		rejectionFunc: (reason?: any) => void;
 		// function might get resolved or rejected inside oAuthSignOutRedirect, so return type can also involve void
-	}): Error | CognitoUser | void {
+	}): Error | void {
 		const user = this.userPool.getCurrentUser();
 		if (!user) {
 			logger.debug('Failed to get user from user pool');
@@ -1405,10 +1407,6 @@ export class AuthClass {
 				dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 			}
 			return err instanceof Error ? err : new Error(err.message);
-		} else {
-			// the error may also be thrown when lack of permissions to get user info etc
-			// in that case we just bypass the error
-			return user;
 		}
 	}
 
@@ -1473,13 +1471,13 @@ export class AuthClass {
 						async (err, session) => {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
-								const errorOrUser = this.handleSessionError({
+								const handleErrorResult = this.handleSessionError({
 									err,
 									resolutionFunc: res,
 									rejectionFunc: rej,
 								});
-								if (errorOrUser && errorOrUser instanceof Error) {
-									rej(errorOrUser);
+								if (handleErrorResult && handleErrorResult instanceof Error) {
+									rej(handleErrorResult);
 								}
 								rej(err);
 								return;
@@ -1501,20 +1499,21 @@ export class AuthClass {
 									(err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
-											const errorOrUser = this.handleSessionError({
+											const handleErrorResult = this.handleSessionError({
 												err,
 												resolutionFunc: res,
 												rejectionFunc: rej,
 											});
-											if (errorOrUser && errorOrUser instanceof Error) {
-												rej(errorOrUser);
-											} else if (
-												errorOrUser &&
-												!(errorOrUser instanceof Error)
+											if (
+												handleErrorResult &&
+												handleErrorResult instanceof Error
 											) {
-												res(errorOrUser);
+												rej(handleErrorResult);
+											} else {
+												res(user);
 											}
 											rej(err);
+											return;
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
@@ -1665,13 +1664,13 @@ export class AuthClass {
 				(err, session) => {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
-						const errorOrUser = this.handleSessionError({
+						const handleErrorResult = this.handleSessionError({
 							err,
 							resolutionFunc: resolve,
 							rejectionFunc: reject,
 						});
-						if (errorOrUser && errorOrUser instanceof Error) {
-							reject(errorOrUser);
+						if (handleErrorResult && handleErrorResult instanceof Error) {
+							reject(handleErrorResult);
 						}
 						reject(err);
 						return;
@@ -1837,13 +1836,13 @@ export class AuthClass {
 					(err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
-							const errorOrUser = this.handleSessionError({
+							const handleErrorResult = this.handleSessionError({
 								err,
 								resolutionFunc: res,
 								rejectionFunc: rej,
 							});
-							if (errorOrUser && errorOrUser instanceof Error) {
-								rej(errorOrUser);
+							if (handleErrorResult && handleErrorResult instanceof Error) {
+								rej(handleErrorResult);
 							}
 							return rej(err);
 						}
