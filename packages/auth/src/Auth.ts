@@ -703,11 +703,14 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
-						this.handleGetUserDataError({
+						const errorOrUser = this.handleSessionError({
 							err,
 							resolutionFunc: res,
 							rejectionFunc: rej,
 						});
+						if (errorOrUser && errorOrUser instanceof Error) {
+							rej(errorOrUser);
+						}
 						rej(err);
 					}
 
@@ -760,11 +763,16 @@ export class AuthClass {
 			user.getUserData((err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
-					this.handleGetUserDataError({
+					const errorOrUser = this.handleSessionError({
 						err,
 						resolutionFunc: res,
 						rejectionFunc: rej,
 					});
+					if (errorOrUser && errorOrUser instanceof Error) {
+						rej(errorOrUser);
+					} else if (errorOrUser && !(errorOrUser instanceof Error)) {
+						res(errorOrUser);
+					}
 					rej(err);
 				} else {
 					res(data);
@@ -866,11 +874,14 @@ export class AuthClass {
 						(err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
-								this.handleGetUserDataError({
+								const errorOrUser = this.handleSessionError({
 									err,
 									resolutionFunc: res,
 									rejectionFunc: rej,
 								});
+								if (errorOrUser && errorOrUser instanceof Error) {
+									rej(errorOrUser);
+								}
 								return rej(err);
 							} else {
 								return res(result);
@@ -1177,11 +1188,14 @@ export class AuthClass {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
-							this.handleGetUserDataError({
+							const errorOrUser = this.handleSessionError({
 								err,
 								resolutionFunc: res,
 								rejectionFunc: rej,
 							});
+							if (errorOrUser && errorOrUser instanceof Error) {
+								rej(errorOrUser);
+							}
 							return rej(err);
 						} else {
 							user.deleteUser((err, result: string) => {
@@ -1317,25 +1331,33 @@ export class AuthClass {
 	}
 
 	// Session revoked by another app
-	private isTokenRevokedError(err: any) {
+	private isTokenRevokedError(
+		err: any
+	): err is { message: 'Access Token has been revoked' } {
 		return (
 			this.isErrorWithMessage(err) &&
 			err.message === 'Access Token has been revoked'
 		);
 	}
 
-	private isRefreshTokenRevokedError(err: any) {
+	private isRefreshTokenRevokedError(
+		err: any
+	): err is { message: 'Refresh Token has been revoked' } {
 		return (
 			this.isErrorWithMessage(err) &&
 			err.message === 'Refresh Token has been revoked'
 		);
 	}
 
-	private isUserDisabledError(err: any) {
+	private isUserDisabledError(
+		err: any
+	): err is { message: 'User is disabled.' } {
 		return this.isErrorWithMessage(err) && err.message === 'User is disabled.';
 	}
 
-	private isUserDoesNotExistError(err: any) {
+	private isUserDoesNotExistError(
+		err: any
+	): err is { message: 'User does not exist.' } {
 		return (
 			this.isErrorWithMessage(err) && err.message === 'User does not exist.'
 		);
@@ -1348,7 +1370,7 @@ export class AuthClass {
 		);
 	}
 
-	private handleGetUserDataError({
+	private handleSessionError({
 		err,
 		resolutionFunc,
 		rejectionFunc,
@@ -1356,11 +1378,12 @@ export class AuthClass {
 		err: any;
 		resolutionFunc: (value?: any) => void;
 		rejectionFunc: (reason?: any) => void;
-	}) {
+		// function might get resolved or rejected inside oAuthSignOutRedirect, so return type can also involve void
+	}): Error | CognitoUser | void {
 		const user = this.userPool.getCurrentUser();
 		if (!user) {
 			logger.debug('Failed to get user from user pool');
-			rejectionFunc(Error('No current user'));
+			return new Error('No current user');
 		}
 		if (
 			this.isUserDisabledError(err) ||
@@ -1381,11 +1404,11 @@ export class AuthClass {
 			} else {
 				dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 			}
-			rejectionFunc(err);
+			return err instanceof Error ? err : new Error(err.message);
 		} else {
 			// the error may also be thrown when lack of permissions to get user info etc
 			// in that case we just bypass the error
-			resolutionFunc(user);
+			return user;
 		}
 	}
 
@@ -1450,11 +1473,14 @@ export class AuthClass {
 						async (err, session) => {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
-								this.handleGetUserDataError({
+								const errorOrUser = this.handleSessionError({
 									err,
 									resolutionFunc: res,
 									rejectionFunc: rej,
 								});
+								if (errorOrUser && errorOrUser instanceof Error) {
+									rej(errorOrUser);
+								}
 								rej(err);
 								return;
 							}
@@ -1475,11 +1501,20 @@ export class AuthClass {
 									(err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
-											this.handleGetUserDataError({
+											const errorOrUser = this.handleSessionError({
 												err,
 												resolutionFunc: res,
 												rejectionFunc: rej,
 											});
+											if (errorOrUser && errorOrUser instanceof Error) {
+												rej(errorOrUser);
+											} else if (
+												errorOrUser &&
+												!(errorOrUser instanceof Error)
+											) {
+												res(errorOrUser);
+											}
+											rej(err);
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
@@ -1630,11 +1665,14 @@ export class AuthClass {
 				(err, session) => {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
-						this.handleGetUserDataError({
+						const errorOrUser = this.handleSessionError({
 							err,
 							resolutionFunc: resolve,
 							rejectionFunc: reject,
 						});
+						if (errorOrUser && errorOrUser instanceof Error) {
+							reject(errorOrUser);
+						}
 						reject(err);
 						return;
 					} else {
@@ -1799,11 +1837,6 @@ export class AuthClass {
 					(err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
-							this.handleGetUserDataError({
-								err,
-								resolutionFunc: res,
-								rejectionFunc: rej,
-							});
 							return rej(err);
 						}
 						user.globalSignOut({
