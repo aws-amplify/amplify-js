@@ -43,14 +43,7 @@ export abstract class AbstractPubSubProvider implements PubSubProvider {
 
 	public abstract newClient(clientOptions: ProvidertOptions): Promise<any>;
 
-	public abstract publish(
-		topics: string[] | string,
-		msg: any,
-		options?: ProvidertOptions
-	): void;
+	public abstract publish(topics: string[] | string, msg: any, options?: ProvidertOptions): void;
 
-	public abstract subscribe(
-		topics: string[] | string,
-		options?: ProvidertOptions
-	): Observable<any>;
+	public abstract subscribe(topics: string[] | string, options?: ProvidertOptions): Observable<any>;
 }

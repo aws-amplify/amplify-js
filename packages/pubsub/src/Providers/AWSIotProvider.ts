@@ -38,11 +38,7 @@ export class AWSIoTProvider extends MqttOverWSProvider {
 				sessionToken: session_token,
 			} = await Credentials.get();
 
-			const result = Signer.signUrl(
-				endpoint,
-				{ access_key, secret_key, session_token },
-				serviceInfo
-			);
+			const result = Signer.signUrl(endpoint, { access_key, secret_key, session_token }, serviceInfo);
 
 			return result;
 		})();

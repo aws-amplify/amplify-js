@@ -96,9 +96,9 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
 				const { mqttConnections = [], newSubscriptions } = options;
 
 				// creates a map of {"topic": "alias"}
-				const newAliases = Object.entries(
-					newSubscriptions
-				).map(([alias, v]: [string, { topic: string }]) => [v.topic, alias]);
+				const newAliases = Object.entries(newSubscriptions).map(
+					([alias, v]: [string, { topic: string }]) => [v.topic, alias]
+				);
 
 				// Merge new aliases with old ones
 				this._topicAlias = new Map([
@@ -107,31 +107,29 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
 				]);
 
 				// group by urls
-				const map: [
-					string,
-					{ url: string; topics: Set<string> }
-				][] = Object.entries(
-					targetTopics.reduce((acc, elem) => {
-						const connectionInfoForTopic = mqttConnections.find(
-							c => c.topics.indexOf(elem) > -1
-						);
+				const map: [string, { url: string; topics: Set<string> }][] =
+					Object.entries(
+						targetTopics.reduce((acc, elem) => {
+							const connectionInfoForTopic = mqttConnections.find(
+								c => c.topics.indexOf(elem) > -1
+							);
 
-						if (connectionInfoForTopic) {
-							const { client: clientId, url } = connectionInfoForTopic;
+							if (connectionInfoForTopic) {
+								const { client: clientId, url } = connectionInfoForTopic;
 
-							if (!acc[clientId]) {
-								acc[clientId] = {
-									url,
-									topics: new Set(),
-								};
+								if (!acc[clientId]) {
+									acc[clientId] = {
+										url,
+										topics: new Set(),
+									};
+								}
+
+								acc[clientId].topics.add(elem);
 							}
 
-							acc[clientId].topics.add(elem);
-						}
-
-						return acc;
-					}, {})
-				);
+							return acc;
+						}, {})
+					);
 
 				// reconnect everything we have in the map
 				await Promise.all(
