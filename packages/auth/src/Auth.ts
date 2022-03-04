@@ -703,13 +703,12 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
-						const handleErrorResult = this.handleSessionError({
-							err,
-							resolutionFunc: res,
-							rejectionFunc: rej,
-						});
-						if (handleErrorResult && handleErrorResult instanceof Error) {
-							rej(handleErrorResult);
+						if (this.isSessionInvalid(err)) {
+							this.cleanUpInvalidSession({
+								user,
+								resolutionFunc: res,
+								rejectionFunc: rej,
+							});
 						}
 						rej(err);
 						return;
@@ -764,13 +763,12 @@ export class AuthClass {
 			user.getUserData((err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
-					const handleErrorResult = this.handleSessionError({
-						err,
-						resolutionFunc: res,
-						rejectionFunc: rej,
-					});
-					if (handleErrorResult && handleErrorResult instanceof Error) {
-						rej(handleErrorResult);
+					if (this.isSessionInvalid(err)) {
+						this.cleanUpInvalidSession({
+							user,
+							resolutionFunc: res,
+							rejectionFunc: rej,
+						});
 					}
 					rej(err);
 					return;
@@ -874,13 +872,12 @@ export class AuthClass {
 						(err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
-								const handleErrorResult = this.handleSessionError({
-									err,
-									resolutionFunc: res,
-									rejectionFunc: rej,
-								});
-								if (handleErrorResult && handleErrorResult instanceof Error) {
-									rej(handleErrorResult);
+								if (this.isSessionInvalid(err)) {
+									this.cleanUpInvalidSession({
+										user,
+										resolutionFunc: res,
+										rejectionFunc: rej,
+									});
 								}
 								return rej(err);
 							} else {
@@ -1188,13 +1185,12 @@ export class AuthClass {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
-							const handleErrorResult = this.handleSessionError({
-								err,
-								resolutionFunc: res,
-								rejectionFunc: rej,
-							});
-							if (handleErrorResult && handleErrorResult instanceof Error) {
-								rej(handleErrorResult);
+							if (this.isSessionInvalid(err)) {
+								this.cleanUpInvalidSession({
+									user,
+									resolutionFunc: res,
+									rejectionFunc: rej,
+								});
 							}
 							return rej(err);
 						} else {
@@ -1370,41 +1366,36 @@ export class AuthClass {
 		);
 	}
 
-	private handleSessionError({
-		err,
-		resolutionFunc,
-		rejectionFunc,
-	}: {
-		err: any;
-		resolutionFunc: (value?: any) => void;
-		rejectionFunc: (reason?: any) => void;
-		// function might get resolved or rejected inside oAuthSignOutRedirect, so return type can also involve void
-	}): Error | void {
-		const user = this.userPool.getCurrentUser();
-		if (!user) {
-			logger.debug('Failed to get user from user pool');
-			return new Error('No current user');
-		}
-		if (
+	private isSessionInvalid(err: any) {
+		return (
 			this.isUserDisabledError(err) ||
 			this.isUserDoesNotExistError(err) ||
 			this.isTokenRevokedError(err) ||
 			this.isRefreshTokenRevokedError(err)
-		) {
-			user.signOut();
-			this.user = null;
-			try {
-				this.cleanCachedItems(); // clean aws credentials
-			} catch (e) {
-				// TODO: change to rejects in refactor
-				logger.debug('failed to clear cached items');
-			}
-			if (this.isSignedInHostedUI()) {
-				this.oAuthSignOutRedirect(resolutionFunc, rejectionFunc);
-			} else {
-				dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
-			}
-			return err instanceof Error ? err : new Error(err.message);
+		);
+	}
+
+	private cleanUpInvalidSession({
+		user,
+		resolutionFunc,
+		rejectionFunc,
+	}: {
+		user: CognitoUser;
+		resolutionFunc: (value?: any) => void;
+		rejectionFunc: (reason?: any) => void;
+	}) {
+		user.signOut();
+		this.user = null;
+		try {
+			this.cleanCachedItems(); // clean aws credentials
+		} catch (e) {
+			// TODO: change to rejects in refactor
+			logger.debug('failed to clear cached items');
+		}
+		if (this.isSignedInHostedUI()) {
+			this.oAuthSignOutRedirect(resolutionFunc, rejectionFunc);
+		} else {
+			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 		}
 	}
 
@@ -1469,13 +1460,12 @@ export class AuthClass {
 						async (err, session) => {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
-								const handleErrorResult = this.handleSessionError({
-									err,
-									resolutionFunc: res,
-									rejectionFunc: rej,
-								});
-								if (handleErrorResult && handleErrorResult instanceof Error) {
-									rej(handleErrorResult);
+								if (this.isSessionInvalid(err)) {
+									this.cleanUpInvalidSession({
+										user,
+										resolutionFunc: res,
+										rejectionFunc: rej,
+									});
 								}
 								rej(err);
 								return;
@@ -1497,20 +1487,16 @@ export class AuthClass {
 									(err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
-											const handleErrorResult = this.handleSessionError({
-												err,
-												resolutionFunc: res,
-												rejectionFunc: rej,
-											});
-											if (
-												handleErrorResult &&
-												handleErrorResult instanceof Error
-											) {
-												rej(handleErrorResult);
+											if (this.isSessionInvalid(err)) {
+												this.cleanUpInvalidSession({
+													user,
+													resolutionFunc: res,
+													rejectionFunc: rej,
+												});
+												rej(err);
 											} else {
 												res(user);
 											}
-											rej(err);
 											return;
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
@@ -1662,13 +1648,12 @@ export class AuthClass {
 				(err, session) => {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
-						const handleErrorResult = this.handleSessionError({
-							err,
-							resolutionFunc: resolve,
-							rejectionFunc: reject,
-						});
-						if (handleErrorResult && handleErrorResult instanceof Error) {
-							reject(handleErrorResult);
+						if (this.isSessionInvalid(err)) {
+							this.cleanUpInvalidSession({
+								user,
+								resolutionFunc: resolve,
+								rejectionFunc: reject,
+							});
 						}
 						reject(err);
 						return;
@@ -1834,13 +1819,12 @@ export class AuthClass {
 					(err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
-							const handleErrorResult = this.handleSessionError({
-								err,
-								resolutionFunc: res,
-								rejectionFunc: rej,
-							});
-							if (handleErrorResult && handleErrorResult instanceof Error) {
-								rej(handleErrorResult);
+							if (this.isSessionInvalid(err)) {
+								this.cleanUpInvalidSession({
+									user,
+									resolutionFunc: res,
+									rejectionFunc: rej,
+								});
 							}
 							return rej(err);
 						}
