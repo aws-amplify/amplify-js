@@ -1696,6 +1696,39 @@ describe('auth unit test', () => {
 				expect(e).not.toBeNull();
 			}
 		});
+
+		test('refresh token revoked case', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => user);
+			const getSessionSpy = jest
+				.spyOn(user, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback({ message: 'Refresh Token has been revoked' }, null);
+				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			await expect(auth.userSession(user)).rejects.toThrowError(
+				'Refresh Token has been revoked'
+			);
+			expect(getSessionSpy).toHaveBeenCalledTimes(1);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+		});
 	});
 
 	describe('currentUserCredentials test', () => {
@@ -2763,6 +2796,10 @@ describe('auth unit test', () => {
 	});
 
 	describe('delete user test suite', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
 		const auth = new Auth(authOptions);
 		const user = new CognitoUser({
 			Username: 'raz',
@@ -2779,11 +2816,16 @@ describe('auth unit test', () => {
 				.mockImplementation((callback: any) => {
 					return callback(null, session);
 				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
 
 			expect(await auth.deleteUser()).toBe('SUCCESS');
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			// TODO: test session cleared properly
 			spy1.mockClear();
 			spy2.mockClear();
+			userSignoutSpy.mockClear();
 		});
 
 		test('no user pool should throw error', async () => {
@@ -2830,6 +2872,36 @@ describe('auth unit test', () => {
 
 			spy1.mockClear();
 			spy2.mockClear();
+		});
+
+		test('getSession call fail should signout user', async () => {
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const getSessionSpy = jest
+				.spyOn(user, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback({ message: 'Refresh Token has been revoked' }, null);
+				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			await expect(auth.deleteUser()).rejects.toThrowError(
+				'Refresh Token has been revoked'
+			);
+			expect(getSessionSpy).toHaveBeenCalledTimes(1);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
 		});
 
 		test('cognito deleteUser call fails...', async () => {
@@ -3496,6 +3568,41 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 			spyon2.mockClear();
 			spyon3.mockClear();
+		});
+
+		test('get session error - refresh token revoked should signout user', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			const getSessionSpy = jest
+				.spyOn(user, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback({ message: 'Refresh Token has been revoked' }, null);
+				});
+			const userSignoutSpy = jest
+				.spyOn(user, 'signOut')
+				.mockImplementationOnce(() => {});
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			await expect(auth.currentUserPoolUser()).rejects.toThrowError(
+				'Refresh Token has been revoked'
+			);
+			expect(getSessionSpy).toHaveBeenCalledTimes(1);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
 		});
 
 		test('get user data error because of user is deleted, disabled or token has been revoked', async () => {
