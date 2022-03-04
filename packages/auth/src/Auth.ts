@@ -1837,6 +1837,14 @@ export class AuthClass {
 					(err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
+							const errorOrUser = this.handleSessionError({
+								err,
+								resolutionFunc: res,
+								rejectionFunc: rej,
+							});
+							if (errorOrUser && errorOrUser instanceof Error) {
+								rej(errorOrUser);
+							}
 							return rej(err);
 						}
 						user.globalSignOut({
