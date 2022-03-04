@@ -1450,6 +1450,11 @@ export class AuthClass {
 						async (err, session) => {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
+								this.handleGetUserDataError({
+									err,
+									resolutionFunc: res,
+									rejectionFunc: rej,
+								});
 								rej(err);
 								return;
 							}
@@ -1625,6 +1630,11 @@ export class AuthClass {
 				(err, session) => {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
+						this.handleGetUserDataError({
+							err,
+							resolutionFunc: resolve,
+							rejectionFunc: reject,
+						});
 						reject(err);
 						return;
 					} else {
@@ -1789,6 +1799,11 @@ export class AuthClass {
 					(err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
+							this.handleGetUserDataError({
+								err,
+								resolutionFunc: res,
+								rejectionFunc: rej,
+							});
 							return rej(err);
 						}
 						user.globalSignOut({
