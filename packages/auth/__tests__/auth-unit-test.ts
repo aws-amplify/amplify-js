@@ -4093,7 +4093,7 @@ describe('auth unit test', () => {
 		});
 	});
 
-	describe.only('setPreferredMFA test', () => {
+	describe('setPreferredMFA test', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 			jest.resetAllMocks();
