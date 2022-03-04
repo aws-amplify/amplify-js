@@ -1324,6 +1324,13 @@ export class AuthClass {
 		);
 	}
 
+	private isRefreshTokenRevokedError(err: any) {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has been revoked'
+		);
+	}
+
 	private isUserDisabledError(err: any) {
 		return this.isErrorWithMessage(err) && err.message === 'User is disabled.';
 	}
