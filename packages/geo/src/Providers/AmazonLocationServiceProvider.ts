@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import camelcaseKeys from 'camelcase-keys';
+
 import {
 	ConsoleLogger as Logger,
 	Credentials,
@@ -39,6 +40,8 @@ import {
 	BatchDeleteGeofenceCommandInput,
 	BatchDeleteGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
+
+import { validateGeofenceId, validateGeofencesInput } from '../util';
 
 import {
 	GeoConfig,
@@ -372,12 +375,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
+		// Verify geofence collection exists in aws-config.js
 		try {
 			this._verifyGeofenceCollections(options?.collectionName);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
 		}
+
+		validateGeofencesInput(geofences);
 
 		// Convert geofences to PascalCase for Amazon Location Service format
 		const PascalGeofences: BatchPutGeofenceRequestEntry[] = geofences.map(
@@ -478,6 +484,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			logger.debug(error);
 			throw error;
 		}
+
+		validateGeofenceId(geofenceId);
 
 		// Create Amazon Location Service Client
 		const client = new LocationClient({
@@ -615,12 +623,18 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
-		// Verify geofence collection exists in aws-config.js
-		try {
-			this._verifyGeofenceCollections(options?.collectionName);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
+		this._verifyGeofenceCollections(options?.collectionName);
+
+		// Validate all geofenceIds are valid
+		const badGeofenceIds = geofenceIds.filter(geofenceId => {
+			try {
+				validateGeofenceId(geofenceId);
+			} catch (error) {
+				return true;
+			}
+		});
+		if (badGeofenceIds.length > 0) {
+			throw new Error(`Invalid geofence ids: ${badGeofenceIds.join(', ')}`);
 		}
 
 		const results: AmazonLocationServiceDeleteGeofencesResults = {

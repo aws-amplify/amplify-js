@@ -17,18 +17,13 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
-import {
-	validateCoordinates,
-	validateGeofences,
-	validateGeofenceId,
-} from './util';
+import { validateCoordinates } from './util';
 
 import {
 	Place,
 	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
-	SearchForSuggestionsResults,
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,
@@ -240,8 +235,6 @@ export class GeoClass {
 		}
 
 		try {
-			// Validate all geofences are unique and valid before calling Provider
-			validateGeofences(geofenceInputArray);
 			return await prov.saveGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
@@ -263,8 +256,6 @@ export class GeoClass {
 		const prov = this.getPluggable(providerName);
 
 		try {
-			// Validate geofenceId is valid before calling Provider
-			validateGeofenceId(geofenceId);
 			return await prov.getGeofence(geofenceId, options);
 		} catch (error) {
 			logger.debug(error);
@@ -314,20 +305,6 @@ export class GeoClass {
 			geofenceIdsInputArray = [geofenceIds];
 		} else {
 			geofenceIdsInputArray = geofenceIds;
-		}
-
-		// Validate all geofenceIds are valid
-		const badGeofenceIds = geofenceIdsInputArray.filter(geofenceId => {
-			try {
-				validateGeofenceId(geofenceId);
-			} catch (error) {
-				return false;
-			}
-		});
-		if (badGeofenceIds.length > 0) {
-			const errorString = `Invalid geofence ids: ${badGeofenceIds}`;
-			logger.debug(errorString);
-			throw new Error(errorString);
 		}
 
 		//  Delete geofences
