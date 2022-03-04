@@ -764,15 +764,13 @@ export class AuthClass {
 			user.getUserData((err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
-					const errorOrUser = this.handleSessionError({
+					const handleErrorResult = this.handleSessionError({
 						err,
 						resolutionFunc: res,
 						rejectionFunc: rej,
 					});
-					if (errorOrUser && errorOrUser instanceof Error) {
-						rej(errorOrUser);
-					} else {
-						res(user);
+					if (handleErrorResult && handleErrorResult instanceof Error) {
+						rej(handleErrorResult);
 					}
 					rej(err);
 					return;
@@ -876,13 +874,13 @@ export class AuthClass {
 						(err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
-								const errorOrUser = this.handleSessionError({
+								const handleErrorResult = this.handleSessionError({
 									err,
 									resolutionFunc: res,
 									rejectionFunc: rej,
 								});
-								if (errorOrUser && errorOrUser instanceof Error) {
-									rej(errorOrUser);
+								if (handleErrorResult && handleErrorResult instanceof Error) {
+									rej(handleErrorResult);
 								}
 								return rej(err);
 							} else {
@@ -1190,13 +1188,13 @@ export class AuthClass {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
-							const errorOrUser = this.handleSessionError({
+							const handleErrorResult = this.handleSessionError({
 								err,
 								resolutionFunc: res,
 								rejectionFunc: rej,
 							});
-							if (errorOrUser && errorOrUser instanceof Error) {
-								rej(errorOrUser);
+							if (handleErrorResult && handleErrorResult instanceof Error) {
+								rej(handleErrorResult);
 							}
 							return rej(err);
 						} else {
