@@ -10,6 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import booleanClockwise from '@turf/boolean-clockwise';
+
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import {
@@ -27,35 +29,34 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 		throw new Error(`Invalid coordinates: [${lng},${lat}]`);
 	}
 	if (lat < -90 || lat > 90) {
-		const errorString =
-			'Latitude must be between -90 and 90 degrees inclusive.';
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error('Latitude must be between -90 and 90 degrees inclusive.');
 	} else if (lng < -180 || lng > 180) {
-		const errorString =
-			'Longitude must be between -180 and 180 degrees inclusive.';
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			'Longitude must be between -180 and 180 degrees inclusive.'
+		);
 	}
 }
 
-export function validateGeofenceId(geofenceId: string) {
+export function validateGeofenceId(geofenceId: string): void {
 	const geofenceIdRegex = /^[-._\p{L}\p{N}]+$/iu;
 
 	// Check if geofenceId is valid
 	if (!geofenceIdRegex.test(geofenceId)) {
-		const errorString = `Invalid geofenceId: ${geofenceId} Ids can only contain alphanumeric characters, hyphens, underscores and periods.`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`Invalid geofenceId: '${geofenceId}' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`
+		);
 	}
 }
 
-export function validateLinearRing(linearRing: LinearRing) {
+export function validateLinearRing(
+	linearRing: LinearRing,
+	geofenceId?: string
+): void {
 	// Validate LinearRing size, must be at least 4 points
 	if (linearRing.length < 4) {
-		const errorString = 'LinearRing must contain 4 or more coordinates.';
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`${geofenceId}: LinearRing must contain 4 or more coordinates.`
+		);
 	}
 
 	// Validate all coordinates are valid, error with which ones are bad
@@ -68,11 +69,11 @@ export function validateLinearRing(linearRing: LinearRing) {
 		}
 	});
 	if (badCoordinates.length > 0) {
-		const errorString = `One or more of the coordinates are not valid: ${JSON.stringify(
-			badCoordinates
-		)}`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`${geofenceId}: One or more of the coordinates in the Polygon LinearRing are not valid: ${JSON.stringify(
+				badCoordinates
+			)}`
+		);
 	}
 
 	// Validate first and last coordinates are the same
@@ -80,103 +81,95 @@ export function validateLinearRing(linearRing: LinearRing) {
 	const [lngB, latB] = linearRing[linearRing.length - 1];
 
 	if (lngA !== lngB || latA !== latB) {
-		const errorString = `LinearRing's first and last coordinates are not the same`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`${geofenceId}: LinearRing's first and last coordinates are not the same`
+		);
+	}
+
+	if (booleanClockwise(linearRing)) {
+		throw new Error(
+			`${geofenceId}: LinearRing coordinates must be wound counterclockwise`
+		);
 	}
 }
 
-export function validatePolygon(polygon: GeofencePolygon): void {
+export function validatePolygon(
+	polygon: GeofencePolygon,
+	geofenceId?: string
+): void {
 	if (!Array.isArray(polygon)) {
-		const errorString = `Polygon ${JSON.stringify(
-			polygon
-		)} is of incorrect structure. It should be an array of 'LinearRing'`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`${geofenceId}: Polygon is of incorrect structure. It should be an array of LinearRings`
+		);
 	}
-	if (!(polygon.length === 1)) {
-		const errorString = `Polygon ${JSON.stringify(
-			polygon
-		)} geometry.polygon must have a single LinearRing array`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+	if (polygon.length < 1) {
+		throw new Error(
+			`${geofenceId}: Polygon must have a single LinearRing array.`
+		);
+	}
+	if (polygon.length > 1) {
+		throw new Error(
+			`${geofenceId}: Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
+		);
 	}
 	const verticesCount = polygon.reduce(
 		(prev, linearRing) => prev + linearRing.length,
 		0
 	);
 	if (verticesCount > 1000) {
-		const errorString = `Polygon has more than the maximum 1000 vertices.`;
-		logger.debug(errorString);
-		throw new Error(errorString);
+		throw new Error(
+			`${geofenceId}: Polygon has more than the maximum 1000 vertices.`
+		);
 	}
 }
 
-export function validateGeofences(geofences: GeofenceInput[]) {
+export function validateGeofencesInput(geofences: GeofenceInput[]) {
 	const geofenceIds = {};
 
 	geofences.forEach((geofence: GeofenceInput) => {
 		// verify all required properties are present
+
+		// Validate geofenceId exists
 		if (!geofence.geofenceId) {
-			const errorString = `Geofence ${JSON.stringify(
-				geofence
-			)} is missing geofenceId`;
-			logger.debug(errorString);
-			throw new Error(errorString);
+			throw new Error(`Geofence '${geofence}' is missing geofenceId`);
 		}
-
-		if (!geofence.geometry) {
-			const errorString = `Geofence ${JSON.stringify(
-				geofence
-			)} is missing geometry`;
-			logger.debug(errorString);
-			throw new Error(errorString);
-		}
-
-		if (!geofence.geometry.polygon) {
-			const errorString = `Geofence ${JSON.stringify(
-				geofence
-			)} is missing geometry.polygon`;
-			logger.debug(errorString);
-			throw new Error(errorString);
-		}
-
-		const {
-			geofenceId,
-			geometry: { polygon },
-		} = geofence;
-
-		// Validate geofenceId is valid
-		try {
-			validateGeofenceId(geofenceId);
-		} catch (error) {
-			throw error;
-		}
+		const { geofenceId } = geofence;
+		validateGeofenceId(geofenceId);
 
 		// Validate geofenceId is unique
 		if (geofenceIds[geofenceId]) {
-			const errorString = `Duplicate geofenceId: ${geofenceId}`;
-			logger.debug(errorString);
-			throw new Error(errorString);
+			throw new Error(`Duplicate geofenceId: ${geofenceId}`);
 		} else {
 			geofenceIds[geofenceId] = true;
 		}
 
+		// Validate geometry exists
+		if (!geofence.geometry) {
+			throw new Error(`Geofence '${geofenceId}' is missing geometry`);
+		}
+		const { geometry } = geofence;
+
+		// Validate polygon exists
+		if (!geometry.polygon) {
+			throw new Error(`Geofence '${geofenceId}' is missing geometry.polygon`);
+		}
+		const { polygon } = geometry;
+
 		// Validate polygon length and structure
 		try {
-			validatePolygon(polygon);
+			validatePolygon(polygon, geofenceId);
 		} catch (error) {
 			if (
 				error.message === `Polygon has more than the maximum 1000 vertices.`
 			) {
-				const errorString = `Geofence ${geofenceId} has more than the maximum of 1000 vertices`;
-				logger.debug(errorString);
-				throw new Error(errorString);
+				throw new Error(
+					`Geofence '${geofenceId}' has more than the maximum of 1000 vertices`
+				);
 			}
 		}
 
 		// Validate LinearRing length, structure, and coordinates
 		const [linearRing] = polygon;
-		validateLinearRing(linearRing);
+		validateLinearRing(linearRing, geofenceId);
 	});
 }

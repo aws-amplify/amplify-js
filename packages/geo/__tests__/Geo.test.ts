@@ -35,7 +35,6 @@ import {
 	validGeofence1,
 	singleGeofenceCamelcaseResults,
 	batchGeofencesCamelcaseResults,
-	geofencesWithInvalidId,
 } from './testData';
 
 import {
@@ -441,21 +440,6 @@ describe('Geo', () => {
 			);
 		});
 
-		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-
-			await expect(
-				geo.saveGeofences(geofencesWithInvalidId)
-			).rejects.toThrowError(
-				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
-			);
-		});
-
 		test('should fail if there is no provider', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -503,24 +487,6 @@ describe('Geo', () => {
 				CollectionName: 'geofenceCollectionExample',
 			};
 			expect(input).toEqual(output);
-		});
-
-		test('getGeofence errors when a bad geofenceId is given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockGetGeofenceCommand);
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-
-			const badGeofenceId = 't|-|!$ !$ N()T V@|_!D';
-			await expect(geo.getGeofence(badGeofenceId)).rejects.toThrow(
-				`Invalid geofenceId: ${badGeofenceId} Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
-			);
 		});
 	});
 

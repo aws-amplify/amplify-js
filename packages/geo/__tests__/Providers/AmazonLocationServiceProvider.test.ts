@@ -26,6 +26,7 @@ import {
 	validGeofences,
 	batchGeofencesCamelcaseResults,
 	validGeometry,
+	clockwiseGeofence,
 } from '../testData';
 import {
 	createGeofenceInputArray,
@@ -507,6 +508,25 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(expected);
 		});
 
+		test('should error if a geofence is wound clockwise', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockBatchPutGeofenceCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			await expect(
+				locationProvider.saveGeofences([clockwiseGeofence])
+			).rejects.toThrow(
+				'geofenceWithClockwiseGeofence: LinearRing coordinates must be wound counterclockwise'
+			);
+		});
+
 		test('should error if there are no geofenceCollections in config', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -548,6 +568,24 @@ describe('AmazonLocationServiceProvider', () => {
 			};
 
 			await expect(results).toEqual(expected);
+		});
+
+		test('getGeofence errors when a bad geofenceId is given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(mockGetGeofenceCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const badGeofenceId = 't|-|!$ !$ N()T V@|_!D';
+			await expect(locationProvider.getGeofence(badGeofenceId)).rejects.toThrow(
+				`Invalid geofenceId: '${badGeofenceId}' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`
+			);
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
@@ -730,6 +768,23 @@ describe('AmazonLocationServiceProvider', () => {
 				errors: badResults,
 			};
 			expect(results).toEqual(expected);
+		});
+
+		test('should error if there is a bad geofence in the input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+			await expect(
+				locationProvider.deleteGeofences([
+					'thisIsAGoodId',
+					't|-|!$ !$ N()T V@|_!D',
+					'#2 t|-|!$ !$ N()T V@|_!D',
+				])
+			).rejects.toThrow(
+				`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`
+			);
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {

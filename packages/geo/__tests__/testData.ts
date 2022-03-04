@@ -126,6 +126,14 @@ export const validLinearRing: LinearRing = [
 	validCoordinates1,
 ];
 
+export const clockwiseLinearRing: LinearRing = [
+	validCoordinates1,
+	validCoordinates4,
+	validCoordinates3,
+	validCoordinates2,
+	validCoordinates1,
+];
+
 export const linearRingIncomplete: LinearRing = [
 	validCoordinates1,
 	validCoordinates2,
@@ -147,6 +155,11 @@ export const linearRingBadCoordinates: LinearRing = [
 
 // Polygons
 export const validPolygon: GeofencePolygon = [validLinearRing];
+
+export const polygonClockwiseLinearRing: GeofencePolygon = [
+	clockwiseLinearRing,
+];
+
 export const polygonTooBig: GeofencePolygon = [
 	validLinearRing,
 	validLinearRing,
@@ -170,9 +183,15 @@ export const validGeofence3: GeofenceInput = {
 	geofenceId: 'validGeofenceId3',
 	geometry: validGeometry,
 };
+
 export const geofenceWithInvalidId: GeofenceInput = {
 	geofenceId: 't|-|!$ !$ N()T V@|_!D',
 	geometry: validGeometry,
+};
+
+export const clockwiseGeofence: GeofenceInput = {
+	geofenceId: 'geofenceWithClockwiseGeofence',
+	geometry: { polygon: polygonClockwiseLinearRing },
 };
 
 export const validGeofences = [];
@@ -194,6 +213,7 @@ export const geofencesWithInvalidId = [
 	validGeofence2,
 	validGeofence3,
 	geofenceWithInvalidId,
+	validGeofence1,
 ];
 
 export const singleGeofenceCamelcaseResults = {
