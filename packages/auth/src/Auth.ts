@@ -703,7 +703,11 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
-						this.handleGetUserDataError({ err, res, rej });
+						this.handleGetUserDataError({
+							err,
+							resolutionFunc: res,
+							rejectionFunc: rej,
+						});
 						rej(err);
 					}
 
@@ -756,7 +760,11 @@ export class AuthClass {
 			user.getUserData((err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
-					this.handleGetUserDataError({ err, res, rej });
+					this.handleGetUserDataError({
+						err,
+						resolutionFunc: res,
+						rejectionFunc: rej,
+					});
 					rej(err);
 				} else {
 					res(data);
@@ -858,7 +866,11 @@ export class AuthClass {
 						(err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
-								this.handleGetUserDataError({ err, res, rej });
+								this.handleGetUserDataError({
+									err,
+									resolutionFunc: res,
+									rejectionFunc: rej,
+								});
 								return rej(err);
 							} else {
 								return res(result);
@@ -1165,6 +1177,11 @@ export class AuthClass {
 					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
+							this.handleGetUserDataError({
+								err,
+								resolutionFunc: res,
+								rejectionFunc: rej,
+							});
 							return rej(err);
 						} else {
 							user.deleteUser((err, result: string) => {
@@ -1326,22 +1343,23 @@ export class AuthClass {
 
 	private handleGetUserDataError({
 		err,
-		res,
-		rej,
+		resolutionFunc,
+		rejectionFunc,
 	}: {
 		err: any;
-		res: (value?: any) => void;
-		rej: (reason?: any) => void;
+		resolutionFunc: (value?: any) => void;
+		rejectionFunc: (reason?: any) => void;
 	}) {
 		const user = this.userPool.getCurrentUser();
 		if (!user) {
 			logger.debug('Failed to get user from user pool');
-			rej(Error('No current user'));
+			rejectionFunc(Error('No current user'));
 		}
 		if (
 			this.isUserDisabledError(err) ||
 			this.isUserDoesNotExistError(err) ||
-			this.isTokenRevokedError(err)
+			this.isTokenRevokedError(err) ||
+			this.isRefreshTokenRevokedError(err)
 		) {
 			user.signOut();
 			this.user = null;
@@ -1352,15 +1370,15 @@ export class AuthClass {
 				logger.debug('failed to clear cached items');
 			}
 			if (this.isSignedInHostedUI()) {
-				this.oAuthSignOutRedirect(res, rej);
+				this.oAuthSignOutRedirect(resolutionFunc, rejectionFunc);
 			} else {
 				dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 			}
-			rej(err);
+			rejectionFunc(err);
 		} else {
 			// the error may also be thrown when lack of permissions to get user info etc
 			// in that case we just bypass the error
-			res(user);
+			resolutionFunc(user);
 		}
 	}
 
@@ -1445,7 +1463,11 @@ export class AuthClass {
 									(err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
-											this.handleGetUserDataError({ err, res, rej });
+											this.handleGetUserDataError({
+												err,
+												resolutionFunc: res,
+												rejectionFunc: rej,
+											});
 										}
 										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
 										const attributeList = [];
