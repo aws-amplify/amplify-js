@@ -4064,10 +4064,10 @@ describe('auth unit test', () => {
 			});
 			jest
 				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
-				.mockImplementationOnce(() => user);
+				.mockImplementation(() => user);
 			const getUserDataSpy = jest
 				.spyOn(user, 'getUserData')
-				.mockImplementationOnce((callback: any) => {
+				.mockImplementation((callback: any) => {
 					callback(new Error('Access Token has been revoked'), null);
 				});
 			const userSignoutSpy = jest
@@ -4111,7 +4111,14 @@ describe('auth unit test', () => {
 				Username: 'username',
 				Pool: userPool,
 			});
-			const getUserDataSpy = jest.spyOn(user, 'getUserData');
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementation((callback: any) => {
+					const data = {
+						PreferredMfaSetting: 'SMS',
+					};
+					callback(null, data);
+				});
 			const setUserMfaPreferenceSpy = jest.spyOn(user, 'setUserMfaPreference');
 			const res = await auth.setPreferredMFA(user, 'SOFTWARE_TOKEN_MFA');
 			expect(setUserMfaPreferenceSpy).toHaveBeenCalledWith(
