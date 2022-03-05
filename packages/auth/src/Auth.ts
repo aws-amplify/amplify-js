@@ -700,15 +700,11 @@ export class AuthClass {
 
 			const bypassCache = params ? params.bypassCache : false;
 			user.getUserData(
-				(err, data) => {
+				async (err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
 						if (this.isSessionInvalid(err)) {
-							this.cleanUpInvalidSession({
-								user,
-								resolutionFunc: res,
-								rejectionFunc: rej,
-							});
+							await this.cleanUpInvalidSession(user);
 						}
 						rej(err);
 						return;
@@ -760,15 +756,11 @@ export class AuthClass {
 
 	private _getUserData(user, params) {
 		return new Promise((res, rej) => {
-			user.getUserData((err, data) => {
+			user.getUserData(async (err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
 					if (this.isSessionInvalid(err)) {
-						this.cleanUpInvalidSession({
-							user,
-							resolutionFunc: res,
-							rejectionFunc: rej,
-						});
+						await this.cleanUpInvalidSession(user);
 					}
 					rej(err);
 					return;
@@ -869,15 +861,11 @@ export class AuthClass {
 					logger.debug('Caching the latest user data into local');
 					// cache the latest result into user data
 					user.getUserData(
-						(err, data) => {
+						async (err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
 								if (this.isSessionInvalid(err)) {
-									this.cleanUpInvalidSession({
-										user,
-										resolutionFunc: res,
-										rejectionFunc: rej,
-									});
+									await this.cleanUpInvalidSession(user);
 								}
 								return rej(err);
 							} else {
@@ -1186,11 +1174,7 @@ export class AuthClass {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
-								this.cleanUpInvalidSession({
-									user,
-									resolutionFunc: res,
-									rejectionFunc: rej,
-								});
+								await this.cleanUpInvalidSession(user);
 							}
 							return rej(err);
 						} else {
@@ -1375,25 +1359,19 @@ export class AuthClass {
 		);
 	}
 
-	private cleanUpInvalidSession({
-		user,
-		resolutionFunc,
-		rejectionFunc,
-	}: {
-		user: CognitoUser;
-		resolutionFunc: (value?: any) => void;
-		rejectionFunc: (reason?: any) => void;
-	}) {
+	private async cleanUpInvalidSession(user: CognitoUser) {
 		user.signOut();
 		this.user = null;
 		try {
-			this.cleanCachedItems(); // clean aws credentials
+			await this.cleanCachedItems(); // clean aws credentials
 		} catch (e) {
 			// TODO: change to rejects in refactor
 			logger.debug('failed to clear cached items');
 		}
 		if (this.isSignedInHostedUI()) {
-			this.oAuthSignOutRedirect(resolutionFunc, rejectionFunc);
+			return new Promise((res, rej) => {
+				this.oAuthSignOutRedirect(res, rej);
+			});
 		} else {
 			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 		}
@@ -1461,11 +1439,7 @@ export class AuthClass {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
 								if (this.isSessionInvalid(err)) {
-									this.cleanUpInvalidSession({
-										user,
-										resolutionFunc: res,
-										rejectionFunc: rej,
-									});
+									await this.cleanUpInvalidSession(user);
 								}
 								rej(err);
 								return;
@@ -1484,15 +1458,11 @@ export class AuthClass {
 							const { scope = '' } = session.getAccessToken().decodePayload();
 							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
 								user.getUserData(
-									(err, data) => {
+									async (err, data) => {
 										if (err) {
 											logger.debug('getting user data failed', err);
 											if (this.isSessionInvalid(err)) {
-												this.cleanUpInvalidSession({
-													user,
-													resolutionFunc: res,
-													rejectionFunc: rej,
-												});
+												await this.cleanUpInvalidSession(user);
 												rej(err);
 											} else {
 												res(user);
@@ -1645,15 +1615,11 @@ export class AuthClass {
 		return new Promise((resolve, reject) => {
 			logger.debug('Getting the session from this user:', user);
 			user.getSession(
-				(err, session) => {
+				async (err, session) => {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
 						if (this.isSessionInvalid(err)) {
-							this.cleanUpInvalidSession({
-								user,
-								resolutionFunc: resolve,
-								rejectionFunc: reject,
-							});
+							await this.cleanUpInvalidSession(user);
 						}
 						reject(err);
 						return;
@@ -1816,15 +1782,11 @@ export class AuthClass {
 				const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
 				user.getSession(
-					(err, result) => {
+					async (err, result) => {
 						if (err) {
 							logger.debug('failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
-								this.cleanUpInvalidSession({
-									user,
-									resolutionFunc: res,
-									rejectionFunc: rej,
-								});
+								await this.cleanUpInvalidSession(user);
 							}
 							return rej(err);
 						}
