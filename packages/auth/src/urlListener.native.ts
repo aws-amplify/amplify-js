@@ -12,6 +12,7 @@
  */
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('urlListener');
+import { Linking, AppState } from 'react-native';
 
 let handler;
 
@@ -19,26 +20,26 @@ export default async callback => {
 	if (handler) {
 		return;
 	}
+	let linkingSubscription;
+	let appStateEventSubscription;
+	handler =
+		handler ||
+		(({ url, ...rest }: { url: string }) => {
+			logger.debug('urlListener', { url, ...rest });
+			callback({ url });
+		});
 
-	let Linking: any;
-	let AppState: any;
+	linkingSubscription?.remove?.();
+	linkingSubscription = Linking.addEventListener('url', handler);
 
-	try {
-		({ Linking, AppState } = require('react-native'));
-	} catch (error) {
-		/* Keep webpack happy */
-	}
-
-	handler = ({ url, ...rest }: { url: string }) => {
-		logger.debug('urlListener', { url, ...rest });
-		callback({ url });
-	};
-
-	Linking.addEventListener('url', handler);
-	AppState.addEventListener('change', async newAppState => {
-		if (newAppState === 'active') {
-			const initialUrl = await Linking.getInitialURL();
-			handler({ url: initialUrl });
+	appStateEventSubscription?.remove?.();
+	appStateEventSubscription = AppState.addEventListener(
+		'change',
+		async newAppState => {
+			if (newAppState === 'active') {
+				const initialUrl = await Linking.getInitialURL();
+				handler({ url: initialUrl });
+			}
 		}
-	});
+	);
 };
