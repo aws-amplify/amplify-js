@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "5.2.6",
+  "version": "5.2.7",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -26,13 +26,7 @@
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
   },
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "licenses": [
-    {
-      "type": "Amazon Software License",
-      "url": "http://aws.amazon.com/asl"
-    }
-  ],
+  "license": "Apache-2.0",
   "keywords": [
     "amazon",
     "aws",
