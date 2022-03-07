@@ -1,6 +1,8 @@
 module.exports = {
 	entry: {
 		'aws-amplify-datastore-storage-adapter.min': './lib-esm/index.js',
+		'aws-amplify-datastore-storage-adapter-expo.min':
+			'./lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
 	},
 	externals: [
 		'@aws-amplify/datastore',

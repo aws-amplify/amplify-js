@@ -1,3 +1,1 @@
-import ExpoSQLiteAdapter from './ExpoSQLiteAdapter/ExpoSQLiteAdapter';
-import SQLiteAdapter from './SQLiteAdapter/SQLiteAdapter';
-export { SQLiteAdapter, ExpoSQLiteAdapter };
+export { default as SQLiteAdapter } from './SQLiteAdapter/SQLiteAdapter';
