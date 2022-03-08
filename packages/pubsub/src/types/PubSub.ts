@@ -14,6 +14,11 @@ export interface PubSubOptions {
 	[key: string]: any;
 }
 
-export interface ProvidertOptions {
+export interface ProviderOptions {
 	[key: string]: any;
 }
+
+/**
+ * @deprecated Migrated to ProviderOptions
+ */
+export { ProviderOptions as ProvidertOptions };

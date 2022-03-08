@@ -20,7 +20,7 @@ import {
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
+import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
 import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
 const { isNode } = browserOrNode();
@@ -133,7 +133,7 @@ export class PubSubClass {
 		);
 	}
 
-	private getProviders(options: ProvidertOptions = {}) {
+	private getProviders(options: ProviderOptions = {}) {
 		const { provider: providerName } = options;
 		if (!providerName) {
 			return this._pluggables;
@@ -150,7 +150,7 @@ export class PubSubClass {
 	async publish(
 		topics: string[] | string,
 		msg: any,
-		options?: ProvidertOptions
+		options?: ProviderOptions
 	) {
 		return Promise.all(
 			this.getProviders(options).map(provider =>
@@ -161,7 +161,7 @@ export class PubSubClass {
 
 	subscribe(
 		topics: string[] | string,
-		options?: ProvidertOptions
+		options?: ProviderOptions
 	): Observable<any> {
 		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
