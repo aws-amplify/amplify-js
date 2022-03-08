@@ -704,7 +704,11 @@ export class AuthClass {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
 						if (this.isSessionInvalid(err)) {
-							await this.cleanUpInvalidSession(user);
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (err) {
+								rej(err);
+							}
 						}
 						rej(err);
 						return;
@@ -760,7 +764,11 @@ export class AuthClass {
 				if (err) {
 					logger.debug('getting user data failed', err);
 					if (this.isSessionInvalid(err)) {
-						await this.cleanUpInvalidSession(user);
+						try {
+							await this.cleanUpInvalidSession(user);
+						} catch (err) {
+							rej(err);
+						}
 					}
 					rej(err);
 					return;
@@ -865,7 +873,11 @@ export class AuthClass {
 							if (err) {
 								logger.debug('getting user data failed', err);
 								if (this.isSessionInvalid(err)) {
-									await this.cleanUpInvalidSession(user);
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (err) {
+										rej(err);
+									}
 								}
 								return rej(err);
 							} else {
@@ -1174,7 +1186,11 @@ export class AuthClass {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
-								await this.cleanUpInvalidSession(user);
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (err) {
+									rej(err);
+								}
 							}
 							return rej(err);
 						} else {
@@ -1439,7 +1455,11 @@ export class AuthClass {
 							if (err) {
 								logger.debug('Failed to get the user session', err);
 								if (this.isSessionInvalid(err)) {
-									await this.cleanUpInvalidSession(user);
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (err) {
+										rej(err);
+									}
 								}
 								rej(err);
 								return;
@@ -1462,7 +1482,11 @@ export class AuthClass {
 										if (err) {
 											logger.debug('getting user data failed', err);
 											if (this.isSessionInvalid(err)) {
-												await this.cleanUpInvalidSession(user);
+												try {
+													await this.cleanUpInvalidSession(user);
+												} catch (err) {
+													rej(err);
+												}
 												rej(err);
 											} else {
 												res(user);
@@ -1619,7 +1643,11 @@ export class AuthClass {
 					if (err) {
 						logger.debug('Failed to get the session from user', user);
 						if (this.isSessionInvalid(err)) {
-							await this.cleanUpInvalidSession(user);
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (err) {
+								reject(err);
+							}
 						}
 						reject(err);
 						return;
@@ -1786,7 +1814,11 @@ export class AuthClass {
 						if (err) {
 							logger.debug('failed to get the user session', err);
 							if (this.isSessionInvalid(err)) {
-								await this.cleanUpInvalidSession(user);
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (err) {
+									rej(err);
+								}
 							}
 							return rej(err);
 						}
@@ -1842,7 +1874,7 @@ export class AuthClass {
 		this._oAuthHandler.signOut(); // this method redirects url
 
 		// App should be redirected to another url otherwise it will reject
-		setTimeout(() => reject('Signout timeout fail'), 3000);
+		setTimeout(() => reject(Error('Signout timeout fail')), 3000);
 	}
 
 	/**

@@ -260,20 +260,22 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-let mockLocalStorageItems = {};
-
-const mockLocalStorage = {
-	getItem: jest.fn().mockImplementation(key => mockLocalStorageItems[key]),
-	setItem: jest.fn().mockImplementation((key, value) => {
-		mockLocalStorageItems[key] = value;
-	}),
-	clear: jest.fn().mockImplementation(() => {
-		mockLocalStorageItems = {};
-	}),
-	removeItem: jest.fn().mockImplementation(key => {
-		mockLocalStorageItems[key] = undefined;
-	}),
-} as unknown as Storage;
+const createMockLocalStorage = () =>
+	({
+		_items: {},
+		getItem(key: string) {
+			return this._items[key];
+		},
+		setItem(key: string, value: string) {
+			this._items[key] = value;
+		},
+		clear() {
+			this._items = {};
+		},
+		removeItem(key: string) {
+			delete this._items[key];
+		},
+	} as unknown as Storage);
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
@@ -295,6 +297,27 @@ const authOptions: AuthOptions = {
 	region: 'region',
 	identityPoolId: 'awsCognitoIdentityPoolId',
 	mandatorySignIn: false,
+};
+
+const authOptionsWithHostedUIConfig: AuthOptions = {
+	userPoolId: 'awsUserPoolsId',
+	userPoolWebClientId: 'awsUserPoolsWebClientId',
+	region: 'region',
+	identityPoolId: 'awsCognitoIdentityPoolId',
+	mandatorySignIn: false,
+	oauth: {
+		domain: 'https://myHostedUIDomain.com',
+		scope: [
+			'phone',
+			'email',
+			'openid',
+			'profile',
+			'aws.cognito.signin.user.admin',
+		],
+		redirectSignIn: 'http://localhost:3000/',
+		redirectSignOut: 'http://localhost:3000/',
+		responseType: 'code',
+	},
 };
 
 const authOptionsWithClientMetadata: AuthOptions = {
@@ -1492,6 +1515,9 @@ describe('auth unit test', () => {
 	});
 
 	describe('currentSession', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -3620,7 +3646,7 @@ describe('auth unit test', () => {
 		test('get user data error because of user is deleted, disabled or token has been revoked', async () => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => mockLocalStorage);
+				.mockImplementation(createMockLocalStorage);
 
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -3665,6 +3691,58 @@ describe('auth unit test', () => {
 				{ data: null, event: 'signOut', message: 'A user has been signed out' },
 				'Auth',
 				Symbol.for('amplify_default')
+			);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+		});
+
+		test('get user data error because of user is deleted, disabled or token has been revoked - oAuth case', async () => {
+			const mockLocalStorage = createMockLocalStorage();
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => mockLocalStorage);
+			mockLocalStorage.setItem('amplify-signin-with-hostedUI', 'true');
+
+			// need window.open defined as oAuthHandler will invoke window.open
+			jest.spyOn(window, 'open').mockImplementationOnce(() => {
+				return {} as Window;
+			});
+
+			const auth = new Auth(authOptionsWithHostedUIConfig);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementation(() => {
+					return user;
+				});
+			jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation((callback: any) => {
+					return callback(null, session);
+				});
+			jest
+				.spyOn(CognitoUser.prototype, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					callback(new Error('User is disabled.'), null);
+				});
+			const userSignoutSpy = jest.spyOn(CognitoUser.prototype, 'signOut');
+
+			jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: USER_ADMIN_SCOPE };
+				});
+			await expect(auth.currentUserPoolUser()).rejects.toThrow(
+				'Signout timeout fail'
 			);
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 		});
@@ -4132,7 +4210,7 @@ describe('auth unit test', () => {
 		beforeEach(() => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => mockLocalStorage);
+				.mockImplementation(createMockLocalStorage);
 		});
 
 		test('happy path', async () => {
@@ -4221,7 +4299,7 @@ describe('auth unit test', () => {
 		beforeEach(() => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => mockLocalStorage);
+				.mockImplementation(createMockLocalStorage);
 		});
 
 		it('happy path', async () => {
