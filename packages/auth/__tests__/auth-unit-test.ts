@@ -3529,12 +3529,6 @@ describe('auth unit test', () => {
 					preferredMFA: 'SMS',
 				})
 			);
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
-			spyon4.mockClear();
-			spyon5.mockClear();
 		});
 
 		test('no current user', async () => {
@@ -3556,8 +3550,6 @@ describe('auth unit test', () => {
 			} catch (e) {
 				expect(e).toBe('No current user');
 			}
-
-			spyon.mockClear();
 		});
 
 		test('No userPool in config', async () => {
@@ -3566,7 +3558,9 @@ describe('auth unit test', () => {
 				Username: 'username',
 				Pool: userPool,
 			});
-			const errorMessage = new NoUserPoolError(AuthErrorTypes.EmptyCode);
+			const errorMessage = new NoUserPoolError(
+				AuthErrorTypes.MissingAuthConfig
+			);
 
 			expect.assertions(2);
 			expect(auth.currentUserPoolUser().then()).rejects.toThrow(
@@ -3602,10 +3596,6 @@ describe('auth unit test', () => {
 				expect(e).toBe('err');
 				expect(spyon3).not.toBeCalled();
 			}
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
 		});
 
 		test('get session error - refresh token revoked should signout user', async () => {
@@ -3742,7 +3732,7 @@ describe('auth unit test', () => {
 					return { scope: USER_ADMIN_SCOPE };
 				});
 			await expect(auth.currentUserPoolUser()).rejects.toThrow(
-				'Signout timeout fail'
+				'Session is invalid due to: User is disabled. and failed to clean up invalid session: Signout timeout fail'
 			);
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 		});
@@ -3790,12 +3780,6 @@ describe('auth unit test', () => {
 			expect.assertions(1);
 
 			expect(await auth.currentUserPoolUser()).toEqual(user);
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
-			spyon4.mockClear();
-			spyon5.mockClear();
 		});
 
 		test('directly return the user if no permission(scope) to get the user data', async () => {
@@ -3841,12 +3825,6 @@ describe('auth unit test', () => {
 			expect.assertions(2);
 			expect(spyon3).not.toBeCalled();
 			expect(await auth.currentUserPoolUser()).toBe(user);
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
-			spyon4.mockClear();
-			spyon5.mockClear();
 		});
 	});
 

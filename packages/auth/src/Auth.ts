@@ -706,8 +706,12 @@ export class AuthClass {
 						if (this.isSessionInvalid(err)) {
 							try {
 								await this.cleanUpInvalidSession(user);
-							} catch (error) {
-								rej(error);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
 							}
 						}
 						rej(err);
@@ -766,8 +770,12 @@ export class AuthClass {
 					if (this.isSessionInvalid(err)) {
 						try {
 							await this.cleanUpInvalidSession(user);
-						} catch (err) {
-							rej(err);
+						} catch (cleanUpError) {
+							rej(
+								new Error(
+									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+								)
+							);
 						}
 					}
 					rej(err);
@@ -875,8 +883,12 @@ export class AuthClass {
 								if (this.isSessionInvalid(err)) {
 									try {
 										await this.cleanUpInvalidSession(user);
-									} catch (err) {
-										rej(err);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
 									}
 								}
 								return rej(err);
@@ -1188,8 +1200,12 @@ export class AuthClass {
 							if (this.isSessionInvalid(err)) {
 								try {
 									await this.cleanUpInvalidSession(user);
-								} catch (err) {
-									rej(err);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
 								}
 							}
 							return rej(err);
@@ -1456,8 +1472,12 @@ export class AuthClass {
 								if (this.isSessionInvalid(err)) {
 									try {
 										await this.cleanUpInvalidSession(user);
-									} catch (err) {
-										rej(err);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
 									}
 								}
 								rej(err);
@@ -1483,8 +1503,12 @@ export class AuthClass {
 											if (this.isSessionInvalid(err)) {
 												try {
 													await this.cleanUpInvalidSession(user);
-												} catch (err) {
-													rej(err);
+												} catch (cleanUpError) {
+													rej(
+														new Error(
+															`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+														)
+													);
 												}
 												rej(err);
 											} else {
@@ -1596,7 +1620,7 @@ export class AuthClass {
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
-			return Promise.reject();
+			return this.rejectNoUserPool();
 		}
 
 		return new Promise((res, rej) => {
@@ -1644,8 +1668,12 @@ export class AuthClass {
 						if (this.isSessionInvalid(err)) {
 							try {
 								await this.cleanUpInvalidSession(user);
-							} catch (err) {
-								reject(err);
+							} catch (cleanUpError) {
+								reject(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
 							}
 						}
 						reject(err);
@@ -1694,8 +1722,8 @@ export class AuthClass {
 					logger.debug('getting session success', session);
 					return this.Credentials.set(session, 'session');
 				})
-				.catch(error => {
-					logger.debug('getting session failed', error);
+				.catch(() => {
+					logger.debug('getting guest credentials');
 					return this.Credentials.set(null, 'guest');
 				});
 		}
@@ -1815,8 +1843,12 @@ export class AuthClass {
 							if (this.isSessionInvalid(err)) {
 								try {
 									await this.cleanUpInvalidSession(user);
-								} catch (err) {
-									rej(err);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
 								}
 							}
 							return rej(err);
@@ -1896,7 +1928,7 @@ export class AuthClass {
 				logger.debug('no current Cognito user');
 			}
 		} else {
-			logger.debug('no Congito User pool');
+			logger.debug('no Cognito User pool');
 		}
 
 		/**
