@@ -2201,7 +2201,7 @@ describe('auth unit test', () => {
 				});
 			expect(await auth.signOut()).toBeUndefined();
 
-			spyon.mockClear();
+			spyon.mockReset();
 		});
 
 		test('get guest credentials failed', async () => {
@@ -2826,6 +2826,7 @@ describe('auth unit test', () => {
 		let user = null;
 		let userPool = null;
 		beforeEach(() => {
+			jest.clearAllMocks();
 			auth = new Auth(authOptions);
 			user = new CognitoUser({
 				Username: 'raz',
@@ -2835,9 +2836,6 @@ describe('auth unit test', () => {
 				UserPoolId: authOptions.userPoolId,
 				ClientId: authOptions.userPoolWebClientId,
 			});
-		});
-		afterEach(() => {
-			jest.clearAllMocks();
 		});
 		test('Happy path should delete a user', async () => {
 			const spy1 = jest
@@ -2883,7 +2881,7 @@ describe('auth unit test', () => {
 			} catch (error) {
 				expect(error).toEqual(new Error('No current user.'));
 			}
-			spy1.mockClear();
+			spy1.mockReset();
 		});
 
 		test('no session should throw error', async () => {
@@ -3546,6 +3544,7 @@ describe('auth unit test', () => {
 			} catch (e) {
 				expect(e).toBe('No current user');
 			}
+			spyon.mockReset();
 		});
 
 		test('No userPool in config', async () => {
