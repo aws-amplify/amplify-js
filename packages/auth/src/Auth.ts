@@ -706,8 +706,8 @@ export class AuthClass {
 						if (this.isSessionInvalid(err)) {
 							try {
 								await this.cleanUpInvalidSession(user);
-							} catch (err) {
-								rej(err);
+							} catch (error) {
+								rej(error);
 							}
 						}
 						rej(err);
