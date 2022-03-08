@@ -2854,12 +2854,8 @@ describe('auth unit test', () => {
 				.spyOn(user, 'signOut')
 				.mockImplementationOnce(() => {});
 
-			try {
-				expect(await auth.deleteUser()).toBe('SUCCESS');
-				expect(userSignoutSpy).toHaveBeenCalledTimes(1);
-			} catch (err) {
-				console.error(err);
-			}
+			expect(await auth.deleteUser()).toBe('SUCCESS');
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			// TODO: test session cleared properly
 			spy1.mockClear();
 			spy2.mockClear();
