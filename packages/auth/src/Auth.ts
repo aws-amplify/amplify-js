@@ -1381,7 +1381,6 @@ export class AuthClass {
 		try {
 			await this.cleanCachedItems(); // clean aws credentials
 		} catch (e) {
-			// TODO: change to rejects in refactor
 			logger.debug('failed to clear cached items');
 		}
 		if (this.isSignedInHostedUI()) {
