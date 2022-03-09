@@ -1375,6 +1375,15 @@ export class AuthClass {
 		);
 	}
 
+	private isRefreshTokenExpiredError(
+		err: any
+	): err is { message: 'Refresh Token has expired' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has expired'
+		);
+	}
+
 	private isSignedInHostedUI() {
 		return (
 			this._oAuthHandler &&
@@ -1387,7 +1396,8 @@ export class AuthClass {
 			this.isUserDisabledError(err) ||
 			this.isUserDoesNotExistError(err) ||
 			this.isTokenRevokedError(err) ||
-			this.isRefreshTokenRevokedError(err)
+			this.isRefreshTokenRevokedError(err) ||
+			this.isRefreshTokenExpiredError(err)
 		);
 	}
 
