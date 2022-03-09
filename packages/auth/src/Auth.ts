@@ -712,6 +712,7 @@ export class AuthClass {
 										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 									)
 								);
+								return;
 							}
 						}
 						rej(err);
@@ -776,6 +777,7 @@ export class AuthClass {
 									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 								)
 							);
+							return;
 						}
 					}
 					rej(err);
@@ -889,6 +891,7 @@ export class AuthClass {
 												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 											)
 										);
+										return;
 									}
 								}
 								return rej(err);
@@ -1206,6 +1209,7 @@ export class AuthClass {
 											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 										)
 									);
+									return;
 								}
 							}
 							return rej(err);
@@ -1488,6 +1492,7 @@ export class AuthClass {
 												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 											)
 										);
+										return;
 									}
 								}
 								rej(err);
@@ -1684,6 +1689,7 @@ export class AuthClass {
 										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 									)
 								);
+								return;
 							}
 						}
 						rej(err);
@@ -1859,6 +1865,7 @@ export class AuthClass {
 											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 										)
 									);
+									return;
 								}
 							}
 							return rej(err);
