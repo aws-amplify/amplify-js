@@ -1524,6 +1524,7 @@ export class AuthClass {
 															`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 														)
 													);
+													return;
 												}
 												rej(err);
 											} else {
