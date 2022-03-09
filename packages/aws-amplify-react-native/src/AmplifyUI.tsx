@@ -28,7 +28,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { I18n } from 'aws-amplify';
-import AmplifyTheme, { AmplifyThemeType, linkUnderlayColor, placeholderColor } from './AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType, placeholderColor } from './AmplifyTheme';
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
 import icons from './icons';
@@ -160,7 +160,7 @@ export const LinkCell: FC<ILinkCellProps> = (props) => {
 		<View style={theme.cell}>
 			<TouchableHighlight
 				onPress={props.onPress}
-				underlayColor={linkUnderlayColor}
+				underlayColor={theme.linkUnderlay.color}
 				{...setTestId(props.testID)}
 				disabled={disabled}
 			>

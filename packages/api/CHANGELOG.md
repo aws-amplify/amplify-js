@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.32...@aws-amplify/api@4.0.33) (2022-02-28)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** Improve API.graphql return type ([#9197](https://github.com/aws-amplify/amplify-js/issues/9197)) ([9a0531b](https://github.com/aws-amplify/amplify-js/commit/9a0531b11e9eb6659d36ca0c51c642b3d947f63c))
+
+
+
+
+
 ## [4.0.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.31...@aws-amplify/api@4.0.32) (2022-02-03)
 
 **Note:** Version bump only for package @aws-amplify/api
