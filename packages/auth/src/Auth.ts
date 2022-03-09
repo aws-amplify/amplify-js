@@ -1659,7 +1659,7 @@ export class AuthClass {
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-		return new Promise((resolve, reject) => {
+		return new Promise((res, rej) => {
 			logger.debug('Getting the session from this user:', user);
 			user.getSession(
 				async (err, session) => {
@@ -1669,18 +1669,18 @@ export class AuthClass {
 							try {
 								await this.cleanUpInvalidSession(user);
 							} catch (cleanUpError) {
-								reject(
+								rej(
 									new Error(
 										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 									)
 								);
 							}
 						}
-						reject(err);
+						rej(err);
 						return;
 					} else {
 						logger.debug('Succeed to get the user session', session);
-						resolve(session);
+						res(session);
 						return;
 					}
 				},
