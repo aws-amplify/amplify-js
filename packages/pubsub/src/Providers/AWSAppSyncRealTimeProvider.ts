@@ -148,6 +148,17 @@ const standardDomainPattern =
 
 const customDomainPath = '/realtime';
 
+export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
+	appSyncGraphqlEndpoint?: string;
+	authenticationType?: string;
+	query?: string;
+	variables?: object;
+	apiKey?: string;
+	region?: string;
+	graphql_headers?: () => {};
+	additionalHeaders?: { [key: string]: string };
+}
+
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private awsRealTimeSocket: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
@@ -175,7 +186,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	subscribe(
 		_topics: string[] | string,
-		options?: ProviderOptions
+		options?: AWSAppSyncRealTimeProviderOptions
 	): Observable<any> {
 		const { appSyncGraphqlEndpoint } = options;
 

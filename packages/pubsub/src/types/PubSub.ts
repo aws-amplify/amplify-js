@@ -21,4 +21,4 @@ export interface ProviderOptions {
 /**
  * @deprecated Migrated to ProviderOptions
  */
-export { ProviderOptions as ProvidertOptions };
+export type ProvidertOptions = ProviderOptions;

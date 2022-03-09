@@ -37,12 +37,13 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
+	aws_pubsub_endpoint?: string;
 }
 
 /**
  * @deprecated Migrated to MqttProviderOptions
  */
-export { MqttProviderOptions as MqttProvidertOptions };
+export type MqttProvidertOptions = MqttProviderOptions;
 
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
