@@ -2855,9 +2855,6 @@ describe('auth unit test', () => {
 			expect(await auth.deleteUser()).toBe('SUCCESS');
 			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
 			// TODO: test session cleared properly
-			spy1.mockClear();
-			spy2.mockClear();
-			userSignoutSpy.mockClear();
 		});
 
 		test('no user pool should throw error', async () => {
@@ -2901,9 +2898,6 @@ describe('auth unit test', () => {
 			} catch (error) {
 				expect(error).toEqual(Error('no session'));
 			}
-
-			spy1.mockClear();
-			spy2.mockClear();
 		});
 
 		test('getSession call fail should signout user', async () => {
@@ -2958,10 +2952,6 @@ describe('auth unit test', () => {
 			} catch (error) {
 				expect(error).toEqual(Error('Cognito deleteUser error'));
 			}
-
-			spy1.mockClear();
-			spy2.mockClear();
-			spy3.mockClear();
 		});
 	});
 
