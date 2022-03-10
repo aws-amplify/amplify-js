@@ -42,4 +42,9 @@ export default async callback => {
 			}
 		}
 	);
+
+	return () => {
+		linkingSubscription?.remove?.();
+		appStateEventSubscription?.remove?.();
+	};
 };
