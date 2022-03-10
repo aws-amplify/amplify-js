@@ -16,7 +16,7 @@ import { LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
 
-const LOG_LEVELS = {
+export const LOG_LEVELS = {
 	VERBOSE: 1,
 	DEBUG: 2,
 	INFO: 3,
@@ -41,6 +41,11 @@ export class ConsoleLogger implements Logger {
 	level: LOG_TYPE | string;
 	private _pluggables: LoggingProvider[];
 	private _config: object;
+
+	private static pluggables: LoggingProvider[] = [];
+	public static addPluggable(pluggable: LoggingProvider) {
+		ConsoleLogger.pluggables.push(pluggable);
+	}
 
 	/**
 	 * @constructor
@@ -77,6 +82,43 @@ export class ConsoleLogger implements Logger {
 		return this._config;
 	}
 
+	_logGlobal(type: LOG_TYPE | string, ...msg) {
+		const generateGenericEvent = (msg: any[]) => {
+			let strMessage = '';
+			let data;
+
+			if (msg.length === 1 && typeof msg[0] === 'string') {
+				strMessage = msg[0];
+			} else if (msg.length === 1) {
+				data = msg[0];
+			} else if (typeof msg[0] === 'string') {
+				let obj = msg.slice(1);
+				if (obj.length === 1) {
+					obj = obj[0];
+				}
+				strMessage = msg[0];
+				data = obj;
+			} else {
+				data = msg;
+			}
+
+			const event = {
+				data,
+				level: type,
+				message: strMessage,
+				source: this.name,
+				timestamp: Date.now(),
+			};
+
+			return event;
+		};
+
+		for (const pluggable of ConsoleLogger.pluggables) {
+			const event = generateGenericEvent(msg);
+			pluggable.pushLog(event);
+		}
+	}
+
 	/**
 	 * Write log
 	 * @method
@@ -85,6 +127,8 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	_log(type: LOG_TYPE | string, ...msg) {
+		this._logGlobal(type, ...msg);
+
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;

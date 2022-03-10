@@ -92,6 +92,7 @@ describe('aws-amplify', () => {
 			  "I18n",
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
+			  "APILoggingProvider",
 			  "withSSRContext",
 			  "Geo",
 			  "default",

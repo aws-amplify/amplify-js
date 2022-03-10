@@ -56,6 +56,7 @@ export {
 	I18n,
 	ServiceWorker,
 	AWSCloudWatchProvider,
+	APILoggingProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';

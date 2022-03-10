@@ -1,6 +1,6 @@
 import { DelayFunction } from '../types';
 import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
-const logger = new Logger('Util');
+const logger = new Logger('Retry');
 
 export class NonRetryableError extends Error {
 	public readonly nonRetryable = true;
@@ -27,10 +27,10 @@ export async function retry(
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
-	logger.debug(
+	logger.verbose(
 		`${
 			functionToRetry.name
-		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
+		} attempt #${attempt} with these vars: ${JSON.stringify(args)}`
 	);
 
 	try {

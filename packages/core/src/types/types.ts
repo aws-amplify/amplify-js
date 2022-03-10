@@ -1,6 +1,6 @@
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
-
+import { LOG_TYPE } from '../Logger/ConsoleLogger';
 export interface AmplifyConfig {
 	Analytics?: object;
 	Auth?: object;
@@ -44,7 +44,10 @@ export interface LoggingProvider {
 	configure(config?: object): object;
 
 	// take logs and push to provider
-	pushLogs(logs: InputLogEvent[]): void;
+	pushLogs?(logs: InputLogEvent[]): void;
+
+	// push a single log event
+	pushLog?(log: GenericLogEvent): void;
 }
 
 export interface AWSCloudWatchProviderOptions {
@@ -59,4 +62,27 @@ export interface CloudWatchDataTracker {
 	eventUploadInProgress: boolean;
 	logEvents: InputLogEvent[];
 	verifiedLogGroup?: LogGroup;
+}
+
+export interface APILoggingProviderOptions {
+	endpoint: string;
+	apiKey?: string;
+	enabled?: boolean;
+	level?: LOG_TYPE;
+	excludeClassList?: string[];
+	metadata?: { [key: string]: any };
+	eventFormat?: EVENT_FORMAT;
+	bufferInterval?: number;
+}
+
+export enum EVENT_FORMAT {
+	GENERIC = 'GENERIC',
+	CLOUDWATCH = 'CLOUDWATCH',
+}
+export interface GenericLogEvent {
+	level: string;
+	source: string;
+	timestamp: number;
+	message?: string;
+	data?: object;
 }
