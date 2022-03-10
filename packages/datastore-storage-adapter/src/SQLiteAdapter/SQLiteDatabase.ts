@@ -12,11 +12,6 @@ if (Logger.LOG_LEVEL === 'DEBUG') {
 }
 
 const DB_NAME = 'AmplifyDatastore';
-const DB_DISPLAYNAME = 'AWS Amplify DataStore SQLite Database';
-
-// TODO: make these configurable
-const DB_SIZE = 200000;
-const DB_VERSION = '1.0';
 
 /*
 
@@ -86,12 +81,12 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public async batchQuery<T = any>(
-		queryStatements: Set<ParameterizedStatement>
+		queryParameterizedStatements: Set<ParameterizedStatement>
 	): Promise<T[]> {
 		const results = [];
 
 		await this.db.readTransaction(tx => {
-			for (const [statement, params] of queryStatements) {
+			for (const [statement, params] of queryParameterizedStatements) {
 				tx.executeSql(
 					statement,
 					params,
@@ -107,19 +102,21 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public async batchSave(
-		saveStatements: Set<ParameterizedStatement>,
-		deleteStatements?: Set<ParameterizedStatement>
+		saveParameterizedStatements: Set<ParameterizedStatement>,
+		deleteParameterizedStatements?: Set<ParameterizedStatement>
 	): Promise<void> {
 		await this.db.transaction(tx => {
-			for (const [statement, params] of saveStatements) {
+			for (const [statement, params] of saveParameterizedStatements) {
 				tx.executeSql(statement, params);
 			}
-			if (deleteStatements) {
-				for (const [statement, params] of deleteStatements) {
+		});
+		if (deleteParameterizedStatements) {
+			await this.db.transaction(tx => {
+				for (const [statement, params] of deleteParameterizedStatements) {
 					tx.executeSql(statement, params);
 				}
-			}
-		});
+			});
+		}
 	}
 
 	public async selectAndDelete<T = any>(

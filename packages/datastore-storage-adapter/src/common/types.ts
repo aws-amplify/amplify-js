@@ -14,11 +14,11 @@ export interface CommonSQLiteDatabase {
 	): Promise<T[]>;
 	save(statement: string, params: (string | number)[]): Promise<void>;
 	batchQuery<T = any>(
-		queryStatements: Set<ParameterizedStatement>
+		queryParameterizedStatement: Set<ParameterizedStatement>
 	): Promise<T[]>;
 	batchSave(
-		saveStatements: Set<ParameterizedStatement>,
-		deleteStatements?: Set<ParameterizedStatement>
+		saveParameterizedStatements: Set<ParameterizedStatement>,
+		deleteParameterizedStatements?: Set<ParameterizedStatement>
 	): Promise<void>;
 	selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
