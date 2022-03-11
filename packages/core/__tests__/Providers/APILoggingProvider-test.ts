@@ -1,22 +1,14 @@
 import {
 	cloudWatchEventFromGeneric,
-	cloudWatchLogEventBatch,
 	truncateOversizedEvent,
 } from '../../src/Providers/APIProvider/CloudWatchEventFormatter';
 import { postOptions } from '../../src/Providers/APIProvider/Fetch';
 import { APILoggingProvider } from '../../src/Providers/APIProvider/APILoggingProvider';
-import {
-	GenericLogEvent,
-	LoggingProvider,
-	APILoggingProviderOptions,
-} from '../../src/types/types';
+import { GenericLogEvent } from '../../src/types/types';
 import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { getStringByteSize } from '../../src/';
-import {
-	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
-	AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE,
-	AWS_CLOUDWATCH_MAX_EVENT_SIZE,
-} from '../../src/Util/Constants';
+import { AWS_CLOUDWATCH_MAX_EVENT_SIZE } from '../../src/Util/Constants';
+import { EVENT_FORMAT } from '../../src/types';
 
 const wait = async (ms: number) =>
 	await new Promise(resolve => setTimeout(resolve, ms));
@@ -161,6 +153,138 @@ describe('APILoggingProvider', () => {
 				expect.objectContaining(expectedBody)
 			);
 		});
+
+		test('Generic Event Format + metadata', async () => {
+			const unitTestConfig = {
+				endpoint: LOCALHOST,
+				bufferInterval: 100, // 100ms
+				eventFormat: EVENT_FORMAT.GENERIC,
+				metadata: {
+					appId: 123,
+					username: 'bob',
+				},
+			};
+			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
+
+			const testLog: GenericLogEvent = {
+				data: { a: 1 },
+				level: 'WARN',
+				message: 'Test Event',
+				source: 'Unit Test',
+				timestamp: 1000000000000,
+			};
+
+			const expectedBody = {
+				body: JSON.stringify({
+					logEvents: [{ ...testLog }],
+					metadata: {
+						appId: 123,
+						username: 'bob',
+					},
+				}),
+			};
+
+			apiLoggingProvider.pushLog(testLog);
+			await wait(200); // wait 200ms since our bufferInterval is 100ms
+
+			expect(fetch).toHaveBeenCalledWith(
+				LOCALHOST,
+				expect.objectContaining(expectedBody)
+			);
+		});
+
+		test('Event Batching', async () => {
+			const unitTestConfig = {
+				endpoint: LOCALHOST,
+				bufferInterval: 100, // 100ms
+				metadata: {
+					appId: 123,
+					username: 'bob',
+				},
+			};
+			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
+
+			const testLog: GenericLogEvent = {
+				data: { a: 1 },
+				level: 'WARN',
+				message: 'Test Event',
+				source: 'Unit Test',
+				timestamp: 1000000000000,
+			};
+
+			const testLog2: GenericLogEvent = {
+				data: { a: 2 },
+				level: 'WARN',
+				message: 'Test Event 2',
+				source: 'Unit Test',
+				timestamp: 1000000000001,
+			};
+
+			const { timestamp, ...message } = testLog;
+			const { timestamp: t2, ...m2 } = testLog2;
+
+			const expectedBody = {
+				body: JSON.stringify({
+					logEvents: [
+						{
+							timestamp,
+							message: JSON.stringify(message),
+						},
+						{
+							timestamp: t2,
+							message: JSON.stringify(m2),
+						},
+					],
+					metadata: {
+						appId: 123,
+						username: 'bob',
+					},
+				}),
+			};
+
+			apiLoggingProvider.pushLog(testLog);
+
+			// await wait(20);
+
+			apiLoggingProvider.pushLog(testLog2);
+
+			await wait(200); // wait 200ms since our bufferInterval is 100ms
+
+			expect(fetch).toHaveBeenCalledWith(
+				LOCALHOST,
+				expect.objectContaining(expectedBody)
+			);
+		});
+
+		test('Does not attempt to send events when offline', async () => {
+			const unitTestConfig = {
+				endpoint: LOCALHOST,
+				bufferInterval: 100, // 100ms
+			};
+			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
+
+			await wait(10);
+
+			// simulate offline event
+			(apiLoggingProvider as any).connectivity.observer.next({
+				online: false,
+			});
+
+			await wait(10);
+
+			const testLog: GenericLogEvent = {
+				data: { a: 1 },
+				level: 'WARN',
+				message: 'Test Event',
+				source: 'Unit Test',
+				timestamp: 1000000000000,
+			};
+
+			apiLoggingProvider.pushLog(testLog);
+			await wait(200);
+
+			expect(fetch).not.toHaveBeenCalled();
+		});
 	});
 });
 
@@ -189,8 +313,6 @@ describe('cloudWatchEventFromGeneric', () => {
 		expect(cloudWatchEventFromGeneric(genericEvent)).toEqual(cloudWatchEvent);
 	});
 });
-
-describe('cloudWatchLogEventBatch', () => {});
 
 describe('truncateOversizedEvent', () => {
 	test('Truncate long message', () => {
