@@ -27,7 +27,7 @@ export async function retry(
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
-	logger.verbose(
+	logger.debug(
 		`${
 			functionToRetry.name
 		} attempt #${attempt} with these vars: ${JSON.stringify(args)}`

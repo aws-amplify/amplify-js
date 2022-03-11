@@ -20,8 +20,83 @@ import {
 
 describe('APILoggingProvider', () => {
 	describe('Config', () => {
-		const config = {};
-		const provider = new APILoggingProvider();
+		afterEach(() => {
+			jest.restoreAllMocks();
+		});
+		test('Config validation - no endpoint', () => {
+			const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+			const config: any = {};
+			new APILoggingProvider(config);
+
+			expect(error).toBeCalledWith(
+				expect.stringMatching(/Unable to start/),
+				Error(
+					'Invalid configuration. `config.endpoint` must be a string. Received: undefined'
+				)
+			);
+		});
+
+		test('Config validation - http', () => {
+			const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+			const config: any = {
+				endpoint: 'http://google.com',
+			};
+			new APILoggingProvider(config);
+
+			expect(error).toBeCalledWith(
+				expect.stringMatching(/Unable to start/),
+				Error(
+					'Invalid configuration. Only HTTPS endpoints are supported. Received: http:'
+				)
+			);
+		});
+
+		test('Config validation - allow http for localhost', () => {
+			const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+			const config: any = {
+				endpoint: 'http://localhost:3000',
+			};
+			new APILoggingProvider(config);
+
+			expect(error).not.toHaveBeenCalled();
+		});
+	});
+	describe('Push logs', () => {
+		let apiLoggingProvider: APILoggingProvider;
+		let globalAny: any = global;
+		beforeEach(() => {
+			const unitTestConfig = {
+				endpoint: 'http://localhost:3000',
+				bufferInterval: 100,
+			};
+			apiLoggingProvider = new APILoggingProvider(unitTestConfig);
+		});
+		afterEach(() => {
+			globalAny.fetch.mockClear();
+			delete globalAny.fetch;
+		});
+
+		// In progress
+		test.skip('Happy Path', async () => {
+			globalAny.fetch = jest
+				.fn()
+				.mockImplementationOnce(
+					(input: RequestInfo) =>
+						<Promise<Response>>Promise.resolve({ ok: true })
+				);
+
+			const timestamp = Date.now();
+
+			const testLog: GenericLogEvent = {
+				data: { a: 1 },
+				level: 'WARN',
+				message: 'Test Event',
+				source: 'Unit Test',
+				timestamp,
+			};
+
+			expect(fetch).toHaveBeenCalled();
+		});
 	});
 });
 

@@ -8,6 +8,7 @@ import { GenericLogEvent } from '../../types/types';
 import { ConsoleLogger as Logger, getStringByteSize } from '../../';
 
 const logger = new Logger('APILoggingProvider');
+const TRUNCATE_MAX_LENGTH = 5000;
 
 export const cloudWatchEventFromGeneric = (
 	event: GenericLogEvent
@@ -29,7 +30,7 @@ export const truncateOversizedEvent = (event: InputLogEvent): InputLogEvent => {
 		const truncatedObj = {
 			level: messageJson.level,
 			class: messageJson.class,
-			message: messageJson.message.substring(0, 500),
+			message: messageJson.message.substring(0, TRUNCATE_MAX_LENGTH),
 		};
 
 		if (messageJson.data != null) {
@@ -37,7 +38,7 @@ export const truncateOversizedEvent = (event: InputLogEvent): InputLogEvent => {
 				'data'
 			] = `OBJECT SIZE EXCEEDS CLOUDWATCH EVENT LIMIT. Truncated: ${JSON.stringify(
 				messageJson.data
-			).substring(0, 500)}`;
+			).substring(0, TRUNCATE_MAX_LENGTH)}`;
 		}
 
 		return {
@@ -92,5 +93,5 @@ export const cloudWatchLogEventBatch = (
 		currentEventIdx += 1;
 	}
 
-	return buffer.splice(0, currentEventIdx);
+	return buffer.slice(0, currentEventIdx);
 };

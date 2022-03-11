@@ -12,7 +12,7 @@
  */
 
 import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
-import { LoggingProvider } from '../types';
+import { GenericLogEvent, LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
 
@@ -83,42 +83,41 @@ export class ConsoleLogger implements Logger {
 	}
 
 	_logGlobal(type: LOG_TYPE | string, ...msg) {
-		const generateGenericEvent = (msg: any[]) => {
-			let strMessage = '';
-			let data;
-
-			if (msg.length === 1 && typeof msg[0] === 'string') {
-				strMessage = msg[0];
-			} else if (msg.length === 1) {
-				data = msg[0];
-			} else if (typeof msg[0] === 'string') {
-				let obj = msg.slice(1);
-				if (obj.length === 1) {
-					obj = obj[0];
-				}
-				strMessage = msg[0];
-				data = obj;
-			} else {
-				data = msg;
-			}
-
-			const event = {
-				data,
-				level: type,
-				message: strMessage,
-				source: this.name,
-				timestamp: Date.now(),
-			};
-
-			return event;
-		};
-
 		for (const pluggable of ConsoleLogger.pluggables) {
-			const event = generateGenericEvent(msg);
+			const event = this._generateGenericEvent(type, msg);
 			pluggable.pushLog(event);
 		}
 	}
 
+	_generateGenericEvent(type: LOG_TYPE | string, msg: any[]): GenericLogEvent {
+		let strMessage = '';
+		let data;
+
+		if (msg.length === 1 && typeof msg[0] === 'string') {
+			strMessage = msg[0];
+		} else if (msg.length === 1) {
+			data = msg[0];
+		} else if (typeof msg[0] === 'string') {
+			let obj = msg.slice(1);
+			if (obj.length === 1) {
+				obj = obj[0];
+			}
+			strMessage = msg[0];
+			data = obj;
+		} else {
+			data = msg;
+		}
+
+		const event = {
+			data,
+			level: type,
+			message: strMessage,
+			source: this.name,
+			timestamp: Date.now(),
+		};
+
+		return event;
+	}
 	/**
 	 * Write log
 	 * @method

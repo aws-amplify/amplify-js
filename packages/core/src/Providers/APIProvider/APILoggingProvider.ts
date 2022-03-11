@@ -17,6 +17,7 @@ import {
 	API_LOGGING_PROVIDER_NAME,
 	API_LOGGING_PROVIDER_CATEGORY,
 } from '../../Util/Constants';
+import { getStringByteSize } from '../../Util/StringUtils';
 
 const logger = new Logger('APILoggingProvider');
 const HTTPS = 'https';
@@ -29,6 +30,7 @@ const DEFAULT_CLASS_EXCLUDE_LIST = [
 	'AWSCloudWatch',
 	'Retry', // causes a loop because we're using jitteredExponentialRetry below
 ];
+const LAMBDA_PAYLOAD_LIMIT = 6 * 1024 * 1024; // 6MB
 
 /* 
 	Todo:
@@ -243,21 +245,41 @@ class APILoggingProvider implements LoggingProvider {
 			},
 			[this.config.endpoint, options]
 		);
+
+		// remove events from buffer after the request succeeds
+		this.eventBuffer.splice(0, eventBatch.length);
 	}
 
 	private generateEventBatch(
 		buffer: GenericLogEvent[] | InputLogEvent[]
 	): GenericLogEvent[] | InputLogEvent[] {
-		if (this.config.eventFormat === EVENT_FORMAT.CLOUDWATCH) {
-			return cloudWatchLogEventBatch(buffer as InputLogEvent[]);
-		}
+		switch (this.config.eventFormat) {
+			case EVENT_FORMAT.CLOUDWATCH:
+				return cloudWatchLogEventBatch(buffer as InputLogEvent[]);
 
-		return this.genericLogEventBatch(buffer as GenericLogEvent[]);
+			case EVENT_FORMAT.GENERIC:
+			default:
+				return this.genericLogEventBatch(buffer as GenericLogEvent[]);
+		}
 	}
 
 	private genericLogEventBatch(buffer: GenericLogEvent[]): GenericLogEvent[] {
-		// TODO: Add logic to limit batch + headers to 6MB; the Lambda payload limit
-		return buffer;
+		let totalByteSize = 0;
+		let currentEventIdx = 0;
+
+		while (currentEventIdx < buffer.length) {
+			const currentEvent = buffer[currentEventIdx];
+			const eventSize = getStringByteSize(JSON.stringify(currentEvent));
+
+			if (totalByteSize + eventSize > LAMBDA_PAYLOAD_LIMIT) {
+				break;
+			}
+
+			totalByteSize += eventSize;
+			currentEventIdx += 1;
+		}
+
+		return buffer.slice(0, currentEventIdx);
 	}
 }
 

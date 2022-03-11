@@ -1,8 +1,6 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ReachabilityMonitor } from './LoggerReachability';
 
-const RECONNECTING_IN = 5000;
-
 type ConnectionStatus = {
 	online: boolean;
 };
@@ -46,17 +44,6 @@ export default class LoggerConnectivity {
 			clearTimeout(this.timeout);
 			this.subscription.unsubscribe();
 			this.observer = undefined;
-		}
-	}
-
-	socketDisconnected() {
-		if (this.observer && typeof this.observer.next === 'function') {
-			this.observer.next({ online: false });
-
-			this.timeout = setTimeout(() => {
-				const observerResult = { ...this.connectionStatus };
-				this.observer.next(observerResult);
-			}, RECONNECTING_IN);
 		}
 	}
 }
