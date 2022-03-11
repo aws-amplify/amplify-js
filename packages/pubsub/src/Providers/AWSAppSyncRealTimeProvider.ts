@@ -28,6 +28,7 @@ import {
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 
@@ -148,9 +149,11 @@ const standardDomainPattern =
 
 const customDomainPath = '/realtime';
 
+type GraphqlAuthModes = keyof typeof GRAPHQL_AUTH_MODE;
+
 export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: string;
+	authenticationType?: GraphqlAuthModes;
 	query?: string;
 	variables?: object;
 	apiKey?: string;
