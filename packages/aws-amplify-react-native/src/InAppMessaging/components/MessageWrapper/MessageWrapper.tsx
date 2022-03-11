@@ -19,7 +19,11 @@ import { MessageWrapperProps } from './types';
 
 export default function MessageWrapper({ children, style }: MessageWrapperProps) {
 	return (
-		<Modal transparent visible>
+		<Modal
+			transparent
+			visible
+			supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
+		>
 			<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
 		</Modal>
 	);
