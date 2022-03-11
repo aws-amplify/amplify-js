@@ -38,6 +38,7 @@ export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
 	aws_pubsub_endpoint?: string;
+	aws_appsync_dangerously_connect_to_http_endpoint_for_testing?: boolean;
 }
 
 /**

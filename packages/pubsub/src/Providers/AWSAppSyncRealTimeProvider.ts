@@ -158,7 +158,7 @@ export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	variables?: object;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {};
+	graphql_headers?: () => {} | Promise<{}>;
 	additionalHeaders?: { [key: string]: string };
 }
 
