@@ -18,6 +18,10 @@ import {
 	AWS_CLOUDWATCH_MAX_EVENT_SIZE,
 } from '../../src/Util/Constants';
 
+const wait = async (ms: number) =>
+	await new Promise(resolve => setTimeout(resolve, ms));
+const LOCALHOST = 'http://localhost:3000';
+
 describe('APILoggingProvider', () => {
 	describe('Config', () => {
 		afterEach(() => {
@@ -54,7 +58,7 @@ describe('APILoggingProvider', () => {
 		test('Config validation - allow http for localhost', () => {
 			const error = jest.spyOn(console, 'error').mockImplementation(() => {});
 			const config: any = {
-				endpoint: 'http://localhost:3000',
+				endpoint: LOCALHOST,
 			};
 			new APILoggingProvider(config);
 
@@ -62,40 +66,100 @@ describe('APILoggingProvider', () => {
 		});
 	});
 	describe('Push logs', () => {
-		let apiLoggingProvider: APILoggingProvider;
-		let globalAny: any = global;
+		let globalAny: any = globalThis;
 		beforeEach(() => {
-			const unitTestConfig = {
-				endpoint: 'http://localhost:3000',
-				bufferInterval: 100,
-			};
-			apiLoggingProvider = new APILoggingProvider(unitTestConfig);
-		});
-		afterEach(() => {
-			globalAny.fetch.mockClear();
-			delete globalAny.fetch;
-		});
-
-		// In progress
-		test.skip('Happy Path', async () => {
 			globalAny.fetch = jest
 				.fn()
 				.mockImplementationOnce(
 					(input: RequestInfo) =>
 						<Promise<Response>>Promise.resolve({ ok: true })
 				);
+		});
 
-			const timestamp = Date.now();
+		afterEach(() => {
+			globalAny.fetch.mockClear();
+		});
+
+		test('Happy Path', async () => {
+			const unitTestConfig = {
+				endpoint: LOCALHOST,
+				bufferInterval: 100, // 100ms
+			};
+			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
 			const testLog: GenericLogEvent = {
 				data: { a: 1 },
 				level: 'WARN',
 				message: 'Test Event',
 				source: 'Unit Test',
-				timestamp,
+				timestamp: 1000000000000,
 			};
 
-			expect(fetch).toHaveBeenCalled();
+			const { timestamp, ...message } = testLog;
+
+			const expectedBody = {
+				body: JSON.stringify({
+					logEvents: [
+						{
+							timestamp,
+							message: JSON.stringify(message),
+						},
+					],
+				}),
+			};
+
+			apiLoggingProvider.pushLog(testLog);
+			await wait(200); // wait 200ms since our bufferInterval is 100ms
+
+			expect(fetch).toHaveBeenCalledWith(
+				LOCALHOST,
+				expect.objectContaining(expectedBody)
+			);
+		});
+
+		test('Happy Path + metadata', async () => {
+			const unitTestConfig = {
+				endpoint: LOCALHOST,
+				bufferInterval: 100, // 100ms
+				metadata: {
+					appId: 123,
+					username: 'bob',
+				},
+			};
+			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
+
+			const testLog: GenericLogEvent = {
+				data: { a: 1 },
+				level: 'WARN',
+				message: 'Test Event',
+				source: 'Unit Test',
+				timestamp: 1000000000000,
+			};
+
+			const { timestamp, ...message } = testLog;
+
+			const expectedBody = {
+				body: JSON.stringify({
+					logEvents: [
+						{
+							timestamp,
+							message: JSON.stringify(message),
+						},
+					],
+					metadata: {
+						appId: 123,
+						username: 'bob',
+					},
+				}),
+			};
+
+			apiLoggingProvider.pushLog(testLog);
+			await wait(200); // wait 200ms since our bufferInterval is 100ms
+
+			expect(fetch).toHaveBeenCalledWith(
+				LOCALHOST,
+				expect.objectContaining(expectedBody)
+			);
 		});
 	});
 });
