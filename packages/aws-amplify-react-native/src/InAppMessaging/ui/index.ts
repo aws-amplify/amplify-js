@@ -12,4 +12,5 @@
  */
 
 export { default as Button, ButtonProps } from './Button';
+export { default as Carousel, DEFAULT_CAROUSEL_INDICATOR_SIZE } from './Carousel';
 export { default as IconButton, IconButtonProps, IconButtonStyles } from './IconButton';

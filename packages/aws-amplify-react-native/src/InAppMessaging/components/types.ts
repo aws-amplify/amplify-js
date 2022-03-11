@@ -28,6 +28,8 @@ export type InAppMessageComponentStyle = {
 	container?: StyleProp<ViewStyle>;
 	header?: StyleProp<TextStyle>;
 	image?: StyleProp<ImageStyle>;
+	pageIndicatorActive?: StyleProp<ViewStyle>;
+	pageIndicatorInactive?: StyleProp<ViewStyle>;
 	primaryButton?: InAppMessageComponentButtonStyle;
 	secondaryButton?: InAppMessageComponentButtonStyle;
 };
@@ -51,12 +53,16 @@ export interface InAppMessageComponentContentProps
 	secondaryButton?: InAppMessageComponentButtonProps;
 }
 
-export interface InAppMessageComponentBaseProps extends InAppMessageComponentContentProps {
+export interface InAppMessageComponentCommonProps {
 	layout: InAppMessageLayout;
 	onClose?: () => void;
 	onDisplay?: () => void;
 	style?: InAppMessageComponentStyle;
 }
+
+export interface InAppMessageComponentBaseProps
+	extends InAppMessageComponentCommonProps,
+		InAppMessageComponentContentProps {}
 
 export interface InAppMessageComponentBaseStyle {
 	body: TextStyle;
@@ -70,5 +76,7 @@ export interface InAppMessageComponentBaseStyle {
 	iconButton: ViewStyle;
 	image: ImageStyle;
 	imageContainer: ViewStyle;
+	pageIndicatorActive?: ViewStyle;
+	pageIndicatorInactive?: ViewStyle;
 	textContainer: ViewStyle;
 }

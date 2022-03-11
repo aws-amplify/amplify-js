@@ -25,6 +25,11 @@ jest.mock('../../hooks/useMessageImage', () => ({
 	default: jest.fn(),
 }));
 
+jest.mock('../../MessageWrapper', () => ({
+	__esModule: true,
+	default: 'MessageWrapper',
+}));
+
 const mockUseMessageImage = useMessageImage as jest.Mock;
 const onClose = jest.fn();
 const onPress = jest.fn();

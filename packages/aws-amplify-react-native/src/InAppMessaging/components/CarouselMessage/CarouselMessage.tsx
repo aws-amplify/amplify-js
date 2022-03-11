@@ -11,8 +11,32 @@
  * and limitations under the License.
  */
 
+import React from 'react';
+
+import { Carousel } from '../../ui';
+
+import FullScreenMessage from '../FullScreenMessage';
+import { useMessageProps } from '../hooks';
+import MessageWrapper from '../MessageWrapper';
+
+import { getStyles } from './styles';
 import { CarouselMessageProps } from './types';
 
-export default function CarouselMessage(_: CarouselMessageProps) {
-	return null;
+export default function CarouselMessage(props: CarouselMessageProps) {
+	const { data, onClose } = props;
+	const { styles } = useMessageProps(props, getStyles);
+
+	const renderItem = ({ item }) => <FullScreenMessage isCarouselItem {...item} onClose={onClose} />;
+
+	return (
+		<MessageWrapper disableSafeAreaView>
+			<Carousel
+				data={data}
+				renderItem={renderItem}
+				indicatorActiveStyle={styles.pageIndicator.active}
+				indicatorInactiveStyle={styles.pageIndicator.inactive}
+				style={styles.componentWrapper}
+			/>
+		</MessageWrapper>
+	);
 }

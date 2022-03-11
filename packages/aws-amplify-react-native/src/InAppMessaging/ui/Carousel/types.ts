@@ -10,11 +10,25 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
-
-export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {
-	isCarouselItem?: boolean;
+export interface CarouselProps<T> {
+	data: ReadonlyArray<T>;
+	indicatorActiveStyle?: StyleProp<ViewStyle>;
+	indicatorInactiveStyle?: StyleProp<ViewStyle>;
+	onClose?: () => void;
+	renderItem: ListRenderItem<T>;
+	style?: StyleProp<ViewStyle>;
 }
 
-export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}
+export interface CarouselPageIndicatorProps {
+	activeStyle?: StyleProp<ViewStyle>;
+	currentIndex: number;
+	inactiveStyle?: StyleProp<ViewStyle>;
+	numberOfItems: number;
+	style?: StyleProp<ViewStyle>;
+}
+
+export interface CarouselStyles {
+	indicator: ViewStyle;
+}

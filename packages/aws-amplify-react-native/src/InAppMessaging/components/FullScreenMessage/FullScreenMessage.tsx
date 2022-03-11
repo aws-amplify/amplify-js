@@ -13,20 +13,24 @@
 
 import React from 'react';
 import { Image, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import icons from '../../../icons';
 import { IN_APP_MESSAGING } from '../../../AmplifyTestIDs';
-import { Button, IconButton } from '../../ui';
+import { Button, DEFAULT_CAROUSEL_INDICATOR_SIZE, IconButton } from '../../ui';
 
-import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
+import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE, SPACING_EXTRA_LARGE } from '../constants';
 import { useMessageProps } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 
 import { getStyles } from './styles';
 import { FullScreenMessageProps } from './types';
 
+// indicator size + indicator margins
+const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5) / 3;
+
 export default function FullScreenMessage(props: FullScreenMessageProps) {
-	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
+	const { body, header, image, isCarouselItem, onClose, primaryButton, secondaryButton } = props;
 	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
 		useMessageProps(props, getStyles);
 
@@ -34,9 +38,16 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 		return null;
 	}
 
+	const ComponentWrapper = isCarouselItem ? SafeAreaView : MessageWrapper;
+
 	return (
-		<MessageWrapper style={styles.componentWrapper}>
-			<View style={styles.container}>
+		<ComponentWrapper style={styles.componentWrapper}>
+			<View
+				style={[
+					styles.container,
+					isCarouselItem && { paddingBottom: SPACING_EXTRA_LARGE + DEFAULT_CAROUSEL_INDICATOR_PADDING },
+				]}
+			>
 				<View style={styles.contentContainer}>
 					<IconButton
 						color={styles.iconButton.iconColor}
@@ -90,6 +101,6 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 					</View>
 				)}
 			</View>
-		</MessageWrapper>
+		</ComponentWrapper>
 	);
 }

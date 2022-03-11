@@ -110,6 +110,16 @@ Object {
   "imageContainer": Object {
     "backgroundColor": "green",
   },
+  "pageIndicator": Object {
+    "active": Array [
+      undefined,
+      undefined,
+    ],
+    "inactive": Array [
+      undefined,
+      undefined,
+    ],
+  },
   "primaryButton": Object {
     "container": [Function],
     "text": Array [
@@ -181,6 +191,16 @@ Object {
     undefined,
   ],
   "imageContainer": undefined,
+  "pageIndicator": Object {
+    "active": Array [
+      undefined,
+      undefined,
+    ],
+    "inactive": Array [
+      undefined,
+      undefined,
+    ],
+  },
   "primaryButton": Object {
     "container": [Function],
     "text": Array [

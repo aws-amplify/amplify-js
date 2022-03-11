@@ -165,6 +165,11 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 		iconColor: overrideStyle?.closeIconColor,
 	};
 
+	const pageIndicator = {
+		active: [defaultStyle?.pageIndicatorActive, overrideStyle?.pageIndicatorActive],
+		inactive: [defaultStyle?.pageIndicatorInactive, overrideStyle?.pageIndicatorInactive],
+	};
+
 	// text style applied to message body and header respectively
 	const body = [defaultStyle?.body, messageStyle?.body, overrideStyle?.body];
 	const header = [defaultStyle?.header, messageStyle?.header, overrideStyle?.header];
@@ -181,6 +186,7 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 		iconButton,
 		image,
 		imageContainer,
+		pageIndicator,
 		primaryButton,
 		secondaryButton,
 		textContainer,

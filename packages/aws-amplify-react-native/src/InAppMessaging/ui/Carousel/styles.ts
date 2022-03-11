@@ -11,10 +11,17 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
+import { StyleSheet } from 'react-native';
 
-export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {
-	isCarouselItem?: boolean;
-}
+import { CarouselStyles } from './types';
 
-export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}
+export const styles: CarouselStyles = StyleSheet.create({
+	indicator: {
+		bottom: 0,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		left: 0,
+		position: 'absolute',
+		right: 0,
+	},
+});

@@ -11,10 +11,6 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
-
-export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {
-	isCarouselItem?: boolean;
-}
-
-export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}
+export { default } from './Carousel';
+export { DEFAULT_CAROUSEL_INDICATOR_SIZE } from './constants';
+export { CarouselProps } from './types';
