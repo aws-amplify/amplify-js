@@ -54,6 +54,7 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
+	PollOfflineType,
 } from '../types';
 import {
 	DATASTORE,
@@ -687,6 +688,7 @@ class DataStore {
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
+	private pollOffline: PollOfflineType;
 	private initialized: Promise<void>;
 	private initReject: Function;
 	private initResolve: Function;
@@ -754,7 +756,10 @@ class DataStore {
 			// tslint:disable-next-line:max-line-length
 			const fullSyncIntervalInMilliseconds = this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
 			syncSubscription = this.sync
-				.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
+				.start({
+					fullSyncInterval: fullSyncIntervalInMilliseconds,
+					pollOffline: this.pollOffline,
+				})
 				.subscribe({
 					next: ({ type, data }) => {
 						// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
@@ -1293,6 +1298,7 @@ class DataStore {
 			syncExpressions: configSyncExpressions,
 			authProviders: configAuthProviders,
 			storageAdapter: configStorageAdapter,
+			pollOffline: configPollOffline,
 			...configFromAmplify
 		} = config;
 
@@ -1324,6 +1330,9 @@ class DataStore {
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
 		this.amplifyConfig.authProviders =
 			(configDataStore && configDataStore.authProviders) || configAuthProviders;
+
+		this.pollOffline =
+			(configDataStore && configDataStore.pollOffline) || configPollOffline;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
