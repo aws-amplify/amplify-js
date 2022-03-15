@@ -128,3 +128,8 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
   ```js
   import { Auth } from 'aws-amplify';
   ```
+
+### DataStore docs
+
+TODO: explanation
+[Testing relative link](packages/datastore/README.md)
