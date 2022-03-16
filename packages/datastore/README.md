@@ -17,9 +17,10 @@ Before you start reading through these docs, take a moment to understand [how Da
 - [DataStore Lifecycle Events ("Start", "Stop", "Clear")](docs/datastore-lifecycle-events.md)
   - This explains how DataStore fundementally works, and is a great place to start.
 - [Getting Started](docs/getting-started.md) (Running against sample app, etc.)
-- [Known Issues](docs/known-issues.md)
+- [Local Databases](docs/local-databases.md)
+- [Namespaces](docs/namespaces.md)
 - [How DataStore uses Observables](docs/observables.md)
-- [Schema Migration](docs/schema-migration.md)
+- [Schema Changes](docs/schema-changes.md)
 - [Storage](docs/storage.md)
 - [Sync Engine](docs/sync-engine.md)
 - [Troubleshooting](docs/troubleshooting.md)
