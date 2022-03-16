@@ -1,8 +1,9 @@
-import { openDatabase, WebSQLDatabase } from 'expo-sqlite';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 import { deleteAsync, documentDirectory } from 'expo-file-system';
+import { openDatabase, WebSQLDatabase } from 'expo-sqlite';
+
+import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
 const logger = new Logger('ExpoSQLiteDatabase');
 
@@ -33,7 +34,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		}
 	}
 
-	public async createSchema(statements: string[]): Promise<void> {
+	public createSchema(statements: string[]): Promise<void> {
 		return this.executeStatements(statements);
 	}
 
@@ -60,7 +61,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		return results[0];
 	}
 
-	public async getAll<T extends PersistentModel>(
+	public getAll<T extends PersistentModel>(
 		statement: string,
 		params: (string | number)[]
 	): Promise<T[]> {
@@ -82,10 +83,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public async save(
-		statement: string,
-		params: (string | number)[]
-	): Promise<void> {
+	public save(statement: string, params: (string | number)[]): Promise<void> {
 		return new Promise((resolve, reject) => {
 			this.db.transaction(transaction => {
 				transaction.executeSql(
@@ -104,7 +102,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public async batchQuery<T = any>(
+	public batchQuery<T = any>(
 		queryParameterizedStatements: Set<ParameterizedStatement> = new Set()
 	): Promise<T[]> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
@@ -137,14 +135,14 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	public async batchSave(
+	public batchSave(
 		saveParameterizedStatements: Set<ParameterizedStatement> = new Set(),
 		deleteParameterizedStatements?: Set<ParameterizedStatement>
 	): Promise<void> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			try {
 				this.db.transaction(async transaction => {
-					// await for all sql statments promises to resolve
+					// await for all sql statements promises to resolve
 					await Promise.all(
 						[...saveParameterizedStatements].map(
 							([statement, params]) =>
@@ -164,9 +162,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 								)
 						)
 					);
-				});
-				if (deleteParameterizedStatements) {
-					this.db.transaction(async transaction => {
+					if (deleteParameterizedStatements) {
 						await Promise.all(
 							[...deleteParameterizedStatements].map(
 								([statement, params]) =>
@@ -186,16 +182,16 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 									)
 							)
 						);
-					});
-				}
-				resolveTransaction(null);
+					}
+					resolveTransaction(null);
+				});
 			} catch (error) {
 				rejectTransaction(error);
 			}
 		});
 	}
 
-	public async selectAndDelete<T = any>(
+	public selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
 		deleteParameterizedStatement: ParameterizedStatement
 	): Promise<T[]> {
@@ -241,7 +237,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		});
 	}
 
-	private async executeStatements(statements: string[]): Promise<void> {
+	private executeStatements(statements: string[]): Promise<void> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			this.db.transaction(async transaction => {
 				try {

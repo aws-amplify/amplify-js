@@ -37,9 +37,9 @@
 		"@aws-amplify/core": "4.3.14",
 		"@aws-amplify/datastore": "3.7.6",
 		"@types/react-native-sqlite-storage" : "5.0.1",
+		"expo-file-system" : "13.1.4",
 		"expo-sqlite": "10.1.0",
-		"react-native-sqlite-storage": "5.0.0",
-		"expo-file-system" : "13.1.4"
+		"react-native-sqlite-storage": "5.0.0"
 	},
 	"jest": {
 		"globals": {
