@@ -92,6 +92,11 @@ export class ConsoleLogger implements Logger {
 	_generateGenericEvent(type: LOG_TYPE | string, msg: any[]): GenericLogEvent {
 		let strMessage = '';
 		let data;
+		let error: {
+			errorMessage: string;
+			errorName: string;
+			errorStackTrace: string;
+		};
 
 		if (msg.length === 1 && typeof msg[0] === 'string') {
 			strMessage = msg[0];
@@ -103,20 +108,30 @@ export class ConsoleLogger implements Logger {
 				obj = obj[0];
 			}
 			strMessage = msg[0];
+
+			if (obj instanceof Error) {
+				error = {
+					errorMessage: obj.message,
+					errorName: obj.name,
+					errorStackTrace: obj.stack,
+				};
+			}
+
 			data = obj;
 		} else {
 			data = msg;
 		}
 
-		const event = {
-			data,
-			level: type,
+		return {
+			context: {
+				category: this.name,
+				logTime: Date.now(),
+				data,
+			},
+			level: type.toLowerCase(),
 			message: strMessage,
-			source: this.name,
-			timestamp: Date.now(),
+			error,
 		};
-
-		return event;
 	}
 	/**
 	 * Write log

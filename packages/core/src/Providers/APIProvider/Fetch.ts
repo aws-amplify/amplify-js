@@ -1,6 +1,6 @@
 export const postOptions = (body: object) => ({
 	method: 'POST',
-	mode: 'cors',
+	mode: 'no-cors',
 	cache: 'no-cache',
 	credentials: 'same-origin',
 	headers: {
