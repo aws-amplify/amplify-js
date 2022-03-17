@@ -61,26 +61,41 @@ TODO: If it doesn't make the diagram to convoluted, map how sub and sync records
 ```mermaid
 flowchart TD
 
-  sync{Sync Engine}-- observe -->reach[Core reachability]
+  subgraph SyncEngine
+  index{index.ts}-- observe -->reach[Core reachability]
+
+  subgraph processors
+  mp[Mutation Processor]
+  sp[Subscription Processor]
+  syp[Sync Processor]
+  end
 
   reach--next-->mp[Mutation Processor]
   reach--next-->sp[Subscription Processor]
   reach--next-->syp[Sync Processor]
 
-  %% mp-->mergef[merger]-->storage{Storage Engine}
+  subgraph outbox / merger
+  outbox[Outbox]
+  merger[Merger]
+  outbox---merger
+  end
+
+  end
+
   api[DS API]-.->storage
-  mp-- observe -->storage{Storage Engine}
-  storage-- next -->merger[merger*]-- next -->storage
+  mp-- 1. observe -->storage{Storage Engine}
+  storage-- 2. next -->merger[merger*]-- next -->storage
 
 
-  sp-- observes -->appsync[(AppSync)]
+  sp-- observe -->appsync[(AppSync)]
   appsync-- next -->sp
 
   syp---appsync
 
   mp-->outbox[outbox**]
 
+  appsync<--->outbox
   %% styling
   classDef syncEngineClass fill:#8FB,stroke:#333,stroke-width:4px;
-  class sync,mp,sp,syp,merger,outbox syncEngineClass;
+  class index,mp,sp,syp,merger,outbox syncEngineClass;
 ```
