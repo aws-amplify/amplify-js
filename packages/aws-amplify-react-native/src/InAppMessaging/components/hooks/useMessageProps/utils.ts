@@ -64,6 +64,20 @@ export const getComponentButtonStyle = ({
 };
 
 /**
+ * Utility for determining if the provided layout is either of the below layouts
+ *  1. TOP_BANNER
+ *  2. MIDDLE_BANNER
+ *  3. BOTTOM_BANNER
+ *  4. MODAL
+ *
+ * @param {props} - layout props
+ * @returns {boolean} - contains decision on which layout.
+ */
+
+export const isBannerOrModalLayout = (layout: string) =>
+	layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER' || layout === 'MODAL';
+
+/**
  * Parse and assign appropriate message container and wrapper style from style params
  *
  * @param {params} object - contains message styleParams and layout
@@ -80,7 +94,7 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
 	// banner and modal layouts requires no special handling of container or wrapper styles
-	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER' || layout === 'MODAL') {
+	if (isBannerOrModalLayout(layout)) {
 		return {
 			componentWrapper: wrapperDefaultStyle,
 			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],

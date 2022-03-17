@@ -13,11 +13,11 @@
 
 import { ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import {
-	BANNER_ELEVATION,
-	BANNER_SHADOW_HEIGHT,
-	BANNER_SHADOW_OPACITY,
-	BANNER_SHADOW_RADIUS,
-	BANNER_SHADOW_WIDTH,
+	MESSAGE_ELEVATION,
+	MESSAGE_SHADOW_HEIGHT,
+	MESSAGE_SHADOW_OPACITY,
+	MESSAGE_SHADOW_RADIUS,
+	MESSAGE_SHADOW_WIDTH,
 	BORDER_RADIUS_BASE,
 	COLOR_BLACK,
 	COLOR_LIGHT_GREY,
@@ -78,15 +78,15 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		},
 		container: {
 			backgroundColor: COLOR_WHITE,
-			elevation: BANNER_ELEVATION,
+			elevation: MESSAGE_ELEVATION,
 			margin: SPACING_EXTRA_LARGE,
 			shadowColor: COLOR_BLACK,
 			shadowOffset: {
-				width: BANNER_SHADOW_WIDTH,
-				height: BANNER_SHADOW_HEIGHT,
+				width: MESSAGE_SHADOW_WIDTH,
+				height: MESSAGE_SHADOW_HEIGHT,
 			},
-			shadowOpacity: BANNER_SHADOW_OPACITY,
-			shadowRadius: BANNER_SHADOW_RADIUS,
+			shadowOpacity: MESSAGE_SHADOW_OPACITY,
+			shadowRadius: MESSAGE_SHADOW_RADIUS,
 		},
 		contentContainer: {
 			flexDirection: 'row',

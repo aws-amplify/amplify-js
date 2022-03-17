@@ -152,12 +152,7 @@ Object {
     undefined,
   ],
   "buttonsContainer": undefined,
-  "componentWrapper": Array [
-    Object {},
-    Object {},
-    Object {},
-    Object {},
-  ],
+  "componentWrapper": Object {},
   "container": Array [
     Object {},
     Object {},

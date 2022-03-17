@@ -18,7 +18,13 @@ import { BUTTON_PRESSED_OPACITY } from '../../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../../../types';
 import { StyleParams } from '../types';
 
-import { getComponentButtonStyle, getContainerAndWrapperStyle, getMessageStyle, getMessageStyleProps } from '../utils';
+import {
+	getComponentButtonStyle,
+	getContainerAndWrapperStyle,
+	getMessageStyle,
+	getMessageStyleProps,
+	isBannerOrModalLayout,
+} from '../utils';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
@@ -315,10 +321,20 @@ describe('getMessageStyleProps', () => {
 		const overrideStyle: StyleParams['overrideStyle'] = null;
 
 		const output = getMessageStyleProps({
-			layout: 'FULL_SCREEN',
+			layout: 'MODAL',
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
 		expect(output).toMatchSnapshot();
+	});
+});
+
+describe('isBannerOrModalLayout', () => {
+	it('returns the expected output for a given layout', () => {
+		const expectedOutput = isBannerOrModalLayout('MODAL');
+		expect(expectedOutput).toEqual(true);
+
+		const output = isBannerOrModalLayout('FULL_SCREEN');
+		expect(output).toEqual(false);
 	});
 });

@@ -3,6 +3,15 @@
 exports[`BannerMessage renders a message as expected with an image 1`] = `
 <Modal
   hardwareAccelerated={false}
+  supportedOrientations={
+    Array [
+      "portrait",
+      "portrait-upside-down",
+      "landscape",
+      "landscape-left",
+      "landscape-right",
+    ]
+  }
   transparent={true}
   visible={true}
 >
@@ -140,6 +149,15 @@ exports[`BannerMessage renders a message as expected with an image 1`] = `
 exports[`BannerMessage renders a message as expected without an image 1`] = `
 <Modal
   hardwareAccelerated={false}
+  supportedOrientations={
+    Array [
+      "portrait",
+      "portrait-upside-down",
+      "landscape",
+      "landscape-left",
+      "landscape-right",
+    ]
+  }
   transparent={true}
   visible={true}
 >

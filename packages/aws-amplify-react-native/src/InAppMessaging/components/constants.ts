@@ -52,22 +52,12 @@ export const ICON_BUTTON_HIT_SLOP = 10;
 // default value applied in React Native TouchableOpacity
 export const BUTTON_PRESSED_OPACITY = 0.2;
 
-// BannerMessage
+// Message shadow properties
 // iOS shadow values
-export const BANNER_SHADOW_HEIGHT = 2;
-export const BANNER_SHADOW_WIDTH = 2;
-export const BANNER_SHADOW_OPACITY = 0.1;
-export const BANNER_SHADOW_RADIUS = 2;
+export const MESSAGE_SHADOW_HEIGHT = 2;
+export const MESSAGE_SHADOW_WIDTH = 2;
+export const MESSAGE_SHADOW_OPACITY = 0.1;
+export const MESSAGE_SHADOW_RADIUS = 2;
 
 // android shadow values
-export const BANNER_ELEVATION = 3;
-
-// ModalMessage
-// iOS shadow values
-export const MODAL_SHADOW_HEIGHT = 2;
-export const MODAL_SHADOW_WIDTH = 2;
-export const MODAL_SHADOW_OPACITY = 0.1;
-export const MODAL_SHADOW_RADIUS = 2;
-
-// android shadow values
-export const MODAL_ELEVATION = 3;
+export const MESSAGE_ELEVATION = 3;

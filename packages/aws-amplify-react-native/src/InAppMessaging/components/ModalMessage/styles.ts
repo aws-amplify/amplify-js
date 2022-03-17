@@ -25,12 +25,12 @@ import {
 	SPACING_LARGE,
 	SPACING_MEDIUM,
 	SPACING_SMALL,
-	MODAL_SHADOW_HEIGHT,
-	MODAL_SHADOW_OPACITY,
-	MODAL_SHADOW_RADIUS,
-	MODAL_SHADOW_WIDTH,
+	MESSAGE_SHADOW_HEIGHT,
+	MESSAGE_SHADOW_OPACITY,
+	MESSAGE_SHADOW_RADIUS,
+	MESSAGE_SHADOW_WIDTH,
 	COLOR_BLACK,
-	MODAL_ELEVATION,
+	MESSAGE_ELEVATION,
 } from '../constants';
 
 import { ModalMessageStyle } from './types';
@@ -68,12 +68,12 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			backgroundColor: COLOR_WHITE,
 			shadowColor: COLOR_BLACK,
 			shadowOffset: {
-				width: MODAL_SHADOW_WIDTH,
-				height: MODAL_SHADOW_HEIGHT,
+				width: MESSAGE_SHADOW_WIDTH,
+				height: MESSAGE_SHADOW_HEIGHT,
 			},
-			shadowOpacity: MODAL_SHADOW_OPACITY,
-			shadowRadius: MODAL_SHADOW_RADIUS,
-			elevation: MODAL_ELEVATION,
+			shadowOpacity: MESSAGE_SHADOW_OPACITY,
+			shadowRadius: MESSAGE_SHADOW_RADIUS,
+			elevation: MESSAGE_ELEVATION,
 		},
 		contentContainer: {
 			flexDirection: 'row',
