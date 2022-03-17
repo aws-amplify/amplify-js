@@ -1,1 +1,1 @@
-export { default as SQLiteAdapter } from './SQLiteAdapter/SQLiteAdapter';
+export { SQLiteAdapter } from './SQLiteAdapter/SQLiteAdapter';
