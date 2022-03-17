@@ -940,6 +940,12 @@ img { max-width: 100%; }
 				<a href="consolelogger.html#_ts" class="tsd-kind-icon">_ts</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="consolelogger.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="consolelogger.html#configure" class="tsd-kind-icon">configure</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="consolelogger.html#debug" class="tsd-kind-icon">debug</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -947,6 +953,9 @@ img { max-width: 100%; }
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="consolelogger.html#info" class="tsd-kind-icon">info</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="consolelogger.html#listpluggables" class="tsd-kind-icon">list<wbr>Pluggables</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="consolelogger.html#log" class="tsd-kind-icon">log</a>
@@ -968,11 +977,6 @@ img { max-width: 100%; }
 			<div class="lead">
 				<p>Write logs</p>
 			</div>
-			<dl class="tsd-comment-tags">
-				<dt>class</dt>
-				<dd><p>Logger</p>
-				</dd>
-			</dl>
 		</div>
 	</section>
 	<section class="tsd-panel tsd-hierarchy">
@@ -1013,9 +1017,12 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#_log" class="tsd-kind-icon">_log</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#_padding" class="tsd-kind-icon">_padding</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#_ts" class="tsd-kind-icon">_ts</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#configure" class="tsd-kind-icon">configure</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#debug" class="tsd-kind-icon">debug</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#error" class="tsd-kind-icon">error</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#info" class="tsd-kind-icon">info</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#listpluggables" class="tsd-kind-icon">list<wbr>Pluggables</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#log" class="tsd-kind-icon">log</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#verbose" class="tsd-kind-icon">verbose</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="consolelogger.html#warn" class="tsd-kind-icon">warn</a></li>
@@ -1030,25 +1037,21 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Console<wbr>Logger<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, level<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="consolelogger.html" class="tsd-signature-type">ConsoleLogger</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Console<wbr>Logger<span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, level<span class="tsd-signature-symbol">?: </span><a href="../enums/log_type.html" class="tsd-signature-type">LOG_TYPE</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="consolelogger.html" class="tsd-signature-type">ConsoleLogger</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L30">packages/core/src/Logger/ConsoleLogger.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L43">packages/core/src/Logger/ConsoleLogger.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>constructor</dt>
-							<dd></dd>
-						</dl>
 					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>name: <span class="tsd-signature-type">any</span></h5>
+							<h5>name: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Name of the logger</p>
@@ -1056,7 +1059,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> level: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;WARN&quot;</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> level: <a href="../enums/log_type.html" class="tsd-signature-type">LOG_TYPE</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = LOG_TYPE.WARN</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="consolelogger.html" class="tsd-signature-type">ConsoleLogger</a></h4>
@@ -1069,10 +1072,10 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 			<a name="level" class="tsd-anchor"></a>
 			<h3>level</h3>
-			<div class="tsd-signature tsd-kind-icon">level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<div class="tsd-signature tsd-kind-icon">level<span class="tsd-signature-symbol">:</span> <a href="../enums/log_type.html" class="tsd-signature-type">LOG_TYPE</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L30">packages/core/src/Logger/ConsoleLogger.ts:30</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L41">packages/core/src/Logger/ConsoleLogger.ts:41</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1082,7 +1085,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L29">packages/core/src/Logger/ConsoleLogger.ts:29</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L40">packages/core/src/Logger/ConsoleLogger.ts:40</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1092,7 +1095,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">LOG_<wbr>LEVEL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L41">packages/core/src/Logger/ConsoleLogger.ts:41</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L55">packages/core/src/Logger/ConsoleLogger.ts:55</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1103,13 +1106,13 @@ img { max-width: 100%; }
 			<a name="_log" class="tsd-anchor"></a>
 			<h3>_log</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">_log<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">_log<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../enums/log_type.html" class="tsd-signature-type">LOG_TYPE</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L65">packages/core/src/Logger/ConsoleLogger.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L87">packages/core/src/Logger/ConsoleLogger.ts:87</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1127,7 +1130,7 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>type: <span class="tsd-signature-type">string</span></h5>
+							<h5>type: <a href="../enums/log_type.html" class="tsd-signature-type">LOG_TYPE</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>log type, default INFO</p>
 							</div>
@@ -1153,7 +1156,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L43">packages/core/src/Logger/ConsoleLogger.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L57">packages/core/src/Logger/ConsoleLogger.ts:57</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1176,10 +1179,57 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L47">packages/core/src/Logger/ConsoleLogger.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L61">packages/core/src/Logger/ConsoleLogger.ts:61</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="addpluggable" class="tsd-anchor"></a>
+			<h3>add<wbr>Pluggable</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">(</span>pluggable<span class="tsd-signature-symbol">: </span><a href="../interfaces/loggingprovider.html" class="tsd-signature-type">LoggingProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/logger.html">Logger</a>.<a href="../interfaces/logger.html#addpluggable">addPluggable</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L197">packages/core/src/Logger/ConsoleLogger.ts:197</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>pluggable: <a href="../interfaces/loggingprovider.html" class="tsd-signature-type">LoggingProvider</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="configure" class="tsd-anchor"></a>
+			<h3>configure</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L72">packages/core/src/Logger/ConsoleLogger.ts:72</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> config: <span class="tsd-signature-type">object</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1193,7 +1243,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L151">packages/core/src/Logger/ConsoleLogger.ts:151</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L183">packages/core/src/Logger/ConsoleLogger.ts:183</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1231,7 +1281,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L141">packages/core/src/Logger/ConsoleLogger.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L173">packages/core/src/Logger/ConsoleLogger.ts:173</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1269,7 +1319,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L121">packages/core/src/Logger/ConsoleLogger.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L153">packages/core/src/Logger/ConsoleLogger.ts:153</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1298,6 +1348,23 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="listpluggables" class="tsd-anchor"></a>
+			<h3>list<wbr>Pluggables</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">list<wbr>Pluggables<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/loggingprovider.html" class="tsd-signature-type">LoggingProvider</a><span class="tsd-signature-symbol">[]</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L204">packages/core/src/Logger/ConsoleLogger.ts:204</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/loggingprovider.html" class="tsd-signature-type">LoggingProvider</a><span class="tsd-signature-symbol">[]</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="log" class="tsd-anchor"></a>
 			<h3>log</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1307,7 +1374,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L111">packages/core/src/Logger/ConsoleLogger.ts:111</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L143">packages/core/src/Logger/ConsoleLogger.ts:143</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1345,7 +1412,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L161">packages/core/src/Logger/ConsoleLogger.ts:161</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L193">packages/core/src/Logger/ConsoleLogger.ts:193</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1383,7 +1450,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/core/src/Logger/ConsoleLogger.ts#L131">packages/core/src/Logger/ConsoleLogger.ts:131</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/core/src/Logger/ConsoleLogger.ts#L163">packages/core/src/Logger/ConsoleLogger.ts:163</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

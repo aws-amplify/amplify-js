@@ -971,13 +971,13 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Mutation<wbr>Processor<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, userClasses<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, outbox<span class="tsd-signature-symbol">: </span><a href="mutationeventoutbox.html" class="tsd-signature-type">MutationEventOutbox</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, MutationEvent<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="mutationevent.html" class="tsd-signature-type">MutationEvent</a><span class="tsd-signature-symbol">&gt;</span>, conflictHandler<span class="tsd-signature-symbol">?: </span><a href="../globals.html#conflicthandler" class="tsd-signature-type">ConflictHandler</a>, errorHandler<span class="tsd-signature-symbol">?: </span><a href="../globals.html#errorhandler" class="tsd-signature-type">ErrorHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mutationprocessor.html" class="tsd-signature-type">MutationProcessor</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Mutation<wbr>Processor<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, userClasses<span class="tsd-signature-symbol">: </span><a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a>, outbox<span class="tsd-signature-symbol">: </span><a href="mutationeventoutbox.html" class="tsd-signature-type">MutationEventOutbox</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, MutationEvent<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="mutationevent.html" class="tsd-signature-type">MutationEvent</a><span class="tsd-signature-symbol">&gt;</span>, amplifyConfig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, authModeStrategy<span class="tsd-signature-symbol">: </span><a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a>, conflictHandler<span class="tsd-signature-symbol">?: </span><a href="../globals.html#conflicthandler" class="tsd-signature-type">ConflictHandler</a>, errorHandler<span class="tsd-signature-symbol">?: </span><a href="../globals.html#errorhandler" class="tsd-signature-type">ErrorHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="mutationprocessor.html" class="tsd-signature-type">MutationProcessor</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/mutation.ts#L45">packages/datastore/src/sync/processors/mutation.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/mutation.ts#L54">packages/datastore/src/sync/processors/mutation.ts:54</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -989,12 +989,7 @@ img { max-width: 100%; }
 							<h5>storage: <a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a></h5>
 						</li>
 						<li>
-							<h5>userClasses: <span class="tsd-signature-type">object</span></h5>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-index-signature">
-									<h5><span class="tsd-signature-symbol">[</span>modelName: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-							</ul>
+							<h5>userClasses: <a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a></h5>
 						</li>
 						<li>
 							<h5>outbox: <a href="mutationeventoutbox.html" class="tsd-signature-type">MutationEventOutbox</a></h5>
@@ -1004,6 +999,12 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5>MutationEvent: <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><a href="mutationevent.html" class="tsd-signature-type">MutationEvent</a><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> amplifyConfig: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
+						</li>
+						<li>
+							<h5>authModeStrategy: <a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a></h5>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> conflictHandler: <a href="../globals.html#conflicthandler" class="tsd-signature-type">ConflictHandler</a></h5>
@@ -1029,7 +1030,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/mutation.ts#L402">packages/datastore/src/sync/processors/mutation.ts:402</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/mutation.ts#L537">packages/datastore/src/sync/processors/mutation.ts:537</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1046,7 +1047,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/mutation.ts#L102">packages/datastore/src/sync/processors/mutation.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/mutation.ts#L119">packages/datastore/src/sync/processors/mutation.ts:119</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1057,16 +1058,16 @@ img { max-width: 100%; }
 			<a name="start" class="tsd-anchor"></a>
 			<h3>start</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../enums/transformermutationtype.html" class="tsd-signature-type">TransformerMutationType</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationprocessorevent" class="tsd-signature-type">MutationProcessorEvent</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/mutation.ts#L84">packages/datastore/src/sync/processors/mutation.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/mutation.ts#L105">packages/datastore/src/sync/processors/mutation.ts:105</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../enums/transformermutationtype.html" class="tsd-signature-type">TransformerMutationType</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#mutationprocessorevent" class="tsd-signature-type">MutationProcessorEvent</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

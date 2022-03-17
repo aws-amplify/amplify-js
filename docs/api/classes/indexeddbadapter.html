@@ -918,6 +918,9 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-class">
 		<a href="indexeddbadapter.html" class="tsd-kind-icon">IndexedDBAdapter</a>
 		<ul>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="indexeddbadapter.html#batchsave" class="tsd-kind-icon">batch<wbr>Save</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="indexeddbadapter.html#clear" class="tsd-kind-icon">clear</a>
 			</li>
@@ -963,6 +966,7 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="indexeddbadapter.html#batchsave" class="tsd-kind-icon">batch<wbr>Save</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="indexeddbadapter.html#clear" class="tsd-kind-icon">clear</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="indexeddbadapter.html#delete" class="tsd-kind-icon">delete</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="indexeddbadapter.html#query" class="tsd-kind-icon">query</a></li>
@@ -976,6 +980,39 @@ img { max-width: 100%; }
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="batchsave" class="tsd-anchor"></a>
+			<h3>batch<wbr>Save</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#batchsave">batchSave</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L784">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:784</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>modelConstructor: <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5>items: <a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="clear" class="tsd-anchor"></a>
 			<h3>clear</h3>
@@ -987,7 +1024,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#clear">clear</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L627">packages/datastore/src/storage/adapter/indexeddb.ts:627</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L773">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:773</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1004,7 +1041,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L407">packages/datastore/src/storage/adapter/indexeddb.ts:407</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L525">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:525</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1030,14 +1067,14 @@ img { max-width: 100%; }
 			<a name="query" class="tsd-anchor"></a>
 			<h3>query</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">query&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, predicate<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, pagination<span class="tsd-signature-symbol">?: </span><a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">query&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, predicate<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, pagination<span class="tsd-signature-symbol">?: </span><a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#query">query</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L273">packages/datastore/src/storage/adapter/indexeddb.ts:273</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L359">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:359</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1055,7 +1092,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pagination: <a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pagination: <a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1073,7 +1110,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#queryone">queryOne</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L390">packages/datastore/src/storage/adapter/indexeddb.ts:390</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L508">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:508</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1106,7 +1143,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#save">save</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L124">packages/datastore/src/storage/adapter/indexeddb.ts:124</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L208">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:208</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1132,13 +1169,13 @@ img { max-width: 100%; }
 			<a name="setup" class="tsd-anchor"></a>
 			<h3>set<wbr>Up</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">set<wbr>Up<span class="tsd-signature-symbol">(</span>theSchema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, getModelConstructorByModelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Up<span class="tsd-signature-symbol">(</span>theSchema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, getModelConstructorByModelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, sessionId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/storage/adapter/indexeddb.ts#L74">packages/datastore/src/storage/adapter/indexeddb.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/storage/adapter/IndexedDBAdapter.ts#L82">packages/datastore/src/storage/adapter/IndexedDBAdapter.ts:82</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1175,6 +1212,9 @@ img { max-width: 100%; }
 									</ul>
 								</li>
 							</ul>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> sessionId: <span class="tsd-signature-type">string</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>

@@ -919,6 +919,15 @@ img { max-width: 100%; }
 		<a href="iauthpiecestate.html" class="tsd-kind-icon">IAuth<wbr>Piece<wbr>State</a>
 		<ul>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="iauthpiecestate.html#email" class="tsd-kind-icon">email</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="iauthpiecestate.html#error" class="tsd-kind-icon">error</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="iauthpiecestate.html#phone_number" class="tsd-kind-icon">phone_<wbr>number</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="iauthpiecestate.html#requestpending" class="tsd-kind-icon">request<wbr>Pending</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -945,6 +954,9 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iauthpiecestate.html#email" class="tsd-kind-icon">email</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iauthpiecestate.html#error" class="tsd-kind-icon">error</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iauthpiecestate.html#phone_number" class="tsd-kind-icon">phone_<wbr>number</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iauthpiecestate.html#requestpending" class="tsd-kind-icon">request<wbr>Pending</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="iauthpiecestate.html#username" class="tsd-kind-icon">username</a></li>
 					</ul>
@@ -955,12 +967,42 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="email" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> email</h3>
+			<div class="tsd-signature tsd-kind-icon">email<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx#L45">packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx:45</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="error" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> error</h3>
+			<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx#L46">packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx:46</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="phone_number" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> phone_<wbr>number</h3>
+			<div class="tsd-signature tsd-kind-icon">phone_<wbr>number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx#L47">packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx:47</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="requestpending" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> request<wbr>Pending</h3>
 			<div class="tsd-signature tsd-kind-icon">request<wbr>Pending<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/aws-amplify-react/src/Auth/AuthPiece.tsx#L45">packages/aws-amplify-react/src/Auth/AuthPiece.tsx:45</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react/src/Auth/AuthPiece.tsx#L45">packages/aws-amplify-react/src/Auth/AuthPiece.tsx:45</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -970,7 +1012,8 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">username<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/aws-amplify-react/src/Auth/AuthPiece.tsx#L44">packages/aws-amplify-react/src/Auth/AuthPiece.tsx:44</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx#L48">packages/aws-amplify-react-native/src/Auth/AuthPiece.tsx:48</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/aws-amplify-react/src/Auth/AuthPiece.tsx#L44">packages/aws-amplify-react/src/Auth/AuthPiece.tsx:44</a></li>
 				</ul>
 			</aside>
 		</section>
