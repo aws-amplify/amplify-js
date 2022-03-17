@@ -17,6 +17,7 @@ const SERVICE_NAME = 'iotdevicegateway';
 
 export interface AWSIoTProviderOptions extends MqttProviderOptions {
 	aws_pubsub_region?: string;
+	aws_pubsub_endpoint?: string;
 }
 
 export class AWSIoTProvider extends MqttOverWSProvider {

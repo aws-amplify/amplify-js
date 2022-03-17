@@ -28,7 +28,7 @@ import {
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/core';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 

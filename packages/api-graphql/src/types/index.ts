@@ -12,20 +12,14 @@
  */
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/core';
+export { GRAPHQL_AUTH_MODE };
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
 	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
-}
-
-export enum GRAPHQL_AUTH_MODE {
-	API_KEY = 'API_KEY',
-	AWS_IAM = 'AWS_IAM',
-	OPENID_CONNECT = 'OPENID_CONNECT',
-	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-	AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
 export interface GraphQLResult<T = object> {
