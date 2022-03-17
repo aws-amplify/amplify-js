@@ -25,7 +25,6 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           Object {
             "backgroundColor": "#fff",
             "elevation": 3,
-            "flex": 0.7,
             "margin": 16,
             "padding": 16,
             "shadowColor": "#000",
@@ -43,11 +42,41 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
     >
       <View
         style={
-          Object {
-            "flex": 1,
-          }
+          Array [
+            Object {
+              "alignSelf": "flex-end",
+              "flexDirection": "row",
+            },
+          ]
         }
       >
+        <View
+          style={
+            Object {
+              "alignItems": "center",
+              "flex": 1,
+              "marginVertical": 12,
+            }
+          }
+        >
+          <Image
+            source={
+              Object {
+                "uri": "asset.png",
+              }
+            }
+            style={
+              Array [
+                Object {
+                  "height": 100,
+                  "width": 100,
+                },
+                undefined,
+              ]
+            }
+            testID="aws-amplify__in-app-messaging--image"
+          />
+        </View>
         <View
           accessible={true}
           collapsable={false}
@@ -72,6 +101,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           style={
             Array [
               Object {
+                "alignItems": "flex-end",
                 "alignSelf": "flex-start",
                 "marginBottom": 8,
                 "marginLeft": "auto",
@@ -98,43 +128,16 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
             }
           />
         </View>
-        <View
-          style={
-            Object {
-              "alignItems": "center",
-              "marginVertical": 12,
-            }
-          }
-        >
-          <Image
-            source={
-              Object {
-                "uri": "asset.png",
-              }
-            }
-            style={
-              Array [
-                Object {
-                  "height": 100,
-                  "width": 100,
-                },
-                undefined,
-              ]
-            }
-            testID="aws-amplify__in-app-messaging--image"
-          />
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "marginHorizontal": 4,
-              "marginVertical": 12,
-              "paddingLeft": 8,
-            }
-          }
-        />
       </View>
+      <View
+        style={
+          Object {
+            "marginHorizontal": 4,
+            "marginVertical": 12,
+            "paddingLeft": 8,
+          }
+        }
+      />
     </View>
   </RCTSafeAreaView>
 </Modal>
@@ -165,7 +168,6 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           Object {
             "backgroundColor": "#fff",
             "elevation": 3,
-            "flex": 0.7,
             "margin": 16,
             "padding": 16,
             "shadowColor": "#000",
@@ -183,9 +185,12 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
     >
       <View
         style={
-          Object {
-            "flex": 1,
-          }
+          Array [
+            Object {
+              "alignSelf": "flex-end",
+              "flexDirection": "row",
+            },
+          ]
         }
       >
         <View
@@ -212,6 +217,7 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           style={
             Array [
               Object {
+                "alignItems": "flex-end",
                 "alignSelf": "flex-start",
                 "marginBottom": 8,
                 "marginLeft": "auto",
@@ -238,17 +244,16 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
             }
           />
         </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "marginHorizontal": 4,
-              "marginVertical": 12,
-              "paddingLeft": 8,
-            }
-          }
-        />
       </View>
+      <View
+        style={
+          Object {
+            "marginHorizontal": 4,
+            "marginVertical": 12,
+            "paddingLeft": 8,
+          }
+        }
+      />
     </View>
   </RCTSafeAreaView>
 </Modal>
