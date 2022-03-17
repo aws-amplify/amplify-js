@@ -20,7 +20,7 @@ export const cloudWatchEventFromGeneric = (
 
 	return {
 		timestamp,
-		message: JSON.stringify(message),
+		message: JSON.stringify(event),
 	};
 };
 

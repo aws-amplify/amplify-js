@@ -8,7 +8,6 @@ import { GenericLogEvent } from '../../src/types/types';
 import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { getStringByteSize } from '../../src/';
 import { AWS_CLOUDWATCH_MAX_EVENT_SIZE } from '../../src/Util/Constants';
-import { EVENT_FORMAT } from '../../src/types';
 
 const wait = async (ms: number) =>
 	await new Promise(resolve => setTimeout(resolve, ms));
@@ -80,21 +79,30 @@ describe('APILoggingProvider', () => {
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
 			const testLog: GenericLogEvent = {
-				data: { a: 1 },
 				level: 'WARN',
 				message: 'Test Event',
-				source: 'Unit Test',
-				timestamp: 1000000000000,
+				context: {
+					category: 'Auth',
+					logTime: 1234,
+					data: {
+						a: 1,
+					},
+				},
 			};
-
-			const { timestamp, ...message } = testLog;
 
 			const expectedBody = {
 				body: JSON.stringify({
-					logEvents: [
+					logs: [
 						{
-							timestamp,
-							message: JSON.stringify(message),
+							level: 'WARN',
+							message: 'Test Event',
+							context: {
+								category: 'Auth',
+								logTime: 1234,
+								data: {
+									a: 1,
+								},
+							},
 						},
 					],
 				}),
@@ -121,27 +129,36 @@ describe('APILoggingProvider', () => {
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
 			const testLog: GenericLogEvent = {
-				data: { a: 1 },
+				context: {
+					data: { a: 1 },
+					category: 'Test',
+					logTime: 1234,
+				},
 				level: 'WARN',
 				message: 'Test Event',
-				source: 'Unit Test',
-				timestamp: 1000000000000,
 			};
 
-			const { timestamp, ...message } = testLog;
+			const {
+				context: { logTime },
+			} = testLog;
 
 			const expectedBody = {
 				body: JSON.stringify({
-					logEvents: [
+					logs: [
 						{
-							timestamp,
-							message: JSON.stringify(message),
+							level: 'WARN',
+							message: 'Test Event',
+							context: {
+								appId: 123,
+								username: 'bob',
+								data: {
+									a: 1,
+								},
+								category: 'Test',
+								logTime,
+							},
 						},
 					],
-					metadata: {
-						appId: 123,
-						username: 'bob',
-					},
 				}),
 			};
 
@@ -158,7 +175,6 @@ describe('APILoggingProvider', () => {
 			const unitTestConfig = {
 				endpoint: LOCALHOST,
 				bufferInterval: 100, // 100ms
-				eventFormat: EVENT_FORMAT.GENERIC,
 				metadata: {
 					appId: 123,
 					username: 'bob',
@@ -167,20 +183,23 @@ describe('APILoggingProvider', () => {
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
 			const testLog: GenericLogEvent = {
-				data: { a: 1 },
 				level: 'WARN',
 				message: 'Test Event',
-				source: 'Unit Test',
-				timestamp: 1000000000000,
+				context: {
+					data: { a: 1 },
+					category: 'Unit Test',
+					logTime: 1000000000000,
+				},
 			};
 
 			const expectedBody = {
 				body: JSON.stringify({
-					logEvents: [{ ...testLog }],
-					metadata: {
-						appId: 123,
-						username: 'bob',
-					},
+					logs: [
+						{
+							...testLog,
+							context: { appId: 123, username: 'bob', ...testLog.context },
+						},
+					],
 				}),
 			};
 
@@ -205,40 +224,55 @@ describe('APILoggingProvider', () => {
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
 			const testLog: GenericLogEvent = {
-				data: { a: 1 },
 				level: 'WARN',
 				message: 'Test Event',
-				source: 'Unit Test',
-				timestamp: 1000000000000,
+				context: {
+					data: { a: 1 },
+					category: 'Unit Test',
+					logTime: 1000000000000,
+				},
 			};
 
 			const testLog2: GenericLogEvent = {
-				data: { a: 2 },
 				level: 'WARN',
 				message: 'Test Event 2',
-				source: 'Unit Test',
-				timestamp: 1000000000001,
+				context: {
+					data: { a: 2 },
+					category: 'Unit Test',
+					logTime: 1000000000001,
+				},
 			};
 
-			const { timestamp, ...message } = testLog;
-			const { timestamp: t2, ...m2 } = testLog2;
+			const {
+				context: { logTime: timestamp },
+				...message
+			} = testLog;
 
+			const {
+				context: { logTime: t2 },
+				...m2
+			} = testLog2;
+
+			const combinedMessage = {
+				...message,
+				context: {
+					appId: 123,
+					username: 'bob',
+					...testLog.context,
+				},
+			};
+
+			const combinedM2 = {
+				...m2,
+				context: {
+					appId: 123,
+					username: 'bob',
+					...testLog2.context,
+				},
+			};
 			const expectedBody = {
 				body: JSON.stringify({
-					logEvents: [
-						{
-							timestamp,
-							message: JSON.stringify(message),
-						},
-						{
-							timestamp: t2,
-							message: JSON.stringify(m2),
-						},
-					],
-					metadata: {
-						appId: 123,
-						username: 'bob',
-					},
+					logs: [combinedMessage, combinedM2],
 				}),
 			};
 
@@ -273,11 +307,13 @@ describe('APILoggingProvider', () => {
 			await wait(10);
 
 			const testLog: GenericLogEvent = {
-				data: { a: 1 },
+				context: {
+					data: { a: 1 },
+					category: 'Unit Test',
+					logTime: 1000000000000,
+				},
 				level: 'WARN',
 				message: 'Test Event',
-				source: 'Unit Test',
-				timestamp: 1000000000000,
 			};
 
 			apiLoggingProvider.pushLog(testLog);
@@ -294,18 +330,23 @@ describe('cloudWatchEventFromGeneric', () => {
 
 		const genericEvent: GenericLogEvent = {
 			level: 'DEBUG',
-			source: 'test',
-			timestamp,
+			context: {
+				category: 'test',
+				logTime: timestamp,
+				data: { a: 1 },
+			},
 			message: 'test message',
-			data: { a: 1 },
 		};
 
 		const cloudWatchEvent: InputLogEvent = {
 			message: JSON.stringify({
 				level: 'DEBUG',
-				source: 'test',
+				context: {
+					category: 'test',
+					logTime: timestamp,
+					data: { a: 1 },
+				},
 				message: 'test message',
-				data: { a: 1 },
 			}),
 			timestamp,
 		};
@@ -383,7 +424,7 @@ describe('postOptions', () => {
 		    "Content-Type": "application/json",
 		  },
 		  "method": "POST",
-		  "mode": "cors",
+		  "mode": "no-cors",
 		}
 	`);
 });
