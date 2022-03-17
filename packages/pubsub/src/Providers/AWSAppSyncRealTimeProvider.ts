@@ -25,10 +25,10 @@ import {
 	USER_AGENT_HEADER,
 	jitteredExponentialRetry,
 	NonRetryableError,
+	GRAPHQL_AUTH_MODE,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/core';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 
