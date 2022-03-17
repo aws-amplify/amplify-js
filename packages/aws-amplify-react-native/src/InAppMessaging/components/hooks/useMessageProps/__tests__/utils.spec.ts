@@ -226,7 +226,7 @@ describe('getContainerAndWrapperStyle', () => {
 		const overrideStyle: StyleParams['overrideStyle'] = null;
 
 		const output = getContainerAndWrapperStyle({
-			layout: 'MODAL',
+			layout: 'CAROUSEL',
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -315,7 +315,7 @@ describe('getMessageStyleProps', () => {
 		const overrideStyle: StyleParams['overrideStyle'] = null;
 
 		const output = getMessageStyleProps({
-			layout: 'MODAL',
+			layout: 'FULL_SCREEN',
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 

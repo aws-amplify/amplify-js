@@ -79,8 +79,8 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
-	// banner layouts requires no special handling of container or wrapper styles
-	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER') {
+	// banner and modal layouts requires no special handling of container or wrapper styles
+	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER' || layout === 'MODAL') {
 		return {
 			componentWrapper: wrapperDefaultStyle,
 			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],

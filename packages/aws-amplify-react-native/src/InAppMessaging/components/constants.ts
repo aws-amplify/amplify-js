@@ -61,3 +61,13 @@ export const BANNER_SHADOW_RADIUS = 2;
 
 // android shadow values
 export const BANNER_ELEVATION = 3;
+
+// ModalMessage
+// iOS shadow values
+export const MODAL_SHADOW_HEIGHT = 2;
+export const MODAL_SHADOW_WIDTH = 2;
+export const MODAL_SHADOW_OPACITY = 0.1;
+export const MODAL_SHADOW_RADIUS = 2;
+
+// android shadow values
+export const MODAL_ELEVATION = 3;
