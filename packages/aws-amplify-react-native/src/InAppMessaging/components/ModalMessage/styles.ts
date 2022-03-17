@@ -63,7 +63,6 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			backgroundColor: 'transparent',
 		},
 		container: {
-			flex: 0.7,
 			padding: SPACING_EXTRA_LARGE,
 			margin: SPACING_EXTRA_LARGE,
 			backgroundColor: COLOR_WHITE,
@@ -77,7 +76,8 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			elevation: MODAL_ELEVATION,
 		},
 		contentContainer: {
-			flex: 1,
+			flexDirection: 'row',
+			alignSelf: 'flex-end',
 		},
 		header: {
 			fontSize: FONT_SIZE_LARGE,
@@ -86,6 +86,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		iconButton: {
 			alignSelf: 'flex-start',
+			alignItems: 'flex-end',
 			marginBottom: SPACING_MEDIUM,
 			marginLeft: 'auto',
 			marginRight: SPACING_MEDIUM,
@@ -94,11 +95,11 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			...imageDimensions,
 		},
 		imageContainer: {
+			flex: 1,
 			alignItems: 'center',
 			marginVertical: SPACING_LARGE,
 		},
 		textContainer: {
-			flex: 1,
 			marginHorizontal: SPACING_SMALL,
 			marginVertical: SPACING_LARGE,
 			paddingLeft: SPACING_MEDIUM,
