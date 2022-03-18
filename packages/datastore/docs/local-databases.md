@@ -1,4 +1,6 @@
 # Local database examples:
+- *Note: Anything prepended with `sync\_` is an internal table.*
+
 - datastore_Setting
     - Used for schema versioning
     - See the [schema changes doc](docs/schema-changes.md)
