@@ -31,3 +31,6 @@ We determine the storage adapter [here](../src/storage/adapter/getDefaultAdapter
 - [Async Storage](../src/storage/adapter/AsyncStorageAdapter.ts): DataStore scans and filters. 
 - [IndexedDB](../src/storage/adapter/IndexedDBAdapter.ts): if the query is by primary key, DataStore queries against the index, otherwise it scans and filters.
    - *Note: The lazy loading branch includes an improvement to the IndexedDB adapter wherein it will check if any search criteria can meaningfully leverage an index (there is no preference for low cardinality; the first identified index is used.) If so, the base result is sourced from the index and the remaining criteria will be applied as a filter.*
+
+## Understanding the difference between Save and Batch Save
+- TODO
