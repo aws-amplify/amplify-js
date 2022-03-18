@@ -108,7 +108,6 @@ export class ConsoleLogger implements Logger {
 				error = {
 					message: obj.message,
 					name: obj.name,
-					stackTrace: obj.stack,
 				};
 			}
 

@@ -79,7 +79,6 @@ export interface LoggerEvent extends InputLogEvent {
 		error?: {
 			message: string;
 			name: string;
-			stackTrace: string;
 		};
 	};
 }
@@ -103,6 +102,5 @@ export interface GenericLogEvent {
 	error?: {
 		errorMessage: string;
 		errorName: string;
-		errorStackTrace: string;
 	};
 }

@@ -90,11 +90,7 @@ class APILoggingProvider implements LoggingProvider {
 					level,
 					data,
 					name,
-					error: {
-						message: errorMessage,
-						name: errorName,
-						stackTrace: errorStackTrace,
-					} = {},
+					error: { message: errorMessage, name: errorName } = {},
 				},
 			} = event;
 
@@ -102,7 +98,6 @@ class APILoggingProvider implements LoggingProvider {
 				errorMessage && {
 					errorMessage,
 					errorName,
-					errorStackTrace,
 				};
 
 			const combinedEvent: GenericLogEvent = {
