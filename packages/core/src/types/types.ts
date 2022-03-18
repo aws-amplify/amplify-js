@@ -45,9 +45,6 @@ export interface LoggingProvider {
 
 	// take logs and push to provider
 	pushLogs?(logs: InputLogEvent[]): void;
-
-	// push a single log event
-	pushLog?(log: GenericLogEvent): void;
 }
 
 export interface AWSCloudWatchProviderOptions {
@@ -72,6 +69,27 @@ export interface APILoggingProviderOptions {
 	excludeClassList?: string[];
 	metadata?: { [key: string]: any };
 	bufferInterval?: number;
+}
+
+export interface LoggerEvent extends InputLogEvent {
+	loggerInfo?: {
+		level: string;
+		name: string;
+		data?: object;
+		error?: {
+			message: string;
+			name: string;
+			stackTrace: string;
+		};
+	};
+}
+
+export function isLoggerEvent(
+	inputLogEvent: any
+): inputLogEvent is LoggerEvent {
+	return (
+		inputLogEvent && !!Object.keys(inputLogEvent).find(k => k === 'loggerInfo')
+	);
 }
 
 export interface GenericLogEvent {

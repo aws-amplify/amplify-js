@@ -4,7 +4,7 @@ import {
 } from '../../src/Providers/APIProvider/CloudWatchEventFormatter';
 import { postOptions } from '../../src/Providers/APIProvider/Fetch';
 import { APILoggingProvider } from '../../src/Providers/APIProvider/APILoggingProvider';
-import { GenericLogEvent } from '../../src/types/types';
+import { GenericLogEvent, LoggerEvent } from '../../src/types/types';
 import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { getStringByteSize } from '../../src/';
 import { AWS_CLOUDWATCH_MAX_EVENT_SIZE } from '../../src/Util/Constants';
@@ -78,12 +78,12 @@ describe('APILoggingProvider', () => {
 			};
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
-			const testLog: GenericLogEvent = {
-				level: 'WARN',
+			const testLog: LoggerEvent = {
 				message: 'Test Event',
-				context: {
-					category: 'Auth',
-					logTime: 1234,
+				timestamp: 1234,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Auth',
 					data: {
 						a: 1,
 					},
@@ -98,17 +98,17 @@ describe('APILoggingProvider', () => {
 							message: 'Test Event',
 							context: {
 								category: 'Auth',
-								logTime: 1234,
 								data: {
 									a: 1,
 								},
+								logTime: 1234,
 							},
 						},
 					],
 				}),
 			};
 
-			apiLoggingProvider.pushLog(testLog);
+			apiLoggingProvider.pushLogs([testLog]);
 			await wait(200); // wait 200ms since our bufferInterval is 100ms
 
 			expect(fetch).toHaveBeenCalledWith(
@@ -128,19 +128,15 @@ describe('APILoggingProvider', () => {
 			};
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
-			const testLog: GenericLogEvent = {
-				context: {
-					data: { a: 1 },
-					category: 'Test',
-					logTime: 1234,
-				},
-				level: 'WARN',
+			const testLog: LoggerEvent = {
 				message: 'Test Event',
+				timestamp: 1234,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Test',
+					data: { a: 1 },
+				},
 			};
-
-			const {
-				context: { logTime },
-			} = testLog;
 
 			const expectedBody = {
 				body: JSON.stringify({
@@ -149,20 +145,20 @@ describe('APILoggingProvider', () => {
 							level: 'WARN',
 							message: 'Test Event',
 							context: {
-								appId: 123,
-								username: 'bob',
+								category: 'Test',
 								data: {
 									a: 1,
+									appId: 123,
+									username: 'bob',
 								},
-								category: 'Test',
-								logTime,
+								logTime: 1234,
 							},
 						},
 					],
 				}),
 			};
 
-			apiLoggingProvider.pushLog(testLog);
+			apiLoggingProvider.pushLogs([testLog]);
 			await wait(200); // wait 200ms since our bufferInterval is 100ms
 
 			expect(fetch).toHaveBeenCalledWith(
@@ -182,13 +178,13 @@ describe('APILoggingProvider', () => {
 			};
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
-			const testLog: GenericLogEvent = {
-				level: 'WARN',
+			const testLog: LoggerEvent = {
 				message: 'Test Event',
-				context: {
+				timestamp: 1000000000000,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Unit Test',
 					data: { a: 1 },
-					category: 'Unit Test',
-					logTime: 1000000000000,
 				},
 			};
 
@@ -196,14 +192,19 @@ describe('APILoggingProvider', () => {
 				body: JSON.stringify({
 					logs: [
 						{
-							...testLog,
-							context: { appId: 123, username: 'bob', ...testLog.context },
+							level: 'WARN',
+							message: 'Test Event',
+							context: {
+								category: 'Unit Test',
+								data: { a: 1, appId: 123, username: 'bob' },
+								logTime: 1000000000000,
+							},
 						},
 					],
 				}),
 			};
 
-			apiLoggingProvider.pushLog(testLog);
+			apiLoggingProvider.pushLogs([testLog]);
 			await wait(200); // wait 200ms since our bufferInterval is 100ms
 
 			expect(fetch).toHaveBeenCalledWith(
@@ -223,64 +224,62 @@ describe('APILoggingProvider', () => {
 			};
 			const apiLoggingProvider = new APILoggingProvider(unitTestConfig);
 
-			const testLog: GenericLogEvent = {
-				level: 'WARN',
+			const testLog: LoggerEvent = {
 				message: 'Test Event',
-				context: {
-					data: { a: 1 },
-					category: 'Unit Test',
-					logTime: 1000000000000,
+				timestamp: 1000000000000,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Unit Test',
 				},
 			};
 
-			const testLog2: GenericLogEvent = {
-				level: 'WARN',
+			const testLog2: LoggerEvent = {
 				message: 'Test Event 2',
-				context: {
+				timestamp: 1000000000001,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Unit Test',
 					data: { a: 2 },
-					category: 'Unit Test',
-					logTime: 1000000000001,
 				},
 			};
 
-			const {
-				context: { logTime: timestamp },
-				...message
-			} = testLog;
-
-			const {
-				context: { logTime: t2 },
-				...m2
-			} = testLog2;
-
-			const combinedMessage = {
-				...message,
-				context: {
-					appId: 123,
-					username: 'bob',
-					...testLog.context,
-				},
-			};
-
-			const combinedM2 = {
-				...m2,
-				context: {
-					appId: 123,
-					username: 'bob',
-					...testLog2.context,
-				},
-			};
 			const expectedBody = {
 				body: JSON.stringify({
-					logs: [combinedMessage, combinedM2],
+					logs: [
+						{
+							level: 'WARN',
+							message: 'Test Event',
+							context: {
+								category: 'Unit Test',
+								data: {
+									appId: 123,
+									username: 'bob',
+								},
+								logTime: 1000000000000,
+							},
+						},
+						{
+							level: 'WARN',
+							message: 'Test Event 2',
+							context: {
+								category: 'Unit Test',
+								data: {
+									a: 2,
+									appId: 123,
+									username: 'bob',
+								},
+								logTime: 1000000000001,
+							},
+						},
+					],
 				}),
 			};
 
-			apiLoggingProvider.pushLog(testLog);
+			apiLoggingProvider.pushLogs([testLog]);
 
 			// await wait(20);
 
-			apiLoggingProvider.pushLog(testLog2);
+			apiLoggingProvider.pushLogs([testLog2]);
 
 			await wait(200); // wait 200ms since our bufferInterval is 100ms
 
@@ -306,17 +305,19 @@ describe('APILoggingProvider', () => {
 
 			await wait(10);
 
-			const testLog: GenericLogEvent = {
-				context: {
-					data: { a: 1 },
-					category: 'Unit Test',
-					logTime: 1000000000000,
-				},
-				level: 'WARN',
+			const testLog: LoggerEvent = {
 				message: 'Test Event',
+				timestamp: 1000000000000,
+				loggerInfo: {
+					level: 'WARN',
+					name: 'Unit Test',
+					data: {
+						a: 1,
+					},
+				},
 			};
 
-			apiLoggingProvider.pushLog(testLog);
+			apiLoggingProvider.pushLogs([testLog]);
 			await wait(200);
 
 			expect(fetch).not.toHaveBeenCalled();

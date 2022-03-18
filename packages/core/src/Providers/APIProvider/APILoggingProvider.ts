@@ -4,6 +4,7 @@ import {
 	LoggingProvider,
 	GenericLogEvent,
 	APILoggingProviderOptions,
+	isLoggerEvent,
 } from '../../types/types';
 import { jitteredExponentialRetry, NonRetryableError } from '../../../';
 import { postOptions } from './Fetch';
@@ -12,6 +13,7 @@ import {
 	API_LOGGING_PROVIDER_CATEGORY,
 } from '../../Util/Constants';
 import { getStringByteSize } from '../../Util/StringUtils';
+import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 
 const logger = new Logger('APILoggingProvider');
 const HTTPS = 'https';
@@ -71,28 +73,53 @@ class APILoggingProvider implements LoggingProvider {
 		}
 	}
 
-	public pushLog(event: GenericLogEvent): void {
+	public pushLogs(events: InputLogEvent[]): void {
 		if (this.config?.enabled === false) {
 			return;
 		}
 
-		if (!this.verifyEvent(event)) {
-			return;
-		}
+		events.forEach(event => {
+			if (!isLoggerEvent(event)) {
+				return;
+			}
 
-		const { context, level, error, message } = event;
+			const {
+				message,
+				timestamp,
+				loggerInfo: {
+					level,
+					data,
+					name,
+					error: {
+						message: errorMessage,
+						name: errorName,
+						stackTrace: errorStackTrace,
+					} = {},
+				},
+			} = event;
 
-		const combinedEvent: GenericLogEvent = {
-			level,
-			error,
-			message,
-			context: {
-				...this.config.metadata,
-				...context,
-			},
-		};
+			const error = errorName &&
+				errorMessage && {
+					errorMessage,
+					errorName,
+					errorStackTrace,
+				};
 
-		this.eventBuffer.push(combinedEvent);
+			const combinedEvent: GenericLogEvent = {
+				level,
+				error,
+				message,
+				context: {
+					category: name,
+					data: { ...data, ...this.config.metadata },
+					logTime: timestamp,
+				},
+			};
+
+			if (this.verifyEvent(combinedEvent)) {
+				this.eventBuffer.push(combinedEvent);
+			}
+		});
 	}
 
 	private validateConfig(config: APILoggingProviderOptions): void {

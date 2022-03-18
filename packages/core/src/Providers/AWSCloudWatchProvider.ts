@@ -218,7 +218,15 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public pushLogs(logs: InputLogEvent[]): void {
 		logger.debug('pushing log events to Cloudwatch...');
-		this._dataTracker.logEvents = [...this._dataTracker.logEvents, ...logs];
+		const formattedLogs = logs.map(({ message, timestamp }) => ({
+			message,
+			timestamp,
+		}));
+
+		this._dataTracker.logEvents = [
+			...this._dataTracker.logEvents,
+			...formattedLogs,
+		];
 	}
 
 	private async _validateLogGroupExistsAndCreate(
