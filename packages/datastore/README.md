@@ -23,7 +23,7 @@ Before you start reading through these docs, take a moment to understand [how Da
 - [Schema Changes](docs/schema-changes.md)
 - [Storage](docs/storage.md)
 - [Sync Engine](docs/sync-engine.md)
-- [How DataStore uses PubSub](docs/pubsub.md)
+- [How DataStore uses `api-graphql` and PubSub](docs/use-of-api-and-pubsub.md)
 
 ## Other Resources:
 
