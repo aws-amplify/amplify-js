@@ -55,7 +55,6 @@ export const getStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =
 		},
 		componentWrapper: {
 			backgroundColor: COLOR_WHITE,
-			flex: 1,
 		},
 		container: {
 			flex: 1,

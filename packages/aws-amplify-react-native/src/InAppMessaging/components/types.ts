@@ -21,24 +21,38 @@ export type InAppMessageComponentButtonStyle = {
 	text?: ButtonProps['textStyle'];
 };
 
-export type InAppMessageComponentStyle = {
+type InAppMessageComponentCommonStyle = {
 	body?: StyleProp<TextStyle>;
 	closeIconButton?: StyleProp<ViewStyle>;
 	closeIconColor?: ColorValue;
 	container?: StyleProp<ViewStyle>;
 	header?: StyleProp<TextStyle>;
 	image?: StyleProp<ImageStyle>;
-	pageIndicatorActive?: StyleProp<ViewStyle>;
-	pageIndicatorInactive?: StyleProp<ViewStyle>;
 	primaryButton?: InAppMessageComponentButtonStyle;
 	secondaryButton?: InAppMessageComponentButtonStyle;
 };
 
+export type InAppMessageBannerMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageCarouselMessageStyle = InAppMessageComponentCommonStyle & {
+	pageIndicatorActive?: StyleProp<ViewStyle>;
+	pageIndicatorInactive?: StyleProp<ViewStyle>;
+};
+
+export type InAppMessageFullScreenMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageModalMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageComponentStyle = InAppMessageBannerMessageStyle &
+	InAppMessageCarouselMessageStyle &
+	InAppMessageFullScreenMessageStyle &
+	InAppMessageModalMessageStyle;
+
 export type InAppMessageComponentStyles = {
-	BannerMessage?: InAppMessageComponentStyle;
-	CarouselMessage?: InAppMessageComponentStyle;
-	FullScreenMessage?: InAppMessageComponentStyle;
-	ModalMessage?: InAppMessageComponentStyle;
+	BannerMessage?: InAppMessageComponentCommonStyle;
+	CarouselMessage?: InAppMessageComponentCommonStyle;
+	FullScreenMessage?: InAppMessageComponentCommonStyle;
+	ModalMessage?: InAppMessageComponentCommonStyle;
 };
 
 export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top' | null;

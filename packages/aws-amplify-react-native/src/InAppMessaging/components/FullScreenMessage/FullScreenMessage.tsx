@@ -12,95 +12,19 @@
  */
 
 import React from 'react';
-import { Image, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import icons from '../../../icons';
-import { IN_APP_MESSAGING } from '../../../AmplifyTestIDs';
-import { Button, DEFAULT_CAROUSEL_INDICATOR_SIZE, IconButton } from '../../ui';
-
-import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE, SPACING_EXTRA_LARGE } from '../constants';
 import { useMessageProps } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 
+import FullScreenContent from './FullScreenContent';
 import { getStyles } from './styles';
 import { FullScreenMessageProps } from './types';
 
-// indicator size + indicator margins
-const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5) / 3;
-
 export default function FullScreenMessage(props: FullScreenMessageProps) {
-	const { body, header, image, isCarouselItem, onClose, primaryButton, secondaryButton } = props;
-	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
-		useMessageProps(props, getStyles);
-
-	if (!shouldRenderMessage) {
-		return null;
-	}
-
-	const ComponentWrapper = isCarouselItem ? SafeAreaView : MessageWrapper;
+	const { styles } = useMessageProps(props, getStyles);
 
 	return (
-		<ComponentWrapper style={styles.componentWrapper}>
-			<View
-				style={[
-					styles.container,
-					isCarouselItem && { paddingBottom: SPACING_EXTRA_LARGE + DEFAULT_CAROUSEL_INDICATOR_PADDING },
-				]}
-			>
-				<View style={styles.contentContainer}>
-					<IconButton
-						color={styles.iconButton.iconColor}
-						hitSlop={ICON_BUTTON_HIT_SLOP}
-						onPress={onClose}
-						size={ICON_BUTTON_SIZE}
-						source={icons.close}
-						style={styles.iconButton.container}
-						testID={IN_APP_MESSAGING.CLOSE_BUTTON}
-					/>
-					{hasRenderableImage && (
-						<View style={styles.imageContainer}>
-							<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
-						</View>
-					)}
-					<View style={styles.textContainer}>
-						{header?.content && (
-							<Text style={styles.header} testID={IN_APP_MESSAGING.HEADER}>
-								{header.content}
-							</Text>
-						)}
-						{body?.content && (
-							<Text style={styles.body} testID={IN_APP_MESSAGING.BODY}>
-								{body.content}
-							</Text>
-						)}
-					</View>
-				</View>
-				{hasButtons && (
-					<View style={styles.buttonsContainer}>
-						{hasSecondaryButton && (
-							<Button
-								onPress={secondaryButton.onPress}
-								style={styles.secondaryButton.container}
-								testID={IN_APP_MESSAGING.SECONDARY_BUTTON}
-								textStyle={styles.secondaryButton.text}
-							>
-								{secondaryButton.title}
-							</Button>
-						)}
-						{hasPrimaryButton && (
-							<Button
-								onPress={primaryButton.onPress}
-								style={styles.primaryButton.container}
-								testID={IN_APP_MESSAGING.PRIMARY_BUTTON}
-								textStyle={styles.primaryButton.text}
-							>
-								{primaryButton.title}
-							</Button>
-						)}
-					</View>
-				)}
-			</View>
-		</ComponentWrapper>
+		<MessageWrapper style={styles.componentWrapper}>
+			<FullScreenContent {...props} />
+		</MessageWrapper>
 	);
 }

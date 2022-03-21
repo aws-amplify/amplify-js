@@ -13,8 +13,6 @@
 
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
 
-export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {
-	isCarouselItem?: boolean;
-}
+export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {}
 
 export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}

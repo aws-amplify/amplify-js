@@ -14,12 +14,8 @@
 import { ReactElement } from 'react';
 import { InAppMessageAction } from '@aws-amplify/notifications';
 
-import { BannerMessageProps } from '../../BannerMessage';
-import { CarouselMessageProps } from '../../CarouselMessage';
-import { FullScreenMessageProps } from '../../FullScreenMessage';
+import { InAppMessageComponentCommonProps } from '../../types';
 
 export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
 
-export type InAppMessageComponent = (props: InAppMessageComponentProps) => ReactElement;
-
-export type InAppMessageComponentProps = BannerMessageProps | CarouselMessageProps | FullScreenMessageProps;
+export type InAppMessageComponent = (props: InAppMessageComponentCommonProps) => ReactElement;

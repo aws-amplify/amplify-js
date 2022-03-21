@@ -18,17 +18,10 @@ import { IN_APP_MESSAGING } from '../../../../AmplifyTestIDs';
 import useMessageImage from '../../hooks/useMessageImage';
 import { INITIAL_IMAGE_DIMENSIONS } from '../../hooks/useMessageImage/constants';
 
-import FullScreenMessage from '../FullScreenMessage';
+import FullScreenContent from '../FullScreenContent';
 
-jest.mock('../../hooks/useMessageImage', () => ({
-	__esModule: true,
-	default: jest.fn(),
-}));
-
-jest.mock('../../MessageWrapper', () => ({
-	__esModule: true,
-	default: 'MessageWrapper',
-}));
+jest.mock('../../hooks/useMessageImage');
+jest.mock('../../MessageWrapper', () => 'MessageWrapper');
 
 const mockUseMessageImage = useMessageImage as jest.Mock;
 const onClose = jest.fn();
@@ -36,7 +29,7 @@ const onPress = jest.fn();
 
 const baseProps = { layout: 'FULL_SCREEN' as const, onClose };
 
-describe('FullScreenMessage', () => {
+describe('FullScreenContent', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -48,7 +41,7 @@ describe('FullScreenMessage', () => {
 			isImageFetching: false,
 		});
 
-		const renderer = TestRenderer.create(<FullScreenMessage {...baseProps} />);
+		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
 
 		expect(renderer.toJSON()).toMatchSnapshot();
 	});
@@ -63,7 +56,7 @@ describe('FullScreenMessage', () => {
 		const src = 'asset.png';
 		const props = { ...baseProps, image: { src } };
 
-		const renderer = TestRenderer.create(<FullScreenMessage {...props} />);
+		const renderer = TestRenderer.create(<FullScreenContent {...props} />);
 
 		const image = renderer.root.findByProps({ testID: IN_APP_MESSAGING.IMAGE });
 
@@ -78,7 +71,7 @@ describe('FullScreenMessage', () => {
 			isImageFetching: true,
 		});
 
-		const renderer = TestRenderer.create(<FullScreenMessage {...baseProps} />);
+		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
 
 		expect(renderer.toJSON()).toBeNull();
 	});
@@ -107,7 +100,7 @@ describe('FullScreenMessage', () => {
 
 		const props = { ...baseProps, [key]: testProps };
 
-		const renderer = TestRenderer.create(<FullScreenMessage {...props} />);
+		const renderer = TestRenderer.create(<FullScreenContent {...props} />);
 		const testElement = renderer.root.findByProps({ testID });
 
 		expect(testElement.props).toEqual(expect.objectContaining(expectedProps));
@@ -120,7 +113,7 @@ describe('FullScreenMessage', () => {
 			isImageFetching: false,
 		});
 
-		const renderer = TestRenderer.create(<FullScreenMessage {...baseProps} />);
+		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
 		const closeButton = renderer.root.findByProps({ testID: IN_APP_MESSAGING.CLOSE_BUTTON });
 
 		TestRenderer.act(() => {

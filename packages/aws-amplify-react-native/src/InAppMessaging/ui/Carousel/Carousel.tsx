@@ -80,21 +80,21 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 				disableIntervalMomentum
 				horizontal
 				onViewableItemsChanged={onViewableItemsChanged.current}
-				viewabilityConfig={VIEWABILITY_CONFIG}
+				ref={flatListRef}
 				renderItem={carouselRenderItem}
 				renderToHardwareTextureAndroid
-				ref={flatListRef}
 				showsHorizontalScrollIndicator={false}
 				showsVerticalScrollIndicator={false}
-				snapToInterval={width}
 				snapToAlignment="start"
+				snapToInterval={width}
 				style={style}
+				viewabilityConfig={VIEWABILITY_CONFIG}
 			/>
 			<CarouselPageIndicator
 				activeStyle={indicatorActiveStyle}
 				currentIndex={currentIndex}
-				numberOfItems={data.length}
 				inactiveStyle={indicatorInactiveStyle}
+				numberOfItems={data.length}
 				style={styles.indicator}
 			/>
 		</>

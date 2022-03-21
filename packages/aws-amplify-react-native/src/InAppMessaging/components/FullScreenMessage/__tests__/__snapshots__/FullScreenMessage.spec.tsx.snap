@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FullScreenMessage renders as expected 1`] = `
+<MessageWrapper
+  style={
+    Array [
+      Object {
+        "backgroundColor": "#fff",
+      },
+      Object {},
+      Object {},
+      Object {},
+    ]
+  }
+>
+  <FullScreenContent
+    layout="FULL_SCREEN"
+  />
+</MessageWrapper>
+`;

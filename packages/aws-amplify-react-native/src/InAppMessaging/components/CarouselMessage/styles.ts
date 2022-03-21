@@ -18,19 +18,20 @@ import { CarouselMessageStyle } from './types';
 
 export const getStyles = (): CarouselMessageStyle =>
 	StyleSheet.create({
-		body: {},
-		buttonContainer: {},
-		buttonsContainer: {},
-		buttonText: {},
+		body: null,
+		buttonContainer: null,
+		buttonsContainer: null,
+		buttonText: null,
 		componentWrapper: {
 			backgroundColor: COLOR_WHITE,
+			flex: 1,
 		},
-		container: {},
-		contentContainer: {},
-		header: {},
-		iconButton: {},
-		image: {},
-		imageContainer: {},
+		container: null,
+		contentContainer: null,
+		header: null,
+		iconButton: null,
+		image: null,
+		imageContainer: null,
 		pageIndicatorActive: {
 			backgroundColor: COLOR_GREY,
 			borderRadius: SPACING_LARGE / 2,
