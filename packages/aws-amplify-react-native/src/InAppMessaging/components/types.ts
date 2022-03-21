@@ -90,7 +90,5 @@ export interface InAppMessageComponentBaseStyle {
 	iconButton: ViewStyle;
 	image: ImageStyle;
 	imageContainer: ViewStyle;
-	pageIndicatorActive?: ViewStyle;
-	pageIndicatorInactive?: ViewStyle;
 	textContainer: ViewStyle;
 }

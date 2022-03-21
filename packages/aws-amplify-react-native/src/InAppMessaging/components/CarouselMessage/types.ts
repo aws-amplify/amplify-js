@@ -25,7 +25,9 @@ export interface CarouselMessageProps extends InAppMessageComponentCommonProps {
 
 export interface CarouselMessageItemProps extends InAppMessageComponentBaseProps {}
 
-export interface CarouselMessageStyle extends InAppMessageComponentBaseStyle {
+export interface CarouselMessageStyle extends InAppMessageComponentBaseStyle {}
+
+export interface CarouselMessageComponentStyle {
 	pageIndicatorActive: ViewStyle;
 	pageIndicatorInactive: ViewStyle;
 }

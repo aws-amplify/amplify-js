@@ -29,7 +29,24 @@ import {
 	SPACING_SMALL,
 } from '../constants';
 
-import { CarouselMessageStyle } from './types';
+import { CarouselMessageStyle, CarouselMessageComponentStyle } from './types';
+
+export const defaultStyle: CarouselMessageComponentStyle = StyleSheet.create({
+	pageIndicatorActive: {
+		backgroundColor: COLOR_GREY,
+		borderRadius: SPACING_LARGE / 2,
+		height: SPACING_LARGE,
+		margin: SPACING_SMALL,
+		width: SPACING_LARGE,
+	},
+	pageIndicatorInactive: {
+		backgroundColor: COLOR_LIGHT_GREY_2,
+		borderRadius: SPACING_LARGE / 2,
+		height: SPACING_LARGE,
+		margin: SPACING_SMALL,
+		width: SPACING_LARGE,
+	},
+});
 
 export const getStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
 	StyleSheet.create({
@@ -83,20 +100,6 @@ export const getStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
 		imageContainer: {
 			alignItems: 'center',
 			marginVertical: SPACING_LARGE,
-		},
-		pageIndicatorActive: {
-			backgroundColor: COLOR_GREY,
-			borderRadius: SPACING_LARGE / 2,
-			height: SPACING_LARGE,
-			margin: SPACING_SMALL,
-			width: SPACING_LARGE,
-		},
-		pageIndicatorInactive: {
-			backgroundColor: COLOR_LIGHT_GREY_2,
-			borderRadius: SPACING_LARGE / 2,
-			height: SPACING_LARGE,
-			margin: SPACING_SMALL,
-			width: SPACING_LARGE,
 		},
 		textContainer: {
 			flex: 1,

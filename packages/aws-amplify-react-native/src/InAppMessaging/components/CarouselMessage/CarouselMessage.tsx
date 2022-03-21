@@ -11,20 +11,26 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { Carousel } from '../../ui';
 
-import { useMessageProps } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 
 import CarouselItem from './CarouselItem';
-import { getStyles } from './styles';
+import { defaultStyle } from './styles';
 import { CarouselMessageProps } from './types';
 
 export default function CarouselMessage(props: CarouselMessageProps) {
 	const { data, ...rest } = props;
-	const { styles } = useMessageProps(props, getStyles);
+	const { style } = rest;
+
+	const indicatorStyle = useMemo(() => {
+		return {
+			active: [defaultStyle?.pageIndicatorActive, style?.pageIndicatorActive],
+			inactive: [defaultStyle?.pageIndicatorInactive, style?.pageIndicatorInactive],
+		};
+	}, [style]);
 
 	const renderItem = ({ item }) => <CarouselItem {...item} {...rest} />;
 
@@ -33,8 +39,8 @@ export default function CarouselMessage(props: CarouselMessageProps) {
 			<Carousel
 				data={data}
 				renderItem={renderItem}
-				indicatorActiveStyle={styles.pageIndicator.active}
-				indicatorInactiveStyle={styles.pageIndicator.inactive}
+				indicatorActiveStyle={indicatorStyle.active}
+				indicatorInactiveStyle={indicatorStyle.inactive}
 			/>
 		</MessageWrapper>
 	);

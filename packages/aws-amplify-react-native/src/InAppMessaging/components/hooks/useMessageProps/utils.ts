@@ -196,10 +196,6 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 			// Add bottom padding for carousel page indciators
 			{ paddingBottom: SPACING_EXTRA_LARGE + DEFAULT_CAROUSEL_INDICATOR_PADDING },
 		];
-		styleProps.pageIndicator = {
-			active: [defaultStyle?.pageIndicatorActive, overrideStyle?.pageIndicatorActive],
-			inactive: [defaultStyle?.pageIndicatorInactive, overrideStyle?.pageIndicatorInactive],
-		};
 	}
 
 	return styleProps;
