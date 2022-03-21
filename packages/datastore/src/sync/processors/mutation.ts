@@ -1,8 +1,9 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
 	ConsoleLogger as Logger,
-	jitteredExponentialRetry,
+	jitteredBackoff,
 	NonRetryableError,
+	retry,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -241,7 +242,7 @@ class MutationProcessor {
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
-		return await jitteredExponentialRetry(
+		return await retry(
 			async (
 				model: string,
 				operation: TransformerMutationType,
@@ -251,19 +252,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -358,17 +354,18 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
 
 								await this.storage.save(updatedMutation);
 
@@ -417,7 +414,8 @@ class MutationProcessor {
 				modelConstructor,
 				MutationEvent,
 				mutationEvent,
-			]
+			],
+			customJitteredBackoff
 		);
 	}
 
@@ -538,5 +536,23 @@ class MutationProcessor {
 		this.processing = false;
 	}
 }
+
+const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;
+const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
+
+const customJitteredBackoff: typeof originalJitteredBackoff = (
+	attempt,
+	_args,
+	error
+) => {
+	const attempResult = originalJitteredBackoff(attempt);
+
+	// If this is the last attempt and it is a network error, we retry indefinitively every 6 seconds
+	if (attempResult === false && error?.message === 'Network Error') {
+		return MAX_RETRY_DELAY_MS;
+	}
+
+	return attempResult;
+};
 
 export { MutationProcessor };
