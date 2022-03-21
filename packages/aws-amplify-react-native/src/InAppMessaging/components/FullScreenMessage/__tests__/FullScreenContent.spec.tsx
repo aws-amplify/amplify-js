@@ -15,19 +15,26 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import { IN_APP_MESSAGING } from '../../../../AmplifyTestIDs';
-import useMessageImage from '../../hooks/useMessageImage';
-import { INITIAL_IMAGE_DIMENSIONS } from '../../hooks/useMessageImage/constants';
+import { MessageStyleProps } from '../../hooks/useMessageProps/types';
 
 import FullScreenContent from '../FullScreenContent';
 
 jest.mock('../../hooks/useMessageImage');
 jest.mock('../../MessageWrapper', () => 'MessageWrapper');
+jest.mock('../../../ui', () => ({
+	Button: 'Button',
+	IconButton: 'IconButton',
+}));
 
-const mockUseMessageImage = useMessageImage as jest.Mock;
 const onClose = jest.fn();
 const onPress = jest.fn();
 
-const baseProps = { layout: 'FULL_SCREEN' as const, onClose };
+const baseProps = {
+	layout: 'FULL_SCREEN' as const,
+	onClose,
+	onPress,
+	styles: { iconButton: {}, primaryButton: {}, secondaryButton: {} } as MessageStyleProps,
+};
 
 describe('FullScreenContent', () => {
 	beforeEach(() => {
@@ -35,26 +42,14 @@ describe('FullScreenContent', () => {
 	});
 
 	it('renders a message as expected without an image', () => {
-		mockUseMessageImage.mockReturnValueOnce({
-			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
-			isImageFetching: false,
-		});
-
 		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
 
 		expect(renderer.toJSON()).toMatchSnapshot();
 	});
 
 	it('renders a message as expected with an image', () => {
-		mockUseMessageImage.mockReturnValueOnce({
-			hasRenderableImage: true,
-			imageDimensions: { height: 100, width: 100 },
-			isImageFetching: false,
-		});
-
 		const src = 'asset.png';
-		const props = { ...baseProps, image: { src } };
+		const props = { ...baseProps, image: { src }, hasRenderableImage: true };
 
 		const renderer = TestRenderer.create(<FullScreenContent {...props} />);
 
@@ -64,41 +59,25 @@ describe('FullScreenContent', () => {
 		expect(renderer.toJSON()).toMatchSnapshot();
 	});
 
-	it('returns null while an image is fetching', () => {
-		mockUseMessageImage.mockReturnValueOnce({
-			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
-			isImageFetching: true,
-		});
-
-		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
-
-		expect(renderer.toJSON()).toBeNull();
-	});
-
 	it.each([
-		['header', IN_APP_MESSAGING.HEADER, { content: 'header content' }, { children: 'header content' }],
-		['body', IN_APP_MESSAGING.BODY, { content: 'body content' }, { children: 'body content' }],
+		['header', IN_APP_MESSAGING.HEADER, { content: 'header content' }, { children: 'header content' }, {}],
+		['body', IN_APP_MESSAGING.BODY, { content: 'body content' }, { children: 'body content' }, {}],
 		[
 			'primaryButton',
 			IN_APP_MESSAGING.PRIMARY_BUTTON,
 			{ onPress, title: 'primary button' },
 			{ children: 'primary button', onPress },
+			{ hasButtons: true, hasPrimaryButton: true },
 		],
 		[
 			'secondaryButton',
 			IN_APP_MESSAGING.SECONDARY_BUTTON,
 			{ onPress, title: 'secondary button' },
 			{ children: 'secondary button', onPress },
+			{ hasButtons: true, hasSecondaryButton: true },
 		],
-	])('correctly handles a %s prop', (key, testID, testProps, expectedProps) => {
-		mockUseMessageImage.mockReturnValueOnce({
-			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
-			isImageFetching: false,
-		});
-
-		const props = { ...baseProps, [key]: testProps };
+	])('correctly handles a %s prop', (key, testID, testProps, expectedProps, additionalProps) => {
+		const props = { ...baseProps, [key]: testProps, ...additionalProps };
 
 		const renderer = TestRenderer.create(<FullScreenContent {...props} />);
 		const testElement = renderer.root.findByProps({ testID });
@@ -107,12 +86,6 @@ describe('FullScreenContent', () => {
 	});
 
 	it('calls onClose when the close button is pressed', () => {
-		mockUseMessageImage.mockReturnValueOnce({
-			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
-			isImageFetching: false,
-		});
-
 		const renderer = TestRenderer.create(<FullScreenContent {...baseProps} />);
 		const closeButton = renderer.root.findByProps({ testID: IN_APP_MESSAGING.CLOSE_BUTTON });
 

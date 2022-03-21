@@ -12,14 +12,13 @@
  */
 
 import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Carousel } from '../../ui';
 
-import { FullScreenContent } from '../FullScreenMessage';
 import { useMessageProps } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 
+import CarouselItem from './CarouselItem';
 import { getStyles } from './styles';
 import { CarouselMessageProps } from './types';
 
@@ -27,13 +26,7 @@ export default function CarouselMessage(props: CarouselMessageProps) {
 	const { data, ...rest } = props;
 	const { styles } = useMessageProps(props, getStyles);
 
-	const renderItem = ({ item }) => {
-		return (
-			<SafeAreaView style={styles.componentWrapper}>
-				<FullScreenContent {...item} {...rest} />
-			</SafeAreaView>
-		);
-	};
+	const renderItem = ({ item }) => <CarouselItem {...item} {...rest} />;
 
 	return (
 		<MessageWrapper disableSafeAreaView>

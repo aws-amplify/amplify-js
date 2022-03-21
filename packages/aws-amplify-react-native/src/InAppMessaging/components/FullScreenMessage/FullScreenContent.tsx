@@ -19,19 +19,23 @@ import { IN_APP_MESSAGING } from '../../../AmplifyTestIDs';
 import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
-import { useMessageProps } from '../hooks';
 
-import { getStyles } from './styles';
-import { FullScreenMessageProps } from './types';
+import { FullScreenContentProps } from './types';
 
-export default function FullScreenContent(props: FullScreenMessageProps) {
-	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
-	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
-		useMessageProps(props, getStyles);
-
-	if (!shouldRenderMessage) {
-		return null;
-	}
+export default function FullScreenContent(props: FullScreenContentProps) {
+	const {
+		body,
+		hasButtons,
+		hasPrimaryButton,
+		hasRenderableImage,
+		hasSecondaryButton,
+		header,
+		image,
+		onClose,
+		primaryButton,
+		secondaryButton,
+		styles,
+	} = props;
 
 	return (
 		<View style={styles.container}>

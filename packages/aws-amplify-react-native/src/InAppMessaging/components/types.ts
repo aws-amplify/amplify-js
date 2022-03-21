@@ -49,10 +49,10 @@ export type InAppMessageComponentStyle = InAppMessageBannerMessageStyle &
 	InAppMessageModalMessageStyle;
 
 export type InAppMessageComponentStyles = {
-	BannerMessage?: InAppMessageComponentCommonStyle;
-	CarouselMessage?: InAppMessageComponentCommonStyle;
-	FullScreenMessage?: InAppMessageComponentCommonStyle;
-	ModalMessage?: InAppMessageComponentCommonStyle;
+	BannerMessage?: InAppMessageBannerMessageStyle;
+	CarouselMessage?: InAppMessageCarouselMessageStyle;
+	FullScreenMessage?: InAppMessageFullScreenMessageStyle;
+	ModalMessage?: InAppMessageModalMessageStyle;
 };
 
 export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top' | null;

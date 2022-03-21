@@ -43,4 +43,16 @@ describe('FullScreenMessage', () => {
 
 		expect(renderer.toJSON()).toMatchSnapshot();
 	});
+
+	it('returns null while an image is fetching', () => {
+		mockUseMessageImage.mockReturnValueOnce({
+			hasRenderableImage: false,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			isImageFetching: true,
+		});
+
+		const renderer = TestRenderer.create(<FullScreenMessage {...baseProps} />);
+
+		expect(renderer.toJSON()).toBeNull();
+	});
 });

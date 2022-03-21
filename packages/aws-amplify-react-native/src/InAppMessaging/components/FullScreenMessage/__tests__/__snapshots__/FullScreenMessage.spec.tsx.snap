@@ -14,7 +14,112 @@ exports[`FullScreenMessage renders as expected 1`] = `
   }
 >
   <FullScreenContent
+    hasButtons={false}
+    hasPrimaryButton={false}
+    hasRenderableImage={false}
+    hasSecondaryButton={false}
     layout="FULL_SCREEN"
+    shouldRenderMessage={true}
+    styles={
+      Object {
+        "body": Array [
+          Object {
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+          },
+          Object {},
+          undefined,
+        ],
+        "buttonsContainer": Object {
+          "flexDirection": "row",
+          "justifyContent": "center",
+        },
+        "componentWrapper": Array [
+          Object {
+            "backgroundColor": "#fff",
+          },
+          Object {},
+          Object {},
+          Object {},
+        ],
+        "container": Array [
+          Object {
+            "flex": 1,
+            "padding": 16,
+          },
+          Object {},
+          Object {},
+        ],
+        "contentContainer": Object {
+          "flex": 1,
+        },
+        "header": Array [
+          Object {
+            "fontSize": 18,
+            "fontWeight": "400",
+            "lineHeight": 27,
+          },
+          Object {},
+          undefined,
+        ],
+        "iconButton": Object {
+          "container": Array [
+            Object {
+              "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
+            },
+            undefined,
+          ],
+          "iconColor": undefined,
+        },
+        "image": Array [
+          Object {
+            "height": null,
+            "width": null,
+          },
+          undefined,
+        ],
+        "imageContainer": Object {
+          "alignItems": "center",
+          "marginVertical": 12,
+        },
+        "primaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "secondaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "textContainer": Object {
+          "flex": 1,
+          "marginHorizontal": 4,
+          "marginVertical": 12,
+          "paddingLeft": 8,
+        },
+      }
+    }
   />
 </MessageWrapper>
 `;

@@ -11,27 +11,79 @@
  * and limitations under the License.
  */
 
-import { StyleSheet } from 'react-native';
-import { COLOR_GREY, COLOR_LIGHT_GREY_2, COLOR_WHITE, SPACING_LARGE, SPACING_SMALL } from '../constants';
+import { ImageStyle, StyleSheet } from 'react-native';
+import {
+	BORDER_RADIUS_BASE,
+	COLOR_GREY,
+	COLOR_LIGHT_GREY,
+	COLOR_LIGHT_GREY_2,
+	COLOR_WHITE,
+	FONT_SIZE_BASE,
+	FONT_SIZE_LARGE,
+	FONT_WEIGHT_BASE,
+	LINE_HEIGHT_BASE,
+	LINE_HEIGHT_LARGE,
+	SPACING_EXTRA_LARGE,
+	SPACING_LARGE,
+	SPACING_MEDIUM,
+	SPACING_SMALL,
+} from '../constants';
 
 import { CarouselMessageStyle } from './types';
 
-export const getStyles = (): CarouselMessageStyle =>
+export const getStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
 	StyleSheet.create({
-		body: null,
-		buttonContainer: null,
-		buttonsContainer: null,
-		buttonText: null,
+		body: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
+		},
+		buttonContainer: {
+			backgroundColor: COLOR_LIGHT_GREY,
+			borderRadius: BORDER_RADIUS_BASE,
+			flex: 1,
+			margin: SPACING_MEDIUM,
+			padding: SPACING_LARGE,
+		},
+		buttonsContainer: {
+			flexDirection: 'row',
+			justifyContent: 'center',
+		},
+		buttonText: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
+			textAlign: 'center',
+		},
 		componentWrapper: {
 			backgroundColor: COLOR_WHITE,
 			flex: 1,
 		},
-		container: null,
-		contentContainer: null,
-		header: null,
-		iconButton: null,
-		image: null,
-		imageContainer: null,
+		container: {
+			flex: 1,
+			padding: SPACING_EXTRA_LARGE,
+		},
+		contentContainer: {
+			flex: 1,
+		},
+		header: {
+			fontSize: FONT_SIZE_LARGE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_LARGE,
+		},
+		iconButton: {
+			alignSelf: 'flex-start',
+			marginBottom: SPACING_MEDIUM,
+			marginLeft: 'auto',
+			marginRight: SPACING_MEDIUM,
+		},
+		image: {
+			...imageDimensions,
+		},
+		imageContainer: {
+			alignItems: 'center',
+			marginVertical: SPACING_LARGE,
+		},
 		pageIndicatorActive: {
 			backgroundColor: COLOR_GREY,
 			borderRadius: SPACING_LARGE / 2,
@@ -46,5 +98,10 @@ export const getStyles = (): CarouselMessageStyle =>
 			margin: SPACING_SMALL,
 			width: SPACING_LARGE,
 		},
-		textContainer: {},
+		textContainer: {
+			flex: 1,
+			marginHorizontal: SPACING_SMALL,
+			marginVertical: SPACING_LARGE,
+			paddingLeft: SPACING_MEDIUM,
+		},
 	});
