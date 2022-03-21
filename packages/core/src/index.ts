@@ -28,7 +28,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
-export { ICredentials, GRAPHQL_AUTH_MODE } from './types';
+export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export { Platform, getAmplifyUserAgent } from './Platform';

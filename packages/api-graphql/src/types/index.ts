@@ -12,7 +12,7 @@
  */
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/core';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 
 export interface GraphQLOptions {

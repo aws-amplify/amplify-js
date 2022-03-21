@@ -25,10 +25,9 @@ import {
 	USER_AGENT_HEADER,
 	jitteredExponentialRetry,
 	NonRetryableError,
-	GRAPHQL_AUTH_MODE,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
-import Auth from '@aws-amplify/auth';
+import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 
@@ -158,7 +157,7 @@ export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	variables?: object;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | Promise<{}>;
+	graphql_headers?: () => {} | (() => Promise<{}>);
 	additionalHeaders?: { [key: string]: string };
 }
 
