@@ -64,10 +64,7 @@ export function withAuthenticator<Props extends object>(
 	theme: AmplifyThemeType = null,
 	signUpConfig: ISignUpConfig = {}
 ) {
-	class Wrapper extends React.Component<
-		Props & IWithAuthenticatorProps,
-		IWithAuthenticatorState
-	> {
+	class Wrapper extends React.Component<Props & IWithAuthenticatorProps, IWithAuthenticatorState> {
 		authConfig: any;
 
 		constructor(props: Props & IWithAuthenticatorProps) {
@@ -90,6 +87,11 @@ export function withAuthenticator<Props extends object>(
 					authenticatorComponents,
 					signUpConfig,
 				};
+			}
+
+			// set default usernameAttributes to 'username'
+			if (!this.authConfig.usernameAttributes) {
+				this.authConfig.usernameAttributes = 'username';
 			}
 		}
 
@@ -137,10 +139,7 @@ export function withAuthenticator<Props extends object>(
 			return (
 				<Authenticator
 					{...this.props}
-					hideDefault={
-						this.authConfig.authenticatorComponents &&
-						this.authConfig.authenticatorComponents.length > 0
-					}
+					hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
 					signUpConfig={this.authConfig.signUpConfig}
 					onStateChange={this.handleAuthStateChange}
 					children={this.authConfig.authenticatorComponents}
@@ -151,7 +150,7 @@ export function withAuthenticator<Props extends object>(
 		}
 	}
 
-	Object.keys(Comp).forEach(key => {
+	Object.keys(Comp).forEach((key) => {
 		// Copy static properties in order to be as close to Comp as possible.
 		// One particular case is navigationOptions
 		try {
