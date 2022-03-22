@@ -2,9 +2,9 @@
 
 [Amplify DataStore](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/) provides a programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.
 
-| package                | version                                                         |
-| ---------------------- | --------------------------------------------------------------- |
-| @aws-amplify/datastore | ![npm](https://img.shields.io/npm/v/@aws-amplify/datastore.svg) |
+| package                | version                                                         | open issues                                                                                                                                                                                  | closed issues                                                                                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @aws-amplify/datastore | ![npm](https://img.shields.io/npm/v/@aws-amplify/datastore.svg) | [![Open Issues](https://img.shields.io/github/issues/aws-amplify/amplify-js/DataStore?color=red)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3ADataStore+is%3Aopen) | [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js/DataStore)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3ADataStore+is%3Aclosed) |
 
 ## Getting Started
 
