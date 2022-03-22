@@ -33,8 +33,10 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
         Array [
           Object {
             "backgroundColor": "#fff",
+            "borderRadius": 2,
             "elevation": 3,
             "margin": 16,
+            "minHeight": "40%",
             "padding": 16,
             "shadowColor": "#000",
             "shadowOffset": Object {
@@ -64,7 +66,6 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
             Object {
               "alignItems": "center",
               "flex": 1,
-              "marginVertical": 12,
             }
           }
         >
@@ -110,10 +111,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           style={
             Array [
               Object {
-                "alignItems": "flex-end",
-                "alignSelf": "flex-start",
                 "marginBottom": 8,
-                "marginLeft": "auto",
                 "marginRight": 8,
               },
               undefined,
@@ -143,7 +141,6 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           Object {
             "marginHorizontal": 4,
             "marginVertical": 12,
-            "paddingLeft": 8,
           }
         }
       />
@@ -185,8 +182,10 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
         Array [
           Object {
             "backgroundColor": "#fff",
+            "borderRadius": 2,
             "elevation": 3,
             "margin": 16,
+            "minHeight": "40%",
             "padding": 16,
             "shadowColor": "#000",
             "shadowOffset": Object {
@@ -235,10 +234,7 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           style={
             Array [
               Object {
-                "alignItems": "flex-end",
-                "alignSelf": "flex-start",
                 "marginBottom": 8,
-                "marginLeft": "auto",
                 "marginRight": 8,
               },
               undefined,
@@ -268,7 +264,6 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           Object {
             "marginHorizontal": 4,
             "marginVertical": 12,
-            "paddingLeft": 8,
           }
         }
       />

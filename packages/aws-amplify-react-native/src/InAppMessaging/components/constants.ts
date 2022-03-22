@@ -52,7 +52,11 @@ export const ICON_BUTTON_HIT_SLOP = 10;
 // default value applied in React Native TouchableOpacity
 export const BUTTON_PRESSED_OPACITY = 0.2;
 
-// Message shadow properties
+// Message properties
+
+// Modal box values
+export const MESSAGE_RADIUS = 2;
+
 // iOS shadow values
 export const MESSAGE_SHADOW_HEIGHT = 2;
 export const MESSAGE_SHADOW_WIDTH = 2;
