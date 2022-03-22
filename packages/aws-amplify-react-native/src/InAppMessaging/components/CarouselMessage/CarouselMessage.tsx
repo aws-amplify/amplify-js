@@ -27,8 +27,8 @@ export default function CarouselMessage(props: CarouselMessageProps) {
 
 	const indicatorStyle = useMemo(() => {
 		return {
-			active: [defaultStyle?.pageIndicatorActive, style?.pageIndicatorActive],
-			inactive: [defaultStyle?.pageIndicatorInactive, style?.pageIndicatorInactive],
+			active: [defaultStyle.pageIndicatorActive, style?.pageIndicatorActive],
+			inactive: [defaultStyle.pageIndicatorInactive, style?.pageIndicatorInactive],
 		};
 	}, [style]);
 

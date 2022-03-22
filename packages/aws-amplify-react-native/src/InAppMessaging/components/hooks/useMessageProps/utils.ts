@@ -193,7 +193,7 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 	if (layout === 'CAROUSEL') {
 		styleProps.container = [
 			styleProps.container,
-			// Add bottom padding for carousel page indciators
+			// Add bottom padding for carousel page indicators
 			{ paddingBottom: SPACING_EXTRA_LARGE + DEFAULT_CAROUSEL_INDICATOR_PADDING },
 		];
 	}
