@@ -60,7 +60,8 @@ this.sync = new SyncEngine(
    - Component in Amplify Core for reachability
    - Why here?
      - Stop / Start sync process. If you go offline, we disconnect the websocket and stop syncing. If you go online, we reconnect the websocket and start base / delta syncing.
-   - const startPromise = new Promise(resolve => {
+   - 
+   const startPromise = new Promise(resolve => {
      this.datastoreConnectivity.status().subscribe(async ({ online }) => { - packages/datastore/src/sync/index.ts
    - Sync engine subscribes to the storage engine, observable
      - Every write may need to get translated to a mutation in the outbox
