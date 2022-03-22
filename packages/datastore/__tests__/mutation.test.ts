@@ -23,7 +23,7 @@ let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 
-describe.only('Jittered retry', () => {
+describe('Jittered retry', () => {
 	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
@@ -84,11 +84,11 @@ describe('MutationProcessor', () => {
 
 			await mutationProcessor.resume();
 
-			expect(mockJitteredExponentialRetry.mock.results).toHaveLength(1);
+			expect(mockRetry.mock.results).toHaveLength(1);
 
-			await expect(
-				mockJitteredExponentialRetry.mock.results[0].value
-			).rejects.toEqual(new Error('Network Error'));
+			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
+				new Error('Network Error')
+			);
 
 			expect(mutationProcessorSpy).toHaveBeenCalled();
 
@@ -185,19 +185,17 @@ jest.mock('@aws-amplify/api', () => {
 	};
 });
 
-// mocking jitteredExponentialRetry to prevent it from retrying
+// mocking jitteredBackoff to prevent it from retrying
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
 // should throw a Network Error
-let mockJitteredExponentialRetry;
+let mockRetry;
 jest.mock('@aws-amplify/core', () => {
-	mockJitteredExponentialRetry = jest
-		.fn()
-		.mockImplementation(async (fn, args) => {
-			await fn(...args);
-		});
+	mockRetry = jest.fn().mockImplementation(async (fn, args) => {
+		await fn(...args);
+	});
 	return {
 		...jest.requireActual('@aws-amplify/core'),
-		jitteredExponentialRetry: mockJitteredExponentialRetry,
+		retry: mockRetry,
 	};
 });
 
