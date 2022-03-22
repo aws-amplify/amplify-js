@@ -35,7 +35,7 @@ describe('Jittered retry', () => {
 			const lowerLimit = 2 ** attempt * 100;
 			const upperLimit = lowerLimit + 100;
 
-			if (lowerLimit < 205000) {
+			if (lowerLimit < 2 ** 12 * 100) {
 				console.log(
 					`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`
 				);
