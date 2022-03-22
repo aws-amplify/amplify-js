@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.13...@aws-amplify/pushnotification@4.3.14) (2022-03-22)
+
+
+### Bug Fixes
+
+* **pushnotification/android:** return just the error message rather than the whole exception ([#9641](https://github.com/aws-amplify/amplify-js/issues/9641)) ([0de2768](https://github.com/aws-amplify/amplify-js/commit/0de27687c5639dbf899718396c0ae5ba50f7ab29))
+
+
+
+
+
 ## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.12...@aws-amplify/pushnotification@4.3.13) (2022-03-10)
 
 
