@@ -25,12 +25,6 @@ Before you start reading through these docs, take a moment to understand [how Da
 - [Sync Engine](docs/sync-engine.md)
 - [How DataStore uses `api-graphql` and PubSub](docs/use-of-api-and-pubsub.md)
 
-## Other Resources:
-
-- [High-level overview of how DataStore works](https://docs.amplify.aws/lib/datastore/how-it-works/q/platform/js/)
-- [DataStore Docs](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/)
-- [re:Invent talk](https://www.youtube.com/watch?v=KcYl6_We0EU)
-
 # Diagrams
 
 _Note: relationships with dotted lines are explained more in a separate diagram._
@@ -99,3 +93,47 @@ flowchart TD
   classDef syncEngineClass fill:#8FB,stroke:#333,stroke-width:4px;
   class index,mp,sp,syp,merger,outbox syncEngineClass;
 ```
+
+# Project Structure
+
+```bash
+amplify-js/packages/datastore/src
+├── authModeStrategies
+│   └── defaultAuthStraegy.ts
+│   └── index.ts
+│   └── multiAuthStrategy.ts
+├── datastore
+│   └── datastore.ts # Entry point for DataStore
+├── predicates
+│   └── index.ts
+│   └── sort.ts
+├── ssr
+├── storage # Storage Engine
+│   └── adapter # Platform-specific Storage Adapters
+│      └── getDefaultAdapter
+│      └── AsyncStorageAdapter.ts
+│      └── AsyncStorageDatabase.ts
+│      └── index.ts
+│      └── IndexedDBAdapter.ts
+│      └── InMemoryStore.native.ts
+│      └── InMemoryStore.ts
+│   └── storage.ts # Entry point for Storage
+├── sync # Sync Engine
+│   └── dataStoreReachability
+│      └── index.native.ts
+│      └── index.ts
+│   └── processors # Sync Engine Processors
+│      └── mutation.ts
+│      └── subscription.ts
+│      └── sync.ts
+│   └── datastoreConnectivity.ts # Subscribe to reachability monitor
+│   └── index.ts # Entry point for Sync Engine
+│   └── merger.ts
+│   └── outbox.ts
+```
+
+## Other Resources:
+
+- [High-level overview of how DataStore works](https://docs.amplify.aws/lib/datastore/how-it-works/q/platform/js/)
+- [DataStore Docs](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/)
+- [re:Invent talk](https://www.youtube.com/watch?v=KcYl6_We0EU)
