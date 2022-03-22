@@ -415,7 +415,7 @@ class MutationProcessor {
 				MutationEvent,
 				mutationEvent,
 			],
-			customJitteredBackoff
+			safeJitteredBackoff
 		);
 	}
 
@@ -540,19 +540,34 @@ class MutationProcessor {
 const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;
 const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
 
-const customJitteredBackoff: typeof originalJitteredBackoff = (
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Wraps the jittered backoff calculation to retry Network Errors indefinitely.
+ * Backs off according to original jittered retry logic until the original retry
+ * logic hits its max. After this occurs, IFF the error is a Network Error, we
+ * ignore the attempt count and return MAX_RETRY_DELAY_MS to retry forever (until
+ * the request succeeds).
+ *
+ * @param attempt ignored
+ * @param _args ignored
+ * @param error tested to see if `.message` is 'Network Error'
+ * @returns number | false :
+ */
+export const safeJitteredBackoff: typeof originalJitteredBackoff = (
 	attempt,
 	_args,
 	error
 ) => {
-	const attempResult = originalJitteredBackoff(attempt);
+	const attemptResult = originalJitteredBackoff(attempt);
 
-	// If this is the last attempt and it is a network error, we retry indefinitively every 6 seconds
-	if (attempResult === false && error?.message === 'Network Error') {
+	// If this is the last attempt and it is a network error, we retry indefinitively every 5 minutes
+	if (attemptResult === false && error?.message === 'Network Error') {
 		return MAX_RETRY_DELAY_MS;
 	}
 
-	return attempResult;
+	return attemptResult;
 };
 
 export { MutationProcessor };

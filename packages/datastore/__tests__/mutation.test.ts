@@ -1,4 +1,7 @@
-import { MutationProcessor } from '../src/sync/processors/mutation';
+import {
+	MutationProcessor,
+	safeJitteredBackoff,
+} from '../src/sync/processors/mutation';
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
@@ -19,6 +22,53 @@ let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
+
+describe.only('Jittered retry', () => {
+	it('should progress exponentially until some limit', () => {
+		const COUNT = 13;
+
+		const backoffs = [...Array(COUNT)].map((v, i) =>
+			safeJitteredBackoff(i)
+		) as (number | boolean)[];
+
+		const isExpectedValue = (value, attempt) => {
+			const lowerLimit = 2 ** attempt * 100;
+			const upperLimit = lowerLimit + 100;
+
+			if (lowerLimit < 205000) {
+				console.log(
+					`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`
+				);
+				return value >= lowerLimit && value <= upperLimit;
+			} else {
+				console.log(`attempt ${attempt} (${value}) should be false.`);
+				return value === false;
+			}
+		};
+
+		backoffs.forEach((value, attempt) => {
+			expect(isExpectedValue(value, attempt)).toBe(true);
+		});
+
+		// we should be testing up to the edge. at least one backoff at the
+		// end of the list must be false. (past the limit)
+		expect(backoffs.pop()).toBe(false);
+	});
+
+	it('should retry forever on network errors', () => {
+		const MAX_DELAY = 5 * 60 * 1000;
+		const COUNT = 1000;
+
+		const backoffs = [...Array(COUNT)].map((v, i) =>
+			safeJitteredBackoff(i, [], new Error('Network Error'))
+		) as (number | boolean)[];
+
+		backoffs.forEach(v => {
+			expect(v).toBeTruthy();
+			expect(v).toBeLessThanOrEqual(MAX_DELAY);
+		});
+	});
+});
 
 describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
@@ -254,11 +304,9 @@ const axiosError = {
 	stack:
 		'Error: timeout of 0ms exceeded\n    at createError (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265622:17)\n    at EventTarget.handleTimeout (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:265537:16)\n    at EventTarget.dispatchEvent (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:32460:27)\n    at EventTarget.setReadyState (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31623:20)\n    at EventTarget.__didCompleteResponse (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31443:16)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:31553:47\n    at RCTDeviceEventEmitter.emit (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:7202:37)\n    at MessageQueue.__callFunction (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2813:31)\n    at http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2545:17\n    at MessageQueue.__guard (http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false:2767:13)',
 	config: {
-		url:
-			'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+		url: 'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 		method: 'post',
-		data:
-			'{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
+		data: '{"query":"mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {  updatePost(input: $input, condition: $condition) {    id    title    rating    status    _version    _lastChangedAt    _deleted    blog {      id      _deleted    }  }}","variables":{"input":{"id":"86e8f2c1-b002-4ff2-92a2-3dad37933477","status":"INACTIVE","_version":1},"condition":null}}',
 		headers: {
 			Accept: 'application/json, text/plain, */*',
 			'Content-Type': 'application/json; charset=UTF-8',
