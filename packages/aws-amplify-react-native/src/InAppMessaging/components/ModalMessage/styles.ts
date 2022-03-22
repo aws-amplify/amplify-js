@@ -14,6 +14,7 @@
 import { ImageStyle, StyleSheet } from 'react-native';
 import {
 	BORDER_RADIUS_BASE,
+	COLOR_BLACK,
 	COLOR_LIGHT_GREY,
 	COLOR_WHITE,
 	FONT_SIZE_BASE,
@@ -21,16 +22,16 @@ import {
 	FONT_WEIGHT_BASE,
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
-	SPACING_EXTRA_LARGE,
-	SPACING_LARGE,
-	SPACING_MEDIUM,
-	SPACING_SMALL,
+	MESSAGE_ELEVATION,
+	MESSAGE_RADIUS,
 	MESSAGE_SHADOW_HEIGHT,
 	MESSAGE_SHADOW_OPACITY,
 	MESSAGE_SHADOW_RADIUS,
 	MESSAGE_SHADOW_WIDTH,
-	COLOR_BLACK,
-	MESSAGE_ELEVATION,
+	SPACING_EXTRA_LARGE,
+	SPACING_LARGE,
+	SPACING_MEDIUM,
+	SPACING_SMALL,
 } from '../constants';
 
 import { ModalMessageStyle } from './types';
@@ -52,6 +53,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		buttonsContainer: {
 			flexDirection: 'row',
 			justifyContent: 'center',
+			marginTop: 'auto',
 		},
 		buttonText: {
 			fontSize: FONT_SIZE_BASE,
@@ -63,6 +65,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			backgroundColor: 'transparent',
 		},
 		container: {
+			borderRadius: MESSAGE_RADIUS,
 			padding: SPACING_EXTRA_LARGE,
 			margin: SPACING_EXTRA_LARGE,
 			backgroundColor: COLOR_WHITE,
@@ -74,6 +77,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			shadowOpacity: MESSAGE_SHADOW_OPACITY,
 			shadowRadius: MESSAGE_SHADOW_RADIUS,
 			elevation: MESSAGE_ELEVATION,
+			minHeight: '40%',
 		},
 		contentContainer: {
 			flexDirection: 'row',
@@ -85,10 +89,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			lineHeight: LINE_HEIGHT_LARGE,
 		},
 		iconButton: {
-			alignSelf: 'flex-start',
-			alignItems: 'flex-end',
 			marginBottom: SPACING_MEDIUM,
-			marginLeft: 'auto',
 			marginRight: SPACING_MEDIUM,
 		},
 		image: {
@@ -97,11 +98,9 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		imageContainer: {
 			flex: 1,
 			alignItems: 'center',
-			marginVertical: SPACING_LARGE,
 		},
 		textContainer: {
 			marginHorizontal: SPACING_SMALL,
 			marginVertical: SPACING_LARGE,
-			paddingLeft: SPACING_MEDIUM,
 		},
 	});

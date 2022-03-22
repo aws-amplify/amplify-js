@@ -37,36 +37,34 @@ export default function ModalMessage(props: ModalMessageProps) {
 	return (
 		<MessageWrapper style={styles.componentWrapper}>
 			<View style={styles.container}>
-				<>
-					<View style={[styles.contentContainer]}>
-						{hasRenderableImage && (
-							<View style={styles.imageContainer}>
-								<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
-							</View>
-						)}
-						<IconButton
-							color={styles.iconButton.iconColor}
-							hitSlop={ICON_BUTTON_HIT_SLOP}
-							onPress={onClose}
-							size={ICON_BUTTON_SIZE}
-							source={icons.close}
-							style={styles.iconButton.container}
-							testID={IN_APP_MESSAGING.CLOSE_BUTTON}
-						/>
-					</View>
-					<View style={styles.textContainer}>
-						{header?.content && (
-							<Text style={styles.header} testID={IN_APP_MESSAGING.HEADER}>
-								{header.content}
-							</Text>
-						)}
-						{body?.content && (
-							<Text style={styles.body} testID={IN_APP_MESSAGING.BODY}>
-								{body.content}
-							</Text>
-						)}
-					</View>
-				</>
+				<View style={[styles.contentContainer]}>
+					{hasRenderableImage && (
+						<View style={styles.imageContainer}>
+							<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
+						</View>
+					)}
+					<IconButton
+						color={styles.iconButton.iconColor}
+						hitSlop={ICON_BUTTON_HIT_SLOP}
+						onPress={onClose}
+						size={ICON_BUTTON_SIZE}
+						source={icons.close}
+						style={styles.iconButton.container}
+						testID={IN_APP_MESSAGING.CLOSE_BUTTON}
+					/>
+				</View>
+				<View style={styles.textContainer}>
+					{header?.content && (
+						<Text style={styles.header} testID={IN_APP_MESSAGING.HEADER}>
+							{header.content}
+						</Text>
+					)}
+					{body?.content && (
+						<Text style={styles.body} testID={IN_APP_MESSAGING.BODY}>
+							{body.content}
+						</Text>
+					)}
+				</View>
 
 				{hasButtons && (
 					<View style={styles.buttonsContainer}>
