@@ -546,7 +546,7 @@ const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
  *
  * Wraps the jittered backoff calculation to retry Network Errors indefinitely.
  * Backs off according to original jittered retry logic until the original retry
- * logic hits its max. After this occurs, IFF the error is a Network Error, we
+ * logic hits its max. After this occurs, if the error is a Network Error, we
  * ignore the attempt count and return MAX_RETRY_DELAY_MS to retry forever (until
  * the request succeeds).
  *
