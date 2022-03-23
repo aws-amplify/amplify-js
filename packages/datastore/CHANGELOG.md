@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.8...@aws-amplify/datastore@3.7.9) (2022-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
+
+
+
+
+
+## [3.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.7...@aws-amplify/datastore@3.7.8) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [3.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.6...@aws-amplify/datastore@3.7.7) (2022-02-28)
 
 **Note:** Version bump only for package @aws-amplify/datastore

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.1...@aws-amplify/core@4.4.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.0...@aws-amplify/core@4.4.1) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.14...@aws-amplify/core@4.4.0) (2022-02-28)
 
 
