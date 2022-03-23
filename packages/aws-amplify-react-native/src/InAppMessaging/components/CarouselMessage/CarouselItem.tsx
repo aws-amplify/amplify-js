@@ -12,14 +12,15 @@
  */
 
 import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { FullScreenContent } from '../FullScreenMessage';
 import { useMessageProps } from '../hooks';
-import MessageWrapper from '../MessageWrapper';
 
-import FullScreenContent from './FullScreenContent';
 import { getStyles } from './styles';
-import { FullScreenMessageProps } from './types';
+import { CarouselMessageProps } from './types';
 
-export default function FullScreenMessage(props: FullScreenMessageProps) {
+export default function CarouselItem(props: CarouselMessageProps) {
 	const messageProps = useMessageProps(props, getStyles);
 	const { shouldRenderMessage, styles } = messageProps;
 
@@ -28,8 +29,8 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 	}
 
 	return (
-		<MessageWrapper style={styles.componentWrapper}>
+		<SafeAreaView style={styles.componentWrapper}>
 			<FullScreenContent {...props} {...messageProps} />
-		</MessageWrapper>
+		</SafeAreaView>
 	);
 }

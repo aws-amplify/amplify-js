@@ -14,13 +14,8 @@
 import { ReactNode, ReactElement } from 'react';
 import { InAppMessage } from '@aws-amplify/notifications';
 
-import {
-	BannerMessageProps,
-	CarouselMessageProps,
-	FullScreenMessageProps,
-	ModalMessageProps,
-	InAppMessageComponentStyles,
-} from '../components';
+import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps, ModalMessageProps } from '../components';
+import { InAppMessageComponentStyles } from '../components/types';
 
 export type InAppMessageComponents = {
 	BannerMessage?: (props: BannerMessageProps) => ReactElement;
