@@ -96,7 +96,7 @@ flowchart TD
 
 # Project Structure
 
-```bash
+<pre>
 amplify-js/packages/datastore/src
 ├── authModeStrategies
 │   └── defaultAuthStraegy.ts
@@ -128,9 +128,9 @@ amplify-js/packages/datastore/src
 │      └── sync.ts
 │   └── datastoreConnectivity.ts # Subscribe to reachability monitor
 │   └── index.ts # Entry point for Sync Engine
-│   └── merger.ts
-│   └── outbox.ts
-```
+│   └── merger.ts # <a href="https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#merger" title="merger doc">doc</a>
+│   └── outbox.ts # <a href="https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#outbox" title="outbox doc">doc</a>
+</pre>
 
 ## Other Resources:
 

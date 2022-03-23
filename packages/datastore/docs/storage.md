@@ -13,10 +13,10 @@
 We determine the storage adapter [here](../src/storage/adapter/getDefaultAdapter/index.ts). 
 
 
-## The Storage class
-- The [Storage class](../src/storage/storage.ts) is what interacts with the adapters.
+## [The Storage class](../src/storage/storage.ts)
+- The Storage class is what interacts with the adapters.
 
-## Storage Adapters
+## [Storage Adapters](../src/storage/adapter)
    1. There is one adapter per database type we support (i.e. three adapters).
    2. Each adapter provides a unified API for the storage engine to interact with.
    3. The SQLite adapter lives [in it’s own package](https://github.com/aws-amplify/amplify-js/tree/main/packages/datastore-storage-adapter).
@@ -33,4 +33,4 @@ We determine the storage adapter [here](../src/storage/adapter/getDefaultAdapter
    - *Note: The lazy loading branch includes an improvement to the IndexedDB adapter wherein it will check if any search criteria can meaningfully leverage an index (there is no preference for low cardinality; the first identified index is used.) If so, the base result is sourced from the index and the remaining criteria will be applied as a filter.*
 
 ## Understanding the difference between Save and Batch Save
-- TODO
+- As the names imply, `save` accepts a single record and persists it, while `batchSave` accepts a page of records and persists them all. `batchSave`, however, is *only used within the sync processor*, and will also filter out the deleted records from the sync page results, then delete them from the local db.

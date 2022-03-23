@@ -32,13 +32,13 @@ See [the sync class](packages/datastore/src/sync/index.ts)
 	- Create a few records and make sure the records go out successfully and get persisted. Then, delete local data in IndexedDB (either by clicking the `clear` button in a sample, or through dev tools), then reload the page, or perform a query.
 - **Note: AppSync expects us to send only updated fields in order for merge to work correctly.**
 
-### Outbox
+### [Outbox]((../src/sync/outbox.ts))
 - A mutation event outbox
 - Holds all local changes (even if you close the app). 
 - Peek:
 	- Returns the next mutation event to be sent to AppSync, but does not remove it from the outbox.
 
-## Processors
+## [Processors](../src/sync/processors)
 - Sync Engine uses processors depending on the type of operation
 - Utilize observables
 - Where retry happens
