@@ -160,6 +160,10 @@ export class SyncEngine {
 	}
 
 	start(params: StartParams) {
+		console.log(
+			'here is the flag: ',
+			this.syncQueriesProcessor.partialDataFeatureFlagEnabled()
+		);
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 

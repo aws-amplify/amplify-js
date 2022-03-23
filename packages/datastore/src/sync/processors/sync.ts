@@ -65,10 +65,11 @@ class SyncProcessor {
 		if (!this.syncPredicates) {
 			return null;
 		}
-		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
-			this.syncPredicates.get(model),
-			false
-		);
+		const predicatesGroup: PredicatesGroup<any> =
+			ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
 
 		if (!predicatesGroup) {
 			return null;
@@ -164,13 +165,8 @@ class SyncProcessor {
 	}
 
 	// Partial data private feature flag. Not a public API. This will be removed in a future release.
-	private partialDataFeatureFlagEnabled() {
-		try {
-			const flag = sessionStorage.getItem('datastorePartialData');
-			return Boolean(flag);
-		} catch (e) {
-			return false;
-		}
+	public partialDataFeatureFlagEnabled() {
+		return true;
 	}
 
 	private async jitteredRetry<T>({
@@ -222,7 +218,6 @@ class SyncProcessor {
 							error.data[opName] &&
 							error.data[opName].items
 					);
-
 					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;

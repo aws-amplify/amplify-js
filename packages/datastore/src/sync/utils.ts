@@ -39,7 +39,21 @@ enum GraphQLOperationType {
 	DELETE = 'mutation',
 	GET = 'query',
 }
-
+export type OperationName = 'create' | 'update' | 'delete' | 'list' | 'get';
+export function TransformerMutationTypeToOperationName(
+	operation: TransformerMutationType
+): OperationName {
+	switch (operation) {
+		case 'Create':
+			return 'create';
+		case 'Update':
+			return 'update';
+		case 'Delete':
+			return 'delete';
+		case 'Get':
+			return 'get';
+	}
+}
 export enum TransformerMutationType {
 	CREATE = 'Create',
 	UPDATE = 'Update',
@@ -515,11 +529,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {

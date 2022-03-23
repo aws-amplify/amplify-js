@@ -31,7 +31,9 @@ import {
 	createMutationInstanceFromModelOperation,
 	getModelAuthModes,
 	TransformerMutationType,
+	TransformerMutationTypeToOperationName,
 	getTokenForCustomAuth,
+	OperationName,
 } from '../utils';
 
 const MAX_ATTEMPTS = 10;
@@ -251,19 +253,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -358,22 +355,25 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
 
 								await this.storage.save(updatedMutation);
 
 								throw new NonRetryableError('RetryMutation');
 							} else {
+								const newOperation: OperationName =
+									TransformerMutationTypeToOperationName(operation);
 								try {
 									await this.errorHandler({
 										localModel: this.modelInstanceCreator(
@@ -381,9 +381,10 @@ class MutationProcessor {
 											variables.input
 										),
 										message: error.message,
-										operation,
+										operation: newOperation,
 										errorType: error.errorType,
 										errorInfo: error.errorInfo,
+										process: 'mutate',
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
 											: null,

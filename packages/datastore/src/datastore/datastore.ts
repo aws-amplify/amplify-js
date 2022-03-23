@@ -564,7 +564,7 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
 }
 
-function defaultErrorHandler(error: SyncError) {
+function defaultErrorHandler(error: SyncError<any>) {
 	logger.warn(error);
 }
 
@@ -685,7 +685,7 @@ class DataStore {
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
-	private errorHandler: (error: SyncError) => void;
+	private errorHandler: (error: SyncError<any>) => void;
 	private fullSyncInterval: number;
 	private initialized: Promise<void>;
 	private initReject: Function;
@@ -961,7 +961,7 @@ class DataStore {
 		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 	) => {
 		await this.start();
-
+		console.log('Well WELCOME TO DATASTORE DELETE');
 		let condition: ModelPredicate<T>;
 
 		if (!modelOrConstructor) {
