@@ -54,7 +54,7 @@ type ObserverQuery = {
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
-	startAckTimeoutId?;
+	startAckTimeoutId?: NodeJS.Timer;
 };
 
 enum MESSAGE_TYPES {
@@ -161,10 +161,16 @@ export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	additionalHeaders?: { [key: string]: string };
 }
 
+type AWSAppSyncRealTimeAuthInput =
+	Partial<AWSAppSyncRealTimeProviderOptions> & {
+		canonicalUri: string;
+		payload: string;
+	};
+
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
-	private awsRealTimeSocket: WebSocket;
+	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
-	private keepAliveTimeoutId;
+	private keepAliveTimeoutId?: NodeJS.Timer;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
@@ -190,7 +196,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		_topics: string[] | string,
 		options?: AWSAppSyncRealTimeProviderOptions
 	): Observable<any> {
-		const { appSyncGraphqlEndpoint } = options;
+		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
 		return new Observable(observer => {
 			if (!appSyncGraphqlEndpoint) {
@@ -256,10 +262,15 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		return !this.options
 			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
 	}
+
 	private async _startSubscriptionWithAWSAppSyncRealTime({
 		options,
 		observer,
 		subscriptionId,
+	}: {
+		options: AWSAppSyncRealTimeProviderOptions;
+		observer: ZenObservable.SubscriptionObserver<any>;
+		subscriptionId: string;
 	}) {
 		const {
 			appSyncGraphqlEndpoint,
@@ -280,10 +291,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		// Having a subscription id map will make it simple to forward messages received
 		this.subscriptionObserverMap.set(subscriptionId, {
 			observer,
-			query,
-			variables,
+			query: query ?? '',
+			variables: variables ?? {},
 			subscriptionState,
-			startAckTimeoutId: null,
+			startAckTimeoutId: undefined,
 		});
 
 		// Preparing payload for subscription message
@@ -329,16 +340,19 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			});
 		} catch (err) {
 			logger.debug({ err });
-			const { message = '' } = err;
-			observer.error({
-				errors: [
-					{
-						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
-					},
-				],
-			});
+			if (err instanceof Error) {
+				const { message = '' } = err;
+				observer.error({
+					errors: [
+						{
+							...new GraphQLError(
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`
+							),
+						},
+					],
+				});
+			}
 			observer.complete();
-
 			const { subscriptionFailedCallback } =
 				this.subscriptionObserverMap.get(subscriptionId) || {};
 
@@ -354,14 +368,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		// Both subscriptionFailedCallback and subscriptionReadyCallback are used to synchronized this.
 
 		const { subscriptionFailedCallback, subscriptionReadyCallback } =
-			this.subscriptionObserverMap.get(subscriptionId);
+			this.subscriptionObserverMap.get(subscriptionId) ?? {};
 
 		// This must be done before sending the message in order to be listening immediately
 		this.subscriptionObserverMap.set(subscriptionId, {
 			observer,
 			subscriptionState,
-			variables,
-			query,
+			query: query ?? '',
+			variables: variables ?? {},
 			subscriptionReadyCallback,
 			subscriptionFailedCallback,
 			startAckTimeoutId: setTimeout(() => {
@@ -374,27 +388,30 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	// Waiting that subscription has been connected before trying to unsubscribe
-	private async _waitForSubscriptionToBeConnected(subscriptionId) {
-		const { subscriptionState } =
+	private async _waitForSubscriptionToBeConnected(subscriptionId: string) {
+		const subscriptionObserver =
 			this.subscriptionObserverMap.get(subscriptionId);
-		// This in case unsubscribe is invoked before sending start subscription message
-		if (subscriptionState === SUBSCRIPTION_STATUS.PENDING) {
-			return new Promise((res, rej) => {
-				const { observer, subscriptionState, variables, query } =
-					this.subscriptionObserverMap.get(subscriptionId);
-				this.subscriptionObserverMap.set(subscriptionId, {
-					observer,
-					subscriptionState,
-					variables,
-					query,
-					subscriptionReadyCallback: res,
-					subscriptionFailedCallback: rej,
+		if (subscriptionObserver) {
+			const { subscriptionState } = subscriptionObserver;
+			// This in case unsubscribe is invoked before sending start subscription message
+			if (subscriptionState === SUBSCRIPTION_STATUS.PENDING) {
+				return new Promise((res, rej) => {
+					const { observer, subscriptionState, variables, query } =
+						subscriptionObserver;
+					this.subscriptionObserverMap.set(subscriptionId, {
+						observer,
+						subscriptionState,
+						variables,
+						query,
+						subscriptionReadyCallback: res,
+						subscriptionFailedCallback: rej,
+					});
 				});
-			});
+			}
 		}
 	}
 
-	private _sendUnsubscriptionMessage(subscriptionId) {
+	private _sendUnsubscriptionMessage(subscriptionId: string) {
 		try {
 			if (
 				this.awsRealTimeSocket &&
@@ -415,7 +432,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	private _removeSubscriptionObserver(subscriptionId) {
+	private _removeSubscriptionObserver(subscriptionId: string) {
 		this.subscriptionObserverMap.delete(subscriptionId);
 
 		// Verifying 1000ms after removing subscription in case there are new subscription unmount/mount
@@ -437,13 +454,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			logger.debug('closing WebSocket...');
-			clearTimeout(this.keepAliveTimeoutId);
+			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
 			const tempSocket = this.awsRealTimeSocket;
 			// Cleaning callbacks to avoid race condition, socket still exists
-			tempSocket.onclose = undefined;
-			tempSocket.onerror = undefined;
+			tempSocket.onclose = null;
+			tempSocket.onerror = null;
 			tempSocket.close(1000);
-			this.awsRealTimeSocket = null;
+			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
 		}
 	}
@@ -480,29 +497,31 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			if (typeof subscriptionReadyCallback === 'function') {
 				subscriptionReadyCallback();
 			}
-			clearTimeout(startAckTimeoutId);
+			if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 			dispatchApiEvent(
 				CONTROL_MSG.SUBSCRIPTION_ACK,
 				{ query, variables },
 				'Connection established for subscription'
 			);
 			const subscriptionState = SUBSCRIPTION_STATUS.CONNECTED;
-			this.subscriptionObserverMap.set(id, {
-				observer,
-				query,
-				variables,
-				startAckTimeoutId: null,
-				subscriptionState,
-				subscriptionReadyCallback,
-				subscriptionFailedCallback,
-			});
+			if (observer) {
+				this.subscriptionObserverMap.set(id, {
+					observer,
+					query,
+					variables,
+					startAckTimeoutId: undefined,
+					subscriptionState,
+					subscriptionReadyCallback,
+					subscriptionFailedCallback,
+				});
+			}
 
 			// TODO: emit event on hub but it requires to store the id first
 			return;
 		}
 
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
-			clearTimeout(this.keepAliveTimeoutId);
+			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
 			this.keepAliveTimeoutId = setTimeout(
 				this._errorDisconnect.bind(this, CONTROL_MSG.TIMEOUT_DISCONNECT),
 				this.keepAliveTimeout
@@ -512,30 +531,32 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		if (type === MESSAGE_TYPES.GQL_ERROR) {
 			const subscriptionState = SUBSCRIPTION_STATUS.FAILED;
-			this.subscriptionObserverMap.set(id, {
-				observer,
-				query,
-				variables,
-				startAckTimeoutId,
-				subscriptionReadyCallback,
-				subscriptionFailedCallback,
-				subscriptionState,
-			});
+			if (observer) {
+				this.subscriptionObserverMap.set(id, {
+					observer,
+					query,
+					variables,
+					startAckTimeoutId,
+					subscriptionReadyCallback,
+					subscriptionFailedCallback,
+					subscriptionState,
+				});
 
-			observer.error({
-				errors: [
-					{
-						...new GraphQLError(
-							`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
-						),
-					},
-				],
-			});
-			clearTimeout(startAckTimeoutId);
+				observer.error({
+					errors: [
+						{
+							...new GraphQLError(
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
+							),
+						},
+					],
+				});
+				if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 
-			observer.complete();
-			if (typeof subscriptionFailedCallback === 'function') {
-				subscriptionFailedCallback();
+				observer.complete();
+				if (typeof subscriptionFailedCallback === 'function') {
+					subscriptionFailedCallback();
+				}
 			}
 		}
 	}
@@ -557,39 +578,42 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		this.socketStatus = SOCKET_STATUS.CLOSED;
 	}
 
-	private _timeoutStartSubscriptionAck(subscriptionId) {
-		const { observer, query, variables } =
-			this.subscriptionObserverMap.get(subscriptionId) || {};
-		if (!observer) {
-			return;
-		}
-		this.subscriptionObserverMap.set(subscriptionId, {
-			observer,
-			query,
-			variables,
-			subscriptionState: SUBSCRIPTION_STATUS.FAILED,
-		});
-
-		if (observer && !observer.closed) {
-			observer.error({
-				errors: [
-					{
-						...new GraphQLError(
-							`Subscription timeout ${JSON.stringify({
-								query,
-								variables,
-							})}`
-						),
-					},
-				],
+	private _timeoutStartSubscriptionAck(subscriptionId: string) {
+		const subscriptionObserver =
+			this.subscriptionObserverMap.get(subscriptionId);
+		if (subscriptionObserver) {
+			const { observer, query, variables } = subscriptionObserver;
+			if (!observer) {
+				return;
+			}
+			this.subscriptionObserverMap.set(subscriptionId, {
+				observer,
+				query,
+				variables,
+				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 			});
-			// Cleanup will be automatically executed
-			observer.complete();
+
+			if (observer && !observer.closed) {
+				observer.error({
+					errors: [
+						{
+							...new GraphQLError(
+								`Subscription timeout ${JSON.stringify({
+									query,
+									variables,
+								})}`
+							),
+						},
+					],
+				});
+				// Cleanup will be automatically executed
+				observer.complete();
+			}
+			logger.debug(
+				'timeoutStartSubscription',
+				JSON.stringify({ query, variables })
+			);
 		}
-		logger.debug(
-			'timeoutStartSubscription',
-			JSON.stringify({ query, variables })
-		);
 	}
 
 	private _initializeWebSocketConnection({
@@ -598,7 +622,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		apiKey,
 		region,
 		additionalHeaders,
-	}) {
+	}: AWSAppSyncRealTimeProviderOptions) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
 		}
@@ -625,7 +649,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					const payloadQs = Buffer.from(payloadString).toString('base64');
 
-					let discoverableEndpoint = appSyncGraphqlEndpoint;
+					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
 
 					if (this.isCustomDomain(discoverableEndpoint)) {
 						discoverableEndpoint =
@@ -644,7 +668,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
 
-					await this._initializeRetryableHandshake({ awsRealTimeUrl });
+					await this._initializeRetryableHandshake(awsRealTimeUrl);
 
 					this.promiseArray.forEach(({ res }) => {
 						logger.debug('Notifying connection successful');
@@ -661,23 +685,23 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					) {
 						this.awsRealTimeSocket.close(3001);
 					}
-					this.awsRealTimeSocket = null;
+					this.awsRealTimeSocket = undefined;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
 				}
 			}
 		});
 	}
 
-	private async _initializeRetryableHandshake({ awsRealTimeUrl }) {
+	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
 		logger.debug(`Initializaling retryable Handshake`);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
-			[{ awsRealTimeUrl }],
+			[awsRealTimeUrl],
 			MAX_DELAY_MS
 		);
 	}
 
-	private async _initializeHandshake({ awsRealTimeUrl }) {
+	private async _initializeHandshake(awsRealTimeUrl: string) {
 		logger.debug(`Initializing handshake ${awsRealTimeUrl}`);
 		// Because connecting the socket is async, is waiting until connection is open
 		// Step 1: connect websocket
@@ -701,60 +725,66 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			// Step 2: wait for ack from AWS AppSyncReaTime after sending init
 			await (() => {
 				return new Promise((res, rej) => {
-					let ackOk = false;
-					this.awsRealTimeSocket.onerror = error => {
-						logger.debug(`WebSocket error ${JSON.stringify(error)}`);
-					};
-					this.awsRealTimeSocket.onclose = event => {
-						logger.debug(`WebSocket closed ${event.reason}`);
-						rej(new Error(JSON.stringify(event)));
-					};
+					if (this.awsRealTimeSocket) {
+						let ackOk = false;
+						this.awsRealTimeSocket.onerror = error => {
+							logger.debug(`WebSocket error ${JSON.stringify(error)}`);
+						};
+						this.awsRealTimeSocket.onclose = event => {
+							logger.debug(`WebSocket closed ${event.reason}`);
+							rej(new Error(JSON.stringify(event)));
+						};
 
-					this.awsRealTimeSocket.onmessage = (message: MessageEvent) => {
-						logger.debug(
-							`subscription message from AWS AppSyncRealTime: ${message.data} `
-						);
-						const data = JSON.parse(message.data);
-						const {
-							type,
-							payload: {
-								connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT,
-							} = {},
-						} = data;
-						if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
-							ackOk = true;
-							this.keepAliveTimeout = connectionTimeoutMs;
-							this.awsRealTimeSocket.onmessage =
-								this._handleIncomingSubscriptionMessage.bind(this);
-							this.awsRealTimeSocket.onerror = err => {
-								logger.debug(err);
-								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
-							};
-							this.awsRealTimeSocket.onclose = event => {
-								logger.debug(`WebSocket closed ${event.reason}`);
-								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
-							};
-							res('Cool, connected to AWS AppSyncRealTime');
-							return;
-						}
-
-						if (type === MESSAGE_TYPES.GQL_CONNECTION_ERROR) {
+						this.awsRealTimeSocket.onmessage = (message: MessageEvent) => {
+							logger.debug(
+								`subscription message from AWS AppSyncRealTime: ${message.data} `
+							);
+							const data = JSON.parse(message.data);
 							const {
+								type,
 								payload: {
-									errors: [{ errorType = '', errorCode = 0 } = {}] = [],
+									connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT,
 								} = {},
 							} = data;
+							if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
+								ackOk = true;
+								if (this.awsRealTimeSocket) {
+									this.keepAliveTimeout = connectionTimeoutMs;
+									this.awsRealTimeSocket.onmessage =
+										this._handleIncomingSubscriptionMessage.bind(this);
+									this.awsRealTimeSocket.onerror = err => {
+										logger.debug(err);
+										this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+									};
+									this.awsRealTimeSocket.onclose = event => {
+										logger.debug(`WebSocket closed ${event.reason}`);
+										this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+									};
+								}
+								res('Cool, connected to AWS AppSyncRealTime');
+								return;
+							}
 
-							rej({ errorType, errorCode });
-						}
-					};
+							if (type === MESSAGE_TYPES.GQL_CONNECTION_ERROR) {
+								const {
+									payload: {
+										errors: [{ errorType = '', errorCode = 0 } = {}] = [],
+									} = {},
+								} = data;
 
-					const gqlInit = {
-						type: MESSAGE_TYPES.GQL_CONNECTION_INIT,
-					};
-					this.awsRealTimeSocket.send(JSON.stringify(gqlInit));
+								rej({ errorType, errorCode });
+							}
+						};
 
-					function checkAckOk() {
+						const gqlInit = {
+							type: MESSAGE_TYPES.GQL_CONNECTION_INIT,
+						};
+						this.awsRealTimeSocket.send(JSON.stringify(gqlInit));
+
+						setTimeout(checkAckOk.bind(this, ackOk), CONNECTION_INIT_TIMEOUT);
+					}
+
+					function checkAckOk(ackOk: boolean) {
 						if (!ackOk) {
 							rej(
 								new Error(
@@ -763,12 +793,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							);
 						}
 					}
-
-					setTimeout(checkAckOk.bind(this), CONNECTION_INIT_TIMEOUT);
 				});
 			})();
 		} catch (err) {
-			const { errorType, errorCode } = err;
+			const { errorType, errorCode } = err as {
+				errorType: string;
+				errorCode: number;
+			};
 
 			if (NON_RETRYABLE_CODES.includes(errorCode)) {
 				throw new NonRetryableError(errorType);
@@ -788,23 +819,22 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		apiKey,
 		region,
 		additionalHeaders,
-	}): Promise<any> {
-		const headerHandler = {
+	}: AWSAppSyncRealTimeProviderOptions): Promise<any> {
+		const headerHandler: { [key: string]: any } = {
 			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
 			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
 			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
 			AMAZON_COGNITO_USER_POOLS: this._awsRealTimeCUPHeader.bind(this),
 			AWS_LAMBDA: this._customAuthHeader,
 		};
-
-		const handler = headerHandler[authenticationType];
+		const handler = headerHandler[authenticationType ?? ''];
 
 		if (typeof handler !== 'function') {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return '';
 		}
 
-		const { host } = url.parse(appSyncGraphqlEndpoint);
+		const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 
 		const result = await handler({
 			payload,
@@ -819,7 +849,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		return result;
 	}
 
-	private async _awsRealTimeCUPHeader({ host }) {
+	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
 		const session = await Auth.currentSession();
 		return {
 			Authorization: session.getAccessToken().getJwtToken(),
@@ -827,7 +857,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		};
 	}
 
-	private async _awsRealTimeOPENIDHeader({ host }) {
+	private async _awsRealTimeOPENIDHeader({
+		host,
+	}: AWSAppSyncRealTimeAuthInput) {
 		let token;
 		// backwards compatibility
 		const federatedInfo = await Cache.getItem('federatedInfo');
@@ -848,7 +880,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		};
 	}
 
-	private async _awsRealTimeApiKeyHeader({ apiKey, host }) {
+	private async _awsRealTimeApiKeyHeader({
+		apiKey,
+		host,
+	}: AWSAppSyncRealTimeAuthInput) {
 		const dt = new Date();
 		const dtStr = dt.toISOString().replace(/[:\-]|\.\d{3}/g, '');
 
@@ -864,7 +899,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		canonicalUri,
 		appSyncGraphqlEndpoint,
 		region,
-	}) {
+	}: AWSAppSyncRealTimeAuthInput) {
 		const endpointInfo = {
 			region,
 			service: 'appsync',
@@ -874,11 +909,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		if (!credentialsOK) {
 			throw new Error('No credentials');
 		}
-		const creds = await Credentials.get().then(credentials => ({
-			secret_key: credentials.secretAccessKey,
-			access_key: credentials.accessKeyId,
-			session_token: credentials.sessionToken,
-		}));
+		const creds = await Credentials.get().then((credentials: any) => {
+			const { secretAccessKey, accessKeyId, sessionToken } =
+				Credentials.shear(credentials);
+
+			return {
+				secret_key: secretAccessKey,
+				access_key: accessKeyId,
+				session_token: sessionToken,
+			};
+		});
 
 		const request = {
 			url: `${appSyncGraphqlEndpoint}${canonicalUri}`,
@@ -891,8 +931,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		return signed_params.headers;
 	}
 
-	private _customAuthHeader({ host, additionalHeaders }) {
-		if (!additionalHeaders.Authorization) {
+	private _customAuthHeader({
+		host,
+		additionalHeaders,
+	}: AWSAppSyncRealTimeAuthInput) {
+		if (!additionalHeaders || !additionalHeaders['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
@@ -907,14 +950,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	 */
 	_ensureCredentials() {
 		return Credentials.get()
-			.then(credentials => {
+			.then((credentials: any) => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
 				logger.debug('set credentials for AWSAppSyncRealTimeProvider', cred);
 
 				return true;
 			})
-			.catch(err => {
+			.catch((err: any) => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});
