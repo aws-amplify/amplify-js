@@ -37,6 +37,9 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
+	endpoint?: string;
+	aws_pubsub_endpoint?: string;
+	aws_appsync_dangerously_connect_to_http_endpoint_for_testing?: boolean;
 }
 
 /**
@@ -47,24 +50,24 @@ export type MqttProvidertOptions = MqttProviderOptions;
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
 
-	async get(clientId: string, clientFactory: (string) => Promise<any>) {
-		let promise = this.promises.get(clientId);
-		if (promise) {
-			return promise;
+	async get(clientId: string, clientFactory: (input: string) => Promise<any>) {
+		const cachedPromise = this.promises.get(clientId);
+		if (cachedPromise) {
+			return cachedPromise;
 		}
 
-		promise = clientFactory(clientId);
+		const newPromise = clientFactory(clientId);
 
-		this.promises.set(clientId, promise);
+		this.promises.set(clientId, newPromise);
 
-		return promise;
+		return newPromise;
 	}
 
 	get allClients() {
 		return Array.from(this.promises.keys());
 	}
 
-	remove(clientId) {
+	remove(clientId: string) {
 		this.promises.delete(clientId);
 	}
 }
@@ -95,7 +98,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
 	}
 
-	protected getTopicForValue(value) {
+	protected getTopicForValue(value: any) {
 		return typeof value === 'object' && value[topicSymbol];
 	}
 
@@ -103,11 +106,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		return 'MqttOverWSProvider';
 	}
 
-	public onDisconnect({ clientId, errorCode, ...args }) {
+	public onDisconnect({
+		clientId,
+		errorCode,
+		...args
+	}: {
+		clientId?: string;
+		errorCode?: number;
+	}) {
 		if (errorCode !== 0) {
 			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
 
-			const topicsToDelete = [];
+			const topicsToDelete: string[] = [];
+			if (!clientId) {
+				return;
+			}
 			const clientIdObservers = this._clientIdObservers.get(clientId);
 			if (!clientIdObservers) {
 				return;
@@ -171,7 +184,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}
 
 	protected async disconnect(clientId: string): Promise<void> {
-		const client = await this.clientsQueue.get(clientId, () => null);
+		const client = await this.clientsQueue.get(
+			clientId,
+			() => new Promise(() => undefined)
+		);
 
 		if (client && client.isConnected()) {
 			client.disconnect();
@@ -199,7 +215,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	private _onMessage(topic: string, msg: any) {
 		try {
-			const matchedTopicObservers = [];
+			const matchedTopicObservers: Set<SubscriptionObserver<any>>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
@@ -269,9 +285,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
 				if (client) {
-					this._clientIdObservers.get(clientId).delete(observer);
+					this._clientIdObservers.get(clientId)?.delete(observer);
 					// No more observers per client => client not needed anymore
-					if (this._clientIdObservers.get(clientId).size === 0) {
+					if (this._clientIdObservers.get(clientId)?.size === 0) {
 						this.disconnect(clientId);
 						this._clientIdObservers.delete(clientId);
 					}
