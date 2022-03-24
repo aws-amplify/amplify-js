@@ -291,8 +291,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -311,8 +311,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
