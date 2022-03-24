@@ -1130,14 +1130,15 @@ class DataStore {
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.map((event: SubscriptionMessage<T>): SubscriptionMessage<T> => {
 						// The `element` returned by storage only contains updated fields.
-						// Intercept the event to send the `savedElement` so that the first 
-						// snapshot returned to the consumer contains all fields
-						const { opType, model, condition, savedElement } =
-							event;
+						// Intercept the event to send the `savedElement` so that the first
+						// snapshot returned to the consumer contains all fields.
+						// In the event of a delete we return `element`, as `savedElement`
+						// here is undefined.
+						const { opType, model, condition, element, savedElement } = event;
 
 						const updated = {
 							opType,
-							element: savedElement,
+							element: savedElement || element,
 							model,
 							condition,
 						};
