@@ -37,9 +37,6 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
-	endpoint?: string;
-	aws_pubsub_endpoint?: string;
-	aws_appsync_dangerously_connect_to_http_endpoint_for_testing?: boolean;
 }
 
 /**
