@@ -10,12 +10,25 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 
-import { ReactElement } from 'react';
-import { InAppMessageAction } from '@aws-amplify/notifications';
+export interface CarouselProps<T> {
+	data: ReadonlyArray<T>;
+	indicatorActiveStyle?: StyleProp<ViewStyle>;
+	indicatorInactiveStyle?: StyleProp<ViewStyle>;
+	onClose?: () => void;
+	renderItem: ListRenderItem<T>;
+	style?: StyleProp<ViewStyle>;
+}
 
-import { InAppMessageComponentCommonProps } from '../../types';
+export interface CarouselPageIndicatorProps {
+	activeStyle?: StyleProp<ViewStyle>;
+	currentIndex: number;
+	inactiveStyle?: StyleProp<ViewStyle>;
+	numberOfItems: number;
+	style?: StyleProp<ViewStyle>;
+}
 
-export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
-
-export type InAppMessageComponent = (props: InAppMessageComponentCommonProps) => ReactElement;
+export interface CarouselStyles {
+	indicator: ViewStyle;
+}

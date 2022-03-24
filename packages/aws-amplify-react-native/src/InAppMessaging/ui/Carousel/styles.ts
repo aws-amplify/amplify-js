@@ -11,11 +11,17 @@
  * and limitations under the License.
  */
 
-import { ReactElement } from 'react';
-import { InAppMessageAction } from '@aws-amplify/notifications';
+import { StyleSheet } from 'react-native';
 
-import { InAppMessageComponentCommonProps } from '../../types';
+import { CarouselStyles } from './types';
 
-export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
-
-export type InAppMessageComponent = (props: InAppMessageComponentCommonProps) => ReactElement;
+export const styles: CarouselStyles = StyleSheet.create({
+	indicator: {
+		bottom: 0,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		left: 0,
+		position: 'absolute',
+		right: 0,
+	},
+});

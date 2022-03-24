@@ -15,20 +15,21 @@ exports[`MessageWrapper renders as expected 1`] = `
   transparent={true}
   visible={true}
 >
-  <RCTSafeAreaView
-    emulateUnlessSupported={true}
-    style={
-      Array [
-        Object {
-          "flex": 1,
-        },
-        undefined,
-      ]
-    }
-  >
-    <Text>
-      Children
-    </Text>
-  </RCTSafeAreaView>
+  <SafeAreaProvider>
+    <SafeAreaView
+      style={
+        Array [
+          Object {
+            "flex": 1,
+          },
+          undefined,
+        ]
+      }
+    >
+      <Text>
+        Children
+      </Text>
+    </SafeAreaView>
+  </SafeAreaProvider>
 </Modal>
 `;

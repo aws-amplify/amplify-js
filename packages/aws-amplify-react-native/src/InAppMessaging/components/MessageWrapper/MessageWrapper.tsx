@@ -12,19 +12,30 @@
  */
 
 import React from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import { Modal, ModalPropsIOS } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { styles } from './styles';
 import { MessageWrapperProps } from './types';
 
-export default function MessageWrapper({ children, style }: MessageWrapperProps) {
+const SUPPORTED_ORIENTATIONS: ModalPropsIOS['supportedOrientations'] = [
+	'portrait',
+	'portrait-upside-down',
+	'landscape',
+	'landscape-left',
+	'landscape-right',
+];
+
+export default function MessageWrapper({ children, disableSafeAreaView, style }: MessageWrapperProps) {
 	return (
-		<Modal
-			transparent
-			visible
-			supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}
-		>
-			<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
+		<Modal transparent visible supportedOrientations={SUPPORTED_ORIENTATIONS}>
+			<SafeAreaProvider>
+				{disableSafeAreaView ? (
+					children
+				) : (
+					<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
+				)}
+			</SafeAreaProvider>
 		</Modal>
 	);
 }

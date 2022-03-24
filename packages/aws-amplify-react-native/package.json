@@ -41,6 +41,7 @@
 		"metro-react-native-babel-preset": "^0.66.2",
 		"prettier": "2.4.1",
 		"react-test-renderer": "^17.0.2",
+		"react-native-safe-area-context": "^4.1.2",
 		"rimraf": "^2.6.2"
 	},
 	"dependencies": {

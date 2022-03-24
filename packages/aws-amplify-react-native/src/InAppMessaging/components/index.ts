@@ -17,4 +17,10 @@ export { default as FullScreenMessage, FullScreenMessageProps } from './FullScre
 export { default as ModalMessage, ModalMessageProps } from './ModalMessage';
 export { default as InAppMessageDisplay } from './InAppMessageDisplay';
 
-export { InAppMessageComponentStyle, InAppMessageComponentStyles } from './types';
+export {
+	InAppMessageComponentStyle,
+	InAppMessageBannerMessageStyle,
+	InAppMessageCarouselMessageStyle,
+	InAppMessageFullScreenMessageStyle,
+	InAppMessageModalMessageStyle,
+} from './types';

@@ -21,8 +21,9 @@ import DefaultBannerMessage, { BannerMessageProps } from '../../BannerMessage';
 import DefaultCarouselMessage, { CarouselMessageProps } from '../../CarouselMessage';
 import DefaultFullScreenMessage, { FullScreenMessageProps } from '../../FullScreenMessage';
 import DefaultModalMessage, { ModalMessageProps } from '../../ModalMessage';
+import { InAppMessageComponentCommonProps } from '../../types';
 
-import { InAppMessageComponent, InAppMessageComponentProps } from './types';
+import { InAppMessageComponent } from './types';
 import { getContentProps, getPositionProp } from './utils';
 
 const { InAppMessaging } = Notifications;
@@ -36,7 +37,7 @@ const logger = new Logger('Notifications.InAppMessaging');
  */
 export default function useMessage(): {
 	Component: InAppMessageComponent;
-	props: InAppMessageComponentProps;
+	props: InAppMessageComponentCommonProps;
 } {
 	const { clearInAppMessage, components, inAppMessage, style } = useInAppMessaging();
 	const {

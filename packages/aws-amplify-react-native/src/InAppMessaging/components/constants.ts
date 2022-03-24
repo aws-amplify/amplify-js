@@ -20,7 +20,9 @@ import { getLineHeight } from './utils';
 
 // color
 export const COLOR_BLACK = '#000';
+export const COLOR_GREY = '#a1a1a1';
 export const COLOR_LIGHT_GREY = '#e8e8e8';
+export const COLOR_LIGHT_GREY_2 = '#d8d8d8';
 export const COLOR_WHITE = '#fff';
 
 // spacing

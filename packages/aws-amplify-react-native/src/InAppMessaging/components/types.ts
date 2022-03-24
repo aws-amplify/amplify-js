@@ -21,7 +21,7 @@ export type InAppMessageComponentButtonStyle = {
 	text?: ButtonProps['textStyle'];
 };
 
-export type InAppMessageComponentStyle = {
+type InAppMessageComponentCommonStyle = {
 	body?: StyleProp<TextStyle>;
 	closeIconButton?: StyleProp<ViewStyle>;
 	closeIconColor?: ColorValue;
@@ -32,11 +32,27 @@ export type InAppMessageComponentStyle = {
 	secondaryButton?: InAppMessageComponentButtonStyle;
 };
 
+export type InAppMessageBannerMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageCarouselMessageStyle = InAppMessageComponentCommonStyle & {
+	pageIndicatorActive?: StyleProp<ViewStyle>;
+	pageIndicatorInactive?: StyleProp<ViewStyle>;
+};
+
+export type InAppMessageFullScreenMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageModalMessageStyle = InAppMessageComponentCommonStyle;
+
+export type InAppMessageComponentStyle = InAppMessageBannerMessageStyle &
+	InAppMessageCarouselMessageStyle &
+	InAppMessageFullScreenMessageStyle &
+	InAppMessageModalMessageStyle;
+
 export type InAppMessageComponentStyles = {
-	BannerMessage?: InAppMessageComponentStyle;
-	CarouselMessage?: InAppMessageComponentStyle;
-	FullScreenMessage?: InAppMessageComponentStyle;
-	ModalMessage?: InAppMessageComponentStyle;
+	BannerMessage?: InAppMessageBannerMessageStyle;
+	CarouselMessage?: InAppMessageCarouselMessageStyle;
+	FullScreenMessage?: InAppMessageFullScreenMessageStyle;
+	ModalMessage?: InAppMessageModalMessageStyle;
 };
 
 export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top' | null;
@@ -51,12 +67,16 @@ export interface InAppMessageComponentContentProps
 	secondaryButton?: InAppMessageComponentButtonProps;
 }
 
-export interface InAppMessageComponentBaseProps extends InAppMessageComponentContentProps {
+export interface InAppMessageComponentCommonProps {
 	layout: InAppMessageLayout;
 	onClose?: () => void;
 	onDisplay?: () => void;
 	style?: InAppMessageComponentStyle;
 }
+
+export interface InAppMessageComponentBaseProps
+	extends InAppMessageComponentCommonProps,
+		InAppMessageComponentContentProps {}
 
 export interface InAppMessageComponentBaseStyle {
 	body: TextStyle;
