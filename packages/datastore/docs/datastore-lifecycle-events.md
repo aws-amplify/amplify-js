@@ -69,19 +69,23 @@ this.sync = new SyncEngine(
      - **RESUME HERE**
 
    3. ##### Run the Sync Queries (when online)
+      0. TODO: topological sort of the data - we sync the children first, so when you query the parent, the children are already there. Optimisation to parallelize if possible (non-dependent models).
       1. **Overview:**
          1. Graphql queries necessary to hydrate the local store initially.
-         2. The first time you run the app, for example, it will perform a query to perform a scan of dynamodb. Up to 10k per table. That populates the local store.
+         2. The first time you run the app, for example, it will perform a query to perform a scan of dynamodb. Up to 10k per table. That populates the local store. (not necessarily a scan - w/ selective sync, could do query instead of a scan)
             1. Subsequent changes come in through subscriptions.
-         3. Kind of like a list query, but with a start window, read from model metadata.
+
+
+         3. (reword this, base vs delta) Kind of like a  query, but with a start window, read from model metadata.
             1. Tries to use delta sync table.
-            2. Else, uses a scan.
+            2. Else, uses a scan (see above)
             3. The lastSync field is sent from server, not based on client - (I assume this is for full sync status)
       2. **How it works:**
          1. There are two mechanisms:
             1. Base sync - gets all records up to total sync value
          2. Delta sync
             1. One table per model, one delta sync table per DS store
+
          3. Process that knows which to use - appsync has final decision.
             1. TTL on all delta sync table records.
             2. AppSync, update data source, you can find TTL
@@ -95,6 +99,8 @@ this.sync = new SyncEngine(
 4. ### **Begin processing the subscription buffer**
    1. If we receive subscription messages any time in the process of initializing subscriptions, performing sync queries, and processing the mutation queue, we buffer the subscription messages until everything else is completed. Once we have completed processing the mutation queue, we then process the subscription buffer.
 5. ### **DataStore is now in "ready" state**
+
+TODO: diagram for the above (i.e. sync engine)
 
 - For additional reference, and how the above are published as Hub events, see [the docs](https://docs.amplify.aws/lib/datastore/datastore-events/q/platform/js/)
 

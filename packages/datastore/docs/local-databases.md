@@ -1,4 +1,8 @@
 # Local database examples:
+
+TODO: combine with namespaces
+
+
 - *Note: Anything prepended with `sync\_` is an internal table.*
 
 - datastore_Setting

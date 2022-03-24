@@ -1,2 +1,3 @@
 # How DataStore uses `api-graphql` and PubSub
-- TODO
+- subscription processor uses, 
+- api graphql uses pubsub

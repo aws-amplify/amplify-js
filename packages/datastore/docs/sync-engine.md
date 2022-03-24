@@ -31,6 +31,7 @@ See [the sync class](packages/datastore/src/sync/index.ts)
 - *How to locally test / step through Merger:* 
 	- Create a few records and make sure the records go out successfully and get persisted. Then, delete local data in IndexedDB (either by clicking the `clear` button in a sample, or through dev tools), then reload the page, or perform a query.
 - **Note: AppSync expects us to send only updated fields in order for merge to work correctly.**
+- **TODO: single instance of mutation when offline (when online, but other mutations are processing, we'll try and merge into an existing one if it's not already in flight)**
 
 ### [Outbox]((../src/sync/outbox.ts))
 - A mutation event outbox
