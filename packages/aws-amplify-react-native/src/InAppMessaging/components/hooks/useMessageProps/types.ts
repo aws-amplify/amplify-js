@@ -39,6 +39,7 @@ export type MessageStyleProps = {
 	iconButton: { container: StyleProp<ViewStyle>; iconColor: ColorValue };
 	imageContainer: StyleProp<ViewStyle>;
 	image: StyleProp<ImageStyle>;
+	pageIndicator?: { active: StyleProp<ViewStyle>; inactive: StyleProp<ViewStyle> };
 	primaryButton: InAppMessageComponentButtonStyle;
 	secondaryButton: InAppMessageComponentButtonStyle;
 	textContainer: StyleProp<ViewStyle>;

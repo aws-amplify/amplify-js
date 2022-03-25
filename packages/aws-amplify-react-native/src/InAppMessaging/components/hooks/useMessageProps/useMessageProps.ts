@@ -15,7 +15,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import isEmpty from 'lodash/isEmpty';
 
 import useMessageImage from '../useMessageImage';
-import { InAppMessageComponentProps } from '../useMessage';
+import { InAppMessageComponentBaseProps } from '../../types';
 
 import { getMessageStyle, getMessageStyleProps } from './utils';
 import { GetDefaultStyle, UseMessageProps } from './types';
@@ -31,7 +31,7 @@ import { GetDefaultStyle, UseMessageProps } from './types';
  */
 
 export default function useMessageProps(
-	props: InAppMessageComponentProps,
+	props: InAppMessageComponentBaseProps,
 	getDefaultStyle: GetDefaultStyle
 ): UseMessageProps {
 	const { image, layout, onDisplay, primaryButton, secondaryButton } = props;

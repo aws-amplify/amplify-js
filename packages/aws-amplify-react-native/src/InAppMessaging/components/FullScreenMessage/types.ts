@@ -11,7 +11,12 @@
  * and limitations under the License.
  */
 
+import { UseMessageProps } from '../hooks/useMessageProps/types';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
+
+export interface FullScreenContentProps
+	extends FullScreenMessageProps,
+		Partial<Omit<UseMessageProps, 'shouldRenderMessage'>> {}
 
 export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {}
 

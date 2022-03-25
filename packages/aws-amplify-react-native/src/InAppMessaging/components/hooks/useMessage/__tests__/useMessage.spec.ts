@@ -15,7 +15,7 @@ import { InAppMessage, InAppMessageInteractionEvent, Notifications } from '@aws-
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import useInAppMessaging from '../../../../hooks/useInAppMessaging';
-import BannerMessage from '../../../BannerMessage';
+import BannerMessage, { BannerMessageProps } from '../../../BannerMessage';
 import CarouselMessage from '../../../CarouselMessage';
 import FullScreenMessage from '../../../FullScreenMessage';
 import ModalMessage from '../../../ModalMessage';
@@ -202,7 +202,7 @@ describe('useMessage', () => {
 			it('calls the expected methods via the onPress function of the primary button', () => {
 				const { props } = useMessage();
 
-				props.primaryButton.onPress();
+				(props as BannerMessageProps).primaryButton.onPress();
 
 				jest.runAllTimers();
 

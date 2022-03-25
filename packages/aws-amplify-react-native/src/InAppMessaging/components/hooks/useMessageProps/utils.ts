@@ -13,9 +13,13 @@
 
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import { BUTTON_PRESSED_OPACITY } from '../../constants';
+import { DEFAULT_CAROUSEL_INDICATOR_SIZE } from '../../../ui';
+import { BUTTON_PRESSED_OPACITY, SPACING_EXTRA_LARGE } from '../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../../types';
 import { ButtonStylePropParams, MessageStylePropParams, MessageStyleProps } from './types';
+
+// Carousel page indicator size + margins
+const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5) / 3;
 
 /**
  * Parse and assign appropriate button container and text style from style objects params
@@ -185,7 +189,7 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 
 	const { buttonsContainer, contentContainer, imageContainer, textContainer } = defaultStyle ?? {};
 
-	return {
+	const styleProps: MessageStyleProps = {
 		body,
 		buttonsContainer,
 		componentWrapper,
@@ -199,4 +203,14 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 		secondaryButton,
 		textContainer,
 	};
+
+	if (layout === 'CAROUSEL') {
+		styleProps.container = [
+			styleProps.container,
+			// Add bottom padding for carousel page indicators
+			{ paddingBottom: SPACING_EXTRA_LARGE + DEFAULT_CAROUSEL_INDICATOR_PADDING },
+		];
+	}
+
+	return styleProps;
 }
