@@ -1,30 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ModalMessage renders a message as expected with an image 1`] = `
-<Modal
-  hardwareAccelerated={false}
-  supportedOrientations={
-    Array [
-      "portrait",
-      "portrait-upside-down",
-      "landscape",
-      "landscape-left",
-      "landscape-right",
-    ]
+<MessageWrapper
+  style={
+    Object {
+      "backgroundColor": "transparent",
+    }
   }
-  transparent={true}
-  visible={true}
 >
-  <RCTSafeAreaView
-    emulateUnlessSupported={true}
+  <View
     style={
       Array [
         Object {
-          "flex": 1,
+          "backgroundColor": "#fff",
+          "borderRadius": 2,
+          "elevation": 3,
+          "margin": 16,
+          "minHeight": "40%",
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": Object {
+            "height": 2,
+            "width": 2,
+          },
+          "shadowOpacity": 0.1,
+          "shadowRadius": 2,
         },
-        Object {
-          "backgroundColor": "transparent",
-        },
+        Object {},
+        Object {},
       ]
     }
   >
@@ -32,148 +35,127 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "#fff",
-            "borderRadius": 2,
-            "elevation": 3,
-            "margin": 16,
-            "minHeight": "40%",
-            "padding": 16,
-            "shadowColor": "#000",
-            "shadowOffset": Object {
-              "height": 2,
-              "width": 2,
-            },
-            "shadowOpacity": 0.1,
-            "shadowRadius": 2,
+            "alignSelf": "flex-end",
+            "flexDirection": "row",
           },
-          Object {},
-          Object {},
         ]
       }
     >
       <View
         style={
-          Array [
-            Object {
-              "alignSelf": "flex-end",
-              "flexDirection": "row",
-            },
-          ]
+          Object {
+            "alignItems": "center",
+            "flex": 1,
+          }
         }
       >
-        <View
-          style={
+        <Image
+          source={
             Object {
-              "alignItems": "center",
-              "flex": 1,
+              "uri": "asset.png",
             }
           }
-        >
-          <Image
-            source={
-              Object {
-                "uri": "asset.png",
-              }
-            }
-            style={
-              Array [
-                Object {
-                  "height": 100,
-                  "width": 100,
-                },
-                undefined,
-              ]
-            }
-            testID="aws-amplify__in-app-messaging--image"
-          />
-        </View>
-        <View
-          accessible={true}
-          collapsable={false}
-          focusable={true}
-          hitSlop={
-            Object {
-              "bottom": 10,
-              "left": 10,
-              "right": 10,
-              "top": 10,
-            }
-          }
-          onBlur={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
           style={
             Array [
               Object {
-                "marginBottom": 8,
-                "marginRight": 8,
+                "height": 100,
+                "width": 100,
               },
               undefined,
             ]
           }
-          testID="aws-amplify__in-app-messaging--close-button"
-        >
-          <Image
-            source={
-              Object {
-                "testUri": "../../../packages/aws-amplify-react-native/src/icons/close.png",
-              }
-            }
-            style={
-              Object {
-                "height": 20,
-                "resizeMode": "contain",
-                "tintColor": undefined,
-                "width": 20,
-              }
-            }
-          />
-        </View>
+          testID="aws-amplify__in-app-messaging--image"
+        />
       </View>
       <View
-        style={
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        hitSlop={
           Object {
-            "marginHorizontal": 4,
-            "marginVertical": 12,
+            "bottom": 10,
+            "left": 10,
+            "right": 10,
+            "top": 10,
           }
         }
-      />
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Array [
+            Object {
+              "marginBottom": 8,
+              "marginRight": 8,
+            },
+            undefined,
+          ]
+        }
+        testID="aws-amplify__in-app-messaging--close-button"
+      >
+        <Image
+          source={
+            Object {
+              "testUri": "../../../packages/aws-amplify-react-native/src/icons/close.png",
+            }
+          }
+          style={
+            Object {
+              "height": 20,
+              "resizeMode": "contain",
+              "tintColor": undefined,
+              "width": 20,
+            }
+          }
+        />
+      </View>
     </View>
-  </RCTSafeAreaView>
-</Modal>
+    <View
+      style={
+        Object {
+          "marginHorizontal": 4,
+          "marginVertical": 12,
+        }
+      }
+    />
+  </View>
+</MessageWrapper>
 `;
 
 exports[`ModalMessage renders a message as expected without an image 1`] = `
-<Modal
-  hardwareAccelerated={false}
-  supportedOrientations={
-    Array [
-      "portrait",
-      "portrait-upside-down",
-      "landscape",
-      "landscape-left",
-      "landscape-right",
-    ]
+<MessageWrapper
+  style={
+    Object {
+      "backgroundColor": "transparent",
+    }
   }
-  transparent={true}
-  visible={true}
 >
-  <RCTSafeAreaView
-    emulateUnlessSupported={true}
+  <View
     style={
       Array [
         Object {
-          "flex": 1,
+          "backgroundColor": "#fff",
+          "borderRadius": 2,
+          "elevation": 3,
+          "margin": 16,
+          "minHeight": "40%",
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": Object {
+            "height": 2,
+            "width": 2,
+          },
+          "shadowOpacity": 0.1,
+          "shadowRadius": 2,
         },
-        Object {
-          "backgroundColor": "transparent",
-        },
+        Object {},
+        Object {},
       ]
     }
   >
@@ -181,93 +163,69 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
       style={
         Array [
           Object {
-            "backgroundColor": "#fff",
-            "borderRadius": 2,
-            "elevation": 3,
-            "margin": 16,
-            "minHeight": "40%",
-            "padding": 16,
-            "shadowColor": "#000",
-            "shadowOffset": Object {
-              "height": 2,
-              "width": 2,
-            },
-            "shadowOpacity": 0.1,
-            "shadowRadius": 2,
+            "alignSelf": "flex-end",
+            "flexDirection": "row",
           },
-          Object {},
-          Object {},
         ]
       }
     >
       <View
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        hitSlop={
+          Object {
+            "bottom": 10,
+            "left": 10,
+            "right": 10,
+            "top": 10,
+          }
+        }
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           Array [
             Object {
-              "alignSelf": "flex-end",
-              "flexDirection": "row",
+              "marginBottom": 8,
+              "marginRight": 8,
             },
+            undefined,
           ]
         }
+        testID="aws-amplify__in-app-messaging--close-button"
       >
-        <View
-          accessible={true}
-          collapsable={false}
-          focusable={true}
-          hitSlop={
+        <Image
+          source={
             Object {
-              "bottom": 10,
-              "left": 10,
-              "right": 10,
-              "top": 10,
+              "testUri": "../../../packages/aws-amplify-react-native/src/icons/close.png",
             }
           }
-          onBlur={[Function]}
-          onClick={[Function]}
-          onFocus={[Function]}
-          onResponderGrant={[Function]}
-          onResponderMove={[Function]}
-          onResponderRelease={[Function]}
-          onResponderTerminate={[Function]}
-          onResponderTerminationRequest={[Function]}
-          onStartShouldSetResponder={[Function]}
           style={
-            Array [
-              Object {
-                "marginBottom": 8,
-                "marginRight": 8,
-              },
-              undefined,
-            ]
+            Object {
+              "height": 20,
+              "resizeMode": "contain",
+              "tintColor": undefined,
+              "width": 20,
+            }
           }
-          testID="aws-amplify__in-app-messaging--close-button"
-        >
-          <Image
-            source={
-              Object {
-                "testUri": "../../../packages/aws-amplify-react-native/src/icons/close.png",
-              }
-            }
-            style={
-              Object {
-                "height": 20,
-                "resizeMode": "contain",
-                "tintColor": undefined,
-                "width": 20,
-              }
-            }
-          />
-        </View>
+        />
       </View>
-      <View
-        style={
-          Object {
-            "marginHorizontal": 4,
-            "marginVertical": 12,
-          }
-        }
-      />
     </View>
-  </RCTSafeAreaView>
-</Modal>
+    <View
+      style={
+        Object {
+          "marginHorizontal": 4,
+          "marginVertical": 12,
+        }
+      }
+    />
+  </View>
+</MessageWrapper>
 `;

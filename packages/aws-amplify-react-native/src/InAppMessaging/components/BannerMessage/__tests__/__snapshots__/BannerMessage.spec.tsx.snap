@@ -1,21 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`BannerMessage renders a message as expected with an image 1`] = `
-<<<<<<< HEAD
-<Modal
-  hardwareAccelerated={false}
-  supportedOrientations={
-    Array [
-      "portrait",
-      "portrait-upside-down",
-      "landscape",
-      "landscape-left",
-      "landscape-right",
-    ]
-  }
-  transparent={true}
-  visible={true}
-=======
 <MessageWrapper
   style={
     Object {
@@ -24,7 +9,6 @@ exports[`BannerMessage renders a message as expected with an image 1`] = `
       "justifyContent": "flex-start",
     }
   }
->>>>>>> in-app-messaging/staging
 >
   <View
     style={
@@ -142,21 +126,6 @@ exports[`BannerMessage renders a message as expected with an image 1`] = `
 `;
 
 exports[`BannerMessage renders a message as expected without an image 1`] = `
-<<<<<<< HEAD
-<Modal
-  hardwareAccelerated={false}
-  supportedOrientations={
-    Array [
-      "portrait",
-      "portrait-upside-down",
-      "landscape",
-      "landscape-left",
-      "landscape-right",
-    ]
-  }
-  transparent={true}
-  visible={true}
-=======
 <MessageWrapper
   style={
     Object {
@@ -165,7 +134,6 @@ exports[`BannerMessage renders a message as expected without an image 1`] = `
       "justifyContent": "flex-start",
     }
   }
->>>>>>> in-app-messaging/staging
 >
   <View
     style={
