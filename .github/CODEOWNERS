@@ -1,5 +1,3 @@
-/.circleci/ @iartemiev
-/.github/ @Ashish-Nanda
 /packages/amplify-ui @calebpollman
 /packages/amplify-ui-angular @calebpollman
 /packages/amplify-ui-components @calebpollman
@@ -11,12 +9,12 @@
 /packages/api-graphql @jamesaucode @david-mcafee
 /packages/api-rest @jamesaucode @david-mcafee
 /packages/auth @elorzafe @ashika01 @jamesaucode @nickarocho
-# /packages/aws-amplify
-# /packages/aws-amplify-angular
-# /packages/aws-amplify-react
+/packages/aws-amplify @aws-amplify/amplify-js
+/packages/aws-amplify-angular @aws-amplify/amplify-js
+/packages/aws-amplify-react @aws-amplify/amplify-js
 /packages/aws-amplify-react-native @calebpollman @nickarocho
-# /packages/aws-amplify-vue
-/packages/cache @david-mcafee
+/packages/aws-amplify-vue @aws-amplify/amplify-js
+/packages/cache @aws-amplify/amplify-js
 /packages/core @elorzafe @manueliglesias @iartemiev
 /packages/datastore @svidgen @david-mcafee @manueliglesias @ArkamJ
 /packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias @ArkamJ
@@ -26,4 +24,6 @@
 /packages/pubsub @stocaaro @elorzafe @ashika01
 /packages/pushnotification @cshfang
 /packages/storage @jamesaucode @katiegoines
-# /packages/xr
+/packages/xr @aws-amplify/amplify-js
+/.circleci/ @iartemiev
+/.github/ @Ashish-Nanda
