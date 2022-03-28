@@ -6,7 +6,7 @@
 /packages/api-graphql @jamesaucode @david-mcafee
 /packages/api-rest @jamesaucode @david-mcafee
 /packages/auth @elorzafe @ashika01 @jamesaucode @nickarocho
-/packages/aws-amplify-react-native @calebpollman @chintannp @Samaritan1011001 @nickarocho
+/packages/aws-amplify-react-native @calebpollman @nickarocho
 /packages/core @elorzafe @manueliglesias @iartemiev
 /packages/datastore @svidgen @david-mcafee @manueliglesias @ArkamJ
 /packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias @ArkamJ
