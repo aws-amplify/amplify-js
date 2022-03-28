@@ -8,11 +8,6 @@ import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 const logger = new Logger('ExpoSQLiteDatabase');
 
 const DB_NAME = 'AmplifyDatastore';
-const DB_DISPLAY_NAME = 'AWS Amplify DataStore SQLite Database';
-
-// TODO: make these configurable
-const DB_SIZE = 200000;
-const DB_VERSION = '1.0';
 
 /*
 
@@ -30,7 +25,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		// only open database once.
 
 		if (!this.db) {
-			this.db = openDatabase(DB_NAME, DB_VERSION, DB_DISPLAY_NAME, DB_SIZE);
+			// As per expo docs version, description and size arguments are ignored,
+			// but are accepted by the function for compatibility with the WebSQL specification.
+			// Hence, we do not need those arguments.
+			this.db = openDatabase(DB_NAME);
 		}
 	}
 
