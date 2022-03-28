@@ -47,17 +47,20 @@ export type MqttProvidertOptions = MqttProviderOptions;
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
 
-	async get(clientId: string, clientFactory: (input: string) => Promise<any>) {
+	async get(clientId: string, clientFactory?: (input: string) => Promise<any>) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) {
 			return cachedPromise;
 		}
 
-		const newPromise = clientFactory(clientId);
+		if (clientFactory) {
+			const newPromise = clientFactory(clientId);
 
-		this.promises.set(clientId, newPromise);
+			this.promises.set(clientId, newPromise);
 
-		return newPromise;
+			return newPromise;
+		}
+		return undefined;
 	}
 
 	get allClients() {
@@ -152,10 +155,18 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		client.onMessageArrived = ({
 			destinationName: topic,
 			payloadString: msg,
+		}: {
+			destinationName: string;
+			payloadString: string;
 		}) => {
 			this._onMessage(topic, msg);
 		};
-		client.onConnectionLost = ({ errorCode, ...args }) => {
+		client.onConnectionLost = ({
+			errorCode,
+			...args
+		}: {
+			errorCode: number;
+		}) => {
 			this.onDisconnect({ clientId, errorCode, ...args });
 		};
 
@@ -181,10 +192,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}
 
 	protected async disconnect(clientId: string): Promise<void> {
-		const client = await this.clientsQueue.get(
-			clientId,
-			() => new Promise(() => undefined)
-		);
+		const client = await this.clientsQueue.get(clientId);
 
 		if (client && client.isConnected()) {
 			client.disconnect();
