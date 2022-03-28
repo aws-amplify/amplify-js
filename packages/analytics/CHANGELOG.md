@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.1...@aws-amplify/analytics@5.2.2) (2022-03-22)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.0...@aws-amplify/analytics@5.2.1) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.12...@aws-amplify/analytics@5.2.0) (2022-02-28)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** Analytics/types hotfix ([#9648](https://github.com/aws-amplify/amplify-js/issues/9648)) ([ad45ef6](https://github.com/aws-amplify/amplify-js/commit/ad45ef6538675b59b15eba513eab916e8b5d36e1))
+
+
+### Features
+
+* **@aws-amplify/analytics:** Analytics Typescript updates ([#9272](https://github.com/aws-amplify/amplify-js/issues/9272)) ([9a52c2b](https://github.com/aws-amplify/amplify-js/commit/9a52c2b6a59bf0d9622a2572f8752b7b419c0817))
+
+
+
+
+
+## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.11...@aws-amplify/analytics@5.1.12) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.10...@aws-amplify/analytics@5.1.11) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.9...@aws-amplify/analytics@5.1.10) (2022-01-07)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [5.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.8...@aws-amplify/analytics@5.1.9) (2021-12-16)
 
 **Note:** Version bump only for package @aws-amplify/analytics

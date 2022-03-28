@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.23...@aws-amplify/api-graphql@2.2.24) (2022-03-22)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.22...@aws-amplify/api-graphql@2.2.23) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.21...@aws-amplify/api-graphql@2.2.22) (2022-02-28)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** Improve API.graphql return type ([#9197](https://github.com/aws-amplify/amplify-js/issues/9197)) ([9a0531b](https://github.com/aws-amplify/amplify-js/commit/9a0531b11e9eb6659d36ca0c51c642b3d947f63c))
+
+
+
+
+
+## [2.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.20...@aws-amplify/api-graphql@2.2.21) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.19...@aws-amplify/api-graphql@2.2.20) (2022-01-27)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.18...@aws-amplify/api-graphql@2.2.19) (2022-01-07)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
 ## [2.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.2.17...@aws-amplify/api-graphql@2.2.18) (2021-12-16)
 
 

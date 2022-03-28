@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.1...@aws-amplify/core@4.4.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.0...@aws-amplify/core@4.4.1) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.14...@aws-amplify/core@4.4.0) (2022-02-28)
+
+
+### Bug Fixes
+
+* pin async storage to 1.15.17 ([#9570](https://github.com/aws-amplify/amplify-js/issues/9570)) ([bc5235a](https://github.com/aws-amplify/amplify-js/commit/bc5235ac0d15242f7a13457f40999b5331823395))
+
+
+### Features
+
+* **@aws-amplify/core:** add ui protected channel ([#9554](https://github.com/aws-amplify/amplify-js/issues/9554)) ([86e07fc](https://github.com/aws-amplify/amplify-js/commit/86e07fcd3ebbaa5f03d65ed8009b7531ee300e39))
+
+
+
+
+
+## [4.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.13...@aws-amplify/core@4.3.14) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.12...@aws-amplify/core@4.3.13) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
+## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.11...@aws-amplify/core@4.3.12) (2022-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use empty string as translation ([#9403](https://github.com/aws-amplify/amplify-js/issues/9403)) ([512fd99](https://github.com/aws-amplify/amplify-js/commit/512fd99a0d6751ffc3915de6a043d2e6fe01f1e4))
+
+
+### Reverts
+
+* Revert "fix(@aws-amplify/core): use empty string as translation (#9403)" (#9436) ([711259b](https://github.com/aws-amplify/amplify-js/commit/711259b482d721f66d4acc728ff96a8a26965787)), closes [#9403](https://github.com/aws-amplify/amplify-js/issues/9403) [#9436](https://github.com/aws-amplify/amplify-js/issues/9436)
+
+
+
+
+
 ## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.10...@aws-amplify/core@4.3.11) (2021-12-16)
 
 **Note:** Version bump only for package @aws-amplify/core

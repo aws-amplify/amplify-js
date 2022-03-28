@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/included:9.4.1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -34,7 +34,14 @@ executors:
 
   macos-executor:
     macos:
+      xcode: 13.2.1
+    resource_class: large
+
+  # For RN apps that need to be upgraded before using latest iOS/macOS
+  macos-executor-legacy:
+    macos:
       xcode: 11.5.0
+    resource_class: large
 
 test_env_vars: &test_env_vars
   environment:
@@ -250,13 +257,6 @@ commands:
       - restore_cache:
           key: |
             brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
-      - run:
-          # React Native Android can have issues with later versions of Node:
-          # https://github.com/facebook/react-native/issues/26808
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh install-node
-          name: Install node@10
       - run:
           # https://reactnative.dev/docs/environment-setup
           environment:
@@ -944,8 +944,25 @@ jobs:
           sample_name: device-tracking
           spec: device-tracking
           browser: << parameters.browser >>
+
+  integ_react_delete_user:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'delete-user'
+          framework: react
+          category: auth
+          sample_name: delete-user
+          spec: delete-user
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -966,14 +983,14 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   integ_rn_android_storage_multipart_progress:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
@@ -1442,6 +1459,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_delete_user:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -1466,12 +1492,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      # - integ_rn_android_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_rn_android_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_datastore_sqlite_adapter:
           requires:
             - integ_setup
@@ -1511,12 +1537,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          browser: chrome
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
           requires:
             - unit_test
+            - integ_react_delete_user
             - integ_react_predictions
             - integ_react_datastore
             - integ_react_datastore_v2
@@ -1547,7 +1576,7 @@ workflows:
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
-            # - integ_rn_android_storage_multipart_progress
+            - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
             - integ_rn_ios_datastore_sqlite_adapter

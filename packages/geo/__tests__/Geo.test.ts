@@ -13,8 +13,9 @@
 import { Credentials } from '@aws-amplify/core';
 import {
 	LocationClient,
-	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
 import { GeoClass } from '../src/Geo';
@@ -41,6 +42,18 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Place: TestPlacePascalCase,
+				},
+			],
+		};
+	}
+	if (command instanceof SearchPlaceIndexForSuggestionsCommand) {
+		return {
+			Results: [
+				{
+					Text: 'star',
+				},
+				{
+					Text: 'not star',
 				},
 			],
 		};
@@ -134,7 +147,7 @@ describe('Geo', () => {
 			geo.configure({});
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -159,7 +172,7 @@ describe('Geo', () => {
 			geo.configure({});
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -174,7 +187,7 @@ describe('Geo', () => {
 			});
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -194,6 +207,8 @@ describe('Geo', () => {
 	});
 
 	describe('searchByText', () => {
+		const testString = 'star';
+
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -201,8 +216,6 @@ describe('Geo', () => {
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-
-			const testString = 'starbucks';
 
 			const results = await geo.searchByText(testString);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -223,7 +236,6 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const testString = 'starbucks';
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
 				countries: ['USA'],
@@ -252,7 +264,6 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const testString = 'starbucks';
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
 				countries: ['USA'],
@@ -273,6 +284,27 @@ describe('Geo', () => {
 			});
 		});
 
+		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			await expect(geo.searchByText(testString, searchOptions)).rejects.toThrow(
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+			);
+		});
+
 		test('should fail if there is no provider', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -282,8 +314,124 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			const testString = 'starbucks';
 			await expect(geo.searchByText(testString)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
+	describe('searchForSuggestions', () => {
+		const testString = 'star';
+		const testResults = ['star', 'not star'];
+
+		test('should search with just text input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.searchForSuggestions(testString);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+			});
+		});
+
+		test('should search using given options with biasPosition', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByTextOptions = {
+				biasPosition: [12345, 67890],
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchForSuggestions(testString, searchOptions);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.searchIndexName,
+				BiasPosition: searchOptions.biasPosition,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should search using given options with searchAreaConstraints', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByTextOptions = {
+				searchAreaConstraints: [123, 456, 789, 321],
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchForSuggestions(testString, searchOptions);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.searchIndexName,
+				FilterBBox: searchOptions.searchAreaConstraints,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			await expect(
+				geo.searchForSuggestions(testString, searchOptions)
+			).rejects.toThrow(
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+			);
+		});
+
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationService');
+
+			await expect(geo.searchForSuggestions(testString)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});
