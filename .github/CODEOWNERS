@@ -11,6 +11,7 @@
 /packages/api-graphql @jamesaucode @david-mcafee
 /packages/api-rest @jamesaucode @david-mcafee
 /packages/auth @elorzafe @ashika01 @jamesaucode @nickarocho
+/packages/aws-amplify @Ashish-Nanda
 /packages/aws-amplify-angular # TODO
 /packages/aws-amplify-react # TODO
 /packages/aws-amplify-react-native @calebpollman @nickarocho
