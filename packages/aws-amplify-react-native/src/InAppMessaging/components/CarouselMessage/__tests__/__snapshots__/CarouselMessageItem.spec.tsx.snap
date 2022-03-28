@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CarouselMessageItem renders as expected 1`] = `
+<SafeAreaView>
+  <FullScreenContent
+    layout="CAROUSEL"
+    shouldRenderMessage={true}
+    styles={Object {}}
+  />
+</SafeAreaView>
+`;

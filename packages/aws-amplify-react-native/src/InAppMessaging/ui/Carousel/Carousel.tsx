@@ -45,7 +45,7 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 
 	useEffect(() => {
 		// on width change (due to orientation change), jump to the new index offset
-		flatListRef.current.scrollToOffset({ offset: width * indexRef.current, animated: false });
+		flatListRef?.current?.scrollToOffset({ offset: width * indexRef.current, animated: false });
 	}, [width]);
 
 	useEffect(() => {
@@ -70,6 +70,10 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 	const carouselRenderItem = (renderInfo: ListRenderItemInfo<T>) => {
 		return <View style={{ width }}>{renderItem(renderInfo)}</View>;
 	};
+
+	if (!data?.length) {
+		return null;
+	}
 
 	return (
 		<>
