@@ -88,11 +88,6 @@ export function withAuthenticator<Props extends object>(
 					signUpConfig,
 				};
 			}
-
-			// set default usernameAttributes to 'username'
-			if (!this.authConfig.usernameAttributes) {
-				this.authConfig.usernameAttributes = 'username';
-			}
 		}
 
 		handleAuthStateChange(state: string, data?: any) {
