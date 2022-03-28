@@ -16,6 +16,7 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	SchemaNamespace,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
@@ -29,7 +30,7 @@ import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
-	SubscriptionMessage<T> & {
+	InternalSubscriptionMessage<T> & {
 		mutator?: Symbol;
 	};
 
@@ -134,9 +135,8 @@ class StorageClass implements StorageFacade {
 
 			const element = updateMutationInput || savedElement;
 
-			const modelConstructor = (
-				Object.getPrototypeOf(savedElement) as Object
-			).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
