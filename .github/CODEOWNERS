@@ -1,22 +1,22 @@
 /.circleci/ @iartemiev
 /.github/ @Ashish-Nanda
-/packages/amplify-ui # TODO
-/packages/amplify-ui-angular # TODO
-/packages/amplify-ui-components # TODO
-/packages/amplify-ui-react # TODO
-/packages/amplify-ui-storybook # TODO
-/packages/amplify-ui-vue # TODO
+/packages/amplify-ui @calebpollman
+/packages/amplify-ui-angular @calebpollman
+/packages/amplify-ui-components @calebpollman
+/packages/amplify-ui-react @calebpollman
+/packages/amplify-ui-storybook @calebpollman
+/packages/amplify-ui-vue @calebpollman
 /packages/analytics @elorzafe
 /packages/api @jamesaucode @david-mcafee
 /packages/api-graphql @jamesaucode @david-mcafee
 /packages/api-rest @jamesaucode @david-mcafee
 /packages/auth @elorzafe @ashika01 @jamesaucode @nickarocho
-/packages/aws-amplify @Ashish-Nanda
-/packages/aws-amplify-angular # TODO
-/packages/aws-amplify-react # TODO
+# /packages/aws-amplify
+# /packages/aws-amplify-angular
+# /packages/aws-amplify-react
 /packages/aws-amplify-react-native @calebpollman @nickarocho
-/packages/aws-amplify-vue # TODO
-/packages/cache # TODO
+# /packages/aws-amplify-vue
+/packages/cache @david-mcafee
 /packages/core @elorzafe @manueliglesias @iartemiev
 /packages/datastore @svidgen @david-mcafee @manueliglesias @ArkamJ
 /packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias @ArkamJ
@@ -26,4 +26,4 @@
 /packages/pubsub @stocaaro @elorzafe @ashika01
 /packages/pushnotification @cshfang
 /packages/storage @jamesaucode @katiegoines
-/packages/xr # TODO
+# /packages/xr
