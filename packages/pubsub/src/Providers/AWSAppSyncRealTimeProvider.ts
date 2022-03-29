@@ -54,7 +54,7 @@ type ObserverQuery = {
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
-	startAckTimeoutId?: NodeJS.Timer;
+	startAckTimeoutId?: ReturnType<typeof setTimeout>;
 };
 
 enum MESSAGE_TYPES {
@@ -170,7 +170,7 @@ type AWSAppSyncRealTimeAuthInput =
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
-	private keepAliveTimeoutId?: NodeJS.Timer;
+	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
@@ -199,7 +199,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
 		return new Observable(observer => {
-			if (!appSyncGraphqlEndpoint) {
+			if (!options || !appSyncGraphqlEndpoint) {
 				observer.error({
 					errors: [
 						{
@@ -216,7 +216,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					options,
 					observer,
 					subscriptionId,
-				}).catch(err => {
+				}).catch<any>(err => {
 					observer.error({
 						errors: [
 							{
@@ -340,18 +340,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			});
 		} catch (err) {
 			logger.debug({ err });
-			if (err instanceof Error) {
-				const { message = '' } = err;
-				observer.error({
-					errors: [
-						{
-							...new GraphQLError(
-								`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`
-							),
-						},
-					],
-				});
-			}
+			const message = (err as { message?: string })?.message ?? '';
+			observer.error({
+				errors: [
+					{
+						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
+					},
+				],
+			});
 			observer.complete();
 			const { subscriptionFailedCallback } =
 				this.subscriptionObserverMap.get(subscriptionId) || {};
@@ -820,33 +816,34 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		region,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeProviderOptions): Promise<any> {
-		const headerHandler: { [key: string]: any } = {
+		const headerHandler: { [key in GraphqlAuthModes]: any } = {
 			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
 			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
 			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
 			AMAZON_COGNITO_USER_POOLS: this._awsRealTimeCUPHeader.bind(this),
 			AWS_LAMBDA: this._customAuthHeader,
 		};
-		const handler = headerHandler[authenticationType ?? ''];
 
-		if (typeof handler !== 'function') {
+		if (!authenticationType || !headerHandler[authenticationType]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return '';
+		} else {
+			const handler = headerHandler[authenticationType];
+
+			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
+
+			const result = await handler({
+				payload,
+				canonicalUri,
+				appSyncGraphqlEndpoint,
+				apiKey,
+				region,
+				host,
+				additionalHeaders,
+			});
+
+			return result;
 		}
-
-		const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
-
-		const result = await handler({
-			payload,
-			canonicalUri,
-			appSyncGraphqlEndpoint,
-			apiKey,
-			region,
-			host,
-			additionalHeaders,
-		});
-
-		return result;
 	}
 
 	private async _awsRealTimeCUPHeader({ host }: AWSAppSyncRealTimeAuthInput) {
@@ -910,8 +907,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			throw new Error('No credentials');
 		}
 		const creds = await Credentials.get().then((credentials: any) => {
-			const { secretAccessKey, accessKeyId, sessionToken } =
-				Credentials.shear(credentials);
+			const { secretAccessKey, accessKeyId, sessionToken } = credentials as {
+				secretAccessKey: any;
+				accessKeyId: any;
+				sessionToken: any;
+			};
 
 			return {
 				secret_key: secretAccessKey,
