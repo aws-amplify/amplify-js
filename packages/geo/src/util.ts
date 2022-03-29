@@ -12,8 +12,6 @@
  */
 import booleanClockwise from '@turf/boolean-clockwise';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
 import {
 	Longitude,
 	Latitude,
@@ -21,8 +19,6 @@ import {
 	GeofencePolygon,
 	LinearRing,
 } from './types';
-
-const logger = new Logger('Geo');
 
 export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
