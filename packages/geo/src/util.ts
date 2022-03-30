@@ -48,10 +48,11 @@ export function validateLinearRing(
 	linearRing: LinearRing,
 	geofenceId?: string
 ): void {
+	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	// Validate LinearRing size, must be at least 4 points
 	if (linearRing.length < 4) {
 		throw new Error(
-			`${geofenceId}: LinearRing must contain 4 or more coordinates.`
+			`${errorPrefix}LinearRing must contain 4 or more coordinates.`
 		);
 	}
 
@@ -66,7 +67,7 @@ export function validateLinearRing(
 	});
 	if (badCoordinates.length > 0) {
 		throw new Error(
-			`${geofenceId}: One or more of the coordinates in the Polygon LinearRing are not valid: ${JSON.stringify(
+			`${errorPrefix}One or more of the coordinates in the Polygon LinearRing are not valid: ${JSON.stringify(
 				badCoordinates
 			)}`
 		);
@@ -78,13 +79,13 @@ export function validateLinearRing(
 
 	if (lngA !== lngB || latA !== latB) {
 		throw new Error(
-			`${geofenceId}: LinearRing's first and last coordinates are not the same`
+			`${errorPrefix}LinearRing's first and last coordinates are not the same`
 		);
 	}
 
 	if (booleanClockwise(linearRing)) {
 		throw new Error(
-			`${geofenceId}: LinearRing coordinates must be wound counterclockwise`
+			`${errorPrefix}LinearRing coordinates must be wound counterclockwise`
 		);
 	}
 }
@@ -93,19 +94,20 @@ export function validatePolygon(
 	polygon: GeofencePolygon,
 	geofenceId?: string
 ): void {
+	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	if (!Array.isArray(polygon)) {
 		throw new Error(
-			`${geofenceId}: Polygon is of incorrect structure. It should be an array of LinearRings`
+			`${errorPrefix}Polygon is of incorrect structure. It should be an array of LinearRings`
 		);
 	}
 	if (polygon.length < 1) {
 		throw new Error(
-			`${geofenceId}: Polygon must have a single LinearRing array.`
+			`${errorPrefix}Polygon must have a single LinearRing array.`
 		);
 	}
 	if (polygon.length > 1) {
 		throw new Error(
-			`${geofenceId}: Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
+			`${errorPrefix}Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
 		);
 	}
 	const verticesCount = polygon.reduce(
@@ -114,7 +116,7 @@ export function validatePolygon(
 	);
 	if (verticesCount > 1000) {
 		throw new Error(
-			`${geofenceId}: Polygon has more than the maximum 1000 vertices.`
+			`${errorPrefix}Polygon has more than the maximum 1000 vertices.`
 		);
 	}
 }
