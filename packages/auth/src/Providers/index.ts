@@ -1,0 +1,1 @@
+export { AWSCognitoProvider } from './AWSCognitoProvider';

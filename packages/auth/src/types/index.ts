@@ -12,3 +12,4 @@
  */
 
 export * from './Auth';
+export * from './AWSCognitoProvider';
