@@ -392,11 +392,17 @@ export enum OpType {
 	DELETE = 'DELETE',
 }
 
-export type SubscriptionMessage<T extends PersistentModel> = {
+export type SubscriptionMessage<T extends PersistentModel> = Pick<
+	InternalSubscriptionMessage<T>,
+	'opType' | 'element' | 'model' | 'condition'
+>;
+
+export type InternalSubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
+	savedElement?: T;
 };
 
 export type DataStoreSnapshot<T extends PersistentModel> = {

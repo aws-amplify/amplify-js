@@ -13,29 +13,10 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Model, Metadata, testSchema } from './helpers';
+import { Comment, Model, Post, Metadata, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-
-beforeEach(() => {
-	jest.resetModules();
-
-	jest.doMock('../src/storage/storage', () => {
-		const mock = jest.fn().mockImplementation(() => ({
-			init: jest.fn(),
-			runExclusive: jest.fn(),
-			query: jest.fn(() => []),
-			save: jest.fn(() => []),
-			observe: jest.fn(() => Observable.of()),
-		}));
-
-		(<any>mock).getNamespace = () => ({ models: {} });
-
-		return { ExclusiveStorage: mock };
-	});
-	({ initSchema, DataStore } = require('../src/datastore/datastore'));
-});
 
 const nameOf = <T>(name: keyof T) => name;
 
@@ -44,7 +25,379 @@ const nameOf = <T>(name: keyof T) => name;
  */
 const expectType: <T>(param: T) => void = () => {};
 
+describe('DataStore observe, unmocked, with fake-indexeddb', () => {
+	let Comment: PersistentModelConstructor<Comment>;
+	let Model: PersistentModelConstructor<Model>;
+	let Post: PersistentModelConstructor<Post>;
+
+	beforeEach(async () => {
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+		const classes = initSchema(testSchema());
+		({ Comment, Model, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
+			Model: PersistentModelConstructor<Model>;
+			Post: PersistentModelConstructor<Post>;
+		});
+		await DataStore.clear();
+	});
+
+	test('subscribe to all models', async done => {
+		try {
+			const sub = DataStore.observe().subscribe(
+				({ element, opType, model }) => {
+					expectType<PersistentModelConstructor<PersistentModel>>(model);
+					expectType<PersistentModel>(element);
+					expect(opType).toEqual('INSERT');
+					expect(element.field1).toEqual('Smurfs');
+					expect(element.optionalField1).toEqual('More Smurfs');
+					sub.unsubscribe();
+					done();
+				}
+			);
+			DataStore.save(
+				new Model({
+					field1: 'Smurfs',
+					optionalField1: 'More Smurfs',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('subscribe to model instance', async done => {
+		try {
+			const original = await DataStore.save(
+				new Model({
+					field1: 'somevalue',
+					optionalField1: 'This one should be returned',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const sub = DataStore.observe(original).subscribe(
+				({ element, opType, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+					expect(opType).toEqual('UPDATE');
+					expect(element.id).toEqual(original.id);
+					expect(element.field1).toEqual('new field 1 value');
+					// We expect all fields, including ones that haven't been updated, to be returned:
+					expect(element.optionalField1).toEqual('This one should be returned');
+					sub.unsubscribe();
+					done();
+				}
+			);
+
+			// decoy
+			await DataStore.save(
+				new Model({
+					field1: "this one shouldn't get through",
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+			);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('subscribe to Model', async done => {
+		try {
+			const original = await DataStore.save(
+				new Model({
+					field1: 'somevalue',
+					optionalField1: 'additional value',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const sub = DataStore.observe(Model).subscribe(
+				({ element, opType, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+					expect(opType).toEqual('UPDATE');
+					expect(element.id).toEqual(original.id);
+					expect(element.field1).toEqual('new field 1 value');
+					expect(element.optionalField1).toEqual('additional value');
+					sub.unsubscribe();
+					done();
+				}
+			);
+
+			// decoy
+			await DataStore.save(
+				new Post({
+					title: "This one's a decoy!",
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+			);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('subscribe with criteria', async done => {
+		try {
+			const original = await DataStore.save(
+				new Model({
+					field1: 'somevalue',
+					optionalField1: 'additional value',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const sub = DataStore.observe(Model, m =>
+				m.field1('contains', 'new field 1')
+			).subscribe(({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				expect(element.optionalField1).toEqual('additional value');
+				sub.unsubscribe();
+				done();
+			});
+
+			// decoy
+			await DataStore.save(
+				new Model({
+					field1: "This one's a decoy!",
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+			);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('subscribe with criteria on deletes', async done => {
+		try {
+			const original = await DataStore.save(
+				new Model({
+					field1: 'somevalue',
+					optionalField1: 'additional value',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const sub = DataStore.observe(Model, m =>
+				m.field1('eq', 'somevalue')
+			).subscribe(({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('DELETE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('somevalue');
+				expect(element.optionalField1).toEqual('additional value');
+				sub.unsubscribe();
+				done();
+			});
+
+			// decoy
+			await DataStore.save(
+				new Model({
+					field1: "This one's a decoy!",
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			await DataStore.delete(original);
+		} catch (error) {
+			done(error);
+		}
+	});
+});
+
+describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
+	//
+	// ~~~~ OH HEY! ~~~~~
+	//
+	// Remember that `observeQuery()` always issues a first snapshot from the data
+	// already in storage. This is naturally performed async. Because of this,
+	// if you insert items immediately after `observeQuery()`, some of those items
+	// MAY show up in the initial snapshot. (Or maybe they won't!)
+	//
+	// Many of these tests should therefore include timeouts when adding records.
+	// These timeouts let `observeQuery()` sneak in and grab its first snapshot
+	// before those records hit storage, making for predictable tests.
+	//
+	// The tests should also account for that initial, empty snapshot.
+	//
+	// Remember: Snapshots are cumulative.
+	//
+	// And Also: Be careful when saving decoy records! Calling `done()` in a
+	// subscription body while any `DataStore.save()`'s are outstanding WILL
+	// result in cryptic errors that surface in subsequent tests!
+	//
+	// ("Error: An operation was called on an object on which it is not allowed ...")
+	//
+	// ~~~~ OK. Thanks! ~~~~
+	//
+	//   (That's it)
+	//
+
+	let Comment: PersistentModelConstructor<Comment>;
+	let Post: PersistentModelConstructor<Post>;
+
+	beforeEach(async () => {
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+		const classes = initSchema(testSchema());
+		({ Comment, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
+			Post: PersistentModelConstructor<Post>;
+		});
+		await DataStore.clear();
+
+		// Fully faking or mocking the sync engine would be pretty significant.
+		// Instead, we're going to be mocking a few sync engine methods we happen know
+		// `observeQuery()` depends on.
+		(DataStore as any).sync = {
+			// default to report that models are NOT synced.
+			// set to `true` to signal the model is synced.
+			// `observeQuery()` should finish up after this returns `true`.
+			getModelSyncedStatus: (model: any) => false,
+
+			// not important for this testing. but unsubscribe calls this.
+			// so, it needs to exist.
+			unsubscribeConnectivity: () => {},
+		};
+
+		// how many items to accumulate before `observeQuery()` sends the items
+		// to its subscriber.
+		(DataStore as any).syncPageSize = 1000;
+	});
+
+	test('publishes preexisting local data immediately', async done => {
+		try {
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+				expect(items.length).toBe(5);
+				for (let i = 0; i < 5; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+				sub.unsubscribe();
+				done();
+			});
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('publishes data saved after sync', async done => {
+		try {
+			const expecteds = [0, 10];
+
+			const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (let i = 0; i < expected; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
+		try {
+			const expecteds = [5, 15];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(Post).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].title).toEqual(`the post ${i}`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				for (let i = 5; i < 15; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+});
+
 describe('DataStore tests', () => {
+	beforeEach(() => {
+		jest.resetModules();
+
+		jest.doMock('../src/storage/storage', () => {
+			const mock = jest.fn().mockImplementation(() => ({
+				init: jest.fn(),
+				runExclusive: jest.fn(),
+				query: jest.fn(() => []),
+				save: jest.fn(() => []),
+				observe: jest.fn(() => Observable.of()),
+			}));
+
+			(<any>mock).getNamespace = () => ({ models: {} });
+
+			return { ExclusiveStorage: mock };
+		});
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	});
+
 	describe('initSchema tests', () => {
 		test('Model class is created', () => {
 			const classes = initSchema(testSchema());
