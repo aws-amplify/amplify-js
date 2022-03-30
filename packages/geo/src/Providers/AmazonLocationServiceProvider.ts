@@ -291,6 +291,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		geofences: GeofenceInput[],
 		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<SaveGeofencesResults> {
+		if (geofences.length < 1) {
+			throw new Error('Geofence input array is empty');
+		}
+
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');
@@ -326,7 +330,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		while (PascalGeofences.length > 0) {
 			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
-			batches.push(PascalGeofences.splice(0, 10));
+			const apiLimit = 10;
+			batches.push(PascalGeofences.splice(0, apiLimit));
 		}
 
 		await Promise.all(
@@ -539,6 +544,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		geofenceIds: string[],
 		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<AmazonLocationServiceDeleteGeofencesResults> {
+		if (geofenceIds.length < 1) {
+			throw new Error('GeofenceId input array is empty');
+		}
+
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');

@@ -527,6 +527,23 @@ describe('AmazonLocationServiceProvider', () => {
 			);
 		});
 
+		test('should error if input is empty array', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockBatchPutGeofenceCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			await expect(locationProvider.saveGeofences([])).rejects.toThrow(
+				'Geofence input array is empty'
+			);
+		});
+
 		test('should error if there are no geofenceCollections in config', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -784,6 +801,17 @@ describe('AmazonLocationServiceProvider', () => {
 				])
 			).rejects.toThrow(
 				`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`
+			);
+		});
+
+		test('should error if input array is empty', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+			await expect(locationProvider.deleteGeofences([])).rejects.toThrow(
+				`GeofenceId input array is empty`
 			);
 		});
 
