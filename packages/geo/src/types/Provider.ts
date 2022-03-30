@@ -14,7 +14,6 @@
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
 	Place,
 	MapStyle,
@@ -42,9 +41,4 @@ export interface GeoProvider {
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
-
-	searchForSuggestions(
-		text: string,
-		options?: SearchByTextOptions
-	): Promise<SearchForSuggestionsResults>;
 }

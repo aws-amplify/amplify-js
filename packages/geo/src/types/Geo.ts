@@ -97,6 +97,3 @@ export interface Place {
 	street?: string;
 	subRegion?: string;
 }
-
-// Return type for searchForSuggestions
-export type SearchForSuggestionsResults = string[];
