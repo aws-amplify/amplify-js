@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.4.4...@aws-amplify/auth@4.5.0) (2022-03-28)
+
+
+### Features
+
+* PubSub Add Options objects for all Providers and fix: Spelling error and deprecation of old exports ([#9683](https://github.com/aws-amplify/amplify-js/issues/9683)) ([b535af2](https://github.com/aws-amplify/amplify-js/commit/b535af2133b5460c6e8e2fcfd89e1fe235872c27))
+
+
+
+
+
+## [4.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.4.3...@aws-amplify/auth@4.4.4) (2022-03-22)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
 ## [4.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.4.2...@aws-amplify/auth@4.4.3) (2022-03-10)
 
 
