@@ -1,8 +1,8 @@
 # How DataStore uses Observables
 - All of DataStore internally uses event driven methods (observables) to handle everything from the sync process, to observing online connectivity. **This makes the Storage Engine the single source of truth for DataStore.**
-- Which things are observed, and how?
-	- Sync Engine observes DataStore Connectivity 
-	- Sync Engine observes the Storage Engine 
+- Examples:
+	- The Sync Engine observes DataStore Connectivity 
+	- The Sync Engine observes the Storage Engine 
     - The client observes DataStore with `observe` and `observeQuery`:
 		- https://docs.amplify.aws/lib/datastore/real-time/q/platform/js/
 

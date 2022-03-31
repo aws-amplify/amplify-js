@@ -12,6 +12,6 @@
 	- Within sample app: `rm -rf node_modules && yarn && yarn link aws-amplify && yarn link @aws-amplify/datastore && yarn start`
 
 ## Contributing to these docs
-- Do not link to specific lines of code, as these frequently change. Do the opposite instead: link to the documentation within the code itself, as the docs are less likely to change.
+- Do not link to specific lines of code, as these frequently change. Instead, do the opposite: link to the documentation within the code itself, as the docs are less likely to change.
 - Prefer small, self-contained sections over large, monolothic documents.
 - Do not use permalinks - instead, link to the most current files.
