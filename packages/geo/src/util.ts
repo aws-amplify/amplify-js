@@ -24,9 +24,9 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
 		throw new Error(`Invalid coordinates: [${lng},${lat}]`);
 	}
-	if (lat < -90 || lat > 90) {
+	if (lat < -90 || 90 < lat) {
 		throw new Error('Latitude must be between -90 and 90 degrees inclusive.');
-	} else if (lng < -180 || lng > 180) {
+	} else if (lng < -180 || 180 < lng) {
 		throw new Error(
 			'Longitude must be between -180 and 180 degrees inclusive.'
 		);
@@ -158,7 +158,9 @@ export function validateGeofencesInput(geofences: GeofenceInput[]) {
 			validatePolygon(polygon, geofenceId);
 		} catch (error) {
 			if (
-				error.message === `Polygon has more than the maximum 1000 vertices.`
+				error.message.includes(
+					'Polygon has more than the maximum 1000 vertices.'
+				)
 			) {
 				throw new Error(
 					`Geofence '${geofenceId}' has more than the maximum of 1000 vertices`
