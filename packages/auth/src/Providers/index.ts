@@ -1,1 +1,1 @@
-export { AWSCognitoProvider } from './AWSCognitoProvider';
+export { CognitoProvider } from './CognitoProvider';

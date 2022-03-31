@@ -11,30 +11,23 @@
  * and limitations under the License.
  */
 
-import { Auth } from './Auth';
-import {
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	GRAPHQL_AUTH_MODE,
-} from './types/Auth';
-import {
-	CognitoUser,
-	CookieStorage,
-	appendToCognitoUserAgent,
-} from 'amazon-cognito-identity-js';
+import { CognitoHostedUIIdentityProvider } from './types/Auth';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 /**
  * @deprecated use named import
  */
-export default Auth;
+export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
+
+export { CognitoProvider } from './Providers';
+export { AuthPluggable } from './AuthPluggable';
 export {
-	Auth,
-	CognitoUser,
-	CookieStorage,
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	appendToCognitoUserAgent,
-	AuthErrorStrings,
-	GRAPHQL_AUTH_MODE,
-};
+	USER_PARAM_TYPE,
+	SignInWithLink,
+	SignInWithWebAuthn,
+	SignInResult,
+	SignInParams,
+	isAWSCredentials,
+	isApiKey,
+	isAuthorizationToken,
+} from './types';

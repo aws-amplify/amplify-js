@@ -12,4 +12,5 @@
  */
 
 export * from './Auth';
-export * from './AWSCognitoProvider';
+export * from './AuthPluggable';
+export * from './Provider';

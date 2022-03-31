@@ -16,17 +16,6 @@ import {
 	ICognitoStorage,
 } from 'amazon-cognito-identity-js';
 
-/**
- * Parameters for user sign up
- */
-export interface SignUpParams {
-	username: string;
-	password: string;
-	attributes?: object;
-	validationData?: { [key: string]: any };
-	clientMetadata?: { [key: string]: string };
-}
-
 export interface AuthCache {
 	setItem();
 	getItem();
@@ -226,12 +215,4 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 export interface IAuthDevice {
 	id: string;
 	name: string;
-}
-
-export enum GRAPHQL_AUTH_MODE {
-	API_KEY = 'API_KEY',
-	AWS_IAM = 'AWS_IAM',
-	OPENID_CONNECT = 'OPENID_CONNECT',
-	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-	AWS_LAMBDA = 'AWS_LAMBDA',
 }

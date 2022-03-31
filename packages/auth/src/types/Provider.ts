@@ -1,16 +1,17 @@
 import {
-	CognitoUser,
-	CognitoUserSession,
-	ISignUpResult,
-} from './AWSCognitoProvider';
-import { CurrentUserOpts } from '.';
-import {
-	ClientMetaData,
-	SignInOpts,
-	SignOutOpts,
-	AuthOptions,
+	AmplifyUser,
+	ConfirmSignInParams,
+	ConfirmSignUpParams,
+	PluginConfig,
+	SignInParams,
+	SignInResult,
+	SignUpResult,
 	SignUpParams,
-} from './Auth';
+	AddAuthenticatorResponse,
+	RequestScopeResponse,
+	AuthZOptions,
+	AuthorizationResponse,
+} from '.';
 
 /*
  * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -28,7 +29,7 @@ export interface AuthProvider {
 	// you need to implement those methods
 
 	// configure your provider
-	configure(config: AuthOptions);
+	configure(config: PluginConfig);
 
 	// return 'Storage';
 	getCategory(): string;
@@ -36,23 +37,21 @@ export interface AuthProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	// signup
-	signUp?(
-		params: string | SignUpParams,
-		...restOfAttrs: string[]
-	): Promise<ISignUpResult>;
+	signUp(params: SignUpParams): Promise<SignUpResult>;
 
-	// signIn
-	signIn?(
-		usernameOrSignInOpts: string | SignInOpts,
-		pw?: string,
-		clientMetadata?: ClientMetaData
-	): Promise<CognitoUser>;
+	confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult>;
 
-	// signOut
-	signOut?(opts?: SignOutOpts): Promise<any>;
+	signIn(params: SignInParams): Promise<SignInResult>;
 
-	currentUserPoolUser?(params?: CurrentUserOpts): Promise<CognitoUser>;
-	currentSession?(): Promise<CognitoUserSession>;
-	getCreds?(): any;
+	confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult>;
+
+	fetchSession(): Promise<AmplifyUser>;
+
+	addAuthenticator(): Promise<AddAuthenticatorResponse>;
+
+	requestScope(scope: string): Promise<RequestScopeResponse>;
+
+	authorize(authorizationOptions: AuthZOptions): Promise<AuthorizationResponse>;
+
+	signOut(): Promise<void>;
 }
