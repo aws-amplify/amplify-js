@@ -27,6 +27,7 @@ import {
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,
+	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
 	SaveGeofencesResults,
@@ -223,12 +224,12 @@ export class GeoClass {
 
 	/**
 	 * Get a single geofence by geofenceId
-	 * @param geofenceId: string
-	 * @param options?: GeofenceOptions
+	 * @param geofenceId: GeofenceId - The string id of the geofence to get
+	 * @param options?: GeofenceOptions - Optional parameters for getting a geofence
 	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
-		geofenceId: string,
+		geofenceId: GeofenceId,
 		options?: GeofenceOptions
 	): Promise<Geofence> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};

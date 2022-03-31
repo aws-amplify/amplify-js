@@ -15,6 +15,7 @@ import booleanClockwise from '@turf/boolean-clockwise';
 import {
 	Longitude,
 	Latitude,
+	GeofenceId,
 	GeofenceInput,
 	GeofencePolygon,
 	LinearRing,
@@ -33,7 +34,7 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	}
 }
 
-export function validateGeofenceId(geofenceId: string): void {
+export function validateGeofenceId(geofenceId: GeofenceId): void {
 	const geofenceIdRegex = /^[-._\p{L}\p{N}]+$/iu;
 
 	// Check if geofenceId is valid
@@ -46,7 +47,7 @@ export function validateGeofenceId(geofenceId: string): void {
 
 export function validateLinearRing(
 	linearRing: LinearRing,
-	geofenceId?: string
+	geofenceId?: GeofenceId
 ): void {
 	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	// Validate LinearRing size, must be at least 4 points
@@ -92,7 +93,7 @@ export function validateLinearRing(
 
 export function validatePolygon(
 	polygon: GeofencePolygon,
-	geofenceId?: string
+	geofenceId?: GeofenceId
 ): void {
 	const errorPrefix = geofenceId ? `${geofenceId}: ` : '';
 	if (!Array.isArray(polygon)) {

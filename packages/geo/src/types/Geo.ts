@@ -113,9 +113,11 @@ export type PolygonGeometry = {
 	polygon: GeofencePolygon;
 };
 
+export type GeofenceId = string;
+
 // Geofence object used as input for saveGeofences
 export type GeofenceInput = {
-	geofenceId: string;
+	geofenceId: GeofenceId;
 	geometry: PolygonGeometry;
 };
 
@@ -130,12 +132,12 @@ export type GeofenceError = {
 		code: string;
 		message: string;
 	};
-	geofenceId: string;
+	geofenceId: GeofenceId;
 };
 
 // Base geofence object
 type GeofenceBase = {
-	geofenceId: string;
+	geofenceId: GeofenceId;
 	createTime?: Date;
 	updateTime?: Date;
 };
@@ -164,6 +166,6 @@ export type ListGeofenceResults = {
 
 // Results object for deleteGeofence
 export type DeleteGeofencesResults = {
-	successes: string[];
+	successes: GeofenceId[];
 	errors: GeofenceError[];
 };

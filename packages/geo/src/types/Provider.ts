@@ -17,6 +17,7 @@ import {
 	Place,
 	MapStyle,
 	Geofence,
+	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
 	ListGeofenceOptions,
@@ -58,7 +59,7 @@ export interface GeoProvider {
 
 	// get a single geofence
 	getGeofence(
-		geofenceId: string,
+		geofenceId: GeofenceId,
 		options?: ListGeofenceOptions
 	): Promise<Geofence>;
 

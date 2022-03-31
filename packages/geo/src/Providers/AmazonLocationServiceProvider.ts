@@ -49,6 +49,7 @@ import {
 	Place,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
+	GeofenceId,
 	GeofenceInput,
 	AmazonLocationServiceGeofenceOptions,
 	AmazonLocationServiceListGeofenceOptions,
@@ -394,7 +395,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @returns {Promise<AmazonLocationServiceGeofence>} - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
-		geofenceId: string,
+		geofenceId: GeofenceId,
 		options?: AmazonLocationServiceGeofenceOptions
 	): Promise<AmazonLocationServiceGeofence> {
 		const credentialsOK = await this._ensureCredentials();
