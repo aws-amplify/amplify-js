@@ -326,17 +326,16 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			errors: [],
 		};
 
-		const batches = [];
+		const geofenceBatches: BatchPutGeofenceRequestEntry[][] = [];
 
 		while (PascalGeofences.length > 0) {
 			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
 			const apiLimit = 10;
-			batches.push(PascalGeofences.splice(0, apiLimit));
+			geofenceBatches.push(PascalGeofences.splice(0, apiLimit));
 		}
 
 		await Promise.all(
-			batches.map(async batch => {
-				// for (const batch of batches) {
+			geofenceBatches.map(async batch => {
 				// Make API call for the 10 geofences
 				let response: BatchPutGeofenceCommandOutput;
 				try {
@@ -572,15 +571,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			errors: [],
 		};
 
-		const batches = [];
+		const geofenceIdBatches: string[][] = [];
 
 		let count = 0;
 		while (count < geofenceIds.length) {
-			batches.push(geofenceIds.slice(count, (count += 10)));
+			geofenceIdBatches.push(geofenceIds.slice(count, (count += 10)));
 		}
 
 		await Promise.all(
-			batches.map(async batch => {
+			geofenceIdBatches.map(async batch => {
 				let response;
 				try {
 					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
