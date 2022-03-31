@@ -77,7 +77,7 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithBiasPosition
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
-// Options object for searchByCoodinates
+// Options object for searchByCoordinates
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
 	searchIndexName?: string;
