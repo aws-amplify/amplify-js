@@ -62,7 +62,7 @@ export interface GeoProvider {
 		options?: ListGeofenceOptions
 	): Promise<Geofence>;
 
-	// 	list all geofences
+	// list all geofences
 	listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
 
 	// Delete geofences
