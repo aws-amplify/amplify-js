@@ -159,7 +159,7 @@ export type ListGeofenceOptions = GeofenceOptions & {
 // Results options for listGeofence
 export type ListGeofenceResults = {
 	entries: Geofence[];
-	nextToken: string;
+	nextToken: string | undefined;
 };
 
 // Results object for deleteGeofence
