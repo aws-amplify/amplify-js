@@ -6,6 +6,7 @@ import {
 	ModelOperation,
 } from '../src/types';
 import { NAMESPACES } from '../src/util';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 
 describe('Auth Strategies', () => {
 	describe('multiAuthStrategy', () => {
@@ -423,8 +424,8 @@ describe('Auth Strategies', () => {
 
 	describe('defaultAuthStrategy', () => {
 		test('default', () => {
-			const defaultAuthStrategy = require('../src/authModeStrategies/defaultAuthStrategy')
-				.defaultAuthStrategy;
+			const defaultAuthStrategy =
+				require('../src/authModeStrategies/defaultAuthStrategy').defaultAuthStrategy;
 			const schema = getAuthSchema();
 			expect(
 				defaultAuthStrategy({
@@ -448,8 +449,8 @@ async function testMultiAuthStrategy({
 }) {
 	mockCurrentUser({ hasAuthenticatedUser });
 
-	const multiAuthStrategy = require('../src/authModeStrategies/multiAuthStrategy')
-		.multiAuthStrategy;
+	const multiAuthStrategy =
+		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
 
 	const schema = getAuthSchema(authRules);
 
@@ -537,13 +538,15 @@ function mockCurrentUser({
 	hasAuthenticatedUser: boolean;
 }) {
 	jest.mock('@aws-amplify/auth', () => ({
-		currentAuthenticatedUser: () =>
-			new Promise((res, rej) => {
+		currentAuthenticatedUser: () => {
+			return new Promise((res, rej) => {
 				if (hasAuthenticatedUser) {
 					res(hasAuthenticatedUser);
 				} else {
 					rej(hasAuthenticatedUser);
 				}
-			}),
+			});
+		},
+		GRAPHQL_AUTH_MODE,
 	}));
 }
