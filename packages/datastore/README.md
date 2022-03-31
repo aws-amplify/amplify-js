@@ -16,7 +16,7 @@ Before you start reading through these docs, take a moment to understand [how Da
 - [Contributing](docs/contributing.md)
 - [DataStore Lifecycle Events ("Start", "Stop", "Clear")](docs/datastore-lifecycle-events.md)
   - This explains how DataStore fundementally works, and is a great place to start.
-- [Getting Started](docs/getting-started.md) (Running against sample app, etc.)
+- [Getting Started](docs/getting-started.md) (Running against a sample app, etc.)
 - [Namespaces](docs/namespaces.md)
 - [How DataStore uses Observables](docs/observables.md)
 - [Schema Changes](docs/schema-changes.md)
@@ -27,7 +27,7 @@ Before you start reading through these docs, take a moment to understand [how Da
 
 _Note: relationships with dotted lines are explained more in a separate diagram._
 
-## How API and Storage Engine Interact
+## How the DataStore API and Storage Engine Interact
 
 ```mermaid
 flowchart TD
@@ -40,15 +40,13 @@ flowchart TD
   sync-.-appSync[(AppSync)]
 ```
 
-# How the Sync Engine observes changes in Storage and AppSync
+# How the Sync Engine Observes Changes in Storage and AppSync
 
 _Note: All green nodes belong to the Sync Engine._
 
 \* Merger first checks outbox
 
 \*\* Outbox sends outgoing messages to AppSync
-
-TODO: If it doesn't make the diagram to convoluted, map how sub and sync records are persisted to storage
 
 ```mermaid
 flowchart TD

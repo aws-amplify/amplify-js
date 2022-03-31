@@ -9,9 +9,9 @@
 	- Deprecated
 # Local database examples:
 
-- *Note: Anything prepended with `sync\_` is an internal table.*
+- *Note: Anything prepended with `sync_` is an internal table.*
 
-- datastore_Setting
+- ## datastore_Setting
     - Used for schema versioning
     - See the [schema changes doc](docs/schema-changes.md)
     ```
@@ -21,7 +21,7 @@
 		value: "\"4401034582a70c60713e1f7f9da3b752\""
 	}
 	```
-- sync_ModelMetadata
+- ## sync_ModelMetadata
     - Sync Engine metadata
 	- Includes information about the last time we synced a model
 	```
@@ -35,8 +35,8 @@
 		namespace: "user"
 	}
 	```
-- sync_MutationEvent
-- user_[Model Name]
+- ## sync_MutationEvent
+- ## user_[Model Name]
     - The actual records themselves.
 	```
 	{
