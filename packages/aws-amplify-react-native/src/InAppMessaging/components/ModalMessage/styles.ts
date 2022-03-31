@@ -98,6 +98,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		imageContainer: {
 			flex: 1,
 			alignItems: 'center',
+			marginLeft: SPACING_EXTRA_LARGE,
 		},
 		textContainer: {
 			marginHorizontal: SPACING_SMALL,
