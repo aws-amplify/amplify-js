@@ -86,7 +86,7 @@ flowchart TD
 
   appsync<--->outbox
   %% styling
-  classDef syncEngineClass fill:#8FB,stroke:#333,stroke-width:4px;
+  classDef syncEngineClass fill:#8FB,stroke:#333,stroke-width:4px,color:#333;
   class index,mp,sp,syp,merger,outbox syncEngineClass;
 ```
 
