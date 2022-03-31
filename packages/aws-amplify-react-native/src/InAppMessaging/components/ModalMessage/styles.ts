@@ -47,7 +47,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			backgroundColor: COLOR_LIGHT_GREY,
 			borderRadius: BORDER_RADIUS_BASE,
 			flex: 1,
-			margin: SPACING_MEDIUM,
+			marginHorizontal: SPACING_SMALL,
 			padding: SPACING_LARGE,
 		},
 		buttonsContainer: {
