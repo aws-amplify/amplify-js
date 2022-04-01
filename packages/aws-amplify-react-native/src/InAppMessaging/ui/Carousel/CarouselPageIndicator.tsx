@@ -27,10 +27,10 @@ export default function CarouselPageIndicator({
 }: CarouselPageIndicatorProps) {
 	const items = useMemo(
 		() =>
-			new Array(numberOfItems)
+			new Array(numberOfItems ?? 0)
 				.fill(null)
 				.map((_, index) =>
-					currentIndex === index ? (
+					(currentIndex ?? 0) === index ? (
 						<View style={[DEFAULT_CAROUSEL_INDICATOR_ACTIVE_STYLE, activeStyle]} key={`indicator-item-${index}`} />
 					) : (
 						<View style={[DEFAULT_CAROUSEL_INDICATOR_INACTIVE_STYLE, inactiveStyle]} key={`indicator-item-${index}`} />

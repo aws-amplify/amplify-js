@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CarouselPageIndicator handles null index value 1`] = `
+<SafeAreaView>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#a1a1a1",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+</SafeAreaView>
+`;
+
+exports[`CarouselPageIndicator handles null numberOfItems value 1`] = `<SafeAreaView />`;
+
+exports[`CarouselPageIndicator renders indicator styles based on current index 1`] = `
+<SafeAreaView>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#a1a1a1",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+</SafeAreaView>
+`;
+
+exports[`CarouselPageIndicator renders with just one item 1`] = `
+<SafeAreaView>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#a1a1a1",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+</SafeAreaView>
+`;
+
+exports[`CarouselPageIndicator renders with multiple items 1`] = `
+<SafeAreaView>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#a1a1a1",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#d8d8d8",
+          "borderRadius": 6,
+          "height": 12,
+          "margin": 4,
+          "width": 12,
+        },
+        undefined,
+      ]
+    }
+  />
+</SafeAreaView>
+`;

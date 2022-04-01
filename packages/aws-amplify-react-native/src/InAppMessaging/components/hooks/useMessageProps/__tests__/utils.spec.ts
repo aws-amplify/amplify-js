@@ -266,41 +266,40 @@ describe('getMessageStyle', () => {
 });
 
 describe('getMessageStyleProps', () => {
+	const defaultStyle = {
+		body: { color: 'fuschia' },
+		buttonContainer: { backgroundColor: 'chartreuse' },
+		buttonText: { color: 'pink' },
+		buttonsContainer: { backgroundColor: 'teal' },
+		componentWrapper: { backgroundColor: 'gray' },
+		contentContainer: { backgroundColor: 'lightblue' },
+		container: { backgroundColor: 'red', borderRadius: 1 },
+		header: { backgroundColor: 'purple' },
+		iconButton: { backgroundColor: 'blue' },
+		image: { backgroundColor: 'yellow' },
+		imageContainer: { backgroundColor: 'green' },
+		textContainer: { backgroundColor: 'antiquewhite' },
+	};
+
+	const messageStyle: StyleParams['messageStyle'] = {
+		body: { textAlign: 'left' as InAppMessageTextAlign },
+		container: { backgroundColor: 'lightgray', borderRadius: 2 },
+		header: { textAlign: 'center' as InAppMessageTextAlign },
+		primaryButton: { backgroundColor: 'salmon', color: 'olive' },
+		secondaryButton: { backgroundColor: 'sand', color: 'peru' },
+	};
+
+	const overrideStyle = {
+		body: { color: 'white' },
+		closeIconButton: { backgroundColor: 'turquoise' },
+		closeIconColor: 'darkcyan',
+		container: { backgroundColor: 'lawngreen', borderRadius: 3 },
+		header: { backgroundColor: 'lightpink' },
+		image: { backgroundColor: 'royalblue' },
+		primaryButton: { container: { backgroundColor: 'seagreen' }, text: { color: 'black' } },
+		secondaryButton: { container: { backgroundColor: 'sienna' }, text: { color: 'orchid' } },
+	};
 	it('returns the expected output in the happy path', () => {
-		const defaultStyle = {
-			body: { color: 'fuschia' },
-			buttonContainer: { backgroundColor: 'chartreuse' },
-			buttonText: { color: 'pink' },
-			buttonsContainer: { backgroundColor: 'teal' },
-			componentWrapper: { backgroundColor: 'gray' },
-			contentContainer: { backgroundColor: 'lightblue' },
-			container: { backgroundColor: 'red', borderRadius: 1 },
-			header: { backgroundColor: 'purple' },
-			iconButton: { backgroundColor: 'blue' },
-			image: { backgroundColor: 'yellow' },
-			imageContainer: { backgroundColor: 'green' },
-			textContainer: { backgroundColor: 'antiquewhite' },
-		};
-
-		const messageStyle: StyleParams['messageStyle'] = {
-			body: { textAlign: 'left' as InAppMessageTextAlign },
-			container: { backgroundColor: 'lightgray', borderRadius: 2 },
-			header: { textAlign: 'center' as InAppMessageTextAlign },
-			primaryButton: { backgroundColor: 'salmon', color: 'olive' },
-			secondaryButton: { backgroundColor: 'sand', color: 'peru' },
-		};
-
-		const overrideStyle = {
-			body: { color: 'white' },
-			closeIconButton: { backgroundColor: 'turquoise' },
-			closeIconColor: 'darkcyan',
-			container: { backgroundColor: 'lawngreen', borderRadius: 3 },
-			header: { backgroundColor: 'lightpink' },
-			image: { backgroundColor: 'royalblue' },
-			primaryButton: { container: { backgroundColor: 'seagreen' }, text: { color: 'black' } },
-			secondaryButton: { container: { backgroundColor: 'sienna' }, text: { color: 'orchid' } },
-		};
-
 		const output = getMessageStyleProps({
 			layout: 'FULL_SCREEN',
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
@@ -309,14 +308,19 @@ describe('getMessageStyleProps', () => {
 		expect(output).toMatchSnapshot();
 	});
 
-	it('returns the expected output when provided null style params', () => {
-		const defaultStyle: StyleParams['defaultStyle'] = null;
-		const messageStyle: StyleParams['messageStyle'] = null;
-		const overrideStyle: StyleParams['overrideStyle'] = null;
+	it('adds a bottom padding for carousel page indicators', () => {
+		const output = getMessageStyleProps({
+			layout: 'CAROUSEL',
+			styleParams: { defaultStyle, messageStyle: null, overrideStyle: null },
+		});
 
+		expect(output).toMatchSnapshot();
+	});
+
+	it('returns the expected output when provided null style params', () => {
 		const output = getMessageStyleProps({
 			layout: 'MODAL',
-			styleParams: { defaultStyle, messageStyle, overrideStyle },
+			styleParams: { defaultStyle: null, messageStyle: null, overrideStyle: null },
 		});
 
 		expect(output).toMatchSnapshot();

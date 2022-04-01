@@ -16,8 +16,9 @@ import React, { useMemo } from 'react';
 import { Carousel } from '../../ui';
 
 import MessageWrapper from '../MessageWrapper';
+import { InAppMessageComponentContentProps } from '../types';
 
-import CarouselItem from './CarouselItem';
+import CarouselMessageItem from './CarouselMessageItem';
 import { defaultStyle } from './styles';
 import { CarouselMessageProps } from './types';
 
@@ -32,7 +33,9 @@ export default function CarouselMessage(props: CarouselMessageProps) {
 		};
 	}, [style]);
 
-	const renderItem = ({ item }) => <CarouselItem {...item} {...rest} />;
+	const renderItem = ({ item }: { item: InAppMessageComponentContentProps }) => (
+		<CarouselMessageItem {...item} {...rest} />
+	);
 
 	return (
 		<MessageWrapper disableSafeAreaView>

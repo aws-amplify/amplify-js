@@ -18,9 +18,9 @@ import { FullScreenContent } from '../FullScreenMessage';
 import { useMessageProps } from '../hooks';
 
 import { getStyles } from './styles';
-import { CarouselMessageProps } from './types';
+import { CarouselMessageItemProps } from './types';
 
-export default function CarouselItem(props: CarouselMessageProps) {
+export default function CarouselMessageItem(props: CarouselMessageItemProps) {
 	const messageProps = useMessageProps(props, getStyles);
 	const { shouldRenderMessage, styles } = messageProps;
 
