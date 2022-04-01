@@ -29,9 +29,11 @@ import {
 	linearRingBadCoordinates,
 	validPolygon,
 	polygonTooBig,
+	polygonTooManyVertices,
 	validGeofences,
 	geofencesWithDuplicate,
 	geofencesWithInvalidId,
+	geofenceWithTooManyVertices,
 } from './testData';
 
 describe('Geo utility functions', () => {
@@ -116,6 +118,13 @@ describe('Geo utility functions', () => {
 				`emptyPolygon: Polygon must have a single LinearRing array.`
 			);
 		});
+		test('should error if polygon has more than 1000 vertices', () => {
+			expect(() =>
+				validatePolygon(polygonTooManyVertices, 'polygonTooManyVertices')
+			).toThrowError(
+				'polygonTooManyVertices: Polygon has more than the maximum 1000 vertices.'
+			);
+		});
 	});
 
 	describe('validateGeofencesInput', () => {
@@ -133,5 +142,12 @@ describe('Geo utility functions', () => {
 				`Invalid geofenceId: 't|-|!$ !$ N()T V@|_!D' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`
 			);
 		});
+	});
+	test('should error if polygon has more than 1000 vertices', () => {
+		expect(() =>
+			validateGeofencesInput([geofenceWithTooManyVertices])
+		).toThrowError(
+			`Geofence 'geofenceWithTooManyVertices' has more than the maximum of 1000 vertices`
+		);
 	});
 });

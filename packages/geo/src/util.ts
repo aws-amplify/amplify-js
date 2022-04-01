@@ -106,6 +106,7 @@ export function validatePolygon(
 			`${errorPrefix}Polygon must have a single LinearRing array.`
 		);
 	}
+
 	if (polygon.length > 1) {
 		throw new Error(
 			`${errorPrefix}Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
@@ -120,6 +121,9 @@ export function validatePolygon(
 			`${errorPrefix}Polygon has more than the maximum 1000 vertices.`
 		);
 	}
+	polygon.forEach(linearRing => {
+		validateLinearRing(linearRing, geofenceId);
+	});
 }
 
 export function validateGeofencesInput(geofences: GeofenceInput[]) {

@@ -153,6 +153,12 @@ export const linearRingBadCoordinates: LinearRing = [
 	validCoordinates4,
 ];
 
+export const linearRingTooManyVertices: LinearRing = [];
+
+for (let i = 0; i < 1100; i++) {
+	linearRingTooManyVertices.push(validCoordinates1);
+}
+
 // Polygons
 export const validPolygon: GeofencePolygon = [validLinearRing];
 
@@ -163,6 +169,10 @@ export const polygonClockwiseLinearRing: GeofencePolygon = [
 export const polygonTooBig: GeofencePolygon = [
 	validLinearRing,
 	validLinearRing,
+];
+
+export const polygonTooManyVertices: GeofencePolygon = [
+	linearRingTooManyVertices,
 ];
 
 // Geometry
@@ -192,6 +202,11 @@ export const geofenceWithInvalidId: GeofenceInput = {
 export const clockwiseGeofence: GeofenceInput = {
 	geofenceId: 'geofenceWithClockwiseGeofence',
 	geometry: { polygon: polygonClockwiseLinearRing },
+};
+
+export const geofenceWithTooManyVertices: GeofenceInput = {
+	geofenceId: 'geofenceWithTooManyVertices',
+	geometry: { polygon: polygonTooManyVertices },
 };
 
 export const validGeofences = [];
