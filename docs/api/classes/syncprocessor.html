@@ -963,13 +963,13 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Sync<wbr>Processor<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, syncPredicates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, amplifyConfig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, authModeStrategy<span class="tsd-signature-symbol">: </span><a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="syncprocessor.html" class="tsd-signature-type">SyncProcessor</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Sync<wbr>Processor<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, maxRecordsToSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="syncprocessor.html" class="tsd-signature-type">SyncProcessor</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/sync.ts#L37">packages/datastore/src/sync/processors/sync.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/sync.ts#L15">packages/datastore/src/sync/processors/sync.ts:15</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -978,13 +978,7 @@ img { max-width: 100%; }
 							<h5>schema: <a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a></h5>
 						</li>
 						<li>
-							<h5>syncPredicates: <span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> amplifyConfig: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></h5>
-						</li>
-						<li>
-							<h5>authModeStrategy: <a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> maxRecordsToSync: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = DEFAULT_MAX_RECORDS_TO_SYNC</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="syncprocessor.html" class="tsd-signature-type">SyncProcessor</a></h4>
@@ -1004,7 +998,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/datastore/src/sync/processors/sync.ts#L283">packages/datastore/src/sync/processors/sync.ts:283</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/datastore/src/sync/processors/sync.ts#L95">packages/datastore/src/sync/processors/sync.ts:95</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>

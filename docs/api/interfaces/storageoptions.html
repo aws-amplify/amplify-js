@@ -925,22 +925,10 @@ img { max-width: 100%; }
 				<a href="storageoptions.html#credentials" class="tsd-kind-icon">credentials</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="storageoptions.html#customprefix" class="tsd-kind-icon">custom<wbr>Prefix</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="storageoptions.html#dangerouslyconnecttohttpendpointfortesting" class="tsd-kind-icon">dangerously<wbr>Connect<wbr>ToHttp<wbr>Endpoint<wbr>For<wbr>Testing</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="storageoptions.html#level" class="tsd-kind-icon">level</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="storageoptions.html#provider" class="tsd-kind-icon">provider</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="storageoptions.html#region" class="tsd-kind-icon">region</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="storageoptions.html#track" class="tsd-kind-icon">track</a>
 			</li>
 		</ul>
 	</li>
@@ -948,6 +936,13 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 <div class="content-wrap">
+	<section class="tsd-panel tsd-comment">
+		<div class="tsd-comment tsd-typography">
+			<div class="lead">
+				<p>Storage instance options</p>
+			</div>
+		</div>
+	</section>
 	<section class="tsd-panel tsd-hierarchy">
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
@@ -965,12 +960,8 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#bucket" class="tsd-kind-icon">bucket</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#credentials" class="tsd-kind-icon">credentials</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#customprefix" class="tsd-kind-icon">custom<wbr>Prefix</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#dangerouslyconnecttohttpendpointfortesting" class="tsd-kind-icon">dangerously<wbr>Connect<wbr>ToHttp<wbr>Endpoint<wbr>For<wbr>Testing</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#level" class="tsd-kind-icon">level</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#provider" class="tsd-kind-icon">provider</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#region" class="tsd-kind-icon">region</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="storageoptions.html#track" class="tsd-kind-icon">track</a></li>
 					</ul>
 				</section>
 			</div>
@@ -984,64 +975,27 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">bucket<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L46">packages/storage/src/types/Storage.ts:46</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Storage.ts#L17">packages/storage/src/types/Storage.ts:17</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="credentials" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> credentials</h3>
-			<div class="tsd-signature tsd-kind-icon">credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ICredentials</span></div>
+			<div class="tsd-signature tsd-kind-icon">credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L43">packages/storage/src/types/Storage.ts:43</a></li>
-				</ul>
-			</aside>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="customprefix" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> custom<wbr>Prefix</h3>
-			<div class="tsd-signature tsd-kind-icon">custom<wbr>Prefix<span class="tsd-signature-symbol">:</span> <a href="../globals.html#customprefix" class="tsd-signature-type">CustomPrefix</a></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L53">packages/storage/src/types/Storage.ts:53</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Custom mapping of your prefixes.
-						For example, customPrefix: { public: &#39;myPublicPrefix&#39; } will make public level operations access &#39;myPublicPrefix/&#39;
-					instead of the default &#39;public/&#39;.</p>
-				</div>
-			</div>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="dangerouslyconnecttohttpendpointfortesting" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> dangerously<wbr>Connect<wbr>ToHttp<wbr>Endpoint<wbr>For<wbr>Testing</h3>
-			<div class="tsd-signature tsd-kind-icon">dangerously<wbr>Connect<wbr>ToHttp<wbr>Endpoint<wbr>For<wbr>Testing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L58">packages/storage/src/types/Storage.ts:58</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Storage.ts#L20">packages/storage/src/types/Storage.ts:20</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="level" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> level</h3>
-			<div class="tsd-signature tsd-kind-icon">level<span class="tsd-signature-symbol">:</span> <a href="../globals.html#storageaccesslevel" class="tsd-signature-type">StorageAccessLevel</a></div>
+			<div class="tsd-signature tsd-kind-icon">level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L45">packages/storage/src/types/Storage.ts:45</a></li>
-				</ul>
-			</aside>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="provider" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> provider</h3>
-			<div class="tsd-signature tsd-kind-icon">provider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L47">packages/storage/src/types/Storage.ts:47</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Storage.ts#L19">packages/storage/src/types/Storage.ts:19</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1051,24 +1005,9 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">region<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L44">packages/storage/src/types/Storage.ts:44</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/storage/src/types/Storage.ts#L18">packages/storage/src/types/Storage.ts:18</a></li>
 				</ul>
 			</aside>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="track" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> track</h3>
-			<div class="tsd-signature tsd-kind-icon">track<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d4c207644/packages/storage/src/types/Storage.ts#L57">packages/storage/src/types/Storage.ts:57</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>if set to true, automatically sends Storage Events to Amazon Pinpoint</p>
-				</div>
-			</div>
 		</section>
 	</section>
 	<footer>
