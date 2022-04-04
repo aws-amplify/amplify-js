@@ -43,6 +43,7 @@
 	},
 	"jest": {
 		"globals": {
+			"preset": "react-native",
 			"ts-jest": {
 				"diagnostics": true,
 				"tsConfig": {
@@ -89,6 +90,7 @@
 			"dist",
 			"lib",
 			"lib-esm"
-		]
+		],
+		"transformIgnorePatterns": ["/node_modules/(?!(expo-sqlite|expo-file-system|expo-modules-core|react-native)/)"]
 	}
 }
