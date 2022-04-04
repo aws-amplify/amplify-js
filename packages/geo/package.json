@@ -43,7 +43,8 @@
 	"dependencies": {
 		"@aws-amplify/core": "4.5.0",
 		"@aws-sdk/client-location": "3.48.0",
-		"camelcase-keys": "6.2.2"
+		"camelcase-keys": "6.2.2",
+		"@turf/boolean-clockwise": "6.5.0"
 	},
 	"jest": {
 		"globals": {
@@ -71,7 +72,8 @@
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
 			"__tests__/helpers.ts",
-			"__tests__/data.ts"
+			"__tests__/testData.ts",
+			"__tests__/testUtils.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",
