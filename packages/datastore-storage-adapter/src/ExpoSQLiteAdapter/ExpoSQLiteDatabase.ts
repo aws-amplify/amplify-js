@@ -128,6 +128,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					resolveTransaction(results);
 				} catch (error) {
 					rejectTransaction(error);
+					logger.warn(error);
 				}
 			});
 		});
@@ -185,6 +186,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 				});
 			} catch (error) {
 				rejectTransaction(error);
+				logger.warn(error);
 			}
 		});
 	}
@@ -230,6 +232,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					resolveTransaction(result);
 				} catch (error) {
 					rejectTransaction(error);
+					logger.warn(error);
 				}
 			});
 		});
@@ -260,6 +263,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					resolveTransaction(null);
 				} catch (error) {
 					rejectTransaction(error);
+					logger.warn(error);
 				}
 			});
 		});
