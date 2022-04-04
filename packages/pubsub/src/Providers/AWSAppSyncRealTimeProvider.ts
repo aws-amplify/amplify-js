@@ -15,7 +15,7 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { ProvidertOptions } from '../types';
+import { ProviderOptions } from '../types';
 import {
 	Logger,
 	Credentials,
@@ -27,16 +27,17 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
-import Auth from '@aws-amplify/auth';
+import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchApiEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
@@ -142,9 +143,23 @@ const START_ACK_TIMEOUT = 15000;
  */
 const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
 
-const standardDomainPattern = /^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
+const standardDomainPattern =
+	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
 
 const customDomainPath = '/realtime';
+
+type GraphqlAuthModes = keyof typeof GRAPHQL_AUTH_MODE;
+
+export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
+	appSyncGraphqlEndpoint?: string;
+	authenticationType?: GraphqlAuthModes;
+	query?: string;
+	variables?: object;
+	apiKey?: string;
+	region?: string;
+	graphql_headers?: () => {} | (() => Promise<{}>);
+	additionalHeaders?: { [key: string]: string };
+}
 
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private awsRealTimeSocket: WebSocket;
@@ -173,7 +188,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	subscribe(
 		_topics: string[] | string,
-		options?: ProvidertOptions
+		options?: AWSAppSyncRealTimeProviderOptions
 	): Observable<any> {
 		const { appSyncGraphqlEndpoint } = options;
 
@@ -338,10 +353,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		// E.g.unsubscribe gets invoked prior to finishing WebSocket handshake or START_ACK.
 		// Both subscriptionFailedCallback and subscriptionReadyCallback are used to synchronized this.
 
-		const {
-			subscriptionFailedCallback,
-			subscriptionReadyCallback,
-		} = this.subscriptionObserverMap.get(subscriptionId);
+		const { subscriptionFailedCallback, subscriptionReadyCallback } =
+			this.subscriptionObserverMap.get(subscriptionId);
 
 		// This must be done before sending the message in order to be listening immediately
 		this.subscriptionObserverMap.set(subscriptionId, {
@@ -362,18 +375,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	// Waiting that subscription has been connected before trying to unsubscribe
 	private async _waitForSubscriptionToBeConnected(subscriptionId) {
-		const { subscriptionState } = this.subscriptionObserverMap.get(
-			subscriptionId
-		);
+		const { subscriptionState } =
+			this.subscriptionObserverMap.get(subscriptionId);
 		// This in case unsubscribe is invoked before sending start subscription message
 		if (subscriptionState === SUBSCRIPTION_STATUS.PENDING) {
 			return new Promise((res, rej) => {
-				const {
-					observer,
-					subscriptionState,
-					variables,
-					query,
-				} = this.subscriptionObserverMap.get(subscriptionId);
+				const { observer, subscriptionState, variables, query } =
+					this.subscriptionObserverMap.get(subscriptionId);
 				this.subscriptionObserverMap.set(subscriptionId, {
 					observer,
 					subscriptionState,
@@ -620,14 +628,15 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					let discoverableEndpoint = appSyncGraphqlEndpoint;
 
 					if (this.isCustomDomain(discoverableEndpoint)) {
-						discoverableEndpoint = discoverableEndpoint.concat(
-							customDomainPath
-						);
+						discoverableEndpoint =
+							discoverableEndpoint.concat(customDomainPath);
 					} else {
-						discoverableEndpoint = discoverableEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('gogi-beta', 'grt-beta');
+						discoverableEndpoint = discoverableEndpoint
+							.replace('appsync-api', 'appsync-realtime-api')
+							.replace('gogi-beta', 'grt-beta');
 					}
 
-				    // Creating websocket url with required query strings
+					// Creating websocket url with required query strings
 					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
 					discoverableEndpoint = discoverableEndpoint
 						.replace('https://', protocol)
@@ -715,9 +724,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
 							ackOk = true;
 							this.keepAliveTimeout = connectionTimeoutMs;
-							this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
-								this
-							);
+							this.awsRealTimeSocket.onmessage =
+								this._handleIncomingSubscriptionMessage.bind(this);
 							this.awsRealTimeSocket.onerror = err => {
 								logger.debug(err);
 								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);

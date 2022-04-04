@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.3...aws-amplify-react-native@6.0.4) (2022-03-28)
+
+
+### Bug Fixes
+
+* **withAuthenticator:** RN Set default usernameAttributes to username and autofill the username in ConfirmSignUp Page. ([#9723](https://github.com/aws-amplify/amplify-js/issues/9723)) ([4ce84c7](https://github.com/aws-amplify/amplify-js/commit/4ce84c7dc04c4489804f9bba2b47b391dfba3b1b))
+
+
+
+
+
 ## [6.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.2...aws-amplify-react-native@6.0.3) (2022-02-28)
 
 

@@ -314,8 +314,8 @@ function jitteredRetrySyncProcessorSetup({
 		...coreMocks,
 	}));
 
-	const SyncProcessorClass = require('../src/sync/processors/sync')
-		.SyncProcessor;
+	const SyncProcessorClass =
+		require('../src/sync/processors/sync').SyncProcessor;
 
 	const testInternalSchema = {
 		namespaces: {},

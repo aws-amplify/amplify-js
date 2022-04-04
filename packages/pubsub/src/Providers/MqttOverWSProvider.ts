@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import Observable from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ProvidertOptions, SubscriptionObserver } from '../types';
+import { ProviderOptions, SubscriptionObserver } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -34,10 +34,15 @@ export function mqttTopicMatch(filter: string, topic: string) {
 	return length === topicArray.length;
 }
 
-export interface MqttProvidertOptions extends ProvidertOptions {
+export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
 }
+
+/**
+ * @deprecated Migrated to MqttProviderOptions
+ */
+export type MqttProvidertOptions = MqttProviderOptions;
 
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
@@ -69,7 +74,7 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
 
-	constructor(options: MqttProvidertOptions = {}) {
+	constructor(options: MqttProviderOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
 	}
 
@@ -128,10 +133,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	public async newClient({
-		url,
-		clientId,
-	}: MqttProvidertOptions): Promise<any> {
+	public async newClient({ url, clientId }: MqttProviderOptions): Promise<any> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		// @ts-ignore
@@ -161,7 +163,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	protected async connect(
 		clientId: string,
-		options: MqttProvidertOptions = {}
+		options: MqttProviderOptions = {}
 	): Promise<any> {
 		return await this.clientsQueue.get(clientId, clientId =>
 			this.newClient({ ...options, clientId })
@@ -189,15 +191,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		targetTopics.forEach(topic => client.send(topic, message));
 	}
 
-	protected _topicObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
-	protected _clientIdObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _clientIdObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
 	private _onMessage(topic: string, msg: any) {
 		try {
@@ -223,7 +221,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	subscribe(
 		topics: string[] | string,
-		options: MqttProvidertOptions = {}
+		options: MqttProviderOptions = {}
 	): Observable<any> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
