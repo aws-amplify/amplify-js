@@ -61,3 +61,4 @@ See [the sync class](packages/datastore/src/sync/index.ts)
 
 ## Misc:
 - AppSync records are soft-deleted and have a TTL. 
+- TODO: special configurations around sync intervals

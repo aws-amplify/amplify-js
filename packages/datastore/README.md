@@ -34,6 +34,7 @@ Before you start reading through these docs, take a moment to understand [how Da
 - [Schema Changes](docs/schema-changes.md)
 - [Storage](docs/storage.md)
 - [Sync Engine](docs/sync-engine.md)
+- ["Unsupported hacks" / workarounds](docs/workarounds.md)
 
 ---
 
