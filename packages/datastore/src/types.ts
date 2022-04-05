@@ -661,6 +661,7 @@ export type DataStoreConfig = {
 		storageAdapter?: Adapter;
 	};
 	authModeStrategyType?: AuthModeStrategyType;
+	//allowedErrors: boolean;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError<any>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
@@ -773,18 +774,18 @@ export type SyncError<T extends PersistentModel> = {
 	message: string;
 	errorType: ErrorType;
 	errorInfo?: string;
-	model?: ModelMeta<T>;
+	model?: string;
 	localModel: PersistentModel;
 	remoteModel: PersistentModel;
 	process: ProcessName;
-	operation: OperationName;
+	operation: string;
 	source?: Error;
 };
 
 type ErrorType =
 	| 'ConfigError'
 	| 'BadRecord'
-	| 'Authorization'
+	| 'Unauthorized'
 	| 'Transient'
 	| 'Unknown';
 

@@ -73,7 +73,7 @@ import {
 
 setAutoFreeze(true);
 enablePatches();
-
+console.log('inside DS');
 const logger = new Logger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
@@ -1284,6 +1284,7 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
+			//allowedErrors: boolean,
 			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,

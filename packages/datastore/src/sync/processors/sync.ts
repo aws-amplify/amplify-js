@@ -8,6 +8,7 @@ import {
 	PredicatesGroup,
 	GraphQLFilter,
 	AuthModeStrategy,
+	ErrorHandler,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -24,6 +25,7 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
+import { ModelInstanceCreator } from '../../datastore/datastore';
 
 const opResultDefaults = {
 	items: [],
@@ -40,7 +42,9 @@ class SyncProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler?: ErrorHandler,
+		private readonly modelInstanceCreator?: ModelInstanceCreator
 	) {
 		this.generateQueries();
 	}
@@ -197,7 +201,7 @@ class SyncProcessor {
 						authMode,
 						this.amplifyConfig
 					);
-
+					console.log('right here');
 					return await API.graphql({
 						query,
 						variables,
@@ -219,13 +223,33 @@ class SyncProcessor {
 							error.data[opName].items
 					);
 					if (this.partialDataFeatureFlagEnabled()) {
+						console.log('inside partial');
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
 								item => item !== null
 							);
-
+							console.log('here are errors: ', error);
 							if (error.errors) {
+								for (const err of error.errors) {
+									try {
+										await this.errorHandler({
+											localModel: null,
+											message: err.message,
+											model: modelDefinition.name,
+											operation: opName,
+											// map errorType to baditem based of 'cannot return null for non-nullable type'
+											// Badrecord is default
+											errorType: 'BadRecord',
+											// map for errorInfo as well
+											//errorInfo: err.errorInfo,
+											process: 'sync',
+											remoteModel: null,
+										});
+									} catch (e) {
+										logger.error('failed to execute sync errorHandler', e);
+									}
+								}
 								Hub.dispatch('datastore', {
 									event: 'syncQueriesPartialSyncError',
 									data: {
@@ -240,7 +264,7 @@ class SyncProcessor {
 							throw error;
 						}
 					}
-
+					console.log('outside of it');
 					// If the error is unauthorized, filter out unauthorized items and return accessible items
 					const unauthorized =
 						error &&

@@ -375,11 +375,15 @@ class MutationProcessor {
 								const newOperation: OperationName =
 									TransformerMutationTypeToOperationName(operation);
 								try {
+									console.log('made it here');
+									// To test this change schema without compiling and push
 									await this.errorHandler({
-										localModel: this.modelInstanceCreator(
-											modelConstructor,
-											variables.input
-										),
+										// modelInstanceCreator not necessary
+										// localModel: this.modelInstanceCreator(
+										// 	modelConstructor,
+										// 	variables.input
+										// ),
+										localModel: variables.input,
 										message: error.message,
 										operation: newOperation,
 										errorType: error.errorType,

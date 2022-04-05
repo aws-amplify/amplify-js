@@ -12,6 +12,7 @@ import {
 	PredicatesGroup,
 	ModelPredicate,
 	AuthModeStrategy,
+	ErrorHandler,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -48,18 +49,16 @@ class SubscriptionProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private buffer: [
-		TransformerMutationType,
-		SchemaModel,
-		PersistentModel
-	][] = [];
+	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
+		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler?: ErrorHandler
 	) {}
 
 	private buildSubscription(
@@ -259,6 +258,8 @@ class SubscriptionProcessor {
 						: USER_CREDENTIALS.unauth;
 				} catch (err) {
 					// best effort to get AWS credentials
+					// NEEDS LOGGER.DEBUG
+					logger.debug('incorrect credentials: ', err);
 				}
 
 				try {
@@ -268,6 +269,8 @@ class SubscriptionProcessor {
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
+					// NEEDS LOGGER.DEBUG
+					logger.debug('incorrect what going on: ', err);
 				}
 
 				try {
@@ -308,8 +311,8 @@ class SubscriptionProcessor {
 						.forEach(async modelDefinition => {
 							const modelAuthModes = await getModelAuthModes({
 								authModeStrategy: this.authModeStrategy,
-								defaultAuthMode: this.amplifyConfig
-									.aws_appsync_authenticationType,
+								defaultAuthMode:
+									this.amplifyConfig.aws_appsync_authenticationType,
 								modelName: modelDefinition.name,
 								schema: this.schema,
 							});
@@ -413,10 +416,11 @@ class SubscriptionProcessor {
 													return;
 												}
 
-												const predicatesGroup = ModelPredicateCreator.getPredicates(
-													this.syncPredicates.get(modelDefinition),
-													false
-												);
+												const predicatesGroup =
+													ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
+													);
 
 												const { [opName]: record } = data;
 
@@ -439,6 +443,7 @@ class SubscriptionProcessor {
 												this.drainBuffer();
 											},
 											error: subscriptionError => {
+												console.log('here is auth error');
 												const {
 													error: { errors: [{ message = '' } = {}] } = {
 														errors: [],
@@ -472,6 +477,28 @@ class SubscriptionProcessor {
 															}`
 														);
 														logger.warn('subscriptionError', message);
+
+														try {
+															this.errorHandler({
+																localModel: null,
+																message: message,
+																model: modelDefinition.name,
+																operation: operation,
+																// map errorType to baditem based of 'cannot return null for non-nullable type'
+																// Badrecord is default
+																errorType: 'Unauthorized',
+																// map for errorInfo as well
+																//errorInfo: err.errorInfo,
+																process: 'subscribe',
+																remoteModel: null,
+															});
+														} catch (e) {
+															logger.error(
+																'failed to execute subscription errorHandler',
+																e
+															);
+														}
+
 														return;
 													} else {
 														logger.debug(
@@ -489,7 +516,7 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-
+												// Perhaps case for ErrorHandler
 												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
@@ -500,9 +527,10 @@ class SubscriptionProcessor {
 													message.includes('"errorType":"Unauthorized"') ||
 													message.includes('"errorType":"OperationDisabled"')
 												) {
+													// Perhaps case for ErrorHandler
 													return;
 												}
-
+												// Perphaps case for ErrorHandler
 												observer.error(message);
 											},
 										})
@@ -534,15 +562,15 @@ class SubscriptionProcessor {
 
 			return () => {
 				Object.keys(subscriptions).forEach(modelName => {
-					subscriptions[modelName][
-						TransformerMutationType.CREATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.UPDATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.DELETE
-					].forEach(subscription => subscription.unsubscribe());
+					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
+						subscription => subscription.unsubscribe()
+					);
 				});
 			};
 		});
