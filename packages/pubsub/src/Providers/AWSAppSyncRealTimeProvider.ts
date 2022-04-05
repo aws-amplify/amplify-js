@@ -340,7 +340,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			});
 		} catch (err) {
 			logger.debug({ err });
-			const message = (err as { message?: string })?.message ?? '';
+			const message = err['message']?.message ?? '';
 			observer.error({
 				errors: [
 					{
