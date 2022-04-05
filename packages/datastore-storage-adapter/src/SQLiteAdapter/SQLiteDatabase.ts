@@ -58,7 +58,9 @@ class SQLiteDatabase {
 		statement: string,
 		params: any[]
 	): Promise<T> {
+		console.log('database get', statement, params);
 		const [resultSet] = await this.db.executeSql(statement, params);
+		console.log('get resultSet', resultSet);
 		const result =
 			resultSet &&
 			resultSet.rows &&
@@ -66,14 +68,17 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		return result[0] || undefined;
+		console.log('get result', result);
+		return result?.[0] || undefined;
 	}
 
 	public async getAll<T extends PersistentModel>(
 		statement: string,
 		params: any[]
 	): Promise<T[]> {
+		console.log('database getAll', statement, params);
 		const [resultSet] = await this.db.executeSql(statement, params);
+		console.log('getAll resultSet', resultSet);
 		const result =
 			resultSet &&
 			resultSet.rows &&
@@ -81,22 +86,25 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
+		console.log('getAll result', result);
 		return result || [];
 	}
 
 	public async save(statement: string, params: any[]): Promise<void> {
+		console.log('save', statement, params);
 		await this.db.executeSql(statement, params);
 	}
 
 	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
+		console.log('batchQuery', queryStatements);
 		const results = [];
 
-		await this.db.readTransaction(function(tx) {
+		await this.db.readTransaction(function (tx) {
 			for (const [statement, params] of queryStatements) {
 				tx.executeSql(
 					statement,
 					params,
-					function(_tx, res) {
+					function (_tx, res) {
 						results.push(res.rows.raw()[0]);
 					},
 					logger.warn
@@ -111,7 +119,8 @@ class SQLiteDatabase {
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
 	) {
-		await this.db.transaction(function(tx) {
+		console.log('batchSave', saveStatements, deleteStatements);
+		await this.db.transaction(function (tx) {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
 			}
@@ -127,16 +136,17 @@ class SQLiteDatabase {
 		query: ParameterizedStatement,
 		_delete: ParameterizedStatement
 	) {
+		console.log('saveAndDelete', query, _delete);
 		let results = [];
 
 		const [queryStatement, queryParams] = query;
 		const [deleteStatement, deleteParams] = _delete;
 
-		await this.db.transaction(function(tx) {
+		await this.db.transaction(function (tx) {
 			tx.executeSql(
 				queryStatement,
 				queryParams,
-				function(_tx, res) {
+				function (_tx, res) {
 					results = res.rows.raw();
 				},
 				logger.warn
@@ -148,7 +158,7 @@ class SQLiteDatabase {
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {
-		return await this.db.transaction(function(tx) {
+		return await this.db.transaction(function (tx) {
 			for (const statement of statements) {
 				tx.executeSql(statement);
 			}
