@@ -428,11 +428,16 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	signOut(): Promise<void> {
-		throw new Error('Method not implemented.');
+		this.clearCachedTokens();
+		return Promise.resolve();
 	}
 
 	isConfigured() {
 		return this._config.userPoolId && this._config.region;
+	}
+
+	private clearCachedTokens() {
+		this._userStorage.removeItem(COGNITO_CACHE_KEY);
 	}
 
 	private createNewCognitoClient(config: {
