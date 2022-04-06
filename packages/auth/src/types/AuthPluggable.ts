@@ -20,7 +20,20 @@ type RequestScopeResponse = {
 	requestScopeSuccessful: boolean;
 };
 
+export type SignInMethod =
+	| SignInWithLink['signInType']
+	| SignInWithWebAuthn['signInType']
+	| SignInWithSocial['signInType']
+	| SignInWithPassword['signInType'];
+
+export type SignInWithPassword = {
+	signInType: 'Password';
+	username: string;
+	password?: string;
+};
+
 export type SignInWithLink = {
+	signInType: 'Link';
 	link: {
 		method: USER_PARAM_TYPE;
 		value: string;
@@ -28,6 +41,7 @@ export type SignInWithLink = {
 };
 
 export type SignInWithWebAuthn = {
+	signInType: 'WebAuthn';
 	webauthn: {
 		method: USER_PARAM_TYPE;
 		value: string;
@@ -35,12 +49,17 @@ export type SignInWithWebAuthn = {
 };
 
 export type SignInWithSocial = {
+	signInType: 'Social';
 	social: {
 		provider: SOCIAL_PROVIDER;
 	};
 };
 
-type SignInParams = SignInWithLink | SignInWithWebAuthn | SignInWithSocial;
+type SignInParams =
+	| SignInWithLink
+	| SignInWithWebAuthn
+	| SignInWithSocial
+	| SignInWithPassword;
 
 export function isSignInWithWebAuthN(
 	signInParams: SignInParams
@@ -80,6 +99,7 @@ type AmplifyUser = {
 		identifiers?: UserIdentifiers[];
 	};
 	credentials?: {
+		// scope
 		[key: string]: {
 			jwt?: {
 				idToken: string;
