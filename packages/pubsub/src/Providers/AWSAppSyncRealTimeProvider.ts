@@ -25,6 +25,7 @@ import {
 	USER_AGENT_HEADER,
 	jitteredExponentialRetry,
 	NonRetryableError,
+	ICredentials,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -340,7 +341,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			});
 		} catch (err) {
 			logger.debug({ err });
-			const message = err['message']?.message ?? '';
+			const message = err['message'] ?? '';
 			observer.error({
 				errors: [
 					{
@@ -816,7 +817,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		region,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeProviderOptions): Promise<any> {
-		const headerHandler: { [key in GraphqlAuthModes]: any } = {
+		const headerHandler: {
+			[key in GraphqlAuthModes]: (AWSAppSyncRealTimeAuthInput) => {};
+		} = {
 			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
 			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
 			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
@@ -907,11 +910,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			throw new Error('No credentials');
 		}
 		const creds = await Credentials.get().then((credentials: any) => {
-			const { secretAccessKey, accessKeyId, sessionToken } = credentials as {
-				secretAccessKey: any;
-				accessKeyId: any;
-				sessionToken: any;
-			};
+			const { secretAccessKey, accessKeyId, sessionToken } =
+				credentials as ICredentials;
 
 			return {
 				secret_key: secretAccessKey,
