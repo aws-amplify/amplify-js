@@ -12,7 +12,10 @@ import {
 	PredicatesGroup,
 	ModelPredicate,
 	AuthModeStrategy,
+	ErrorHandler,
+	ErrorHandlerType,
 } from '../../types';
+import { NonRetryableError } from '@aws-amplify/core';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
@@ -20,6 +23,8 @@ import {
 	getUserGroupsFromToken,
 	TransformerMutationType,
 	getTokenForCustomAuth,
+	mapErrorToType,
+	ErrorMap,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -56,7 +61,8 @@ class SubscriptionProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler?: ErrorHandler
 	) {}
 
 	private buildSubscription(
@@ -256,6 +262,7 @@ class SubscriptionProcessor {
 						: USER_CREDENTIALS.unauth;
 				} catch (err) {
 					// best effort to get AWS credentials
+					// NEEDS LOGGER.DEBUG
 				}
 
 				try {
@@ -265,6 +272,7 @@ class SubscriptionProcessor {
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
+					// NEEDS LOGGER.DEBUG
 				}
 
 				try {
@@ -436,7 +444,7 @@ class SubscriptionProcessor {
 												}
 												this.drainBuffer();
 											},
-											error: subscriptionError => {
+											error: async subscriptionError => {
 												const {
 													error: { errors: [{ message = '' } = {}] } = {
 														errors: [],
@@ -470,6 +478,85 @@ class SubscriptionProcessor {
 															}`
 														);
 														logger.warn('subscriptionError', message);
+														const errorMap = {
+															Unauthorized: [
+																(givenError: any) => {
+																	const {
+																		error: {
+																			errors: [{ message = '' } = {}],
+																		} = {
+																			errors: [],
+																		},
+																	} = givenError;
+																	console.log('this is message: ', message);
+																	const regex =
+																		/Connection failed.+Unauthorized/;
+																	return regex.test(message);
+																},
+															],
+
+															// will be defaulted within mapper function.
+															// no need to specify any matchers here.
+															Unknown: [],
+														} as ErrorMap;
+														let errorHandlerResult: ErrorHandlerType;
+														try {
+															errorHandlerResult = await this.errorHandler({
+																localModel: null,
+																message: message,
+																model: modelDefinition.name,
+																operation: operation,
+																// map errorType to baditem based of 'cannot return null for non-nullable type'
+																// Badrecord is default
+																errorType: mapErrorToType(
+																	errorMap,
+																	subscriptionError
+																),
+																// map for errorInfo as well
+																//errorInfo: err.errorInfo,
+																process: 'subscribe',
+																remoteModel: null,
+																cause: subscriptionError,
+															});
+														} catch (e) {
+															logger.error(
+																'failed to execute subscription errorHandler',
+																e
+															);
+														}
+														switch (errorHandlerResult) {
+															case 'ContinueSync':
+																logger.debug(
+																	'error handled by errorHandler',
+																	subscriptionError
+																);
+																return;
+																break;
+															case 'Retry':
+																logger.debug(
+																	'error is being retried',
+																	subscriptionError
+																);
+																throw new Error('errorHandler retry');
+																break;
+															case 'StopSync':
+																logger.debug(
+																	'errorHandler stopped sync',
+																	subscriptionError
+																);
+																throw new NonRetryableError(
+																	'errorHandler stopped sync'
+																);
+																break;
+															default:
+																logger.error(
+																	'Invalid errorHandler response: ',
+																	errorHandlerResult
+																);
+																throw new NonRetryableError(
+																	'Invalid errorHandler response'
+																);
+														}
 														return;
 													} else {
 														logger.debug(
@@ -487,7 +574,7 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-
+												// Perhaps case for ErrorHandler
 												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
@@ -498,9 +585,10 @@ class SubscriptionProcessor {
 													message.includes('"errorType":"Unauthorized"') ||
 													message.includes('"errorType":"OperationDisabled"')
 												) {
+													// Perhaps case for ErrorHandler
 													return;
 												}
-
+												// Perhaps case for ErrorHandler
 												observer.error(message);
 											},
 										})
