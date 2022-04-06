@@ -36,6 +36,7 @@
 4.  ### **Sync Engine Operations**
 -  #### 4.1 Instantiate Sync Engine (`this.sync = new SyncEngine(`)
     - The Sync Engine is only instantiated if there is a graphql endpoint (meaning we’ve already provisioned the backend). Otherwise, DataStore is in local-only mode. See [datastore.ts](packages/datastore/src/datastore/datastore.ts#L735)
+    - If DataStore is local-only, `Amplify.configure(awsExports);` is not required.
     - **Note: at this step, we do not yet process the buffer**
     - There are three subscriptions per model: `create`, `update`, and `delete`
 
