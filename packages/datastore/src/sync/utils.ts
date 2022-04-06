@@ -40,6 +40,22 @@ enum GraphQLOperationType {
 	GET = 'query',
 }
 
+export type OperationName = 'create' | 'update' | 'delete' | 'list' | 'get';
+export function TransformerMutationTypeToOperationName(
+	operation: TransformerMutationType
+): OperationName {
+	switch (operation) {
+		case 'Create':
+			return 'create';
+		case 'Update':
+			return 'update';
+		case 'Delete':
+			return 'delete';
+		case 'Get':
+			return 'get';
+	}
+}
+
 export enum TransformerMutationType {
 	CREATE = 'Create',
 	UPDATE = 'Update',

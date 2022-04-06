@@ -8,6 +8,7 @@ import {
 	PredicatesGroup,
 	GraphQLFilter,
 	AuthModeStrategy,
+	ErrorHandler,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -24,7 +25,7 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
-
+import { ModelInstanceCreator } from '../../datastore/datastore';
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -40,7 +41,9 @@ class SyncProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler?: ErrorHandler,
+		private readonly modelInstanceCreator?: ModelInstanceCreator
 	) {
 		this.generateQueries();
 	}
@@ -165,13 +168,8 @@ class SyncProcessor {
 	}
 
 	// Partial data private feature flag. Not a public API. This will be removed in a future release.
-	private partialDataFeatureFlagEnabled() {
-		try {
-			const flag = sessionStorage.getItem('datastorePartialData');
-			return Boolean(flag);
-		} catch (e) {
-			return false;
-		}
+	public partialDataFeatureFlagEnabled() {
+		return true;
 	}
 
 	private async jitteredRetry<T>({
@@ -232,6 +230,25 @@ class SyncProcessor {
 							);
 
 							if (error.errors) {
+								for (const err of error.errors) {
+									try {
+										await this.errorHandler({
+											localModel: null,
+											message: err.message,
+											model: modelDefinition.name,
+											operation: opName,
+											// map errorType to baditem based of 'cannot return null for non-nullable type'
+											// Badrecord is default
+											errorType: 'BadRecord',
+											// map for errorInfo as well
+											//errorInfo: err.errorInfo,
+											process: 'sync',
+											remoteModel: null,
+										});
+									} catch (e) {
+										logger.error('failed to execute sync errorHandler', e);
+									}
+								}
 								Hub.dispatch('datastore', {
 									event: 'syncQueriesPartialSyncError',
 									data: {

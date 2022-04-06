@@ -136,13 +136,15 @@ export class SyncEngine {
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,

@@ -658,7 +658,7 @@ export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (error: SyncError) => void; // default : logger.warn
+		errorHandler?: (error: SyncError<any>) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -668,7 +668,7 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (error: SyncError) => void; // default : logger.warn
+	errorHandler?: (error: SyncError<any>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
@@ -775,13 +775,39 @@ export type SyncConflict = {
 	attempts: number;
 };
 
-export type SyncError = {
+export type SyncError<T extends PersistentModel> = {
 	message: string;
-	errorType: string;
-	errorInfo: string;
+	errorType: ErrorType;
+	errorInfo?: string;
+	model?: string;
 	localModel: PersistentModel;
 	remoteModel: PersistentModel;
+	process: ProcessName;
 	operation: string;
+	source?: Error;
+};
+
+type ErrorType =
+	| 'ConfigError'
+	| 'BadRecord'
+	| 'Unauthorized'
+	| 'Transient'
+	| 'Unknown';
+
+type ProcessName =
+	| 'sync'
+	| 'mutate'
+	| 'subscribe'
+	| 'save()'
+	| 'query()'
+	| 'delete()';
+
+type OperationName = 'create' | 'update' | 'delete' | 'list' | 'get';
+
+type ModelMeta<T extends PersistentModel> = {
+	modelConstructor: PersistentModelConstructor<T>;
+	schema: SchemaModel;
+	pkFields: string[];
 };
 
 export const DISCARD = Symbol('DISCARD');
@@ -792,7 +818,7 @@ export type ConflictHandler = (
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
-export type ErrorHandler = (error: SyncError) => void;
+export type ErrorHandler = (error: SyncError<any>) => void;
 
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;

@@ -12,6 +12,7 @@ import {
 	PredicatesGroup,
 	ModelPredicate,
 	AuthModeStrategy,
+	ErrorHandler,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -56,7 +57,8 @@ class SubscriptionProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler?: ErrorHandler
 	) {}
 
 	private buildSubscription(
@@ -256,6 +258,7 @@ class SubscriptionProcessor {
 						: USER_CREDENTIALS.unauth;
 				} catch (err) {
 					// best effort to get AWS credentials
+					// NEEDS LOGGER.DEBUG
 				}
 
 				try {
@@ -265,6 +268,7 @@ class SubscriptionProcessor {
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
+					// NEEDS LOGGER.DEBUG
 				}
 
 				try {
@@ -470,6 +474,28 @@ class SubscriptionProcessor {
 															}`
 														);
 														logger.warn('subscriptionError', message);
+
+														try {
+															this.errorHandler({
+																localModel: null,
+																message: message,
+																model: modelDefinition.name,
+																operation: operation,
+																// map errorType to baditem based of 'cannot return null for non-nullable type'
+																// Badrecord is default
+																errorType: 'Unauthorized',
+																// map for errorInfo as well
+																//errorInfo: err.errorInfo,
+																process: 'subscribe',
+																remoteModel: null,
+															});
+														} catch (e) {
+															logger.error(
+																'failed to execute subscription errorHandler',
+																e
+															);
+														}
+
 														return;
 													} else {
 														logger.debug(
@@ -487,7 +513,7 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-
+												// Perhaps case for ErrorHandler
 												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
@@ -498,9 +524,10 @@ class SubscriptionProcessor {
 													message.includes('"errorType":"Unauthorized"') ||
 													message.includes('"errorType":"OperationDisabled"')
 												) {
+													// Perhaps case for ErrorHandler
 													return;
 												}
-
+												// Perhaps case for ErrorHandler
 												observer.error(message);
 											},
 										})

@@ -32,7 +32,9 @@ import {
 	createMutationInstanceFromModelOperation,
 	getModelAuthModes,
 	TransformerMutationType,
+	TransformerMutationTypeToOperationName,
 	getTokenForCustomAuth,
+	OperationName,
 } from '../utils';
 
 const MAX_ATTEMPTS = 10;
@@ -371,16 +373,21 @@ class MutationProcessor {
 
 								throw new NonRetryableError('RetryMutation');
 							} else {
+								const newOperation: OperationName =
+									TransformerMutationTypeToOperationName(operation);
 								try {
 									await this.errorHandler({
-										localModel: this.modelInstanceCreator(
-											modelConstructor,
-											variables.input
-										),
+										// modelInstanceCreator not necessary
+										// localModel: this.modelInstanceCreator(
+										// 	modelConstructor,
+										// 	variables.input
+										// ),
+										localModel: variables.input,
 										message: error.message,
-										operation,
+										operation: newOperation,
 										errorType: error.errorType,
 										errorInfo: error.errorInfo,
+										process: 'mutate',
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
 											: null,
