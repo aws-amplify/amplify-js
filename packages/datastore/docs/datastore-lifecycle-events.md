@@ -4,9 +4,30 @@
 
 **Understanding how DataStore starts is critical to understanding how DataStore fundamentally works.** At a high level, starting DataStore does the following things in order for each model:
 
-> 1.  Init Schema
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant DS as DataStore
+    participant S as Storage
+    participant SE as Sync Engine
+
+    U ->>+ DS: start
+    DS ->>+ S: init(schema)
+    S -->>- DS: 
+    DS ->>+ S: check schema version
+    S -->>- DS: 
+    opt GraphQL endpoint available
+        DS ->>+ SE: start(schema, config)
+        SE -->>- DS: 
+    end
+    DS -->>- U: 
+```
+*TODO: diagram should have 1:1 mapping with the following:*
+
+> 1.  Init Schema (schema provided by codegen)
 > 2.  Init the Storage Engine
-> 3.  Migrate schema changes
+> 3.  Migrate schema changes (i.e. "check schema version")
+** The following is only performed if there is an AppSync back-end:
 > 4.  Sync Engine Operations
 > 5.  Empty the Outbox / processes the mutation queue
 > 6.  Begin processing the subscription buffer
@@ -16,7 +37,62 @@
 - _When importing a model, DS consumes `schema.js`, and creates the IndexedDB store._
 
 ## **How it works:**
+```mermaid
+sequenceDiagram
+    participant DS as DataStore
+    participant SE as Sync Engine
+    participant R as Reachability
+    participant SP as Subscriptions<br />Processor
+    participant QP as Queries<br />Processor
+    participant MP as Mutations<br />Processor
 
+    DS ->> SE: start(schema, config)
+    activate SE
+    SE -->> DS: 
+
+    DS ->> SE: subscribe 
+
+    SE ->> SE: setupModels(schema)
+    Note right of SE: - metadata<br />- sync expressions
+
+    SE ->>+ R: subscribe
+
+    alt online
+        R ->>+ SP: start
+        Note right of SP: - Establishes realtime connection<br />- Buffers incoming messages
+        SP -->> R: 
+
+        R ->> QP: start
+        activate QP
+        QP -->> R: 
+        R ->> QP: subscribe
+        Note right of QP: - Invokes syncXXX queries<br />- Paginates
+        QP -->> R: 
+        deactivate QP
+
+        R ->> MP: subscribe
+        MP -->> R: 
+        R ->> MP: process
+        MP -->> R: 
+
+        R ->> SP: subscribe
+        Note right of SP: - Drains the buffer
+        SP -->>- R: 
+
+    else offline
+        SE ->> SP: unsubscribe
+        SP -->> SE: 
+
+        SE ->> QP: unsubscribe
+        QP -->> SE: 
+
+        SE ->> MP: unsubscribe
+        MP -->> SE: 
+    end
+
+    R -->>- SE: 
+    SE -->>- DS: 
+```
 1.  ### **Init schema**
     - **1.1** First we call `initSchema` [here](packages/datastore/src/datastore/datastore.ts)
     - **1.2** Codegen then generates `schema.js` from the schema
