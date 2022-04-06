@@ -85,7 +85,12 @@ type ConfirmSignUpParams = {};
 
 type SignUpResult = {};
 
-type ConfirmSignInParams = {};
+type ConfirmSignInParams = {
+	confirmationCode: string;
+	// default to SMS_MFA
+	mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+	clientMetadata?: { [key: string]: string };
+};
 
 type UserIdentifiers = {
 	type: string;
