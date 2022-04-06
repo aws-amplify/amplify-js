@@ -83,7 +83,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		} catch (error) {
 			this.reject(error);
 		}
-		console.log('setUp complete');
+		// console.log('setUp complete');
 	}
 
 	async clear(): Promise<void> {
@@ -155,7 +155,7 @@ export class SQLiteAdapter implements StorageAdapter {
 
 		await this.db.batchSave(saveStatements);
 
-		console.log('save complete');
+		// console.log('save complete');
 		return result;
 	}
 
@@ -242,7 +242,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			}
 		}
 
-		console.log('load almost complete!');
+		// console.log('load almost complete!');
 
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
@@ -254,7 +254,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		console.log('query start');
+		// console.log('query start');
 		const { name: tableName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -286,7 +286,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			return await this.db.getAll(queryStatement, params);
 		})();
 
-		console.log('end of query()');
+		// console.log('end of query()');
 
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
@@ -295,7 +295,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		tableName: string,
 		id: string
 	): Promise<T> {
-		console.log('adapter getByid', tableName, id);
+		// console.log('adapter getByid', tableName, id);
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
 		return record;

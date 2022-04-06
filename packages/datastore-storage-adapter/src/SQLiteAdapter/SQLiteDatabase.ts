@@ -58,9 +58,9 @@ class SQLiteDatabase {
 		statement: string,
 		params: any[]
 	): Promise<T> {
-		console.log('database get', statement, params);
+		// console.log('database get', statement, params);
 		const [resultSet] = await this.db.executeSql(statement, params);
-		console.log('get resultSet', resultSet);
+		// console.log('get resultSet', resultSet);
 		const result =
 			resultSet &&
 			resultSet.rows &&
@@ -68,7 +68,7 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		console.log('get result', result);
+		// console.log('get result', result);
 		return result?.[0] || undefined;
 	}
 
@@ -76,9 +76,9 @@ class SQLiteDatabase {
 		statement: string,
 		params: any[]
 	): Promise<T[]> {
-		console.log('database getAll', statement, params);
+		// console.log('database getAll', statement, params);
 		const [resultSet] = await this.db.executeSql(statement, params);
-		console.log('getAll resultSet', resultSet);
+		// console.log('getAll resultSet', resultSet);
 		const result =
 			resultSet &&
 			resultSet.rows &&
@@ -86,17 +86,17 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		console.log('getAll result', result);
+		// console.log('getAll result', result);
 		return result || [];
 	}
 
 	public async save(statement: string, params: any[]): Promise<void> {
-		console.log('save', statement, params);
+		// console.log('save', statement, params);
 		await this.db.executeSql(statement, params);
 	}
 
 	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
-		console.log('batchQuery', queryStatements);
+		// console.log('batchQuery', queryStatements);
 		const results = [];
 
 		await this.db.readTransaction(function (tx) {
@@ -119,7 +119,7 @@ class SQLiteDatabase {
 		saveStatements: Set<ParameterizedStatement>,
 		deleteStatements?: Set<ParameterizedStatement>
 	) {
-		console.log('batchSave', saveStatements, deleteStatements);
+		// console.log('batchSave', saveStatements, deleteStatements);
 		await this.db.transaction(function (tx) {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
@@ -136,7 +136,7 @@ class SQLiteDatabase {
 		query: ParameterizedStatement,
 		_delete: ParameterizedStatement
 	) {
-		console.log('saveAndDelete', query, _delete);
+		// console.log('saveAndDelete', query, _delete);
 		let results = [];
 
 		const [queryStatement, queryParams] = query;
