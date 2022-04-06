@@ -51,7 +51,6 @@ public class RNPushNotificationHelper {
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
     private static final String LOG_TAG = "RNPushNotificationHelper";
-    private static final String NOTIFICATION_OPENED = "com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED";
 
     public RNPushNotificationHelper(Application context) {
         this.context = context;
@@ -257,7 +256,7 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(NOTIFICATION_OPENED);
+            Intent intent = new Intent(context, RNPushNotificationBroadcastReceiver.class);
             intent.putExtra("notification", bundle);
 
             Log.i(LOG_TAG, "sendNotification: " + intent);
