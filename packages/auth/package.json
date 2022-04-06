@@ -43,10 +43,11 @@
   "dependencies": {
     "@aws-amplify/cache": "4.0.38",
     "@aws-amplify/core": "4.5.0",
+    "@aws-sdk/client-cognito-identity": "3.58.0",
     "@aws-sdk/client-cognito-identity-provider": "3.58.0",
-    "@xstate/fsm": "1.6.5",
     "amazon-cognito-identity-js": "5.2.8",
-    "crypto-js": "^4.1.1"
+    "crypto-js": "^4.1.1",
+    "xstate": "4.27.0"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
