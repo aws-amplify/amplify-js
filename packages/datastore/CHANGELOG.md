@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.8.0...@aws-amplify/datastore@3.9.0) (2022-04-04)
+
+
+### Features
+
+* update DataStore observe / observeQuery to return all fields in local update snapshot ([#9556](https://github.com/aws-amplify/amplify-js/issues/9556)) ([40ee89b](https://github.com/aws-amplify/amplify-js/commit/40ee89b828e859bfaadea2269cce96562ab6c90a))
+
+
+
+
+
 # [3.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.9...@aws-amplify/datastore@3.8.0) (2022-03-28)
 
 
