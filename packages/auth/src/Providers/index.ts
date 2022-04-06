@@ -1,1 +1,0 @@
-export { CognitoProvider } from './CognitoProvider';
