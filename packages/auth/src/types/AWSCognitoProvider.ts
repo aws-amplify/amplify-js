@@ -1,5 +1,5 @@
-export interface CognitoUser {}
+// export interface CognitoUser {}
 
-export interface CognitoUserSession {}
+// export interface CognitoUserSession {}
 
-export interface ISignUpResult {}
+// export interface ISignUpResult {}
