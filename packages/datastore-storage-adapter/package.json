@@ -36,6 +36,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "4.5.0",
 		"@aws-amplify/datastore": "3.8.0",
+		"expo-file-system" : "13.1.4",
 		"expo-sqlite": "10.1.0",
 		"react-native-sqlite-storage": "5.0.0",
     "@types/react-native-sqlite-storage" : "5.0.1"
