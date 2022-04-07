@@ -143,12 +143,14 @@ describe('SQLiteAdapter', () => {
 	});
 
 	test.only('can manage related models, where parent is saved first', async done => {
+		sqlog.push('\n\nCREATING POST\n\n');
 		const post = await DataStore.save(
 			new Post({
 				title: 'some post',
 			})
 		);
 
+		sqlog.push('\n\nADDING COMMENT\n\n');
 		const comment = await DataStore.save(
 			new Comment({
 				content: 'some comment',
@@ -156,11 +158,14 @@ describe('SQLiteAdapter', () => {
 			})
 		);
 
-		const updatedPost = await DataStore.save(
-			Post.copyOf(post, draft => {
-				draft.title = 'updated title';
+		sqlog.push('\n\nUPDATING COMMENT\n\n');
+		const updatedComment = await DataStore.save(
+			Comment.copyOf(comment, draft => {
+				draft.content = 'updated content';
 			})
 		);
+
+		sqlog.push('\n\nDONE\n\n');
 
 		setTimeout(async () => {
 			// const mutations = await db.getAll('select * from MutationEvent', []);
