@@ -10,14 +10,20 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
 	Place,
 	MapStyle,
+	Geofence,
+	GeofenceId,
+	GeofenceInput,
+	GeofenceOptions,
+	ListGeofenceOptions,
+	ListGeofenceResults,
+	SaveGeofencesResults,
+	DeleteGeofencesResults,
 } from './Geo';
 
 export interface GeoProvider {
@@ -36,15 +42,33 @@ export interface GeoProvider {
 	// get the map resource listed as default
 	getDefaultMap(): MapStyle;
 
+	// search by a text string and return a list of places
 	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 
+	// search by coordinates and return a matching place
 	searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
 
-	searchForSuggestions(
-		text: string,
-		options?: SearchByTextOptions
-	): Promise<SearchForSuggestionsResults>;
+	// create geofences
+	saveGeofences(
+		geofences: GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<SaveGeofencesResults>;
+
+	// get a single geofence
+	getGeofence(
+		geofenceId: GeofenceId,
+		options?: ListGeofenceOptions
+	): Promise<Geofence>;
+
+	// list all geofences
+	listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
+
+	// Delete geofences
+	deleteGeofences(
+		geofenceIds: string[],
+		options?: GeofenceOptions
+	): Promise<DeleteGeofencesResults>;
 }

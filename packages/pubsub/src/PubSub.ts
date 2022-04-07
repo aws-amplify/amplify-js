@@ -34,12 +34,12 @@ export class PubSubClass {
 	/**
 	 * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
 	 */
-	private _awsAppSyncProvider: AWSAppSyncProvider;
+	private _awsAppSyncProvider?: AWSAppSyncProvider;
 
 	/**
 	 * Internal instance of AWSAppSyncRealTimeProvider used by the API category to subscribe to AppSync
 	 */
-	private _awsAppSyncRealTimeProvider: AWSAppSyncRealTimeProvider;
+	private _awsAppSyncRealTimeProvider?: AWSAppSyncRealTimeProvider;
 
 	/**
 	 * Lazy instantiate AWSAppSyncProvider when it is required by the API category
@@ -68,8 +68,8 @@ export class PubSubClass {
 	 *
 	 * @param {PubSubOptions} options - Configuration object for PubSub
 	 */
-	constructor(options: PubSubOptions) {
-		this._options = options;
+	constructor(options?: PubSubOptions) {
+		this._options = options ?? {};
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
@@ -120,7 +120,7 @@ export class PubSubClass {
 		);
 	}
 
-	private getProviderByName(providerName) {
+	private getProviderByName(providerName: string | symbol) {
 		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
 			return this.awsAppSyncProvider;
 		}
@@ -194,5 +194,5 @@ export class PubSubClass {
 	}
 }
 
-export const PubSub = new PubSubClass(null);
+export const PubSub = new PubSubClass();
 Amplify.register(PubSub);

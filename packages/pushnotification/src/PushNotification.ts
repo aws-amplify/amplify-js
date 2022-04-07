@@ -43,13 +43,11 @@ export default class PushNotification {
 			this._config = {};
 		}
 		this.updateEndpoint = this.updateEndpoint.bind(this);
-		this.handleNotificationReceived = this.handleNotificationReceived.bind(
-			this
-		);
+		this.handleNotificationReceived =
+			this.handleNotificationReceived.bind(this);
 		this.handleNotificationOpened = this.handleNotificationOpened.bind(this);
-		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
-			this
-		);
+		this._checkIfOpenedByNotification =
+			this._checkIfOpenedByNotification.bind(this);
 		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
@@ -133,7 +131,6 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
-		RNPushNotification.initialize();
 
 		// check if the token is cached properly
 		if (!(await this._registerTokenCached())) {
@@ -254,9 +251,8 @@ export default class PushNotification {
 
 	handleNotificationReceived(rawMessage) {
 		logger.debug('handleNotificationReceived, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');
@@ -294,9 +290,8 @@ export default class PushNotification {
 		});
 
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');
