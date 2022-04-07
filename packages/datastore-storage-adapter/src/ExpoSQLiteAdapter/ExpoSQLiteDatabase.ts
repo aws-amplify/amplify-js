@@ -139,13 +139,13 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		deleteParameterizedStatements?: Set<ParameterizedStatement>
 	): Promise<void> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
-			try {
-				this.db.transaction(async transaction => {
+			this.db.transaction(async transaction => {
+				try {
 					// await for all sql statements promises to resolve
 					await Promise.all(
 						[...saveParameterizedStatements].map(
 							([statement, params]) =>
-								new Promise((resolve, reject) =>
+								new Promise((resolve, reject) => {
 									transaction.executeSql(
 										statement,
 										params,
@@ -157,8 +157,8 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 											logger.warn(error);
 											return true;
 										}
-									)
-								)
+									);
+								})
 						)
 					);
 					if (deleteParameterizedStatements) {
@@ -183,11 +183,11 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						);
 					}
 					resolveTransaction(null);
-				});
-			} catch (error) {
-				rejectTransaction(error);
-				logger.warn(error);
-			}
+				} catch (error) {
+					rejectTransaction(error);
+					logger.warn(error);
+				}
+			});
 		});
 	}
 
