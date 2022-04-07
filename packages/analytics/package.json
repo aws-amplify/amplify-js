@@ -50,8 +50,7 @@
 		"@aws-sdk/client-personalize-events": "3.6.1",
 		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
-		"lodash": "^4.17.20",
-		"uuid": "^3.2.1"
+		"lodash": "^4.17.20"
 	},
 	"jest": {
 		"globals": {

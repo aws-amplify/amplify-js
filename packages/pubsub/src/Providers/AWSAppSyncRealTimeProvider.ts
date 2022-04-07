@@ -13,7 +13,6 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
-import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
 import { ProviderOptions } from '../types';
 import {
@@ -26,6 +25,7 @@ import {
 	jitteredExponentialRetry,
 	NonRetryableError,
 	ICredentials,
+	uuid,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -212,7 +212,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				});
 				observer.complete();
 			} else {
-				const subscriptionId = uuid();
+				const subscriptionId = uuid.v4();
 				this._startSubscriptionWithAWSAppSyncRealTime({
 					options,
 					observer,

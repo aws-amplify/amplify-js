@@ -11,12 +11,11 @@
  * and limitations under the License.
  */
 import * as Paho from 'paho-mqtt';
-import { v4 as uuid } from 'uuid';
 import Observable from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { ProviderOptions, SubscriptionObserver } from '../types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, uuid } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
 
@@ -78,7 +77,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
 
 	constructor(options: MqttProviderOptions = {}) {
-		super({ ...options, clientId: options.clientId || uuid() });
+		super({ ...options, clientId: options.clientId || uuid.v4() });
 	}
 
 	protected get clientId() {

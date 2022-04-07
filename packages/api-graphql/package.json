@@ -50,7 +50,6 @@
     "@aws-amplify/core": "4.5.1",
     "@aws-amplify/pubsub": "4.3.1",
     "graphql": "15.8.0",
-    "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
   "jest": {

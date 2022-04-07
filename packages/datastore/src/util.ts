@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
-import { v4 as uuid } from 'uuid';
+import { uuid } from '@aws-amplify/core';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
@@ -466,7 +466,7 @@ let privateModeCheckResult;
 
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
-		const dbname = uuid();
+		const dbname = uuid.v4();
 		let db;
 
 		const isPrivate = () => {

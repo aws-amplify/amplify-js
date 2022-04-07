@@ -48,8 +48,7 @@
 		"@aws-sdk/client-textract": "3.6.1",
 		"@aws-sdk/client-translate": "3.6.1",
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
-		"@aws-sdk/util-utf8-node": "3.6.1",
-		"uuid": "^3.2.1"
+		"@aws-sdk/util-utf8-node": "3.6.1"
 	},
 	"jest": {
 		"globals": {

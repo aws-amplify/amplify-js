@@ -161,9 +161,10 @@ let response = {
 let resolve = null;
 let reject = null;
 
-jest.mock('uuid', () => {
-	return { v1: () => 'uuid' };
-});
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	uuid: { v1: () => 'uuid' },
+}));
 
 beforeEach(() => {
 	PinpointClient.prototype.send = jest.fn(async command => {

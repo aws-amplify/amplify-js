@@ -13,8 +13,7 @@
 import { SessionInfo } from './DataType';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
-import { v1 as uuid } from 'uuid';
-import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, JS, uuid } from '@aws-amplify/core';
 
 import Cache from '@aws-amplify/cache';
 
@@ -35,7 +34,7 @@ export class SessionInfoManager {
 
 	constructor(prefixKey = '') {
 		this._isBrowser = JS.browserOrNode().isBrowser;
-		this._timerKey = uuid().substr(0, 15);
+		this._timerKey = uuid.v1().substr(0, 15);
 		this._refreshTimer();
 	}
 
@@ -45,7 +44,7 @@ export class SessionInfoManager {
 		}
 		const that = this;
 		this._timer = setInterval(() => {
-			that._timerKey = uuid().substr(0, 15);
+			that._timerKey = uuid.v1().substr(0, 15);
 		}, TIMER_INTERVAL);
 	}
 
@@ -77,7 +76,7 @@ export class SessionInfoManager {
 		const existUserId = sessionInfo.userId;
 		const existSessionId = sessionInfo.sessionId;
 		if (this._isRequireNewSession(userId, existUserId, existSessionId)) {
-			const newSessionId = uuid();
+			const newSessionId = uuid.v1();
 			this.storeValue(PERSONALIZE_CACHE_USERID, userId);
 			this.storeValue(PERSONALIZE_CACHE_SESSIONID, newSessionId);
 			sessionInfo.sessionId = newSessionId;
@@ -107,7 +106,7 @@ export class SessionInfoManager {
 		sessionInfo.sessionId = this.retrieveValue(PERSONALIZE_CACHE_SESSIONID);
 		sessionInfo.userId = this.retrieveValue(PERSONALIZE_CACHE_USERID);
 		if (isEmpty(sessionInfo.sessionId)) {
-			sessionInfo.sessionId = uuid();
+			sessionInfo.sessionId = uuid.v1();
 			this.storeValue(PERSONALIZE_CACHE_SESSIONID, sessionInfo.sessionId);
 		}
 		this.storeValue(PERSONALIZE_CACHE, trackingId);

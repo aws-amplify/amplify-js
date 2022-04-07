@@ -19,6 +19,7 @@ import {
 	JS,
 	Hub,
 	getAmplifyUserAgent,
+	uuid,
 } from '@aws-amplify/core';
 import {
 	EventsBatch,
@@ -37,13 +38,13 @@ import {
 	EventObject,
 	EndpointFailureData,
 } from '../types';
-import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event, data) => {
 	Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
@@ -165,7 +166,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		const timestamp = new Date().getTime();
 		// attach the session and eventId
 		this._generateSession(params);
-		params.event.eventId = uuid();
+		params.event.eventId = uuid.v1();
 
 		Object.assign(params, { timestamp, config: this._config });
 
@@ -206,14 +207,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _generateSession(params) {
-		this._sessionId = this._sessionId || uuid();
+		this._sessionId = this._sessionId || uuid.v1();
 		const { event } = params;
 
 		switch (event.name) {
 			case SESSION_START:
 				// refresh the session id and session start time
 				this._sessionStartTimestamp = new Date().getTime();
-				this._sessionId = uuid();
+				this._sessionId = uuid.v1();
 				event.session = {
 					Id: this._sessionId,
 					StartTimestamp: new Date(this._sessionStartTimestamp).toISOString(),
@@ -223,7 +224,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				const stopTimestamp = new Date().getTime();
 				this._sessionStartTimestamp =
 					this._sessionStartTimestamp || new Date().getTime();
-				this._sessionId = this._sessionId || uuid();
+				this._sessionId = this._sessionId || uuid.v1();
 				event.session = {
 					Id: this._sessionId,
 					Duration: stopTimestamp - this._sessionStartTimestamp,
@@ -236,7 +237,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			default:
 				this._sessionStartTimestamp =
 					this._sessionStartTimestamp || new Date().getTime();
-				this._sessionId = this._sessionId || uuid();
+				this._sessionId = this._sessionId || uuid.v1();
 				event.session = {
 					Id: this._sessionId,
 					StartTimestamp: new Date(this._sessionStartTimestamp).toISOString(),
@@ -613,7 +614,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			typeof endpointId
 		);
 		if (!endpointId) {
-			endpointId = uuid();
+			endpointId = uuid.v1();
 			// set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
 			// also set its priority to the highest to reduce its chance of being deleted when cache is full
 			const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
@@ -662,7 +663,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			: undefined;
 		const tmp = {
 			channelType,
-			requestId: uuid(),
+			requestId: uuid.v1(),
 			effectiveDate: new Date().toISOString(),
 			...defaultEndpointConfig,
 			...event,
