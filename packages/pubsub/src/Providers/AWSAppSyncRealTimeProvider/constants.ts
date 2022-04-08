@@ -1,18 +1,6 @@
-import { ZenObservable } from 'zen-observable-ts';
-
 export const MAX_DELAY_MS = 5000;
 
 export const NON_RETRYABLE_CODES = [400, 401, 403];
-
-export type ObserverQuery = {
-	observer: ZenObservable.SubscriptionObserver<any>;
-	query: string;
-	variables: object;
-	subscriptionState: SUBSCRIPTION_STATUS;
-	subscriptionReadyCallback?: Function;
-	subscriptionFailedCallback?: Function;
-	startAckTimeoutId?: ReturnType<typeof setTimeout>;
-};
 
 export enum MESSAGE_TYPES {
 	/**

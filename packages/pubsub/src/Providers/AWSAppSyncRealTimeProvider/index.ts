@@ -39,7 +39,6 @@ import {
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
-	ObserverQuery,
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
@@ -49,6 +48,16 @@ const logger = new Logger('AWSAppSyncRealTimeProvider');
 
 const dispatchApiEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
+};
+
+export type ObserverQuery = {
+	observer: ZenObservable.SubscriptionObserver<any>;
+	query: string;
+	variables: object;
+	subscriptionState: SUBSCRIPTION_STATUS;
+	subscriptionReadyCallback?: Function;
+	subscriptionFailedCallback?: Function;
+	startAckTimeoutId?: ReturnType<typeof setTimeout>;
 };
 
 const standardDomainPattern =
@@ -83,7 +92,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
 
-	newWebSocket(url, protocol) {
+	getNewWebSocket(url, protocol) {
 		return new WebSocket(url, protocol);
 	}
 
@@ -616,7 +625,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		try {
 			await (() => {
 				return new Promise<void>((res, rej) => {
-					const newSocket = this.newWebSocket(awsRealTimeUrl, 'graphql-ws');
+					const newSocket = this.getNewWebSocket(awsRealTimeUrl, 'graphql-ws');
 					newSocket.onerror = () => {
 						logger.debug(`WebSocket connection error`);
 					};

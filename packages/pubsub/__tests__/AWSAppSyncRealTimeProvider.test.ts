@@ -27,7 +27,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 	});
 
 	describe('newClient()', () => {
-		test('throws and error', () => {
+		test('throws an error', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			expect(provider.newClient).toThrow(Error('Not used here'));
 		});
@@ -41,7 +41,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 	});
 
 	describe('publish()', () => {
-		test('throws and error', async () => {
+		test("rejects raising an error indicating publish isn't supported", async () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			await expect(provider.publish('test', 'test')).rejects.toThrow(
 				Error('Operation not supported')
@@ -58,11 +58,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 		describe('returned observer', () => {
 			test('returns error when no appSyncGraphqlEndpoint is provided', done => {
 				expect.assertions(1);
+
 				const provider = new AWSAppSyncRealTimeProvider();
-				let observerError: { errors: GraphQLError } | undefined = undefined;
 				provider.subscribe('test', {}).subscribe({
 					error(err) {
-						observerError = err;
 						expect(err.errors[0].message).toEqual(
 							'Subscribe only available for AWS AppSync endpoint'
 						);
@@ -73,18 +72,21 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 			describe('connection logic with mocked websocket', () => {
 				let fakeWebSocketInterface: FakeWebSocketInterface;
-				let loggerSpy: jest.SpyInstance;
+				const loggerSpy: jest.SpyInstance = jest.spyOn(
+					Logger.prototype,
+					'_log'
+				);
+
 				let provider: AWSAppSyncRealTimeProvider;
 
 				beforeEach(async () => {
 					fakeWebSocketInterface = new FakeWebSocketInterface();
-					loggerSpy = jest.spyOn(Logger.prototype, '_log');
 					provider = new AWSAppSyncRealTimeProvider();
 
 					// Saving this spy and resetting it by hand causes badness
 					//     Saving it causes new websockets to be reachable across past tests that have not fully closed
 					//     Resetting it proactively causes those same past tests to be dealing with null while they reach a settled state
-					jest.spyOn(provider, 'newWebSocket').mockImplementation(() => {
+					jest.spyOn(provider, 'getNewWebSocket').mockImplementation(() => {
 						fakeWebSocketInterface.newWebSocket();
 						return fakeWebSocketInterface.webSocket;
 					});
@@ -92,14 +94,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				afterEach(async () => {
 					await fakeWebSocketInterface?.closeInterface();
-					loggerSpy.mockReset();
+					loggerSpy.mockClear();
 				});
 
 				test('subscription waiting for onopen with ws://localhost:8080 goes untranslated', async () => {
 					expect.assertions(1);
 
 					const newSocketSpy = jest
-						.spyOn(provider, 'newWebSocket')
+						.spyOn(provider, 'getNewWebSocket')
 						.mockImplementation(() => {
 							fakeWebSocketInterface.newWebSocket();
 							return fakeWebSocketInterface.webSocket;
@@ -125,7 +127,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect.assertions(1);
 
 					const newSocketSpy = jest
-						.spyOn(provider, 'newWebSocket')
+						.spyOn(provider, 'getNewWebSocket')
 						.mockImplementation(() => {
 							fakeWebSocketInterface.newWebSocket();
 							return fakeWebSocketInterface.webSocket;
@@ -147,11 +149,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription waiting for onopen with https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql", translates to wss', async () => {
+				test('subscription waiting for onopen with https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql" translates to wss', async () => {
 					expect.assertions(1);
 
 					const newSocketSpy = jest
-						.spyOn(provider, 'newWebSocket')
+						.spyOn(provider, 'getNewWebSocket')
 						.mockImplementation(() => {
 							fakeWebSocketInterface.newWebSocket();
 							return fakeWebSocketInterface.webSocket;
@@ -254,19 +256,18 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async done => {
+				test('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async () => {
 					// Test for happy path message receipt has nothing to assert (only passes when message triggers done)
-					expect.assertions(0);
+					expect.assertions(1);
 
+					const mockNext = jest.fn();
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
 					const subscription = observer.subscribe({
 						// Succeed only when the first message comes through
-						next(x) {
-							done();
-						},
+						next: mockNext,
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
@@ -277,11 +278,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },
 					});
+
+					expect(mockNext).toBeCalled();
 				});
 
-				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack', async done => {
+				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack', async () => {
 					// Test for happy path message receipt has nothing to assert (only passes when message triggers done)
-					expect.assertions(0);
+					expect.assertions(1);
+					const mockNext = jest.fn();
 
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
@@ -289,42 +293,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					const subscription = observer.subscribe({
 						// Succeed only when the first message comes through
-						next(x) {
-							done();
-						},
-						// Closing a hot connection (for cleanup) makes it blow up the test stack
-						error: () => {},
-					});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
-					await fakeWebSocketInterface?.sendMessage(
-						new MessageEvent('start_ack', {
-							data: JSON.stringify({
-								type: MESSAGE_TYPES.GQL_START_ACK,
-								payload: { connectionTimeoutMs: 100 },
-							}),
-						})
-					);
-					await fakeWebSocketInterface?.sendDataMessage({
-						type: MESSAGE_TYPES.GQL_DATA,
-						payload: { data: {} },
-					});
-				});
-
-				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack and close triggered', async done => {
-					// Test for happy path message receipt has nothing to assert (only passes when message triggers done)
-					expect.assertions(0);
-
-					const observer = provider.subscribe('test', {
-						appSyncGraphqlEndpoint: 'ws://localhost:8080',
-					});
-
-					const subscription = observer.subscribe({
-						// Succeed only when the first message comes through
-						next(x) {
-							done();
-						},
+						next: mockNext,
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
@@ -343,11 +312,47 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },
 					});
+
+					expect(mockNext).toBeCalled();
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a error data message is received', async done => {
+				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack and close triggered', async () => {
+					// Test for happy path message receipt has nothing to assert (only passes when message triggers done)
+					expect.assertions(1);
+					const mockNext = jest.fn();
+
+					const observer = provider.subscribe('test', {
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const subscription = observer.subscribe({
+						// Succeed only when the first message comes through
+						next: mockNext,
+						// Closing a hot connection (for cleanup) makes it blow up the test stack
+						error: () => {},
+					});
+					await fakeWebSocketInterface?.readyForUse;
+					await fakeWebSocketInterface?.triggerOpen();
+					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.sendMessage(
+						new MessageEvent('start_ack', {
+							data: JSON.stringify({
+								type: MESSAGE_TYPES.GQL_START_ACK,
+								payload: { connectionTimeoutMs: 100 },
+							}),
+						})
+					);
+					await fakeWebSocketInterface?.sendDataMessage({
+						type: MESSAGE_TYPES.GQL_DATA,
+						payload: { data: {} },
+					});
+					expect(mockNext).toBeCalled();
+				});
+
+				test('subscription observer error is triggered when a connection is formed and a error data message is received', async () => {
 					// Test for error message path message receipt has nothing to assert (only passes when error triggers error subscription method)
-					expect.assertions(0);
+					expect.assertions(1);
+					const mockNext = jest.fn();
 
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
@@ -355,9 +360,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					const subscription = observer.subscribe({
 						// Succeed only when the first message comes through
-						error: x => {
-							done();
-						},
+						error: mockNext,
 					});
 
 					await fakeWebSocketInterface?.readyForUse;
@@ -367,6 +370,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_ERROR,
 						payload: { data: {} },
 					});
+					expect(mockNext).toBeCalled();
 				});
 
 				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
@@ -531,7 +535,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await subscription.unsubscribe();
 					await fakeWebSocketInterface?.triggerClose();
 
-					expect(fakeWebSocketInterface.hasClosed).resolves.toBe(undefined);
+					expect(fakeWebSocketInterface.hasClosed).resolves.toBeUndefined();
 				});
 
 				test('failure to ack before timeout', async () => {
@@ -613,9 +617,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with AWS_IAM', async () => {
 						expect.assertions(1);
 
-						jest.spyOn(Credentials, 'get').mockImplementation(() => {
-							return Promise.resolve({});
-						});
+						jest.spyOn(Credentials, 'get').mockResolvedValue({});
 						jest.spyOn(Signer, 'sign').mockImplementation(() => {
 							return {
 								headers: {
@@ -644,7 +646,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.assertions(1);
 
 						jest.spyOn(Credentials, 'get').mockImplementation(() => {
-							return Promise.resolve(undefined);
+							return Promise.resolve();
 						});
 						jest.spyOn(Signer, 'sign').mockImplementation(() => {
 							return {
@@ -848,7 +850,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
-					test('authenticating with AWS_LAMBDA without Autorization', async () => {
+					test('authenticating with AWS_LAMBDA without Authorization', async () => {
 						expect.assertions(1);
 
 						const subscription = provider

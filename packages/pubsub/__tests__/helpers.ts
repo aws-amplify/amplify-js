@@ -5,13 +5,13 @@ export class FakeWebSocketInterface {
 	readyForUse: Promise<undefined>;
 	hasClosed: Promise<undefined>;
 
-	private readyResolve: (value: PromiseLike<undefined>) => void;
+	private readyResolve: (value: PromiseLike<any>) => void;
 
 	constructor() {
 		this.readyForUse = new Promise((res, rej) => {
 			this.readyResolve = res;
 		});
-		let closeResolver: (value: PromiseLike<undefined>) => void;
+		let closeResolver: (value: PromiseLike<any>) => void;
 		this.hasClosed = new Promise((res, rej) => {
 			closeResolver = res;
 		});
@@ -19,14 +19,16 @@ export class FakeWebSocketInterface {
 	}
 
 	async triggerOpen() {
-		// After an open is triggered, it takes a few ms for it to enact provider behavior
+		// After an open is triggered, the provider has logic that must execute
+		//   which changes the function resolvers assigned to the websocket
 		await this.runAndWait(() => {
 			this.webSocket.onopen(new Event('', {}));
 		}, 50);
 	}
 
 	async triggerClose() {
-		// After a close is triggered, it takes a few ms for it to enact provider behavior
+		// After a close is triggered, the provider has logic that must execute
+		//   which changes the function resolvers assigned to the websocket
 		await this.runAndWait(() => {
 			if (this.webSocket.onclose)
 				this.webSocket.onclose(new CloseEvent('', {}));
@@ -34,8 +36,7 @@ export class FakeWebSocketInterface {
 	}
 
 	async closeInterface() {
-		//
-		await this?.triggerClose();
+		await this.triggerClose();
 		// Wait for either hasClosed or a half second has passed
 		await new Promise(res => {
 			// The interface is closed when the socket "hasClosed"
@@ -48,7 +49,8 @@ export class FakeWebSocketInterface {
 	}
 
 	async triggerError() {
-		// After an error is triggered, it takes a few ms for it to enact provider behavior
+		// After an error is triggered, the provider has logic that must execute
+		//   which changes the function resolvers assigned to the websocket
 		await this.runAndWait(() => {
 			this.webSocket.onerror(new Event('TestError', {}));
 		}, 50);
@@ -103,7 +105,7 @@ export class FakeWebSocketInterface {
 
 class FakeWebSocket implements WebSocket {
 	subscriptionId: string | undefined;
-	closeResolver?: (value: PromiseLike<undefined>) => void;
+	closeResolver?: (value: PromiseLike<any>) => void;
 
 	binaryType: BinaryType;
 	bufferedAmount: number;
@@ -161,7 +163,7 @@ class FakeWebSocket implements WebSocket {
 		throw new Error('Method not implemented dispatchEvent.');
 	}
 
-	constructor(closeResolver?: (value: PromiseLike<undefined>) => void) {
+	constructor(closeResolver?: (value: PromiseLike<any>) => void) {
 		this.closeResolver = closeResolver;
 	}
 }
