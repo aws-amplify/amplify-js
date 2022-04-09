@@ -88,6 +88,16 @@ import {
 	internalTestSchema,
 } from './helpers';
 import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
+import Observable from 'zen-observable';
+// import DataStoreConnectivity from '@aws-amplify/datastore/src/sync/datastoreConnectivity';
+
+jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
+	return {
+		status: () => Observable.of(false) as any,
+		unsubscribe: () => {},
+		socketDisconnected: () => {},
+	};
+});
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -116,10 +126,19 @@ describe('SQLiteAdapter', () => {
 			Model: PersistentModelConstructor<Model>;
 			Post: PersistentModelConstructor<Post>;
 		});
+		await DataStore.clear();
+
+		// start() ensures storageAdapter is set
+		await DataStore.start();
+
 		adapter = (DataStore as any).storageAdapter;
 		db = (adapter as any).db;
 		syncEngine = (DataStore as any).sync;
-		await DataStore.clear();
+
+		// my jest spy-fu wasn't up to snuff here. but, this succesfully
+		// prevents the mutation process from clearing the mutation queue, which
+		// allows us to observe the state of mutations.
+		(syncEngine as any).mutationsProcessor.isReady = () => false;
 	});
 
 	test('is being used in SQLite test suite (sanity check)', async () => {
@@ -144,6 +163,7 @@ describe('SQLiteAdapter', () => {
 
 	test.only('can manage related models, where parent is saved first', async done => {
 		sqlog.push('\n\nCREATING POST\n\n');
+
 		const post = await DataStore.save(
 			new Post({
 				title: 'some post',
@@ -167,11 +187,14 @@ describe('SQLiteAdapter', () => {
 
 		sqlog.push('\n\nDONE\n\n');
 
+		// if this tests gets flaky, either increase the timeout or
+		// find an event to hook into for assurance that mutations have all
+		// been processed by the sync engine.
 		setTimeout(async () => {
-			// const mutations = await db.getAll('select * from MutationEvent', []);
-			// console.log('mutations', mutations);
+			const mutations = await db.getAll('select * from MutationEvent', []);
+			console.log('mutations', mutations);
 			console.log('sqlog', sqlog.join('\n'));
-			// expect(mutations.length).toBe(2);
+			expect(mutations.length).toBe(3);
 			done();
 		}, 250);
 	});
