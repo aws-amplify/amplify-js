@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "5.2.1",
+  "version": "5.2.8",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -26,13 +26,7 @@
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
   },
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "licenses": [
-    {
-      "type": "Amazon Software License",
-      "url": "http://aws.amazon.com/asl"
-    }
-  ],
+  "license": "Apache-2.0",
   "keywords": [
     "amazon",
     "aws",
@@ -75,11 +69,11 @@
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
+    "@babel/cli": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-react": "^7.0.0",
-    "@react-native-async-storage/async-storage": "^1.13.0",
+    "@react-native-async-storage/async-storage": "1.15.17",
     "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
@@ -91,9 +85,8 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
     "genversion": "^2.2.0",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "3.4.0",
     "react": "^16.0.0",
-    "react-native": "^0.62.3",
     "rimraf": "^2.5.4",
     "webpack": "^3.5.5"
   }

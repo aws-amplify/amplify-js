@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
- 
+
 package com.amazonaws.amplify.pushnotification;
 
 import android.app.ActivityManager;
@@ -48,6 +48,7 @@ import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelive
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationHelper;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationCommon;
 
+
 public class RNPushNotificationMessagingService extends FirebaseMessagingService {
     private static final String LOG_TAG = "RNPushNotificationMessagingService";
 
@@ -59,7 +60,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.i(LOG_TAG, "Message From: " + remoteMessage.getFrom());
-        
+
         final Boolean isForeground = isApplicationInForeground();
         final Bundle bundle = convertMessageToBundle(remoteMessage);
         final Boolean hasData = remoteMessage.getData().size() > 0 ? true: false;
@@ -70,7 +71,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
         handler.post(new Runnable() {
             public void run() {
                 // Construct and load our normal React JS code bundle
-                ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+                final ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
                 ReactContext context = mReactInstanceManager.getCurrentReactContext();
                 // If it's constructed, send a notification
                 if (context != null) {
@@ -121,7 +122,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
             RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
             pushNotificationHelper.sendToNotificationCentre(bundle);
         }
-        
+
     }
 
     // whether the app is in foreground
@@ -135,7 +136,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
                     for (String d : processInfo.pkgList) {
                         return true;
                     }
-                } 
+                }
             }
         }
         return false;
@@ -155,7 +156,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
 
         return bundle;
     }
-    
+
     // convert data map to bundle
     private Bundle convertDataToBundle(RemoteMessage message) {
         Map<String, String> data = message.getData();
@@ -166,5 +167,56 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
         }
         return bundle;
     }
+
+	/**
+	 * Called if InstanceID token is updated. This may occur if the security of
+	 * the previous token had been compromised. Note that this is called when the InstanceID token
+	 * is initially generated so this is where you would retrieve the token.
+	 */
+	@Override
+	public void onNewToken(String refreshedToken) {
+		// Get updated InstanceID token.
+		Log.i(LOG_TAG, "Refreshed token: " + refreshedToken);
+
+		final Bundle bundle = createBundleWithToken(refreshedToken);
+		// We need to run this on the main thread, as the React Native code assumes that is true.
+		// Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
+		// "Can't create handler inside thread that has not called Looper.prepare()"
+		Handler handler = new Handler(Looper.getMainLooper());
+		handler.post(new Runnable() {
+			public void run() {
+				// Construct and load our normal React code bundle
+				final ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
+				ReactContext context = mReactInstanceManager.getCurrentReactContext();
+				// If it's constructed, send a notification
+				if (context != null) {
+					sendRegistrationToken((ReactApplicationContext) context, bundle);
+				} else {
+					// Otherwise wait for construction, then send the notification
+					mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+						public void onReactContextInitialized(ReactContext context) {
+							sendRegistrationToken((ReactApplicationContext) context, bundle);
+                            mReactInstanceManager.removeReactInstanceEventListener(this);
+						}
+					});
+					if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+						// Construct it in the background
+						mReactInstanceManager.createReactContextInBackground();
+					}
+				}
+			}
+		});
+	}
+
+	private void sendRegistrationToken(ReactApplicationContext context, Bundle bundle) {
+		RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
+		jsDelivery.emitTokenReceived(bundle);
+	}
+
+	private Bundle createBundleWithToken(String token) {
+		Bundle bundle = new Bundle();
+		bundle.putString("refreshToken", token);
+		return bundle;
+	}
 
 }

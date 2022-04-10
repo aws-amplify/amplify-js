@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
- 
+
 package com.amazonaws.amplify.pushnotification;
 
 import android.util.Log;
@@ -29,19 +29,20 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
+import androidx.annotation.NonNull;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver;
 
 public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     private static final String LOG_TAG = "RNPushNotificationModule";
-    private boolean receiverRegistered;
 
     public RNPushNotificationModule(ReactApplicationContext reactContext) {
         super(reactContext);
         Log.i(LOG_TAG, "constructing RNPushNotificationModule");
-        this.receiverRegistered = false;
     }
 
     @Override
@@ -49,24 +50,25 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
         return "RNPushNotification";
     }
 
-    @ReactMethod
-    public void initialize() {
-        ReactApplicationContext context = getReactApplicationContext();
-        Log.i(LOG_TAG, "initializing RNPushNotificationModule");
-        if (!this.receiverRegistered) {
-            this.receiverRegistered = true;
-            Log.i(LOG_TAG, "registering receiver");
-            Application applicationContext = (Application) context.getApplicationContext();
-            RNPushNotificationBroadcastReceiver receiver = new RNPushNotificationBroadcastReceiver();
-            IntentFilter intentFilter = new IntentFilter("com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED");
-            applicationContext.registerReceiver(receiver, intentFilter);
-        }
-    }
 
     @ReactMethod
-    public void getToken(Callback callback) {
-        String token =  FirebaseInstanceId.getInstance().getToken();
-        Log.i(LOG_TAG, "getting token" + token);
-        callback.invoke(token);
+    public void getToken(final Callback onSuccessCallback, final Callback onErrorCallback) {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                @Override
+                public void onComplete(@NonNull Task<String> task) {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        Log.i(LOG_TAG, "got token " + token);
+                        onSuccessCallback.invoke(token);
+                    } else {
+                        Exception exception = task.getException();
+                        if (exception != null) {
+                            String exceptionMessage = exception.getMessage();
+                            Log.e(LOG_TAG, "Error getting token: " + exceptionMessage);
+                            onErrorCallback.invoke(exceptionMessage);
+                        }
+                    }
+                }
+            });
     }
 }

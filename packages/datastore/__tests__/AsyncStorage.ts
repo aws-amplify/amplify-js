@@ -31,12 +31,12 @@ let Comment: PersistentModelConstructor<InstanceType<typeof CommentType>>;
 let Nested: NonModelTypeConstructor<InstanceType<typeof NestedType>>;
 let Post: PersistentModelConstructor<InstanceType<typeof PostType>>;
 let Person: PersistentModelConstructor<InstanceType<typeof PersonType>>;
-let PostAuthorJoin: PersistentModelConstructor<InstanceType<
-	typeof PostAuthorJoinType
->>;
-let PostMetadata: NonModelTypeConstructor<InstanceType<
-	typeof PostMetadataType
->>;
+let PostAuthorJoin: PersistentModelConstructor<
+	InstanceType<typeof PostAuthorJoinType>
+>;
+let PostMetadata: NonModelTypeConstructor<
+	InstanceType<typeof PostMetadataType>
+>;
 
 const inmemoryMap = new Map<string, string>();
 
@@ -75,8 +75,9 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 	};
 });
 
-jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () =>
-	AsyncStorageAdapter
+jest.mock(
+	'../src/storage/adapter/getDefaultAdapter/index',
+	() => () => AsyncStorageAdapter
 );
 
 /**

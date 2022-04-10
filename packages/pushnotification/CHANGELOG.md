@@ -3,6 +3,152 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.15...@aws-amplify/pushnotification@4.3.16) (2022-04-04)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.14...@aws-amplify/pushnotification@4.3.15) (2022-03-28)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.13...@aws-amplify/pushnotification@4.3.14) (2022-03-22)
+
+
+### Bug Fixes
+
+* **pushnotification/android:** return just the error message rather than the whole exception ([#9641](https://github.com/aws-amplify/amplify-js/issues/9641)) ([0de2768](https://github.com/aws-amplify/amplify-js/commit/0de27687c5639dbf899718396c0ae5ba50f7ab29))
+
+
+
+
+
+## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.12...@aws-amplify/pushnotification@4.3.13) (2022-03-10)
+
+
+### Bug Fixes
+
+* **pushnotification:** deprecated build.gradle ([#9607](https://github.com/aws-amplify/amplify-js/issues/9607)) ([6117e71](https://github.com/aws-amplify/amplify-js/commit/6117e71ed36d0a6a12c14303618c76f84c1015d7))
+
+
+
+
+
+## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.11...@aws-amplify/pushnotification@4.3.12) (2022-02-28)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.10...@aws-amplify/pushnotification@4.3.11) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.9...@aws-amplify/pushnotification@4.3.10) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.8...@aws-amplify/pushnotification@4.3.9) (2022-01-07)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.7...@aws-amplify/pushnotification@4.3.8) (2021-12-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** make eligible variables final ([#9301](https://github.com/aws-amplify/amplify-js/issues/9301)) ([ae11b53](https://github.com/aws-amplify/amplify-js/commit/ae11b53f837fe13fca52cae771a4cba06306bc0b))
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.6...@aws-amplify/pushnotification@4.3.7) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.5...@aws-amplify/pushnotification@4.3.6) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.4...@aws-amplify/pushnotification@4.3.5) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.3...@aws-amplify/pushnotification@4.3.4) (2021-11-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** Upgrade Firebase Android package ([#9191](https://github.com/aws-amplify/amplify-js/issues/9191)) ([0476241](https://github.com/aws-amplify/amplify-js/commit/04762411c44dfc927dacd2dbbdcd945e618da979))
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.2...@aws-amplify/pushnotification@4.3.3) (2021-11-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** tap on notification opens the app when it is a killed state ([#9055](https://github.com/aws-amplify/amplify-js/issues/9055)) ([14219e7](https://github.com/aws-amplify/amplify-js/commit/14219e740c780762a7b4e5e6a071446026703b9e))
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.1...@aws-amplify/pushnotification@4.3.2) (2021-11-09)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.0...@aws-amplify/pushnotification@4.3.1) (2021-10-28)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 # [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.2.14...@aws-amplify/pushnotification@4.3.0) (2021-10-21)
 
 ### Features

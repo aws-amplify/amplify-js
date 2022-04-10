@@ -1,14 +1,12 @@
 import axios from 'axios';
-
 import {
 	AxiosHttpHandler,
 	reactNativeRequestTransformer,
 } from '../../src/providers/axios-http-handler';
-import { HttpRequest } from '@aws-sdk/protocol-http';
+import { HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { Platform, Logger } from '@aws-amplify/core';
 
 jest.mock('axios');
-jest.useFakeTimers();
 
 let request: HttpRequest;
 
@@ -28,6 +26,11 @@ describe('AxiosHttpHandler', () => {
 			headers: {},
 			clone: () => null as unknown as HttpRequest,
 		};
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('.handle', () => {
@@ -57,7 +60,7 @@ describe('AxiosHttpHandler', () => {
 				method: 'get',
 				responseType: 'blob',
 				url: 'http://localhost:3000/?key=value',
-			})
+			});
 		});
 
 		it("should update data to null when it's undefined and content-type header is set", async () => {
@@ -147,6 +150,7 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should timeout after requestTimeout', async () => {
+			jest.useFakeTimers();
 			const handler = new AxiosHttpHandler({ requestTimeout: 1000 });
 			const req = handler.handle(request, options);
 			expect(setTimeout).toHaveBeenCalledTimes(1);
@@ -157,16 +161,66 @@ describe('AxiosHttpHandler', () => {
 			);
 		});
 
-		it('axios request should log and re-throw error', async () => {
+		it('axios request should log errors', async () => {
 			axios.request = jest
 				.fn()
 				.mockImplementation(() => Promise.reject(new Error('err')));
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 			const handler = new AxiosHttpHandler();
+			try {
+				await handler.handle(request, options);
+			} catch (_error) {
+				expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+			}
+		});
+
+		it('cancel request should throw error', async () => {
+			expect.assertions(1);
+			axios.isCancel = jest.fn().mockImplementation(() => true);
+			axios.request = jest
+				.fn()
+				.mockImplementation(() => Promise.reject(new Error('err')));
+			const handler = new AxiosHttpHandler();
 			await expect(handler.handle(request, options)).rejects.toThrowError(
 				'err'
 			);
-			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+		});
+
+		it('unexpected error without a response object should be re-thrown', async () => {
+			axios.request = jest
+				.fn()
+				.mockImplementationOnce(() =>
+					Promise.reject(new Error('Unexpected error!'))
+				);
+			const handler = new AxiosHttpHandler();
+			await expect(handler.handle(request, options)).rejects.toThrowError(
+				'Unexpected error!'
+			);
+		});
+
+		it('error with response object should be converted to a HttpResponse', async () => {
+			const expectedHeaders = {
+				foo: 'bar',
+			};
+			const expectedStatusCode = 400;
+			const expectedBody = 'body';
+			axios.request = jest.fn().mockImplementationOnce(() =>
+				Promise.reject({
+					response: {
+						status: expectedStatusCode,
+						headers: expectedHeaders,
+						data: expectedBody,
+					},
+				})
+			);
+			const handler = new AxiosHttpHandler();
+			const result = await handler.handle(request, options);
+			expect(result.response).toBeInstanceOf(HttpResponse);
+			expect(result.response).toEqual({
+				statusCode: expectedStatusCode,
+				headers: expectedHeaders,
+				body: expectedBody,
+			});
 		});
 	});
 
@@ -182,10 +236,10 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should run defaultTransformers logic on everything else', () => {
-			const mockTransformer = jest.fn()
+			const mockTransformer = jest.fn();
 			axios.defaults.transformRequest = [mockTransformer];
 			reactNativeRequestTransformer[0]('data', {});
 			expect(mockTransformer).toHaveBeenCalledTimes(1);
-		})
+		});
 	});
 });
