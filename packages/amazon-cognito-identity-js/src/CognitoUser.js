@@ -227,7 +227,7 @@ export default class CognitoUser {
 	 */
 	authenticateUserDefaultAuth(authDetails, callback) {
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		const dateHelper = new DateHelper();
 
@@ -295,7 +295,7 @@ export default class CognitoUser {
 
 						const message = CryptoJS.lib.WordArray.create(
 							Buffer.concat([
-								Buffer.from(this.pool.getUserPoolId().split('_')[1], 'utf8'),
+								Buffer.from(this.pool.getUserPoolName(), 'utf8'),
 								Buffer.from(this.username, 'utf8'),
 								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
 								Buffer.from(dateNow, 'utf8'),
@@ -391,7 +391,7 @@ export default class CognitoUser {
 			return;
 		}
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
@@ -794,7 +794,7 @@ export default class CognitoUser {
 		challengeResponses.ANSWER = answerChallenge;
 
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
@@ -883,7 +883,7 @@ export default class CognitoUser {
 				}
 
 				const authenticationHelper = new AuthenticationHelper(
-					this.pool.getUserPoolId().split('_')[1]
+					this.pool.getUserPoolName()
 				);
 				authenticationHelper.generateHashDevice(
 					dataAuthenticate.AuthenticationResult.NewDeviceMetadata
