@@ -5,7 +5,7 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, testSchema } from './helpers';
+import { Model, User, Profile, Post, Comment, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
 
 let initSchema: typeof initSchemaType;
@@ -17,6 +17,7 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
+
 		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getById');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
@@ -159,20 +160,41 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Save', () => {
 		let User: PersistentModelConstructor<User>;
 		let Profile: PersistentModelConstructor<Profile>;
+		let Comment: PersistentModelConstructor<Comment>;
+		let Post: PersistentModelConstructor<Post>;
 		let profile: Profile;
+		let adapter: any;
 
-		beforeAll(async () => {
+		beforeEach(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			DataStore.configure({
+				storageAdapter: Adapter,
+			});
+			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
+				'https://0.0.0.0/does/not/exist/graphql';
 
 			const classes = initSchema(testSchema());
 
-			({ User } = classes as {
+			({ User, Profile, Comment, Post } = classes as {
 				User: PersistentModelConstructor<User>;
+				Profile: PersistentModelConstructor<Profile>;
+				Comment: PersistentModelConstructor<Comment>;
+				Post: PersistentModelConstructor<Post>;
 			});
 
-			({ Profile } = classes as {
-				Profile: PersistentModelConstructor<Profile>;
-			});
+			await DataStore.clear();
+
+			// ensure `.storageAdapter` is set.
+			await DataStore.start();
+
+			adapter = (DataStore as any).storageAdapter;
+			const syncEngine = (DataStore as any).sync;
+
+			// my jest spy-fu wasn't up to snuff here. but, this succesfully
+			// prevents the mutation process from clearing the mutation queue, which
+			// allows us to observe the state of mutations.
+			(syncEngine as any).mutationsProcessor.isReady = () => false;
 
 			profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
@@ -199,6 +221,40 @@ describe('IndexedDBAdapter tests', () => {
 			const user = await DataStore.query(User, user1Id);
 			expect(user.profileID).toEqual(profile.id);
 			expect(user.profile).toEqual(profile);
+		});
+
+		it('should produce a single mutation for an updated model with a BelongTo (regression test)', async done => {
+			// SQLite adapter, for example, was producing an extra mutation
+			// in this scenario.
+
+			const post = await DataStore.save(
+				new Post({
+					title: 'some post',
+				})
+			);
+
+			const comment = await DataStore.save(
+				new Comment({
+					content: 'some comment',
+					post,
+				})
+			);
+
+			const updatedComment = await DataStore.save(
+				Comment.copyOf(comment, draft => {
+					draft.content = 'updated content';
+				})
+			);
+
+			// if this tests gets flaky, either increase the timeout or
+			// find an event to hook into for assurance that mutations have all
+			// been processed by the sync engine.
+			setTimeout(async () => {
+				const mutations = await adapter.getAll('sync_MutationEvent');
+				console.log('mutations', mutations);
+				expect(mutations.length).toBe(3);
+				done();
+			}, 250);
 		});
 	});
 });
