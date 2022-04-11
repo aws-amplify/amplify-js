@@ -138,6 +138,17 @@ class MutationEventOutbox {
 		return mutationEvents;
 	}
 
+	public async getAll<T extends PersistentModel>(
+		storage: StorageFacade
+	): Promise<MutationEvent[]> {
+		const mutationEventModelDefinition =
+			this.schema.namespaces[SYNC].models.MutationEvent;
+
+		const mutationEvents = await storage.query(this.MutationEvent);
+
+		return mutationEvents;
+	}
+
 	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
 		const mutationEvents = await storage.query(this.MutationEvent);
 
@@ -250,7 +261,7 @@ class MutationEventOutbox {
 		});
 	}
 
-	/* 
+	/*
 	if a model is using custom timestamp fields
 	the custom field names will be stored in the model attributes
 

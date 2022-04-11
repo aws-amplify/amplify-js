@@ -1383,8 +1383,18 @@ class DataStore {
 		this.sessionId = this.retrieveSessionId();
 	};
 
-	clear = async function clear() {
+	clear = async function clear(
+		beforeClear?: (pending: MutationEvent[]) => boolean
+	) {
 		if (this.storage === undefined) {
+			return;
+		}
+
+		const continueClear = beforeClear
+			? beforeClear(await this.sync.outbox.getAll(this.storage))
+			: true;
+		if (!continueClear) {
+			logger.warn('Clear aborted.');
 			return;
 		}
 
