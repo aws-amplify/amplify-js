@@ -1,10 +1,4 @@
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	JS,
-	uuid,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import {
 	Draft,
 	immerable,
@@ -13,6 +7,7 @@ import {
 	enablePatches,
 	Patch,
 } from 'immer';
+import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
@@ -430,7 +425,7 @@ const createModelClass = <T extends PersistentModel>(
 					const id = isInternal
 						? _id
 						: modelDefinition.syncable
-						? uuid.v4()
+						? uuid4()
 						: ulid();
 
 					if (!isInternal) {
