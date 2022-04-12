@@ -103,6 +103,10 @@ let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
 let sqlog: any[];
 
+async function pause(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe('SQLiteAdapter', () => {
 	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
@@ -111,6 +115,11 @@ describe('SQLiteAdapter', () => {
 	let db: SQLiteDatabase;
 	let syncEngine: SyncEngine;
 	sqlog = [];
+
+	async function getMutations() {
+		await pause(250);
+		return await db.getAll('select * from MutationEvent', []);
+	}
 
 	beforeEach(async () => {
 		console.log('BEFORE EACH!');
@@ -161,7 +170,7 @@ describe('SQLiteAdapter', () => {
 		expect(retrieved).toEqual(saved);
 	});
 
-	test.only('can manage related models, where parent is saved first', async done => {
+	test.only('can manage related models, where parent is saved first', async () => {
 		sqlog.push('\n\nCREATING POST\n\n');
 
 		const post = await DataStore.save(
@@ -179,6 +188,7 @@ describe('SQLiteAdapter', () => {
 		);
 
 		sqlog.push('\n\nUPDATING COMMENT\n\n');
+		console.log('UPDATE CONTENT');
 		const updatedComment = await DataStore.save(
 			Comment.copyOf(comment, draft => {
 				draft.content = 'updated content';
@@ -187,15 +197,25 @@ describe('SQLiteAdapter', () => {
 
 		sqlog.push('\n\nDONE\n\n');
 
-		// if this tests gets flaky, either increase the timeout or
-		// find an event to hook into for assurance that mutations have all
-		// been processed by the sync engine.
-		setTimeout(async () => {
-			const mutations = await db.getAll('select * from MutationEvent', []);
-			console.log('mutations', mutations);
-			console.log('sqlog', sqlog.join('\n'));
-			expect(mutations.length).toBe(3);
-			done();
-		}, 250);
+		// console.log('mutations', mutations);
+		// console.log('sqlog', sqlog.join('\n'));
+		const mutations = await getMutations();
+		console.log('mutations 1', mutations);
+		expect(mutations.length).toBe(3);
+	});
+
+	it.only('should produce a mutation for a nested BELONGS_TO insert', async () => {
+		const comment = await DataStore.save(
+			new Comment({
+				content: 'newly created comment',
+				post: new Post({
+					title: 'newly created post',
+				}),
+			})
+		);
+
+		const mutations = await getMutations();
+		console.log('mutations 2', mutations);
+		expect(mutations.length).toBe(2);
 	});
 });

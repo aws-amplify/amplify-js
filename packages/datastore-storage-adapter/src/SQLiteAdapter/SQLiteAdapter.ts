@@ -107,11 +107,16 @@ export class SQLiteAdapter implements StorageAdapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
+
+		console.log('connectdModels', connectedModels);
+
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				return { modelName, item, instance };
 			}
 		);
+
+		console.log('connectionStoreNames', connectionStoreNames);
 
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
@@ -135,6 +140,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		const saveStatements = new Set<ParameterizedStatement>();
 
 		for await (const resItem of connectionStoreNames) {
+			// console.log('resItem', resItem);
 			const { modelName, item, instance } = resItem;
 			const { id } = item;
 
@@ -147,6 +153,8 @@ export class SQLiteAdapter implements StorageAdapter {
 			const saveStatement = fromDB
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
+
+			console.log('saving connected item', instance);
 
 			saveStatements.add(saveStatement);
 
