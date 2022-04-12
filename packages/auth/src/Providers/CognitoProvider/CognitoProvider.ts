@@ -13,6 +13,7 @@ import {
 	SignUpParams,
 	SignUpResult,
 	AWSCredentials,
+	SignInWithPassword,
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
@@ -36,14 +37,7 @@ const logger = new Logger('CognitoProvider');
 
 const COGNITO_CACHE_KEY = '__cognito_cached_tokens';
 
-interface CognitoUserStorage {
-	getItem(key: string): string;
-	setItem(key: string, value: string): void;
-	removeItem(key: string): void;
-	clear(): void;
-}
-
-type CognitoChallenge =
+export type CognitoChallenge =
 	| 'SMS_MFA'
 	| 'SELECT_MFA_TYPE'
 	| 'MFA_SETUP'
@@ -54,11 +48,11 @@ type CognitoChallenge =
 	| 'DEVICE_PASSWORD_VERIFIER'
 	| 'ADMIN_NOSRP_AUTH';
 
-type CognitoConfig = {
+export type CognitoProviderConfig = {
 	userPoolId: string;
 	clientId: string;
 	region: string;
-	storage?: CognitoUserStorage;
+	storage?: Storage;
 	identityPoolId?: string;
 	clientMetadata?: { [key: string]: string };
 };
@@ -74,13 +68,18 @@ export enum AuthFlow {
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
-	private _config: CognitoConfig;
+	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlow.USER_PASSWORD_AUTH;
-	private _session: string;
-	private _username: string;
+	private _session: string | null = null;
+	private _username: string | null = null;
+
+	constructor(config: PluginConfig) {
+		this._config = config ?? {};
+		this._userStorage = config.storage ?? new StorageHelper().getStorage();
+	}
 
 	configure(config: PluginConfig) {
 		logger.debug(
@@ -95,7 +94,9 @@ export class CognitoProvider implements AuthProvider {
 			clientId: config.clientId,
 			identityPoolId: config.identityPoolId,
 		};
-		this._userStorage = config.storage || new StorageHelper().getStorage();
+		if (config.storage) {
+			this._userStorage = config.storage;
+		}
 	}
 
 	getCategory(): string {
@@ -111,6 +112,7 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	private isAuthenticated() {
+		// TODO: should also check if token has expired?
 		const session = this.getSessionData();
 		return session !== null;
 	}
@@ -135,15 +137,19 @@ export class CognitoProvider implements AuthProvider {
 		}
 		// Plain username password flow
 		if (this._authFlow === AuthFlow.USER_PASSWORD_AUTH) {
-			const { username } = params;
-			const res = await this.initiateAuthPlainUsernamePassword(params);
+			const { username, password } = params;
+			if (!password) {
+				throw new Error('Password is required for USER_PASSWORD_AUTH flow');
+			}
+			const res = await this.initiateAuthPlainUsernamePassword(
+				params as SignInWithPassword & { password: string }
+			);
 			if (this.hasChallenge(res)) {
 				this._session = res.Session;
 				this._username = username;
-				console.log(this);
 				return { signInSuccesful: false, nextStep: true };
 			} else {
-				this.cacheTokens(res);
+				this.cacheSessionData(res);
 				this._username = username;
 				// placeholder signin event
 				dispatchAuthEvent(
@@ -181,7 +187,7 @@ export class CognitoProvider implements AuthProvider {
 
 	private async initiateAuthPlainUsernamePassword(
 		params: SignInParams & {
-			password?: string;
+			password: string;
 			clientMetadata?: { [key: string]: string };
 		}
 	): Promise<InitiateAuthCommandOutput> {
@@ -194,16 +200,16 @@ export class CognitoProvider implements AuthProvider {
 		}
 		const { username, password } = params;
 		const client = this.createNewCognitoClient({
-			region: this._config.region,
+			region: this._config?.region,
 		});
 		const initiateAuthInput: InitiateAuthCommandInput = {
 			AuthFlow: this._authFlow,
-			ClientId: this._config.clientId,
+			ClientId: this._config?.clientId,
 			AuthParameters: {
 				USERNAME: username,
 				PASSWORD: password,
 			},
-			ClientMetadata: params.clientMetadata || this._config.clientMetadata,
+			ClientMetadata: params.clientMetadata || this._config?.clientMetadata,
 		};
 		try {
 			const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
@@ -240,8 +246,13 @@ export class CognitoProvider implements AuthProvider {
 		console.log('handle new password required challenge');
 	}
 
-	private cacheTokens(output: InitiateAuthCommandOutput) {
+	private cacheSessionData(output: InitiateAuthCommandOutput) {
 		const { AuthenticationResult, Session } = output;
+		if (!AuthenticationResult) {
+			throw new Error(
+				'Cannot cache session data - Initiate Auth did not return tokens'
+			);
+		}
 		const { AccessToken, IdToken, RefreshToken } = AuthenticationResult;
 		this._userStorage.setItem(
 			COGNITO_CACHE_KEY,
@@ -254,10 +265,37 @@ export class CognitoProvider implements AuthProvider {
 		);
 	}
 
+	private handleSmsMfaChallenge(
+		params: ConfirmSignInParams & { mfaType: 'SMS_MFA' }
+	) {
+		const { confirmationCode, mfaType = 'SMS_MFA' } = params;
+	}
+
+	private respondToChallenge(challengeName: CognitoChallenge) {
+		if (!this._username) {
+			throw new Error(
+				`No stored username to handle this challenge, please signIn.`
+			);
+		}
+		if (!this._session) {
+			throw new Error(
+				`No stored Session to handle the ${challengeName} challenge`
+			);
+		}
+	}
+
 	async confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult> {
 		const { confirmationCode, mfaType = 'SMS_MFA' } = params;
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
+		if (!this._username) {
+			throw new Error(
+				'No stored username, please sign in before using confirmSignIn'
+			);
+		}
+		if (!this._session) {
+			throw new Error('No stored Session to handle the login challenge');
+		}
 		challengeResponses.USERNAME = this._username;
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
@@ -274,28 +312,23 @@ export class CognitoProvider implements AuthProvider {
 		const res = await cognitoClient.send(
 			new RespondToAuthChallengeCommand(respondToAuthChallengeInput)
 		);
-		if (this.hasChallenge(res)) {
-			this._session = res.Session;
-			return { signInSuccesful: false, nextStep: true };
-		} else {
-			this.cacheTokens(res);
-			// placeholder signin event
-			dispatchAuthEvent(
-				'signIn',
-				{ something: 'something' },
-				'a user has been signed in.'
-			);
-			return { signInSuccesful: true, nextStep: false };
-		}
-		// throw new Error('Method not implemented.');
+		return this.finishSignInFlow(res);
 	}
 
 	async completeNewPassword(
 		newPassword: string,
 		requiredAttributes?: { [key: string]: any }
-	) {
+	): Promise<SignInResult> {
 		if (!newPassword) {
 			throw new Error('Need password');
+		}
+		if (!this._username) {
+			throw new Error(
+				'No stored username, please sign in before using completeNewPassword'
+			);
+		}
+		if (!this._session) {
+			throw new Error('No stored Session to handle the login challenge');
 		}
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
@@ -319,7 +352,23 @@ export class CognitoProvider implements AuthProvider {
 		const res = await cognitoClient.send(
 			new RespondToAuthChallengeCommand(respondToAuthChallengeInput)
 		);
-		return res;
+		return this.finishSignInFlow(res);
+	}
+
+	private finishSignInFlow(res: InitiateAuthCommandOutput) {
+		if (this.hasChallenge(res)) {
+			this._session = res.Session;
+			return { signInSuccesful: false, nextStep: true };
+		} else {
+			this.cacheSessionData(res);
+			// placeholder signin event
+			dispatchAuthEvent(
+				'signIn',
+				{ something: 'something' },
+				'a user has been signed in.'
+			);
+			return { signInSuccesful: true, nextStep: false };
+		}
 	}
 
 	private getSessionData(): {
@@ -327,10 +376,15 @@ export class CognitoProvider implements AuthProvider {
 		idToken: string;
 		refreshToken: string;
 	} | null {
-		const session = JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY));
-		return session;
+		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
+			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
+		}
+		return null;
 	}
 	async fetchSession(): Promise<AmplifyUser> {
+		if (!this.isConfigured()) {
+			throw new Error();
+		}
 		const { region, identityPoolId } = this._config;
 		if (!region) {
 			logger.debug('region is not configured for getting the credentials');
@@ -427,13 +481,18 @@ export class CognitoProvider implements AuthProvider {
 	): Promise<AuthorizationResponse> {
 		throw new Error('Method not implemented.');
 	}
-	signOut(): Promise<void> {
+	async signOut(): Promise<void> {
 		this.clearCachedTokens();
+		dispatchAuthEvent(
+			'signOut',
+			{ placeholder: 'placeholder' },
+			'A user has been signed out'
+		);
 		return Promise.resolve();
 	}
 
-	isConfigured() {
-		return this._config.userPoolId && this._config.region;
+	private isConfigured(): boolean {
+		return Boolean(this._config?.userPoolId) && Boolean(this._config?.region);
 	}
 
 	private clearCachedTokens() {
