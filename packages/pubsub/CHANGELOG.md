@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.3.0...@aws-amplify/pubsub@4.3.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* PubSub - Resolve ts strict errors in the root import object ([#9733](https://github.com/aws-amplify/amplify-js/issues/9733)) ([c1d360c](https://github.com/aws-amplify/amplify-js/commit/c1d360c4acb388afb7b40cf73ba0484b6cdb64b1))
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.11...@aws-amplify/pubsub@4.3.0) (2022-03-28)
+
+
+### Features
+
+* PubSub Add Options objects for all Providers and fix: Spelling error and deprecation of old exports ([#9683](https://github.com/aws-amplify/amplify-js/issues/9683)) ([b535af2](https://github.com/aws-amplify/amplify-js/commit/b535af2133b5460c6e8e2fcfd89e1fe235872c27))
+
+
+
+
+
+## [4.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.10...@aws-amplify/pubsub@4.2.11) (2022-03-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.2.9...@aws-amplify/pubsub@4.2.10) (2022-03-10)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
