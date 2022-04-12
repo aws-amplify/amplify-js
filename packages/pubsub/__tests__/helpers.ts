@@ -1,5 +1,13 @@
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
+export function delay(timeout) {
+	return new Promise(resolve => {
+		setTimeout(() => {
+			resolve(undefined);
+		}, timeout);
+	});
+}
+
 export class FakeWebSocketInterface {
 	readonly webSocket: FakeWebSocket;
 	readyForUse: Promise<undefined>;
@@ -18,21 +26,27 @@ export class FakeWebSocketInterface {
 		this.webSocket = new FakeWebSocket(closeResolver);
 	}
 
+	async standardConnectionHandshake() {
+		await this.readyForUse;
+		await this.triggerOpen();
+		await this.handShakeMessage();
+	}
+
 	async triggerOpen() {
 		// After an open is triggered, the provider has logic that must execute
 		//   which changes the function resolvers assigned to the websocket
-		await this.runAndWait(() => {
+		await this.runAndResolve(() => {
 			this.webSocket.onopen(new Event('', {}));
-		}, 50);
+		});
 	}
 
 	async triggerClose() {
 		// After a close is triggered, the provider has logic that must execute
 		//   which changes the function resolvers assigned to the websocket
-		await this.runAndWait(() => {
+		await this.runAndResolve(() => {
 			if (this.webSocket.onclose)
 				this.webSocket.onclose(new CloseEvent('', {}));
-		}, 150);
+		});
 	}
 
 	async closeInterface() {
@@ -44,16 +58,16 @@ export class FakeWebSocketInterface {
 
 			// The provider can get pretty wrapped around itself,
 			// but its safe to continue after half a second, even if it hasn't closed the socket
-			this.wait(500).then(() => res(undefined));
+			delay(500).then(() => res(undefined));
 		});
 	}
 
 	async triggerError() {
 		// After an error is triggered, the provider has logic that must execute
 		//   which changes the function resolvers assigned to the websocket
-		await this.runAndWait(() => {
+		await this.runAndResolve(() => {
 			this.webSocket.onerror(new Event('TestError', {}));
-		}, 50);
+		});
 	}
 
 	newWebSocket() {
@@ -85,21 +99,14 @@ export class FakeWebSocketInterface {
 
 	async sendMessage(message: MessageEvent) {
 		// After a message is sent, it takes a few ms for it to enact provider behavior
-		await this.runAndWait(() => {
+		await this.runAndResolve(() => {
 			this.webSocket.onmessage(message);
-		}, 50);
-	}
-
-	wait(timeout) {
-		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve(undefined);
-			}, timeout);
 		});
 	}
-	async runAndWait(fn, timeout) {
+
+	async runAndResolve(fn) {
 		fn();
-		await this.wait(timeout);
+		await Promise.resolve();
 	}
 }
 

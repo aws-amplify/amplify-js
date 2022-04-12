@@ -5,7 +5,7 @@ import Observable from 'zen-observable-ts';
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import Cache from '@aws-amplify/cache';
 import { MESSAGE_TYPES } from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
-import { FakeWebSocketInterface, replaceConstant } from './helpers';
+import { FakeWebSocketInterface, delay, replaceConstant } from './helpers';
 
 describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {
@@ -97,8 +97,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						},
 					});
 
-					// Wait for the subscription to be processed
-					await fakeWebSocketInterface?.wait(50);
+					// Resolve the subscription
+					await Promise.resolve();
 
 					expect(mockError).toBeCalled();
 				});
@@ -120,7 +120,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe({});
 
 					// Wait for the message to be received and processed
-					await fakeWebSocketInterface?.wait(50);
+					await delay(50);
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -146,7 +146,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe({});
 
 					// Wait for the message to be received and processed
-					await fakeWebSocketInterface?.wait(50);
+					await delay(50);
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -173,7 +173,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe({});
 
 					// Wait for the message to be received and processed
-					await fakeWebSocketInterface?.wait(50);
+					await delay(50);
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -208,7 +208,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe({});
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerClose();
-					await fakeWebSocketInterface?.wait(50);
+					await delay(50);
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -276,9 +276,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },
@@ -301,9 +299,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendMessage(
 						new MessageEvent('start_ack', {
 							data: JSON.stringify({
@@ -334,9 +330,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendMessage(
 						new MessageEvent('start_ack', {
 							data: JSON.stringify({
@@ -366,9 +360,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						error: mockError,
 					});
 
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_ERROR,
 						payload: { data: {} },
@@ -407,8 +399,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						},
 					});
 
-					// Wait while the message is received and processed
-					await fakeWebSocketInterface?.wait(50);
+					// Resolve the message delivery actions
+					await Promise.resolve();
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -433,9 +425,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						error: x => {},
 					});
 
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.triggerError();
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
@@ -468,8 +458,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						},
 					});
 
-					// Wait while the message is received and processed
-					await fakeWebSocketInterface?.wait(50);
+					// Resolve the message delivery actions
+					await Promise.resolve();
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -502,8 +492,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							}),
 						})
 					);
-					// Wait for the connection timeout to get updated with the keep alive payload
-					await fakeWebSocketInterface?.wait(10);
+					// Resolve the message delivery actions
+					await Promise.resolve();
 
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
@@ -511,7 +501,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					// Now wait for the timeout to elapse
-					await fakeWebSocketInterface?.wait(100);
+					await delay(100);
 
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
@@ -528,9 +518,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					const subscription = observer.subscribe({});
 
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.handShakeMessage();
+					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },
@@ -553,12 +541,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							error: () => {},
 						});
 
-						await fakeWebSocketInterface?.readyForUse;
-						await fakeWebSocketInterface?.triggerOpen();
-						await fakeWebSocketInterface?.handShakeMessage();
+						await fakeWebSocketInterface?.standardConnectionHandshake();
 
 						// Wait long enough that the shortened timeout will elapse
-						await fakeWebSocketInterface?.wait(100);
+						await delay(100);
 
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
@@ -584,7 +570,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await fakeWebSocketInterface?.triggerOpen();
 
 						// Wait long enough that the shortened timeout will elapse
-						await fakeWebSocketInterface?.wait(100);
+						await delay(100);
 
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).toBeCalledWith(
@@ -715,7 +701,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							});
 
 						// It takes time for the credentials to resolve
-						await fakeWebSocketInterface?.wait(50);
+						await delay(50);
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'WARN',
