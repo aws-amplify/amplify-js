@@ -9,4 +9,4 @@
            }
        ```
    - The process of checking the schema version (`checkSchemaVersion`) occurs when DataStore starts, after the Storage Engine has been initialized, and before the Sync Engine is initialized.
-   - If the schema version has changed, we clear local storage, and perform a full sync
+   - If the schema version has changed, we clear local storage, and perform a full sync. _Note: When local storage is cleared, any local changes that have not yet been persisted to AppSync will be lost._
