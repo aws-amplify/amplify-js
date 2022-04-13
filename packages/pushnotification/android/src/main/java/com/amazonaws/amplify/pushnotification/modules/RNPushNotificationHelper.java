@@ -31,10 +31,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
-
-import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -364,7 +362,7 @@ public class RNPushNotificationHelper {
             // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
             //         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        
+
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will
