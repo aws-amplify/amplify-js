@@ -179,15 +179,12 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		outDir: pkgTscES5OutDir,
 	};
 
-	compilerOptions.inlineSourceMap = true;
-	compilerOptions.inlineSources = true;
-
-	// if (watchMode) {
-	// 	compilerOptions.inlineSourceMap = true;
-	// 	compilerOptions.inlineSources = true;
-	// } else {
-	// 	compilerOptions.sourceMap = true;
-	// }
+	if (watchMode) {
+		compilerOptions.inlineSourceMap = true;
+		compilerOptions.inlineSources = true;
+	} else {
+		compilerOptions.sourceMap = true;
+	}
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
@@ -239,15 +236,12 @@ function buildES6(typeScriptCompiler, watchMode) {
 		outDir: pkgTscES6OutDir,
 	};
 
-	compilerOptions.inlineSourceMap = true;
-	compilerOptions.inlineSources = true;
-
-	// if (watchMode) {
-	// 	compilerOptions.inlineSourceMap = true;
-	// 	compilerOptions.inlineSources = true;
-	// } else {
-	// 	compilerOptions.sourceMap = true;
-	// }
+	if (watchMode) {
+		compilerOptions.inlineSourceMap = true;
+		compilerOptions.inlineSources = true;
+	} else {
+		compilerOptions.sourceMap = true;
+	}
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
