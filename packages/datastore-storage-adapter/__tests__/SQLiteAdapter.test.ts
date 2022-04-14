@@ -1,6 +1,53 @@
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
+import { SQLiteAdapter } from '../src';
+import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
+import {
+	DataStore as DataStoreType,
+	StorageAdapter,
+	PersistentModelConstructor,
+	initSchema as initSchemaType,
+} from '@aws-amplify/datastore';
+import { Model, Post, Comment, testSchema } from './helpers';
+import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
+import Observable from 'zen-observable';
+
+jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
+	return {
+		status: () => Observable.of(false) as any,
+		unsubscribe: () => {},
+		socketDisconnected: () => {},
+	};
+});
+
+// TODO: move into generalized test suite helper?
+jest.mock('react-native-sqlite-storage', () => {
+	return {
+		async openDatabase(name, version, displayname, size) {
+			return new InnerSQLiteDatabase();
+		},
+		async deleteDatabase(name) {},
+		enablePromise(enabled) {},
+		DEBUG(debug) {},
+	};
+});
+
+let initSchema: typeof initSchemaType;
+let DataStore: typeof DataStoreType;
+let sqlog: any[];
+
+/**
+ * Convenience function to wait for a number of ms.
+ *
+ * Intended as a cheap way to wait for async operations to settle.
+ *
+ * @param ms number of ms to pause for
+ */
+async function pause(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /**
  * A lower-level SQLite wrapper to test SQLiteAdapter against.
  * It's intended to be fast, using an in-memory database.
@@ -55,63 +102,6 @@ class InnerSQLiteDatabase {
 	}
 
 	async close() {}
-}
-
-// TODO: move into generalized test suite helper?
-jest.mock('react-native-sqlite-storage', () => {
-	return {
-		async openDatabase(name, version, displayname, size) {
-			return new InnerSQLiteDatabase();
-		},
-		async deleteDatabase(name) {},
-		enablePromise(enabled) {},
-		DEBUG(debug) {},
-	};
-});
-
-import { SQLiteAdapter } from '../src';
-import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
-import {
-	DataStore as DataStoreType,
-	StorageAdapter,
-	InternalSchema,
-	PersistentModelConstructor,
-	QueryOne,
-	SchemaModel,
-	initSchema as initSchemaType,
-} from '@aws-amplify/datastore';
-import {
-	Model,
-	Post,
-	Comment,
-	testSchema,
-	internalTestSchema,
-} from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
-import Observable from 'zen-observable';
-// import DataStoreConnectivity from '@aws-amplify/datastore/src/sync/datastoreConnectivity';
-
-jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
-	return {
-		status: () => Observable.of(false) as any,
-		unsubscribe: () => {},
-		socketDisconnected: () => {},
-	};
-});
-
-let initSchema: typeof initSchemaType;
-let DataStore: typeof DataStoreType;
-let sqlog: any[];
-
-/**
- * Convenience function to wait for a number of ms.
- *
- * Intended as a cheap way to wait for async operations to settle.
- *
- * @param ms number of ms to pause for
- */
-async function pause(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe('SQLiteAdapter', () => {
