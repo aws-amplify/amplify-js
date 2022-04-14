@@ -45,19 +45,19 @@ describe('IndexedDBAdapter tests', () => {
 
 			({ id: model1Id } = await DataStore.save(
 				new Model({
-					field1: 'Some value',
+					field1: 'field1 value 0',
 					dateCreated: baseDate.toISOString(),
 				})
 			));
 			await DataStore.save(
 				new Model({
-					field1: 'another value',
+					field1: 'field1 value 1',
 					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
 				})
 			);
 			await DataStore.save(
 				new Model({
-					field1: 'a third value',
+					field1: 'field1 value 2',
 					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
@@ -70,7 +70,7 @@ describe('IndexedDBAdapter tests', () => {
 		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
-			expect(result.field1).toEqual('Some value');
+			expect(result.field1).toEqual('field1 value 0');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1('eq', 'another value')
+				c.field1('eq', 'field1 value 1')
 			);
 
 			expect(results.length).toEqual(1);
@@ -94,7 +94,7 @@ describe('IndexedDBAdapter tests', () => {
 			});
 
 			expect(results.length).toEqual(3);
-			expect(results[0].field1).toEqual('a third value');
+			expect(results[0].field1).toEqual('field1 value 2');
 			expect(spyOnGetAll).toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
 			expect(spyOnMemory).toHaveBeenCalled();
@@ -149,7 +149,7 @@ describe('IndexedDBAdapter tests', () => {
 			expect(results.length).toEqual(0);
 		});
 
-		it('shouldNOT  match fields of any non-empty value for `("ge", null)`', async () => {
+		it('should NOT  match fields of any non-empty value for `("ge", null)`', async () => {
 			const results = await DataStore.query(Model, m => m.field1('ge', null));
 			expect(results.length).toEqual(0);
 		});
@@ -190,6 +190,48 @@ describe('IndexedDBAdapter tests', () => {
 				m.field1('le', undefined)
 			);
 			expect(results.length).toEqual(0);
+		});
+
+		it('should match gt', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('gt', 'field1 value 0')
+			);
+			expect(results.length).toEqual(2);
+		});
+
+		it('should match ge', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('ge', 'field1 value 1')
+			);
+			expect(results.length).toEqual(2);
+		});
+
+		it('should match lt', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('lt', 'field1 value 2')
+			);
+			expect(results.length).toEqual(2);
+		});
+
+		it('should match le', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('le', 'field1 value 1')
+			);
+			expect(results.length).toEqual(2);
+		});
+
+		it('should match eq', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('eq', 'field1 value 1')
+			);
+			expect(results.length).toEqual(1);
+		});
+
+		it('should match ne', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('ne', 'field1 value 1')
+			);
+			expect(results.length).toEqual(2);
 		});
 	});
 
@@ -331,8 +373,6 @@ describe('IndexedDBAdapter tests', () => {
 				})
 			);
 
-			console.log('UPDATE CONTENT');
-
 			const updatedComment = await DataStore.save(
 				Comment.copyOf(comment, draft => {
 					draft.content = 'updated content';
@@ -340,7 +380,6 @@ describe('IndexedDBAdapter tests', () => {
 			);
 
 			const mutations = await getMutations();
-			console.log('mutations 1', mutations);
 
 			// comment update should be smashed to together with post
 			expect(mutations.length).toBe(2);
@@ -357,7 +396,6 @@ describe('IndexedDBAdapter tests', () => {
 			);
 
 			const mutations = await getMutations();
-			console.log('mutations 2', mutations);
 
 			// one for the new comment, one for the new post
 			expect(mutations.length).toBe(2);
