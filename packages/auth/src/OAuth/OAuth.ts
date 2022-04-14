@@ -125,7 +125,11 @@ export default class OAuth {
 			.map(pairings => pairings.split('='))
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
-		if (!code) {
+		const currentUrlPathname = parse(currentUrl).pathname || '/';
+		const redirectSignInPathname =
+			parse(this._config.redirectSignIn).pathname || '/';
+
+		if (!code || currentUrlPathname !== redirectSignInPathname) {
 			return;
 		}
 
@@ -287,7 +291,7 @@ export default class OAuth {
 		);
 		logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-		return this._urlOpener(oAuthLogoutEndpoint);
+		return this._urlOpener(oAuthLogoutEndpoint, signout_uri);
 	}
 
 	private _generateState(length: number) {

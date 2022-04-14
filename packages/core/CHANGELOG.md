@@ -3,312 +3,541 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.6.0...@aws-amplify/core@3.7.0) (2020-10-15)
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.1...@aws-amplify/core@4.4.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.0...@aws-amplify/core@4.4.1) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.14...@aws-amplify/core@4.4.0) (2022-02-28)
+
+
+### Bug Fixes
+
+* pin async storage to 1.15.17 ([#9570](https://github.com/aws-amplify/amplify-js/issues/9570)) ([bc5235a](https://github.com/aws-amplify/amplify-js/commit/bc5235ac0d15242f7a13457f40999b5331823395))
 
 
 ### Features
 
-* **@aws-amplify/core:** add worker support to reachability ([#6956](https://github.com/aws-amplify/amplify-js/issues/6956)) ([ebb20c1](https://github.com/aws-amplify/amplify-js/commit/ebb20c1c970eea5dc32288f4dfda9c2cc959ac10))
+* **@aws-amplify/core:** add ui protected channel ([#9554](https://github.com/aws-amplify/amplify-js/issues/9554)) ([86e07fc](https://github.com/aws-amplify/amplify-js/commit/86e07fcd3ebbaa5f03d65ed8009b7531ee300e39))
 
 
 
 
+
+## [4.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.13...@aws-amplify/core@4.3.14) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.12...@aws-amplify/core@4.3.13) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
+## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.11...@aws-amplify/core@4.3.12) (2022-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use empty string as translation ([#9403](https://github.com/aws-amplify/amplify-js/issues/9403)) ([512fd99](https://github.com/aws-amplify/amplify-js/commit/512fd99a0d6751ffc3915de6a043d2e6fe01f1e4))
+
+
+### Reverts
+
+* Revert "fix(@aws-amplify/core): use empty string as translation (#9403)" (#9436) ([711259b](https://github.com/aws-amplify/amplify-js/commit/711259b482d721f66d4acc728ff96a8a26965787)), closes [#9403](https://github.com/aws-amplify/amplify-js/issues/9403) [#9436](https://github.com/aws-amplify/amplify-js/issues/9436)
+
+
+
+
+
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.10...@aws-amplify/core@4.3.11) (2021-12-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.9...@aws-amplify/core@4.3.10) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.8...@aws-amplify/core@4.3.9) (2021-12-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Use undefined for default sequence token with CloudWatch logging ([#9181](https://github.com/aws-amplify/amplify-js/issues/9181)) ([6f217aa](https://github.com/aws-amplify/amplify-js/commit/6f217aa89e672fc4665816756994e6245b19227e))
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.7...@aws-amplify/core@4.3.8) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.6...@aws-amplify/core@4.3.7) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.5...@aws-amplify/core@4.3.6) (2021-11-12)
+
+
+### Reverts
+
+* Revert "chore:update-@aws-sdk/client-cloudwatch-logs (#9189)" (#9192) ([36fe262](https://github.com/aws-amplify/amplify-js/commit/36fe26243247c45cdb3f5391d91f0641c9cd5b99)), closes [#9189](https://github.com/aws-amplify/amplify-js/issues/9189) [#9192](https://github.com/aws-amplify/amplify-js/issues/9192)
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.4...@aws-amplify/core@4.3.5) (2021-11-09)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.3...@aws-amplify/core@4.3.4) (2021-10-28)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.2...@aws-amplify/core@4.3.3) (2021-10-21)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.1...@aws-amplify/core@4.3.2) (2021-10-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.0...@aws-amplify/core@4.3.1) (2021-09-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.11...@aws-amplify/core@4.3.0) (2021-09-24)
+
+### Features
+
+- **Geo:** add Geo class and amazonLocationServicesProvider - Geo milestone 1 - PR 3/6 ([#8618](https://github.com/aws-amplify/amplify-js/issues/8618)) ([4c1c1fe](https://github.com/aws-amplify/amplify-js/commit/4c1c1fe786f2a4b1d7e1260491357a248dd6d084))
+- **Geo:** getAvailableMaps and getDefaultMap - Geo milestone 1 - PR 4 ([#8620](https://github.com/aws-amplify/amplify-js/issues/8620)) ([229f93e](https://github.com/aws-amplify/amplify-js/commit/229f93edf1bc07de26aebe28f26f3066d3e31a74))
+- **Geo:** searchByCoordinates - Geo milestone 1 - PR 6 ([#8622](https://github.com/aws-amplify/amplify-js/issues/8622)) ([ae725c0](https://github.com/aws-amplify/amplify-js/commit/ae725c0f2d55ba95d4ecc76e46506a888e6b67c5))
+- **Geo:** searchByText - Geo milestone 1 - PR 5 ([#8621](https://github.com/aws-amplify/amplify-js/issues/8621)) ([5346ae1](https://github.com/aws-amplify/amplify-js/commit/5346ae17dcf5672b3c25c46f483af53d5f5dfc93))
+- **Geo:** update aws-amplify/core - Geo milestone 1 - PR 2/6 ([#8617](https://github.com/aws-amplify/amplify-js/issues/8617)) ([3a83893](https://github.com/aws-amplify/amplify-js/commit/3a8389388ebe7a521d0b78c58e24d91b53db4799))
+
+## [4.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.10...@aws-amplify/core@4.2.11) (2021-09-22)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** error throwing and tests ([#8916](https://github.com/aws-amplify/amplify-js/issues/8916)) ([0918a07](https://github.com/aws-amplify/amplify-js/commit/0918a0741d1e90bc67cbfb10f3eb6ce719fee58e))
+
+## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.9...@aws-amplify/core@4.2.10) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.8...@aws-amplify/core@4.2.9) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.7...@aws-amplify/core@4.2.8) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.6...@aws-amplify/core@4.2.7) (2021-09-04)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.5...@aws-amplify/core@4.2.6) (2021-09-02)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.4...@aws-amplify/core@4.2.5) (2021-08-26)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.3...@aws-amplify/core@4.2.4) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.2...@aws-amplify/core@4.2.3) (2021-08-12)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** Include refreshToken in UniversalStorage for SSR ([#7374](https://github.com/aws-amplify/amplify-js/issues/7374)) ([1e0887b](https://github.com/aws-amplify/amplify-js/commit/1e0887bdc45e178f04229c888051ecf10d2bfabc))
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.1...@aws-amplify/core@4.2.2) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.0...@aws-amplify/core@4.2.1) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.3...@aws-amplify/core@4.2.0) (2021-07-16)
+
+### Features
+
+- core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.2...@aws-amplify/core@4.1.3) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.1...@aws-amplify/core@4.1.2) (2021-06-24)
+
+### Bug Fixes
+
+- **@aws-amplify/auth:** switching unauthenticated users to authenticated users ([40cc22f](https://github.com/aws-amplify/amplify-js/commit/40cc22f8b332e4748c85504ca8e2ac2713fd87d1))
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.0...@aws-amplify/core@4.1.1) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.3...@aws-amplify/core@4.1.0) (2021-06-10)
+
+### Bug Fixes
+
+- remove RN-specific peerDeps to correctly hoist core in npm@7 ([#8368](https://github.com/aws-amplify/amplify-js/issues/8368)) ([9cc5218](https://github.com/aws-amplify/amplify-js/commit/9cc52186e687d6782b41581959380bd7f534e5d2))
+
+### Features
+
+- added log queue and size safety to cloudwatch provider ([ae2f198](https://github.com/aws-amplify/amplify-js/commit/ae2f198b1e96c232f52f4ce9d613c4f3d94a0718))
+- adding more methods to the cloudwatchlogger ([263c637](https://github.com/aws-amplify/amplify-js/commit/263c6376fffd48e9c080aab8141d55cd6e31d135))
+- initial setup for the cloudwatch logger and provider ([57a7d4c](https://github.com/aws-amplify/amplify-js/commit/57a7d4c9add70170c69e7fad89f59c4d0efe779d))
+- moved CloudLogger logic to ConsoleLogger ([93db90d](https://github.com/aws-amplify/amplify-js/commit/93db90d041c7ca697e5993003a4fb105a3821cbe))
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.1...@aws-amplify/core@4.0.3) (2021-05-26)
+
+### Bug Fixes
+
+- **@aws-amplify/api-rest:** Improve Clock Drift/Skew Logic ([#8319](https://github.com/aws-amplify/amplify-js/issues/8319)) ([8448b4f](https://github.com/aws-amplify/amplify-js/commit/8448b4fe1f995f0d6056bcb46dd0fb2023fb197d))
+- added expiration to ICredentials type ([6553676](https://github.com/aws-amplify/amplify-js/commit/6553676ae2f5add5705dedd1b66a7e19c064cee1))
+- remove Cognito Identity Id from storage on SignIn/SignOut ([#8278](https://github.com/aws-amplify/amplify-js/issues/8278)) ([ef358a7](https://github.com/aws-amplify/amplify-js/commit/ef358a761cf74d16b61172cd1a75b4bc6cfd2bdf))
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.0...@aws-amplify/core@4.0.1) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.23...@aws-amplify/core@4.0.0) (2021-05-11)
+
+- chore!: Upgrade to @react-native-async-storage/async-storage (#8250) ([1de4853](https://github.com/aws-amplify/amplify-js/commit/1de48531b68e3c53c3b7dbf4487da4578cb79888)), closes [#8250](https://github.com/aws-amplify/amplify-js/issues/8250)
+
+### BREAKING CHANGES
+
+- Upgrade from React Native AsyncStorage to @react-native-async-storage/async-storage
+
+Co-authored-by: Ashish Nanda <ashish.nanda.5591@gmail.com>
+Co-authored-by: Ivan Artemiev <29709626+iartemiev@users.noreply.github.com>
+
+## [3.8.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.22...@aws-amplify/core@3.8.23) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.21...@aws-amplify/core@3.8.22) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.20...@aws-amplify/core@3.8.21) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.19...@aws-amplify/core@3.8.20) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.18...@aws-amplify/core@3.8.19) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.17...@aws-amplify/core@3.8.18) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.16...@aws-amplify/core@3.8.17) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.15...@aws-amplify/core@3.8.16) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.14...@aws-amplify/core@3.8.15) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.13...@aws-amplify/core@3.8.14) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.12...@aws-amplify/core@3.8.13) (2021-02-09)
+
+### Reverts
+
+- Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+## [3.8.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.11...@aws-amplify/core@3.8.12) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.10...@aws-amplify/core@3.8.11) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.9...@aws-amplify/core@3.8.10) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.8...@aws-amplify/core@3.8.9) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.7...@aws-amplify/core@3.8.8) (2020-12-17)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** use addEventListener for Reachability ([#7407](https://github.com/aws-amplify/amplify-js/issues/7407)) ([cd1db8f](https://github.com/aws-amplify/amplify-js/commit/cd1db8f99aa2499936792ddb8267a8a951603434))
+
+## [3.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.6...@aws-amplify/core@3.8.7) (2020-12-10)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** refresh manually after TTL has passed ([#7288](https://github.com/aws-amplify/amplify-js/issues/7288)) ([74b895c](https://github.com/aws-amplify/amplify-js/commit/74b895c45e629edc5ecf333e2769f222ae500834))
+
+## [3.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.5...@aws-amplify/core@3.8.6) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.4...@aws-amplify/core@3.8.5) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.3...@aws-amplify/core@3.8.4) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.2...@aws-amplify/core@3.8.3) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.1...@aws-amplify/core@3.8.2) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [3.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.0...@aws-amplify/core@3.8.1) (2020-10-31)
+
+### Bug Fixes
+
+- **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+# [3.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.7.0...@aws-amplify/core@3.8.0) (2020-10-29)
+
+### Features
+
+- **@aws-amplify/datastore:** add Selective Sync ([#7001](https://github.com/aws-amplify/amplify-js/issues/7001)) ([8fa348b](https://github.com/aws-amplify/amplify-js/commit/8fa348b8ba708434992d97557b0fceebbf7abe9a))
+
+# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.6.0...@aws-amplify/core@3.7.0) (2020-10-15)
+
+### Features
+
+- **@aws-amplify/core:** add worker support to reachability ([#6956](https://github.com/aws-amplify/amplify-js/issues/6956)) ([ebb20c1](https://github.com/aws-amplify/amplify-js/commit/ebb20c1c970eea5dc32288f4dfda9c2cc959ac10))
 
 # [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.5...@aws-amplify/core@3.6.0) (2020-10-01)
 
-
 ### Features
 
-* **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
-
-
-
-
+- **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
 
 ## [3.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.4...@aws-amplify/core@3.5.5) (2020-09-25)
 
-
 ### Bug Fixes
 
-* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
-
-
-
-
+- Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
 
 ## [3.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.3...@aws-amplify/core@3.5.4) (2020-09-16)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/auth:** No Auth module registered in Amplify ([#6811](https://github.com/aws-amplify/amplify-js/issues/6811)) ([cfa00d3](https://github.com/aws-amplify/amplify-js/commit/cfa00d32ce942faba72a8064173ba5fc9cba17bd))
-
-
-
-
+- **@aws-amplify/auth:** No Auth module registered in Amplify ([#6811](https://github.com/aws-amplify/amplify-js/issues/6811)) ([cfa00d3](https://github.com/aws-amplify/amplify-js/commit/cfa00d32ce942faba72a8064173ba5fc9cba17bd))
 
 ## [3.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.2...@aws-amplify/core@3.5.3) (2020-09-15)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.1...@aws-amplify/core@3.5.2) (2020-09-10)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.0...@aws-amplify/core@3.5.1) (2020-09-03)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 # [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.7...@aws-amplify/core@3.5.0) (2020-09-03)
-
 
 ### Features
 
-* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
-
-
-
-
+- **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
 
 ## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.6...@aws-amplify/core@3.4.7) (2020-09-01)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/core:** get new guest credentials if identity id isn't found ([#6618](https://github.com/aws-amplify/amplify-js/issues/6618)) ([7b904bf](https://github.com/aws-amplify/amplify-js/commit/7b904bf8647a39e5bdb683d9767aaba69ab932f3))
-
-
-
-
+- **@aws-amplify/core:** get new guest credentials if identity id isn't found ([#6618](https://github.com/aws-amplify/amplify-js/issues/6618)) ([7b904bf](https://github.com/aws-amplify/amplify-js/commit/7b904bf8647a39e5bdb683d9767aaba69ab932f3))
 
 ## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.5...@aws-amplify/core@3.4.6) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.4...@aws-amplify/core@3.4.5) (2020-08-06)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.3...@aws-amplify/core@3.4.4) (2020-07-27)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.2...@aws-amplify/core@3.4.3) (2020-07-22)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.1...@aws-amplify/core@3.4.2) (2020-07-09)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.0...@aws-amplify/core@3.4.1) (2020-07-07)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 # [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.3...@aws-amplify/core@3.4.0) (2020-06-18)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
-
+- **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
 
 ### Features
 
-* **core:** expose observable for testing ([#6042](https://github.com/aws-amplify/amplify-js/issues/6042)) ([05257da](https://github.com/aws-amplify/amplify-js/commit/05257da6604917ab1a54accbfc9945c6bbbbb22b))
-* Automatically handle clock drift/skew for API calls ([#5869](https://github.com/aws-amplify/amplify-js/issues/5869)) ([6218ff6](https://github.com/aws-amplify/amplify-js/commit/6218ff62269056f46d65760c3ec61baadb3742f4))
-
-
-
-
+- **core:** expose observable for testing ([#6042](https://github.com/aws-amplify/amplify-js/issues/6042)) ([05257da](https://github.com/aws-amplify/amplify-js/commit/05257da6604917ab1a54accbfc9945c6bbbbb22b))
+- Automatically handle clock drift/skew for API calls ([#5869](https://github.com/aws-amplify/amplify-js/issues/5869)) ([6218ff6](https://github.com/aws-amplify/amplify-js/commit/6218ff62269056f46d65760c3ec61baadb3742f4))
 
 ## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.2...@aws-amplify/core@3.3.3) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.1...@aws-amplify/core@3.3.2) (2020-06-04)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.0...@aws-amplify/core@3.3.1) (2020-06-03)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 # [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.9...@aws-amplify/core@3.3.0) (2020-06-02)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/datastore:** Allow partial subscriptions. ([#5968](https://github.com/aws-amplify/amplify-js/issues/5968)) ([3331e9a](https://github.com/aws-amplify/amplify-js/commit/3331e9a713b38bb672aca5dc667ecef30b8820ce))
-
+- **@aws-amplify/datastore:** Allow partial subscriptions. ([#5968](https://github.com/aws-amplify/amplify-js/issues/5968)) ([3331e9a](https://github.com/aws-amplify/amplify-js/commit/3331e9a713b38bb672aca5dc667ecef30b8820ce))
 
 ### Features
 
-* **@aws-amplify/datastore:** Sync Status Notification. Performance Improvements. ([#5942](https://github.com/aws-amplify/amplify-js/issues/5942)) ([67fac50](https://github.com/aws-amplify/amplify-js/commit/67fac50cd734338ac76797d06111fc5ca911bd48))
-
-
-
-
+- **@aws-amplify/datastore:** Sync Status Notification. Performance Improvements. ([#5942](https://github.com/aws-amplify/amplify-js/issues/5942)) ([67fac50](https://github.com/aws-amplify/amplify-js/commit/67fac50cd734338ac76797d06111fc5ca911bd48))
 
 ## [3.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.8...@aws-amplify/core@3.2.9) (2020-05-26)
 
-
 ### Bug Fixes
 
-* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
-
-
-
-
+- **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
 
 ## [3.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.7...@aws-amplify/core@3.2.8) (2020-05-22)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.6...@aws-amplify/core@3.2.7) (2020-05-14)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/core:** Correctly log retry error object ([#5699](https://github.com/aws-amplify/amplify-js/issues/5699)) ([825ed73](https://github.com/aws-amplify/amplify-js/commit/825ed73218ae3074c536da2d3e444bb965506a97))
-
-
-
-
+- **@aws-amplify/core:** Correctly log retry error object ([#5699](https://github.com/aws-amplify/amplify-js/issues/5699)) ([825ed73](https://github.com/aws-amplify/amplify-js/commit/825ed73218ae3074c536da2d3e444bb965506a97))
 
 ## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.5...@aws-amplify/core@3.2.6) (2020-04-30)
 
-
 ### Reverts
 
-* Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
-
-
-
-
+- Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
 
 ## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.4...@aws-amplify/core@3.2.5) (2020-04-24)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.3...@aws-amplify/core@3.2.4) (2020-04-14)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/api-graphql:** Add missing @aws-amplify/pubsub… ([#5352](https://github.com/aws-amplify/amplify-js/issues/5352)) ([ffb6514](https://github.com/aws-amplify/amplify-js/commit/ffb6514ab2aa14e09d2aa0df0da110585b5a713f))
-
-
-
-
+- **@aws-amplify/api-graphql:** Add missing @aws-amplify/pubsub… ([#5352](https://github.com/aws-amplify/amplify-js/issues/5352)) ([ffb6514](https://github.com/aws-amplify/amplify-js/commit/ffb6514ab2aa14e09d2aa0df0da110585b5a713f))
 
 ## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.2...@aws-amplify/core@3.2.3) (2020-04-08)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.1...@aws-amplify/core@3.2.2) (2020-04-07)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.0...@aws-amplify/core@3.2.1) (2020-04-03)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 # [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.1.2...@aws-amplify/core@3.2.0) (2020-04-02)
-
 
 ### Features
 
-* **@aws-amplify/ui-components:** I18n Support ([#4979](https://github.com/aws-amplify/amplify-js/issues/4979)) ([6f3e37c](https://github.com/aws-amplify/amplify-js/commit/6f3e37cf1d764455475bc4aee689bd3fbe71dd3e))
-* **@aws-amplify/ui-components:** User agent tracking for UI component packages ([#4804](https://github.com/aws-amplify/amplify-js/issues/4804)) ([15a0a2f](https://github.com/aws-amplify/amplify-js/commit/15a0a2fadeb96543721a6733faeb509efc26e1e2))
-
-
-
-
+- **@aws-amplify/ui-components:** I18n Support ([#4979](https://github.com/aws-amplify/amplify-js/issues/4979)) ([6f3e37c](https://github.com/aws-amplify/amplify-js/commit/6f3e37cf1d764455475bc4aee689bd3fbe71dd3e))
+- **@aws-amplify/ui-components:** User agent tracking for UI component packages ([#4804](https://github.com/aws-amplify/amplify-js/issues/4804)) ([15a0a2f](https://github.com/aws-amplify/amplify-js/commit/15a0a2fadeb96543721a6733faeb509efc26e1e2))
 
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.1.1...@aws-amplify/core@3.1.2) (2020-04-01)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.1.0...@aws-amplify/core@3.1.1) (2020-04-01)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.3.0...@aws-amplify/core@3.1.0) (2020-03-31)
 

@@ -523,9 +523,13 @@ describe('Rest API test', () => {
 
 			// Server is always "correct"
 			const serverDate = new Date();
-			// Local machine is ahead by 1 hour
 			const requestDate = new Date();
-			requestDate.setHours(requestDate.getHours() + 1);
+
+			// Local machine is behind by 1 hour
+			// It's important to change the _server_ time in this test,
+			// because the local time "looks correct" to the user & DateUtils
+			// compares the server response to local time.
+			serverDate.setHours(serverDate.getHours() + 1);
 
 			const clockSkewError: any = new Error('BadRequestException');
 			const init = {
@@ -546,6 +550,7 @@ describe('Rest API test', () => {
 			// Ensure the errors are the correct type for gating
 			expect(DateUtils.isClockSkewError(normalError)).toBe(false);
 			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
+			expect(DateUtils.isClockSkewed(serverDate)).toBe(true);
 
 			jest
 				.spyOn(RestClient.prototype as any, 'endpoint')

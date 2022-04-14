@@ -1,18 +1,6 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Buffer } from 'buffer';
@@ -20,12 +8,25 @@ import CryptoJS from 'crypto-js/core';
 import 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import SHA256 from 'crypto-js/sha256';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
+import WordArray from './utils/WordArray';
 
-const randomBytes = function(nBytes) {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
-};
+/**
+ * Returns a Buffer with a sequence of random nBytes
+ *
+ * @param {number} nBytes
+ * @returns {Buffer} fixed-length sequence of random bytes
+ */
+
+function randomBytes(nBytes) {
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
+}
 
 import BigInteger from './BigInteger';
+
+/**
+ * Tests if a hex string has it most significant bit set (case-insensitive regex)
+ */
+const HEX_MSB_REGEX = /^[89a-f]/i;
 
 const initN =
 	'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' +
@@ -57,7 +58,7 @@ export default class AuthenticationHelper {
 		this.N = new BigInteger(initN, 16);
 		this.g = new BigInteger('2', 16);
 		this.k = new BigInteger(
-			this.hexHash(`00${this.N.toString(16)}0${this.g.toString(16)}`),
+			this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`),
 			16
 		);
 
@@ -101,12 +102,14 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	generateRandomSmallA() {
+		// This will be interpreted as a postive 128-bit integer
 		const hexRandom = randomBytes(128).toString('hex');
 
 		const randomBigInt = new BigInteger(hexRandom, 16);
-		const smallABigInt = randomBigInt.mod(this.N);
 
-		return smallABigInt;
+		// There is no need to do randomBigInt.mod(this.N - 1) as N (3072-bit) is > 128 bytes (1024-bit)
+
+		return randomBigInt;
 	}
 
 	/**
@@ -152,6 +155,8 @@ export default class AuthenticationHelper {
 		const hashedString = this.hash(combinedString);
 
 		const hexRandom = randomBytes(16).toString('hex');
+
+		// The random hex will be unambiguously represented as a postive integer
 		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));
 
 		this.g.modPow(
@@ -292,7 +297,7 @@ export default class AuthenticationHelper {
 
 			const hkdf = this.computehkdf(
 				Buffer.from(this.padHex(sValue), 'hex'),
-				Buffer.from(this.padHex(this.UValue.toString(16)), 'hex')
+				Buffer.from(this.padHex(this.UValue), 'hex')
 			);
 
 			callback(null, hkdf);
@@ -320,7 +325,6 @@ export default class AuthenticationHelper {
 					if (err2) {
 						callback(err2, null);
 					}
-
 					callback(null, result.mod(this.N));
 				}
 			);
@@ -336,17 +340,77 @@ export default class AuthenticationHelper {
 	}
 
 	/**
-	 * Converts a BigInteger (or hex string) to hex format padded with zeroes for hashing
-	 * @param {BigInteger|String} bigInt Number or string to pad.
-	 * @returns {String} Padded hex string.
+	 * Returns an unambiguous, even-length hex string of the two's complement encoding of an integer.
+	 *
+	 * It is compatible with the hex encoding of Java's BigInteger's toByteArray(), wich returns a
+	 * byte array containing the two's-complement representation of a BigInteger. The array contains
+	 * the minimum number of bytes required to represent the BigInteger, including at least one sign bit.
+	 *
+	 * Examples showing how ambiguity is avoided by left padding with:
+	 * 	"00" (for positive values where the most-significant-bit is set)
+	 *  "FF" (for negative values where the most-significant-bit is set)
+	 *
+	 * padHex(bigInteger.fromInt(-236))  === "FF14"
+	 * padHex(bigInteger.fromInt(20))    === "14"
+	 *
+	 * padHex(bigInteger.fromInt(-200))  === "FF38"
+	 * padHex(bigInteger.fromInt(56))    === "38"
+	 *
+	 * padHex(bigInteger.fromInt(-20))   === "EC"
+	 * padHex(bigInteger.fromInt(236))   === "00EC"
+	 *
+	 * padHex(bigInteger.fromInt(-56))   === "C8"
+	 * padHex(bigInteger.fromInt(200))   === "00C8"
+	 *
+	 * @param {BigInteger} bigInt Number to encode.
+	 * @returns {String} even-length hex string of the two's complement encoding.
 	 */
 	padHex(bigInt) {
-		let hashStr = bigInt.toString(16);
-		if (hashStr.length % 2 === 1) {
-			hashStr = `0${hashStr}`;
-		} else if ('89ABCDEFabcdef'.indexOf(hashStr[0]) !== -1) {
-			hashStr = `00${hashStr}`;
+		if (!(bigInt instanceof BigInteger)) {
+			throw new Error('Not a BigInteger');
 		}
-		return hashStr;
+
+		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
+
+		/* Get a hex string for abs(bigInt) */
+		let hexStr = bigInt.abs().toString(16);
+
+		/* Pad hex to even length if needed */
+		hexStr = hexStr.length % 2 !== 0 ? `0${hexStr}` : hexStr;
+
+		/* Prepend "00" if the most significant bit is set */
+		hexStr = HEX_MSB_REGEX.test(hexStr) ? `00${hexStr}` : hexStr;
+
+		if (isNegative) {
+			/* Flip the bits of the representation */
+			const invertedNibbles = hexStr
+				.split('')
+				.map(x => {
+					const invertedNibble = ~parseInt(x, 16) & 0xf;
+					return '0123456789ABCDEF'.charAt(invertedNibble);
+				})
+				.join('');
+
+			/* After flipping the bits, add one to get the 2's complement representation */
+			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
+				BigInteger.ONE
+			);
+
+			hexStr = flippedBitsBI.toString(16);
+
+			/*
+			For hex strings starting with 'FF8', 'FF' can be dropped, e.g. 0xFFFF80=0xFF80=0x80=-128
+	
+			Any sequence of '1' bits on the left can always be substituted with a single '1' bit
+			without changing the represented value.
+	
+			This only happens in the case when the input is 80...00
+			*/
+			if (hexStr.toUpperCase().startsWith('FF8')) {
+				hexStr = hexStr.substring(2);
+			}
+		}
+
+		return hexStr;
 	}
 }

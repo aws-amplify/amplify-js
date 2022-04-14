@@ -6,38 +6,39 @@
  * @prop --background-image: Image of the icon displayed next to text. Defaults to an upside down triangle.
  */
 :host {
-  --color: var(--amplify-secondary-color);
-  --background-color: var(--amplify-secondary-contrast);
-  --border-color: var(--amplify-light-grey);
-  --border-focus: var(--amplify-primary-color);
-  --background-image: linear-gradient(45deg, transparent 50%, gray 50%),
-    linear-gradient(135deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
+	--color: var(--amplify-secondary-color);
+	--background-color: var(--amplify-secondary-contrast);
+	--border-color: var(--amplify-light-grey);
+	--border-focus: var(--amplify-primary-color);
+	--background-image: linear-gradient(45deg, transparent 50%, gray 50%),
+		linear-gradient(135deg, gray 50%, transparent 50%),
+		linear-gradient(to right, #ccc, #ccc);
 }
 
 .select {
-  padding: 1rem 1.75rem 1rem 1rem;
-  font-size: var(--amplify-text-sm);
-  color: var(--color);
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: 3px 0 0 3px;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  flex-basis: auto;
-  width: fit-content;
-  margin: 0;
-  height: 3.125rem;
+	padding: 1rem 1.75rem 1rem 1rem;
+	font-size: var(--amplify-text-sm);
+	color: var(--color);
+	background-color: var(--background-color);
+	border: 1px solid var(--border-color);
+	border-radius: 3px 0 0 3px;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	flex-basis: auto;
+	width: fit-content;
+	margin: 0;
+	height: 3.125rem;
 
-  background-image: var(--background-image);
-  background-position: calc(100% - 1rem) calc(1em + 0.5rem), calc(100% - 0.7rem) calc(1em + 0.5rem),
-    calc(100% - 2.5em) 0.5em;
-  background-size: 6px 5px, 6px 5px, 0px 1.5em;
-  background-repeat: no-repeat;
+	background-image: var(--background-image);
+	background-position: calc(100% - 1rem) calc(1em + 0.5rem),
+		calc(100% - 0.7rem) calc(1em + 0.5rem), calc(100% - 2.5em) 0.5em;
+	background-size: 6px 5px, 6px 5px, 0px 1.5em;
+	background-repeat: no-repeat;
 
-  :focus {
-    outline: none;
-    border-color: var(--border-focus);
-  }
+	:focus {
+		outline: none;
+		border-color: var(--border-focus);
+	}
 }

@@ -3,7 +3,7 @@ import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
-import { default as AsyncStorageAdapterType } from '../src/storage/adapter/asyncstorage';
+import { default as AsyncStorageAdapterType } from '../src/storage/adapter/AsyncStorageAdapter';
 import { DATASTORE, USER } from '../src/util';
 import {
 	Author as AuthorType,
@@ -93,7 +93,7 @@ function setUpSchema(beforeSetUp?: Function) {
 
 	({
 		default: AsyncStorageAdapter,
-	} = require('../src/storage/adapter/asyncstorage'));
+	} = require('../src/storage/adapter/AsyncStorageAdapter'));
 
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 

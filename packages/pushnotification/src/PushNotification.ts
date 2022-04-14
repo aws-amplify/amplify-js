@@ -14,11 +14,11 @@
 import {
 	NativeModules,
 	DeviceEventEmitter,
-	AsyncStorage,
 	Platform,
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
@@ -139,12 +139,17 @@ export default class PushNotification {
 		if (!(await this._registerTokenCached())) {
 			const { appId } = this._config;
 			const cacheKey = 'push_token' + appId;
-			RNPushNotification.getToken(token => {
-				logger.debug('Get the token from Firebase Service', token);
-				// resend the token in case it's missing in the Pinpoint service
-				// the token will also be cached locally
-				this.updateEndpoint(token);
-			});
+			RNPushNotification.getToken(
+				token => {
+					logger.debug('Get the token from Firebase Service', token);
+					// resend the token in case it's missing in the Pinpoint service
+					// the token will also be cached locally
+					this.updateEndpoint(token);
+				},
+				error => {
+					logger.error('Error getting the token from Firebase Service', error);
+				}
+			);
 		}
 	}
 

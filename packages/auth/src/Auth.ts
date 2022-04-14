@@ -61,13 +61,18 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
+import {
+	AuthErrorTypes,
+	CognitoHostedUIIdentityProvider,
+	IAuthDevice,
+} from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -75,26 +80,33 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
+
+// Cognito Documentation for max device
+// tslint:disable-next-line:max-line-length
+// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
+const MAX_DEVICES = 60;
 
 /**
  * Provide authentication steps
  */
 export class AuthClass {
 	private _config: AuthOptions;
-	private userPool = null;
+	private userPool: CognitoUserPool = null;
 	private user: any = null;
 	private _oAuthHandler: OAuth;
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
+	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 
 	Credentials = Credentials;
 
@@ -180,7 +192,10 @@ export class AuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new CognitoUserPool(userPoolData);
+			this.userPool = new CognitoUserPool(
+				userPoolData,
+				this.wrapRefreshSessionCallback
+			);
 		}
 
 		this.Credentials.configure({
@@ -192,7 +207,7 @@ export class AuthClass {
 			storage: this._storage,
 		});
 
-		// initiailize cognitoauth client if hosted ui options provided
+		// initialize cognitoauth client if hosted ui options provided
 		// to keep backward compatibility:
 		const cognitoHostedUIConfig = oauth
 			? isCognitoHostedOpts(this._config.oauth)
@@ -245,6 +260,22 @@ export class AuthClass {
 		return this._config;
 	}
 
+	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+		const wrapped: NodeCallback.Any = (error, data) => {
+			if (data) {
+				dispatchAuthEvent('tokenRefresh', undefined, `New token retrieved`);
+			} else {
+				dispatchAuthEvent(
+					'tokenRefresh_failure',
+					error,
+					`Failed to retrieve new token`
+				);
+			}
+			return callback(error, data);
+		};
+		return wrapped;
+	} // prettier-ignore
+
 	/**
 	 * Sign up with username, password and other attributes like phone, email
 	 * @param {String | object} params - The user attributes used for signin
@@ -261,8 +292,8 @@ export class AuthClass {
 
 		let username: string = null;
 		let password: string = null;
-		const attributes: object[] = [];
-		let validationData: object[] = null;
+		const attributes: CognitoUserAttribute[] = [];
+		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
 
 		if (params && typeof params === 'string') {
@@ -270,9 +301,19 @@ export class AuthClass {
 			password = restOfAttrs ? restOfAttrs[0] : null;
 			const email: string = restOfAttrs ? restOfAttrs[1] : null;
 			const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
-			if (email) attributes.push({ Name: 'email', Value: email });
+
+			if (email)
+				attributes.push(
+					new CognitoUserAttribute({ Name: 'email', Value: email })
+				);
+
 			if (phone_number)
-				attributes.push({ Name: 'phone_number', Value: phone_number });
+				attributes.push(
+					new CognitoUserAttribute({
+						Name: 'phone_number',
+						Value: phone_number,
+					})
+				);
 		} else if (params && typeof params === 'object') {
 			username = params['username'];
 			password = params['password'];
@@ -286,11 +327,24 @@ export class AuthClass {
 			const attrs = params['attributes'];
 			if (attrs) {
 				Object.keys(attrs).map(key => {
-					const ele: object = { Name: key, Value: attrs[key] };
-					attributes.push(ele);
+					attributes.push(
+						new CognitoUserAttribute({ Name: key, Value: attrs[key] })
+					);
 				});
 			}
-			validationData = params['validationData'] || null;
+
+			const validationDataObject = params['validationData'];
+			if (validationDataObject) {
+				validationData = [];
+				Object.keys(validationDataObject).map(key => {
+					validationData.push(
+						new CognitoUserAttribute({
+							Name: key,
+							Value: validationDataObject[key],
+						})
+					);
+				});
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -334,7 +388,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * Send the verfication code to confirm sign up
+	 * Send the verification code to confirm sign up
 	 * @param {String} username - The username to be confirmed
 	 * @param {String} code - The verification code
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
@@ -565,14 +619,30 @@ export class AuthClass {
 	private signInWithPassword(
 		authDetails: AuthenticationDetails
 	): Promise<CognitoUser | any> {
+		if (this.pendingSignIn) {
+			throw new Error('Pending sign-in attempt already in progress');
+		}
+
 		const user = this.createCognitoUser(authDetails.getUsername());
 
-		return new Promise((resolve, reject) => {
+		this.pendingSignIn = new Promise((resolve, reject) => {
 			user.authenticateUser(
 				authDetails,
-				this.authCallbacks(user, resolve, reject)
+				this.authCallbacks(
+					user,
+					value => {
+						this.pendingSignIn = null;
+						resolve(value);
+					},
+					error => {
+						this.pendingSignIn = null;
+						reject(error);
+					}
+				)
 			);
 		});
+
+		return this.pendingSignIn;
 	}
 
 	/**
@@ -593,8 +663,9 @@ export class AuthClass {
 	}
 
 	/**
-	 * get user current preferred mfa option
-	 * this method doesn't work with totp, we need to deprecate it.
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
@@ -625,11 +696,25 @@ export class AuthClass {
 	): Promise<string> {
 		const that = this;
 		return new Promise((res, rej) => {
+			const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 			const bypassCache = params ? params.bypassCache : false;
 			user.getUserData(
-				(err, data) => {
+				async (err, data) => {
 					if (err) {
 						logger.debug('getting preferred mfa failed', err);
+						if (this.isSessionInvalid(err)) {
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
+								return;
+							}
+						}
 						rej(err);
 						return;
 					}
@@ -643,7 +728,7 @@ export class AuthClass {
 						return;
 					}
 				},
-				{ bypassCache }
+				{ bypassCache, clientMetadata }
 			);
 		});
 	}
@@ -680,14 +765,25 @@ export class AuthClass {
 
 	private _getUserData(user, params) {
 		return new Promise((res, rej) => {
-			user.getUserData((err, data) => {
+			user.getUserData(async (err, data) => {
 				if (err) {
 					logger.debug('getting user data failed', err);
+					if (this.isSessionInvalid(err)) {
+						try {
+							await this.cleanUpInvalidSession(user);
+						} catch (cleanUpError) {
+							rej(
+								new Error(
+									`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+								)
+							);
+							return;
+						}
+					}
 					rej(err);
 					return;
 				} else {
 					res(data);
-					return;
 				}
 			}, params);
 		});
@@ -701,22 +797,27 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 		const userData = await this._getUserData(user, {
 			bypassCache: true,
+			clientMetadata,
 		});
 		let smsMfaSettings = null;
 		let totpMfaSettings = null;
 
 		switch (mfaMethod) {
-			case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
+			case 'TOTP':
+			case 'SOFTWARE_TOKEN_MFA':
 				totpMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
-			case 'SMS' || 'SMS_MFA':
+			case 'SMS':
+			case 'SMS_MFA':
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -778,15 +879,30 @@ export class AuthClass {
 					logger.debug('Caching the latest user data into local');
 					// cache the latest result into user data
 					user.getUserData(
-						(err, data) => {
+						async (err, data) => {
 							if (err) {
 								logger.debug('getting user data failed', err);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
+								}
 								return rej(err);
 							} else {
 								return res(result);
 							}
 						},
-						{ bypassCache: true }
+						{
+							bypassCache: true,
+							clientMetadata,
+						}
 					);
 				}
 			);
@@ -794,7 +910,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * diable SMS
+	 * disable SMS
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
@@ -867,7 +983,7 @@ export class AuthClass {
 		user: CognitoUser | any,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
-		logger.debug('verfication totp token', user, challengeAnswer);
+		logger.debug('verification totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -876,6 +992,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;
@@ -915,7 +1036,11 @@ export class AuthClass {
 						} finally {
 							that.user = user;
 
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
@@ -956,7 +1081,11 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
@@ -1017,6 +1146,111 @@ export class AuthClass {
 				this.authCallbacks(user, resolve, reject),
 				clientMetadata
 			);
+		});
+	}
+
+	/**
+	 * Delete an authenticated users' attributes
+	 * @param {CognitoUser} - The currently logged in user object
+	 * @return {Promise}
+	 **/
+	public deleteUserAttributes(
+		user: CognitoUser | any,
+		attributeNames: string[]
+	) {
+		const that = this;
+		return new Promise((resolve, reject) => {
+			that.userSession(user).then(session => {
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
+					}
+				});
+			});
+		});
+	}
+
+	/**
+	 * Delete the current authenticated user
+	 * @return {Promise}
+	 **/
+	// TODO: Check return type void
+	public async deleteUser(): Promise<string | void> {
+		try {
+			await this._storageSync;
+		} catch (e) {
+			logger.debug('Failed to sync cache info into memory', e);
+			throw new Error(e);
+		}
+
+		const isSignedInHostedUI =
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
+
+		return new Promise(async (res, rej) => {
+			if (this.userPool) {
+				const user = this.userPool.getCurrentUser();
+
+				if (!user) {
+					logger.debug('Failed to get user from user pool');
+					return rej(new Error('No current user.'));
+				} else {
+					user.getSession(async (err, session) => {
+						if (err) {
+							logger.debug('Failed to get the user session', err);
+							if (this.isSessionInvalid(err)) {
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
+									return;
+								}
+							}
+							return rej(err);
+						} else {
+							user.deleteUser((err, result: string) => {
+								if (err) {
+									rej(err);
+								} else {
+									dispatchAuthEvent(
+										'userDeleted',
+										result,
+										'The authenticated user has been deleted.'
+									);
+									user.signOut();
+									this.user = null;
+									try {
+										this.cleanCachedItems(); // clean aws credentials
+									} catch (e) {
+										// TODO: change to rejects in refactor
+										logger.debug('failed to clear cached items');
+									}
+
+									if (isSignedInHostedUI) {
+										this.oAuthSignOutRedirect(res, rej);
+									} else {
+										dispatchAuthEvent(
+											'signOut',
+											this.user,
+											`A user has been signed out`
+										);
+										res(result);
+									}
+								}
+							});
+						}
+					});
+				}
+			} else {
+				logger.debug('no Congito User pool');
+				rej(new Error('Cognito User pool does not exist'));
+			}
 		});
 	}
 
@@ -1105,6 +1339,89 @@ export class AuthClass {
 		});
 	}
 
+	private isErrorWithMessage(err: any): err is { message: string } {
+		return (
+			typeof err === 'object' &&
+			Object.prototype.hasOwnProperty.call(err, 'message')
+		);
+	}
+
+	// Session revoked by another app
+	private isTokenRevokedError(
+		err: any
+	): err is { message: 'Access Token has been revoked' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Access Token has been revoked'
+		);
+	}
+
+	private isRefreshTokenRevokedError(
+		err: any
+	): err is { message: 'Refresh Token has been revoked' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has been revoked'
+		);
+	}
+
+	private isUserDisabledError(
+		err: any
+	): err is { message: 'User is disabled.' } {
+		return this.isErrorWithMessage(err) && err.message === 'User is disabled.';
+	}
+
+	private isUserDoesNotExistError(
+		err: any
+	): err is { message: 'User does not exist.' } {
+		return (
+			this.isErrorWithMessage(err) && err.message === 'User does not exist.'
+		);
+	}
+
+	private isRefreshTokenExpiredError(
+		err: any
+	): err is { message: 'Refresh Token has expired' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Refresh Token has expired'
+		);
+	}
+
+	private isSignedInHostedUI() {
+		return (
+			this._oAuthHandler &&
+			this._storage.getItem('amplify-signin-with-hostedUI') === 'true'
+		);
+	}
+
+	private isSessionInvalid(err: any) {
+		return (
+			this.isUserDisabledError(err) ||
+			this.isUserDoesNotExistError(err) ||
+			this.isTokenRevokedError(err) ||
+			this.isRefreshTokenRevokedError(err) ||
+			this.isRefreshTokenExpiredError(err)
+		);
+	}
+
+	private async cleanUpInvalidSession(user: CognitoUser) {
+		user.signOut();
+		this.user = null;
+		try {
+			await this.cleanCachedItems(); // clean aws credentials
+		} catch (e) {
+			logger.debug('failed to clear cached items');
+		}
+		if (this.isSignedInHostedUI()) {
+			return new Promise((res, rej) => {
+				this.oAuthSignOutRedirect(res, rej);
+			});
+		} else {
+			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
+		}
+	}
+
 	/**
 	 * Get current authenticated user
 	 * @return - A promise resolves to current authenticated CognitoUser if success
@@ -1159,68 +1476,90 @@ export class AuthClass {
 						return;
 					}
 
+					const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 					// refresh the session if the session expired.
-					user.getSession(async (err, session) => {
-						if (err) {
-							logger.debug('Failed to get the user session', err);
-							rej(err);
-							return;
-						}
-
-						// get user data from Cognito
-						const bypassCache = params ? params.bypassCache : false;
-
-						if (bypassCache) {
-							await this.Credentials.clear();
-						}
-
-						// validate the token's scope first before calling this function
-						const { scope = '' } = session.getAccessToken().decodePayload();
-						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-							user.getUserData(
-								(err, data) => {
-									if (err) {
-										logger.debug('getting user data failed', err);
-										// Make sure the user is still valid
-										if (
-											err.message === 'User is disabled.' ||
-											err.message === 'User does not exist.' ||
-											err.message === 'Access Token has been revoked' // Session revoked by another app
-										) {
-											rej(err);
-										} else {
-											// the error may also be thrown when lack of permissions to get user info etc
-											// in that case we just bypass the error
-											res(user);
-										}
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the user session', err);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
 										return;
 									}
-									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-									const attributeList = [];
+								}
+								rej(err);
+								return;
+							}
 
-									for (let i = 0; i < data.UserAttributes.length; i++) {
-										const attribute = {
-											Name: data.UserAttributes[i].Name,
-											Value: data.UserAttributes[i].Value,
-										};
-										const userAttribute = new CognitoUserAttribute(attribute);
-										attributeList.push(userAttribute);
-									}
+							// get user data from Cognito
+							const bypassCache = params ? params.bypassCache : false;
 
-									const attributes = this.attributesToObject(attributeList);
-									Object.assign(user, { attributes, preferredMFA });
-									return res(user);
-								},
-								{ bypassCache }
-							);
-						} else {
-							logger.debug(
-								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-									`is not in the scopes of the access token`
-							);
-							return res(user);
-						}
-					});
+							if (bypassCache) {
+								await this.Credentials.clear();
+							}
+
+							const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+							// validate the token's scope first before calling this function
+							const { scope = '' } = session.getAccessToken().decodePayload();
+							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
+								user.getUserData(
+									async (err, data) => {
+										if (err) {
+											logger.debug('getting user data failed', err);
+											if (this.isSessionInvalid(err)) {
+												try {
+													await this.cleanUpInvalidSession(user);
+												} catch (cleanUpError) {
+													rej(
+														new Error(
+															`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+														)
+													);
+													return;
+												}
+												rej(err);
+											} else {
+												res(user);
+											}
+											return;
+										}
+										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+										const attributeList = [];
+
+										for (let i = 0; i < data.UserAttributes.length; i++) {
+											const attribute = {
+												Name: data.UserAttributes[i].Name,
+												Value: data.UserAttributes[i].Value,
+											};
+											const userAttribute = new CognitoUserAttribute(attribute);
+											attributeList.push(userAttribute);
+										}
+
+										const attributes = this.attributesToObject(attributeList);
+										Object.assign(user, { attributes, preferredMFA });
+										return res(user);
+									},
+									{ bypassCache, clientMetadata }
+								);
+							} else {
+								logger.debug(
+									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
+										`is not in the scopes of the access token`
+								);
+								return res(user);
+							}
+						},
+						{ clientMetadata }
+					);
 				})
 				.catch(e => {
 					logger.debug('Failed to sync cache info into memory', e);
@@ -1281,7 +1620,7 @@ export class AuthClass {
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
-				throw 'not authenticated';
+				return Promise.reject('The user is not authenticated');
 			}
 			this.user = user;
 			return this.user;
@@ -1297,7 +1636,7 @@ export class AuthClass {
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
-			return Promise.reject();
+			return this.rejectNoUserPool();
 		}
 
 		return new Promise((res, rej) => {
@@ -1334,24 +1673,41 @@ export class AuthClass {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
-		return new Promise((resolve, reject) => {
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+		return new Promise((res, rej) => {
 			logger.debug('Getting the session from this user:', user);
-			user.getSession((err, session) => {
-				if (err) {
-					logger.debug('Failed to get the session from user', user);
-					reject(err);
-					return;
-				} else {
-					logger.debug('Succeed to get the user session', session);
-					resolve(session);
-					return;
-				}
-			});
+			user.getSession(
+				async (err, session) => {
+					if (err) {
+						logger.debug('Failed to get the session from user', user);
+						if (this.isSessionInvalid(err)) {
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
+								return;
+							}
+						}
+						rej(err);
+						return;
+					} else {
+						logger.debug('Succeed to get the user session', session);
+						res(session);
+						return;
+					}
+				},
+				{ clientMetadata }
+			);
 		});
 	}
 
 	/**
-	 * Get  authenticated credentials of current user.
+	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
@@ -1383,8 +1739,8 @@ export class AuthClass {
 					logger.debug('getting session success', session);
 					return this.Credentials.set(session, 'session');
 				})
-				.catch(error => {
-					logger.debug('getting session failed', error);
+				.catch(() => {
+					logger.debug('getting guest credentials');
 					return this.Credentials.set(null, 'guest');
 				});
 		}
@@ -1407,15 +1763,18 @@ export class AuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
-			user.getAttributeVerificationCode(attr, {
-				onSuccess() {
-					return resolve();
+			user.getAttributeVerificationCode(
+				attr,
+				{
+					onSuccess(success) {
+						return resolve(success);
+					},
+					onFailure(err) {
+						return reject(err);
+					},
 				},
-				onFailure(err) {
-					return reject(err);
-				},
-				clientMetadata,
-			});
+				clientMetadata
+			);
 		});
 	}
 
@@ -1492,34 +1851,52 @@ export class AuthClass {
 				logger.debug('user global sign out', user);
 				// in order to use global signout
 				// we must validate the user as an authenticated user by using getSession
-				user.getSession((err, result) => {
-					if (err) {
-						logger.debug('failed to get the user session', err);
-						return rej(err);
-					}
-					user.globalSignOut({
-						onSuccess: data => {
-							logger.debug('global sign out success');
-							if (isSignedInHostedUI) {
-								this.oAuthSignOutRedirect(res, rej);
-							} else {
-								return res();
+				const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+				user.getSession(
+					async (err, result) => {
+						if (err) {
+							logger.debug('failed to get the user session', err);
+							if (this.isSessionInvalid(err)) {
+								try {
+									await this.cleanUpInvalidSession(user);
+								} catch (cleanUpError) {
+									rej(
+										new Error(
+											`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+										)
+									);
+									return;
+								}
 							}
-						},
-						onFailure: err => {
-							logger.debug('global sign out failed', err);
 							return rej(err);
-						},
-					});
-				});
+						}
+						user.globalSignOut({
+							onSuccess: data => {
+								logger.debug('global sign out success');
+								if (isSignedInHostedUI) {
+									this.oAuthSignOutRedirect(res, rej);
+								} else {
+									return res();
+								}
+							},
+							onFailure: err => {
+								logger.debug('global sign out failed', err);
+								return rej(err);
+							},
+						});
+					},
+					{ clientMetadata }
+				);
 			} else {
 				logger.debug('user sign out', user);
-				user.signOut();
-				if (isSignedInHostedUI) {
-					this.oAuthSignOutRedirect(res, rej);
-				} else {
-					return res();
-				}
+				user.signOut(() => {
+					if (isSignedInHostedUI) {
+						this.oAuthSignOutRedirect(res, rej);
+					} else {
+						return res();
+					}
+				});
 			}
 		});
 	}
@@ -1546,7 +1923,7 @@ export class AuthClass {
 		this._oAuthHandler.signOut(); // this method redirects url
 
 		// App should be redirected to another url otherwise it will reject
-		setTimeout(() => reject('Signout timeout fail'), 3000);
+		setTimeout(() => reject(Error('Signout timeout fail')), 3000);
 	}
 
 	/**
@@ -1569,7 +1946,7 @@ export class AuthClass {
 				logger.debug('no current Cognito user');
 			}
 		} else {
-			logger.debug('no Congito User pool');
+			logger.debug('no Cognito User pool');
 		}
 
 		/**
@@ -1680,7 +2057,7 @@ export class AuthClass {
 		code: string,
 		password: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<void> {
+	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1700,13 +2077,13 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: () => {
+					onSuccess: success => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
 							`${username} forgotPasswordSubmit successful`
 						);
-						resolve();
+						resolve(success);
 						return;
 					},
 					onFailure: err => {
@@ -1734,7 +2111,7 @@ export class AuthClass {
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			const user = await this.currentUserPoolUser().catch(err =>
-				logger.debug(err)
+				logger.error(err)
 			);
 			if (!user) {
 				return null;
@@ -1760,7 +2137,7 @@ export class AuthClass {
 				};
 				return info;
 			} catch (err) {
-				logger.debug('currentUserInfo error', err);
+				logger.error('currentUserInfo error', err);
 				return {};
 			}
 		}
@@ -1912,12 +2289,8 @@ export class AuthClass {
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
-					const {
-						accessToken,
-						idToken,
-						refreshToken,
-						state,
-					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
+					const { accessToken, idToken, refreshToken, state } =
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -1935,7 +2308,7 @@ export class AuthClass {
 						logger.debug('AWS credentials', credentials);
 					}
 
-					/* 
+					/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained
 				then there is custom state present on the state string.
@@ -1974,10 +2347,7 @@ export class AuthClass {
 					);
 
 					if (isCustomStateIncluded) {
-						const customState = state
-							.split('-')
-							.splice(1)
-							.join('-');
+						const customState = state.split('-').splice(1).join('-');
 
 						dispatchAuthEvent(
 							'customOAuthState',
@@ -1990,6 +2360,17 @@ export class AuthClass {
 					return credentials;
 				} catch (err) {
 					logger.debug('Error in cognito hosted auth response', err);
+
+					// Just like a successful handling of `?code`, replace the window history to "dispose" of the `code`.
+					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
+					if (window && typeof window.history !== 'undefined') {
+						window.history.replaceState(
+							{},
+							null,
+							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+						);
+					}
+
 					dispatchAuthEvent(
 						'signIn_failure',
 						err,
@@ -2036,13 +2417,19 @@ export class AuthClass {
 					attribute.Name === 'phone_number_verified'
 				) {
 					obj[attribute.Name] =
-						attribute.Value === 'true' || attribute.Value === true;
+						this.isTruthyString(attribute.Value) || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
 			});
 		}
 		return obj;
+	}
+
+	private isTruthyString(value: any): boolean {
+		return (
+			typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true'
+		);
 	}
 
 	private createCognitoUser(username: string): CognitoUser {
@@ -2088,6 +2475,106 @@ export class AuthClass {
 	private rejectNoUserPool(): Promise<never> {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
+	}
+
+	public async rememberDevice(): Promise<string | AuthError> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.setDeviceStatusRemembered({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async forgetDevice(): Promise<void> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.forgetDevice({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async fetchDevices(): Promise<IAuthDevice[]> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			throw new Error('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			const cb = {
+				onSuccess(data) {
+					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+						const deviceName =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_name'
+							) || {};
+
+						const deviceInfo: IAuthDevice = {
+							id: device.DeviceKey,
+							name: deviceName.Value,
+						};
+						return deviceInfo;
+					});
+					res(deviceList);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			};
+			currUser.listDevices(MAX_DEVICES, null, cb);
+		});
 	}
 }
 

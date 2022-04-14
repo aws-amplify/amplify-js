@@ -1,0 +1,45 @@
+{
+	"name": "next",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"analyze": "ANALYZE=true next build",
+		"dev": "next dev",
+		"prebuild": "rimraf .next",
+		"build": "next build",
+		"start": "next start",
+		"precalculate": "$_ run build",
+		"calculate": "bundlewatch"
+	},
+	"bundlewatch": {
+		"files": [
+			{
+				"path": ".next/static/chunks/pages/Amplify-*.js",
+				"maxSize": "1kB"
+			},
+			{
+				"path": ".next/static/chunks/pages/Amplify+Auth-*.js",
+				"maxSize": "175kB"
+			},
+			{
+				"path": ".next/static/chunks/pages/Amplify+Storage-*.js",
+				"maxSize": "40kB"
+			},
+			{
+				"path": ".next/static/chunks/pages/index-*.js",
+				"maxSize": "5kB"
+			}
+		]
+	},
+	"dependencies": {
+		"@next/bundle-analyzer": "^10.0.7",
+		"aws-amplify": "unstable",
+		"next": "^12.1.0",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2"
+	},
+	"devDependencies": {
+		"bundlewatch": "^0.3.1",
+		"rimraf": "^3.0.2"
+	}
+}

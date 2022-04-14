@@ -82,6 +82,6 @@ describe('API test', () => {
 			.spyOn(GraphQLAPIClass.prototype, 'graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
-		expect(await api.graphql(null)).toBe('grapqhqlResponse');
+		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');
 	});
 });

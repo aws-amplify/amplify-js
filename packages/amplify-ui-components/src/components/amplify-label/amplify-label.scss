@@ -2,11 +2,11 @@
  * @prop --label-color: Text color within the label
  */
 :host {
-  --label-color: var(--amplify-secondary-color);
+	--label-color: var(--amplify-secondary-color);
 }
 
 .label {
-  color: var(--label-color);
-  font-size: var(--amplify-text-sm);
-  margin-bottom: 16px;
+	color: var(--label-color);
+	font-size: var(--amplify-text-sm);
+	margin-bottom: 16px;
 }

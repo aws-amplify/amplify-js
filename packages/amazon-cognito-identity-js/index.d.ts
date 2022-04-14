@@ -2,6 +2,9 @@ declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	export namespace NodeCallback {
+		export type Any = NodeCallback<Error | undefined, any>;
+	}
 
 	export interface CodeDeliveryDetails {
 		AttributeName: string;
@@ -60,22 +63,26 @@ declare module 'amazon-cognito-identity-js' {
 		Storage?: ICognitoStorage;
 	}
 
+	export interface GetSessionOptions {
+		clientMetadata: Record<string, string>;
+	}
+
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
 
-		public setSignInUserSession(
-			signInUserSession: CognitoUserSession
-		): void;
+		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
 		public getSignInUserSession(): CognitoUserSession | null;
 		public getUsername(): string;
 
 		public getAuthenticationFlowType(): string;
-		public setAuthenticationFlowType(
-			authenticationFlowType: string
-		): string;
+		public setAuthenticationFlowType(authenticationFlowType: string): string;
+		public getCachedDeviceKeyAndPassword(): void;
 
 		public getSession(
-			callback: ((error: Error, session: null) => void) | ((error: null, session: CognitoUserSession) => void)
+			callback:
+				| ((error: Error, session: null) => void)
+				| ((error: null, session: CognitoUserSession) => void),
+			options?: GetSessionOptions
 		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
@@ -122,7 +129,7 @@ declare module 'amazon-cognito-identity-js' {
 			verificationCode: string,
 			newPassword: string,
 			callbacks: {
-				onSuccess: () => void;
+				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 			},
 			clientMetaData?: ClientMetadata
@@ -153,7 +160,10 @@ declare module 'amazon-cognito-identity-js' {
 		public sendMFACode(
 			confirmationCode: string,
 			callbacks: {
-				onSuccess: (session: CognitoUserSession) => void;
+				onSuccess: (
+					session: CognitoUserSession,
+					userConfirmationNecessary?: boolean
+				) => void;
 				onFailure: (err: any) => void;
 			},
 			mfaType?: string,
@@ -170,22 +180,10 @@ declare module 'amazon-cognito-identity-js' {
 		public completeNewPasswordChallenge(
 			newPassword: string,
 			requiredAttributeData: any,
-			callbacks: {
-				onSuccess: (session: CognitoUserSession) => void;
-				onFailure: (err: any) => void;
-				mfaRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
-				customChallenge?: (challengeParameters: any) => void;
-				mfaSetup?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
-			},
+			callbacks: IAuthenticationCallback,
 			clientMetadata?: ClientMetadata
 		): void;
-		public signOut(): void;
+		public signOut(callback?: () => void): void;
 		public globalSignOut(callbacks: {
 			onSuccess: (msg: string) => void;
 			onFailure: (err: Error) => void;
@@ -203,7 +201,8 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string>
+			callback: NodeCallback<Error, string>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(
 			attributeList: string[],
@@ -212,7 +211,7 @@ declare module 'amazon-cognito-identity-js' {
 		public getAttributeVerificationCode(
 			name: string,
 			callback: {
-				onSuccess: () => void;
+				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: string) => void | null;
 			}
@@ -221,7 +220,10 @@ declare module 'amazon-cognito-identity-js' {
 		public enableMFA(callback: NodeCallback<Error, string>): void;
 		public disableMFA(callback: NodeCallback<Error, string>): void;
 		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
-		public getUserData(callback: NodeCallback<Error, UserData>, params?: any): void;
+		public getUserData(
+			callback: NodeCallback<Error, UserData>,
+			params?: any
+		): void;
 		public associateSoftwareToken(callbacks: {
 			associateSecretCode: (secretCode: string) => void;
 			onFailure: (err: any) => void;
@@ -244,14 +246,8 @@ declare module 'amazon-cognito-identity-js' {
 			callbacks: {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
-				mfaRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
-				totpRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
+				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
+				totpRequired?: (challengeName: any, challengeParameters: any) => void;
 			}
 		): void;
 	}
@@ -274,8 +270,11 @@ declare module 'amazon-cognito-identity-js' {
 		Value: string;
 	}
 
-	export class CognitoUserAttribute {
+	export class CognitoUserAttribute implements ICognitoUserAttributeData {
 		constructor(data: ICognitoUserAttributeData);
+
+		Name: string;
+		Value: string;
 
 		public getValue(): string;
 		public setValue(value: string): CognitoUserAttribute;
@@ -301,7 +300,12 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export class CognitoUserPool {
-		constructor(data: ICognitoUserPoolData);
+		constructor(
+			data: ICognitoUserPoolData,
+			wrapRefreshSessionCallback?: (
+				target: NodeCallback.Any
+			) => NodeCallback.Any
+		);
 
 		public getUserPoolId(): string;
 		public getClientId(): string;
@@ -385,4 +389,10 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export const appendToCognitoUserAgent: (content: string) => void;
+
+	export class WordArray {
+		constructor(words?: string[], sigBytes?: number);
+		random(nBytes: number): WordArray;
+		toString(): string;
+	}
 }
