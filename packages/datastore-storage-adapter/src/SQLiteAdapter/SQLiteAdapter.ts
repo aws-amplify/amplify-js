@@ -83,7 +83,6 @@ export class SQLiteAdapter implements StorageAdapter {
 		} catch (error) {
 			this.reject(error);
 		}
-		// console.log('setUp complete');
 	}
 
 	async clear(): Promise<void> {
@@ -108,15 +107,11 @@ export class SQLiteAdapter implements StorageAdapter {
 			this.getModelConstructorByModelName
 		);
 
-		console.log('connectdModels', connectedModels);
-
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				return { modelName, item, instance };
 			}
 		);
-
-		console.log('connectionStoreNames', connectionStoreNames);
 
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
@@ -140,7 +135,6 @@ export class SQLiteAdapter implements StorageAdapter {
 		const saveStatements = new Set<ParameterizedStatement>();
 
 		for await (const resItem of connectionStoreNames) {
-			// console.log('resItem', resItem);
 			const { modelName, item, instance } = resItem;
 			const { id } = item;
 
@@ -154,16 +148,13 @@ export class SQLiteAdapter implements StorageAdapter {
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
 
-			console.log('saving connected item', instance);
-
-			saveStatements.add(saveStatement);
-
-			result.push([instance, opType]);
+			if (id === model.id || opType === OpType.INSERT) {
+				saveStatements.add(saveStatement);
+				result.push([instance, opType]);
+			}
 		}
 
 		await this.db.batchSave(saveStatements);
-
-		// console.log('save complete');
 		return result;
 	}
 
@@ -250,8 +241,6 @@ export class SQLiteAdapter implements StorageAdapter {
 			}
 		}
 
-		// console.log('load almost complete!');
-
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
@@ -262,7 +251,6 @@ export class SQLiteAdapter implements StorageAdapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		// console.log('query start');
 		const { name: tableName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -294,8 +282,6 @@ export class SQLiteAdapter implements StorageAdapter {
 			return await this.db.getAll(queryStatement, params);
 		})();
 
-		// console.log('end of query()');
-
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
@@ -303,7 +289,6 @@ export class SQLiteAdapter implements StorageAdapter {
 		tableName: string,
 		id: string
 	): Promise<T> {
-		// console.log('adapter getByid', tableName, id);
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
 		return record;
@@ -486,8 +471,6 @@ export class SQLiteAdapter implements StorageAdapter {
 
 		// perform all of the insert/update/delete operations in a single transaction
 		await this.db.batchSave(saveStatements, deleteStatements);
-
-		console.log('batchSave end');
 		return result;
 	}
 }

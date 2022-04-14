@@ -13,6 +13,10 @@ let DataStore: typeof DataStoreType;
 // using any to get access to private methods
 const IDBAdapter = <any>Adapter;
 
+async function pause(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
@@ -32,22 +36,29 @@ describe('IndexedDBAdapter tests', () => {
 				Model: PersistentModelConstructor<Model>;
 			});
 
+			// NOTE: sort() test on these models can be flaky unless we
+			// strictly control the datestring of each! In a non-negligible percentage
+			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
+			// quickly enough that dates were colliding. (or so it seemed!)
+
+			const baseDate = new Date();
+
 			({ id: model1Id } = await DataStore.save(
 				new Model({
 					field1: 'Some value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: baseDate.toISOString(),
 				})
 			));
 			await DataStore.save(
 				new Model({
 					field1: 'another value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
 				})
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'a third value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
 		});
@@ -108,6 +119,78 @@ describe('IndexedDBAdapter tests', () => {
 			expect(spyOnEngine).not.toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
 		});
+
+		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('ne', undefined)
+			);
+			expect(results.length).toEqual(3);
+		});
+
+		it('should match fields of any non-empty value for `("ne", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('ne', null));
+			expect(results.length).toEqual(3);
+		});
+
+		it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('eq', undefined)
+			);
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("eq", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('eq', null));
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("gt", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('gt', null));
+			expect(results.length).toEqual(0);
+		});
+
+		it('shouldNOT  match fields of any non-empty value for `("ge", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('ge', null));
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("lt", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('lt', null));
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("le", null)`', async () => {
+			const results = await DataStore.query(Model, m => m.field1('le', null));
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('gt', undefined)
+			);
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('ge', undefined)
+			);
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('lt', undefined)
+			);
+			expect(results.length).toEqual(0);
+		});
+
+		it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
+			const results = await DataStore.query(Model, m =>
+				m.field1('le', undefined)
+			);
+			expect(results.length).toEqual(0);
+		});
 	});
 
 	describe('Delete', () => {
@@ -162,8 +245,12 @@ describe('IndexedDBAdapter tests', () => {
 		let Profile: PersistentModelConstructor<Profile>;
 		let Comment: PersistentModelConstructor<Comment>;
 		let Post: PersistentModelConstructor<Post>;
-		let profile: Profile;
 		let adapter: any;
+
+		async function getMutations() {
+			await pause(250);
+			return await adapter.getAll('sync_MutationEvent');
+		}
 
 		beforeEach(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -195,13 +282,13 @@ describe('IndexedDBAdapter tests', () => {
 			// prevents the mutation process from clearing the mutation queue, which
 			// allows us to observe the state of mutations.
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
-
-			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
 		});
 
 		it('should allow linking model via model field', async () => {
+			const profile = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			);
+
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profile })
 			);
@@ -213,6 +300,10 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
+			const profile = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			);
+
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profileID: profile.id })
 			);
@@ -223,7 +314,7 @@ describe('IndexedDBAdapter tests', () => {
 			expect(user.profile).toEqual(profile);
 		});
 
-		it('should produce a single mutation for an updated model with a BelongTo (regression test)', async done => {
+		it('should produce a single mutation for an updated model with a BelongTo (regression test)', async () => {
 			// SQLite adapter, for example, was producing an extra mutation
 			// in this scenario.
 
@@ -240,21 +331,36 @@ describe('IndexedDBAdapter tests', () => {
 				})
 			);
 
+			console.log('UPDATE CONTENT');
+
 			const updatedComment = await DataStore.save(
 				Comment.copyOf(comment, draft => {
 					draft.content = 'updated content';
 				})
 			);
 
-			// if this tests gets flaky, either increase the timeout or
-			// find an event to hook into for assurance that mutations have all
-			// been processed by the sync engine.
-			setTimeout(async () => {
-				const mutations = await adapter.getAll('sync_MutationEvent');
-				console.log('mutations', mutations);
-				expect(mutations.length).toBe(3);
-				done();
-			}, 250);
+			const mutations = await getMutations();
+			console.log('mutations 1', mutations);
+
+			// comment update should be smashed to together with post
+			expect(mutations.length).toBe(2);
+		});
+
+		it('should produce a mutation for a nested BELONGS_TO insert', async () => {
+			const comment = await DataStore.save(
+				new Comment({
+					content: 'newly created comment',
+					post: new Post({
+						title: 'newly created post',
+					}),
+				})
+			);
+
+			const mutations = await getMutations();
+			console.log('mutations 2', mutations);
+
+			// one for the new comment, one for the new post
+			expect(mutations.length).toBe(2);
 		});
 	});
 });

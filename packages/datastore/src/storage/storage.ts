@@ -121,6 +121,18 @@ class StorageClass implements StorageFacade {
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
 			if (opType === OpType.UPDATE && !syncResponse) {
+				//
+				// LOOK!!!
+				// the `model` used here is in effect regardless of what model
+				// comes back from adapter.save().
+				// SQLite adapter is returning two models in my test. Post, Comment.
+				// so ... Post is being smashed through Comment constructor?
+				//
+				// not sure what the right behavior is here. the core fix is occuring
+				// in SQLite adapter; but, is there a valid case where we DO get
+				// different types of models back from adapter.save()?
+				//
+
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
 					savedElement,
@@ -134,6 +146,24 @@ class StorageClass implements StorageFacade {
 			}
 
 			const element = updateMutationInput || savedElement;
+
+			// console.log('ruhoh', updateMutationInput, savedElement);
+			/* yields.
+				ruhoh {
+					content: null,
+					id: '02f18ee0-b088-41aa-b049-538aa837f8b8',
+					_version: null,
+					_lastChangedAt: null,
+					_deleted: null
+				} Post {
+					id: '02f18ee0-b088-41aa-b049-538aa837f8b8',
+					title: 'some post',
+					comments: null,
+					_version: null,
+					_lastChangedAt: null,
+					_deleted: null
+				}
+			*/
 
 			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
 				.constructor as PersistentModelConstructor<T>;

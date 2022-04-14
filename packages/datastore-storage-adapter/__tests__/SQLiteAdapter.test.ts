@@ -14,8 +14,6 @@ class InnerSQLiteDatabase {
 		callback = undefined,
 		logger = undefined
 	) {
-		// console.log('executeSql', statement, params, callback);
-		sqlog.push(`${statement} : ${JSON.stringify(params)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
 			return new Promise(resolve => {
 				const rows = [];
@@ -34,7 +32,6 @@ class InnerSQLiteDatabase {
 								raw: () => rows,
 							},
 						};
-						// console.log('rows', rows);
 						resolve([resultSet]);
 					}
 				);
@@ -45,12 +42,10 @@ class InnerSQLiteDatabase {
 	}
 
 	async transaction(fn) {
-		// console.log('transaction', fn);
 		return this.innerDB.serialize(await fn(this));
 	}
 
 	async readTransaction(fn) {
-		// console.log('readTransaction', fn);
 		return this.innerDB.serialize(await fn(this));
 	}
 
@@ -116,13 +111,24 @@ describe('SQLiteAdapter', () => {
 	let syncEngine: SyncEngine;
 	sqlog = [];
 
+	async function addModels(qty = 3) {
+		for (let i = 0; i < qty; i++) {
+			await DataStore.save(
+				new Model({
+					field1: `field1 value ${i}`,
+					dateCreated: new Date().toISOString(),
+					emails: [],
+				})
+			);
+		}
+	}
+
 	async function getMutations() {
 		await pause(250);
 		return await db.getAll('select * from MutationEvent', []);
 	}
 
 	beforeEach(async () => {
-		console.log('BEFORE EACH!');
 		({ initSchema, DataStore } = require('@aws-amplify/datastore'));
 		DataStore.configure({
 			storageAdapter: SQLiteAdapter,
@@ -150,11 +156,11 @@ describe('SQLiteAdapter', () => {
 		(syncEngine as any).mutationsProcessor.isReady = () => false;
 	});
 
-	test('is being used in SQLite test suite (sanity check)', async () => {
+	it('is being used in SQLite test suite (sanity check)', async () => {
 		expect(adapter.constructor.name).toEqual('SQLiteAdapter');
 	});
 
-	test('can manage a basic model', async () => {
+	it('can manage a basic model', async () => {
 		const saved = await DataStore.save(
 			new Model({
 				field1: 'some value',
@@ -170,16 +176,117 @@ describe('SQLiteAdapter', () => {
 		expect(retrieved).toEqual(saved);
 	});
 
-	test.only('can manage related models, where parent is saved first', async () => {
-		sqlog.push('\n\nCREATING POST\n\n');
+	it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
 
+		const results = await DataStore.query(Model, m =>
+			m.field1('ne', undefined)
+		);
+
+		expect(results.length).toEqual(qty);
+	});
+
+	it('should match fields of any non-empty value for `("ne", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+
+		const results = await DataStore.query(Model, m => m.field1('ne', null));
+
+		expect(results.length).toEqual(qty);
+	});
+
+	it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+
+		const results = await DataStore.query(Model, m =>
+			m.field1('eq', undefined)
+		);
+
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("eq", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+
+		const results = await DataStore.query(Model, m => m.field1('eq', null));
+
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("gt", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m => m.field1('gt', null));
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("ge", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m => m.field1('ge', null));
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("lt", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m => m.field1('lt', null));
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("le", null)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m => m.field1('le', null));
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m =>
+			m.field1('gt', undefined)
+		);
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m =>
+			m.field1('ge', undefined)
+		);
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m =>
+			m.field1('lt', undefined)
+		);
+		expect(results.length).toEqual(0);
+	});
+
+	it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
+		const qty = 3;
+		await addModels(qty);
+		const results = await DataStore.query(Model, m =>
+			m.field1('le', undefined)
+		);
+		expect(results.length).toEqual(0);
+	});
+
+	it('can manage related models, where parent is saved first', async () => {
 		const post = await DataStore.save(
 			new Post({
 				title: 'some post',
 			})
 		);
 
-		sqlog.push('\n\nADDING COMMENT\n\n');
 		const comment = await DataStore.save(
 			new Comment({
 				content: 'some comment',
@@ -187,25 +294,18 @@ describe('SQLiteAdapter', () => {
 			})
 		);
 
-		sqlog.push('\n\nUPDATING COMMENT\n\n');
-		console.log('UPDATE CONTENT');
-		const updatedComment = await DataStore.save(
+		await DataStore.save(
 			Comment.copyOf(comment, draft => {
 				draft.content = 'updated content';
 			})
 		);
 
-		sqlog.push('\n\nDONE\n\n');
-
-		// console.log('mutations', mutations);
-		// console.log('sqlog', sqlog.join('\n'));
 		const mutations = await getMutations();
-		console.log('mutations 1', mutations);
-		expect(mutations.length).toBe(3);
+		expect(mutations.length).toBe(2);
 	});
 
-	it.only('should produce a mutation for a nested BELONGS_TO insert', async () => {
-		const comment = await DataStore.save(
+	it('should produce a mutation for a nested BELONGS_TO insert', async () => {
+		await DataStore.save(
 			new Comment({
 				content: 'newly created comment',
 				post: new Post({
@@ -215,7 +315,6 @@ describe('SQLiteAdapter', () => {
 		);
 
 		const mutations = await getMutations();
-		console.log('mutations 2', mutations);
 		expect(mutations.length).toBe(2);
 	});
 });
