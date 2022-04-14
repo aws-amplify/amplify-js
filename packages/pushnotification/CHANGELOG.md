@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.16...@aws-amplify/pushnotification@4.3.17) (2022-04-14)
+
+
+### Bug Fixes
+
+* **pushnotification:** onTap of notification after the app is killed in Android Oreo or higher ([#9729](https://github.com/aws-amplify/amplify-js/issues/9729)) ([eaaa2c4](https://github.com/aws-amplify/amplify-js/commit/eaaa2c40ba4217baf45e0ae781f69edad0c21e64))
+* **pushnotification:** unused and androidX imports  ([#9708](https://github.com/aws-amplify/amplify-js/issues/9708)) ([43b11c3](https://github.com/aws-amplify/amplify-js/commit/43b11c353771ad7f42cac899cb6d0afabf7eb77c)), closes [#8023](https://github.com/aws-amplify/amplify-js/issues/8023)
+
+
+
+
+
 ## [4.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.15...@aws-amplify/pushnotification@4.3.16) (2022-04-04)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification
