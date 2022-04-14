@@ -43,6 +43,7 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
@@ -744,8 +745,6 @@ class DataStore {
 				userClasses,
 				this.storage,
 				modelInstanceCreator,
-				this.maxRecordsToSync,
-				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
@@ -1125,9 +1124,28 @@ class DataStore {
 			(async () => {
 				await this.start();
 
+				// Filter the events returned by Storage according to namespace,
+				// append original element data, and subscribe to the observable
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
+					.map(
+						(event: InternalSubscriptionMessage<T>): SubscriptionMessage<T> => {
+							// The `element` returned by storage only contains updated fields.
+							// Intercept the event to send the `savedElement` so that the first
+							// snapshot returned to the consumer contains all fields.
+							// In the event of a delete we return `element`, as `savedElement`
+							// here is undefined.
+							const { opType, model, condition, element, savedElement } = event;
+
+							return {
+								opType,
+								element: savedElement || element,
+								model,
+								condition,
+							};
+						}
+					)
 					.subscribe(observer);
 			})();
 
@@ -1329,12 +1347,13 @@ class DataStore {
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
-			this.syncExpressions ||
-			configSyncExpressions;
+			configSyncExpressions ||
+			this.syncExpressions;
 
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
 			configMaxRecordsToSync ||
+			this.maxRecordsToSync ||
 			10000;
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
@@ -1343,6 +1362,7 @@ class DataStore {
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
 			configSyncPageSize ||
+			this.syncPageSize ||
 			1000;
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
@@ -1350,14 +1370,14 @@ class DataStore {
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||
-			this.fullSyncInterval ||
 			configFullSyncInterval ||
+			this.fullSyncInterval ||
 			24 * 60; // 1 day
 
 		this.storageAdapter =
 			(configDataStore && configDataStore.storageAdapter) ||
-			this.storageAdapter ||
 			configStorageAdapter ||
+			this.storageAdapter ||
 			undefined;
 
 		this.sessionId = this.retrieveSessionId();

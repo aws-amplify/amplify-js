@@ -48,11 +48,8 @@ class SubscriptionProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private buffer: [
-		TransformerMutationType,
-		SchemaModel,
-		PersistentModel
-	][] = [];
+	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
+		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
 	constructor(
@@ -308,8 +305,8 @@ class SubscriptionProcessor {
 						.forEach(async modelDefinition => {
 							const modelAuthModes = await getModelAuthModes({
 								authModeStrategy: this.authModeStrategy,
-								defaultAuthMode: this.amplifyConfig
-									.aws_appsync_authenticationType,
+								defaultAuthMode:
+									this.amplifyConfig.aws_appsync_authenticationType,
 								modelName: modelDefinition.name,
 								schema: this.schema,
 							});
@@ -413,10 +410,11 @@ class SubscriptionProcessor {
 													return;
 												}
 
-												const predicatesGroup = ModelPredicateCreator.getPredicates(
-													this.syncPredicates.get(modelDefinition),
-													false
-												);
+												const predicatesGroup =
+													ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
+													);
 
 												const { [opName]: record } = data;
 
@@ -534,15 +532,15 @@ class SubscriptionProcessor {
 
 			return () => {
 				Object.keys(subscriptions).forEach(modelName => {
-					subscriptions[modelName][
-						TransformerMutationType.CREATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.UPDATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.DELETE
-					].forEach(subscription => subscription.unsubscribe());
+					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
+						subscription => subscription.unsubscribe()
+					);
 				});
 			};
 		});
