@@ -515,11 +515,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
