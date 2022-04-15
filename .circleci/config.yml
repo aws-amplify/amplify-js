@@ -370,6 +370,10 @@ jobs:
       - attach_workspace:
           at: /root
       - run:
+          name: 'build sqlite3 binaries'
+          command: |
+            npm install --build-from-source
+      - run:
           name: 'Run Amplify JS unit tests'
           command: |
             yarn test
