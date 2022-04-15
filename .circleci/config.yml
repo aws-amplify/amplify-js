@@ -371,7 +371,10 @@ jobs:
           at: /root
       - run:
           name: 'build sqlite3 binaries'
+          # https://github.com/TryGhost/node-sqlite3#source-install
           command: |
+            cd packages/datastore-storage-adapter
+            yarn
             npm install --build-from-source
       - run:
           name: 'Run Amplify JS unit tests'
