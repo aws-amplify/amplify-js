@@ -126,12 +126,11 @@ class StorageClass implements StorageFacade {
 				// the `model` used here is in effect regardless of what model
 				// comes back from adapter.save().
 				// Prior to fix, SQLite adapter had been returning two models
-				// of different types, resulting in an invalid outbox entry.
+				// of different types, resulting in invalid outbox entries.
 				//
-				// i'm not sure what the right behavior is here. the bux is
-				// essentially fixed in SQLite adapter; but, is there a valid
-				// case where we DO get different types of models back from
-				// adapter.save()? if so, what is the correct handling?
+				// the bug is essentially fixed in SQLite adapter.
+				// leaving as-is, because it's currently unclear whether anything
+				// depends on this remaining as-is.
 				//
 
 				updateMutationInput = this.getUpdateMutationInput(

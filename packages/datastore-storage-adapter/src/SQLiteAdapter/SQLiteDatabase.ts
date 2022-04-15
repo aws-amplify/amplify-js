@@ -66,7 +66,6 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		// console.log('get result', result);
 		return result?.[0] || undefined;
 	}
 
