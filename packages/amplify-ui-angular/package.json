@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/ui-angular",
 	"private": "true",
-	"version": "1.0.42",
+	"version": "1.0.47",
 	"description": "Angular specific wrapper for @aws-amplify/ui-components",
 	"publishConfig": {
 		"access": "public"
@@ -32,7 +32,7 @@
 		"dist/"
 	],
 	"dependencies": {
-		"@aws-amplify/ui-components": "1.9.13"
+		"@aws-amplify/ui-components": "1.9.18"
 	},
 	"devDependencies": {
 		"@angular/compiler-cli": "^7.2.1",

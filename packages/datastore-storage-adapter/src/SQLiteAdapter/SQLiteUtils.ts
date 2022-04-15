@@ -236,6 +236,30 @@ const logicalOperatorMap = {
 	between: 'BETWEEN',
 };
 
+/**
+ * If the given (operator, operand) indicate the need for a special `NULL` comparison,
+ * that `WHERE` clause condition will be returned. If not special `NULL` handling is
+ * needed, `null` will be returned, and the caller should construct the `WHERE`
+ * clause component using the normal operator map(s) and parameterization.
+ *
+ * @param operator "beginsWith" | "contains" | "notContains" | "between"
+ * | "eq" | "ne" | "le" | "lt" | "ge" | "gt"
+ * @param operand any
+ * @returns (string | null) The `WHERE` clause component or `null` if N/A.
+ */
+function buildSpecialNullComparison(field, operator, operand) {
+	if (operand === null || operand === undefined) {
+		if (operator === 'eq') {
+			return `"${field}" IS NULL`;
+		} else if (operator === 'ne') {
+			return `"${field}" IS NOT NULL`;
+		}
+	}
+
+	// no special null handling required
+	return null;
+}
+
 const whereConditionFromPredicateObject = ({
 	field,
 	operator,
@@ -247,8 +271,16 @@ const whereConditionFromPredicateObject = ({
 		| keyof typeof comparisonOperatorMap;
 	operand: any;
 }): ParameterizedStatement => {
-	const comparisonOperator = comparisonOperatorMap[operator];
+	const specialNullClause = buildSpecialNullComparison(
+		field,
+		operator,
+		operand
+	);
+	if (specialNullClause) {
+		return [specialNullClause, []];
+	}
 
+	const comparisonOperator = comparisonOperatorMap[operator];
 	if (comparisonOperator) {
 		return [`"${field}" ${comparisonOperator} ?`, [operand]];
 	}

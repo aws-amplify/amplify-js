@@ -22,6 +22,10 @@ export interface GeoConfig {
 			items: string[];
 			default: string;
 		};
+		geofenceCollections?: {
+			items: string[];
+			default: string;
+		};
 	};
 }
 
@@ -31,10 +35,10 @@ export interface MapStyle {
 	style: string;
 }
 
-export type Latitude = number;
 export type Longitude = number;
+export type Latitude = number;
 
-// Coordinate point
+// Coordinates are a tuple of longitude and latitude
 export type Coordinates = [Longitude, Latitude];
 
 // SW Longitude point for bounding box
@@ -73,6 +77,7 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithBiasPosition
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
+// Options object for searchByCoordinates
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
 	searchIndexName?: string;
@@ -97,6 +102,70 @@ export interface Place {
 	street?: string;
 	subRegion?: string;
 }
+// Array of 4 or more coordinates, where the first and last coordinate are the same to form a closed boundary
+export type LinearRing = Coordinates[];
 
-// Return type for searchForSuggestions
-export type SearchForSuggestionsResults = string[];
+// An array of one linear ring
+export type GeofencePolygon = LinearRing[];
+
+// Geometry object for Polygon
+export type PolygonGeometry = {
+	polygon: GeofencePolygon;
+};
+
+export type GeofenceId = string;
+
+// Geofence object used as input for saveGeofences
+export type GeofenceInput = {
+	geofenceId: GeofenceId;
+	geometry: PolygonGeometry;
+};
+
+// Options object for saveGeofences
+export type GeofenceOptions = {
+	providerName?: string;
+};
+
+// Error type for errors related to Geofence API calls
+export type GeofenceError = {
+	error: {
+		code: string;
+		message: string;
+	};
+	geofenceId: GeofenceId;
+};
+
+// Base geofence object
+type GeofenceBase = {
+	geofenceId: GeofenceId;
+	createTime?: Date;
+	updateTime?: Date;
+};
+
+// Results object for getGeofence
+export type Geofence = GeofenceBase & {
+	geometry: PolygonGeometry;
+};
+
+// Results object for saveGeofences
+export type SaveGeofencesResults = {
+	successes: GeofenceBase[];
+	errors: GeofenceError[];
+};
+
+// Options object for listGeofence
+export type ListGeofenceOptions = GeofenceOptions & {
+	nextToken?: string;
+};
+
+// Results options for listGeofence
+export type ListGeofenceResults = {
+	entries: Geofence[];
+	nextToken: string | undefined;
+};
+
+// Results object for deleteGeofence
+export type DeleteGeofencesResults = {
+	successes: GeofenceId[];
+	errors: GeofenceError[];
+};
