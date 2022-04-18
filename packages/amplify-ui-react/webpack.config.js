@@ -29,6 +29,7 @@ module.exports = {
 	devtool: 'source-map',
 	resolve: {
 		extensions: ['.js', '.json'],
+		fallback: {fs: false},
 	},
 	mode: 'production',
 	module: {
@@ -49,8 +50,5 @@ module.exports = {
 				],
 			},
 		],
-	},
-	node: {
-		fs: 'empty',
 	},
 };
