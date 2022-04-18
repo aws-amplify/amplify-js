@@ -17,7 +17,6 @@ import { Image } from 'react-native';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
-import { INITIAL_IMAGE_DIMENSIONS } from './constants';
 import { ImageDimensions, ImagePrefetchStatus, UseMessageImage } from './types';
 import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
 
@@ -39,7 +38,7 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(
 		shouldPrefetch ? ImagePrefetchStatus.FETCHING : null
 	);
-	const imageDimensions = useRef<ImageDimensions>(INITIAL_IMAGE_DIMENSIONS).current;
+	const imageDimensions = useRef<ImageDimensions>({ height: null, width: null }).current;
 
 	const isImageFetching = prefetchStatus === ImagePrefetchStatus.FETCHING;
 	const hasRenderableImage = prefetchStatus === ImagePrefetchStatus.SUCCESS;

@@ -67,9 +67,9 @@ export default function Carousel<T>(props: CarouselProps<T>) {
 		};
 	}, [updateOrientation]);
 
-	const carouselRenderItem = (renderInfo: ListRenderItemInfo<T>) => {
-		return <View style={{ width }}>{renderItem(renderInfo)}</View>;
-	};
+	const carouselRenderItem = (renderInfo: ListRenderItemInfo<T>) => (
+		<View style={{ width }}>{renderItem(renderInfo)}</View>
+	);
 
 	if (!data?.length) {
 		return null;
