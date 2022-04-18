@@ -44,10 +44,10 @@
 		"@react-native-community/netinfo": "4.7.0"
 	},
 	"dependencies": {
-		"@aws-amplify/auth": "4.4.2",
-		"@aws-amplify/cache": "4.0.35",
-		"@aws-amplify/core": "4.4.0",
-		"@aws-amplify/storage": "4.4.16",
+		"@aws-amplify/auth": "4.5.2",
+		"@aws-amplify/cache": "4.0.40",
+		"@aws-amplify/core": "4.5.2",
+		"@aws-amplify/storage": "4.4.21",
 		"zen-observable-ts": "0.8.19"
 	},
 	"jest": {
