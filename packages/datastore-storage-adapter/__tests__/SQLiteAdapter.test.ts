@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
-import { SQLiteAdapter } from '../src';
+import { SQLiteAdapter } from '../src/SQLiteAdapter/SQLiteAdapter';
 import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
 import {
 	DataStore as DataStoreType,
@@ -173,7 +173,7 @@ describe('SQLiteAdapter', () => {
 
 	describe('sanity checks', () => {
 		it('is set as the adapter SQLite tests', async () => {
-			expect(adapter.constructor.name).toEqual('SQLiteAdapter');
+			expect(adapter.constructor.name).toEqual('CommonSQLiteAdapter');
 		});
 
 		it('is logging SQL statements during normal operation', async () => {
