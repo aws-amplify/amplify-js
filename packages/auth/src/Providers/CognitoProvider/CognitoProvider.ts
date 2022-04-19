@@ -13,16 +13,14 @@ import {
 	SignUpParams,
 	SignUpResult,
 	AWSCredentials,
-	SignInWithPassword,
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
-	InitiateAuthCommandInput,
-	InitiateAuthCommand,
 	InitiateAuthCommandOutput,
 	GetUserCommand,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommand,
+	AuthFlowType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClient,
@@ -30,8 +28,14 @@ import {
 	GetCredentialsForIdentityCommand,
 	GetCredentialsForIdentityCommandOutput,
 } from '@aws-sdk/client-cognito-identity';
-import { dispatchAuthEvent, decodeJWT } from './Util';
+import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Logger, StorageHelper } from '@aws-amplify/core';
+import {
+	cognitoSignUp,
+	cognitoConfirmSignUp,
+	cognitoSignIn,
+	cognitoConfirmSignIn,
+} from './service';
 
 const logger = new Logger('CognitoProvider');
 
@@ -57,14 +61,6 @@ export type CognitoProviderConfig = {
 	clientMetadata?: { [key: string]: string };
 };
 
-export enum AuthFlow {
-	USER_SRP_AUTH = 'USER_SRP_AUTH',
-	REFRESH_TOKEN_AUTH = 'REFRESH_TOKEN_AUTH',
-	REFRESH_TOKEN = 'REFRESH_TOKEN',
-	CUSTOM_AUTH = 'CUSTOM_AUTH',
-	USER_PASSWORD_AUTH = 'USER_PASSWORD_AUTH',
-}
-
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
@@ -72,7 +68,7 @@ export class CognitoProvider implements AuthProvider {
 	private _userStorage: Storage;
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
-	private _authFlow = AuthFlow.USER_PASSWORD_AUTH;
+	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
 	private _session: string | null = null;
 	private _username: string | null = null;
 
@@ -105,11 +101,37 @@ export class CognitoProvider implements AuthProvider {
 	getProviderName(): string {
 		return CognitoProvider.PROVIDER_NAME;
 	}
-	signUp(params: SignUpParams): Promise<SignUpResult> {
-		throw new Error('Method not implemented.');
+	async signUp(params: SignUpParams): Promise<SignUpResult> {
+		const signUpRes = cognitoSignUp(
+			{
+				region: this._config.region,
+			},
+			{
+				...params,
+				clientId: this._config.clientId,
+			}
+		);
+		return signUpRes;
 	}
-	confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult> {
-		throw new Error('Method not implemented.');
+	async confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult> {
+		const { username, confirmationCode } = params;
+		try {
+			const res = await cognitoConfirmSignUp(
+				{
+					region: this._config.region,
+				},
+				{
+					clientId: this._config.clientId,
+					username,
+					confirmationCode,
+				}
+			);
+			console.log(res);
+			return res;
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
 	}
 	private isAuthenticated() {
 		// TODO: should also check if token has expired?
@@ -135,32 +157,23 @@ export class CognitoProvider implements AuthProvider {
 				'User is already authenticated, please sign out the current user before signing in.'
 			);
 		}
-		// Plain username password flow
-		if (this._authFlow === AuthFlow.USER_PASSWORD_AUTH) {
-			const { username, password } = params;
-			if (!password) {
-				throw new Error('Password is required for USER_PASSWORD_AUTH flow');
-			}
-			const res = await this.initiateAuthPlainUsernamePassword(
-				params as SignInWithPassword & { password: string }
+		try {
+			const res = await cognitoSignIn(
+				{
+					region: this._config.region,
+				},
+				{
+					...params,
+					authFlow: this._authFlow,
+					clientId: this._config.clientId,
+				}
 			);
-			if (this.hasChallenge(res)) {
-				this._session = res.Session;
-				this._username = username;
-				return { signInSuccesful: false, nextStep: true };
-			} else {
-				this.cacheSessionData(res);
-				this._username = username;
-				// placeholder signin event
-				dispatchAuthEvent(
-					'signIn',
-					{ something: 'something' },
-					'a user has been signed in.'
-				);
-				return Promise.resolve({ signInSuccesful: true, nextStep: false });
-			}
+			this._username = params.username;
+			return this.finishSignInFlow(res);
+		} catch (err) {
+			logger.error(err);
+			throw err;
 		}
-		throw new Error('Cagamos');
 	}
 
 	private sendMFACode(
@@ -183,41 +196,6 @@ export class CognitoProvider implements AuthProvider {
 			typeof res.ChallengeParameters === 'object' &&
 			typeof res.Session === 'string'
 		);
-	}
-
-	private async initiateAuthPlainUsernamePassword(
-		params: SignInParams & {
-			password: string;
-			clientMetadata?: { [key: string]: string };
-		}
-	): Promise<InitiateAuthCommandOutput> {
-		if (
-			params.signInType === 'Link' ||
-			params.signInType === 'Social' ||
-			params.signInType === 'WebAuthn'
-		) {
-			throw new Error('Not implemented');
-		}
-		const { username, password } = params;
-		const client = this.createNewCognitoClient({
-			region: this._config?.region,
-		});
-		const initiateAuthInput: InitiateAuthCommandInput = {
-			AuthFlow: this._authFlow,
-			ClientId: this._config?.clientId,
-			AuthParameters: {
-				USERNAME: username,
-				PASSWORD: password,
-			},
-			ClientMetadata: params.clientMetadata || this._config?.clientMetadata,
-		};
-		try {
-			const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
-			return res;
-		} catch (err) {
-			logger.error(err);
-			throw err;
-		}
 	}
 
 	private handleChallenge(challengeName: CognitoChallenge) {
@@ -253,13 +231,20 @@ export class CognitoProvider implements AuthProvider {
 				'Cannot cache session data - Initiate Auth did not return tokens'
 			);
 		}
-		const { AccessToken, IdToken, RefreshToken } = AuthenticationResult;
+		const {
+			AccessToken,
+			IdToken,
+			RefreshToken,
+			ExpiresIn = 0,
+		} = AuthenticationResult;
 		this._userStorage.setItem(
 			COGNITO_CACHE_KEY,
 			JSON.stringify({
 				accessToken: AccessToken,
 				idToken: IdToken,
 				refreshToken: RefreshToken,
+				// ExpiresIn is in seconds, but Date().getTime is in milliseconds
+				expiration: new Date().getTime() + ExpiresIn * 1000,
 				...(Session && { session: Session }),
 			})
 		);
@@ -286,8 +271,6 @@ export class CognitoProvider implements AuthProvider {
 
 	async confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult> {
 		const { confirmationCode, mfaType = 'SMS_MFA' } = params;
-		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
-			{};
 		if (!this._username) {
 			throw new Error(
 				'No stored username, please sign in before using confirmSignIn'
@@ -296,21 +279,17 @@ export class CognitoProvider implements AuthProvider {
 		if (!this._session) {
 			throw new Error('No stored Session to handle the login challenge');
 		}
-		challengeResponses.USERNAME = this._username;
-		challengeResponses[
-			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
-		] = confirmationCode;
-		const respondToAuthChallengeInput: RespondToAuthChallengeCommandInput = {
-			ChallengeName: mfaType,
-			ChallengeResponses: challengeResponses,
-			ClientId: this._config.clientId,
-			Session: this._session,
-		};
-		const cognitoClient = this.createNewCognitoClient({
-			region: this._config.region,
-		});
-		const res = await cognitoClient.send(
-			new RespondToAuthChallengeCommand(respondToAuthChallengeInput)
+		const res = await cognitoConfirmSignIn(
+			{
+				region: this._config.region,
+			},
+			{
+				confirmationCode,
+				mfaType,
+				username: this._username,
+				session: this._session,
+				clientId: this._config.clientId,
+			}
 		);
 		return this.finishSignInFlow(res);
 	}
@@ -375,6 +354,7 @@ export class CognitoProvider implements AuthProvider {
 		accessToken: string;
 		idToken: string;
 		refreshToken: string;
+		expiration: number;
 	} | null {
 		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
@@ -386,10 +366,10 @@ export class CognitoProvider implements AuthProvider {
 			throw new Error();
 		}
 		const { region, identityPoolId } = this._config;
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			throw new Error('region is not configured for getting the credentials');
-		}
+		// if (!region) {
+		// 	logger.debug('region is not configured for getting the credentials');
+		// 	throw new Error('region is not configured for getting the credentials');
+		// }
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			throw new Error('No Cognito Federated Identity pool provided');
@@ -404,6 +384,8 @@ export class CognitoProvider implements AuthProvider {
 			);
 		}
 		const { idToken, accessToken, refreshToken } = session;
+		const expiration = getExpirationTimeFromJWT(idToken);
+		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
 		const getIdRes = await cognitoIdentityClient.send(
 			new GetIdCommand({
@@ -424,6 +406,11 @@ export class CognitoProvider implements AuthProvider {
 				},
 			})
 		);
+		if (!getCredentialsRes.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
 		const cognitoClient = this.createNewCognitoClient({
 			region: this._config.region,
 		});
@@ -432,6 +419,7 @@ export class CognitoProvider implements AuthProvider {
 				AccessToken: accessToken,
 			})
 		);
+		console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -458,9 +446,15 @@ export class CognitoProvider implements AuthProvider {
 			},
 		};
 	}
+	private refreshSession() {}
 	private shearAWSCredentials(
 		res: GetCredentialsForIdentityCommandOutput
 	): AWSCredentials {
+		if (!res.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
 		return {

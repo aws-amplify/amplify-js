@@ -30,3 +30,19 @@ export const decodeJWT = (
 		return {};
 	}
 };
+
+const hasExpiration = (decodedToken: {
+	[key: string]: string | number | string[];
+}): decodedToken is typeof decodedToken & { exp: number } => {
+	return (
+		decodedToken && typeof (decodedToken as { exp: number }).exp !== 'undefined'
+	);
+};
+
+export const getExpirationTimeFromJWT = (token: string): number => {
+	const decodedToken = decodeJWT(token);
+	if (!hasExpiration(decodedToken)) {
+		throw new Error('No expiration time on JWT');
+	}
+	return decodedToken.exp;
+};

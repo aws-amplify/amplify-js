@@ -47,6 +47,7 @@
     "@aws-sdk/client-cognito-identity-provider": "3.58.0",
     "amazon-cognito-identity-js": "5.2.8",
     "crypto-js": "^4.1.1",
+    "typescript": "~3.8.3",
     "xstate": "4.27.0"
   },
   "devDependencies": {

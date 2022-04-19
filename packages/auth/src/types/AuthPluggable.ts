@@ -30,6 +30,7 @@ export type SignInWithPassword = {
 	signInType: 'Password';
 	username: string;
 	password?: string;
+	clientMetadata?: { [key: string]: string };
 };
 
 export type SignInWithLink = {
@@ -81,7 +82,10 @@ export function isSignInWithSocial(
 	return signInParams && !!Object.keys(signInParams).find(k => k === 'social');
 }
 
-type ConfirmSignUpParams = {};
+type ConfirmSignUpParams = {
+	confirmationCode: string;
+	username: string;
+};
 
 type SignUpResult = {};
 

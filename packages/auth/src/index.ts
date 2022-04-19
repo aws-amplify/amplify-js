@@ -19,7 +19,7 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
  */
 export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
 
-export { CognitoProvider } from './Providers';
+export { CognitoProvider } from './Providers/CognitoProvider';
 export { AuthPluggable } from './AuthPluggable';
 export {
 	USER_PARAM_TYPE,
@@ -31,3 +31,13 @@ export {
 	isApiKey,
 	isAuthorizationToken,
 } from './types';
+
+// NOTE: temporary type to satisfy the Typescript compiler
+enum o {
+	A = 'A',
+}
+export { o as GRAPHQL_AUTH_MODE };
+
+export { Auth } from './Auth';
+export { Auth as default } from './Auth';
+export * from './types';
