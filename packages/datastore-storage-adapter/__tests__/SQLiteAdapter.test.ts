@@ -3,6 +3,7 @@ sqlite3.verbose();
 
 import { SQLiteAdapter } from '../src';
 import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
+import { ParameterizedStatement } from '../src/SQLiteAdapter/SQLiteUtils';
 import {
 	DataStore as DataStoreType,
 	StorageAdapter,
@@ -67,26 +68,29 @@ class InnerSQLiteDatabase {
 	) {
 		sqlog.push(`${statement}; ${JSON.stringify(params)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
-			return new Promise(resolve => {
+			return new Promise(async resolve => {
 				const rows = [];
+				const resultSet = {
+					rows: {
+						get length() {
+							return rows.length;
+						},
+						raw: () => rows,
+					},
+				};
 
-				this.innerDB.each(
+				await this.innerDB.each(
 					statement,
 					params,
 					async (err, row) => {
 						rows.push(row);
-						if (callback) await callback(this, row);
 					},
 					() => {
-						const resultSet = {
-							rows: {
-								length: rows.length,
-								raw: () => rows,
-							},
-						};
 						resolve([resultSet]);
 					}
 				);
+
+				if (callback) await callback(this, resultSet);
 			});
 		} else {
 			return await this.innerDB.run(statement, params, callback);
@@ -181,6 +185,65 @@ describe('SQLiteAdapter', () => {
 			// a number of queries to create tables. the test adapter should
 			// log these all to `sqlog`.
 			expect(sqlog.length).toBeGreaterThan(0);
+		});
+
+		it('can batchSave', async () => {
+			const saves = new Set<ParameterizedStatement>();
+			saves.add([
+				`insert into "Model" (
+					"field1",
+					"dateCreated",
+					"emails",
+					"id",
+					"_version",
+					"_lastChangedAt",
+					"_deleted"
+				) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+				[
+					'field1 value 0',
+					'2022-04-18T19:29:46.316Z',
+					[],
+					'a1d63606-bd3b-4641-870a-ac97694577a8',
+					null,
+					null,
+					null,
+				],
+			]);
+			await db.batchSave(saves);
+			const result = await db.get('select * from "Model" limit 1', []);
+			expect(result.id).toEqual('a1d63606-bd3b-4641-870a-ac97694577a8');
+		});
+
+		it('can batchQuery', async () => {
+			await db.save(
+				`insert into "Model" (
+				"field1",
+				"dateCreated",
+				"emails",
+				"id",
+				"_version",
+				"_lastChangedAt",
+				"_deleted"
+			) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+				[
+					'field1 value 0',
+					'2022-04-18T19:29:46.316Z',
+					[],
+					'a1d63606-bd3b-4641-870a-ac97694577a8',
+					null,
+					null,
+					null,
+				]
+			);
+
+			const queries = new Set<ParameterizedStatement>();
+			queries.add([
+				'select * from "Model" where id = ? limit 1',
+				['a1d63606-bd3b-4641-870a-ac97694577a8'],
+			]);
+			const result = await db.batchQuery(queries);
+
+			expect(result.length).toBe(1);
 		});
 	});
 
