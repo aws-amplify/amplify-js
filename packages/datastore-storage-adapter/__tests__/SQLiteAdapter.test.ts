@@ -13,7 +13,6 @@ import {
 import { Model, Post, Comment, testSchema } from './helpers';
 import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
 import Observable from 'zen-observable';
-import { RollupWatchOptions } from 'rollup';
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
