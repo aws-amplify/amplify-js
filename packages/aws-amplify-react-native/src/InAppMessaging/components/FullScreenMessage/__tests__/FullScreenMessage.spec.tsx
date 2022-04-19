@@ -15,7 +15,6 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import useMessageImage from '../../hooks/useMessageImage';
-import { INITIAL_IMAGE_DIMENSIONS } from '../../hooks/useMessageImage/constants';
 
 import FullScreenMessage from '../FullScreenMessage';
 
@@ -35,7 +34,7 @@ describe('FullScreenMessage', () => {
 	it('renders as expected', () => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 
@@ -47,7 +46,7 @@ describe('FullScreenMessage', () => {
 	it('returns null while an image is fetching', () => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: true,
 		});
 

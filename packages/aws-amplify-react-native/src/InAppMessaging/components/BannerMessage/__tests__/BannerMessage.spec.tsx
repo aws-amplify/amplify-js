@@ -16,7 +16,6 @@ import TestRenderer from 'react-test-renderer';
 
 import { IN_APP_MESSAGING } from '../../../../AmplifyTestIDs';
 import useMessageImage from '../../hooks/useMessageImage';
-import { INITIAL_IMAGE_DIMENSIONS } from '../../hooks/useMessageImage/constants';
 
 import BannerMessage from '../BannerMessage';
 
@@ -37,7 +36,7 @@ describe('BannerMessage', () => {
 	it('renders a message as expected without an image', () => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 
@@ -67,7 +66,7 @@ describe('BannerMessage', () => {
 	it('returns null while an image is fetching', () => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: true,
 		});
 
@@ -94,7 +93,7 @@ describe('BannerMessage', () => {
 	])('correctly handles a %s prop', (key, testID, testProps, expectedProps) => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 
@@ -109,7 +108,7 @@ describe('BannerMessage', () => {
 	it('calls onClose when the close button is pressed', () => {
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 
