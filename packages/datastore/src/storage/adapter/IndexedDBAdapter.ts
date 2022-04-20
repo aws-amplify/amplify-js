@@ -250,6 +250,7 @@ class IndexedDBAdapter implements Adapter {
 				return { storeName, item, instance };
 			}
 		);
+
 		const tx = this.db.transaction(
 			[storeName, ...Array.from(set.values())],
 			'readwrite'

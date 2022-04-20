@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.1...@aws-amplify/core@4.5.2) (2022-04-14)
+
+
+### Bug Fixes
+
+* PubSub - Resolve ts strict errors in the AWSAppSyncRealTimeProvider ([#9731](https://github.com/aws-amplify/amplify-js/issues/9731)) ([0c9c401](https://github.com/aws-amplify/amplify-js/commit/0c9c4018573df31f7e4739207be22eefb8bf8a56))
+
+
+
+
+
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.0...@aws-amplify/core@4.5.1) (2022-04-04)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 # [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.2...@aws-amplify/core@4.5.0) (2022-03-28)
 
 
