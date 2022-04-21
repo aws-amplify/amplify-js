@@ -1385,7 +1385,16 @@ class DataStore {
 
 	clear = async function clear() {
 		if (this.storage === undefined) {
-			return;
+			// connect to storage so that it can be cleared without fully starting DataStore
+			this.storage = new Storage(
+				schema,
+				namespaceResolver,
+				getModelConstructorByModelName,
+				modelInstanceCreator,
+				this.storageAdapter,
+				this.sessionId
+			);
+			await this.storage.init();
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
