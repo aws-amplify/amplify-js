@@ -1,1 +1,2 @@
-export { SQLiteAdapter } from './SQLiteAdapter/SQLiteAdapter';
+import SQLiteAdapter from './SQLiteAdapter/SQLiteAdapter';
+export { SQLiteAdapter };

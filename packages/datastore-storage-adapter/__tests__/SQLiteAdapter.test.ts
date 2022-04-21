@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
-import { SQLiteAdapter } from '../src/SQLiteAdapter/SQLiteAdapter';
+import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
 import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
 import {
 	DataStore as DataStoreType,
