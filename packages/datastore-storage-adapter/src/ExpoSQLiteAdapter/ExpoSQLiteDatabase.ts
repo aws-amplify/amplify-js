@@ -2,12 +2,10 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { deleteAsync, documentDirectory } from 'expo-file-system';
 import { openDatabase, WebSQLDatabase } from 'expo-sqlite';
-
+import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
 const logger = new Logger('ExpoSQLiteDatabase');
-
-const DB_NAME = 'AmplifyDatastore';
 
 /*
 

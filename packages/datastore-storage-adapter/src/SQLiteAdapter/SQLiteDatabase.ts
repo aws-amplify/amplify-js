@@ -1,6 +1,7 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
+import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
 const logger = new Logger('SQLiteDatabase');
@@ -10,8 +11,6 @@ SQLite.enablePromise(true);
 if (Logger.LOG_LEVEL === 'DEBUG') {
 	SQLite.DEBUG(true);
 }
-
-const DB_NAME = 'AmplifyDatastore';
 
 /*
 
