@@ -71,7 +71,7 @@ export class FakeWebSocketInterface {
 	}
 
 	newWebSocket() {
-		setTimeout(() => this.readyResolve(undefined), 200);
+		setTimeout(() => this.readyResolve(undefined), 10);
 		return this.webSocket;
 	}
 

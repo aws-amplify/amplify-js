@@ -88,17 +88,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					const mockError = jest.fn();
 
 					const provider = new AWSAppSyncRealTimeProvider();
-					provider.subscribe('test', {}).subscribe({
-						error(err) {
-							expect(err.errors[0].message).toEqual(
-								'Subscribe only available for AWS AppSync endpoint'
-							);
-							mockError();
-						},
-					});
 
-					// Resolve the subscription
-					await Promise.resolve();
+					await Promise.resolve(
+						provider.subscribe('test', {}).subscribe({
+							error(err) {
+								expect(err.errors[0].message).toEqual(
+									'Subscribe only available for AWS AppSync endpoint'
+								);
+								mockError();
+							},
+						})
+					);
 
 					expect(mockError).toBeCalled();
 				});
@@ -119,8 +119,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 						.subscribe({});
 
-					// Wait for the message to be received and processed
-					await delay(50);
+					// Wait for the socket to be initialize
+					await fakeWebSocketInterface.readyForUse;
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -145,8 +145,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 						.subscribe({});
 
-					// Wait for the message to be received and processed
-					await delay(50);
+					// Wait for the socket to be initialize
+					await fakeWebSocketInterface.readyForUse;
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -172,8 +172,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 						.subscribe({});
 
-					// Wait for the message to be received and processed
-					await delay(50);
+					// Wait for the socket to be initialize
+					await fakeWebSocketInterface.readyForUse;
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
@@ -387,20 +387,21 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.sendDataMessage({
-						type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
-						payload: {
-							errors: [
-								{
-									errorType: 'Non-retriable Test',
-									errorCode: 400, // Not found - non-retriable
-								},
-							],
-						},
-					});
 
 					// Resolve the message delivery actions
-					await Promise.resolve();
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							payload: {
+								errors: [
+									{
+										errorType: 'Non-retriable Test',
+										errorCode: 400, // Not found - non-retriable
+									},
+								],
+							},
+						})
+					);
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -446,20 +447,21 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.sendDataMessage({
-						type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
-						payload: {
-							errors: [
-								{
-									errorType: 'Retriable Test',
-									errorCode: 408, // Request timed out - retriable
-								},
-							],
-						},
-					});
 
 					// Resolve the message delivery actions
-					await Promise.resolve();
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendDataMessage({
+							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+							payload: {
+								errors: [
+									{
+										errorType: 'Retriable Test',
+										errorCode: 408, // Request timed out - retriable
+									},
+								],
+							},
+						})
+					);
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -484,16 +486,18 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.sendMessage(
-						new MessageEvent('connection_ack', {
-							data: JSON.stringify({
-								type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
-								payload: { connectionTimeoutMs: 20 },
-							}),
-						})
-					);
+
 					// Resolve the message delivery actions
-					await Promise.resolve();
+					await Promise.resolve(
+						fakeWebSocketInterface?.sendMessage(
+							new MessageEvent('connection_ack', {
+								data: JSON.stringify({
+									type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
+									payload: { connectionTimeoutMs: 20 },
+								}),
+							})
+						)
+					);
 
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
