@@ -36,14 +36,11 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
-    "compression-webpack-plugin": "^1.1.3",
     "find": "^0.2.7",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
     "rimraf": "^2.6.2",
-    "source-map-loader": "^0.2.1",
-    "uglifyjs-webpack-plugin": "^0.4.6",
-    "webpack": "^3.5.5"
+    "source-map-loader": "^0.2.1"
   },
   "dependencies": {
     "@aws-amplify/core": "4.5.1",
