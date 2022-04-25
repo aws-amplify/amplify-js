@@ -36,11 +36,6 @@
 				"rowCount": 9
 			},
 			{
-				"name": "user_Comment",
-				"schema": "id,commentPostId",
-				"rowCount": 2
-			},
-			{
 				"name": "user_Post",
 				"schema": "id,postBlogId,referencePostId",
 				"rowCount": 2
@@ -320,38 +315,6 @@
 						"_version": null,
 						"_lastChangedAt": null,
 						"_deleted": null,
-						"$types": {
-							"_version": "undef",
-							"_lastChangedAt": "undef",
-							"_deleted": "undef"
-						}
-					}
-				]
-			},
-			{
-				"tableName": "user_Comment",
-				"inbound": true,
-				"rows": [
-					{
-						"content": "c2",
-						"id": "007ea314-6645-486f-88a9-d1aaa4fddb9e",
-						"_version": null,
-						"_lastChangedAt": null,
-						"_deleted": null,
-						"commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
-						"$types": {
-							"_version": "undef",
-							"_lastChangedAt": "undef",
-							"_deleted": "undef"
-						}
-					},
-					{
-						"content": "c1",
-						"id": "13c99f5f-1fbb-4088-aaf9-63b789e68574",
-						"_version": null,
-						"_lastChangedAt": null,
-						"_deleted": null,
-						"commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
 						"$types": {
 							"_version": "undef",
 							"_lastChangedAt": "undef",
