@@ -64,6 +64,9 @@
 		"universal-cookie": "^4.0.4",
 		"zen-observable-ts": "0.8.19"
 	},
+	"peerDependencies": {
+		"aws-amplify": "4.3.20"
+	},
 	"jest": {
 		"globals": {
 			"ts-jest": {

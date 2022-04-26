@@ -46,6 +46,9 @@
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2"
 	},
+	"peerDependencies": {
+		"aws-amplify": "4.3.20"
+	},
 	"jest": {
 		"globals": {
 			"ts-jest": {

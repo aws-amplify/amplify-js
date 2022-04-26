@@ -46,6 +46,9 @@
   "dependencies": {
     "@aws-amplify/core": "4.5.2"
   },
+	"peerDependencies": {
+		"aws-amplify": "4.3.20"
+	},
   "jest": {
     "globals": {
       "ts-jest": {

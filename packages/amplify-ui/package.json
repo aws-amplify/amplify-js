@@ -14,6 +14,9 @@
     "build": "npm run clean && webpack && copyfiles -u 1 ./src/*.css.d.ts ./lib"
   },
   "license": "Apache-2.0",
+	"peerDependencies": {
+		"aws-amplify": "4.3.20"
+	},
   "devDependencies": {
     "autoprefixer": "^9.5.1",
     "copyfiles": "^2.1.0",

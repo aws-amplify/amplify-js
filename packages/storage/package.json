@@ -49,6 +49,9 @@
     "axios": "0.21.4",
     "events": "^3.1.0"
   },
+	"peerDependencies": {
+		"aws-amplify": "4.3.20"
+	},
   "jest": {
     "globals": {
       "ts-jest": {
