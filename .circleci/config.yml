@@ -1240,6 +1240,11 @@ workflows:
           requires:
             - integ_setup
             - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       # - integ_angular_auth:
       #     requires:
       #       - integ_setup
