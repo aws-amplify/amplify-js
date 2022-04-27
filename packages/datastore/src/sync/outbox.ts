@@ -16,6 +16,7 @@ import { USER, SYNC, valuesEqual } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
+// https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#outbox
 class MutationEventOutbox {
 	private inProgressMutationEventId: string;
 

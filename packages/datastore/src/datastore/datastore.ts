@@ -43,6 +43,7 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
@@ -1123,9 +1124,28 @@ class DataStore {
 			(async () => {
 				await this.start();
 
+				// Filter the events returned by Storage according to namespace,
+				// append original element data, and subscribe to the observable
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
+					.map(
+						(event: InternalSubscriptionMessage<T>): SubscriptionMessage<T> => {
+							// The `element` returned by storage only contains updated fields.
+							// Intercept the event to send the `savedElement` so that the first
+							// snapshot returned to the consumer contains all fields.
+							// In the event of a delete we return `element`, as `savedElement`
+							// here is undefined.
+							const { opType, model, condition, element, savedElement } = event;
+
+							return {
+								opType,
+								element: savedElement || element,
+								model,
+								condition,
+							};
+						}
+					)
 					.subscribe(observer);
 			})();
 
@@ -1365,7 +1385,16 @@ class DataStore {
 
 	clear = async function clear() {
 		if (this.storage === undefined) {
-			return;
+			// connect to storage so that it can be cleared without fully starting DataStore
+			this.storage = new Storage(
+				schema,
+				namespaceResolver,
+				getModelConstructorByModelName,
+				modelInstanceCreator,
+				this.storageAdapter,
+				this.sessionId
+			);
+			await this.storage.init();
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {

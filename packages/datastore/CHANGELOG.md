@@ -3,117 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.7.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.5...@aws-amplify/datastore@3.7.6) (2022-02-03)
+# [3.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.9.0...@aws-amplify/datastore@3.10.0) (2022-04-14)
 
+
+### Features
+
+* **data:** Datastore Docs ([#9753](https://github.com/aws-amplify/amplify-js/issues/9753)) ([4eb824f](https://github.com/aws-amplify/amplify-js/commit/4eb824f168df408469557e6ccc60edfee99953c2))
+
+
+
+
+
+# [3.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.8.0...@aws-amplify/datastore@3.9.0) (2022-04-04)
+
+
+### Features
+
+* update DataStore observe / observeQuery to return all fields in local update snapshot ([#9556](https://github.com/aws-amplify/amplify-js/issues/9556)) ([40ee89b](https://github.com/aws-amplify/amplify-js/commit/40ee89b828e859bfaadea2269cce96562ab6c90a))
+
+
+
+
+
+# [3.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.9...@aws-amplify/datastore@3.8.0) (2022-03-28)
+
+
+### Features
+
+* PubSub Add Options objects for all Providers and fix: Spelling error and deprecation of old exports ([#9683](https://github.com/aws-amplify/amplify-js/issues/9683)) ([b535af2](https://github.com/aws-amplify/amplify-js/commit/b535af2133b5460c6e8e2fcfd89e1fe235872c27))
+
+
+
+
+
+## [3.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.8...@aws-amplify/datastore@3.7.9) (2022-03-22)
 
 ### Bug Fixes
 
-* **datastore:** correctly apply config values ([#9542](https://github.com/aws-amplify/amplify-js/issues/9542)) ([3f8b838](https://github.com/aws-amplify/amplify-js/commit/3f8b83869becf5f9963d61e6f7cfe695badb3b53))
+- **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
 
+## [3.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.7...@aws-amplify/datastore@3.7.8) (2022-03-10)
 
+**Note:** Version bump only for package @aws-amplify/datastore
 
+## [3.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.6...@aws-amplify/datastore@3.7.7) (2022-02-28)
 
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.7.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.5...@aws-amplify/datastore@3.7.6) (2022-02-03)
+
+### Bug Fixes
+
+- **datastore:** correctly apply config values ([#9542](https://github.com/aws-amplify/amplify-js/issues/9542)) ([3f8b838](https://github.com/aws-amplify/amplify-js/commit/3f8b83869becf5f9963d61e6f7cfe695badb3b53))
 
 ## [3.7.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.4...@aws-amplify/datastore@3.7.5) (2022-01-27)
 
 **Note:** Version bump only for package @aws-amplify/datastore
 
-
-
-
-
 ## [3.7.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.3...@aws-amplify/datastore@3.7.4) (2022-01-07)
 
 **Note:** Version bump only for package @aws-amplify/datastore
 
-
-
-
-
 ## [3.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.2...@aws-amplify/datastore@3.7.3) (2021-12-16)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/datastore:** fixes observeQuery in local-only mode ([#9300](https://github.com/aws-amplify/amplify-js/issues/9300)) ([b0b57fb](https://github.com/aws-amplify/amplify-js/commit/b0b57fb1ba81d8ad190c4e67efb878ef4c6a2344))
-
-
-
-
+- **@aws-amplify/datastore:** fixes observeQuery in local-only mode ([#9300](https://github.com/aws-amplify/amplify-js/issues/9300)) ([b0b57fb](https://github.com/aws-amplify/amplify-js/commit/b0b57fb1ba81d8ad190c4e67efb878ef4c6a2344))
 
 ## [3.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.1...@aws-amplify/datastore@3.7.2) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/datastore
 
-
-
-
-
 ## [3.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.0...@aws-amplify/datastore@3.7.1) (2021-12-02)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/datastore:** belongsTo bug ([#9268](https://github.com/aws-amplify/amplify-js/issues/9268)) ([5106639](https://github.com/aws-amplify/amplify-js/commit/510663981a32443b79dd065ca075b664ca8bdff6))
-* **@aws-amplify/datastore:** consecutive saves with timestamps ([#9298](https://github.com/aws-amplify/amplify-js/issues/9298)) ([807dea0](https://github.com/aws-amplify/amplify-js/commit/807dea0acae8389854560ca73b035ecbf220d040))
-
-
-
-
+- **@aws-amplify/datastore:** belongsTo bug ([#9268](https://github.com/aws-amplify/amplify-js/issues/9268)) ([5106639](https://github.com/aws-amplify/amplify-js/commit/510663981a32443b79dd065ca075b664ca8bdff6))
+- **@aws-amplify/datastore:** consecutive saves with timestamps ([#9298](https://github.com/aws-amplify/amplify-js/issues/9298)) ([807dea0](https://github.com/aws-amplify/amplify-js/commit/807dea0acae8389854560ca73b035ecbf220d040))
 
 # [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.1...@aws-amplify/datastore@3.7.0) (2021-11-18)
 
-
 ### Features
 
-* **@aws-amplify/datastore:** hasOne CRUD improvements ([#9239](https://github.com/aws-amplify/amplify-js/issues/9239)) ([d521d17](https://github.com/aws-amplify/amplify-js/commit/d521d17c45a246c63c02a29e103e8a3db374c11e))
-
-
-
-
+- **@aws-amplify/datastore:** hasOne CRUD improvements ([#9239](https://github.com/aws-amplify/amplify-js/issues/9239)) ([d521d17](https://github.com/aws-amplify/amplify-js/commit/d521d17c45a246c63c02a29e103e8a3db374c11e))
 
 ## [3.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.0...@aws-amplify/datastore@3.6.1) (2021-11-16)
 
 **Note:** Version bump only for package @aws-amplify/datastore
 
-
-
-
-
 # [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.2...@aws-amplify/datastore@3.6.0) (2021-11-12)
-
 
 ### Features
 
-* **@aws-amplify/datastore:** ObserveQuery performance and type enhancements ([#9141](https://github.com/aws-amplify/amplify-js/issues/9141)) ([755ce09](https://github.com/aws-amplify/amplify-js/commit/755ce09f5152c54d215f023089f30b2c98ace33a))
-
-
-
-
+- **@aws-amplify/datastore:** ObserveQuery performance and type enhancements ([#9141](https://github.com/aws-amplify/amplify-js/issues/9141)) ([755ce09](https://github.com/aws-amplify/amplify-js/commit/755ce09f5152c54d215f023089f30b2c98ace33a))
 
 ## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.1...@aws-amplify/datastore@3.5.2) (2021-11-09)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/datastore:** use forEach instead of map to iterate over unsubscribe callbacks ([#9146](https://github.com/aws-amplify/amplify-js/issues/9146)) ([ec6ee1c](https://github.com/aws-amplify/amplify-js/commit/ec6ee1c066a283e4e34a287db5712f2bb944e6ba))
-
+- **@aws-amplify/datastore:** use forEach instead of map to iterate over unsubscribe callbacks ([#9146](https://github.com/aws-amplify/amplify-js/issues/9146)) ([ec6ee1c](https://github.com/aws-amplify/amplify-js/commit/ec6ee1c066a283e4e34a287db5712f2bb944e6ba))
 
 ### Reverts
 
-* uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
-
-
-
-
+- uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
 
 ## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.0...@aws-amplify/datastore@3.5.1) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/datastore
-
-
-
-
 
 # [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.8...@aws-amplify/datastore@3.5.0) (2021-10-21)
 

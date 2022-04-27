@@ -5,7 +5,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:12
+      - image: cypress/base:12.22.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -15,7 +15,7 @@ executors:
 
   unit-test-executor:
     docker:
-      - image: cypress/base:12
+      - image: cypress/base:12.22.8
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/included:9.4.1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -369,6 +369,12 @@ jobs:
     steps:
       - attach_workspace:
           at: /root
+      - run:
+          name: 'build sqlite3 binaries'
+          # https://github.com/TryGhost/node-sqlite3#source-install
+          command: |
+            cd packages/datastore-storage-adapter
+            npm install --build-from-source
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
@@ -1537,7 +1543,9 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          browser: chrome
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches

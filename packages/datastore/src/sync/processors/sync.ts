@@ -65,10 +65,11 @@ class SyncProcessor {
 		if (!this.syncPredicates) {
 			return null;
 		}
-		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
-			this.syncPredicates.get(model),
-			false
-		);
+		const predicatesGroup: PredicatesGroup<any> =
+			ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
 
 		if (!predicatesGroup) {
 			return null;
