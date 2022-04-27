@@ -67,12 +67,18 @@
           ],
           "allowJs": true
         }
-      }
+      },
+      "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+      "testPathIgnorePatterns": [
+        "__tests__/helpers.ts"
+      ]
     },
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testPathIgnorePatterns": [
+      "__tests__/helpers.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
