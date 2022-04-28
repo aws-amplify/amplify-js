@@ -121,6 +121,18 @@ class StorageClass implements StorageFacade {
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
 			if (opType === OpType.UPDATE && !syncResponse) {
+				//
+				// TODO: LOOK!!!
+				// the `model` used here is in effect regardless of what model
+				// comes back from adapter.save().
+				// Prior to fix, SQLite adapter had been returning two models
+				// of different types, resulting in invalid outbox entries.
+				//
+				// the bug is essentially fixed in SQLite adapter.
+				// leaving as-is, because it's currently unclear whether anything
+				// depends on this remaining as-is.
+				//
+
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
 					savedElement,

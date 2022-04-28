@@ -106,6 +106,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
+
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				return { modelName, item, instance };
@@ -147,13 +148,13 @@ export class SQLiteAdapter implements StorageAdapter {
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
 
-			saveStatements.add(saveStatement);
-
-			result.push([instance, opType]);
+			if (id === model.id || opType === OpType.INSERT) {
+				saveStatements.add(saveStatement);
+				result.push([instance, opType]);
+			}
 		}
 
 		await this.db.batchSave(saveStatements);
-
 		return result;
 	}
 
@@ -470,7 +471,6 @@ export class SQLiteAdapter implements StorageAdapter {
 
 		// perform all of the insert/update/delete operations in a single transaction
 		await this.db.batchSave(saveStatements, deleteStatements);
-
 		return result;
 	}
 }

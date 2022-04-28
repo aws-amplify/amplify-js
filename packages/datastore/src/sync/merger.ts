@@ -5,6 +5,8 @@ import {
 	PersistentModelConstructor,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
+
+// https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#merger
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
