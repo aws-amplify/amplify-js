@@ -9,6 +9,8 @@ import {
 	GraphQLFilter,
 	AuthModeStrategy,
 	ErrorHandler,
+	ErrorHandlerType,
+	ErrorType,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -17,6 +19,8 @@ import {
 	getForbiddenError,
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
+	mapErrorToType,
+	ErrorMap,
 } from '../utils';
 import {
 	jitteredExponentialRetry,
@@ -221,32 +225,65 @@ class SyncProcessor {
 							error.data[opName] &&
 							error.data[opName].items
 					);
+					const errorMap = {
+						BadRecord: [/^Cannot return \w+ for [\w-_]+ type/],
+						ConfigError: [
+							// (error: Error) => { return true }
+						],
 
+						// will be defaulted within mapper function.
+						// no need to specify any matchers here.
+						Unknown: [],
+					} as ErrorMap;
 					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
 								item => item !== null
 							);
-
 							if (error.errors) {
 								for (const err of error.errors) {
+									let errorHandlerResult: ErrorHandlerType;
 									try {
-										await this.errorHandler({
+										errorHandlerResult = await this.errorHandler({
 											localModel: null,
 											message: err.message,
 											model: modelDefinition.name,
 											operation: opName,
 											// map errorType to baditem based of 'cannot return null for non-nullable type'
 											// Badrecord is default
-											errorType: 'BadRecord',
+											errorType: mapErrorToType(errorMap, err),
 											// map for errorInfo as well
 											//errorInfo: err.errorInfo,
 											process: 'sync',
 											remoteModel: null,
+											cause: err,
 										});
 									} catch (e) {
+										errorHandlerResult = 'StopSync';
 										logger.error('failed to execute sync errorHandler', e);
+									}
+									switch (errorHandlerResult) {
+										case 'ContinueSync':
+											logger.debug('error handled by errorHandler', err);
+											return result;
+											break;
+										case 'Retry':
+											logger.debug('error is being retried', err);
+											throw new Error('errorHandler retry');
+											break;
+										case 'StopSync':
+											logger.debug('errorHandler stopped sync', err);
+											throw new NonRetryableError('errorHandler stopped sync');
+											break;
+										default:
+											logger.error(
+												'Invalid errorHandler response: ',
+												errorHandlerResult
+											);
+											throw new NonRetryableError(
+												'Invalid errorHandler response'
+											);
 									}
 								}
 								Hub.dispatch('datastore', {

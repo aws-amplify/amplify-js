@@ -24,6 +24,7 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 	TypeConstructorMap,
+	ErrorHandlerType,
 } from '../../types';
 import { exhaustiveCheck, USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
@@ -35,6 +36,8 @@ import {
 	TransformerMutationTypeToOperationName,
 	getTokenForCustomAuth,
 	OperationName,
+	ErrorMap,
+	mapErrorToType,
 } from '../utils';
 
 const MAX_ATTEMPTS = 10;
@@ -375,8 +378,19 @@ class MutationProcessor {
 							} else {
 								const newOperation: OperationName =
 									TransformerMutationTypeToOperationName(operation);
+								let errorHandlerResult: ErrorHandlerType;
 								try {
-									await this.errorHandler({
+									const errorMap = {
+										BadRecord: [/^Cannot return \w+ for [\w-_]+ type/],
+										ConfigError: [
+											// (error: Error) => { return true }
+										],
+
+										// will be defaulted within mapper function.
+										// no need to specify any matchers here.
+										Unknown: [],
+									} as ErrorMap;
+									errorHandlerResult = await this.errorHandler({
 										// modelInstanceCreator not necessary
 										// localModel: this.modelInstanceCreator(
 										// 	modelConstructor,
@@ -385,9 +399,10 @@ class MutationProcessor {
 										localModel: variables.input,
 										message: error.message,
 										operation: newOperation,
-										errorType: error.errorType,
+										errorType: mapErrorToType(errorMap, error),
 										errorInfo: error.errorInfo,
 										process: 'mutate',
+										cause: error,
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
 											: null,
@@ -395,6 +410,34 @@ class MutationProcessor {
 								} catch (err) {
 									logger.warn('failed to execute errorHandler', err);
 								} finally {
+									switch (errorHandlerResult) {
+										case 'ContinueSync':
+											logger.debug('error handled by errorHandler', error);
+											return error.data
+												? [
+														{ data: { [opName]: error.data } },
+														opName,
+														modelDefinition,
+												  ]
+												: [];
+											break;
+										case 'Retry':
+											logger.debug('error is being retried', error);
+											throw new Error('errorHandler retry');
+											break;
+										case 'StopSync':
+											logger.debug('errorHandler stopped sync', error);
+											throw new NonRetryableError('errorHandler stopped sync');
+											break;
+										default:
+											logger.error(
+												'Invalid errorHandler response: ',
+												errorHandlerResult
+											);
+											throw new NonRetryableError(
+												'Invalid errorHandler response'
+											);
+									}
 									// Return empty tuple, dequeues the mutation
 									return error.data
 										? [

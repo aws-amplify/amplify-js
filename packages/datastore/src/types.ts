@@ -658,7 +658,9 @@ export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (error: SyncError<any>) => void; // default : logger.warn
+		errorHandler?: (
+			error: SyncError<PersistentModel>
+		) => Promise<ErrorHandlerType>; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -668,7 +670,9 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (error: SyncError<any>) => void; // default : logger.warn
+	errorHandler?: (
+		error: SyncError<PersistentModel>
+	) => Promise<ErrorHandlerType>; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
@@ -784,25 +788,19 @@ export type SyncError<T extends PersistentModel> = {
 	remoteModel: PersistentModel;
 	process: ProcessName;
 	operation: string;
-	source?: Error;
+	cause?: Error;
 };
 
-type ErrorType =
+export type ErrorType =
 	| 'ConfigError'
 	| 'BadRecord'
 	| 'Unauthorized'
 	| 'Transient'
 	| 'Unknown';
 
-type ProcessName =
-	| 'sync'
-	| 'mutate'
-	| 'subscribe'
-	| 'save()'
-	| 'query()'
-	| 'delete()';
+type ProcessName = 'sync' | 'mutate' | 'subscribe';
 
-type OperationName = 'create' | 'update' | 'delete' | 'list' | 'get';
+type OperationName = 'create' | 'update' | 'delete' | 'list';
 
 type ModelMeta<T extends PersistentModel> = {
 	modelConstructor: PersistentModelConstructor<T>;
@@ -818,7 +816,11 @@ export type ConflictHandler = (
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
-export type ErrorHandler = (error: SyncError<any>) => void;
+export type ErrorHandler = (
+	error: SyncError<PersistentModel>
+) => Promise<ErrorHandlerType>;
+// Make below into symbols like Discard
+export type ErrorHandlerType = 'StopSync' | 'Retry' | 'ContinueSync';
 
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;

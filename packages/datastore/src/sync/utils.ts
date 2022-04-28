@@ -26,6 +26,7 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ErrorType,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -38,6 +39,26 @@ enum GraphQLOperationType {
 	UPDATE = 'mutation',
 	DELETE = 'mutation',
 	GET = 'query',
+}
+
+export type ErrorMap = {
+	[key in ErrorType]: (RegExp | ((error: Error) => boolean))[];
+};
+
+// type ErrorType = keyof typeof errorMap;
+
+export function mapErrorToType(errorMap: ErrorMap, error: Error) {
+	const errorTypes = [...Object.keys(errorMap)] as ErrorType[];
+	for (const errorType of errorTypes) {
+		for (const matcher of errorMap[errorType]) {
+			if (typeof matcher === 'function') {
+				if (matcher(error)) return errorType;
+			} else {
+				if (matcher.test(error.message)) return errorType;
+			}
+		}
+	}
+	return 'Unknown';
 }
 
 export type OperationName = 'create' | 'update' | 'delete' | 'list' | 'get';
