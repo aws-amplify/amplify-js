@@ -41,6 +41,20 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		await DataStore.clear();
 	});
 
+	test('clear without starting', async () => {
+		await DataStore.save(
+			new Model({
+				field1: 'Smurfs',
+				optionalField1: 'More Smurfs',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+		expect(await DataStore.query(Model)).toHaveLength(1);
+		await DataStore.stop();
+		await DataStore.clear();
+		expect(await DataStore.query(Model)).toHaveLength(0);
+	});
+
 	test('subscribe to all models', async done => {
 		try {
 			const sub = DataStore.observe().subscribe(
