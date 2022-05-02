@@ -464,9 +464,9 @@ class SubscriptionProcessor {
 														recoverySuggestion:
 															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 														localModel: null,
-														message: message,
+														message,
 														model: modelDefinition.name,
-														operation: operation,
+														operation,
 														errorType: mapErrorToType(
 															errorMap,
 															subscriptionError
