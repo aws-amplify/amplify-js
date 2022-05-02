@@ -241,7 +241,7 @@ class SyncProcessor {
 							);
 							if (error.errors) {
 								await Promise.all(
-									error.error.map(async err => {
+									error.errors.map(async err => {
 										try {
 											await this.errorHandler({
 												recoverySuggestion:
