@@ -747,11 +747,15 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			AWS_LAMBDA: this._customAuthHeader,
 		};
 
-		if (!authenticationType || !headerHandler[authenticationType]) {
-			logger.debug(`Authentication type ${authenticationType} not supported`);
+		const authenticationTypeString = String(authenticationType);
+
+		if (!authenticationTypeString || !headerHandler[authenticationTypeString]) {
+			logger.debug(
+				`Authentication type ${authenticationTypeString} not supported`
+			);
 			return '';
 		} else {
-			const handler = headerHandler[authenticationType];
+			const handler = headerHandler[authenticationTypeString];
 
 			const { host } = url.parse(appSyncGraphqlEndpoint ?? '');
 

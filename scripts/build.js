@@ -147,7 +147,7 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 	logger.info(ts.formatDiagnostic(diagnostic, formatHost));
 }
 
-async function buildES5(typeScriptCompiler, watchMode) {
+async function buildES5(typeScriptCompiler, watchMode, tsStrict) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
@@ -177,6 +177,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		// temporary fix
 		types: ['node'],
 		outDir: pkgTscES5OutDir,
+		strict: tsStrict,
 	};
 
 	if (watchMode) {
@@ -204,7 +205,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 	});
 }
 
-function buildES6(typeScriptCompiler, watchMode) {
+function buildES6(typeScriptCompiler, watchMode, tsStrict) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
@@ -234,6 +235,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		// temporary fix
 		types: ['node'],
 		outDir: pkgTscES6OutDir,
+		strict: tsStrict,
 	};
 
 	if (watchMode) {
@@ -261,15 +263,15 @@ function buildES6(typeScriptCompiler, watchMode) {
 	});
 }
 
-function build(type, watchMode) {
+function build(type, watchMode, tsStrict) {
 	if (type === 'rollup') buildRollUp();
 
 	var typeScriptCompiler = watchMode
 		? runTypeScriptWithWatchMode
 		: runTypeScriptWithoutWatchMode;
 
-	if (type === 'es5') buildES5(typeScriptCompiler, watchMode);
-	if (type === 'es6') buildES6(typeScriptCompiler, watchMode);
+	if (type === 'es5') buildES5(typeScriptCompiler, watchMode, tsStrict);
+	if (type === 'es6') buildES6(typeScriptCompiler, watchMode, tsStrict);
 }
 
 module.exports = build;

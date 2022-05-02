@@ -1,0 +1,14 @@
+//WARNING: The tsconfig used to build amplify is inline in ../../scripts/build.js, this file exists only to provide IDE feedback while modifying the library.
+//         This file intentionally sets ts to strict globally as an aspiration where not all packages have strict turned on in the actual build process.
+{
+	"compilerOptions": {
+		"rootDir": "./",
+		"target": "es5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"strict": true,
+		"noImplicitAny": false,
+		"useUnknownInCatchVariables": false
+	},
+	"exclude": ["node_modules", ".vscode-test"]
+}
