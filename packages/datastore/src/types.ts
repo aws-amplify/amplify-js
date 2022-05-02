@@ -779,6 +779,7 @@ export type SyncError<T extends PersistentModel> = {
 	message: string;
 	errorType: ErrorType;
 	errorInfo?: string;
+	recoverySuggestion?: string;
 	model?: string;
 	localModel: T;
 	remoteModel: T;
