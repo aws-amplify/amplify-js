@@ -459,6 +459,25 @@ class SubscriptionProcessor {
 														errors: [],
 													},
 												} = subscriptionError;
+												try {
+													await this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null,
+														message: message,
+														model: modelDefinition.name,
+														operation: operation,
+														errorType: mapErrorToType(
+															errorMap,
+															subscriptionError
+														),
+														process: ProcessName.subscribe,
+														remoteModel: null,
+														cause: subscriptionError,
+													});
+												} catch (e) {
+													logger.error('Sync error handler failed with:', e);
+												}
 
 												if (
 													message.includes(
@@ -487,28 +506,6 @@ class SubscriptionProcessor {
 															}`
 														);
 														logger.warn('subscriptionError', message);
-														try {
-															await this.errorHandler({
-																recoverySuggestion:
-																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-																localModel: null,
-																message: message,
-																model: modelDefinition.name,
-																operation: operation,
-																errorType: mapErrorToType(
-																	errorMap,
-																	subscriptionError
-																),
-																process: ProcessName.subscribe,
-																remoteModel: null,
-																cause: subscriptionError,
-															});
-														} catch (e) {
-															logger.error(
-																'Sync error handler failed with:',
-																e
-															);
-														}
 														return;
 													} else {
 														logger.debug(
@@ -526,7 +523,6 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-												// Perhaps case for ErrorHandler
 												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
@@ -537,10 +533,8 @@ class SubscriptionProcessor {
 													message.includes('"errorType":"Unauthorized"') ||
 													message.includes('"errorType":"OperationDisabled"')
 												) {
-													// Perhaps case for ErrorHandler
 													return;
 												}
-												// Perhaps case for ErrorHandler
 												observer.error(message);
 											},
 										})
