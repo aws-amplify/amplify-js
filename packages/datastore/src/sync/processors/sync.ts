@@ -9,8 +9,7 @@ import {
 	GraphQLFilter,
 	AuthModeStrategy,
 	ErrorHandler,
-	ErrorHandlerType,
-	ErrorType,
+	ProcessName,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -172,8 +171,13 @@ class SyncProcessor {
 	}
 
 	// Partial data private feature flag. Not a public API. This will be removed in a future release.
-	public partialDataFeatureFlagEnabled() {
-		return true;
+	private partialDataFeatureFlagEnabled() {
+		try {
+			const flag = sessionStorage.getItem('datastorePartialData');
+			return Boolean(flag);
+		} catch (e) {
+			return false;
+		}
 	}
 
 	private async jitteredRetry<T>({
@@ -225,16 +229,6 @@ class SyncProcessor {
 							error.data[opName] &&
 							error.data[opName].items
 					);
-					const errorMap = {
-						BadRecord: [/^Cannot return \w+ for [\w-_]+ type/],
-						ConfigError: [
-							// (error: Error) => { return true }
-						],
-
-						// will be defaulted within mapper function.
-						// no need to specify any matchers here.
-						Unknown: [],
-					} as ErrorMap;
 					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;
@@ -242,50 +236,28 @@ class SyncProcessor {
 								item => item !== null
 							);
 							if (error.errors) {
-								for (const err of error.errors) {
-									let errorHandlerResult: ErrorHandlerType;
-									try {
-										errorHandlerResult = await this.errorHandler({
-											localModel: null,
-											message: err.message,
-											model: modelDefinition.name,
-											operation: opName,
-											// map errorType to baditem based of 'cannot return null for non-nullable type'
-											// Badrecord is default
-											errorType: mapErrorToType(errorMap, err),
-											// map for errorInfo as well
-											//errorInfo: err.errorInfo,
-											process: 'sync',
-											remoteModel: null,
-											cause: err,
-										});
-									} catch (e) {
-										errorHandlerResult = 'StopSync';
-										logger.error('failed to execute sync errorHandler', e);
-									}
-									switch (errorHandlerResult) {
-										case 'ContinueSync':
-											logger.debug('error handled by errorHandler', err);
-											return result;
-											break;
-										case 'Retry':
-											logger.debug('error is being retried', err);
-											throw new Error('errorHandler retry');
-											break;
-										case 'StopSync':
-											logger.debug('errorHandler stopped sync', err);
-											throw new NonRetryableError('errorHandler stopped sync');
-											break;
-										default:
-											logger.error(
-												'Invalid errorHandler response: ',
-												errorHandlerResult
-											);
-											throw new NonRetryableError(
-												'Invalid errorHandler response'
-											);
-									}
-								}
+								const errorMap = {
+									BadRecord: error =>
+										/^Cannot return \w+ for [\w-_]+ type/.test(error.message),
+								} as ErrorMap;
+								await Promise.all(
+									error.error.map(async err => {
+										try {
+											await this.errorHandler({
+												localModel: null,
+												message: err.message,
+												model: modelDefinition.name,
+												operation: opName,
+												errorType: mapErrorToType(errorMap, err),
+												process: ProcessName.sync,
+												remoteModel: null,
+												cause: err,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+									})
+								);
 								Hub.dispatch('datastore', {
 									event: 'syncQueriesPartialSyncError',
 									data: {

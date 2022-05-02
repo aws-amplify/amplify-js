@@ -658,9 +658,7 @@ export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (
-			error: SyncError<PersistentModel>
-		) => Promise<ErrorHandlerType>; // default : logger.warn
+		errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -670,9 +668,7 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (
-		error: SyncError<PersistentModel>
-	) => Promise<ErrorHandlerType>; // default : logger.warn
+	errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
@@ -784,8 +780,8 @@ export type SyncError<T extends PersistentModel> = {
 	errorType: ErrorType;
 	errorInfo?: string;
 	model?: string;
-	localModel: PersistentModel;
-	remoteModel: PersistentModel;
+	localModel: T;
+	remoteModel: T;
 	process: ProcessName;
 	operation: string;
 	cause?: Error;
@@ -798,15 +794,11 @@ export type ErrorType =
 	| 'Transient'
 	| 'Unknown';
 
-type ProcessName = 'sync' | 'mutate' | 'subscribe';
-
-type OperationName = 'create' | 'update' | 'delete' | 'list';
-
-type ModelMeta<T extends PersistentModel> = {
-	modelConstructor: PersistentModelConstructor<T>;
-	schema: SchemaModel;
-	pkFields: string[];
-};
+export enum ProcessName {
+	'sync' = 'sync',
+	'mutate' = 'mutate',
+	'subscribe' = 'subscribe',
+}
 
 export const DISCARD = Symbol('DISCARD');
 
@@ -816,11 +808,7 @@ export type ConflictHandler = (
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
-export type ErrorHandler = (
-	error: SyncError<PersistentModel>
-) => Promise<ErrorHandlerType>;
-// Make below into symbols like Discard
-export type ErrorHandlerType = 'StopSync' | 'Retry' | 'ContinueSync';
+export type ErrorHandler = (error: SyncError<PersistentModel>) => void;
 
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;

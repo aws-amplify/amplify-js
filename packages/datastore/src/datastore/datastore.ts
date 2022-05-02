@@ -55,7 +55,6 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
-	ErrorHandlerType,
 } from '../types';
 import {
 	DATASTORE,
@@ -566,11 +565,8 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
 }
 
-function defaultErrorHandler(
-	error: SyncError<PersistentModel>
-): Promise<ErrorHandlerType> {
+function defaultErrorHandler(error: SyncError<PersistentModel>): void {
 	logger.warn(error);
-	return Promise.resolve('StopSync');
 }
 
 function getModelConstructorByModelName(
@@ -690,9 +686,7 @@ class DataStore {
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
-	private errorHandler: (
-		error: SyncError<PersistentModel>
-	) => Promise<ErrorHandlerType>;
+	private errorHandler: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval: number;
 	private initialized: Promise<void>;
 	private initReject: Function;
@@ -1310,7 +1304,6 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
-			//allowedErrors: booolean,
 			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
