@@ -30,6 +30,18 @@ import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
 
+const errorMap = {
+	Unauthorized: (givenError: any) => {
+		const {
+			error: { errors: [{ message = '' } = {}] } = {
+				errors: [],
+			},
+		} = givenError;
+		const regex = /Connection failed.+Unauthorized/;
+		return regex.test(message);
+	},
+} as ErrorMap;
+
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
 }
@@ -475,20 +487,10 @@ class SubscriptionProcessor {
 															}`
 														);
 														logger.warn('subscriptionError', message);
-														const errorMap = {
-															Unauthorized: (givenError: any) => {
-																const {
-																	error: { errors: [{ message = '' } = {}] } = {
-																		errors: [],
-																	},
-																} = givenError;
-																const regex = /Connection failed.+Unauthorized/;
-																return regex.test(message);
-															},
-														} as ErrorMap;
 														try {
-											await this.errorHandler({
-												recoverySuggestion: "Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues",
+															await this.errorHandler({
+																recoverySuggestion:
+																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 																localModel: null,
 																message: message,
 																model: modelDefinition.name,

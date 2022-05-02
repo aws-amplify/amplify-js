@@ -42,6 +42,10 @@ const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
 
+const errorMap = {
+	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
+} as ErrorMap;
+
 type MutationProcessorEvent = {
 	operation: TransformerMutationType;
 	modelDefinition: SchemaModel;
@@ -375,12 +379,9 @@ class MutationProcessor {
 								throw new NonRetryableError('RetryMutation');
 							} else {
 								try {
-									const errorMap = {
-										BadRecord: error =>
-											/^Cannot return \w+ for [\w-_]+ type/.test(error.message),
-									} as ErrorMap;
-											await this.errorHandler({
-												recoverySuggestion: "Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues",
+									await this.errorHandler({
+										recoverySuggestion:
+											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 										localModel: variables.input,
 										message: error.message,
 										operation,

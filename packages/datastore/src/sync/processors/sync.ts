@@ -37,6 +37,10 @@ const opResultDefaults = {
 
 const logger = new Logger('DataStore');
 
+const errorMap = {
+	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
+} as ErrorMap;
+
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
@@ -236,15 +240,12 @@ class SyncProcessor {
 								item => item !== null
 							);
 							if (error.errors) {
-								const errorMap = {
-									BadRecord: error =>
-										/^Cannot return \w+ for [\w-_]+ type/.test(error.message),
-								} as ErrorMap;
 								await Promise.all(
 									error.error.map(async err => {
 										try {
 											await this.errorHandler({
-												recoverySuggestion: "Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues",
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 												localModel: null,
 												message: err.message,
 												model: modelDefinition.name,
