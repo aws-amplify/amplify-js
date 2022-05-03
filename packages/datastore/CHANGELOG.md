@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.10.0...@aws-amplify/datastore@3.11.0) (2022-05-03)
+
+
+### Bug Fixes
+
+* add newly created models to IDB during migration ([#9754](https://github.com/aws-amplify/amplify-js/issues/9754)) ([58d7e00](https://github.com/aws-amplify/amplify-js/commit/58d7e003463e1cabe3a4bb5601a2cdf11736150d))
+* **@aws-amplify/datastore-storage-adapter:** SQLite adapter NULL handling and mutation queue management bugs ([#9813](https://github.com/aws-amplify/amplify-js/issues/9813)) ([fe691fd](https://github.com/aws-amplify/amplify-js/commit/fe691fd4f67adc6ac973dd12ca056563d0720d69))
+
+
+### Features
+
+* clear DataStore without first starting ([#9768](https://github.com/aws-amplify/amplify-js/issues/9768)) ([38bdabd](https://github.com/aws-amplify/amplify-js/commit/38bdabd5408e03595a90d673bbffd963cf432daa))
+* rework error handler ([#9861](https://github.com/aws-amplify/amplify-js/issues/9861)) ([6ae8d10](https://github.com/aws-amplify/amplify-js/commit/6ae8d10569abf24559436a46e1723825e6472489))
+
+
+
+
+
 # [3.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.9.0...@aws-amplify/datastore@3.10.0) (2022-04-14)
 
 
