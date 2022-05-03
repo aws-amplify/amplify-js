@@ -30,6 +30,7 @@ import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
 
+// TODO: add additional error maps
 const errorMap = {
 	Unauthorized: (givenError: any) => {
 		const {
@@ -73,7 +74,7 @@ class SubscriptionProcessor {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly errorHandler?: ErrorHandler
+		private readonly errorHandler: ErrorHandler
 	) {}
 
 	private buildSubscription(

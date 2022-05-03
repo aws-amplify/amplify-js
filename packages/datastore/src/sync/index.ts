@@ -155,8 +155,8 @@ export class SyncEngine {
 			MutationEvent,
 			this.amplifyConfig,
 			this.authModeStrategy,
-			conflictHandler,
-			errorHandler
+			errorHandler,
+			conflictHandler
 		);
 		this.datastoreConnectivity = new DataStoreConnectivity();
 	}

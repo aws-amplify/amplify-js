@@ -37,6 +37,7 @@ const opResultDefaults = {
 
 const logger = new Logger('DataStore');
 
+// TODO: add additional error maps
 const errorMap = {
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 } as ErrorMap;
@@ -49,7 +50,7 @@ class SyncProcessor {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly errorHandler?: ErrorHandler,
+		private readonly errorHandler: ErrorHandler,
 		private readonly modelInstanceCreator?: ModelInstanceCreator
 	) {
 		this.generateQueries();

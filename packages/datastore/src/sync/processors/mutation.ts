@@ -42,6 +42,7 @@ const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
 
+// TODO: add additional error maps
 const errorMap = {
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 } as ErrorMap;
@@ -70,8 +71,8 @@ class MutationProcessor {
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly conflictHandler?: ConflictHandler,
-		private readonly errorHandler?: ErrorHandler
+		private readonly errorHandler: ErrorHandler,
+		private readonly conflictHandler?: ConflictHandler
 	) {
 		this.generateQueries();
 	}

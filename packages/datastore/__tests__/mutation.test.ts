@@ -266,6 +266,7 @@ async function instantiateMutationProcessor() {
 			aws_appsync_authenticationType: 'API_KEY',
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		},
+		() => null,
 		() => null
 	);
 
