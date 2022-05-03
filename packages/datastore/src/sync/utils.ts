@@ -26,6 +26,7 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ErrorType,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -38,6 +39,27 @@ enum GraphQLOperationType {
 	UPDATE = 'mutation',
 	DELETE = 'mutation',
 	GET = 'query',
+}
+
+export type ErrorMap = {
+	[key in ErrorType]: (error: Error) => boolean;
+};
+
+/**
+ * Categorizes an error with a broad error type, intended to make
+ * customer error handling code simpler.
+ * @param errorMap Error names and a list of patterns that indicate them (each pattern as a regex or function)
+ * @param error The underying error to categorize.
+ */
+export function mapErrorToType(errorMap: ErrorMap, error: Error): ErrorType {
+	const errorTypes = [...Object.keys(errorMap)] as ErrorType[];
+	for (const errorType of errorTypes) {
+		const matcher = errorMap[errorType];
+		if (matcher(error)) {
+			return errorType;
+		}
+	}
+	return 'Unknown';
 }
 
 export enum TransformerMutationType {
