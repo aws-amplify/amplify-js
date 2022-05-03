@@ -30,7 +30,6 @@ import {
 	MESSAGE_SHADOW_WIDTH,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
-	SPACING_MEDIUM,
 	SPACING_SMALL,
 } from '../constants';
 
@@ -89,8 +88,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			lineHeight: LINE_HEIGHT_LARGE,
 		},
 		iconButton: {
-			marginBottom: SPACING_MEDIUM,
-			marginRight: SPACING_MEDIUM,
+			alignSelf: 'flex-start',
 		},
 		image: {
 			...imageDimensions,
