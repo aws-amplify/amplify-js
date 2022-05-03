@@ -5,7 +5,7 @@
 # 1. lerna increments version numbers
 # 2. update-peer-deps.sh updates the peer deps to new version (version lifecycle event)
 # 3. lerna creates release commit. i.e. chore(release) ...
-# 4. lerna changes the peers deps back to old version (appears to bug in lerna)
+# 4. lerna changes the peers deps back to old version (appears to be a bug in lerna)
 # 5. update-peer-deps.sh updates the peer deps to new version again (prepublishOnly lifecycle event)
 # 6. lerna publishes packages
 
