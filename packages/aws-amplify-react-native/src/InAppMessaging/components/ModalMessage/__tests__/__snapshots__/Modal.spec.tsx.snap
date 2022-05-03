@@ -90,8 +90,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
         style={
           Array [
             Object {
-              "marginBottom": 8,
-              "marginRight": 8,
+              "alignSelf": "flex-start",
             },
             undefined,
           ]
@@ -190,8 +189,7 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
         style={
           Array [
             Object {
-              "marginBottom": 8,
-              "marginRight": 8,
+              "alignSelf": "flex-start",
             },
             undefined,
           ]
