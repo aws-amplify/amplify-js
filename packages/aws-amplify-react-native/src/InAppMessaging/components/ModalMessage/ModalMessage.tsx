@@ -38,7 +38,7 @@ export default function ModalMessage(props: ModalMessageProps) {
 		<MessageWrapper style={styles.componentWrapper}>
 			<View style={styles.container}>
 				<View style={styles.contentContainer}>
-					<View style={styles.iconButton.container}></View>
+					<View style={styles.iconButton.container} />
 					{hasRenderableImage && (
 						<View style={styles.imageContainer}>
 							<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
