@@ -34,7 +34,6 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
     <View
       style={
         Object {
-          "alignSelf": "flex-end",
           "flexDirection": "row",
         }
       }
@@ -44,7 +43,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           Object {
             "alignItems": "center",
             "flex": 1,
-            "marginLeft": 16,
+            "marginLeft": 20,
           }
         }
       >
@@ -160,7 +159,6 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
     <View
       style={
         Object {
-          "alignSelf": "flex-end",
           "flexDirection": "row",
         }
       }
