@@ -20,7 +20,6 @@ import {
 	FONT_SIZE_BASE,
 	FONT_SIZE_LARGE,
 	FONT_WEIGHT_BASE,
-	ICON_BUTTON_SIZE,
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	MESSAGE_ELEVATION,
@@ -81,6 +80,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		contentContainer: {
 			flexDirection: 'row',
+			backgroundColor: 'grey',
 		},
 		header: {
 			fontSize: FONT_SIZE_LARGE,
@@ -89,7 +89,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		iconButton: {
 			alignSelf: 'flex-start',
-			width: ICON_BUTTON_SIZE,
+			backgroundColor: 'yellow',
 		},
 		image: {
 			...imageDimensions,
@@ -97,6 +97,8 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		imageContainer: {
 			flex: 1,
 			alignItems: 'center',
+			backgroundColor: 'blue',
+			marginLeft: SPACING_EXTRA_LARGE + SPACING_SMALL,
 		},
 		textContainer: {
 			marginHorizontal: SPACING_SMALL,
