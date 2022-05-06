@@ -5,13 +5,21 @@ export type ErrorMap = Partial<{
 }>;
 
 export const mutationErrorMap: ErrorMap = {
-	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
+	BadModel: () => false,
+	BadRecord: error => {
+		const { message } = error;
+		return (
+			/^Cannot return \w+ for [\w-_]+ type/.test(message) ||
+			/^Variable '.+' has coerced Null value for NonNull type/.test(message)
+		); // newly required field, out of date client
+	},
 	ConfigError: () => false,
 	Transient: () => false,
 	Unauthorized: () => false,
 };
 
 export const subscriptionErrorMap: ErrorMap = {
+	BadModel: () => false,
 	BadRecord: () => false,
 	ConfigError: () => false,
 	Transient: () => false,
@@ -27,6 +35,7 @@ export const subscriptionErrorMap: ErrorMap = {
 };
 
 export const syncErrorMap: ErrorMap = {
+	BadModel: () => false,
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
 	Transient: () => false,
