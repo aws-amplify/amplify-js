@@ -1,9 +1,9 @@
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
-import { SQLiteAdapter } from '../src';
+import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
 import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
-import { ParameterizedStatement } from '../src/SQLiteAdapter/SQLiteUtils';
+import { ParameterizedStatement } from '../src/common/types';
 import {
 	DataStore as DataStoreType,
 	StorageAdapter,
@@ -177,7 +177,7 @@ describe('SQLiteAdapter', () => {
 
 	describe('sanity checks', () => {
 		it('is set as the adapter SQLite tests', async () => {
-			expect(adapter.constructor.name).toEqual('SQLiteAdapter');
+			expect(adapter.constructor.name).toEqual('CommonSQLiteAdapter');
 		});
 
 		it('is logging SQL statements during normal operation', async () => {
@@ -228,7 +228,7 @@ describe('SQLiteAdapter', () => {
 				[
 					'field1 value 0',
 					'2022-04-18T19:29:46.316Z',
-					[],
+					'abcd@abcd.com',
 					'a1d63606-bd3b-4641-870a-ac97694577a8',
 					null,
 					null,
