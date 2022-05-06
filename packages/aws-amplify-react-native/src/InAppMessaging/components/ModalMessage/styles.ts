@@ -80,7 +80,6 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		contentContainer: {
 			flexDirection: 'row',
-			backgroundColor: 'grey',
 		},
 		header: {
 			fontSize: FONT_SIZE_LARGE,
@@ -89,7 +88,6 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		iconButton: {
 			alignSelf: 'flex-start',
-			backgroundColor: 'yellow',
 		},
 		image: {
 			...imageDimensions,
@@ -97,7 +95,6 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		imageContainer: {
 			flex: 1,
 			alignItems: 'center',
-			backgroundColor: 'blue',
 			marginLeft: SPACING_EXTRA_LARGE + SPACING_SMALL,
 		},
 		textContainer: {
