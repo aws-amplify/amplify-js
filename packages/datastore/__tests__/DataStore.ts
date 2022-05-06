@@ -349,6 +349,87 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}
 	});
 
+	test('can filter items', async done => {
+		try {
+			const expecteds = [0, 5];
+
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (const item of items) {
+					expect(item.title).toMatch('include');
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	// TODO: fix.
+	// See: https://github.com/aws-amplify/amplify-js/issues/9325
+	// The test currently times out, because the mutation is filtered before
+	// observeQuery can get ahold of it, so the last expected subscription
+	// message never even arrives.
+	test.skip('can remove newly-unmatched items out of the snapshot on subsequent saves', async done => {
+		try {
+			const expecteds = [0, 5, 4];
+
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (const item of items) {
+					expect(item.title).toMatch('include');
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+				setTimeout(async () => {
+					const itemToEdit = (await DataStore.query(Post)).pop();
+					await DataStore.save(
+						Post.copyOf(itemToEdit, draft => {
+							draft.title = 'edited post - omit';
+						})
+					);
+				}, 100);
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
 	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
 		try {
 			const expecteds = [5, 15];
