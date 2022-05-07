@@ -1,18 +1,6 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import Client from './Client';
@@ -48,7 +36,10 @@ export default class CognitoUserPool {
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
+		if (
+			UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
+			!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)
+		) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
@@ -178,15 +169,17 @@ export default class CognitoUserPool {
 			return undefined;
 		}
 		/* eslint-disable */
-		const amazonCognitoAdvancedSecurityDataConst = AmazonCognitoAdvancedSecurityData;
+		const amazonCognitoAdvancedSecurityDataConst =
+			AmazonCognitoAdvancedSecurityData;
 		/* eslint-enable */
 
 		if (this.advancedSecurityDataCollectionFlag) {
-			const advancedSecurityData = amazonCognitoAdvancedSecurityDataConst.getData(
-				username,
-				this.userPoolId,
-				this.clientId
-			);
+			const advancedSecurityData =
+				amazonCognitoAdvancedSecurityDataConst.getData(
+					username,
+					this.userPoolId,
+					this.clientId
+				);
 			if (advancedSecurityData) {
 				const userContextData = {
 					EncodedData: advancedSecurityData,

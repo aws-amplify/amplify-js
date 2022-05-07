@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import Observable from 'zen-observable-ts';
-import { ProvidertOptions } from './PubSub';
+import { ProviderOptions } from './PubSub';
 
 export interface PubSubProvider {
 	// configure your provider
@@ -23,14 +23,10 @@ export interface PubSubProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	publish(
-		topics: string[] | string,
-		msg: any,
-		options?: ProvidertOptions
-	): void;
+	publish(topics: string[] | string, msg: any, options?: ProviderOptions): void;
 
 	subscribe(
 		topics: string[] | string,
-		options?: ProvidertOptions
+		options?: ProviderOptions
 	): Observable<any>;
 }

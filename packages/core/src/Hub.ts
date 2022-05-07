@@ -64,6 +64,7 @@ export class HubClass {
 		'interactions',
 		'pubsub',
 		'storage',
+		'ui',
 		'xr',
 	];
 
