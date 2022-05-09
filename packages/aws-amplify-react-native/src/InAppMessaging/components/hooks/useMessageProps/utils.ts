@@ -74,7 +74,7 @@ export const getComponentButtonStyle = ({
  *  2. MIDDLE_BANNER
  *  3. BOTTOM_BANNER
  *  4. MODAL
- * @param {layout} - message layout value
+ * @param {InAppMessageLayout} - message layout value
  * @returns {boolean} - `true` if layout is banner or modal, `false` otherwise
  */
 
