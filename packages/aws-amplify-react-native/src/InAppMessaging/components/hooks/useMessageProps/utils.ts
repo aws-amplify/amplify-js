@@ -74,8 +74,8 @@ export const getComponentButtonStyle = ({
  *  3. BOTTOM_BANNER
  *  4. MODAL
  *
- * @param {props} - layout props
- * @returns {boolean} - contains decision on which layout.
+ * @param {string} - layout style
+ * @returns {boolean} - `true` if layout is banner or modal, `false` otherwise
  */
 
 export const isBannerOrModalLayout = (layout: string) =>
@@ -97,7 +97,7 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
-	// banner and modal layouts requires no special handling of container or wrapper styles
+	// banner and modal layouts require no special handling of container or wrapper styles
 	if (isBannerOrModalLayout(layout)) {
 		return {
 			componentWrapper: wrapperDefaultStyle,

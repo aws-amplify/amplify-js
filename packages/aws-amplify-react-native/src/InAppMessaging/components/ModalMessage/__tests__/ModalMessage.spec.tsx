@@ -20,10 +20,7 @@ import { INITIAL_IMAGE_DIMENSIONS } from '../../hooks/useMessageImage/constants'
 
 import ModalMessage from '../ModalMessage';
 
-jest.mock('../../hooks/useMessageImage', () => ({
-	__esModule: true,
-	default: jest.fn(),
-}));
+jest.mock('../../hooks/useMessageImage');
 jest.mock('../../MessageWrapper', () => 'MessageWrapper');
 
 const mockUseMessageImage = useMessageImage as jest.Mock;

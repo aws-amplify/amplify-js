@@ -57,7 +57,7 @@ export const BUTTON_PRESSED_OPACITY = 0.2;
 // Message properties
 
 // Modal box values
-export const MESSAGE_RADIUS = 2;
+export const MODAL_BORDER_RADIUS = 2;
 
 // iOS shadow values
 export const MESSAGE_SHADOW_HEIGHT = 2;

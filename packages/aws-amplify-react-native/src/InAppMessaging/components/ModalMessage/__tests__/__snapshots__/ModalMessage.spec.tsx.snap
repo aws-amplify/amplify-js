@@ -35,6 +35,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
       style={
         Object {
           "flexDirection": "row",
+          "marginLeft": "auto",
         }
       }
     >
@@ -160,6 +161,7 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
       style={
         Object {
           "flexDirection": "row",
+          "marginLeft": "auto",
         }
       }
     >

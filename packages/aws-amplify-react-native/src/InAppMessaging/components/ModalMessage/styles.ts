@@ -23,7 +23,7 @@ import {
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	MESSAGE_ELEVATION,
-	MESSAGE_RADIUS,
+	MODAL_BORDER_RADIUS,
 	MESSAGE_SHADOW_HEIGHT,
 	MESSAGE_SHADOW_OPACITY,
 	MESSAGE_SHADOW_RADIUS,
@@ -64,7 +64,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			backgroundColor: 'transparent',
 		},
 		container: {
-			borderRadius: MESSAGE_RADIUS,
+			borderRadius: MODAL_BORDER_RADIUS,
 			padding: SPACING_EXTRA_LARGE,
 			margin: SPACING_EXTRA_LARGE,
 			backgroundColor: COLOR_WHITE,
@@ -80,6 +80,7 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 		},
 		contentContainer: {
 			flexDirection: 'row',
+			marginLeft: 'auto',
 		},
 		header: {
 			fontSize: FONT_SIZE_LARGE,

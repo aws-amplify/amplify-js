@@ -331,10 +331,7 @@ describe('getMessageStyleProps', () => {
 
 describe('isBannerOrModalLayout', () => {
 	it('returns the expected output for a given layout', () => {
-		const expectedOutput = isBannerOrModalLayout('MODAL');
-		expect(expectedOutput).toEqual(true);
-
-		const output = isBannerOrModalLayout('FULL_SCREEN');
-		expect(output).toEqual(false);
+		expect(isBannerOrModalLayout('MODAL')).toEqual(true);
+		expect(isBannerOrModalLayout('FULL_SCREEN')).toEqual(false);
 	});
 });
