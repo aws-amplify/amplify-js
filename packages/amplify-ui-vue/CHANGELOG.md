@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.32...@aws-amplify/ui-vue@1.1.33) (2022-05-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
+## [1.1.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.31...@aws-amplify/ui-vue@1.1.32) (2022-04-14)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
 ## [1.1.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.30...@aws-amplify/ui-vue@1.1.31) (2022-04-04)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue

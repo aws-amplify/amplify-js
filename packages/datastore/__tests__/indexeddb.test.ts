@@ -550,8 +550,14 @@ describe('DB versions migration', () => {
 		// Open V2
 		db = await idb.openDB('amplify-datastore', 2);
 
-		expect(db.objectStoreNames).toMatchObject(
-			v1Data.data.tables.map(({ name }) => name)
+		expect([...db.objectStoreNames].sort()).toMatchObject(
+			[
+				...v1Data.data.tables.map(({ name }) => name),
+				// Simulate Comment model added after IndexedDB was created,
+				// but before migration
+				`${USER}_Comment`,
+				`${USER}_Person`,
+			].sort()
 		);
 
 		for (const storeName of db.objectStoreNames) {

@@ -370,6 +370,12 @@ jobs:
       - attach_workspace:
           at: /root
       - run:
+          name: 'build sqlite3 binaries'
+          # https://github.com/TryGhost/node-sqlite3#source-install
+          command: |
+            cd packages/datastore-storage-adapter
+            npm install --build-from-source
+      - run:
           name: 'Run Amplify JS unit tests'
           command: |
             yarn test
@@ -1091,27 +1097,6 @@ jobs:
           category: geo
           sample_name: display-map
           spec: display-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Marker Map'
-          framework: react
-          category: geo
-          sample_name: marker-map
-          spec: marker-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Cluster Map'
-          framework: react
-          category: geo
-          sample_name: cluster-marker-map
-          spec: cluster-marker-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Search Map'
-          framework: react
-          category: geo
-          sample_name: search-map
-          spec: search-map
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Search Outside Map'

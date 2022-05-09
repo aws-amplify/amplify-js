@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.2.12...@aws-amplify/datastore-storage-adapter@1.2.13) (2022-05-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore-storage-adapter:** SQLite adapter NULL handling and mutation queue management bugs ([#9813](https://github.com/aws-amplify/amplify-js/issues/9813)) ([fe691fd](https://github.com/aws-amplify/amplify-js/commit/fe691fd4f67adc6ac973dd12ca056563d0720d69))
+
+
+
+
+
+## [1.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.2.11...@aws-amplify/datastore-storage-adapter@1.2.12) (2022-04-14)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+
+
+
+
 ## [1.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.2.10...@aws-amplify/datastore-storage-adapter@1.2.11) (2022-04-04)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

@@ -565,7 +565,7 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
 }
 
-function defaultErrorHandler(error: SyncError) {
+function defaultErrorHandler(error: SyncError<PersistentModel>): void {
 	logger.warn(error);
 }
 
@@ -686,7 +686,7 @@ class DataStore {
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
-	private errorHandler: (error: SyncError) => void;
+	private errorHandler: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval: number;
 	private initialized: Promise<void>;
 	private initReject: Function;
@@ -1385,7 +1385,16 @@ class DataStore {
 
 	clear = async function clear() {
 		if (this.storage === undefined) {
-			return;
+			// connect to storage so that it can be cleared without fully starting DataStore
+			this.storage = new Storage(
+				schema,
+				namespaceResolver,
+				getModelConstructorByModelName,
+				modelInstanceCreator,
+				this.storageAdapter,
+				this.sessionId
+			);
+			await this.storage.init();
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
