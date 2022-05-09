@@ -4,6 +4,9 @@ export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
 }>;
 
+const connectionTimeout = error =>
+	/^Connection failed: Connection Timeout/.test(error.message);
+
 export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => {
@@ -14,7 +17,7 @@ export const mutationErrorMap: ErrorMap = {
 		); // newly required field, out of date client
 	},
 	ConfigError: () => false,
-	Transient: () => false,
+	Transient: connectionTimeout,
 	Unauthorized: error =>
 		/^Request failed with status code 401/.test(error.message),
 };
@@ -23,15 +26,13 @@ export const subscriptionErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: () => false,
 	ConfigError: () => false,
-	Transient: () => false,
-	Unauthorized: (givenError: any) => {
-		const {
-			error: { errors: [{ message = '' } = {}] } = {
-				errors: [],
-			},
-		} = givenError;
-		const regex = /Connection failed.+Unauthorized/;
-		return regex.test(message);
+	Transient: observableError => {
+		const error = unwrapObserbableError(observableError);
+		return connectionTimeout(error);
+	},
+	Unauthorized: observableError => {
+		const error = unwrapObserbableError(observableError);
+		return /Connection failed.+Unauthorized/.test(error.message);
 	},
 };
 
@@ -39,9 +40,19 @@ export const syncErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
-	Transient: () => false,
+	Transient: connectionTimeout,
 	Unauthorized: () => false,
 };
+
+function unwrapObserbableError(observableError: any) {
+	const {
+		error: { errors: [error] } = {
+			errors: [],
+		},
+	} = observableError;
+
+	return error;
+}
 
 export function getMutationErrorType(error: Error): ErrorType {
 	return mapErrorToType(mutationErrorMap, error);
