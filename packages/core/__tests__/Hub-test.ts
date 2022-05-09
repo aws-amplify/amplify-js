@@ -27,14 +27,14 @@ describe('Hub', () => {
 			}
 
 			// Default handler for listening events
-			onHubCapsule = jest.fn(function(capsule) {
+			onHubCapsule = jest.fn(function (capsule) {
 				const { channel, payload } = capsule;
 				if (channel === 'auth') {
 					this.onAuthEvent(payload);
 				}
 			});
 
-			onAuthEvent = jest.fn(function(payload) {
+			onAuthEvent = jest.fn(function (payload) {
 				// ... your implementation
 			});
 		}
@@ -85,6 +85,25 @@ describe('Hub', () => {
 		expect(loggerSpy).toHaveBeenCalledWith(
 			'WARN',
 			'WARNING: auth is protected and dispatching on it can have unintended consequences'
+		);
+	});
+
+	test('Protected channel - ui', () => {
+		const listener = jest.fn(() => {});
+		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+
+		Hub.listen('ui', listener);
+
+		Hub.dispatch('ui', {
+			event: 'auth:signOut:finished',
+			data: 'the user has been signed out',
+			message: 'User has been signed out',
+		});
+
+		expect(listener).toHaveBeenCalled();
+		expect(loggerSpy).toHaveBeenCalledWith(
+			'WARN',
+			'WARNING: ui is protected and dispatching on it can have unintended consequences'
 		);
 	});
 

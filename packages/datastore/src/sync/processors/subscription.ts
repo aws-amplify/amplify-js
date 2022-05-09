@@ -12,6 +12,8 @@ import {
 	PredicatesGroup,
 	ModelPredicate,
 	AuthModeStrategy,
+	ErrorHandler,
+	ProcessName,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -20,11 +22,26 @@ import {
 	getUserGroupsFromToken,
 	TransformerMutationType,
 	getTokenForCustomAuth,
+	mapErrorToType,
+	ErrorMap,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
+
+// TODO: add additional error maps
+const errorMap = {
+	Unauthorized: (givenError: any) => {
+		const {
+			error: { errors: [{ message = '' } = {}] } = {
+				errors: [],
+			},
+		} = givenError;
+		const regex = /Connection failed.+Unauthorized/;
+		return regex.test(message);
+	},
+} as ErrorMap;
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
@@ -48,18 +65,16 @@ class SubscriptionProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private buffer: [
-		TransformerMutationType,
-		SchemaModel,
-		PersistentModel
-	][] = [];
+	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
+		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler: ErrorHandler
 	) {}
 
 	private buildSubscription(
@@ -308,8 +323,8 @@ class SubscriptionProcessor {
 						.forEach(async modelDefinition => {
 							const modelAuthModes = await getModelAuthModes({
 								authModeStrategy: this.authModeStrategy,
-								defaultAuthMode: this.amplifyConfig
-									.aws_appsync_authenticationType,
+								defaultAuthMode:
+									this.amplifyConfig.aws_appsync_authenticationType,
 								modelName: modelDefinition.name,
 								schema: this.schema,
 							});
@@ -413,10 +428,11 @@ class SubscriptionProcessor {
 													return;
 												}
 
-												const predicatesGroup = ModelPredicateCreator.getPredicates(
-													this.syncPredicates.get(modelDefinition),
-													false
-												);
+												const predicatesGroup =
+													ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
+													);
 
 												const { [opName]: record } = data;
 
@@ -438,12 +454,31 @@ class SubscriptionProcessor {
 												}
 												this.drainBuffer();
 											},
-											error: subscriptionError => {
+											error: async subscriptionError => {
 												const {
 													error: { errors: [{ message = '' } = {}] } = {
 														errors: [],
 													},
 												} = subscriptionError;
+												try {
+													await this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null,
+														message,
+														model: modelDefinition.name,
+														operation,
+														errorType: mapErrorToType(
+															errorMap,
+															subscriptionError
+														),
+														process: ProcessName.subscribe,
+														remoteModel: null,
+														cause: subscriptionError,
+													});
+												} catch (e) {
+													logger.error('Sync error handler failed with:', e);
+												}
 
 												if (
 													message.includes(
@@ -489,7 +524,6 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-
 												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
@@ -502,7 +536,6 @@ class SubscriptionProcessor {
 												) {
 													return;
 												}
-
 												observer.error(message);
 											},
 										})
@@ -534,15 +567,15 @@ class SubscriptionProcessor {
 
 			return () => {
 				Object.keys(subscriptions).forEach(modelName => {
-					subscriptions[modelName][
-						TransformerMutationType.CREATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.UPDATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.DELETE
-					].forEach(subscription => subscription.unsubscribe());
+					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
+						subscription => subscription.unsubscribe()
+					);
 				});
 			};
 		});

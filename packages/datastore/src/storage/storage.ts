@@ -16,6 +16,7 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	SchemaNamespace,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
@@ -29,7 +30,7 @@ import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
-	SubscriptionMessage<T> & {
+	InternalSubscriptionMessage<T> & {
 		mutator?: Symbol;
 	};
 
@@ -111,7 +112,7 @@ class StorageClass implements StorageFacade {
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [originalElement, opType] = r;
+			const [savedElement, opType] = r;
 
 			// truthy when save is called by the Merger
 			const syncResponse = !!mutator;
@@ -120,9 +121,21 @@ class StorageClass implements StorageFacade {
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
 			if (opType === OpType.UPDATE && !syncResponse) {
+				//
+				// TODO: LOOK!!!
+				// the `model` used here is in effect regardless of what model
+				// comes back from adapter.save().
+				// Prior to fix, SQLite adapter had been returning two models
+				// of different types, resulting in invalid outbox entries.
+				//
+				// the bug is essentially fixed in SQLite adapter.
+				// leaving as-is, because it's currently unclear whether anything
+				// depends on this remaining as-is.
+				//
+
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
-					originalElement,
+					savedElement,
 					patchesTuple
 				);
 				// // an update without changed user fields
@@ -132,11 +145,10 @@ class StorageClass implements StorageFacade {
 				}
 			}
 
-			const element = updateMutationInput || originalElement;
+			const element = updateMutationInput || savedElement;
 
-			const modelConstructor = (
-				Object.getPrototypeOf(originalElement) as Object
-			).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -144,6 +156,7 @@ class StorageClass implements StorageFacade {
 				element,
 				mutator,
 				condition: ModelPredicateCreator.getPredicates(condition, false),
+				savedElement,
 			});
 		});
 

@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import Observable from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ProvidertOptions, SubscriptionObserver } from '../types';
+import { ProviderOptions, SubscriptionObserver } from '../types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -34,32 +34,40 @@ export function mqttTopicMatch(filter: string, topic: string) {
 	return length === topicArray.length;
 }
 
-export interface MqttProvidertOptions extends ProvidertOptions {
+export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
 }
 
+/**
+ * @deprecated Migrated to MqttProviderOptions
+ */
+export type MqttProvidertOptions = MqttProviderOptions;
+
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
 
-	async get(clientId: string, clientFactory: (string) => Promise<any>) {
-		let promise = this.promises.get(clientId);
-		if (promise) {
-			return promise;
+	async get(clientId: string, clientFactory?: (input: string) => Promise<any>) {
+		const cachedPromise = this.promises.get(clientId);
+		if (cachedPromise) {
+			return cachedPromise;
 		}
 
-		promise = clientFactory(clientId);
+		if (clientFactory) {
+			const newPromise = clientFactory(clientId);
 
-		this.promises.set(clientId, promise);
+			this.promises.set(clientId, newPromise);
 
-		return promise;
+			return newPromise;
+		}
+		return undefined;
 	}
 
 	get allClients() {
 		return Array.from(this.promises.keys());
 	}
 
-	remove(clientId) {
+	remove(clientId: string) {
 		this.promises.delete(clientId);
 	}
 }
@@ -69,7 +77,7 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
 
-	constructor(options: MqttProvidertOptions = {}) {
+	constructor(options: MqttProviderOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
 	}
 
@@ -90,7 +98,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
 	}
 
-	protected getTopicForValue(value) {
+	protected getTopicForValue(value: any) {
 		return typeof value === 'object' && value[topicSymbol];
 	}
 
@@ -98,11 +106,21 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		return 'MqttOverWSProvider';
 	}
 
-	public onDisconnect({ clientId, errorCode, ...args }) {
+	public onDisconnect({
+		clientId,
+		errorCode,
+		...args
+	}: {
+		clientId?: string;
+		errorCode?: number;
+	}) {
 		if (errorCode !== 0) {
 			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
 
-			const topicsToDelete = [];
+			const topicsToDelete: string[] = [];
+			if (!clientId) {
+				return;
+			}
 			const clientIdObservers = this._clientIdObservers.get(clientId);
 			if (!clientIdObservers) {
 				return;
@@ -128,10 +146,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	public async newClient({
-		url,
-		clientId,
-	}: MqttProvidertOptions): Promise<any> {
+	public async newClient({ url, clientId }: MqttProviderOptions): Promise<any> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		// @ts-ignore
@@ -140,10 +155,18 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		client.onMessageArrived = ({
 			destinationName: topic,
 			payloadString: msg,
+		}: {
+			destinationName: string;
+			payloadString: string;
 		}) => {
 			this._onMessage(topic, msg);
 		};
-		client.onConnectionLost = ({ errorCode, ...args }) => {
+		client.onConnectionLost = ({
+			errorCode,
+			...args
+		}: {
+			errorCode: number;
+		}) => {
 			this.onDisconnect({ clientId, errorCode, ...args });
 		};
 
@@ -161,7 +184,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	protected async connect(
 		clientId: string,
-		options: MqttProvidertOptions = {}
+		options: MqttProviderOptions = {}
 	): Promise<any> {
 		return await this.clientsQueue.get(clientId, clientId =>
 			this.newClient({ ...options, clientId })
@@ -169,7 +192,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}
 
 	protected async disconnect(clientId: string): Promise<void> {
-		const client = await this.clientsQueue.get(clientId, () => null);
+		const client = await this.clientsQueue.get(clientId);
 
 		if (client && client.isConnected()) {
 			client.disconnect();
@@ -189,19 +212,15 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		targetTopics.forEach(topic => client.send(topic, message));
 	}
 
-	protected _topicObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
-	protected _clientIdObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _clientIdObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
 	private _onMessage(topic: string, msg: any) {
 		try {
-			const matchedTopicObservers = [];
+			const matchedTopicObservers: Set<SubscriptionObserver<any>>[] = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
 				if (mqttTopicMatch(observerTopic, topic)) {
 					matchedTopicObservers.push(observerForTopic);
@@ -223,7 +242,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	subscribe(
 		topics: string[] | string,
-		options: MqttProvidertOptions = {}
+		options: MqttProviderOptions = {}
 	): Observable<any> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
@@ -271,9 +290,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
 				if (client) {
-					this._clientIdObservers.get(clientId).delete(observer);
+					this._clientIdObservers.get(clientId)?.delete(observer);
 					// No more observers per client => client not needed anymore
-					if (this._clientIdObservers.get(clientId).size === 0) {
+					if (this._clientIdObservers.get(clientId)?.size === 0) {
 						this.disconnect(clientId);
 						this._clientIdObservers.delete(clientId);
 					}
