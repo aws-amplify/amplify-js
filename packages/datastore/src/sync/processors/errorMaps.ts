@@ -15,7 +15,8 @@ export const mutationErrorMap: ErrorMap = {
 	},
 	ConfigError: () => false,
 	Transient: () => false,
-	Unauthorized: () => false,
+	Unauthorized: error =>
+		/^Request failed with status code 401/.test(error.message),
 };
 
 export const subscriptionErrorMap: ErrorMap = {
