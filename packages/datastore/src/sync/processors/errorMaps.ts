@@ -7,6 +7,9 @@ export type ErrorMap = Partial<{
 const connectionTimeout = error =>
 	/^Connection failed: Connection Timeout/.test(error.message);
 
+const serverError = error =>
+	/^Error: Request failed with status code 5\d\d/.test(error.message);
+
 export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => {
@@ -17,7 +20,7 @@ export const mutationErrorMap: ErrorMap = {
 		); // newly required field, out of date client
 	},
 	ConfigError: () => false,
-	Transient: connectionTimeout,
+	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: error =>
 		/^Request failed with status code 401/.test(error.message),
 };
@@ -28,7 +31,7 @@ export const subscriptionErrorMap: ErrorMap = {
 	ConfigError: () => false,
 	Transient: observableError => {
 		const error = unwrapObserbableError(observableError);
-		return connectionTimeout(error);
+		return connectionTimeout(error) || serverError(error);
 	},
 	Unauthorized: observableError => {
 		const error = unwrapObserbableError(observableError);
@@ -40,7 +43,7 @@ export const syncErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
-	Transient: connectionTimeout,
+	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: () => false,
 };
 
