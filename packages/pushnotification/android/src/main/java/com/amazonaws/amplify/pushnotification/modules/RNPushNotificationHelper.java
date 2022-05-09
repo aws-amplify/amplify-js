@@ -31,10 +31,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
-
-import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +49,6 @@ public class RNPushNotificationHelper {
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
     private static final String LOG_TAG = "RNPushNotificationHelper";
-    private static final String NOTIFICATION_OPENED = "com.amazonaws.amplify.pushnotification.NOTIFICATION_OPENED";
 
     public RNPushNotificationHelper(Application context) {
         this.context = context;
@@ -257,7 +254,7 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(NOTIFICATION_OPENED);
+            Intent intent = new Intent(context, RNPushNotificationBroadcastReceiver.class);
             intent.putExtra("notification", bundle);
 
             Log.i(LOG_TAG, "sendNotification: " + intent);
@@ -365,7 +362,7 @@ public class RNPushNotificationHelper {
             // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
             //         PendingIntent.FLAG_UPDATE_CURRENT);
 
-        
+
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will

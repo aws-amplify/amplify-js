@@ -29,8 +29,22 @@ const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
 export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
 
+export type ErrorWithResponse = {
+	response: { status: number } & { [key: string]: any };
+};
+
 function isBlob(body: any): body is Blob {
 	return typeof Blob !== 'undefined' && body instanceof Blob;
+}
+
+function hasErrorResponse(error: any): error is ErrorWithResponse {
+	return (
+		typeof error !== 'undefined' &&
+		Object.prototype.hasOwnProperty.call(error, 'response') &&
+		typeof error.response !== 'undefined' &&
+		Object.prototype.hasOwnProperty.call(error.response, 'status') &&
+		typeof error.response.status === 'number'
+	);
 }
 
 const normalizeHeaders = (
@@ -49,7 +63,7 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function(data, headers) {
+	function (data, headers) {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -137,11 +151,11 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
-			axiosRequest.onUploadProgress = function(event) {
+			axiosRequest.onUploadProgress = function (event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
-			axiosRequest.onDownloadProgress = function(event) {
+			axiosRequest.onDownloadProgress = function (event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
@@ -186,15 +200,19 @@ export class AxiosHttpHandler implements HttpHandler {
 						logger.error(error.message);
 					}
 					// for axios' cancel error, we should re-throw it back so it's not considered an s3client error
-					// if we return empty, or an abitrary error HttpResponse, it will be hard to debug down the line
-					if (axios.isCancel(error)) {
+					// if we return empty, or an abitrary error HttpResponse, it will be hard to debug down the line.
+					//
+					// for errors that does not have a 'response' object, it's very likely that it is an unexpected error for
+					// example a disconnect. Without it we cannot meaningfully reconstruct a HttpResponse, and the AWS SDK might
+					// consider the request successful by mistake. In this case we should also re-throw the error.
+					if (axios.isCancel(error) || !hasErrorResponse(error)) {
 						throw error;
 					}
 					// otherwise, we should re-construct an HttpResponse from the error, so that it can be passed down to other
 					// aws sdk middleware (e.g retry, clock skew correction, error message serializing)
 					return {
 						response: new HttpResponse({
-							statusCode: error.response?.status,
+							statusCode: error.response.status,
 							body: error.response?.data,
 							headers: error.response?.headers,
 						}),

@@ -404,49 +404,13 @@ Object {
       },
       Object {
         "inbound": false,
-        "rows": Array [
-          Object {
-            "$": Array [
-              1,
-              Object {
-                "_deleted": null,
-                "_lastChangedAt": null,
-                "_version": null,
-                "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
-                "content": "c2",
-                "id": "007ea314-6645-486f-88a9-d1aaa4fddb9e",
-              },
-            ],
-            "$types": Object {
-              "$": Object {
-                "1._deleted": "undef",
-                "1._lastChangedAt": "undef",
-                "1._version": "undef",
-              },
-            },
-          },
-          Object {
-            "$": Array [
-              2,
-              Object {
-                "_deleted": null,
-                "_lastChangedAt": null,
-                "_version": null,
-                "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
-                "content": "c1",
-                "id": "13c99f5f-1fbb-4088-aaf9-63b789e68574",
-              },
-            ],
-            "$types": Object {
-              "$": Object {
-                "1._deleted": "undef",
-                "1._lastChangedAt": "undef",
-                "1._version": "undef",
-              },
-            },
-          },
-        ],
+        "rows": Array [],
         "tableName": "user_Comment",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Person",
       },
       Object {
         "inbound": false,
@@ -537,7 +501,12 @@ Object {
       },
       Object {
         "name": "user_Comment",
-        "rowCount": 2,
+        "rowCount": 0,
+        "schema": "++,&id,commentPostId",
+      },
+      Object {
+        "name": "user_Person",
+        "rowCount": 0,
         "schema": "++,&id",
       },
       Object {
