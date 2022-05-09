@@ -12,7 +12,7 @@
  */
 
 import { PressableStateCallbackType, StyleProp, ViewStyle } from 'react-native';
-import { InAppMessageTextAlign } from '@aws-amplify/notifications';
+import { InAppMessageLayout, InAppMessageTextAlign } from '@aws-amplify/notifications';
 
 import { BUTTON_PRESSED_OPACITY } from '../../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../../../types';
@@ -331,7 +331,8 @@ describe('getMessageStyleProps', () => {
 
 describe('isBannerOrModalLayout', () => {
 	it('returns the expected output for a given layout', () => {
-		expect(isBannerOrModalLayout('MODAL')).toEqual(true);
-		expect(isBannerOrModalLayout('FULL_SCREEN')).toEqual(false);
+		expect(isBannerOrModalLayout('TOP_BANNER' as InAppMessageLayout)).toEqual(true);
+		expect(isBannerOrModalLayout('MODAL' as InAppMessageLayout)).toEqual(true);
+		expect(isBannerOrModalLayout('FULL_SCREEN' as InAppMessageLayout)).toEqual(false);
 	});
 });
