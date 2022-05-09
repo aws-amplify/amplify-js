@@ -14,18 +14,18 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, EventSubscription } from 'react-native';
 
-type Orientation = 'portrait' | 'landscape';
-const getOrientation = (): Orientation => {
+export type DeviceOrientation = 'portrait' | 'landscape';
+const getDeviceOrientation = (): DeviceOrientation => {
 	const { height, width } = Dimensions.get('screen');
 	return height >= width ? 'portrait' : 'landscape';
 };
 
-export default function useOrientation(): Orientation {
-	const [orientation, setOrientation] = useState<Orientation>(getOrientation);
+export default function useDeviceOrientation(): DeviceOrientation {
+	const [deviceOrientation, setDeviceOrientation] = useState<DeviceOrientation>(getDeviceOrientation);
 
 	useEffect(() => {
 		const handler = () => {
-			setOrientation(getOrientation);
+			setDeviceOrientation(getDeviceOrientation);
 		};
 
 		// The below cast and conditional unsubscribe handling is due to subscription removal variation
@@ -46,5 +46,5 @@ export default function useOrientation(): Orientation {
 		};
 	}, []);
 
-	return orientation;
+	return deviceOrientation;
 }

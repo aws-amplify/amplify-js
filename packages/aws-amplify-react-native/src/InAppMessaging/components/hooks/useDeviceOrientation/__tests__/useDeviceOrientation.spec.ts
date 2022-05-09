@@ -13,9 +13,9 @@
 
 import { Dimensions, EventSubscription, ScaledSize } from 'react-native';
 import { renderHook } from '@testing-library/react-hooks';
-import useOrientation from '../useOrientation';
+import useDeviceOrientation from '../useDeviceOrientation';
 
-describe('useOrientation', () => {
+describe('useDeviceOrientation', () => {
 	const subscription: Pick<EventSubscription, 'remove'> = { remove: jest.fn() };
 
 	let getSpy: jest.SpyInstance;
@@ -34,7 +34,7 @@ describe('useOrientation', () => {
 	it('should handle unsubscribing for React Native versions < 0.65', () => {
 		getSpy.mockImplementation((_: string) => ({ height: 300, width: 100 } as ScaledSize));
 
-		const { result, unmount } = renderHook(() => useOrientation());
+		const { result, unmount } = renderHook(() => useDeviceOrientation());
 
 		expect(getSpy).toHaveBeenCalledTimes(1);
 		expect(getSpy).toHaveBeenCalledWith('screen');
@@ -52,7 +52,7 @@ describe('useOrientation', () => {
 		getSpy.mockImplementation((_: string) => ({ height: 100, width: 300 } as ScaledSize));
 		addEventListenerSpy.mockReturnValue(subscription);
 
-		const { result, unmount } = renderHook(() => useOrientation());
+		const { result, unmount } = renderHook(() => useDeviceOrientation());
 
 		expect(getSpy).toHaveBeenCalledTimes(1);
 		expect(getSpy).toHaveBeenCalledWith('screen');
