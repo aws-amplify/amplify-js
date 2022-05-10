@@ -48,63 +48,102 @@ export const defaultStyle: CarouselMessageComponentStyle = StyleSheet.create({
 	},
 });
 
-export const getStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
+const commonStyles: Omit<CarouselMessageStyle, 'image'> = {
+	body: {
+		fontSize: FONT_SIZE_BASE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_BASE,
+	},
+	buttonContainer: {
+		backgroundColor: COLOR_LIGHT_GREY,
+		borderRadius: BORDER_RADIUS_BASE,
+		flex: 1,
+		margin: SPACING_MEDIUM,
+		padding: SPACING_LARGE,
+	},
+	buttonsContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	buttonText: {
+		fontSize: FONT_SIZE_BASE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_BASE,
+		textAlign: 'center',
+	},
+	componentWrapper: {
+		backgroundColor: COLOR_WHITE,
+		flex: 1,
+	},
+	container: {
+		flex: 1,
+		padding: SPACING_EXTRA_LARGE,
+	},
+	contentContainer: {
+		flex: 1,
+	},
+	header: {
+		fontSize: FONT_SIZE_LARGE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_LARGE,
+	},
+	iconButton: {
+		alignSelf: 'flex-start',
+		marginBottom: SPACING_MEDIUM,
+		marginLeft: 'auto',
+		marginRight: SPACING_MEDIUM,
+	},
+	imageContainer: {
+		alignItems: 'center',
+		marginVertical: SPACING_LARGE,
+	},
+	textContainer: {
+		flex: 1,
+		marginHorizontal: SPACING_SMALL,
+		marginVertical: SPACING_LARGE,
+		paddingLeft: SPACING_MEDIUM,
+	},
+};
+
+export const getPortraitStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
 	StyleSheet.create({
-		body: {
-			fontSize: FONT_SIZE_BASE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_BASE,
-		},
-		buttonContainer: {
-			backgroundColor: COLOR_LIGHT_GREY,
-			borderRadius: BORDER_RADIUS_BASE,
-			flex: 1,
-			margin: SPACING_MEDIUM,
-			padding: SPACING_LARGE,
-		},
-		buttonsContainer: {
+		body: { ...commonStyles.body },
+		buttonContainer: { ...commonStyles.buttonContainer },
+		buttonText: { ...commonStyles.buttonText },
+		buttonsContainer: { ...commonStyles.buttonsContainer },
+		componentWrapper: { ...commonStyles.componentWrapper },
+		container: { ...commonStyles.container },
+		contentContainer: { ...commonStyles.contentContainer },
+		header: { ...commonStyles.header },
+		iconButton: { ...commonStyles.iconButton },
+		image: { ...imageDimensions },
+		imageContainer: { ...commonStyles.imageContainer },
+		textContainer: { ...commonStyles.textContainer },
+	});
+
+export const getLandscapeStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
+	StyleSheet.create({
+		body: { ...commonStyles.body },
+		buttonContainer: { ...commonStyles.buttonContainer },
+		buttonText: { ...commonStyles.buttonText },
+		buttonsContainer: { ...commonStyles.buttonsContainer },
+		componentWrapper: { ...commonStyles.componentWrapper },
+		container: { ...commonStyles.container },
+		contentContainer: {
+			...commonStyles.contentContainer,
+			alignContent: 'center',
+			justifyContent: 'center',
 			flexDirection: 'row',
+		},
+		header: { ...commonStyles.header },
+		iconButton: { ...commonStyles.iconButton },
+		image: { ...imageDimensions },
+		imageContainer: {
+			...commonStyles.imageContainer,
 			justifyContent: 'center',
 		},
-		buttonText: {
-			fontSize: FONT_SIZE_BASE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_BASE,
-			textAlign: 'center',
-		},
-		componentWrapper: {
-			backgroundColor: COLOR_WHITE,
-			flex: 1,
-		},
-		container: {
-			flex: 1,
-			padding: SPACING_EXTRA_LARGE,
-		},
-		contentContainer: {
-			flex: 1,
-		},
-		header: {
-			fontSize: FONT_SIZE_LARGE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_LARGE,
-		},
-		iconButton: {
-			alignSelf: 'flex-start',
-			marginBottom: SPACING_MEDIUM,
-			marginLeft: 'auto',
-			marginRight: SPACING_MEDIUM,
-		},
-		image: {
-			...imageDimensions,
-		},
-		imageContainer: {
-			alignItems: 'center',
-			marginVertical: SPACING_LARGE,
-		},
 		textContainer: {
-			flex: 1,
-			marginHorizontal: SPACING_SMALL,
-			marginVertical: SPACING_LARGE,
-			paddingLeft: SPACING_MEDIUM,
+			...commonStyles.textContainer,
+			justifyContent: 'center',
 		},
 	});

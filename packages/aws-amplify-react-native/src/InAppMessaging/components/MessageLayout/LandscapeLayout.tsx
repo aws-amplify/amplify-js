@@ -20,9 +20,9 @@ import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
 
-import { FullScreenContentProps } from './types';
+import { LayoutProps } from './types';
 
-export default function FullScreenContent(props: FullScreenContentProps) {
+export default function LandscapeLayout(props: Omit<LayoutProps, 'orientation'>) {
 	const {
 		body,
 		hasButtons,
@@ -40,15 +40,6 @@ export default function FullScreenContent(props: FullScreenContentProps) {
 	return (
 		<View style={styles.container}>
 			<View style={styles.contentContainer}>
-				<IconButton
-					color={styles.iconButton.iconColor}
-					hitSlop={ICON_BUTTON_HIT_SLOP}
-					onPress={onClose}
-					size={ICON_BUTTON_SIZE}
-					source={icons.close}
-					style={styles.iconButton.container}
-					testID={IN_APP_MESSAGING.CLOSE_BUTTON}
-				/>
 				{hasRenderableImage && (
 					<View style={styles.imageContainer}>
 						<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
@@ -66,6 +57,15 @@ export default function FullScreenContent(props: FullScreenContentProps) {
 						</Text>
 					)}
 				</View>
+				<IconButton
+					color={styles.iconButton.iconColor}
+					hitSlop={ICON_BUTTON_HIT_SLOP}
+					onPress={onClose}
+					size={ICON_BUTTON_SIZE}
+					source={icons.close}
+					style={styles.iconButton.container}
+					testID={IN_APP_MESSAGING.CLOSE_BUTTON}
+				/>
 			</View>
 			{hasButtons && (
 				<View style={styles.buttonsContainer}>

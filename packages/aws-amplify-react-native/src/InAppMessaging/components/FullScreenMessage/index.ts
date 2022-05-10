@@ -12,5 +12,4 @@
  */
 
 export { default } from './FullScreenMessage';
-export { default as FullScreenContent } from './FullScreenContent';
 export { FullScreenMessageProps } from './types';

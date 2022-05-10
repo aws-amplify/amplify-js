@@ -23,51 +23,82 @@ import {
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	MESSAGE_ELEVATION,
-	MODAL_BORDER_RADIUS,
 	MESSAGE_SHADOW_HEIGHT,
 	MESSAGE_SHADOW_OPACITY,
 	MESSAGE_SHADOW_RADIUS,
 	MESSAGE_SHADOW_WIDTH,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
+	SPACING_MEDIUM,
 	SPACING_SMALL,
 } from '../constants';
 
 import { ModalMessageStyle } from './types';
 
-export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
+const commonStyles: Omit<ModalMessageStyle, 'componentWrapper' | 'contentContainer' | 'image'> = {
+	body: {
+		fontSize: FONT_SIZE_BASE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_BASE,
+	},
+	buttonContainer: {
+		backgroundColor: COLOR_LIGHT_GREY,
+		borderRadius: BORDER_RADIUS_BASE,
+		flex: 1,
+		margin: SPACING_MEDIUM,
+		padding: SPACING_LARGE,
+	},
+	buttonsContainer: {
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	buttonText: {
+		fontSize: FONT_SIZE_BASE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_BASE,
+		textAlign: 'center',
+	},
+	container: {
+		padding: SPACING_EXTRA_LARGE,
+	},
+	header: {
+		fontSize: FONT_SIZE_LARGE,
+		fontWeight: FONT_WEIGHT_BASE,
+		lineHeight: LINE_HEIGHT_LARGE,
+	},
+	iconButton: {
+		alignSelf: 'flex-start',
+		marginBottom: SPACING_MEDIUM,
+		marginLeft: 'auto',
+		marginRight: SPACING_MEDIUM,
+	},
+	imageContainer: {
+		alignItems: 'center',
+		marginVertical: SPACING_LARGE,
+	},
+	textContainer: {
+		flex: 1,
+		marginHorizontal: SPACING_SMALL,
+		marginVertical: SPACING_LARGE,
+		paddingHorizontal: SPACING_MEDIUM,
+	},
+};
+
+export const getPortraitStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
-		body: {
-			fontSize: FONT_SIZE_BASE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_BASE,
-		},
-		buttonContainer: {
-			backgroundColor: COLOR_LIGHT_GREY,
-			borderRadius: BORDER_RADIUS_BASE,
-			flex: 1,
-			marginHorizontal: SPACING_SMALL,
-			padding: SPACING_LARGE,
-		},
-		buttonsContainer: {
-			flexDirection: 'row',
-			justifyContent: 'center',
-			marginTop: 'auto',
-		},
-		buttonText: {
-			fontSize: FONT_SIZE_BASE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_BASE,
-			textAlign: 'center',
-		},
+		body: { ...commonStyles.body },
+		buttonContainer: { ...commonStyles.buttonContainer },
+		buttonText: { ...commonStyles.buttonText },
+		buttonsContainer: { ...commonStyles.buttonsContainer },
 		componentWrapper: {
 			backgroundColor: 'transparent',
+			flex: 1,
 		},
 		container: {
-			borderRadius: MODAL_BORDER_RADIUS,
-			padding: SPACING_EXTRA_LARGE,
-			margin: SPACING_EXTRA_LARGE,
+			...commonStyles.container,
 			backgroundColor: COLOR_WHITE,
+			elevation: MESSAGE_ELEVATION,
+			margin: SPACING_EXTRA_LARGE,
 			shadowColor: COLOR_BLACK,
 			shadowOffset: {
 				width: MESSAGE_SHADOW_WIDTH,
@@ -75,31 +106,41 @@ export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 			},
 			shadowOpacity: MESSAGE_SHADOW_OPACITY,
 			shadowRadius: MESSAGE_SHADOW_RADIUS,
-			elevation: MESSAGE_ELEVATION,
-			minHeight: '40%',
+		},
+		contentContainer: null,
+		header: { ...commonStyles.header },
+		iconButton: { ...commonStyles.iconButton },
+		image: { ...imageDimensions },
+		imageContainer: { ...commonStyles.imageContainer },
+		textContainer: { ...commonStyles.textContainer, backgroundColor: 'teal' },
+	});
+
+export const getLandscapeStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
+	StyleSheet.create({
+		body: { ...commonStyles.body },
+		buttonContainer: { ...commonStyles.buttonContainer },
+		buttonText: { ...commonStyles.buttonText },
+		buttonsContainer: { ...commonStyles.buttonsContainer },
+		componentWrapper: {
+			flex: 1,
+		},
+		container: {
+			...commonStyles.container,
+			flex: 1,
 		},
 		contentContainer: {
-			flexDirection: 'row',
-			marginLeft: 'auto',
-		},
-		header: {
-			fontSize: FONT_SIZE_LARGE,
-			fontWeight: FONT_WEIGHT_BASE,
-			lineHeight: LINE_HEIGHT_LARGE,
-		},
-		iconButton: {
-			alignSelf: 'flex-start',
-		},
-		image: {
-			...imageDimensions,
-		},
-		imageContainer: {
 			flex: 1,
-			alignItems: 'center',
-			marginLeft: SPACING_EXTRA_LARGE + SPACING_SMALL,
+			flexDirection: 'row',
+		},
+		header: { ...commonStyles.header },
+		iconButton: { ...commonStyles.iconButton },
+		image: { ...imageDimensions },
+		imageContainer: {
+			...commonStyles.imageContainer,
+			justifyContent: 'center',
 		},
 		textContainer: {
-			marginHorizontal: SPACING_SMALL,
-			marginVertical: SPACING_LARGE,
+			...commonStyles.textContainer,
+			justifyContent: 'center',
 		},
 	});

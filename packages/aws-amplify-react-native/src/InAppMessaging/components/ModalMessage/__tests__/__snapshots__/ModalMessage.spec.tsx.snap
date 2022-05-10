@@ -5,6 +5,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
   style={
     Object {
       "backgroundColor": "transparent",
+      "flex": 1,
     }
   }
 >
@@ -13,10 +14,8 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
       Array [
         Object {
           "backgroundColor": "#fff",
-          "borderRadius": 2,
           "elevation": 3,
           "margin": 16,
-          "minHeight": "40%",
           "padding": 16,
           "shadowColor": "#000",
           "shadowOffset": Object {
@@ -32,19 +31,63 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
     }
   >
     <View
-      style={
-        Object {
-          "flexDirection": "row",
-          "marginLeft": "auto",
-        }
-      }
+      style={null}
     >
+      <View
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        hitSlop={
+          Object {
+            "bottom": 10,
+            "left": 10,
+            "right": 10,
+            "top": 10,
+          }
+        }
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Array [
+            Object {
+              "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
+            },
+            undefined,
+          ]
+        }
+        testID="aws-amplify__in-app-messaging--close-button"
+      >
+        <Image
+          source={
+            Object {
+              "testUri": "../../../packages/aws-amplify-react-native/src/icons/close.png",
+            }
+          }
+          style={
+            Object {
+              "height": 20,
+              "resizeMode": "contain",
+              "tintColor": undefined,
+              "width": 20,
+            }
+          }
+        />
+      </View>
       <View
         style={
           Object {
             "alignItems": "center",
-            "flex": 1,
-            "marginLeft": 20,
+            "marginVertical": 12,
           }
         }
       >
@@ -67,6 +110,66 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
         />
       </View>
       <View
+        style={
+          Object {
+            "backgroundColor": "teal",
+            "flex": 1,
+            "marginHorizontal": 4,
+            "marginVertical": 12,
+            "paddingHorizontal": 8,
+          }
+        }
+      />
+    </View>
+  </View>
+</MessageWrapper>
+`;
+
+exports[`ModalMessage renders as expected in landscape mode 1`] = `
+<MessageWrapper
+  style={
+    Array [
+      Object {
+        "flex": 1,
+      },
+      Object {},
+      Object {},
+      Object {},
+    ]
+  }
+>
+  <View
+    style={
+      Array [
+        Object {
+          "flex": 1,
+          "padding": 16,
+        },
+        Object {},
+        Object {},
+      ]
+    }
+  >
+    <View
+      style={
+        Object {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "justifyContent": "center",
+            "marginHorizontal": 4,
+            "marginVertical": 12,
+            "paddingHorizontal": 8,
+          }
+        }
+      />
+      <View
         accessible={true}
         collapsable={false}
         focusable={true}
@@ -91,6 +194,9 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           Array [
             Object {
               "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
             },
             undefined,
           ]
@@ -114,23 +220,16 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
         />
       </View>
     </View>
-    <View
-      style={
-        Object {
-          "marginHorizontal": 4,
-          "marginVertical": 12,
-        }
-      }
-    />
   </View>
 </MessageWrapper>
 `;
 
-exports[`ModalMessage renders a message as expected without an image 1`] = `
+exports[`ModalMessage renders as expected in portrait mode 1`] = `
 <MessageWrapper
   style={
     Object {
       "backgroundColor": "transparent",
+      "flex": 1,
     }
   }
 >
@@ -139,10 +238,8 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
       Array [
         Object {
           "backgroundColor": "#fff",
-          "borderRadius": 2,
           "elevation": 3,
           "margin": 16,
-          "minHeight": "40%",
           "padding": 16,
           "shadowColor": "#000",
           "shadowOffset": Object {
@@ -158,12 +255,7 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
     }
   >
     <View
-      style={
-        Object {
-          "flexDirection": "row",
-          "marginLeft": "auto",
-        }
-      }
+      style={null}
     >
       <View
         accessible={true}
@@ -190,6 +282,9 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           Array [
             Object {
               "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
             },
             undefined,
           ]
@@ -212,15 +307,18 @@ exports[`ModalMessage renders a message as expected without an image 1`] = `
           }
         />
       </View>
-    </View>
-    <View
-      style={
-        Object {
-          "marginHorizontal": 4,
-          "marginVertical": 12,
+      <View
+        style={
+          Object {
+            "backgroundColor": "teal",
+            "flex": 1,
+            "marginHorizontal": 4,
+            "marginVertical": 12,
+            "paddingHorizontal": 8,
+          }
         }
-      }
-    />
+      />
+    </View>
   </View>
 </MessageWrapper>
 `;

@@ -15,10 +15,12 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import { IN_APP_MESSAGING } from '../../../../AmplifyTestIDs';
+import useDeviceOrientation from '../../hooks/useDeviceOrientation';
 import useMessageImage from '../../hooks/useMessageImage';
 
 import ModalMessage from '../ModalMessage';
 
+jest.mock('../../hooks/useDeviceOrientation');
 jest.mock('../../hooks/useMessageImage');
 jest.mock('../../MessageWrapper', () => 'MessageWrapper');
 
@@ -33,7 +35,8 @@ describe('ModalMessage', () => {
 		jest.clearAllMocks();
 	});
 
-	it('renders a message as expected without an image', () => {
+	it.each(['landscape', 'portrait'])('renders as expected in %s mode', (orientation) => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue(orientation);
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },
@@ -46,6 +49,7 @@ describe('ModalMessage', () => {
 	});
 
 	it('renders a message as expected with an image', () => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue('portrait');
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: true,
 			imageDimensions: { height: 100, width: 100 },
@@ -64,6 +68,7 @@ describe('ModalMessage', () => {
 	});
 
 	it('returns null while an image is fetching', () => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue('portrait');
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },

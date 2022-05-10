@@ -26,12 +26,13 @@ export default function CarouselMessage(props: CarouselMessageProps) {
 	const { data, ...rest } = props;
 	const { style } = rest;
 
-	const indicatorStyle = useMemo(() => {
-		return {
+	const indicatorStyle = useMemo(
+		() => ({
 			active: [defaultStyle.pageIndicatorActive, style?.pageIndicatorActive],
 			inactive: [defaultStyle.pageIndicatorInactive, style?.pageIndicatorInactive],
-		};
-	}, [style]);
+		}),
+		[style]
+	);
 
 	const renderItem = ({ item }: { item: InAppMessageComponentContentProps }) => (
 		<CarouselMessageItem {...item} {...rest} />

@@ -14,14 +14,16 @@
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { FullScreenContent } from '../FullScreenMessage';
-import { useMessageProps } from '../hooks';
+import { useDeviceOrientation, useMessageProps } from '../hooks';
+import { MessageLayout } from '../MessageLayout';
 
-import { getStyles } from './styles';
+import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { CarouselMessageItemProps } from './types';
 
 export default function CarouselMessageItem(props: CarouselMessageItemProps) {
-	const messageProps = useMessageProps(props, getStyles);
+	const orientation = useDeviceOrientation();
+	const inPortraitMode = orientation === 'portrait';
+	const messageProps = useMessageProps(props, inPortraitMode ? getPortraitStyles : getLandscapeStyles, orientation);
 	const { shouldRenderMessage, styles } = messageProps;
 
 	if (!shouldRenderMessage) {
@@ -30,7 +32,7 @@ export default function CarouselMessageItem(props: CarouselMessageItemProps) {
 
 	return (
 		<SafeAreaView style={styles.componentWrapper}>
-			<FullScreenContent {...props} {...messageProps} />
+			<MessageLayout {...props} {...messageProps} orientation={orientation} />
 		</SafeAreaView>
 	);
 }

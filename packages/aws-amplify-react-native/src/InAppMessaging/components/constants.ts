@@ -47,17 +47,7 @@ export const FONT_WEIGHT_BASE = '400';
 export const ICON_BUTTON_SIZE = 20;
 export const ICON_BUTTON_HIT_SLOP = 10;
 
-// component specific constants
-
-// Message UI Buttons
-
-// default value applied in React Native TouchableOpacity
-export const BUTTON_PRESSED_OPACITY = 0.2;
-
-// Message properties
-
-// Modal box values
-export const MODAL_BORDER_RADIUS = 2;
+// shadow properties
 
 // iOS shadow values
 export const MESSAGE_SHADOW_HEIGHT = 2;
@@ -67,3 +57,10 @@ export const MESSAGE_SHADOW_RADIUS = 2;
 
 // android shadow values
 export const MESSAGE_ELEVATION = 3;
+
+// component specific constants
+
+// Message UI Buttons
+
+// default value applied in React Native TouchableOpacity
+export const BUTTON_PRESSED_OPACITY = 0.8;

@@ -25,8 +25,8 @@ const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5)
 /**
  * Parse and assign appropriate button container and text style from style objects params
  *
- * @param {params} object - contains message styleParams and button type
- * @returns {InAppMessageComponentButtonStyle} resolved button container and text style arrays
+ * @param params - object containing message styleParams and button type
+ * @returns InAppMessageComponentButtonStyle - resolved button container and text style arrays
  */
 export const getComponentButtonStyle = ({
 	styleParams,
@@ -73,22 +73,22 @@ export const getComponentButtonStyle = ({
  *  1. TOP_BANNER
  *  2. MIDDLE_BANNER
  *  3. BOTTOM_BANNER
- *  4. MODAL
- * @param {InAppMessageLayout} - message layout value
- * @returns {boolean} - `true` if layout is banner or modal, `false` otherwise
+ *
+ * @param layout - message layout value
+ * @returns boolean - `true` if layout is a banner, `false` otherwise
  */
 
-export const isBannerOrModalLayout = (layout: InAppMessageLayout) =>
-	layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER' || layout === 'MODAL';
+export const isBannerLayout = (layout: InAppMessageLayout) =>
+	layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER';
 
 /**
  * Parse and assign appropriate message container and wrapper style from style params
  *
- * @param {params} object - contains message styleParams and layout
- * @returns {object} contains resolved containerStyle and wrapperStyle
+ * @param params - object containing message styleParams and layout
+ * @returns object - contains resolved containerStyle and wrapperStyle
  */
 
-export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStylePropParams) => {
+export const getContainerAndWrapperStyle = ({ styleParams, layout, orientation }: MessageStylePropParams) => {
 	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 
 	const containerDefaultStyle = defaultStyle?.container ?? {};
@@ -97,16 +97,16 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
-	// banner and modal layouts require no special handling of container or wrapper styles
-	if (isBannerOrModalLayout(layout)) {
+	// banner and modal layouts in portrait mode require no special handling of container or wrapper styles
+	if (isBannerLayout(layout) || (layout === 'MODAL' && orientation === 'portrait')) {
 		return {
 			componentWrapper: wrapperDefaultStyle,
 			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],
 		};
 	}
 
-	// in non-banner layouts container backgroundColor values should be applied as componentWrapper style
-	// to ensure that the backgroundColor is applied to the entire screen
+	// in non-banner and landscape modal layouts container backgroundColor values should be applied as
+	// componentWrapper style to ensure that the backgroundColor is applied to the entire screen
 	const { backgroundColor: defaultBackgroundColor, ...restContainerDefaultStyle } = containerDefaultStyle;
 	const { backgroundColor: messageBackgroundColor, ...restContainerMessageStyle } = containerMessageStyle;
 
@@ -131,8 +131,8 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 /**
  * Utility for extracting message payload style
  *
- * @param {props} - message props
- * @returns {object} - contains message payload specific style
+ * @param props - message props
+ * @returns object - contains message payload specific style
  */
 
 export const getMessageStyle = ({
@@ -153,19 +153,19 @@ export const getMessageStyle = ({
  * Receives message styling and returns style property values for use with in-app message
  * UI components. Handles resolvement style precedence between default, payload, and custom style
  *
- * @param {params} object - contains message style params and layout
+ * @param params - object containing message style params and layout
  *
  * Style param resolve precedence from lowest to highest:
  *   1. defaultStyle
  *   2. messageStyle
  *   3. overrideStyle
  *
- * @returns {MessageStyleProps} resolved message style props
+ * @returns MessageStyleProps - resolved message style props
  */
 
-export function getMessageStyleProps({ styleParams, layout }: MessageStylePropParams): MessageStyleProps {
+export function getMessageStyleProps({ styleParams, layout, orientation }: MessageStylePropParams): MessageStyleProps {
 	// view style applied to the componentWrapper and primary container views
-	const { componentWrapper, container } = getContainerAndWrapperStyle({ styleParams, layout });
+	const { componentWrapper, container } = getContainerAndWrapperStyle({ styleParams, layout, orientation });
 
 	// primary and secondary button container and text style
 	const primaryButton = getComponentButtonStyle({ styleParams, buttonType: 'primaryButton' });

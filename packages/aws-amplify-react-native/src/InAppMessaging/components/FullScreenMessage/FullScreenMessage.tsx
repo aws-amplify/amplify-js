@@ -12,15 +12,18 @@
  */
 
 import React from 'react';
-import { useMessageProps } from '../hooks';
+
+import { useDeviceOrientation, useMessageProps } from '../hooks';
+import { MessageLayout } from '../MessageLayout';
 import MessageWrapper from '../MessageWrapper';
 
-import FullScreenContent from './FullScreenContent';
-import { getStyles } from './styles';
+import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { FullScreenMessageProps } from './types';
 
 export default function FullScreenMessage(props: FullScreenMessageProps) {
-	const messageProps = useMessageProps(props, getStyles);
+	const orientation = useDeviceOrientation();
+	const inPortraitMode = orientation === 'portrait';
+	const messageProps = useMessageProps(props, inPortraitMode ? getPortraitStyles : getLandscapeStyles, orientation);
 	const { shouldRenderMessage, styles } = messageProps;
 
 	if (!shouldRenderMessage) {
@@ -29,7 +32,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 
 	return (
 		<MessageWrapper style={styles.componentWrapper}>
-			<FullScreenContent {...props} {...messageProps} />
+			<MessageLayout {...props} {...messageProps} orientation={orientation} />
 		</MessageWrapper>
 	);
 }

@@ -23,12 +23,14 @@ import {
 	getContainerAndWrapperStyle,
 	getMessageStyle,
 	getMessageStyleProps,
-	isBannerOrModalLayout,
+	isBannerLayout,
 } from '../utils';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
 const EMPTY_STYLE = Object.freeze({});
+
+const orientation = 'portrait';
 
 describe('getComponentButtonStyle', () => {
 	const pressedOpacity = { opacity: BUTTON_PRESSED_OPACITY };
@@ -141,6 +143,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'TOP_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -166,6 +169,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -192,6 +196,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -215,6 +220,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'BOTTOM_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -233,6 +239,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -308,6 +315,7 @@ describe('getMessageStyleProps', () => {
 	it('returns the expected output in the happy path', () => {
 		const output = getMessageStyleProps({
 			layout: 'FULL_SCREEN',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -317,6 +325,7 @@ describe('getMessageStyleProps', () => {
 	it('adds a bottom padding for carousel page indicators', () => {
 		const output = getMessageStyleProps({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle: null, overrideStyle: null },
 		});
 
@@ -326,6 +335,7 @@ describe('getMessageStyleProps', () => {
 	it('returns the expected output when provided null style params', () => {
 		const output = getMessageStyleProps({
 			layout: 'MODAL',
+			orientation,
 			styleParams: { defaultStyle: null, messageStyle: null, overrideStyle: null },
 		});
 
@@ -333,10 +343,15 @@ describe('getMessageStyleProps', () => {
 	});
 });
 
-describe('isBannerOrModalLayout', () => {
-	it('returns the expected output for a given layout', () => {
-		expect(isBannerOrModalLayout('TOP_BANNER' as InAppMessageLayout)).toEqual(true);
-		expect(isBannerOrModalLayout('MODAL' as InAppMessageLayout)).toEqual(true);
-		expect(isBannerOrModalLayout('FULL_SCREEN' as InAppMessageLayout)).toEqual(false);
+describe('isBannerLayout', () => {
+	it.each([
+		['BOTTOM_BANNER', true],
+		['MIDDLE_BANNER', true],
+		['TOP_BANNER', true],
+		['CAROUSEL', false],
+		['FULL_SCREEN', false],
+		['MODAL', false],
+	])('returns the expected output for a %s layout', (layout, expected) => {
+		expect(isBannerLayout(layout as InAppMessageLayout)).toEqual(expected);
 	});
 });
