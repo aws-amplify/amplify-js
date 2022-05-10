@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ImageStyle, StyleSheet, ViewStyle } from 'react-native';
+import { ImageStyle, StyleSheet } from 'react-native';
 import {
 	BORDER_RADIUS_BASE,
 	COLOR_BLACK,
@@ -23,30 +23,19 @@ import {
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	MESSAGE_ELEVATION,
+	MODAL_BORDER_RADIUS,
 	MESSAGE_SHADOW_HEIGHT,
 	MESSAGE_SHADOW_OPACITY,
 	MESSAGE_SHADOW_RADIUS,
 	MESSAGE_SHADOW_WIDTH,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
-	SPACING_MEDIUM,
 	SPACING_SMALL,
 } from '../constants';
-import { BannerMessagePositionStyle, BannerMessageStyle } from './types';
 
-export const positionStyle: BannerMessagePositionStyle = {
-	bottom: {
-		justifyContent: 'flex-end',
-	},
-	middle: {
-		justifyContent: 'center',
-	},
-	top: {
-		justifyContent: 'flex-start',
-	},
-};
+import { ModalMessageStyle } from './types';
 
-export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { position: ViewStyle }): BannerMessageStyle =>
+export const getStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
 		body: {
 			fontSize: FONT_SIZE_BASE,
@@ -57,13 +46,13 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			backgroundColor: COLOR_LIGHT_GREY,
 			borderRadius: BORDER_RADIUS_BASE,
 			flex: 1,
-			margin: SPACING_MEDIUM,
+			marginHorizontal: SPACING_SMALL,
 			padding: SPACING_LARGE,
 		},
 		buttonsContainer: {
 			flexDirection: 'row',
 			justifyContent: 'center',
-			paddingHorizontal: SPACING_SMALL,
+			marginTop: 'auto',
 		},
 		buttonText: {
 			fontSize: FONT_SIZE_BASE,
@@ -72,14 +61,13 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			textAlign: 'center',
 		},
 		componentWrapper: {
-			...additionalStyle.position,
 			backgroundColor: 'transparent',
-			flex: 1,
 		},
 		container: {
-			backgroundColor: COLOR_WHITE,
-			elevation: MESSAGE_ELEVATION,
+			borderRadius: MODAL_BORDER_RADIUS,
+			padding: SPACING_EXTRA_LARGE,
 			margin: SPACING_EXTRA_LARGE,
+			backgroundColor: COLOR_WHITE,
 			shadowColor: COLOR_BLACK,
 			shadowOffset: {
 				width: MESSAGE_SHADOW_WIDTH,
@@ -87,10 +75,12 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			},
 			shadowOpacity: MESSAGE_SHADOW_OPACITY,
 			shadowRadius: MESSAGE_SHADOW_RADIUS,
+			elevation: MESSAGE_ELEVATION,
+			minHeight: '40%',
 		},
 		contentContainer: {
 			flexDirection: 'row',
-			padding: SPACING_LARGE,
+			marginLeft: 'auto',
 		},
 		header: {
 			fontSize: FONT_SIZE_LARGE,
@@ -99,17 +89,17 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		},
 		iconButton: {
 			alignSelf: 'flex-start',
-			marginLeft: 'auto',
 		},
 		image: {
 			...imageDimensions,
 		},
 		imageContainer: {
-			justifyContent: 'center',
+			flex: 1,
+			alignItems: 'center',
+			marginLeft: SPACING_EXTRA_LARGE + SPACING_SMALL,
 		},
 		textContainer: {
-			flex: 1,
 			marginHorizontal: SPACING_SMALL,
-			paddingLeft: SPACING_MEDIUM,
+			marginVertical: SPACING_LARGE,
 		},
 	});

@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 
+import { InAppMessageLayout } from '@aws-amplify/notifications';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { DEFAULT_CAROUSEL_INDICATOR_SIZE } from '../../../ui';
@@ -68,6 +69,19 @@ export const getComponentButtonStyle = ({
 };
 
 /**
+ * Utility for determining if the provided layout is either of the below layouts
+ *  1. TOP_BANNER
+ *  2. MIDDLE_BANNER
+ *  3. BOTTOM_BANNER
+ *  4. MODAL
+ * @param {InAppMessageLayout} - message layout value
+ * @returns {boolean} - `true` if layout is banner or modal, `false` otherwise
+ */
+
+export const isBannerOrModalLayout = (layout: InAppMessageLayout) =>
+	layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER' || layout === 'MODAL';
+
+/**
  * Parse and assign appropriate message container and wrapper style from style params
  *
  * @param {params} object - contains message styleParams and layout
@@ -83,8 +97,8 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
-	// banner layouts requires no special handling of container or wrapper styles
-	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER') {
+	// banner and modal layouts require no special handling of container or wrapper styles
+	if (isBannerOrModalLayout(layout)) {
 		return {
 			componentWrapper: wrapperDefaultStyle,
 			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],

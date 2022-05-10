@@ -12,13 +12,19 @@
  */
 
 import { PressableStateCallbackType, StyleProp, ViewStyle } from 'react-native';
-import { InAppMessageTextAlign } from '@aws-amplify/notifications';
+import { InAppMessageLayout, InAppMessageTextAlign } from '@aws-amplify/notifications';
 
 import { BUTTON_PRESSED_OPACITY } from '../../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../../../types';
 import { StyleParams } from '../types';
 
-import { getComponentButtonStyle, getContainerAndWrapperStyle, getMessageStyle, getMessageStyleProps } from '../utils';
+import {
+	getComponentButtonStyle,
+	getContainerAndWrapperStyle,
+	getMessageStyle,
+	getMessageStyleProps,
+	isBannerOrModalLayout,
+} from '../utils';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
@@ -226,7 +232,7 @@ describe('getContainerAndWrapperStyle', () => {
 		const overrideStyle: StyleParams['overrideStyle'] = null;
 
 		const output = getContainerAndWrapperStyle({
-			layout: 'MODAL',
+			layout: 'CAROUSEL',
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -324,5 +330,13 @@ describe('getMessageStyleProps', () => {
 		});
 
 		expect(output).toMatchSnapshot();
+	});
+});
+
+describe('isBannerOrModalLayout', () => {
+	it('returns the expected output for a given layout', () => {
+		expect(isBannerOrModalLayout('TOP_BANNER' as InAppMessageLayout)).toEqual(true);
+		expect(isBannerOrModalLayout('MODAL' as InAppMessageLayout)).toEqual(true);
+		expect(isBannerOrModalLayout('FULL_SCREEN' as InAppMessageLayout)).toEqual(false);
 	});
 });
