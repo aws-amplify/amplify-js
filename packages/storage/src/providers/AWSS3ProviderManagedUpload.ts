@@ -213,8 +213,8 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
+		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		try {
-			const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {

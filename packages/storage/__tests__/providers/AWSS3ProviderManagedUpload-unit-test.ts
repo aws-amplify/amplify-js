@@ -22,7 +22,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { Logger } from '@aws-amplify/core';
 import * as events from 'events';
-import { Console } from 'console';
 
 jest.useRealTimers();
 
@@ -260,7 +259,7 @@ describe('multi part upload tests', () => {
 					}
 					return promise;
 				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.reject({ Key: testParams.key });
+					return Promise.resolve({ Key: testParams.key });
 				}
 			});
 
@@ -315,6 +314,10 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			UploadId: testUploadId,
 		});
+
+		// As the 'sendUploadProgress' happens when the upload is 100% complete, 
+		// it won't be called, as an error is thrown before upload completion.
+		expect(eventSpy).toBeCalledTimes(0);
 	});
 
 	test('error case: cleanup failed', async () => {
@@ -360,7 +363,6 @@ describe('multi part upload tests', () => {
 					ETag: 'test_etag_' + command.input.PartNumber,
 				});
 			} else if (command instanceof CompleteMultipartUploadCommand) {
-				// return Promise.resolve({ Key: testParams.Key });
 				return Promise.reject(new Error('Error completing multipart upload.'));
 			}
 		});
