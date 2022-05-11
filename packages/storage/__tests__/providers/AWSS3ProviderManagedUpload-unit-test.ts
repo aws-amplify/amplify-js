@@ -22,6 +22,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Logger } from '@aws-amplify/core';
 import * as events from 'events';
+import { Console } from 'console';
 
 jest.useRealTimers();
 
@@ -259,7 +260,7 @@ describe('multi part upload tests', () => {
 					}
 					return promise;
 				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.resolve({ Key: testParams.key });
+					return Promise.reject({ Key: testParams.key });
 				}
 			});
 
@@ -269,7 +270,7 @@ describe('multi part upload tests', () => {
 		try {
 			await uploader.upload();
 		} catch (error) {
-			expect(error.message).toBe('Upload was cancelled.');
+			expect(error.message).toBe('Part 2 just going to fail in 100ms');
 		}
 
 		// Should have called 5 times =>
@@ -314,19 +315,6 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			UploadId: testUploadId,
 		});
-		// Progress reporting works as well
-		expect(eventSpy).toHaveBeenNthCalledWith(1, {
-			key: testParams.Key,
-			loaded: testMinPartSize,
-			part: 1,
-			total: testParams.Body.length,
-		});
-		expect(eventSpy).toHaveBeenNthCalledWith(2, {
-			key: testParams.Key,
-			loaded: testParams.Body.length,
-			part: 2,
-			total: testParams.Body.length,
-		});
 	});
 
 	test('error case: cleanup failed', async () => {
@@ -334,7 +322,13 @@ describe('multi part upload tests', () => {
 			if (command instanceof CreateMultipartUploadCommand) {
 				return Promise.resolve({ UploadId: testUploadId });
 			} else if (command instanceof UploadPartCommand) {
-				return Promise.reject(new Error('failed to upload'));
+				return Promise.resolve({
+					PartNumber: testParams.part,
+					Body: testParams.body,
+					UploadId: testUploadId,
+					Key: testParams.key,
+					Bucket: testParams.bucket,
+				});
 			} else if (command instanceof ListPartsCommand) {
 				return Promise.resolve({
 					Parts: [
@@ -353,7 +347,7 @@ describe('multi part upload tests', () => {
 			new events.EventEmitter()
 		);
 		await expect(uploader.upload()).rejects.toThrow(
-			'Upload was cancelled. Multi Part upload clean up failed'
+			'Multipart upload clean up failed.'
 		);
 	});
 
@@ -366,7 +360,8 @@ describe('multi part upload tests', () => {
 					ETag: 'test_etag_' + command.input.PartNumber,
 				});
 			} else if (command instanceof CompleteMultipartUploadCommand) {
-				return Promise.reject('error');
+				// return Promise.resolve({ Key: testParams.Key });
+				return Promise.reject(new Error('Error completing multipart upload.'));
 			}
 		});
 		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
@@ -375,11 +370,10 @@ describe('multi part upload tests', () => {
 			testOpts,
 			new events.EventEmitter()
 		);
-		await uploader.upload();
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'ERROR',
-			'error happened while finishing the upload. Cancelling the multipart upload',
-			'error'
-		);
-	});
+
+		await expect(uploader.upload()).rejects.toThrow('Error completing multipart upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(1, 'DEBUG', 'testUploadId');
+		expect(loggerSpy).toHaveBeenNthCalledWith(2, 'ERROR', 'Error happened while finishing the upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(3, 'ERROR', 'Error. Cancelling the multipart upload.');
+	})
 });
