@@ -411,7 +411,7 @@ declare module 'amazon-cognito-identity-js' {
 		constructor({ AccessToken }: { AccessToken: string });
 
 		public jwtToken: string;
-		public payload: CognitoAccessToken;
+		public payload: CognitoAccessToken['payload'];
 
 		public getJwtToken(): string;
 		public getExpiration(): number;
@@ -446,7 +446,7 @@ declare module 'amazon-cognito-identity-js' {
 		constructor({ IdToken }: { IdToken: string });
 
 		public jwtToken: string;
-		public payload: CognitoIdToken;
+		public payload: CognitoIdToken['payload'];
 
 		public getJwtToken(): string;
 		public getExpiration(): number;
