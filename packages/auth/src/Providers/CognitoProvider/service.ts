@@ -52,15 +52,6 @@ function curry(fn: (...a: any[]) => any) {
 	};
 }
 
-// export class CognitoService {
-// 	private readonly client: CognitoIdentityProviderClient;
-//
-// 	constructor(config: CognitoIdentityProviderClientConfig) {
-// 		this.client = new CognitoIdentityProviderClient(config);
-// 	}
-//
-// }
-
 export function createCognitoClient(
 	config: CognitoIdentityProviderClientConfig
 ) {

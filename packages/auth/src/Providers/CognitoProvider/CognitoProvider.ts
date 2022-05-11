@@ -29,13 +29,15 @@ import {
 	GetCredentialsForIdentityCommandOutput,
 } from '@aws-sdk/client-cognito-identity';
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
-import { Logger, StorageHelper } from '@aws-amplify/core';
+import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
+import { interpret } from 'xstate';
 import {
 	cognitoSignUp,
 	cognitoConfirmSignUp,
 	cognitoSignIn,
 	cognitoConfirmSignIn,
 } from './service';
+import { authMachine } from './machines/authenticationMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -61,9 +63,15 @@ export type CognitoProviderConfig = {
 	clientMetadata?: { [key: string]: string };
 };
 
+function listenToAuthHub(send: any) {
+	return Hub.listen('auth', data => {
+		send(data.payload.event);
+	});
+}
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
+	private _authService = interpret(authMachine, { devTools: true }).start();
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
 	private _storageSync: Promise<void> = Promise.resolve();
@@ -75,6 +83,12 @@ export class CognitoProvider implements AuthProvider {
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
 		this._userStorage = config.storage ?? new StorageHelper().getStorage();
+		listenToAuthHub(this._authService.send);
+		// @ts-ignore
+		window.Hub = Hub;
+		this._authService.subscribe(state => {
+			console.log(state);
+		});
 	}
 
 	configure(config: PluginConfig) {
@@ -93,6 +107,11 @@ export class CognitoProvider implements AuthProvider {
 		if (config.storage) {
 			this._userStorage = config.storage;
 		}
+		console.log('successfully configured cognito provider');
+		this._authService.send({
+			type: 'configure',
+			data: { config: this._config },
+		});
 	}
 
 	getCategory(): string {
@@ -138,12 +157,14 @@ export class CognitoProvider implements AuthProvider {
 		const session = this.getSessionData();
 		return session !== null;
 	}
+
 	async signIn(
 		params: SignInParams & { password?: string }
 	): Promise<SignInResult> {
 		if (!this.isConfigured()) {
 			throw new Error('Plugin not configured');
 		}
+		// TODO: implement the other sign in method
 		if (
 			params.signInType === 'Link' ||
 			params.signInType === 'Social' ||
@@ -152,12 +173,14 @@ export class CognitoProvider implements AuthProvider {
 			throw new Error('Not implemented');
 		}
 		// throw error if user is already signed in
+		// NOTE: the state machine should probably already know we are authenticated
 		if (this.isAuthenticated()) {
 			throw new Error(
 				'User is already authenticated, please sign out the current user before signing in.'
 			);
 		}
 		try {
+			this._authService.send('initializedSignedIn');
 			const res = await cognitoSignIn(
 				{
 					region: this._config.region,
