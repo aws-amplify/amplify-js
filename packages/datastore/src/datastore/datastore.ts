@@ -94,7 +94,6 @@ declare class Setting {
 const SETTING_SCHEMA_VERSION = 'schemaVersion';
 
 let schema: InternalSchema;
-let schemaInitialized = false;
 const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
@@ -221,8 +220,6 @@ const initSchema = (userSchema: Schema) => {
 		schema.namespaces[namespace].modelTopologicalOrdering = result;
 	});
 
-	schemaInitialized = true;
-
 	return userClasses;
 };
 
@@ -232,7 +229,7 @@ const initSchema = (userSchema: Schema) => {
  * Currently this only needs to be called in start() and clear() because all other functions will call start first.
  */
 const checkSchemaInitialized = () => {
-	if (!schemaInitialized) {
+	if (schema === undefined) {
 		const message =
 			'Schema is not initialized. DataStore will not function as expected. This could happen if you have multiple versions of DataStore installed. Please see https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js/#check-for-duplicate-versions';
 		logger.error(message);
