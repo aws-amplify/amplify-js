@@ -396,13 +396,21 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			subscriptionFailedCallback,
 		} = this.subscriptionObserverMap.get(id) || {};
 
-		logger.debug({ id, observer, query, variables });
+		logger.debug({ id, observer, query, variables, type });
 
 		if (type === MESSAGE_TYPES.GQL_DATA && payload && payload.data) {
 			if (observer) {
 				observer.next(payload);
 			} else {
 				logger.debug(`observer not found for id: ${id}`);
+			}
+			return;
+		}
+
+		if (type === MESSAGE_TYPES.GQL_COMPLETE) {
+			logger.debug(`connection completed for id: ${id}`);
+			if (observer) {
+				observer.complete();
 			}
 			return;
 		}

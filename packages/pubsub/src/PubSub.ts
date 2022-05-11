@@ -184,7 +184,7 @@ export class PubSubClass {
 					start: console.error,
 					next: value => observer.next({ provider, value }),
 					error: error => observer.error({ provider, error }),
-					// complete: observer.complete, // TODO: when all completed, complete the outer one
+					complete: observer.complete, // TODO: when all completed, complete the outer one
 				})
 			);
 
