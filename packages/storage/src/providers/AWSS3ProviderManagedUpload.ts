@@ -60,6 +60,7 @@ export class AWSS3ProviderManagedUpload {
 	private completedParts: CompletedPart[] = [];
 	private cancel = false;
 	private s3client: S3Client;
+	private uploadId = null;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -116,37 +117,47 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			// if any error is thrown, call cleanup
-			if(this.cancel) this.cleanup(this.uploadId);
-			logger.error('Error. Cancelling the multipart upload. ', error);
+			await this.cleanup(this.uploadId);
+			logger.error('Error. Cancelling the multipart upload.');
 			throw error;
 		}
 	}
 
 	private createParts(): Part[] {
-		const parts: Part[] = [];
-		for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
-			const bodyEnd = Math.min(
-				bodyStart + this.minPartSize,
-				this.totalBytesToUpload
-			);
-			parts.push({
-				bodyPart: this.body.slice(bodyStart, bodyEnd),
-				partNumber: parts.length + 1,
-				emitter: new events.EventEmitter(),
-				_lastUploadedBytes: 0,
-			});
-			bodyStart += this.minPartSize;
+		try {
+			const parts: Part[] = [];
+			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
+				const bodyEnd = Math.min(
+					bodyStart + this.minPartSize,
+					this.totalBytesToUpload
+				);
+				parts.push({
+					bodyPart: this.body.slice(bodyStart, bodyEnd),
+					partNumber: parts.length + 1,
+					emitter: new events.EventEmitter(),
+					_lastUploadedBytes: 0,
+				});
+				bodyStart += this.minPartSize;
+			}
+			return parts;
+		} catch (error) {
+			logger.error(error);
+			throw error;
 		}
-		return parts;
 	}
 
 	private async createMultiPartUpload() {
-		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
-			this.params
-		);
-		const response = await this.s3client.send(createMultiPartUploadCommand);
-		logger.debug(response.UploadId);
-		return response.UploadId;
+		try {
+			const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
+				this.params
+			);
+			const response = await this.s3client.send(createMultiPartUploadCommand);
+			logger.debug(response.UploadId);
+			return response.UploadId;
+		} catch (error) {
+			logger.error(error);
+			throw error;
+		}
 	}
 
 	/**
@@ -191,11 +202,14 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			logger.error(
+<<<<<<< HEAD
 				'Error happened while uploading a part. Cancelling the multipart upload',
 				error
+=======
+				'Error happened while uploading a part. Cancelling the multipart upload'
+>>>>>>> storage/8781
 			);
-			this.cancelUpload();
-			return;
+			throw error;
 		}
 	}
 
@@ -206,21 +220,28 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
-		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		try {
+			const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
+<<<<<<< HEAD
 			this.cancelUpload();
 			logger.error(`Error happened while finishing the upload. ${error.message}`);
+=======
+			logger.error('Error happened while finishing the upload.');
+>>>>>>> storage/8781
 			throw error;
 		}
 	}
 
+<<<<<<< HEAD
 	public cancelUpload() {
 		this.cancel = true;
 	}
 
+=======
+>>>>>>> storage/8781
 	private async cleanup(uploadId: string) {
 		// Reset this's state
 		this.body = null;
@@ -240,7 +261,7 @@ export class AWSS3ProviderManagedUpload {
 		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
-			throw new Error('Multi Part upload clean up failed');
+			throw new Error('Multipart upload clean up failed.');
 		}
 	}
 
