@@ -67,8 +67,6 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter = null;
 
-	private uploadId = null;
-
 	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
@@ -202,12 +200,7 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			logger.error(
-<<<<<<< HEAD
-				'Error happened while uploading a part. Cancelling the multipart upload',
-				error
-=======
 				'Error happened while uploading a part. Cancelling the multipart upload'
->>>>>>> storage/8781
 			);
 			throw error;
 		}
@@ -225,23 +218,11 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-<<<<<<< HEAD
-			this.cancelUpload();
-			logger.error(`Error happened while finishing the upload. ${error.message}`);
-=======
 			logger.error('Error happened while finishing the upload.');
->>>>>>> storage/8781
 			throw error;
 		}
 	}
 
-<<<<<<< HEAD
-	public cancelUpload() {
-		this.cancel = true;
-	}
-
-=======
->>>>>>> storage/8781
 	private async cleanup(uploadId: string) {
 		// Reset this's state
 		this.body = null;
