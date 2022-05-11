@@ -67,7 +67,32 @@ declare module 'amazon-cognito-identity-js' {
 		clientMetadata: Record<string, string>;
 	}
 
-	export class CognitoUser {
+	export enum AuthenticationFlowType {
+		USER_SRP_AUTH = 'USER_SRP_AUTH',
+		USER_PASSWORD_AUTH = 'USER_PASSWORD_AUTH',
+		CUSTOM_AUTH = 'CUSTOM_AUTH',
+	}
+
+	export interface CognitoUser {
+		attributes: {
+			email: string;
+			email_verified: boolean;
+			family_name: string;
+			given_name: string;
+			phone_number: string;
+			phone_number_verified: boolean;
+			sub: string;
+		};
+
+		pool: CognitoUserPool;
+		authenticationFlowType: AuthenticationFlowType;
+		keyPrefix: string;
+		signInUserSession: CognitoUserSession | null;
+		userDataKey: string;
+		username: string;
+	}
+
+	export class CognitoUser implements CognitoUser {
 		constructor(data: ICognitoUserData);
 
 		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
@@ -299,13 +324,23 @@ declare module 'amazon-cognito-identity-js' {
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
-	export class CognitoUserPool {
+	export interface CognitoUserPool {
+		advancedSecurityDataCollectionFlag: boolean;
+		clientId: string;
+		userPoolId: string;
+	}
+
+	export class CognitoUserPool implements CognitoUserPool {
 		constructor(
 			data: ICognitoUserPoolData,
 			wrapRefreshSessionCallback?: (
 				target: NodeCallback.Any
 			) => NodeCallback.Any
 		);
+
+		public clientId: string;
+		public userPoolId: string;
+		public advancedSecurityDataCollectionFlag: boolean;
 
 		public getUserPoolId(): string;
 		public getClientId(): string;
@@ -328,8 +363,20 @@ declare module 'amazon-cognito-identity-js' {
 		RefreshToken?: CognitoRefreshToken;
 	}
 
-	export class CognitoUserSession {
+	export interface CognitoUserSession {
+		clockDrift: number;
+		idToken: CognitoIdToken;
+		accessToken: CognitoAccessToken;
+		refreshToken: CognitoRefreshToken;
+	}
+
+	export class CognitoUserSession implements CognitoUserSession {
 		constructor(data: ICognitoUserSessionData);
+
+		public clockDrift: number;
+		public idToken: CognitoIdToken;
+		public accessToken: CognitoAccessToken;
+		public refreshToken: CognitoRefreshToken;
 
 		public getIdToken(): CognitoIdToken;
 		public getRefreshToken(): CognitoRefreshToken;
@@ -341,30 +388,80 @@ declare module 'amazon-cognito-identity-js' {
         public config: AWS.CognitoIdentityServiceProvider.Types.ClientConfiguration;
     }
     */
-	export class CognitoAccessToken {
-		payload: { [key: string]: any };
 
+	export interface CognitoAccessToken {
+		jwtToken: string;
+		payload: {
+			origin_jti: string;
+			sub: string;
+			event_id: string;
+			token_use: string;
+			scope: string;
+			auth_time: number;
+			iss: string;
+			exp: number;
+			iat: number;
+			jti: string;
+			client_id: string;
+			username: string;
+		};
+	}
+
+	export class CognitoAccessToken implements CognitoAccessToken {
 		constructor({ AccessToken }: { AccessToken: string });
 
+		public jwtToken: string;
+		public payload: CognitoAccessToken;
+
 		public getJwtToken(): string;
 		public getExpiration(): number;
 		public getIssuedAt(): number;
 		public decodePayload(): { [id: string]: any };
 	}
 
-	export class CognitoIdToken {
-		payload: { [key: string]: any };
+	export interface CognitoIdToken {
+		jwtToken: string;
+		payload: {
+			sub: string;
+			email_verified: boolean;
+			iss: string;
+			phone_number_verified: boolean;
+			'cognito:username': string;
+			given_name: string;
+			origin_jti: string;
+			aud: string;
+			event_id: string;
+			token_use: string;
+			auth_time: number;
+			phone_number: string;
+			exp: number;
+			iat: number;
+			family_name: string;
+			jti: string;
+			email: string;
+		};
+	}
 
+	export class CognitoIdToken implements CognitoIdToken {
 		constructor({ IdToken }: { IdToken: string });
 
+		public jwtToken: string;
+		public payload: CognitoIdToken;
+
 		public getJwtToken(): string;
 		public getExpiration(): number;
 		public getIssuedAt(): number;
 		public decodePayload(): { [id: string]: any };
 	}
 
-	export class CognitoRefreshToken {
+	export interface CognitoRefreshToken {
+		token: string;
+	}
+
+	export class CognitoRefreshToken implements CognitoRefreshToken {
 		constructor({ RefreshToken }: { RefreshToken: string });
+
+		public token: string;
 
 		public getToken(): string;
 	}
