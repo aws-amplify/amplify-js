@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "3.11.0",
+	"version": "3.11.1",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -48,10 +48,10 @@
 		"fake-indexeddb": "3.0.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api": "4.0.39",
-		"@aws-amplify/auth": "4.5.3",
-		"@aws-amplify/core": "4.5.3",
-		"@aws-amplify/pubsub": "4.4.0",
+		"@aws-amplify/api": "4.0.40",
+		"@aws-amplify/auth": "4.5.4",
+		"@aws-amplify/core": "4.5.4",
+		"@aws-amplify/pubsub": "4.4.1",
 		"amazon-cognito-identity-js": "5.2.8",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
