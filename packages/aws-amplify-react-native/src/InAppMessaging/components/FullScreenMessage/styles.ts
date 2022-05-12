@@ -87,18 +87,8 @@ const commonStyles: Omit<FullScreenMessageStyle, 'image'> = {
 
 export const getPortraitStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =>
 	StyleSheet.create({
-		body: { ...commonStyles.body },
-		buttonContainer: { ...commonStyles.buttonContainer },
-		buttonText: { ...commonStyles.buttonText },
-		buttonsContainer: { ...commonStyles.buttonsContainer },
-		componentWrapper: { ...commonStyles.componentWrapper },
-		container: { ...commonStyles.container },
-		contentContainer: { ...commonStyles.contentContainer },
-		header: { ...commonStyles.header },
-		iconButton: { ...commonStyles.iconButton },
+		...commonStyles,
 		image: { ...imageDimensions },
-		imageContainer: { ...commonStyles.imageContainer },
-		textContainer: { ...commonStyles.textContainer },
 	});
 
 export const getLandscapeStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =>
@@ -112,7 +102,6 @@ export const getLandscapeStyles = (imageDimensions: ImageStyle): FullScreenMessa
 			...commonStyles.contentContainer,
 			flexDirection: 'row',
 		},
-		iconButton: { ...commonStyles.iconButton },
 		image: { ...imageDimensions },
 		imageContainer: {
 			...commonStyles.imageContainer,

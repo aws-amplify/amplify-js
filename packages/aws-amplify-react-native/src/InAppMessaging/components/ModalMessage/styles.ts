@@ -35,7 +35,7 @@ import {
 
 import { ModalMessageStyle } from './types';
 
-const commonStyles: Omit<ModalMessageStyle, 'componentWrapper' | 'contentContainer' | 'image'> = {
+const commonStyles: Omit<ModalMessageStyle, 'contentContainer' | 'image'> = {
 	body: {
 		fontSize: FONT_SIZE_BASE,
 		fontWeight: FONT_WEIGHT_BASE,
@@ -57,6 +57,9 @@ const commonStyles: Omit<ModalMessageStyle, 'componentWrapper' | 'contentContain
 		fontWeight: FONT_WEIGHT_BASE,
 		lineHeight: LINE_HEIGHT_BASE,
 		textAlign: 'center',
+	},
+	componentWrapper: {
+		flex: 1,
 	},
 	container: {
 		padding: SPACING_EXTRA_LARGE,
@@ -86,13 +89,10 @@ const commonStyles: Omit<ModalMessageStyle, 'componentWrapper' | 'contentContain
 
 export const getPortraitStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
-		body: { ...commonStyles.body },
-		buttonContainer: { ...commonStyles.buttonContainer },
-		buttonText: { ...commonStyles.buttonText },
-		buttonsContainer: { ...commonStyles.buttonsContainer },
+		...commonStyles,
 		componentWrapper: {
+			...commonStyles.componentWrapper,
 			backgroundColor: 'transparent',
-			flex: 1,
 		},
 		container: {
 			...commonStyles.container,
@@ -107,23 +107,15 @@ export const getPortraitStyles = (imageDimensions: ImageStyle): ModalMessageStyl
 			shadowOpacity: MESSAGE_SHADOW_OPACITY,
 			shadowRadius: MESSAGE_SHADOW_RADIUS,
 		},
+		// intentionally set to null to satisfy TS, but can be updated as needed
 		contentContainer: null,
-		header: { ...commonStyles.header },
-		iconButton: { ...commonStyles.iconButton },
 		image: { ...imageDimensions },
-		imageContainer: { ...commonStyles.imageContainer },
-		textContainer: { ...commonStyles.textContainer, backgroundColor: 'teal' },
+		textContainer: { ...commonStyles.textContainer },
 	});
 
 export const getLandscapeStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
-		body: { ...commonStyles.body },
-		buttonContainer: { ...commonStyles.buttonContainer },
-		buttonText: { ...commonStyles.buttonText },
-		buttonsContainer: { ...commonStyles.buttonsContainer },
-		componentWrapper: {
-			flex: 1,
-		},
+		...commonStyles,
 		container: {
 			...commonStyles.container,
 			flex: 1,
@@ -132,8 +124,6 @@ export const getLandscapeStyles = (imageDimensions: ImageStyle): ModalMessageSty
 			flex: 1,
 			flexDirection: 'row',
 		},
-		header: { ...commonStyles.header },
-		iconButton: { ...commonStyles.iconButton },
 		image: { ...imageDimensions },
 		imageContainer: {
 			...commonStyles.imageContainer,

@@ -112,7 +112,6 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
       <View
         style={
           Object {
-            "backgroundColor": "teal",
             "flex": 1,
             "marginHorizontal": 4,
             "marginVertical": 12,
@@ -310,7 +309,6 @@ exports[`ModalMessage renders as expected in portrait mode 1`] = `
       <View
         style={
           Object {
-            "backgroundColor": "teal",
             "flex": 1,
             "marginHorizontal": 4,
             "marginVertical": 12,
