@@ -513,6 +513,60 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
+				test('subscription is complete when a connection is formed and a complete message is received', async () => {
+					expect.assertions(1);
+
+					const mockComplete = jest.fn();
+					const observer = provider.subscribe('test', {
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const subscription = observer.subscribe({
+						// Succeed only when the complete message comes through
+						complete: mockComplete,
+						// Closing a hot connection (for cleanup) makes it blow up the test stack
+						error: () => {},
+					});
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.sendDataMessage({
+						type: MESSAGE_TYPES.GQL_COMPLETE,
+						payload: {},
+					});
+
+					expect(mockComplete).toBeCalled();
+				});
+
+				test('subscription is complete when a connection is formed and a complete message is received after connection ack', async () => {
+					expect.assertions(1);
+
+					const mockComplete = jest.fn();
+					const observer = provider.subscribe('test', {
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const subscription = observer.subscribe({
+						// Succeed only when the complete message comes through
+						complete: mockComplete,
+						// Closing a hot connection (for cleanup) makes it blow up the test stack
+						error: () => {},
+					});
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.sendMessage(
+						new MessageEvent('start_ack', {
+							data: JSON.stringify({
+								type: MESSAGE_TYPES.GQL_START_ACK,
+								payload: { connectionTimeoutMs: 100 },
+							}),
+						})
+					);
+					await fakeWebSocketInterface?.sendDataMessage({
+						type: MESSAGE_TYPES.GQL_COMPLETE,
+						payload: {},
+					});
+
+					expect(mockComplete).toBeCalled();
+				});
+
 				test('socket is closed when subscription is closed', async () => {
 					expect.assertions(1);
 
