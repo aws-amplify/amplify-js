@@ -21,9 +21,12 @@ import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { FullScreenMessageProps } from './types';
 
 export default function FullScreenMessage(props: FullScreenMessageProps) {
-	const orientation = useDeviceOrientation();
-	const inPortraitMode = orientation === 'portrait';
-	const messageProps = useMessageProps(props, inPortraitMode ? getPortraitStyles : getLandscapeStyles, orientation);
+	const { deviceOrientation, isPortraitMode } = useDeviceOrientation();
+	const messageProps = useMessageProps(
+		props,
+		isPortraitMode ? getPortraitStyles : getLandscapeStyles,
+		deviceOrientation
+	);
 	const { shouldRenderMessage, styles } = messageProps;
 
 	if (!shouldRenderMessage) {
@@ -32,7 +35,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 
 	return (
 		<MessageWrapper style={styles.componentWrapper}>
-			<MessageLayout {...props} {...messageProps} orientation={orientation} />
+			<MessageLayout {...props} {...messageProps} orientation={deviceOrientation} />
 		</MessageWrapper>
 	);
 }

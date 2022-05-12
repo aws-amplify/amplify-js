@@ -35,8 +35,14 @@ describe('ModalMessage', () => {
 		jest.clearAllMocks();
 	});
 
-	it.each(['landscape', 'portrait'])('renders as expected in %s mode', (orientation) => {
-		(useDeviceOrientation as jest.Mock).mockReturnValue(orientation);
+	it.each([
+		['landscape', false],
+		['portrait', true],
+	])('renders as expected in %s mode', (deviceOrientation, isPortraitMode) => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation,
+			isPortraitMode,
+		});
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },
@@ -49,7 +55,10 @@ describe('ModalMessage', () => {
 	});
 
 	it('renders a message as expected with an image', () => {
-		(useDeviceOrientation as jest.Mock).mockReturnValue('portrait');
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation: 'portrait',
+			isPortraitMode: true,
+		});
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: true,
 			imageDimensions: { height: 100, width: 100 },

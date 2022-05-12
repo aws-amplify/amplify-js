@@ -21,9 +21,12 @@ import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { CarouselMessageItemProps } from './types';
 
 export default function CarouselMessageItem(props: CarouselMessageItemProps) {
-	const orientation = useDeviceOrientation();
-	const inPortraitMode = orientation === 'portrait';
-	const messageProps = useMessageProps(props, inPortraitMode ? getPortraitStyles : getLandscapeStyles, orientation);
+	const { deviceOrientation, isPortraitMode } = useDeviceOrientation();
+	const messageProps = useMessageProps(
+		props,
+		isPortraitMode ? getPortraitStyles : getLandscapeStyles,
+		deviceOrientation
+	);
 	const { shouldRenderMessage, styles } = messageProps;
 
 	if (!shouldRenderMessage) {
@@ -32,7 +35,7 @@ export default function CarouselMessageItem(props: CarouselMessageItemProps) {
 
 	return (
 		<SafeAreaView style={styles.componentWrapper}>
-			<MessageLayout {...props} {...messageProps} orientation={orientation} />
+			<MessageLayout {...props} {...messageProps} orientation={deviceOrientation} />
 		</SafeAreaView>
 	);
 }

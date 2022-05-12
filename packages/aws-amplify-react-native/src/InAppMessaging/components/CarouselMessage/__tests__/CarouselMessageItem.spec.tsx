@@ -34,8 +34,14 @@ describe('CarouselMessageItem', () => {
 		jest.clearAllMocks();
 	});
 
-	it.each(['landscape', 'portrait'])('renders as expected in %s mode', (orientation) => {
-		(useDeviceOrientation as jest.Mock).mockReturnValue(orientation);
+	it.each([
+		['landscape', false],
+		['portrait', true],
+	])('renders as expected in %s mode', (deviceOrientation, isPortraitMode) => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation,
+			isPortraitMode,
+		});
 		(useMessageImage as jest.Mock).mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },
