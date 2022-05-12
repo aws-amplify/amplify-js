@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "4.3.17",
+  "version": "4.3.18",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -43,7 +43,7 @@
     "source-map-loader": "^0.2.1"
   },
   "dependencies": {
-    "@aws-amplify/core": "4.5.2",
+    "@aws-amplify/core": "4.5.3",
     "@react-native-community/push-notification-ios": "1.0.3"
   },
   "jest": {

@@ -282,6 +282,15 @@ export class RestAPIClass {
 	}
 
 	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._api.hasCancelToken(request);
+	}
+
+	/**
 	 * Getting endpoint for API
 	 * @param {string} apiName - The name of the api
 	 * @return {string} - The endpoint of the api

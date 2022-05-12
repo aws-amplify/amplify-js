@@ -658,7 +658,7 @@ export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (error: SyncError) => void; // default : logger.warn
+		errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -668,7 +668,7 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (error: SyncError) => void; // default : logger.warn
+	errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
@@ -775,14 +775,31 @@ export type SyncConflict = {
 	attempts: number;
 };
 
-export type SyncError = {
+export type SyncError<T extends PersistentModel> = {
 	message: string;
-	errorType: string;
-	errorInfo: string;
-	localModel: PersistentModel;
-	remoteModel: PersistentModel;
+	errorType: ErrorType;
+	errorInfo?: string;
+	recoverySuggestion?: string;
+	model?: string;
+	localModel: T;
+	remoteModel: T;
+	process: ProcessName;
 	operation: string;
+	cause?: Error;
 };
+
+export type ErrorType =
+	| 'ConfigError'
+	| 'BadRecord'
+	| 'Unauthorized'
+	| 'Transient'
+	| 'Unknown';
+
+export enum ProcessName {
+	'sync' = 'sync',
+	'mutate' = 'mutate',
+	'subscribe' = 'subscribe',
+}
 
 export const DISCARD = Symbol('DISCARD');
 
@@ -792,7 +809,7 @@ export type ConflictHandler = (
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
-export type ErrorHandler = (error: SyncError) => void;
+export type ErrorHandler = (error: SyncError<PersistentModel>) => void;
 
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;

@@ -16,13 +16,12 @@ import {
 	ModelAttributeAuth,
 	ModelAuthRule,
 	utils,
+	GraphQLScalarType,
 } from '@aws-amplify/datastore';
 
-import { getSQLiteType } from './types';
+import { ParameterizedStatement } from './types';
 
 const { USER, isNonModelConstructor, isModelConstructor } = utils;
-
-export type ParameterizedStatement = [string, any[]];
 
 const keysFromModel = model =>
 	Object.keys(model)
@@ -70,6 +69,36 @@ function prepareValueForDML(value: unknown): any {
 	}
 
 	return `${value}`;
+}
+
+export function getSQLiteType(
+	scalar: keyof Omit<
+		typeof GraphQLScalarType,
+		'getJSType' | 'getValidationFunction' | 'getSQLiteType'
+	>
+): 'TEXT' | 'INTEGER' | 'REAL' | 'BLOB' {
+	switch (scalar) {
+		case 'Boolean':
+		case 'Int':
+		case 'AWSTimestamp':
+			return 'INTEGER';
+		case 'ID':
+		case 'String':
+		case 'AWSDate':
+		case 'AWSTime':
+		case 'AWSDateTime':
+		case 'AWSEmail':
+		case 'AWSJSON':
+		case 'AWSURL':
+		case 'AWSPhone':
+		case 'AWSIPAddress':
+			return 'TEXT';
+		case 'Float':
+			return 'REAL';
+		default:
+			const _: never = scalar as never;
+			throw new Error(`unknown type ${scalar as string}`);
+	}
 }
 
 export function generateSchemaStatements(schema: InternalSchema): string[] {

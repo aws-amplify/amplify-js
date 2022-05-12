@@ -99,6 +99,7 @@
 	"resolutions": {
 		"@babel/types": "7.12.10",
 		"@types/babel__traverse": "7.0.8",
+		"@babel/traverse": "7.17.9",
 		"@types/react": "16.9.10",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12"
