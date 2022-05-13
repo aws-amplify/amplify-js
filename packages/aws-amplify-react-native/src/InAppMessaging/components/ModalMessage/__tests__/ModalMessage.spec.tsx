@@ -77,7 +77,10 @@ describe('ModalMessage', () => {
 	});
 
 	it('returns null while an image is fetching', () => {
-		(useDeviceOrientation as jest.Mock).mockReturnValue('portrait');
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation: 'portrait',
+			isPortraitMode: true,
+		});
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },
