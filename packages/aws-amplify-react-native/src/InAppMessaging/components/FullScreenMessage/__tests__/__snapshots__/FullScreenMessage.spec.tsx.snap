@@ -89,7 +89,7 @@ exports[`FullScreenMessage renders as expected in landscape mode 1`] = `
         "imageContainer": Object {
           "alignItems": "center",
           "justifyContent": "center",
-          "marginVertical": 12,
+          "margin": 12,
         },
         "primaryButton": Object {
           "container": [Function],
@@ -120,8 +120,6 @@ exports[`FullScreenMessage renders as expected in landscape mode 1`] = `
         "textContainer": Object {
           "flex": 1,
           "justifyContent": "center",
-          "marginHorizontal": 4,
-          "marginVertical": 12,
           "paddingHorizontal": 8,
         },
       }
@@ -165,6 +163,7 @@ exports[`FullScreenMessage renders as expected in portrait mode 1`] = `
         "buttonsContainer": Object {
           "flexDirection": "row",
           "justifyContent": "center",
+          "marginTop": "auto",
         },
         "componentWrapper": Array [
           Object {
@@ -215,7 +214,7 @@ exports[`FullScreenMessage renders as expected in portrait mode 1`] = `
         ],
         "imageContainer": Object {
           "alignItems": "center",
-          "marginVertical": 12,
+          "margin": 12,
         },
         "primaryButton": Object {
           "container": [Function],
@@ -244,8 +243,6 @@ exports[`FullScreenMessage renders as expected in portrait mode 1`] = `
           ],
         },
         "textContainer": Object {
-          "flex": 1,
-          "marginHorizontal": 4,
           "marginVertical": 12,
           "paddingHorizontal": 8,
         },

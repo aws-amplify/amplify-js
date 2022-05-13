@@ -67,8 +67,7 @@ exports[`BannerMessage renders a message as expected with an image 1`] = `
         style={
           Object {
             "flex": 1,
-            "marginHorizontal": 4,
-            "paddingLeft": 8,
+            "paddingHorizontal": 8,
           }
         }
       />
@@ -167,8 +166,7 @@ exports[`BannerMessage renders a message as expected without an image 1`] = `
         style={
           Object {
             "flex": 1,
-            "marginHorizontal": 4,
-            "paddingLeft": 8,
+            "paddingHorizontal": 8,
           }
         }
       />

@@ -30,12 +30,11 @@ import {
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
-	SPACING_SMALL,
 } from '../constants';
 
 import { ModalMessageStyle } from './types';
 
-const commonStyles: Omit<ModalMessageStyle, 'contentContainer' | 'image'> = {
+const commonStyles: Omit<ModalMessageStyle, 'container' | 'contentContainer' | 'image' | 'textContainer'> = {
 	body: {
 		fontSize: FONT_SIZE_BASE,
 		fontWeight: FONT_WEIGHT_BASE,
@@ -61,9 +60,6 @@ const commonStyles: Omit<ModalMessageStyle, 'contentContainer' | 'image'> = {
 	componentWrapper: {
 		flex: 1,
 	},
-	container: {
-		padding: SPACING_EXTRA_LARGE,
-	},
 	header: {
 		fontSize: FONT_SIZE_LARGE,
 		fontWeight: FONT_WEIGHT_BASE,
@@ -71,31 +67,26 @@ const commonStyles: Omit<ModalMessageStyle, 'contentContainer' | 'image'> = {
 	},
 	iconButton: {
 		alignSelf: 'flex-start',
-		marginBottom: SPACING_MEDIUM,
 		marginLeft: 'auto',
-		marginRight: SPACING_MEDIUM,
 	},
 	imageContainer: {
 		alignItems: 'center',
-		marginVertical: SPACING_LARGE,
-	},
-	textContainer: {
-		flex: 1,
-		marginHorizontal: SPACING_SMALL,
-		marginVertical: SPACING_LARGE,
-		paddingHorizontal: SPACING_MEDIUM,
+		margin: SPACING_LARGE,
 	},
 };
 
 export const getPortraitStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
 		...commonStyles,
+		buttonsContainer: {
+			...commonStyles.buttonsContainer,
+			marginTop: 'auto',
+		},
 		componentWrapper: {
 			...commonStyles.componentWrapper,
 			backgroundColor: 'transparent',
 		},
 		container: {
-			...commonStyles.container,
 			backgroundColor: COLOR_WHITE,
 			elevation: MESSAGE_ELEVATION,
 			margin: SPACING_EXTRA_LARGE,
@@ -106,23 +97,29 @@ export const getPortraitStyles = (imageDimensions: ImageStyle): ModalMessageStyl
 			},
 			shadowOpacity: MESSAGE_SHADOW_OPACITY,
 			shadowRadius: MESSAGE_SHADOW_RADIUS,
+			minHeight: '40%',
 		},
-		// intentionally set to null to satisfy TS, but can be updated as needed
-		contentContainer: null,
+		contentContainer: { padding: SPACING_LARGE },
 		image: { ...imageDimensions },
-		textContainer: { ...commonStyles.textContainer },
+		textContainer: {
+			marginTop: SPACING_LARGE,
+		},
 	});
 
 export const getLandscapeStyles = (imageDimensions: ImageStyle): ModalMessageStyle =>
 	StyleSheet.create({
 		...commonStyles,
 		container: {
-			...commonStyles.container,
 			flex: 1,
+			padding: SPACING_EXTRA_LARGE,
 		},
 		contentContainer: {
 			flex: 1,
 			flexDirection: 'row',
+		},
+		iconButton: {
+			...commonStyles.iconButton,
+			marginRight: SPACING_MEDIUM,
 		},
 		image: { ...imageDimensions },
 		imageContainer: {
@@ -130,7 +127,8 @@ export const getLandscapeStyles = (imageDimensions: ImageStyle): ModalMessageSty
 			justifyContent: 'center',
 		},
 		textContainer: {
-			...commonStyles.textContainer,
+			flex: 1,
 			justifyContent: 'center',
+			paddingHorizontal: SPACING_MEDIUM,
 		},
 	});

@@ -16,7 +16,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           "backgroundColor": "#fff",
           "elevation": 3,
           "margin": 16,
-          "padding": 16,
+          "minHeight": "40%",
           "shadowColor": "#000",
           "shadowOffset": Object {
             "height": 2,
@@ -31,7 +31,11 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
     }
   >
     <View
-      style={null}
+      style={
+        Object {
+          "padding": 12,
+        }
+      }
     >
       <View
         accessible={true}
@@ -58,9 +62,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
           Array [
             Object {
               "alignSelf": "flex-start",
-              "marginBottom": 8,
               "marginLeft": "auto",
-              "marginRight": 8,
             },
             undefined,
           ]
@@ -87,7 +89,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
         style={
           Object {
             "alignItems": "center",
-            "marginVertical": 12,
+            "margin": 12,
           }
         }
       >
@@ -112,10 +114,7 @@ exports[`ModalMessage renders a message as expected with an image 1`] = `
       <View
         style={
           Object {
-            "flex": 1,
-            "marginHorizontal": 4,
-            "marginVertical": 12,
-            "paddingHorizontal": 8,
+            "marginTop": 12,
           }
         }
       />
@@ -162,8 +161,6 @@ exports[`ModalMessage renders as expected in landscape mode 1`] = `
           Object {
             "flex": 1,
             "justifyContent": "center",
-            "marginHorizontal": 4,
-            "marginVertical": 12,
             "paddingHorizontal": 8,
           }
         }
@@ -193,7 +190,6 @@ exports[`ModalMessage renders as expected in landscape mode 1`] = `
           Array [
             Object {
               "alignSelf": "flex-start",
-              "marginBottom": 8,
               "marginLeft": "auto",
               "marginRight": 8,
             },
@@ -239,7 +235,7 @@ exports[`ModalMessage renders as expected in portrait mode 1`] = `
           "backgroundColor": "#fff",
           "elevation": 3,
           "margin": 16,
-          "padding": 16,
+          "minHeight": "40%",
           "shadowColor": "#000",
           "shadowOffset": Object {
             "height": 2,
@@ -254,7 +250,11 @@ exports[`ModalMessage renders as expected in portrait mode 1`] = `
     }
   >
     <View
-      style={null}
+      style={
+        Object {
+          "padding": 12,
+        }
+      }
     >
       <View
         accessible={true}
@@ -281,9 +281,7 @@ exports[`ModalMessage renders as expected in portrait mode 1`] = `
           Array [
             Object {
               "alignSelf": "flex-start",
-              "marginBottom": 8,
               "marginLeft": "auto",
-              "marginRight": 8,
             },
             undefined,
           ]
@@ -309,10 +307,7 @@ exports[`ModalMessage renders as expected in portrait mode 1`] = `
       <View
         style={
           Object {
-            "flex": 1,
-            "marginHorizontal": 4,
-            "marginVertical": 12,
-            "paddingHorizontal": 8,
+            "marginTop": 12,
           }
         }
       />

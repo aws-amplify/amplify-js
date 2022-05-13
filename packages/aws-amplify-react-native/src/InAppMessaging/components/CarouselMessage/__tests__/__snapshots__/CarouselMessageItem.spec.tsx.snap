@@ -96,7 +96,7 @@ exports[`CarouselMessageItem renders as expected in landscape mode 1`] = `
         "imageContainer": Object {
           "alignItems": "center",
           "justifyContent": "center",
-          "marginVertical": 12,
+          "margin": 12,
         },
         "primaryButton": Object {
           "container": [Function],
@@ -127,9 +127,7 @@ exports[`CarouselMessageItem renders as expected in landscape mode 1`] = `
         "textContainer": Object {
           "flex": 1,
           "justifyContent": "center",
-          "marginHorizontal": 4,
-          "marginVertical": 12,
-          "paddingLeft": 8,
+          "paddingHorizontal": 8,
         },
       }
     }
@@ -229,7 +227,7 @@ exports[`CarouselMessageItem renders as expected in portrait mode 1`] = `
         ],
         "imageContainer": Object {
           "alignItems": "center",
-          "marginVertical": 12,
+          "margin": 12,
         },
         "primaryButton": Object {
           "container": [Function],
@@ -258,10 +256,8 @@ exports[`CarouselMessageItem renders as expected in portrait mode 1`] = `
           ],
         },
         "textContainer": Object {
-          "flex": 1,
-          "marginHorizontal": 4,
           "marginVertical": 12,
-          "paddingLeft": 8,
+          "paddingHorizontal": 8,
         },
       }
     }

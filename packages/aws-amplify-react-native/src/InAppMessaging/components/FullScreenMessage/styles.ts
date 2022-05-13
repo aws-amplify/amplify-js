@@ -24,7 +24,6 @@ import {
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
-	SPACING_SMALL,
 } from '../constants';
 
 import { FullScreenMessageStyle } from './types';
@@ -75,12 +74,9 @@ const commonStyles: Omit<FullScreenMessageStyle, 'image'> = {
 	},
 	imageContainer: {
 		alignItems: 'center',
-		marginVertical: SPACING_LARGE,
+		margin: SPACING_LARGE,
 	},
 	textContainer: {
-		flex: 1,
-		marginHorizontal: SPACING_SMALL,
-		marginVertical: SPACING_LARGE,
 		paddingHorizontal: SPACING_MEDIUM,
 	},
 };
@@ -88,7 +84,15 @@ const commonStyles: Omit<FullScreenMessageStyle, 'image'> = {
 export const getPortraitStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =>
 	StyleSheet.create({
 		...commonStyles,
+		buttonsContainer: {
+			...commonStyles.buttonsContainer,
+			marginTop: 'auto',
+		},
 		image: { ...imageDimensions },
+		textContainer: {
+			...commonStyles.textContainer,
+			marginVertical: SPACING_LARGE,
+		},
 	});
 
 export const getLandscapeStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =>
@@ -109,6 +113,7 @@ export const getLandscapeStyles = (imageDimensions: ImageStyle): FullScreenMessa
 		},
 		textContainer: {
 			...commonStyles.textContainer,
+			flex: 1,
 			justifyContent: 'center',
 		},
 	});

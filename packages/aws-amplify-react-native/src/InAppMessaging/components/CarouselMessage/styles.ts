@@ -95,13 +95,10 @@ const commonStyles: Omit<CarouselMessageStyle, 'image'> = {
 	},
 	imageContainer: {
 		alignItems: 'center',
-		marginVertical: SPACING_LARGE,
+		margin: SPACING_LARGE,
 	},
 	textContainer: {
-		flex: 1,
-		marginHorizontal: SPACING_SMALL,
-		marginVertical: SPACING_LARGE,
-		paddingLeft: SPACING_MEDIUM,
+		paddingHorizontal: SPACING_MEDIUM,
 	},
 };
 
@@ -109,6 +106,10 @@ export const getPortraitStyles = (imageDimensions: ImageStyle): CarouselMessageS
 	StyleSheet.create({
 		...commonStyles,
 		image: { ...imageDimensions },
+		textContainer: {
+			...commonStyles.textContainer,
+			marginVertical: SPACING_LARGE,
+		},
 	});
 
 export const getLandscapeStyles = (imageDimensions: ImageStyle): CarouselMessageStyle =>
@@ -127,6 +128,7 @@ export const getLandscapeStyles = (imageDimensions: ImageStyle): CarouselMessage
 		},
 		textContainer: {
 			...commonStyles.textContainer,
+			flex: 1,
 			justifyContent: 'center',
 		},
 	});

@@ -63,7 +63,7 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		buttonsContainer: {
 			flexDirection: 'row',
 			justifyContent: 'center',
-			paddingHorizontal: SPACING_SMALL,
+			padding: SPACING_SMALL,
 		},
 		buttonText: {
 			fontSize: FONT_SIZE_BASE,
@@ -109,7 +109,6 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		},
 		textContainer: {
 			flex: 1,
-			marginHorizontal: SPACING_SMALL,
-			paddingLeft: SPACING_MEDIUM,
+			paddingHorizontal: SPACING_MEDIUM,
 		},
 	});
