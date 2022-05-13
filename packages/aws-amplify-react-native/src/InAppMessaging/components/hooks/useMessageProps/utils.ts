@@ -26,7 +26,7 @@ const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5)
 /**
  * Parse and assign appropriate button container and text style from style objects params
  *
- * @param {params} ButtonStylePropParams message styleParams and button type
+ * @param {ButtonStylePropParams} params - message styleParams and button type
  * @returns {InAppMessageComponentButtonStyle} resolved button container and text style arrays
  */
 export const getComponentButtonStyle = ({
@@ -73,8 +73,8 @@ export const getComponentButtonStyle = ({
  * Utility for determining if the provided layout, orientation or layout/orientation combination requires filling the
  * entire device screem.
  *
- * @param {InAppMessageLayout} layout message layout
- * @param {DeviceOrientation} orientation device orientation
+ * @param {InAppMessageLayout} layout - message layout
+ * @param {DeviceOrientation} orientation - device orientation
  * @returns {Boolean} boolean indicating whether entire screen should be filled
  */
 
@@ -145,7 +145,7 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout, orientation }
 /**
  * Utility for extracting message payload style
  *
- * @param {InAppMessageComponentBaseProps} props message props
+ * @param {InAppMessageComponentBaseProps} props - message props
  * @returns {Object} message payload specific style
  */
 
@@ -172,7 +172,7 @@ export const getMessageStyle = ({
  *   2. messageStyle
  *   3. overrideStyle
  *
- * @param {MessageStylePropParams} params message style params, layout, and device orientation
+ * @param {MessageStylePropParams} params - message style params, layout, and device orientation
  * @returns {MessageStyleProps} message style props
  */
 
