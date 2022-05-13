@@ -20,8 +20,14 @@ const getDeviceOrientation = (): DeviceOrientation => {
 	return height >= width ? 'portrait' : 'landscape';
 };
 
-export default function useDeviceOrientation(): DeviceOrientation {
+export default function useDeviceOrientation(): {
+	deviceOrientation: DeviceOrientation;
+	isLandscapeMode: boolean;
+	isPortraitMode: boolean;
+} {
 	const [deviceOrientation, setDeviceOrientation] = useState<DeviceOrientation>(getDeviceOrientation);
+	const isLandscapeMode = deviceOrientation === 'landscape';
+	const isPortraitMode = deviceOrientation === 'portrait';
 
 	useEffect(() => {
 		const handler = () => {
@@ -46,5 +52,5 @@ export default function useDeviceOrientation(): DeviceOrientation {
 		};
 	}, []);
 
-	return deviceOrientation;
+	return { deviceOrientation, isLandscapeMode, isPortraitMode };
 }

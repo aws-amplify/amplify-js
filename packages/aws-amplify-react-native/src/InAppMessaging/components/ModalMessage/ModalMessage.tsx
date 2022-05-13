@@ -12,23 +12,21 @@
  */
 
 import React from 'react';
-import { Image, Text, View } from 'react-native';
-
-import icons from '../../../icons';
-import { IN_APP_MESSAGING } from '../../../AmplifyTestIDs';
-import { Button, IconButton } from '../../ui';
-
-import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
-import { useMessageProps } from '../hooks';
+import { useDeviceOrientation, useMessageProps } from '../hooks';
+import { MessageLayout } from '../MessageLayout';
 import MessageWrapper from '../MessageWrapper';
 
-import { getStyles } from './styles';
+import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { ModalMessageProps } from './types';
 
 export default function ModalMessage(props: ModalMessageProps) {
-	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
-	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
-		useMessageProps(props, getStyles);
+	const { deviceOrientation, isPortraitMode } = useDeviceOrientation();
+	const messageProps = useMessageProps(
+		props,
+		isPortraitMode ? getPortraitStyles : getLandscapeStyles,
+		deviceOrientation
+	);
+	const { shouldRenderMessage, styles } = messageProps;
 
 	if (!shouldRenderMessage) {
 		return null;
@@ -36,61 +34,7 @@ export default function ModalMessage(props: ModalMessageProps) {
 
 	return (
 		<MessageWrapper style={styles.componentWrapper}>
-			<View style={styles.container}>
-				<View style={styles.contentContainer}>
-					{hasRenderableImage && (
-						<View style={styles.imageContainer}>
-							<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
-						</View>
-					)}
-					<IconButton
-						color={styles.iconButton.iconColor}
-						hitSlop={ICON_BUTTON_HIT_SLOP}
-						onPress={onClose}
-						size={ICON_BUTTON_SIZE}
-						source={icons.close}
-						style={styles.iconButton.container}
-						testID={IN_APP_MESSAGING.CLOSE_BUTTON}
-					/>
-				</View>
-				<View style={styles.textContainer}>
-					{header?.content && (
-						<Text style={styles.header} testID={IN_APP_MESSAGING.HEADER}>
-							{header.content}
-						</Text>
-					)}
-					{body?.content && (
-						<Text style={styles.body} testID={IN_APP_MESSAGING.BODY}>
-							{body.content}
-						</Text>
-					)}
-				</View>
-
-				{hasButtons && (
-					<View style={styles.buttonsContainer}>
-						{hasSecondaryButton && (
-							<Button
-								onPress={secondaryButton.onPress}
-								style={styles.secondaryButton.container}
-								testID={IN_APP_MESSAGING.SECONDARY_BUTTON}
-								textStyle={styles.secondaryButton.text}
-							>
-								{secondaryButton.title}
-							</Button>
-						)}
-						{hasPrimaryButton && (
-							<Button
-								onPress={primaryButton.onPress}
-								style={styles.primaryButton.container}
-								testID={IN_APP_MESSAGING.PRIMARY_BUTTON}
-								textStyle={styles.primaryButton.text}
-							>
-								{primaryButton.title}
-							</Button>
-						)}
-					</View>
-				)}
-			</View>
+			<MessageLayout {...props} {...messageProps} orientation={deviceOrientation} />
 		</MessageWrapper>
 	);
 }

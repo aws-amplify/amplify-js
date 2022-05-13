@@ -12,6 +12,7 @@
  */
 
 import React from 'react';
+
 import { Image, Text, View } from 'react-native';
 
 import icons from '../../../icons';
@@ -20,9 +21,9 @@ import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
 
-import { FullScreenContentProps } from './types';
+import { LayoutProps } from './types';
 
-export default function FullScreenContent(props: FullScreenContentProps) {
+export default function MessageLayout({ orientation, ...props }: LayoutProps) {
 	const {
 		body,
 		hasButtons,
@@ -37,18 +38,22 @@ export default function FullScreenContent(props: FullScreenContentProps) {
 		styles,
 	} = props;
 
+	const iconButton = (
+		<IconButton
+			color={styles.iconButton.iconColor}
+			hitSlop={ICON_BUTTON_HIT_SLOP}
+			onPress={onClose}
+			size={ICON_BUTTON_SIZE}
+			source={icons.close}
+			style={styles.iconButton.container}
+			testID={IN_APP_MESSAGING.CLOSE_BUTTON}
+		/>
+	);
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.contentContainer}>
-				<IconButton
-					color={styles.iconButton.iconColor}
-					hitSlop={ICON_BUTTON_HIT_SLOP}
-					onPress={onClose}
-					size={ICON_BUTTON_SIZE}
-					source={icons.close}
-					style={styles.iconButton.container}
-					testID={IN_APP_MESSAGING.CLOSE_BUTTON}
-				/>
+				{orientation === 'portrait' && iconButton}
 				{hasRenderableImage && (
 					<View style={styles.imageContainer}>
 						<Image source={{ uri: image?.src }} style={styles.image} testID={IN_APP_MESSAGING.IMAGE} />
@@ -66,6 +71,7 @@ export default function FullScreenContent(props: FullScreenContentProps) {
 						</Text>
 					)}
 				</View>
+				{orientation === 'landscape' && iconButton}
 			</View>
 			{hasButtons && (
 				<View style={styles.buttonsContainer}>

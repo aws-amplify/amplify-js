@@ -1,11 +1,266 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CarouselMessageItem renders as expected 1`] = `
-<SafeAreaView>
-  <FullScreenContent
+exports[`CarouselMessageItem renders as expected in landscape mode 1`] = `
+<SafeAreaView
+  style={
+    Array [
+      Object {
+        "backgroundColor": "#fff",
+        "flex": 1,
+      },
+      Object {},
+      Object {},
+      Object {},
+    ]
+  }
+>
+  <MessageLayout
+    hasButtons={false}
+    hasPrimaryButton={false}
+    hasRenderableImage={false}
+    hasSecondaryButton={false}
     layout="CAROUSEL"
+    orientation="landscape"
     shouldRenderMessage={true}
-    styles={Object {}}
+    styles={
+      Object {
+        "body": Array [
+          Object {
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+          },
+          Object {},
+          undefined,
+        ],
+        "buttonsContainer": Object {
+          "flexDirection": "row",
+          "justifyContent": "center",
+        },
+        "componentWrapper": Array [
+          Object {
+            "backgroundColor": "#fff",
+            "flex": 1,
+          },
+          Object {},
+          Object {},
+          Object {},
+        ],
+        "container": Array [
+          Array [
+            Object {
+              "flex": 1,
+              "padding": 16,
+            },
+            Object {},
+            Object {},
+          ],
+          Object {
+            "paddingBottom": 36,
+          },
+        ],
+        "contentContainer": Object {
+          "alignContent": "center",
+          "flex": 1,
+          "flexDirection": "row",
+          "justifyContent": "center",
+        },
+        "header": Array [
+          Object {
+            "fontSize": 18,
+            "fontWeight": "400",
+            "lineHeight": 27,
+          },
+          Object {},
+          undefined,
+        ],
+        "iconButton": Object {
+          "container": Array [
+            Object {
+              "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
+            },
+            undefined,
+          ],
+          "iconColor": undefined,
+        },
+        "image": Array [
+          Object {
+            "height": null,
+            "width": null,
+          },
+          undefined,
+        ],
+        "imageContainer": Object {
+          "alignItems": "center",
+          "justifyContent": "center",
+          "margin": 12,
+        },
+        "primaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "secondaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "textContainer": Object {
+          "flex": 1,
+          "justifyContent": "center",
+          "paddingHorizontal": 8,
+        },
+      }
+    }
+  />
+</SafeAreaView>
+`;
+
+exports[`CarouselMessageItem renders as expected in portrait mode 1`] = `
+<SafeAreaView
+  style={
+    Array [
+      Object {
+        "backgroundColor": "#fff",
+        "flex": 1,
+      },
+      Object {},
+      Object {},
+      Object {},
+    ]
+  }
+>
+  <MessageLayout
+    hasButtons={false}
+    hasPrimaryButton={false}
+    hasRenderableImage={false}
+    hasSecondaryButton={false}
+    layout="CAROUSEL"
+    orientation="portrait"
+    shouldRenderMessage={true}
+    styles={
+      Object {
+        "body": Array [
+          Object {
+            "fontSize": 16,
+            "fontWeight": "400",
+            "lineHeight": 24,
+          },
+          Object {},
+          undefined,
+        ],
+        "buttonsContainer": Object {
+          "flexDirection": "row",
+          "justifyContent": "center",
+        },
+        "componentWrapper": Array [
+          Object {
+            "backgroundColor": "#fff",
+            "flex": 1,
+          },
+          Object {},
+          Object {},
+          Object {},
+        ],
+        "container": Array [
+          Array [
+            Object {
+              "flex": 1,
+              "padding": 16,
+            },
+            Object {},
+            Object {},
+          ],
+          Object {
+            "paddingBottom": 36,
+          },
+        ],
+        "contentContainer": Object {
+          "flex": 1,
+        },
+        "header": Array [
+          Object {
+            "fontSize": 18,
+            "fontWeight": "400",
+            "lineHeight": 27,
+          },
+          Object {},
+          undefined,
+        ],
+        "iconButton": Object {
+          "container": Array [
+            Object {
+              "alignSelf": "flex-start",
+              "marginBottom": 8,
+              "marginLeft": "auto",
+              "marginRight": 8,
+            },
+            undefined,
+          ],
+          "iconColor": undefined,
+        },
+        "image": Array [
+          Object {
+            "height": null,
+            "width": null,
+          },
+          undefined,
+        ],
+        "imageContainer": Object {
+          "alignItems": "center",
+          "margin": 12,
+        },
+        "primaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "secondaryButton": Object {
+          "container": [Function],
+          "text": Array [
+            Object {
+              "fontSize": 16,
+              "fontWeight": "400",
+              "lineHeight": 24,
+              "textAlign": "center",
+            },
+            Object {},
+            Object {},
+          ],
+        },
+        "textContainer": Object {
+          "marginVertical": 12,
+          "paddingHorizontal": 8,
+        },
+      }
+    }
   />
 </SafeAreaView>
 `;

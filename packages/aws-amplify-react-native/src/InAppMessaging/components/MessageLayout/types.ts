@@ -11,8 +11,12 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
+import { DeviceOrientation, UseMessageProps } from '../hooks';
+import { InAppMessageComponentBaseProps } from '../types';
 
-export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {}
-
-export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}
+export interface LayoutProps
+	extends InAppMessageComponentBaseProps,
+		Partial<Omit<UseMessageProps, 'shouldRenderMessage' | 'styles'>> {
+	orientation: DeviceOrientation;
+	styles: Omit<UseMessageProps['styles'], 'componentWrapper'>;
+}

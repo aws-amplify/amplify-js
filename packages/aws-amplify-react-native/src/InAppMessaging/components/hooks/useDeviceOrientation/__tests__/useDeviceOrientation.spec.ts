@@ -15,6 +15,9 @@ import { Dimensions, EventSubscription, ScaledSize } from 'react-native';
 import { renderHook } from '@testing-library/react-hooks';
 import useDeviceOrientation from '../useDeviceOrientation';
 
+const landscapeDimensions = { height: 100, width: 300 } as ScaledSize;
+const portraitDimensions = { height: 300, width: 100 } as ScaledSize;
+
 describe('useDeviceOrientation', () => {
 	const subscription: Pick<EventSubscription, 'remove'> = { remove: jest.fn() };
 
@@ -32,15 +35,13 @@ describe('useDeviceOrientation', () => {
 	});
 
 	it('should handle unsubscribing for React Native versions < 0.65', () => {
-		getSpy.mockImplementation((_: string) => ({ height: 300, width: 100 } as ScaledSize));
+		getSpy.mockImplementation((_: string) => portraitDimensions);
 
-		const { result, unmount } = renderHook(() => useDeviceOrientation());
+		const { unmount } = renderHook(() => useDeviceOrientation());
 
 		expect(getSpy).toHaveBeenCalledTimes(1);
 		expect(getSpy).toHaveBeenCalledWith('screen');
 		expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
-
-		expect(result.current).toBe('portrait');
 
 		unmount();
 
@@ -49,19 +50,34 @@ describe('useDeviceOrientation', () => {
 	});
 
 	it('should handle unsubscribing for React Native versions >= 0.65', () => {
-		getSpy.mockImplementation((_: string) => ({ height: 100, width: 300 } as ScaledSize));
+		getSpy.mockImplementation((_: string) => landscapeDimensions);
 		addEventListenerSpy.mockReturnValue(subscription);
 
-		const { result, unmount } = renderHook(() => useDeviceOrientation());
+		const { unmount } = renderHook(() => useDeviceOrientation());
 
 		expect(getSpy).toHaveBeenCalledTimes(1);
 		expect(getSpy).toHaveBeenCalledWith('screen');
 		expect(addEventListenerSpy).toHaveBeenCalledTimes(1);
-		expect(result.current).toBe('landscape');
 
 		unmount();
 
 		expect(subscription.remove).toHaveBeenCalledTimes(1);
 		expect(removeEventListener).not.toHaveBeenCalled();
 	});
+
+	it.each([
+		['landscape', landscapeDimensions, true, false],
+		['portrait', portraitDimensions, false, true],
+	])(
+		'returns the expected values when the device is in %s mode',
+		(deviceOrientation, dimensions, isLandscapeMode, isPortraitMode) => {
+			getSpy.mockImplementation((_: string) => dimensions);
+
+			const { result } = renderHook(() => useDeviceOrientation());
+
+			expect(result.current.deviceOrientation).toBe(deviceOrientation);
+			expect(result.current.isLandscapeMode).toBe(isLandscapeMode);
+			expect(result.current.isPortraitMode).toBe(isPortraitMode);
+		}
+	);
 });

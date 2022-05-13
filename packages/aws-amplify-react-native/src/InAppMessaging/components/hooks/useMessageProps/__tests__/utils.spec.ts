@@ -23,12 +23,15 @@ import {
 	getContainerAndWrapperStyle,
 	getMessageStyle,
 	getMessageStyleProps,
-	isBannerOrModalLayout,
+	shouldFillDeviceScreen,
 } from '../utils';
+import { DeviceOrientation } from '../../useDeviceOrientation';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
 const EMPTY_STYLE = Object.freeze({});
+
+const orientation = 'portrait';
 
 describe('getComponentButtonStyle', () => {
 	const pressedOpacity = { opacity: BUTTON_PRESSED_OPACITY };
@@ -141,6 +144,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'TOP_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -166,6 +170,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -192,6 +197,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -215,6 +221,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'BOTTOM_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -233,6 +240,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -308,6 +316,7 @@ describe('getMessageStyleProps', () => {
 	it('returns the expected output in the happy path', () => {
 		const output = getMessageStyleProps({
 			layout: 'FULL_SCREEN',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -317,6 +326,7 @@ describe('getMessageStyleProps', () => {
 	it('adds a bottom padding for carousel page indicators', () => {
 		const output = getMessageStyleProps({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle: null, overrideStyle: null },
 		});
 
@@ -326,6 +336,7 @@ describe('getMessageStyleProps', () => {
 	it('returns the expected output when provided null style params', () => {
 		const output = getMessageStyleProps({
 			layout: 'MODAL',
+			orientation,
 			styleParams: { defaultStyle: null, messageStyle: null, overrideStyle: null },
 		});
 
@@ -333,10 +344,16 @@ describe('getMessageStyleProps', () => {
 	});
 });
 
-describe('isBannerOrModalLayout', () => {
-	it('returns the expected output for a given layout', () => {
-		expect(isBannerOrModalLayout('TOP_BANNER' as InAppMessageLayout)).toEqual(true);
-		expect(isBannerOrModalLayout('MODAL' as InAppMessageLayout)).toEqual(true);
-		expect(isBannerOrModalLayout('FULL_SCREEN' as InAppMessageLayout)).toEqual(false);
+describe('shouldFillDeviceScreen', () => {
+	it.each([
+		['BOTTOM_BANNER', 'portrait', false],
+		['MIDDLE_BANNER', 'portrait', false],
+		['TOP_BANNER', 'portrait', false],
+		['CAROUSEL', 'portrait', true],
+		['FULL_SCREEN', 'portrait', true],
+		['MODAL', 'portrait', false],
+		['MODAL', 'landscape', true],
+	])('returns the expected output for a %s layout', (layout, deviceOrientation, expected) => {
+		expect(shouldFillDeviceScreen(layout as InAppMessageLayout, deviceOrientation as DeviceOrientation)).toBe(expected);
 	});
 });

@@ -19,6 +19,7 @@ import {
 	InAppMessageComponentButtonStyle,
 	InAppMessageComponentStyle,
 } from '../../types';
+import { DeviceOrientation } from '../useDeviceOrientation';
 import { ImageDimensions } from '../useMessageImage';
 
 type InAppMessagePayloadStyle = {
@@ -81,6 +82,11 @@ export type MessageStylePropParams = {
 	 * message specific layout
 	 */
 	layout: InAppMessageLayout;
+
+	/**
+	 * current device orientation
+	 */
+	orientation: DeviceOrientation;
 
 	/**
 	 * style params to derive resolved style from

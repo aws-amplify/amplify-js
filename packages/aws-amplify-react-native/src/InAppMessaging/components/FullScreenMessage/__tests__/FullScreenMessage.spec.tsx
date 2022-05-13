@@ -14,13 +14,15 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
+import useDeviceOrientation from '../../hooks/useDeviceOrientation';
 import useMessageImage from '../../hooks/useMessageImage';
 
 import FullScreenMessage from '../FullScreenMessage';
 
+jest.mock('../../hooks/useDeviceOrientation');
 jest.mock('../../hooks/useMessageImage');
 jest.mock('../../MessageWrapper', () => 'MessageWrapper');
-jest.mock('../FullScreenContent', () => 'FullScreenContent');
+jest.mock('../../MessageLayout', () => ({ MessageLayout: 'MessageLayout' }));
 
 const baseProps = { layout: 'FULL_SCREEN' as const };
 
@@ -31,7 +33,14 @@ describe('FullScreenMessage', () => {
 		jest.clearAllMocks();
 	});
 
-	it('renders as expected', () => {
+	it.each([
+		['landscape', false],
+		['portrait', true],
+	])('renders as expected in %s mode', (deviceOrientation, isPortraitMode) => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation,
+			isPortraitMode,
+		});
 		mockUseMessageImage.mockReturnValueOnce({
 			hasRenderableImage: false,
 			imageDimensions: { height: null, width: null },

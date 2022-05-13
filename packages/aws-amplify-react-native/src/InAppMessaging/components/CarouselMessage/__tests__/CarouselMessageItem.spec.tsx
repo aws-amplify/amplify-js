@@ -14,12 +14,15 @@
 import React from 'react';
 import { act, create, ReactTestRenderer } from 'react-test-renderer';
 
-import { useMessageProps } from '../../hooks';
+import useDeviceOrientation from '../../hooks/useDeviceOrientation';
+import useMessageImage from '../../hooks/useMessageImage';
+
 import CarouselMessageItem from '../CarouselMessageItem';
 
 jest.mock('react-native-safe-area-context', () => ({ SafeAreaView: 'SafeAreaView' }));
-jest.mock('../../FullScreenMessage', () => ({ FullScreenContent: 'FullScreenContent' }));
-jest.mock('../../hooks');
+jest.mock('../../hooks/useDeviceOrientation');
+jest.mock('../../hooks/useMessageImage');
+jest.mock('../../MessageLayout', () => ({ MessageLayout: 'MessageLayout' }));
 jest.mock('../../MessageWrapper', () => 'MessageWrapper');
 
 const baseProps = { layout: 'CAROUSEL' as const };
@@ -31,8 +34,20 @@ describe('CarouselMessageItem', () => {
 		jest.clearAllMocks();
 	});
 
-	it('renders as expected', () => {
-		(useMessageProps as jest.Mock).mockReturnValue({ shouldRenderMessage: true, styles: {} });
+	it.each([
+		['landscape', false],
+		['portrait', true],
+	])('renders as expected in %s mode', (deviceOrientation, isPortraitMode) => {
+		(useDeviceOrientation as jest.Mock).mockReturnValue({
+			deviceOrientation,
+			isPortraitMode,
+		});
+		(useMessageImage as jest.Mock).mockReturnValueOnce({
+			hasRenderableImage: false,
+			imageDimensions: { height: null, width: null },
+			isImageFetching: false,
+		});
+
 		act(() => {
 			carouselMessageItem = create(<CarouselMessageItem {...baseProps} />);
 		});
@@ -41,7 +56,11 @@ describe('CarouselMessageItem', () => {
 	});
 
 	it('returns null if message is not ready for rendering', () => {
-		(useMessageProps as jest.Mock).mockReturnValue({ shouldRenderMessage: false, styles: {} });
+		(useMessageImage as jest.Mock).mockReturnValueOnce({
+			hasRenderableImage: false,
+			imageDimensions: { height: null, width: null },
+			isImageFetching: true,
+		});
 		act(() => {
 			carouselMessageItem = create(<CarouselMessageItem {...baseProps} />);
 		});
