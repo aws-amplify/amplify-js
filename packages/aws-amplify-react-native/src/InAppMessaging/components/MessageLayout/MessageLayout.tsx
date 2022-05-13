@@ -23,15 +23,6 @@ import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
 
 import { LayoutProps } from './types';
 
-/**
- * Message UI content helper component:
- *
- * - LandscapeLayout is used for all BannerMessage variants regardless of device orientation,
- * and with ModalMessage, CarouselMessage, and FullScreenMessage components when in 'landscape' mode
- *
- * - PortraitLayout is used for ModalMessage, CarouselMessage, and FullScreenMessage components when
- * in 'portrait' mode
- */
 export default function MessageLayout({ orientation, ...props }: LayoutProps) {
 	const {
 		body,

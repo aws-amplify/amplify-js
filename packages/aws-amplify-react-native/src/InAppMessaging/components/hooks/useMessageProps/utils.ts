@@ -71,7 +71,7 @@ export const getComponentButtonStyle = ({
 
 /**
  * Utility for determining if the provided layout, orientation or layout/orientation combination requires filling the
- * entire device screem.
+ * entire device screen.
  *
  * @param {InAppMessageLayout} layout - message layout
  * @param {DeviceOrientation} orientation - device orientation
