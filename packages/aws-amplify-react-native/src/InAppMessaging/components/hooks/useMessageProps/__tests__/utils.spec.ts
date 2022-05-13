@@ -23,8 +23,9 @@ import {
 	getContainerAndWrapperStyle,
 	getMessageStyle,
 	getMessageStyleProps,
-	isBannerLayout,
+	shouldFillDeviceScreen,
 } from '../utils';
+import { DeviceOrientation } from '../../useDeviceOrientation';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
@@ -343,15 +344,16 @@ describe('getMessageStyleProps', () => {
 	});
 });
 
-describe('isBannerLayout', () => {
+describe('shouldFillDeviceScreen', () => {
 	it.each([
-		['BOTTOM_BANNER', true],
-		['MIDDLE_BANNER', true],
-		['TOP_BANNER', true],
-		['CAROUSEL', false],
-		['FULL_SCREEN', false],
-		['MODAL', false],
-	])('returns the expected output for a %s layout', (layout, expected) => {
-		expect(isBannerLayout(layout as InAppMessageLayout)).toEqual(expected);
+		['BOTTOM_BANNER', 'portrait', false],
+		['MIDDLE_BANNER', 'portrait', false],
+		['TOP_BANNER', 'portrait', false],
+		['CAROUSEL', 'portrait', true],
+		['FULL_SCREEN', 'portrait', true],
+		['MODAL', 'portrait', false],
+		['MODAL', 'landscape', true],
+	])('returns the expected output for a %s layout', (layout, deviceOrientation, expected) => {
+		expect(shouldFillDeviceScreen(layout as InAppMessageLayout, deviceOrientation as DeviceOrientation)).toBe(expected);
 	});
 });

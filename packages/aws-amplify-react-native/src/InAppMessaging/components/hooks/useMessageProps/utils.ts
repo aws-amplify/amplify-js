@@ -17,6 +17,7 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { DEFAULT_CAROUSEL_INDICATOR_SIZE } from '../../../ui';
 import { BUTTON_PRESSED_OPACITY, SPACING_EXTRA_LARGE } from '../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../../types';
+import { DeviceOrientation } from '../useDeviceOrientation';
 import { ButtonStylePropParams, MessageStylePropParams, MessageStyleProps } from './types';
 
 // Carousel page indicator size + margins
@@ -25,8 +26,8 @@ const DEFAULT_CAROUSEL_INDICATOR_PADDING = (DEFAULT_CAROUSEL_INDICATOR_SIZE * 5)
 /**
  * Parse and assign appropriate button container and text style from style objects params
  *
- * @param params - object containing message styleParams and button type
- * @returns InAppMessageComponentButtonStyle - resolved button container and text style arrays
+ * @param {params} ButtonStylePropParams message styleParams and button type
+ * @returns {InAppMessageComponentButtonStyle} resolved button container and text style arrays
  */
 export const getComponentButtonStyle = ({
 	styleParams,
@@ -69,23 +70,37 @@ export const getComponentButtonStyle = ({
 };
 
 /**
- * Utility for determining if the provided layout is either of the below layouts
- *  1. TOP_BANNER
- *  2. MIDDLE_BANNER
- *  3. BOTTOM_BANNER
+ * Utility for determining if the provided layout, orientation or layout/orientation combination requires filling the
+ * entire device screem.
  *
- * @param layout - message layout value
- * @returns boolean - `true` if layout is a banner, `false` otherwise
+ * @param {InAppMessageLayout} layout message layout
+ * @param {DeviceOrientation} orientation device orientation
+ * @returns {Boolean} boolean indicating whether entire screen should be filled
  */
 
-export const isBannerLayout = (layout: InAppMessageLayout) =>
-	layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER';
+export const shouldFillDeviceScreen = (layout: InAppMessageLayout, orientation: DeviceOrientation): boolean => {
+	switch (layout) {
+		case 'CAROUSEL':
+		case 'FULL_SCREEN': {
+			return true;
+		}
+		case 'MODAL': {
+			return orientation === 'landscape';
+		}
+		case 'TOP_BANNER':
+		case 'MIDDLE_BANNER':
+		case 'BOTTOM_BANNER':
+		default: {
+			return false;
+		}
+	}
+};
 
 /**
  * Parse and assign appropriate message container and wrapper style from style params
  *
- * @param params - object containing message styleParams and layout
- * @returns object - contains resolved containerStyle and wrapperStyle
+ * @param {MessageStylePropParams} params - message styleParams, layout, and device orientation
+ * @returns {Object} resolved containerStyle and wrapperStyle
  */
 
 export const getContainerAndWrapperStyle = ({ styleParams, layout, orientation }: MessageStylePropParams) => {
@@ -97,8 +112,7 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout, orientation }
 
 	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
 
-	// banner and modal layouts in portrait mode require no special handling of container or wrapper styles
-	if (isBannerLayout(layout) || (layout === 'MODAL' && orientation === 'portrait')) {
+	if (!shouldFillDeviceScreen(layout, orientation)) {
 		return {
 			componentWrapper: wrapperDefaultStyle,
 			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],
@@ -131,8 +145,8 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout, orientation }
 /**
  * Utility for extracting message payload style
  *
- * @param props - message props
- * @returns object - contains message payload specific style
+ * @param {InAppMessageComponentBaseProps} props message props
+ * @returns {Object} message payload specific style
  */
 
 export const getMessageStyle = ({
@@ -153,14 +167,13 @@ export const getMessageStyle = ({
  * Receives message styling and returns style property values for use with in-app message
  * UI components. Handles resolvement style precedence between default, payload, and custom style
  *
- * @param params - object containing message style params and layout
- *
  * Style param resolve precedence from lowest to highest:
  *   1. defaultStyle
  *   2. messageStyle
  *   3. overrideStyle
  *
- * @returns MessageStyleProps - resolved message style props
+ * @param {MessageStylePropParams} params message style params, layout, and device orientation
+ * @returns {MessageStyleProps} message style props
  */
 
 export function getMessageStyleProps({ styleParams, layout, orientation }: MessageStylePropParams): MessageStyleProps {
