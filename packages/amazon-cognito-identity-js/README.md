@@ -313,7 +313,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 			IdentityPoolId: '...', // your identity pool id here
 			Logins: {
 				// Change the key below according to the specific region your user pool is in.
-				'cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>': result
+				['cognito-idp.<region>.amazonaws.com/<YOUR_USER_POOL_ID>']: result
 					.getIdToken()
 					.getJwtToken(),
 			},
