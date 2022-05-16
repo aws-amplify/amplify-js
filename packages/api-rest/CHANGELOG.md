@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@2.0.39...@aws-amplify/api-rest@2.0.40) (2022-05-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** graphql API.cancel fix ([#9578](https://github.com/aws-amplify/amplify-js/issues/9578)) ([a9ae27f](https://github.com/aws-amplify/amplify-js/commit/a9ae27f65e1a782321c0be87556f92d2ee432352))
+
+
+
+
+
 ## [2.0.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@2.0.38...@aws-amplify/api-rest@2.0.39) (2022-05-03)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

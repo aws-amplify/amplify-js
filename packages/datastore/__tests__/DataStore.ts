@@ -412,6 +412,22 @@ describe('DataStore tests', () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 	});
 
+	test('error on schema not initialized on start', async () => {
+		const errorLog = jest.spyOn(console, 'error');
+		const errorRegex = /Schema is not initialized/;
+		await expect(DataStore.start()).rejects.toThrow(errorRegex);
+
+		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
+	});
+
+	test('error on schema not initialized on clear', async () => {
+		const errorLog = jest.spyOn(console, 'error');
+		const errorRegex = /Schema is not initialized/;
+		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
+
+		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
+	});
+
 	describe('initSchema tests', () => {
 		test('Model class is created', () => {
 			const classes = initSchema(testSchema());
