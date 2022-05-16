@@ -40,22 +40,29 @@ describe('AsyncStorageAdapter tests', () => {
 				Model: PersistentModelConstructor<Model>;
 			});
 
+			// NOTE: sort() test on these models can be flaky unless we
+			// strictly control the datestring of each! In a non-negligible percentage
+			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
+			// quickly enough that dates were colliding. (or so it seemed!)
+
+			const baseDate = new Date();
+
 			({ id: model1Id } = await DataStore.save(
 				new Model({
 					field1: 'Some value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: baseDate.toISOString(),
 				})
 			));
 			await DataStore.save(
 				new Model({
 					field1: 'another value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
 				})
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'a third value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
 		});
