@@ -154,25 +154,12 @@ class IndexedDBAdapter implements Adapter {
 
 								Object.keys(namespace.models).forEach(modelName => {
 									const storeName = this.getStorename(namespaceName, modelName);
-									const store = db.createObjectStore(
+									this.createObjectStoreForModel(
 										db,
 										namespaceName,
 										storeName,
 										modelName
 									);
-
-									const indexes =
-										this.schema.namespaces[namespaceName].relationships[
-											modelName
-										].indexes;
-									indexes.forEach(index => store.createIndex(index, index));
-
-									const keyPath = this.getIndexKeyPath(
-										namespaceName,
-										modelName
-									);
-
-									store.createIndex('byPk', keyPath, { unique: true });
 								});
 							});
 
@@ -977,7 +964,9 @@ class IndexedDBAdapter implements Adapter {
 			this.schema.namespaces[namespaceName].relationships[modelName].indexes;
 		indexes.forEach(index => store.createIndex(index, index));
 
-		store.createIndex('byId', 'id', { unique: true });
+		const keyPath = this.getIndexKeyPath(namespaceName, modelName);
+
+		store.createIndex('byPk', keyPath, { unique: true });
 	}
 }
 
