@@ -2,7 +2,7 @@
 	"name": "@aws-amplify/ui-vue",
 	"private": "true",
 	"sideEffects": true,
-	"version": "1.1.32",
+	"version": "1.1.34",
 	"description": "Vue specific wrapper for @aws-amplify/ui-components",
 	"publishConfig": {
 		"access": "public"
@@ -18,7 +18,7 @@
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"dependencies": {
-		"@aws-amplify/ui-components": "1.9.18"
+		"@aws-amplify/ui-components": "1.9.20"
 	},
 	"devDependencies": {
 		"rimraf": "^3.0.2"
