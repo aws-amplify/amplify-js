@@ -41,6 +41,27 @@ export interface SignInStates {
 	};
 }
 
+type SignInMachineTypestate =
+	| { value: 'notStarted'; context: SignInMachineContext }
+	| {
+			value: 'initiatingPlainUsernamePasswordSignIn';
+			context: SignInMachineContext;
+	  }
+	| { value: 'nextAuthChallenge'; context: SignInMachineContext }
+	| {
+			value: 'signedIn';
+			context: SignInMachineContext;
+	  }
+	| {
+			value: 'error';
+			context: SignInMachineContext & { error: any };
+	  }
+	| { value: 'initiatingSRPA'; context: SignInMachineContext }
+	| {
+			value: 'respondingToAuthChallenge';
+			context: SignInMachineContext & { session: string };
+	  };
+
 export const signInMachineModel = createModel(
 	{
 		clientConfig: {},
@@ -68,7 +89,7 @@ type SignInMachineEvents = EventFrom<typeof signInMachineModel>;
 // SRPSignInState state machine
 export const signInMachineConfig: MachineConfig<
 	SignInMachineContext,
-	SignInStates,
+	any,
 	SignInMachineEvents
 > = {
 	id: 'signInMachine',
@@ -237,7 +258,11 @@ export const signInMachineConfig: MachineConfig<
 	},
 };
 
-export const signInMachine = createMachine(signInMachineConfig, {
+export const signInMachine = createMachine<
+	SignInMachineContext,
+	SignInMachineEvents,
+	SignInMachineTypestate
+>(signInMachineConfig, {
 	actions: {
 		sendErrorToParent: sendParent((context, _event) => ({
 			type: 'error',
