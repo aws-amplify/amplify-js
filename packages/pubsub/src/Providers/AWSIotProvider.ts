@@ -10,12 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { MqttOverWSProvider } from './MqttOverWSProvider';
+import { MqttOverWSProvider, MqttProviderOptions } from './MqttOverWSProvider';
 import { Signer, Credentials } from '@aws-amplify/core';
 
 const SERVICE_NAME = 'iotdevicegateway';
 
+export interface AWSIoTProviderOptions extends MqttProviderOptions {
+	aws_pubsub_region?: string;
+	aws_pubsub_endpoint?: string;
+}
+
 export class AWSIoTProvider extends MqttOverWSProvider {
+	constructor(options: AWSIoTProviderOptions = {}) {
+		super(options);
+	}
+
 	protected get region() {
 		return this.options.aws_pubsub_region;
 	}

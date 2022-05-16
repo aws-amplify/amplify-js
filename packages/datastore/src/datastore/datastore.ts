@@ -49,6 +49,7 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
@@ -239,6 +240,20 @@ const initSchema = (userSchema: Schema) => {
 	});
 
 	return userClasses;
+};
+
+/* Checks if the schema has been initialized by initSchema().
+ *
+ * Call this function before accessing schema.
+ * Currently this only needs to be called in start() and clear() because all other functions will call start first.
+ */
+const checkSchemaInitialized = () => {
+	if (schema === undefined) {
+		const message =
+			'Schema is not initialized. DataStore will not function as expected. This could happen if you have multiple versions of DataStore installed. Please see https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js/#check-for-duplicate-versions';
+		logger.error(message);
+		throw new Error(message);
+	}
 };
 
 const createTypeClasses: (
@@ -599,7 +614,7 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
 }
 
-function defaultErrorHandler(error: SyncError) {
+function defaultErrorHandler(error: SyncError<PersistentModel>): void {
 	logger.warn(error);
 }
 
@@ -719,7 +734,7 @@ class DataStore {
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
-	private errorHandler: (error: SyncError) => void;
+	private errorHandler: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval: number;
 	private initialized?: Promise<void>;
 	private initReject: Function;
@@ -762,6 +777,7 @@ class DataStore {
 
 		await this.storage.init();
 
+		checkSchemaInitialized();
 		await checkSchemaVersion(this.storage, schema.version);
 
 		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
@@ -1206,9 +1222,28 @@ class DataStore {
 			(async () => {
 				await this.start();
 
+				// Filter the events returned by Storage according to namespace,
+				// append original element data, and subscribe to the observable
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
+					.map(
+						(event: InternalSubscriptionMessage<T>): SubscriptionMessage<T> => {
+							// The `element` returned by storage only contains updated fields.
+							// Intercept the event to send the `savedElement` so that the first
+							// snapshot returned to the consumer contains all fields.
+							// In the event of a delete we return `element`, as `savedElement`
+							// here is undefined.
+							const { opType, model, condition, element, savedElement } = event;
+
+							return {
+								opType,
+								element: savedElement || element,
+								model,
+								condition,
+							};
+						}
+					)
 					.subscribe(observer);
 			})();
 
@@ -1446,9 +1481,19 @@ class DataStore {
 		this.sessionId = this.retrieveSessionId()!;
 	};
 
-	clear = async function clear(this: InstanceType<typeof DataStore>) {
+	clear = async function clear() {
+		checkSchemaInitialized();
 		if (this.storage === undefined) {
-			return;
+			// connect to storage so that it can be cleared without fully starting DataStore
+			this.storage = new Storage(
+				schema,
+				namespaceResolver,
+				getModelConstructorByModelName,
+				modelInstanceCreator,
+				this.storageAdapter,
+				this.sessionId
+			);
+			await this.storage.init();
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {

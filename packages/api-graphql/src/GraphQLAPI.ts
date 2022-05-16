@@ -369,6 +369,15 @@ export class GraphQLAPIClass {
 		return this._api.cancel(request, message);
 	}
 
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._api.hasCancelToken(request);
+	}
+
 	private _graphqlSubscribe(
 		{
 			query,

@@ -12,13 +12,9 @@
  */
 package com.amazonaws.amplify.pushnotification.modules;
 
-import java.util.HashMap;
-import java.util.Map;
 import android.content.BroadcastReceiver;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
@@ -26,7 +22,6 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 
-import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 /**
  * The Amazon Pinpoint push notification receiver.
  */
@@ -56,7 +51,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
 
         launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         launchIntent.setPackage(null);
-        context.startActivity(launchIntent);    
+        context.startActivity(launchIntent);
     }
 
     @Override

@@ -154,9 +154,12 @@ class IndexedDBAdapter implements Adapter {
 
 								Object.keys(namespace.models).forEach(modelName => {
 									const storeName = this.getStorename(namespaceName, modelName);
-									const store = db.createObjectStore(storeName, {
-										autoIncrement: true,
-									});
+									const store = db.createObjectStore(
+										db,
+										namespaceName,
+										storeName,
+										modelName
+									);
 
 									const indexes =
 										this.schema.namespaces[namespaceName].relationships[
@@ -229,6 +232,31 @@ class IndexedDBAdapter implements Adapter {
 
 									logger.debug(`${count} ${storeName} records migrated`);
 								}
+
+								// add new models created after IndexedDB, but before migration
+								// this case may happen when a user has not opened an app for
+								// some time and a new model is added during that time
+								Object.keys(theSchema.namespaces).forEach(namespaceName => {
+									const namespace = theSchema.namespaces[namespaceName];
+									const objectStoreNames = new Set(txn.objectStoreNames);
+
+									Object.keys(namespace.models)
+										.map(modelName => {
+											return [
+												modelName,
+												this.getStorename(namespaceName, modelName),
+											];
+										})
+										.filter(([, storeName]) => !objectStoreNames.has(storeName))
+										.forEach(([modelName, storeName]) => {
+											this.createObjectStoreForModel(
+												db,
+												namespaceName,
+												storeName,
+												modelName
+											);
+										});
+								});
 							} catch (error) {
 								logger.error('Error migrating IndexedDB data', error);
 								txn.abort();
@@ -292,6 +320,7 @@ class IndexedDBAdapter implements Adapter {
 				return { storeName, item, instance, keys };
 			}
 		);
+
 		const tx = this.db.transaction(
 			[storeName, ...Array.from(set.values())],
 			'readwrite'
@@ -932,6 +961,23 @@ class IndexedDBAdapter implements Adapter {
 		await txn.done;
 
 		return result;
+	}
+
+	private async createObjectStoreForModel(
+		db: idb.IDBPDatabase,
+		namespaceName: string,
+		storeName: string,
+		modelName: string
+	) {
+		const store = db.createObjectStore(storeName, {
+			autoIncrement: true,
+		});
+
+		const indexes =
+			this.schema.namespaces[namespaceName].relationships[modelName].indexes;
+		indexes.forEach(index => store.createIndex(index, index));
+
+		store.createIndex('byId', 'id', { unique: true });
 	}
 }
 
