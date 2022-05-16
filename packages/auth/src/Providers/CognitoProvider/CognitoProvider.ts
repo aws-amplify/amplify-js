@@ -37,12 +37,11 @@ import {
 	cognitoSignIn,
 	cognitoConfirmSignIn,
 } from './service';
-import { authMachine } from './machines/authenticationMachine';
 import {
-	signInMachine,
-	signInMachineModel,
-	signInMachineEvents,
-} from './machines/signInMachine';
+	authMachine,
+	authMachineEvents,
+} from './machines/authenticationMachine';
+import { signInMachine, signInMachineEvents } from './machines/signInMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -114,10 +113,7 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		console.log('successfully configured cognito provider');
-		this._authService.send({
-			type: 'configure',
-			config: this._config,
-		});
+		this._authService.send(authMachineEvents.configure(this._config));
 	}
 
 	getCategory(): string {
@@ -186,12 +182,9 @@ export class CognitoProvider implements AuthProvider {
 		}
 
 		// kick off the sign in request
-		this._authService.send({
-			type: 'signInRequested',
-			params,
-			signInFlow: this._authFlow,
-		});
-
+		this._authService.send(
+			authMachineEvents.signInRequested(params, this._authFlow)
+		);
 		return this.waitForSignInComplete();
 	}
 
