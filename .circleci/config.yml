@@ -1167,7 +1167,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - ds-custom-pk
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1404,111 +1403,111 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_react_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_react_storage_copy:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_react_storage_ui:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_amazon_cognito_identity_js_cookie_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_react_amazon_cognito_identity_js:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_node_amazon_cognito_identity_js:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_device_tracking:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_react_delete_user:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
-      # - integ_rn_ios_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_push_notifications:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_android_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_android_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_copy:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_amazon_cognito_identity_js_cookie_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_node_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_delete_user:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_datastore_sqlite_adapter:
           requires:
             - integ_setup
