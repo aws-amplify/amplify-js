@@ -478,7 +478,7 @@ cognitoUser.forgotPassword({
 	//Optional automatic callback
 	inputVerificationCode: function(data) {
 		console.log('Code sent to: ' + data);
-		var code = document.getElementById('code').value;
+		var verificationCode = document.getElementById('code').value;
 		var newPassword = document.getElementById('new_password').value;
 		cognitoUser.confirmPassword(verificationCode, newPassword, {
 			onSuccess() {
