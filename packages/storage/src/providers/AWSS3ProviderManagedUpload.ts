@@ -58,7 +58,6 @@ export class AWSS3ProviderManagedUpload {
 	private params: PutObjectRequest = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private cancel = false;
 	private s3client: S3Client;
 	private uploadId = null;
 
