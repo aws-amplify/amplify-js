@@ -3,13 +3,10 @@ import {
 	MachineConfig,
 	sendParent,
 	assign,
-	sendUpdate,
+	EventFrom,
 } from 'xstate';
-import {
-	cognitoSignIn,
-	cacheInitiateAuthResult,
-	cognitoConfirmSignIn,
-} from '../service';
+import { createModel } from 'xstate/lib/model';
+import { cacheInitiateAuthResult } from '../service';
 import { CognitoService } from '../serviceClass';
 import {
 	CognitoIdentityProviderClientConfig,
@@ -30,15 +27,6 @@ export interface SignInMachineContext {
 	userStorage?: Storage;
 }
 
-export type SignInEvents = {
-	type: 'respondToAuthChallenge';
-	params: {
-		confirmationCode: string;
-		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
-		clientMetadata?: Record<string, any>;
-	};
-};
-
 export interface SignInStates {
 	states: {
 		notStarted: {};
@@ -53,11 +41,35 @@ export interface SignInStates {
 	};
 }
 
+export const signInMachineModel = createModel(
+	{
+		clientConfig: {},
+		authConfig: {
+			userPoolId: '',
+			clientId: '',
+			region: '',
+		},
+		username: '',
+		service: null,
+	} as SignInMachineContext,
+	{
+		events: {
+			respondToAuthChallenge: (params: {
+				confirmationCode: string;
+				mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+				clientMetadata?: Record<string, any>;
+			}) => ({ params }),
+		},
+	}
+);
+
+type SignInMachineEvents = EventFrom<typeof signInMachineModel>;
+
 // SRPSignInState state machine
 export const signInMachineConfig: MachineConfig<
 	SignInMachineContext,
 	SignInStates,
-	SignInEvents
+	SignInMachineEvents
 > = {
 	id: 'signInMachine',
 	initial: 'notStarted',
@@ -72,6 +84,11 @@ export const signInMachineConfig: MachineConfig<
 		},
 		username: '',
 		service: null,
+		password: undefined,
+		authFlow: undefined,
+		error: undefined,
+		userStorage: undefined,
+		session: undefined,
 	},
 	states: {
 		notStarted: {
@@ -92,7 +109,6 @@ export const signInMachineConfig: MachineConfig<
 			],
 		},
 		initiatingPlainUsernamePasswordSignIn: {
-			on: {},
 			invoke: {
 				id: 'InitaiteAuth',
 				src: async (context, event) => {
@@ -182,6 +198,7 @@ export const signInMachineConfig: MachineConfig<
 			type: 'final',
 			entry: ['sendErrorToParent'],
 		},
+		// these are from Preamp
 		initiatingSRPA: {
 			// on: {
 			// 	respondPasswordVerifier: 'respondingPasswordVerifier',
@@ -240,3 +257,6 @@ export const signInMachine = createMachine(signInMachineConfig, {
 		},
 	},
 });
+
+export const signInMachineEvents = signInMachineModel.events;
+export const signInMachineActions = signInMachineModel.actions;

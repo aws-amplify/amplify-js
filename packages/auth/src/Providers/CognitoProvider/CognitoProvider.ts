@@ -38,7 +38,11 @@ import {
 	cognitoConfirmSignIn,
 } from './service';
 import { authMachine } from './machines/authenticationMachine';
-import { signInMachine } from './machines/signInMachine';
+import {
+	signInMachine,
+	signInMachineModel,
+	signInMachineEvents,
+} from './machines/signInMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -312,15 +316,12 @@ export class CognitoProvider implements AuthProvider {
 				'Sign in proccess has not been initiated, have you called .signIn?'
 			);
 		}
-		const ref = actorRef as ActorRefFrom<typeof signInMachine>;
-		console.log(actorRef);
-		ref.subscribe(state => {
+		const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
+		// DEBUGGING
+		signInActorRef.subscribe(state => {
 			console.log(state);
 		});
-		ref.send({
-			type: 'respondToAuthChallenge',
-			params,
-		});
+		signInActorRef.send(signInMachineEvents.respondToAuthChallenge(params));
 		return {
 			signInSuccesful: false,
 			nextStep: false,
