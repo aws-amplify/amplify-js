@@ -17,7 +17,7 @@ import {
 	ModelSortPredicateCreator,
 	InternalSchema,
 	isPredicateObj,
-	ModelInstanceMetadata,
+	// ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
