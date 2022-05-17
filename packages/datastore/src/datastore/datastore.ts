@@ -223,6 +223,20 @@ const initSchema = (userSchema: Schema) => {
 	return userClasses;
 };
 
+/* Checks if the schema has been initialized by initSchema().
+ *
+ * Call this function before accessing schema.
+ * Currently this only needs to be called in start() and clear() because all other functions will call start first.
+ */
+const checkSchemaInitialized = () => {
+	if (schema === undefined) {
+		const message =
+			'Schema is not initialized. DataStore will not function as expected. This could happen if you have multiple versions of DataStore installed. Please see https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js/#check-for-duplicate-versions';
+		logger.error(message);
+		throw new Error(message);
+	}
+};
+
 const createTypeClasses: (
 	namespace: SchemaNamespace
 ) => TypeConstructorMap = namespace => {
@@ -729,6 +743,7 @@ class DataStore {
 
 		await this.storage.init();
 
+		checkSchemaInitialized();
 		await checkSchemaVersion(this.storage, schema.version);
 
 		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
@@ -1384,6 +1399,7 @@ class DataStore {
 	};
 
 	clear = async function clear() {
+		checkSchemaInitialized();
 		if (this.storage === undefined) {
 			// connect to storage so that it can be cleared without fully starting DataStore
 			this.storage = new Storage(
