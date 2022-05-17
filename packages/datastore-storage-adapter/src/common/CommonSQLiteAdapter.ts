@@ -404,9 +404,10 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		}
 	}
 
+	// Temp fix to test build, will either export a separate metadata type here, or implement Custom PK in this adapter
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadata[]
+		items: any[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
 		const result: [T, OpType][] = [];
