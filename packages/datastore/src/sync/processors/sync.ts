@@ -18,8 +18,6 @@ import {
 	getForbiddenError,
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
-	mapErrorToType,
-	ErrorMap,
 } from '../utils';
 import {
 	jitteredExponentialRetry,
@@ -29,6 +27,7 @@ import {
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { ModelInstanceCreator } from '../../datastore/datastore';
+import { getSyncErrorType } from './errorMaps';
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -36,11 +35,6 @@ const opResultDefaults = {
 };
 
 const logger = new Logger('DataStore');
-
-// TODO: add additional error maps
-const errorMap = {
-	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
-} as ErrorMap;
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
@@ -249,7 +243,7 @@ class SyncProcessor {
 												message: err.message,
 												model: modelDefinition.name,
 												operation: opName,
-												errorType: mapErrorToType(errorMap, err),
+												errorType: getSyncErrorType(err),
 												process: ProcessName.sync,
 												remoteModel: null,
 												cause: err,

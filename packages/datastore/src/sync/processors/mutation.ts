@@ -34,18 +34,12 @@ import {
 	getModelAuthModes,
 	TransformerMutationType,
 	getTokenForCustomAuth,
-	ErrorMap,
-	mapErrorToType,
 } from '../utils';
+import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
-
-// TODO: add additional error maps
-const errorMap = {
-	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
-} as ErrorMap;
 
 type MutationProcessorEvent = {
 	operation: TransformerMutationType;
@@ -386,7 +380,7 @@ class MutationProcessor {
 										localModel: variables.input,
 										message: error.message,
 										operation,
-										errorType: mapErrorToType(errorMap, error),
+										errorType: getMutationErrorType(error),
 										errorInfo: error.errorInfo,
 										process: ProcessName.mutate,
 										cause: error,
