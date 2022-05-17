@@ -4,6 +4,7 @@ import {
 	sendParent,
 	assign,
 	EventFrom,
+	AssignAction,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { cacheInitiateAuthResult } from '../service';
@@ -25,20 +26,6 @@ export interface SignInMachineContext {
 	error?: any;
 	session?: string;
 	userStorage?: Storage;
-}
-
-export interface SignInStates {
-	states: {
-		notStarted: {};
-		initiatingPlainUsernamePasswordSignIn: {};
-		nextAuthChallenge: {};
-		signedIn: {};
-		error: {};
-		initiatingSRPA: {};
-		respondingToAuthChallenge: {
-			context: SignInMachineContext & { session: string };
-		};
-	};
 }
 
 type SignInMachineTypestate =
@@ -85,6 +72,11 @@ export const signInMachineModel = createModel(
 );
 
 type SignInMachineEvents = EventFrom<typeof signInMachineModel>;
+
+const signInMachineActions: Record<
+	string,
+	AssignAction<SignInMachineContext, any>
+> = {};
 
 // SRPSignInState state machine
 export const signInMachineConfig: MachineConfig<
@@ -284,4 +276,3 @@ export const signInMachine = createMachine<
 });
 
 export const signInMachineEvents = signInMachineModel.events;
-export const signInMachineActions = signInMachineModel.actions;

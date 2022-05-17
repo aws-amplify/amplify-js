@@ -20,8 +20,7 @@ import { CognitoService } from '../serviceClass';
 type SignInActorRef = ActorRefFrom<typeof signInMachine>;
 
 interface AuthMachineContext {
-	// TODO: Type this to ActorRef
-	// actorRef: any;
+	// TODO: union other valid actor refs here when we add more actors
 	actorRef?: SignInActorRef;
 	config: null | CognitoProviderConfig;
 	service: null | CognitoService;
