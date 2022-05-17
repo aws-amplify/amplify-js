@@ -88,7 +88,7 @@ class IndexedDBAdapter implements Adapter {
 
 	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
 		const keyPath =
-			this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
+			this.schema.namespaces[namespaceName]?.keys[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;

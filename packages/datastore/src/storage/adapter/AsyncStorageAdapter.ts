@@ -66,7 +66,7 @@ export class AsyncStorageAdapter implements Adapter {
 	// Returns primary keys for a model
 	private getIndexKeys(namespaceName: string, modelName: string): string[] {
 		const keyPath =
-			this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
+			this.schema.namespaces[namespaceName]?.keys[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;
