@@ -1,26 +1,160 @@
 import {
-	AuthFlowType,
-	CognitoIdentityProviderClientConfig,
-} from '@aws-sdk/client-cognito-identity-provider';
-import { createMachine, MachineConfig } from 'xstate';
+	createMachine,
+	MachineConfig,
+	interpret,
+	spawn,
+	assign,
+	EventFrom,
+	ActionFunctionMap,
+	AssignAction,
+	ActorRefFrom,
+} from 'xstate';
+import { stop } from 'xstate/lib/actions';
+import { createModel } from 'xstate/lib/model';
+import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
+import { signInMachine } from './signInMachine';
+import { SignInParams, AmplifyUser } from '../../../types';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { cognitoSignIn } from '../service';
+import { CognitoService } from '../serviceClass';
 
-// TODO: What to store here?
-interface AuthMachineContext {}
+type SignInActorRef = ActorRefFrom<typeof signInMachine>;
 
-interface AuthStates {}
+interface AuthMachineContext {
+	// TODO: union other valid actor refs here when we add more actors
+	actorRef?: SignInActorRef;
+	config: null | CognitoProviderConfig;
+	service: null | CognitoService;
+	session?: AmplifyUser;
+}
 
-type AuthEvents =
-	| { type: 'configure'; data: any }
-	| { type: 'initializedSignedIn' }
-	| { type: 'initializedSignedOut' }
-	| { type: 'cancelSignUp' }
-	| { type: 'cancelSignIn' }
-	| { type: 'error' }
-	| { type: 'signOutRequested' }
-	| { type: 'signInRequested' }
-	| { type: 'initiateSignUp' };
+type AuthTypestate =
+	| {
+			value: 'notConfigured';
+			context: AuthMachineContext & {
+				config: null;
+				service: null;
+				session: undefined;
+			};
+	  }
+	| {
+			value: 'configured';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
+			value: 'signedOut';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
+			value: 'signedIn';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
+			value: 'signingUp';
+			context: AuthMachineContext;
+	  }
+	| { value: 'error'; context: AuthMachineContext }
+	| {
+			value: 'signingIn';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  };
+
+const signInActorName = 'signInActor';
+
+async function checkActiveSession(context: AuthMachineContext) {
+	if (
+		!context.config?.identityPoolId ||
+		!context.config.userPoolId ||
+		!context.service
+	) {
+		throw new Error('no configured identityPoolId and userPoolId');
+	}
+	const session = await context.service.cognitoFetchSession();
+	return session;
+}
+
+export const authenticationMachineModel = createModel(
+	{
+		config: null,
+		service: null,
+	} as AuthMachineContext,
+	{
+		events: {
+			configure: (config: CognitoProviderConfig) => ({ config }),
+			initializedSignedIn: () => ({}),
+			initializedSignedOut: () => ({}),
+			cancelSignUp: () => ({}),
+			cancelSignIn: () => ({}),
+			error: (error: any) => ({ error }),
+			signOutRequested: () => ({}),
+			signInRequested: (
+				params: SignInParams & { password?: string },
+				signInFlow: AuthFlowType
+			) => ({ params, signInFlow }),
+			initiateSignUp: () => ({}),
+			signInSuccessful: () => ({}),
+		},
+	}
+);
+
+type AuthEvents = EventFrom<typeof authenticationMachineModel>;
+
+const authenticationStateMachineActions: Record<
+	string,
+	AssignAction<AuthMachineContext, any>
+> = {
+	assignConfig: authenticationMachineModel.assign(
+		{
+			config: (_context, event) => event.config,
+		},
+		'configure'
+	),
+	assignService: authenticationMachineModel.assign(
+		{
+			service: (_context, event) =>
+				new CognitoService({
+					region: event.config.region,
+					userPoolId: event.config.userPoolId,
+					identityPoolId: event.config.identityPoolId,
+				}),
+		},
+		'configure'
+	),
+	spawnSignInActor: authenticationMachineModel.assign(
+		{
+			actorRef: (context, event) => {
+				if (!context.config || event.params.signInType !== 'Password') {
+					// not implemented
+					return context.actorRef;
+				}
+				const machine = signInMachine.withContext({
+					clientConfig: { region: context.config?.region },
+					authConfig: context.config,
+					username: event.params.username,
+					password: event.params.password,
+					authFlow: event.signInFlow,
+					service: context.service,
+				});
+				const signInActorRef = spawn(machine, {
+					name: signInActorName,
+				});
+				return signInActorRef;
+			},
+		},
+		'signInRequested'
+	),
+};
 
 // AuthenticationState state machine
 const authenticationStateMachine: MachineConfig<
@@ -28,40 +162,61 @@ const authenticationStateMachine: MachineConfig<
 	any,
 	AuthEvents
 > = {
-	id: 'authenticationState',
+	id: 'authenticationMachine',
 	initial: 'notConfigured',
-	context: {},
+	context: authenticationMachineModel.initialContext,
 	states: {
 		notConfigured: {
 			on: {
 				configure: {
 					target: 'configured',
-					actions: 'sayHello',
+					actions: [
+						authenticationStateMachineActions.assignConfig,
+						authenticationStateMachineActions.assignService,
+					],
 				},
 			},
 		},
 		configured: {
-			always: [
-				{ target: 'signedIn', cond: 'isAuthenticated' },
-				{ target: 'signedOut' },
-			],
-			// on: {
-			// 	// check if user is authenticated, go to 'signedIn' state
-			// 	initializedSignedIn: 'signedIn',
-			// 	// else go to 'signedOut' state
-			// 	initializedSignedOut: 'signedOut',
-			// },
-		},
-		signingOut: {
-			on: {
-				initializedSignedIn: 'signedIn',
-				initializedSignedOut: 'signedOut',
+			invoke: {
+				src: checkActiveSession,
+				onDone: [
+					{
+						cond: (_context, event) => !!event.data,
+						actions: [
+							assign((_context, event) => ({
+								session: event.data,
+							})),
+						],
+						target: 'signedIn',
+					},
+					{
+						// by default set the user to signedOut
+						target: 'signedOut',
+					},
+				],
+				// in any cases, if there are errors, the user is considered 'signedOut'
+				// TODO: we should only have user as 'signedOut' if they are unauthorized
+				// There could be legitimate network errors during the requests, maybe 'error' will be a more accurate state for
+				// those scenarios
+				onError: 'signedOut',
 			},
 		},
+		// signingOut: {
+		// 	on: {
+		// 		initializedSignedIn: 'signedIn',
+		// 		initializedSignedOut: 'signedOut',
+		// 	},
+		// },
 		signedOut: {
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',
+			},
+		},
+		signedIn: {
+			on: {
+				signOutRequested: 'signedOut',
 			},
 		},
 		signingUp: {
@@ -71,47 +226,46 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signingIn: {
+			onEntry: [authenticationStateMachineActions.spawnSignInActor],
 			on: {
-				cancelSignIn: 'signedOut',
-				error: 'error',
+				cancelSignIn: {
+					target: '#authenticationMachine.signedOut',
+				},
+				error: {
+					target: '#authenticationMachine.error',
+				},
+				signInSuccessful: {
+					target: '#authenticationMachine.signedIn',
+				},
 			},
-			// ...srpSignInState
-			// spawn the sign in actor here
-		},
-		signedIn: {
-			on: {
-				signOutRequested: 'signedOut',
-			},
+			onExit: [
+				'stopSignInActor',
+				(context, event) => {
+					console.log(context);
+					console.log(event);
+				},
+			],
+			// ...srpSignInState,
 		},
 		error: {
-			type: 'final',
+			on: {
+				signInRequested: 'signingIn',
+				initiateSignUp: 'signingUp',
+			},
 		},
 	},
 };
-
-export const authMachine = createMachine(authenticationStateMachine, {
+export const authMachine = createMachine<
+	AuthMachineContext,
+	AuthEvents,
+	AuthTypestate
+>(authenticationStateMachine, {
 	actions: {
-		sayHello: async (context, event) => {
-			// @ts-ignore
-			console.log(event);
-			// @ts-ignore
-			const { config } = event.data as { config: CognitoProviderConfig };
-			console.log(config);
-			const res = await cognitoSignIn(config, {
-				username: 'jamesauchu',
-				password: 'The#test1',
-				signInType: 'Password',
-				clientId: config.clientId,
-				authFlow: AuthFlowType.USER_PASSWORD_AUTH,
-			});
-			console.log(res);
-		},
+		stopSignInActor: stop(signInActorName),
 	},
-	guards: {
-		isAuthenticated: (context, event) => {
-			// NOTE: maybe call proivider's fetchSession
-			// return !!context.provider.fetchSession();
-			return true;
-		},
-	},
+	guards: {},
 });
+
+const authMachineService = interpret(authMachine);
+export type AuthMachineService = typeof authMachineService;
+export const authMachineEvents = authenticationMachineModel.events;

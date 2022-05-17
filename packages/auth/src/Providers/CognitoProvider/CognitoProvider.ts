@@ -30,14 +30,18 @@ import {
 } from '@aws-sdk/client-cognito-identity';
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
-import { interpret } from 'xstate';
+import { interpret, ActorRefFrom } from 'xstate';
 import {
 	cognitoSignUp,
 	cognitoConfirmSignUp,
 	cognitoSignIn,
 	cognitoConfirmSignIn,
 } from './service';
-import { authMachine } from './machines/authenticationMachine';
+import {
+	authMachine,
+	authMachineEvents,
+} from './machines/authenticationMachine';
+import { signInMachine, signInMachineEvents } from './machines/signInMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -68,6 +72,7 @@ function listenToAuthHub(send: any) {
 		send(data.payload.event);
 	});
 }
+
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
@@ -84,7 +89,7 @@ export class CognitoProvider implements AuthProvider {
 		this._config = config ?? {};
 		this._userStorage = config.storage ?? new StorageHelper().getStorage();
 		listenToAuthHub(this._authService.send);
-		// @ts-ignore
+		// @ts-ignore ONLY FOR DEBUGGIN AND TESTING!
 		window.Hub = Hub;
 		this._authService.subscribe(state => {
 			console.log(state);
@@ -108,10 +113,7 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		console.log('successfully configured cognito provider');
-		this._authService.send({
-			type: 'configure',
-			data: { config: this._config },
-		});
+		this._authService.send(authMachineEvents.configure(this._config));
 	}
 
 	getCategory(): string {
@@ -154,8 +156,7 @@ export class CognitoProvider implements AuthProvider {
 	}
 	private isAuthenticated() {
 		// TODO: should also check if token has expired?
-		const session = this.getSessionData();
-		return session !== null;
+		return this._authService.state.matches('signedIn');
 	}
 
 	async signIn(
@@ -179,24 +180,32 @@ export class CognitoProvider implements AuthProvider {
 				'User is already authenticated, please sign out the current user before signing in.'
 			);
 		}
-		try {
-			this._authService.send('initializedSignedIn');
-			const res = await cognitoSignIn(
-				{
-					region: this._config.region,
-				},
-				{
-					...params,
-					authFlow: this._authFlow,
-					clientId: this._config.clientId,
+
+		// kick off the sign in request
+		this._authService.send(
+			authMachineEvents.signInRequested(params, this._authFlow)
+		);
+		return this.waitForSignInComplete();
+	}
+
+	private async waitForSignInComplete(): Promise<SignInResult> {
+		console.log('awaiting sign in to complete...');
+		return new Promise<SignInResult>((res, rej) => {
+			this._authService.onTransition((state, event) => {
+				if (state.matches('signedIn')) {
+					res({
+						signInSuccesful: true,
+						nextStep: false,
+					});
+				} else if (state.matches('error')) {
+					if (event.type === 'error') {
+						rej(event.error);
+					} else {
+						rej(new Error('Something went wrong during sign in'));
+					}
 				}
-			);
-			this._username = params.username;
-			return this.finishSignInFlow(res);
-		} catch (err) {
-			logger.error(err);
-			throw err;
-		}
+			});
+		});
 	}
 
 	private sendMFACode(
@@ -293,28 +302,45 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	async confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult> {
-		const { confirmationCode, mfaType = 'SMS_MFA' } = params;
-		if (!this._username) {
+		console.log('confirm signin');
+		const { actorRef } = this._authService.state.context;
+		if (!actorRef && !this._authService.state.matches('signingIn')) {
 			throw new Error(
-				'No stored username, please sign in before using confirmSignIn'
+				'Sign in proccess has not been initiated, have you called .signIn?'
 			);
 		}
-		if (!this._session) {
-			throw new Error('No stored Session to handle the login challenge');
-		}
-		const res = await cognitoConfirmSignIn(
-			{
-				region: this._config.region,
-			},
-			{
-				confirmationCode,
-				mfaType,
-				username: this._username,
-				session: this._session,
-				clientId: this._config.clientId,
-			}
-		);
-		return this.finishSignInFlow(res);
+		const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
+		// DEBUGGING
+		signInActorRef.subscribe(state => {
+			console.log(state);
+		});
+		signInActorRef.send(signInMachineEvents.respondToAuthChallenge(params));
+		return {
+			signInSuccesful: false,
+			nextStep: false,
+		};
+		// const { confirmationCode, mfaType = 'SMS_MFA' } = params;
+		// if (!this._username) {
+		// 	throw new Error(
+		// 		'No stored username, please sign in before using confirmSignIn'
+		// 	);
+		// }
+		// if (!this._session) {
+		// 	throw new Error('No stored Session to handle the login challenge');
+		// }
+		// const res = await cognitoConfirmSignIn(
+		// 	{
+		// 		region: this._config.region,
+		// 	},
+		// 	{
+		// 		confirmationCode,
+		// 		mfaType,
+		// 		username: this._username,
+		// 		session: this._session,
+		// 		clientId: this._config.clientId,
+		// 	}
+		// );
+		// return this.finishSignInFlow(res);
 	}
 
 	async completeNewPassword(
@@ -388,11 +414,22 @@ export class CognitoProvider implements AuthProvider {
 		if (!this.isConfigured()) {
 			throw new Error();
 		}
-		const { region, identityPoolId } = this._config;
-		// if (!region) {
-		// 	logger.debug('region is not configured for getting the credentials');
-		// 	throw new Error('region is not configured for getting the credentials');
+		// if (this._authService.state.matches('signedIn')) {
+		// 	return this._authService.state.context.session!;
 		// }
+		// return new Promise<AmplifyUser>((res, rej) => {
+		// 	this._authService.onTransition(state => {
+		// 		if (state.matches('signedIn')) {
+		// 			console.log('creds? ', state.context.session);
+		// 			res(state.context.session);
+		// 		}
+		// 	});
+		// });
+		const { region, identityPoolId } = this._config;
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			throw new Error('region is not configured for getting the credentials');
+		}
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			throw new Error('No Cognito Federated Identity pool provided');
