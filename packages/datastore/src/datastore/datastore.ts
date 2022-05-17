@@ -891,7 +891,13 @@ class DataStore {
 				identifierOrCriteria
 			);
 		} else {
-			if (isPredicatesAll(identifierOrCriteria)) {
+			// Object is being queried using object literal syntax
+			if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
+				predicate = ModelPredicateCreator.createForPk<T>(
+					modelDefinition,
+					<T>identifierOrCriteria
+				);
+			} else if (isPredicatesAll(identifierOrCriteria)) {
 				// Predicates.ALL means "all records", so no predicate (undefined)
 				predicate = undefined;
 			} else {
