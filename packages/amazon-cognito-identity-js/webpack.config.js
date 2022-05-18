@@ -1,5 +1,4 @@
 // version 3.11.0
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 /* eslint-disable */
@@ -30,11 +29,7 @@ var config = {
 	plugins: [
 		// removed OccurrenceOrderPlugin as it is on by default: https://webpack.js.org/migrate/3/#occurrenceorderplugin-is-now-on-by-default
 		new webpack.BannerPlugin({ banner, raw: true }),
-		new UglifyJsPlugin({
-			minimize: true,
-			sourceMap: true,
-			include: /\.min\.js$/,
-		}),
+		// removed UglifyJsPlugin as is default in production mode from Webpack 4+
 		new CompressionPlugin({
 			include: /\.min\.js$/,
 		}),
