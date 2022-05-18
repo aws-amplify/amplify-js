@@ -197,7 +197,7 @@ export class CognitoProvider implements AuthProvider {
 			actorRef.subscribe(state => {
 				console.log('actorRef state :', state);
 			});
-			const lastState = await Promise.race([
+			await Promise.race([
 				waitFor(
 					authService,
 					state => state.matches('signedIn') || state.matches('error')
@@ -205,7 +205,7 @@ export class CognitoProvider implements AuthProvider {
 				waitFor(actorRef, state => state.matches('nextAuthChallenge')),
 			]);
 			if (authService.state.matches('error')) {
-				throw lastState.context.error;
+				throw authService.state.context.error;
 			}
 			return {
 				signInSuccesful: authService.state.matches('signedIn'),
