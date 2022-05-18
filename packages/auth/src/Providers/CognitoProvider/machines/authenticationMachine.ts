@@ -25,6 +25,7 @@ interface AuthMachineContext {
 	config: null | CognitoProviderConfig;
 	service: null | CognitoService;
 	session?: AmplifyUser;
+	error?: any;
 }
 
 type AuthTypestate =
@@ -227,12 +228,20 @@ const authenticationStateMachine: MachineConfig<
 		},
 		signingIn: {
 			onEntry: [authenticationStateMachineActions.spawnSignInActor],
+			states: {
+				nextAuthChallenge: {},
+			},
 			on: {
 				cancelSignIn: {
 					target: '#authenticationMachine.signedOut',
 				},
 				error: {
 					target: '#authenticationMachine.error',
+					actions: [
+						assign((_context, event) => ({
+							error: event.error,
+						})),
+					],
 				},
 				signInSuccessful: {
 					target: '#authenticationMachine.signedIn',

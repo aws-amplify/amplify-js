@@ -93,15 +93,10 @@ export const signInMachineConfig: MachineConfig<
 			userPoolId: '',
 			clientId: '',
 			// hardcoded
-			region: 'us-west-2',
+			region: '',
 		},
 		username: '',
 		service: null,
-		password: undefined,
-		authFlow: undefined,
-		error: undefined,
-		userStorage: undefined,
-		session: undefined,
 	},
 	states: {
 		notStarted: {
@@ -205,11 +200,16 @@ export const signInMachineConfig: MachineConfig<
 		},
 		signedIn: {
 			type: 'final',
-			entry: sendParent({ type: 'signInSuccessful' }),
+			onEntry: [sendParent({ type: 'signInSuccessful' })],
 		},
 		error: {
 			type: 'final',
-			entry: ['sendErrorToParent'],
+			onEntry: [
+				sendParent((context, _event) => ({
+					type: 'error',
+					error: context.error,
+				})),
+			],
 		},
 		// these are from Preamp
 		initiatingSRPA: {
@@ -239,9 +239,7 @@ export const signInMachineConfig: MachineConfig<
 		// signedIn: {
 		// 	type: 'final',
 		// },
-		// cancelling: {
-		// 	on: {
-		// 		restoreToNotInitialized: 'notStarted',
+		// cancelling: { on: { restoreToNotInitialized: 'notStarted',
 		// 	},
 		// },
 		// error: {

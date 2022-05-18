@@ -31,6 +31,7 @@ import {
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom } from 'xstate';
+import { waitFor } from 'xstate/lib/waitFor';
 import {
 	cognitoSignUp,
 	cognitoConfirmSignUp,
@@ -180,32 +181,38 @@ export class CognitoProvider implements AuthProvider {
 				'User is already authenticated, please sign out the current user before signing in.'
 			);
 		}
-
 		// kick off the sign in request
 		this._authService.send(
 			authMachineEvents.signInRequested(params, this._authFlow)
 		);
-		return this.waitForSignInComplete();
+		return await this.waitForSignInMachineComplete();
 	}
 
-	private async waitForSignInComplete(): Promise<SignInResult> {
-		console.log('awaiting sign in to complete...');
-		return new Promise<SignInResult>((res, rej) => {
-			this._authService.onTransition((state, event) => {
-				if (state.matches('signedIn')) {
-					res({
-						signInSuccesful: true,
-						nextStep: false,
-					});
-				} else if (state.matches('error')) {
-					if (event.type === 'error') {
-						rej(event.error);
-					} else {
-						rej(new Error('Something went wrong during sign in'));
-					}
-				}
+	private async waitForSignInMachineComplete(): Promise<SignInResult> {
+		const authService = this._authService;
+		await waitFor(authService, state => state.matches('signingIn'));
+		const { actorRef } = this._authService.state.context;
+		if (actorRef) {
+			// DEBUGGING
+			actorRef.subscribe(state => {
+				console.log('actorRef state :', state);
 			});
-		});
+			const lastState = await Promise.race([
+				waitFor(
+					authService,
+					state => state.matches('signedIn') || state.matches('error')
+				),
+				waitFor(actorRef, state => state.matches('nextAuthChallenge')),
+			]);
+			if (authService.state.matches('error')) {
+				throw lastState.context.error;
+			}
+			return {
+				signInSuccesful: authService.state.matches('signedIn'),
+				nextStep: actorRef.state.matches('nextAuthChallenge'),
+			};
+		}
+		return { signInSuccesful: false, nextStep: false };
 	}
 
 	private sendMFACode(
@@ -310,37 +317,8 @@ export class CognitoProvider implements AuthProvider {
 			);
 		}
 		const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
-		// DEBUGGING
-		signInActorRef.subscribe(state => {
-			console.log(state);
-		});
 		signInActorRef.send(signInMachineEvents.respondToAuthChallenge(params));
-		return {
-			signInSuccesful: false,
-			nextStep: false,
-		};
-		// const { confirmationCode, mfaType = 'SMS_MFA' } = params;
-		// if (!this._username) {
-		// 	throw new Error(
-		// 		'No stored username, please sign in before using confirmSignIn'
-		// 	);
-		// }
-		// if (!this._session) {
-		// 	throw new Error('No stored Session to handle the login challenge');
-		// }
-		// const res = await cognitoConfirmSignIn(
-		// 	{
-		// 		region: this._config.region,
-		// 	},
-		// 	{
-		// 		confirmationCode,
-		// 		mfaType,
-		// 		username: this._username,
-		// 		session: this._session,
-		// 		clientId: this._config.clientId,
-		// 	}
-		// );
-		// return this.finishSignInFlow(res);
+		return await this.waitForSignInMachineComplete();
 	}
 
 	async completeNewPassword(
