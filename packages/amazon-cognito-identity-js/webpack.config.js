@@ -41,7 +41,6 @@ var config = {
 			{
 				test: /\.js$/,
 				exclude: /node_modules/,
-				loader: 'babel-loader',
 				// rule.query deprecated: https://webpack.js.org/configuration/module/#ruleoptions--rulequery
 				// using the babel-loader: https://webpack.js.org/loaders/babel-loader/
 				use: {
