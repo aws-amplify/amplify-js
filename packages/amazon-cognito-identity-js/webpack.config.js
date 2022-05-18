@@ -47,7 +47,8 @@ var config = {
 				test: /\.js$/,
 				exclude: /node_modules/,
 				loader: 'babel-loader',
-				query: {
+				// rule.query deprecated: https://webpack.js.org/configuration/module/#ruleoptions--rulequery
+				use: {
 					cacheDirectory: './node_modules/.cache/babel',
 				},
 			},
