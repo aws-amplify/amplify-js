@@ -17,6 +17,74 @@ async function pause(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const UUID_REGEX =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/**
+ * Tests a mutation for expected values. If values are present on the mutation
+ * that are not expected, throws an error. Expected values can be listed as a
+ * literal value, a regular expression, or a function (v => bool).
+ *
+ * `id` is automatically tested and expected to be a UUID unless an alternative
+ *  matcher is provided.
+ *
+ * @param mutation A mutation record to check
+ * @param values An object for specific values to test. Format of key: value | regex | v => bool
+ */
+function expectMutation(mutation, values) {
+	const data = JSON.parse(mutation.data);
+	const matchers = {
+		id: UUID_REGEX,
+		...values,
+	};
+	const errors = [
+		...errorsFrom(data, matchers),
+		...extraFieldsFrom(data, matchers).map(f => `Unexpected field: ${f}`),
+	];
+	if (errors.length > 0) {
+		throw new Error(
+			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`
+		);
+	}
+}
+
+/**
+ * Checks an object for adherence to expected values from a set of matchers.
+ * Returns a list of erroneous key-value pairs.
+ * @param data the object to validate.
+ * @param matchers the matcher functions/values/regexes to test the object with
+ */
+function errorsFrom(data, matchers) {
+	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
+		const value = data[property];
+		if (
+			!(
+				(typeof matcher === 'function' && matcher(value)) ||
+				(matcher instanceof RegExp && matcher.test(value)) ||
+				value === matcher
+			)
+		) {
+			errors.push(
+				`Property '${property}' value "${value}" does not match "${matcher}"`
+			);
+		}
+		return errors;
+	}, []);
+}
+
+/**
+ * Checks to see if a given object contains any extra, unexpected properties.
+ * If any are present, it returns the list of unexpectd fields.
+ *
+ * @param data the object that MIGHT contain extra fields.
+ * @param template the authorative template object.
+ */
+function extraFieldsFrom(data, template) {
+	const fields = Object.keys(data);
+	const expectedFields = new Set(Object.keys(template));
+	return fields.filter(name => !expectedFields.has(name));
+}
+
 describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
@@ -383,6 +451,11 @@ describe('IndexedDBAdapter tests', () => {
 
 			// comment update should be smashed to together with post
 			expect(mutations.length).toBe(2);
+			expectMutation(mutations[0], { title: 'some post' });
+			expectMutation(mutations[1], {
+				content: 'updated content',
+				postId: mutations[0].modelId,
+			});
 		});
 
 		it('should produce a mutation for a nested BELONGS_TO insert', async () => {
@@ -399,6 +472,11 @@ describe('IndexedDBAdapter tests', () => {
 
 			// one for the new comment, one for the new post
 			expect(mutations.length).toBe(2);
+			expectMutation(mutations[0], { title: 'newly created post' });
+			expectMutation(mutations[1], {
+				content: 'newly created comment',
+				postId: mutations[0].modelId,
+			});
 		});
 	});
 });

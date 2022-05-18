@@ -315,7 +315,7 @@ describe('SQLiteAdapter', () => {
 		});
 	});
 
-	describe.only('at a high level', () => {
+	describe('at a high level', () => {
 		it('can manage a basic model', async () => {
 			const saved = await DataStore.save(
 				new Model({
@@ -332,7 +332,7 @@ describe('SQLiteAdapter', () => {
 			expect(retrieved).toEqual(saved);
 		});
 
-		it.only('can manage related models, where parent is saved first', async () => {
+		it('can manage related models, where parent is saved first', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'some post',
@@ -361,7 +361,7 @@ describe('SQLiteAdapter', () => {
 			});
 		});
 
-		it.only('should produce a mutation for a nested BELONGS_TO insert', async () => {
+		it('should produce a mutation for a nested BELONGS_TO insert', async () => {
 			await DataStore.save(
 				new Comment({
 					content: 'newly created comment',
