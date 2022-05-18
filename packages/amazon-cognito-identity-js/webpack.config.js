@@ -28,7 +28,7 @@ var config = {
 		crypto: 'crypto',
 	},
 	plugins: [
-		new webpack.optimize.OccurrenceOrderPlugin(),
+		// removed OccurrenceOrderPlugin as it is on by default: https://webpack.js.org/migrate/3/#occurrenceorderplugin-is-now-on-by-default
 		new webpack.BannerPlugin({ banner, raw: true }),
 		new UglifyJsPlugin({
 			minimize: true,
