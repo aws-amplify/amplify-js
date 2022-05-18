@@ -177,6 +177,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		// temporary fix
 		types: ['node'],
 		outDir: pkgTscES5OutDir,
+		skipLibCheck: true,
 	};
 
 	if (watchMode) {
@@ -234,6 +235,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		// temporary fix
 		types: ['node'],
 		outDir: pkgTscES6OutDir,
+		skipLibCheck: true,
 	};
 
 	if (watchMode) {

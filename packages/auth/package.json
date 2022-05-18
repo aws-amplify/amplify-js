@@ -48,7 +48,7 @@
     "amazon-cognito-identity-js": "5.2.8",
     "crypto-js": "^4.1.1",
     "typescript": "~3.8.3",
-    "xstate": "4.27.0"
+    "xstate": "^4.32.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
