@@ -1,3 +1,5 @@
+import { ChallengeNameType } from '@aws-sdk/client-cognito-identity-provider';
+
 export enum USER_PARAM_TYPE {
 	EMAIL = 'email',
 	PHONE = 'phone',
@@ -90,7 +92,13 @@ type ConfirmSignUpParams = {
 type SignUpResult = {};
 
 type ConfirmSignInParams = {
-	confirmationCode: string;
+	confirmationCode?: string;
+	newPassword?: string;
+	challengeName:
+		| ChallengeNameType.SMS_MFA
+		| ChallengeNameType.SOFTWARE_TOKEN_MFA
+		| ChallengeNameType.NEW_PASSWORD_REQUIRED;
+	//challengeName: ChallengeNameType;
 	// default to SMS_MFA
 	mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
 	clientMetadata?: { [key: string]: string };

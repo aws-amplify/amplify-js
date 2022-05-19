@@ -16,11 +16,9 @@ import {
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
-	InitiateAuthCommandOutput,
 	GetUserCommand,
-	RespondToAuthChallengeCommandInput,
-	RespondToAuthChallengeCommand,
 	AuthFlowType,
+	ChallengeNameType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClient,
@@ -32,12 +30,7 @@ import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom } from 'xstate';
 import { waitFor } from 'xstate/lib/waitFor';
-import {
-	cognitoSignUp,
-	cognitoConfirmSignUp,
-	cognitoSignIn,
-	cognitoConfirmSignIn,
-} from './service';
+import { cognitoSignUp, cognitoConfirmSignUp } from './service';
 import {
 	authMachine,
 	authMachineEvents,
@@ -83,8 +76,6 @@ export class CognitoProvider implements AuthProvider {
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
-	private _session: string | null = null;
-	private _username: string | null = null;
 
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
@@ -185,140 +176,68 @@ export class CognitoProvider implements AuthProvider {
 		this._authService.send(
 			authMachineEvents.signInRequested(params, this._authFlow)
 		);
-		return await this.waitForSignInMachineComplete();
+		return await this.waitForSignInComplete();
 	}
 
-	private async waitForSignInMachineComplete(): Promise<SignInResult> {
+	private async waitForSignInComplete(): Promise<SignInResult> {
 		const authService = this._authService;
-		await waitFor(authService, state => state.matches('signingIn'));
-		const { actorRef } = this._authService.state.context;
+		const signingInState = await waitFor(authService, state =>
+			state.matches('signingIn')
+		);
+		const { actorRef } = signingInState.context;
 		if (actorRef) {
+			const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
 			// DEBUGGING
-			actorRef.subscribe(state => {
+			signInActorRef.subscribe(state => {
 				console.log('actorRef state :', state);
 			});
+			// TODO: Can I refactor signInMachine or the main AuthMachine state to avoid using Promise.race?
 			await Promise.race([
 				waitFor(
 					authService,
 					state => state.matches('signedIn') || state.matches('error')
 				),
-				waitFor(actorRef, state => state.matches('nextAuthChallenge')),
+				waitFor(signInActorRef, state => state.matches('nextAuthChallenge')),
 			]);
+			// if it reaches error state, throw the caught error
 			if (authService.state.matches('error')) {
 				throw authService.state.context.error;
 			}
 			return {
 				signInSuccesful: authService.state.matches('signedIn'),
-				nextStep: actorRef.state.matches('nextAuthChallenge'),
+				nextStep: signInActorRef.state.matches('nextAuthChallenge'),
 			};
 		}
 		return { signInSuccesful: false, nextStep: false };
 	}
 
-	private sendMFACode(
-		confirmationCode: string,
-		mfaType: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA',
-		clientMetaData: { [key: string]: string }
-	) {
-		const challengeResponses = {};
-	}
-
-	private hasChallenge(
-		res: InitiateAuthCommandOutput
-	): res is InitiateAuthCommandOutput & {
-		ChallengeName: string;
-		ChallengeParameters: { [key: string]: string };
-		Session: string;
-	} {
-		return (
-			typeof res.ChallengeName === 'string' &&
-			typeof res.ChallengeParameters === 'object' &&
-			typeof res.Session === 'string'
-		);
-	}
-
-	private handleChallenge(challengeName: CognitoChallenge) {
-		switch (challengeName) {
-			case 'SMS_MFA':
-				throw new Error('not implemented');
-			case 'MFA_SETUP':
-				throw new Error('not implemented');
-			case 'CUSTOM_CHALLENGE':
-				throw new Error('not implemented');
-			case 'DEVICE_SRP_AUTH':
-				throw new Error('not implemented');
-			case 'NEW_PASSWORD_REQUIRED':
-				return this.handleNewPasswordRequiredChallenge();
-				throw new Error('not implemented');
-			case 'SOFTWARE_TOKEN_MFA':
-				throw new Error('not implemented');
-			case 'SELECT_MFA_TYPE':
-				throw new Error('not implemented');
-			default:
-				throw new Error(`${challengeName} is not a valid challenge`);
-		}
-	}
-
-	private handleNewPasswordRequiredChallenge() {
-		console.log('handle new password required challenge');
-	}
-
-	private cacheSessionData(output: InitiateAuthCommandOutput) {
-		const { AuthenticationResult, Session } = output;
-		if (!AuthenticationResult) {
-			throw new Error(
-				'Cannot cache session data - Initiate Auth did not return tokens'
-			);
-		}
-		const {
-			AccessToken,
-			IdToken,
-			RefreshToken,
-			ExpiresIn = 0,
-		} = AuthenticationResult;
-		this._userStorage.setItem(
-			COGNITO_CACHE_KEY,
-			JSON.stringify({
-				accessToken: AccessToken,
-				idToken: IdToken,
-				refreshToken: RefreshToken,
-				// ExpiresIn is in seconds, but Date().getTime is in milliseconds
-				expiration: new Date().getTime() + ExpiresIn * 1000,
-				...(Session && { session: Session }),
-			})
-		);
-	}
-
-	private handleSmsMfaChallenge(
-		params: ConfirmSignInParams & { mfaType: 'SMS_MFA' }
-	) {
-		const { confirmationCode, mfaType = 'SMS_MFA' } = params;
-	}
-
-	private respondToChallenge(challengeName: CognitoChallenge) {
-		if (!this._username) {
-			throw new Error(
-				`No stored username to handle this challenge, please signIn.`
-			);
-		}
-		if (!this._session) {
-			throw new Error(
-				`No stored Session to handle the ${challengeName} challenge`
-			);
-		}
-	}
-
 	async confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult> {
 		console.log('confirm signin');
+		if (
+			params.challengeName !== ChallengeNameType.SMS_MFA &&
+			params.challengeName !== ChallengeNameType.SOFTWARE_TOKEN_MFA &&
+			params.challengeName !== ChallengeNameType.NEW_PASSWORD_REQUIRED
+		) {
+			throw new Error('Not implemented');
+		}
 		const { actorRef } = this._authService.state.context;
-		if (!actorRef && !this._authService.state.matches('signingIn')) {
+		if (!actorRef || !this._authService.state.matches('signingIn')) {
 			throw new Error(
 				'Sign in proccess has not been initiated, have you called .signIn?'
 			);
 		}
 		const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
-		signInActorRef.send(signInMachineEvents.respondToAuthChallenge(params));
-		return await this.waitForSignInMachineComplete();
+		signInActorRef.send(
+			// @ts-ignore
+			signInMachineEvents.respondToAuthChallenge({
+				...params,
+			})
+		);
+		return await this.waitForSignInComplete();
+	}
+
+	isSigningIn() {
+		return this._authService.state.matches('signedIn');
 	}
 
 	async completeNewPassword(
@@ -326,55 +245,23 @@ export class CognitoProvider implements AuthProvider {
 		requiredAttributes?: { [key: string]: any }
 	): Promise<SignInResult> {
 		if (!newPassword) {
-			throw new Error('Need password');
+			throw new Error('New password is required to do complete new password');
 		}
-		if (!this._username) {
+		const { actorRef } = this._authService.state.context;
+		if (!actorRef || !this.isSigningIn()) {
 			throw new Error(
-				'No stored username, please sign in before using completeNewPassword'
+				'Sign in proccess has not been initiated, have you called .signIn?'
 			);
 		}
-		if (!this._session) {
-			throw new Error('No stored Session to handle the login challenge');
-		}
-		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
-			{};
-		const prefix = 'userAttributes.';
-		challengeResponses.NEW_PASSWORD = newPassword;
-		challengeResponses.USERNAME = this._username;
-		if (requiredAttributes) {
-			for (const [k, v] of Object.entries(requiredAttributes)) {
-				challengeResponses[prefix + k] = v;
-			}
-		}
-		const respondToAuthChallengeInput: RespondToAuthChallengeCommandInput = {
-			ChallengeName: 'NEW_PASSWORD_REQUIRED',
-			ClientId: this._config.clientId,
-			ChallengeResponses: challengeResponses,
-			Session: this._session,
-		};
-		const cognitoClient = this.createNewCognitoClient({
-			region: this._config.region,
-		});
-		const res = await cognitoClient.send(
-			new RespondToAuthChallengeCommand(respondToAuthChallengeInput)
+		const signInActorRef = actorRef as ActorRefFrom<typeof signInMachine>;
+		signInActorRef.send(
+			signInMachineEvents.respondToAuthChallenge({
+				challengeName: ChallengeNameType.NEW_PASSWORD_REQUIRED,
+				newPassword,
+				requiredAttributes,
+			})
 		);
-		return this.finishSignInFlow(res);
-	}
-
-	private finishSignInFlow(res: InitiateAuthCommandOutput) {
-		if (this.hasChallenge(res)) {
-			this._session = res.Session;
-			return { signInSuccesful: false, nextStep: true };
-		} else {
-			this.cacheSessionData(res);
-			// placeholder signin event
-			dispatchAuthEvent(
-				'signIn',
-				{ something: 'something' },
-				'a user has been signed in.'
-			);
-			return { signInSuccesful: true, nextStep: false };
-		}
+		return await this.waitForSignInComplete();
 	}
 
 	private getSessionData(): {
@@ -484,7 +371,6 @@ export class CognitoProvider implements AuthProvider {
 			},
 		};
 	}
-	private refreshSession() {}
 	private shearAWSCredentials(
 		res: GetCredentialsForIdentityCommandOutput
 	): AWSCredentials {

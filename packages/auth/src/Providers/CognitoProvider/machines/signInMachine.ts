@@ -8,46 +8,19 @@ import {
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { cacheInitiateAuthResult } from '../service';
-import { CognitoService } from '../serviceClass';
 import {
-	CognitoIdentityProviderClientConfig,
 	AuthFlowType,
+	ChallengeNameType,
+	InitiateAuthCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoProviderConfig } from '../CognitoProvider';
-
-export interface SignInMachineContext {
-	// NOTE: Could also just pass down the client directly
-	clientConfig: CognitoIdentityProviderClientConfig;
-	authConfig: CognitoProviderConfig;
-	username: string;
-	service: CognitoService | null;
-	password?: string;
-	authFlow?: AuthFlowType;
-	error?: any;
-	session?: string;
-	userStorage?: Storage;
-}
-
-type SignInMachineTypestate =
-	| { value: 'notStarted'; context: SignInMachineContext }
-	| {
-			value: 'initiatingPlainUsernamePasswordSignIn';
-			context: SignInMachineContext;
-	  }
-	| { value: 'nextAuthChallenge'; context: SignInMachineContext }
-	| {
-			value: 'signedIn';
-			context: SignInMachineContext;
-	  }
-	| {
-			value: 'error';
-			context: SignInMachineContext & { error: any };
-	  }
-	| { value: 'initiatingSRPA'; context: SignInMachineContext }
-	| {
-			value: 'respondingToAuthChallenge';
-			context: SignInMachineContext & { session: string };
-	  };
+import {
+	SignInMachineContext,
+	SignInMachineTypestate,
+	RespondToAuthEventOptions,
+	RespondToMFAChallengeOptions,
+	RespondToCompleteNewPasswordChallengeOptions,
+	assertEventType,
+} from '../types/machines';
 
 export const signInMachineModel = createModel(
 	{
@@ -62,11 +35,12 @@ export const signInMachineModel = createModel(
 	} as SignInMachineContext,
 	{
 		events: {
-			respondToAuthChallenge: (params: {
-				confirmationCode: string;
-				mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
-				clientMetadata?: Record<string, any>;
-			}) => ({ params }),
+			respondToAuthChallenge: (
+				respondToAuthChallengeOptions: RespondToAuthEventOptions
+			) => ({ respondToAuthChallengeOptions }),
+			'done.invoke.InitiateAuth': (data: InitiateAuthCommandOutput) => ({
+				data,
+			}),
 		},
 	}
 );
@@ -78,7 +52,57 @@ const signInMachineActions: Record<
 	AssignAction<SignInMachineContext, any>
 > = {};
 
-// SRPSignInState state machine
+async function respondToAuthChallenge(
+	context: SignInMachineContext,
+	event: ReturnType<
+		typeof signInMachineModel['events']['respondToAuthChallenge']
+	>
+) {
+	switch (event.respondToAuthChallengeOptions.challengeName) {
+		case ChallengeNameType.SMS_MFA:
+		case ChallengeNameType.SOFTWARE_TOKEN_MFA:
+			return await respondToMFAChallenge(
+				context,
+				event.respondToAuthChallengeOptions
+			);
+		case ChallengeNameType.NEW_PASSWORD_REQUIRED:
+			return await respondToNewPasswordChallenge(
+				context,
+				event.respondToAuthChallengeOptions
+			);
+		default:
+			throw new Error('NOT IMPLEMENTED!!');
+	}
+}
+
+async function respondToNewPasswordChallenge(
+	context: SignInMachineContext,
+	respondToAuthChallengeOptions: RespondToCompleteNewPasswordChallengeOptions
+) {
+	return await context.service?.completeNewPassword({
+		username: context.username,
+		newPassword: respondToAuthChallengeOptions.newPassword!,
+		session: context.session!,
+		requiredAttributes: respondToAuthChallengeOptions.requiredAttributes,
+	});
+}
+
+async function respondToMFAChallenge(
+	context: SignInMachineContext,
+	respondToAuthChallengeOptions: RespondToMFAChallengeOptions
+) {
+	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
+		mfaType: respondToAuthChallengeOptions.challengeName as
+			| ChallengeNameType.SOFTWARE_TOKEN_MFA
+			| ChallengeNameType.SMS_MFA,
+		challengeName: respondToAuthChallengeOptions.challengeName,
+		confirmationCode: respondToAuthChallengeOptions.confirmationCode,
+		username: context.username,
+		session: context.session!,
+		clientId: context.authConfig.clientId,
+	});
+}
+
 export const signInMachineConfig: MachineConfig<
 	SignInMachineContext,
 	any,
@@ -118,9 +142,8 @@ export const signInMachineConfig: MachineConfig<
 		},
 		initiatingPlainUsernamePasswordSignIn: {
 			invoke: {
-				id: 'InitaiteAuth',
-				src: async (context, event) => {
-					console.log(event);
+				id: 'InitiateAuth',
+				src: async (context, _event) => {
 					try {
 						const res = await context.service?.signIn(context.clientConfig, {
 							signInType: 'Password',
@@ -129,7 +152,6 @@ export const signInMachineConfig: MachineConfig<
 							authFlow: AuthFlowType.USER_PASSWORD_AUTH,
 							password: context.password,
 						});
-						console.log(res);
 						if (res && typeof res.AuthenticationResult !== 'undefined') {
 							cacheInitiateAuthResult(res, context.userStorage);
 						}
@@ -167,19 +189,11 @@ export const signInMachineConfig: MachineConfig<
 		respondingToAuthChallenge: {
 			invoke: {
 				src: async (context, event) => {
-					const res = await context.service?.cognitoConfirmSignIn(
-						{ region: context.authConfig.region },
-						{
-							confirmationCode: event.params.confirmationCode,
-							username: context.username,
-							clientId: context.authConfig.clientId,
-							session: context.session!,
-						}
-					);
+					assertEventType(event, 'respondToAuthChallenge');
+					const res = await respondToAuthChallenge(context, event);
 					if (res && typeof res.AuthenticationResult !== 'undefined') {
 						cacheInitiateAuthResult(res, context.userStorage);
 					}
-					console.log(res);
 					return res;
 				},
 				onDone: [
@@ -196,6 +210,10 @@ export const signInMachineConfig: MachineConfig<
 						target: 'signedIn',
 					},
 				],
+				onError: {
+					target: 'error',
+					actions: [assign({ error: (_context, event) => event.data })],
+				},
 			},
 		},
 		signedIn: {
@@ -267,8 +285,11 @@ export const signInMachine = createMachine<
 			return context.authFlow === AuthFlowType.USER_SRP_AUTH;
 		},
 		hasNextChallenge: (_context, event) => {
-			// @ts-ignore
-			return event.data.ChallengeName && event.data.Session;
+			return (
+				event.type === 'done.invoke.InitiateAuth' &&
+				typeof event.data.ChallengeName !== 'undefined' &&
+				typeof event.data.Session !== 'undefined'
+			);
 		},
 	},
 });

@@ -13,63 +13,10 @@ import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
-import { SignInParams, AmplifyUser } from '../../../types';
+import { SignInParams } from '../../../types';
+import { AuthMachineContext, AuthTypestate } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
-
-type SignInActorRef = ActorRefFrom<typeof signInMachine>;
-
-interface AuthMachineContext {
-	// TODO: union other valid actor refs here when we add more actors
-	actorRef?: SignInActorRef;
-	config: null | CognitoProviderConfig;
-	service: null | CognitoService;
-	session?: AmplifyUser;
-	error?: any;
-}
-
-type AuthTypestate =
-	| {
-			value: 'notConfigured';
-			context: AuthMachineContext & {
-				config: null;
-				service: null;
-				session: undefined;
-			};
-	  }
-	| {
-			value: 'configured';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-			};
-	  }
-	| {
-			value: 'signedOut';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-			};
-	  }
-	| {
-			value: 'signedIn';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-			};
-	  }
-	| {
-			value: 'signingUp';
-			context: AuthMachineContext;
-	  }
-	| { value: 'error'; context: AuthMachineContext }
-	| {
-			value: 'signingIn';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-			};
-	  };
 
 const signInActorName = 'signInActor';
 
@@ -81,7 +28,7 @@ async function checkActiveSession(context: AuthMachineContext) {
 	) {
 		throw new Error('no configured identityPoolId and userPoolId');
 	}
-	const session = await context.service.cognitoFetchSession();
+	const session = await context.service.fetchSession();
 	return session;
 }
 
@@ -128,6 +75,7 @@ const authenticationStateMachineActions: Record<
 					region: event.config.region,
 					userPoolId: event.config.userPoolId,
 					identityPoolId: event.config.identityPoolId,
+					clientId: event.config.clientId,
 				}),
 		},
 		'configure'
@@ -228,9 +176,6 @@ const authenticationStateMachine: MachineConfig<
 		},
 		signingIn: {
 			onEntry: [authenticationStateMachineActions.spawnSignInActor],
-			states: {
-				nextAuthChallenge: {},
-			},
 			on: {
 				cancelSignIn: {
 					target: '#authenticationMachine.signedOut',
@@ -275,6 +220,4 @@ export const authMachine = createMachine<
 	guards: {},
 });
 
-const authMachineService = interpret(authMachine);
-export type AuthMachineService = typeof authMachineService;
 export const authMachineEvents = authenticationMachineModel.events;

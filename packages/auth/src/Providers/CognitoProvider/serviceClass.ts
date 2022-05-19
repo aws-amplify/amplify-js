@@ -13,6 +13,7 @@ import {
 	RespondToAuthChallengeCommand,
 	RespondToAuthChallengeCommandOutput,
 	GetUserCommand,
+	ChallengeNameType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClientConfig,
@@ -44,6 +45,13 @@ type CognitoConfirmSignInOptions = ConfirmSignInParams & {
 	clientId: string;
 };
 
+type CognitoCompletePasswordOptions = {
+	username: string;
+	newPassword: string;
+	requiredAttributes?: { [key: string]: any };
+	session: string;
+};
+
 type CognitoSessionData = {
 	accessToken: string;
 	idToken: string;
@@ -55,6 +63,7 @@ interface CognitoServiceConfig {
 	region: string;
 	userPoolId: string;
 	identityPoolId?: string;
+	clientId: string;
 }
 
 export class CognitoService {
@@ -99,7 +108,7 @@ export class CognitoService {
 		};
 	}
 
-	async cognitoFetchSession(): Promise<AmplifyUser> {
+	async fetchSession(): Promise<AmplifyUser> {
 		const cognitoIdentityClient = this.createCognitoIdentityClient({
 			region: this.config.region,
 		});
@@ -318,5 +327,34 @@ export class CognitoService {
 			console.error(err);
 			throw err;
 		}
+	}
+
+	async completeNewPassword({
+		username,
+		newPassword,
+		session,
+		requiredAttributes,
+	}: CognitoCompletePasswordOptions) {
+		const client = this.createCognitoClient({
+			region: this.config.region,
+		});
+		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
+			{};
+		challengeResponses.NEW_PASSWORD = newPassword;
+		challengeResponses.USERNAME = username;
+		if (requiredAttributes) {
+			for (const [k, v] of Object.entries(requiredAttributes)) {
+				challengeResponses[`userAttributes.${k}`] = v;
+			}
+		}
+		const res = await client.send(
+			new RespondToAuthChallengeCommand({
+				ChallengeName: ChallengeNameType.NEW_PASSWORD_REQUIRED,
+				ClientId: this.config.clientId,
+				ChallengeResponses: challengeResponses,
+				Session: session,
+			})
+		);
+		return res;
 	}
 }
