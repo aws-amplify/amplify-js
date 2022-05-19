@@ -123,6 +123,11 @@ export class CognitoProvider implements AuthProvider {
 		return CognitoProvider.PROVIDER_NAME;
 	}
 	async signUp(params: SignUpParams): Promise<SignUpResult> {
+		// kick off the sign up request
+		this._authService.send(authMachineEvents.initiateSignUp(params));
+
+		// TODO: move this to the state machine, and `waitFor` the result of the promise
+		// https://xstate.js.org/docs/guides/interpretation.html#waitfor
 		const signUpRes = cognitoSignUp(
 			{
 				region: this._config.region,

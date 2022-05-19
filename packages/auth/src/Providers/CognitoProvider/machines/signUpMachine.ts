@@ -21,6 +21,14 @@ const signUpStateMachine: MachineConfig<
 	context: {},
 	states: {
 		notStarted: {
+			onEntry: [
+				(_context, _event) => {
+					console.log('Sign up machine has been spawned!', {
+						_context,
+						_event,
+					});
+				},
+			],
 			on: {
 				initiateSignUp: 'initiatingSigningUp',
 				confirmSignUp: 'confirmingSignUp',
@@ -54,4 +62,4 @@ const signUpStateMachine: MachineConfig<
 	},
 };
 
-const finalMachine = createMachine(signUpStateMachine);
+export const signUpMachine = createMachine(signUpStateMachine);

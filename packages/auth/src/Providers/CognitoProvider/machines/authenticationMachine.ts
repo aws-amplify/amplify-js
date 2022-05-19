@@ -13,15 +13,17 @@ import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
-import { SignInParams, AmplifyUser } from '../../../types';
+import { signUpMachine } from './signUpMachine';
+import { SignInParams, SignUpParams, AmplifyUser } from '../../../types';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 
 type SignInActorRef = ActorRefFrom<typeof signInMachine>;
+type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 
 interface AuthMachineContext {
 	// TODO: union other valid actor refs here when we add more actors
-	actorRef?: SignInActorRef;
+	actorRef?: SignInActorRef | SignUpActorRef;
 	config: null | CognitoProviderConfig;
 	service: null | CognitoService;
 	session?: AmplifyUser;
@@ -71,6 +73,7 @@ type AuthTypestate =
 	  };
 
 const signInActorName = 'signInActor';
+const signUpActorName = 'signUpActor';
 
 async function checkActiveSession(context: AuthMachineContext) {
 	if (
@@ -102,7 +105,7 @@ export const authenticationMachineModel = createModel(
 				params: SignInParams & { password?: string },
 				signInFlow: AuthFlowType
 			) => ({ params, signInFlow }),
-			initiateSignUp: () => ({}),
+			initiateSignUp: (params: SignUpParams) => ({ params }),
 			signInSuccessful: () => ({}),
 		},
 	}
@@ -153,6 +156,29 @@ const authenticationStateMachineActions: Record<
 			},
 		},
 		'signInRequested'
+	),
+	spawnSignUpActor: authenticationMachineModel.assign(
+		{
+			actorRef: (context, event) => {
+				if (!context.config) {
+					return context.actorRef;
+				}
+
+				// TODO: discover what context is necessary for `signUp` event
+				const machine = signUpMachine.withContext({
+					clientConfig: { region: context.config?.region },
+					authConfig: context.config,
+					username: event.params.username,
+					password: event.params.password,
+					service: context.service,
+				});
+				const signUpActorRef = spawn(machine, {
+					name: signUpActorName,
+				});
+				return signUpActorRef;
+			},
+		},
+		'initiateSignUp'
 	),
 };
 
@@ -220,6 +246,7 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signingUp: {
+			onEntry: [authenticationStateMachineActions.spawnSignUpActor],
 			on: {
 				cancelSignUp: 'signedOut',
 				error: 'error',
