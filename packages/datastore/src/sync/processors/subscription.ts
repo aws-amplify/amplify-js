@@ -22,26 +22,12 @@ import {
 	getUserGroupsFromToken,
 	TransformerMutationType,
 	getTokenForCustomAuth,
-	mapErrorToType,
-	ErrorMap,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
+import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
-
-// TODO: add additional error maps
-const errorMap = {
-	Unauthorized: (givenError: any) => {
-		const {
-			error: { errors: [{ message = '' } = {}] } = {
-				errors: [],
-			},
-		} = givenError;
-		const regex = /Connection failed.+Unauthorized/;
-		return regex.test(message);
-	},
-} as ErrorMap;
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
@@ -468,10 +454,8 @@ class SubscriptionProcessor {
 														message,
 														model: modelDefinition.name,
 														operation,
-														errorType: mapErrorToType(
-															errorMap,
-															subscriptionError
-														),
+														errorType:
+															getSubscriptionErrorType(subscriptionError),
 														process: ProcessName.subscribe,
 														remoteModel: null,
 														cause: subscriptionError,
