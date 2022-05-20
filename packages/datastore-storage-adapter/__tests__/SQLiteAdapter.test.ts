@@ -105,8 +105,6 @@ describe('SQLiteAdapter', () => {
 	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
 	let Post: PersistentModelConstructor<Post>;
-	let adapter: StorageAdapter;
-	let db: SQLiteDatabase;
 	let syncEngine: SyncEngine;
 	sqlog = [];
 
@@ -135,6 +133,8 @@ describe('SQLiteAdapter', () => {
 	 */
 	async function getMutations() {
 		await pause(250);
+		const adapter = (DataStore as any).storageAdapter;
+		const db = (adapter as any).db;
 		return await db.getAll('select * from MutationEvent', []);
 	}
 
@@ -147,6 +147,9 @@ describe('SQLiteAdapter', () => {
 	});
 
 	describe('something', () => {
+		let adapter: StorageAdapter;
+		let db: SQLiteDatabase;
+
 		beforeEach(async () => {
 			DataStore.configure({
 				storageAdapter: SQLiteAdapter,

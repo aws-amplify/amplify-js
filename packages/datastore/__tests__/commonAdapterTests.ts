@@ -75,18 +75,21 @@ export function addCommonQueryTests({
 				new Model({
 					field1: 'field1 value 0',
 					dateCreated: baseDate.toISOString(),
+					emails: ['field1@exampl.com'],
 				})
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'field1 value 1',
 					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
+					emails: ['field2@exampl.com'],
 				})
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'field1 value 2',
 					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
+					emails: ['field3@exampl.com'],
 				})
 			);
 		});
