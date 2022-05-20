@@ -3,128 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.0.36](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.35...@aws-amplify/api@4.0.36) (2022-03-28)
+## [4.0.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.39...@aws-amplify/api@4.0.40) (2022-05-12)
+
+### Bug Fixes
+
+- **@aws-amplify/api:** graphql API.cancel fix ([#9578](https://github.com/aws-amplify/amplify-js/issues/9578)) ([a9ae27f](https://github.com/aws-amplify/amplify-js/commit/a9ae27f65e1a782321c0be87556f92d2ee432352))
+
+## [4.0.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.38...@aws-amplify/api@4.0.39) (2022-05-03)
 
 **Note:** Version bump only for package @aws-amplify/api
 
+## [4.0.38](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.37...@aws-amplify/api@4.0.38) (2022-04-14)
 
+**Note:** Version bump only for package @aws-amplify/api
 
+## [4.0.37](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.36...@aws-amplify/api@4.0.37) (2022-04-04)
 
+**Note:** Version bump only for package @aws-amplify/api
+
+## [4.0.36](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.35...@aws-amplify/api@4.0.36) (2022-03-28)
+
+**Note:** Version bump only for package @aws-amplify/api
 
 ## [4.0.35](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.34...@aws-amplify/api@4.0.35) (2022-03-22)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.33...@aws-amplify/api@4.0.34) (2022-03-10)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.32...@aws-amplify/api@4.0.33) (2022-02-28)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/api:** Improve API.graphql return type ([#9197](https://github.com/aws-amplify/amplify-js/issues/9197)) ([9a0531b](https://github.com/aws-amplify/amplify-js/commit/9a0531b11e9eb6659d36ca0c51c642b3d947f63c))
-
-
-
-
+- **@aws-amplify/api:** Improve API.graphql return type ([#9197](https://github.com/aws-amplify/amplify-js/issues/9197)) ([9a0531b](https://github.com/aws-amplify/amplify-js/commit/9a0531b11e9eb6659d36ca0c51c642b3d947f63c))
 
 ## [4.0.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.31...@aws-amplify/api@4.0.32) (2022-02-03)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.30...@aws-amplify/api@4.0.31) (2022-01-27)
 
 **Note:** Version bump only for package @aws-amplify/api
-
-
-
-
 
 ## [4.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.29...@aws-amplify/api@4.0.30) (2022-01-07)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.28...@aws-amplify/api@4.0.29) (2021-12-16)
 
 **Note:** Version bump only for package @aws-amplify/api
-
-
-
-
 
 ## [4.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.27...@aws-amplify/api@4.0.28) (2021-12-03)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.26...@aws-amplify/api@4.0.27) (2021-12-02)
 
 **Note:** Version bump only for package @aws-amplify/api
-
-
-
-
 
 ## [4.0.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.25...@aws-amplify/api@4.0.26) (2021-11-18)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.24...@aws-amplify/api@4.0.25) (2021-11-16)
 
 **Note:** Version bump only for package @aws-amplify/api
-
-
-
-
 
 ## [4.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.23...@aws-amplify/api@4.0.24) (2021-11-12)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.22...@aws-amplify/api@4.0.23) (2021-11-09)
 
 **Note:** Version bump only for package @aws-amplify/api
 
-
-
-
-
 ## [4.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.21...@aws-amplify/api@4.0.22) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/api
-
-
-
-
 
 ## [4.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.20...@aws-amplify/api@4.0.21) (2021-10-21)
 

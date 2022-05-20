@@ -16,13 +16,12 @@ import {
 	ModelAttributeAuth,
 	ModelAuthRule,
 	utils,
+	GraphQLScalarType,
 } from '@aws-amplify/datastore';
 
-import { getSQLiteType } from './types';
+import { ParameterizedStatement } from './types';
 
 const { USER, isNonModelConstructor, isModelConstructor } = utils;
-
-export type ParameterizedStatement = [string, any[]];
 
 const keysFromModel = model =>
 	Object.keys(model)
@@ -70,6 +69,36 @@ function prepareValueForDML(value: unknown): any {
 	}
 
 	return `${value}`;
+}
+
+export function getSQLiteType(
+	scalar: keyof Omit<
+		typeof GraphQLScalarType,
+		'getJSType' | 'getValidationFunction' | 'getSQLiteType'
+	>
+): 'TEXT' | 'INTEGER' | 'REAL' | 'BLOB' {
+	switch (scalar) {
+		case 'Boolean':
+		case 'Int':
+		case 'AWSTimestamp':
+			return 'INTEGER';
+		case 'ID':
+		case 'String':
+		case 'AWSDate':
+		case 'AWSTime':
+		case 'AWSDateTime':
+		case 'AWSEmail':
+		case 'AWSJSON':
+		case 'AWSURL':
+		case 'AWSPhone':
+		case 'AWSIPAddress':
+			return 'TEXT';
+		case 'Float':
+			return 'REAL';
+		default:
+			const _: never = scalar as never;
+			throw new Error(`unknown type ${scalar as string}`);
+	}
 }
 
 export function generateSchemaStatements(schema: InternalSchema): string[] {
@@ -230,6 +259,30 @@ const logicalOperatorMap = {
 	between: 'BETWEEN',
 };
 
+/**
+ * If the given (operator, operand) indicate the need for a special `NULL` comparison,
+ * that `WHERE` clause condition will be returned. If not special `NULL` handling is
+ * needed, `null` will be returned, and the caller should construct the `WHERE`
+ * clause component using the normal operator map(s) and parameterization.
+ *
+ * @param operator "beginsWith" | "contains" | "notContains" | "between"
+ * | "eq" | "ne" | "le" | "lt" | "ge" | "gt"
+ * @param operand any
+ * @returns (string | null) The `WHERE` clause component or `null` if N/A.
+ */
+function buildSpecialNullComparison(field, operator, operand) {
+	if (operand === null || operand === undefined) {
+		if (operator === 'eq') {
+			return `"${field}" IS NULL`;
+		} else if (operator === 'ne') {
+			return `"${field}" IS NOT NULL`;
+		}
+	}
+
+	// no special null handling required
+	return null;
+}
+
 const whereConditionFromPredicateObject = ({
 	field,
 	operator,
@@ -241,8 +294,16 @@ const whereConditionFromPredicateObject = ({
 		| keyof typeof comparisonOperatorMap;
 	operand: any;
 }): ParameterizedStatement => {
-	const comparisonOperator = comparisonOperatorMap[operator];
+	const specialNullClause = buildSpecialNullComparison(
+		field,
+		operator,
+		operand
+	);
+	if (specialNullClause) {
+		return [specialNullClause, []];
+	}
 
+	const comparisonOperator = comparisonOperatorMap[operator];
 	if (comparisonOperator) {
 		return [`"${field}" ${comparisonOperator} ?`, [operand]];
 	}
