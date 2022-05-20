@@ -485,9 +485,6 @@ export function cacheInitiateAuthResult(
 			accessToken: AccessToken,
 			idToken: IdToken,
 			refreshToken: RefreshToken,
-			// ExpiresIn is in seconds, but Date().getTime is in milliseconds
-			expiration: new Date().getTime() + ExpiresIn * 1000,
-			...(Session && { session: Session }),
 		})
 	);
 }

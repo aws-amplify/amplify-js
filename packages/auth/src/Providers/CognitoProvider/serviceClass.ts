@@ -68,15 +68,23 @@ interface CognitoServiceConfig {
 
 export class CognitoService {
 	private readonly config: CognitoServiceConfig;
-	constructor(config: CognitoServiceConfig) {
+	private readonly clientConfig: CognitoIdentityProviderClientConfig;
+	constructor(
+		config: CognitoServiceConfig,
+		clientConfig: CognitoIdentityClientConfig = {}
+	) {
 		this.config = config;
+		this.clientConfig = {
+			region: this.config.region,
+			...clientConfig,
+		};
 	}
-	createCognitoClient(config: CognitoIdentityProviderClientConfig) {
-		return new CognitoIdentityProviderClient(config);
+	createCognitoClient() {
+		return new CognitoIdentityProviderClient(this.clientConfig);
 	}
 
-	createCognitoIdentityClient(config: CognitoIdentityClientConfig) {
-		return new CognitoIdentityClient(config);
+	createCognitoIdentityClient() {
+		return new CognitoIdentityClient(this.clientConfig);
 	}
 
 	getSessionData(userStorage = new StorageHelper().getStorage()): {
@@ -90,6 +98,7 @@ export class CognitoService {
 		}
 		return null;
 	}
+
 	shearAWSCredentials(
 		res: GetCredentialsForIdentityCommandOutput
 	): AWSCredentials {
@@ -109,13 +118,9 @@ export class CognitoService {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
-		const cognitoIdentityClient = this.createCognitoIdentityClient({
-			region: this.config.region,
-		});
+		const cognitoIdentityClient = this.createCognitoIdentityClient();
 		// TODO: add param for cognito client config
-		const cognitoClient = this.createCognitoClient({
-			region: this.config.region,
-		});
+		const cognitoClient = this.createCognitoClient();
 		const session = this.getSessionData();
 		if (session === null) {
 			throw new Error(
@@ -253,7 +258,7 @@ export class CognitoService {
 			},
 			ClientMetadata: clientMetadata,
 		};
-		const client = this.createCognitoClient(clientConfig);
+		const client = this.createCognitoClient();
 		const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
 		return res;
 	}
@@ -262,7 +267,7 @@ export class CognitoService {
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
-		const client = this.createCognitoClient(clientConfig);
+		const client = this.createCognitoClient();
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
 			ClientId: clientId,
@@ -290,7 +295,7 @@ export class CognitoService {
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 		] = confirmationCode;
-		const client = this.createCognitoClient(clientConfig);
+		const client = this.createCognitoClient();
 		const res = await client.send(
 			new RespondToAuthChallengeCommand({
 				ChallengeName: mfaType,
@@ -306,7 +311,7 @@ export class CognitoService {
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
-		const client = this.createCognitoClient(clientConfig);
+		const client = this.createCognitoClient();
 		const { username, password, clientId, attributes } = params;
 		const input: SignUpCommandInput = {
 			Username: username,
@@ -335,9 +340,7 @@ export class CognitoService {
 		session,
 		requiredAttributes,
 	}: CognitoCompletePasswordOptions) {
-		const client = this.createCognitoClient({
-			region: this.config.region,
-		});
+		const client = this.createCognitoClient();
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.NEW_PASSWORD = newPassword;

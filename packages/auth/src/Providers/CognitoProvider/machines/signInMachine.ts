@@ -153,7 +153,7 @@ export const signInMachineConfig: MachineConfig<
 							password: context.password,
 						});
 						if (res && typeof res.AuthenticationResult !== 'undefined') {
-							cacheInitiateAuthResult(res, context.userStorage);
+							cacheInitiateAuthResult(res, context.authConfig.storage);
 						}
 						return res;
 					} catch (err) {
@@ -192,7 +192,7 @@ export const signInMachineConfig: MachineConfig<
 					assertEventType(event, 'respondToAuthChallenge');
 					const res = await respondToAuthChallenge(context, event);
 					if (res && typeof res.AuthenticationResult !== 'undefined') {
-						cacheInitiateAuthResult(res, context.userStorage);
+						cacheInitiateAuthResult(res, context.authConfig.storage);
 					}
 					return res;
 				},

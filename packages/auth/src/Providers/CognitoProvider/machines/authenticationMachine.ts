@@ -49,7 +49,11 @@ export const authenticationMachineModel = createModel(
 			signInRequested: (
 				params: SignInParams & { password?: string },
 				signInFlow: AuthFlowType
-			) => ({ params, signInFlow }),
+			) => {
+				console.log('request sign in');
+				return { params, signInFlow };
+			},
+			// ({ params, signInFlow }),
 			initiateSignUp: () => ({}),
 			signInSuccessful: () => ({}),
 		},
@@ -192,13 +196,7 @@ const authenticationStateMachine: MachineConfig<
 					target: '#authenticationMachine.signedIn',
 				},
 			},
-			onExit: [
-				'stopSignInActor',
-				(context, event) => {
-					console.log(context);
-					console.log(event);
-				},
-			],
+			onExit: ['stopSignInActor'],
 			// ...srpSignInState,
 		},
 		error: {
