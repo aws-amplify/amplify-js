@@ -59,7 +59,6 @@ export function addCommonQueryTests({
 		}
 
 		beforeEach(async () => {
-			// ({ initSchema, DataStore } = require('../src/'));
 			DataStore.configure({ storageAdapter });
 
 			// establishing a fake appsync endpoint tricks DataStore into attempting
@@ -222,7 +221,6 @@ export function addCommonQueryTests({
 		let adapter: any;
 
 		beforeEach(async () => {
-			// ({ initSchema, DataStore } = require('../src/'));
 			DataStore.configure({ storageAdapter });
 
 			// establishing a fake appsync endpoint tricks DataStore into attempting
