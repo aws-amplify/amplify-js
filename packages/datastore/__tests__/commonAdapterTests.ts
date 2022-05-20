@@ -34,6 +34,30 @@ export function addCommonQueryTests({
 		let Comment: PersistentModelConstructor<Comment>;
 		let Post: PersistentModelConstructor<Post>;
 
+		/**
+		 * Creates the given number of models, with `field1` populated to
+		 * `field1 value ${i}`.
+		 *
+		 * @param qty number of models to create. (default 3)
+		 */
+		async function addModels(qty = 3) {
+			// NOTE: sort() test on these models can be flaky unless we
+			// strictly control the datestring of each! In a non-negligible percentage
+			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
+			// quickly enough that dates were colliding. (or so it seemed!)
+			const baseDate = new Date();
+
+			for (let i = 0; i < qty; i++) {
+				await DataStore.save(
+					new Model({
+						field1: `field1 value ${i}`,
+						dateCreated: new Date(baseDate.getTime() + i).toISOString(),
+						emails: [`field${i}@example.com`],
+					})
+				);
+			}
+		}
+
 		beforeEach(async () => {
 			// ({ initSchema, DataStore } = require('../src/'));
 			DataStore.configure({ storageAdapter });
@@ -64,34 +88,7 @@ export function addCommonQueryTests({
 			// allows us to observe the state of mutations.
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
 
-			// NOTE: sort() test on these models can be flaky unless we
-			// strictly control the datestring of each! In a non-negligible percentage
-			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
-			// quickly enough that dates were colliding. (or so it seemed!)
-
-			const baseDate = new Date();
-
-			await DataStore.save(
-				new Model({
-					field1: 'field1 value 0',
-					dateCreated: baseDate.toISOString(),
-					emails: ['field1@exampl.com'],
-				})
-			);
-			await DataStore.save(
-				new Model({
-					field1: 'field1 value 1',
-					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
-					emails: ['field2@exampl.com'],
-				})
-			);
-			await DataStore.save(
-				new Model({
-					field1: 'field1 value 2',
-					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
-					emails: ['field3@exampl.com'],
-				})
-			);
+			await addModels(3);
 		});
 
 		afterAll(async () => {

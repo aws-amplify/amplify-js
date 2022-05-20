@@ -109,24 +109,6 @@ describe('SQLiteAdapter', () => {
 	sqlog = [];
 
 	/**
-	 * Creates the given number of models, with `field1` populated to
-	 * `field1 value ${i}`.
-	 *
-	 * @param qty number of models to create. (default 3)
-	 */
-	// async function addModels(qty = 3) {
-	// 	for (let i = 0; i < qty; i++) {
-	// 		await DataStore.save(
-	// 			new Model({
-	// 				field1: `field1 value ${i}`,
-	// 				dateCreated: new Date().toISOString(),
-	// 				emails: [],
-	// 			})
-	// 		);
-	// 	}
-	// }
-
-	/**
 	 * Gets all mutations currently in the outbox. This should include ALL
 	 * mutations created/merged, because this test group starts the sync engine,
 	 * but prevents it from syncing/clearing the outbox.
