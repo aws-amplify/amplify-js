@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.2.13...@aws-amplify/datastore-storage-adapter@1.3.0) (2022-05-12)
+
+### Features
+
+- Added ExpoSQLiteAdapter and Code Sharing for common files ([#9581](https://github.com/aws-amplify/amplify-js/issues/9581)) ([a8ed3c2](https://github.com/aws-amplify/amplify-js/commit/a8ed3c2fad0c780c8782e1729414afd51ff6b155))
+
 ## [1.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.2.12...@aws-amplify/datastore-storage-adapter@1.2.13) (2022-05-03)
 
 ### Bug Fixes
