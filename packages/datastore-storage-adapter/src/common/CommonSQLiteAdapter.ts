@@ -147,9 +147,10 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
 
-			saveStatements.add(saveStatement);
-
-			result.push([instance, opType]);
+			if (id === model.id || opType === OpType.INSERT) {
+				saveStatements.add(saveStatement);
+				result.push([instance, opType]);
+			}
 		}
 
 		await this.db.batchSave(saveStatements);

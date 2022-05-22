@@ -89,7 +89,8 @@
 			"/node_modules/",
 			"dist",
 			"lib",
-			"lib-esm"
+			"lib-esm",
+			"../datastore"
 		]
 	}
 }

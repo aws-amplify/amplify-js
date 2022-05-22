@@ -4,8 +4,9 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, Post, Comment, testSchema } from './helpers';
+import { Model, User, Profile, Post, Comment, testSchema, pause } from './helpers';
 import { Predicates } from '../src/predicates';
+import { addCommonQueryTests } from './commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -15,6 +16,19 @@ const ASAdapter = <any>AsyncStorageAdapter;
 describe('AsyncStorageAdapter tests', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	async function getMutations(adapter) {
+		await pause(250);
+		return await adapter.getAll('sync_MutationEvent');
+	}
+
+	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	addCommonQueryTests({
+		initSchema,
+		DataStore,
+		storageAdapter: AsyncStorageAdapter,
+		getMutations,
 	});
 
 	describe('Query', () => {
@@ -67,10 +81,13 @@ describe('AsyncStorageAdapter tests', () => {
 			);
 		});
 
-		it('Should call getByKey for query by key', async () => {
-			expect.assertions(4);
-			const result = await DataStore.query(Model, model1Id);
+		afterAll(async () => {
+			await DataStore.clear();
+		});
 
+		it('Should call getById for query by key', async () => {
+			const result = await DataStore.query(Model, model1Id);
+			expect.assertions(4);
 			expect(result.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
