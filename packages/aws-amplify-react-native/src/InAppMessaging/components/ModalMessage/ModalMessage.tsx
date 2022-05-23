@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,8 +11,30 @@
  * and limitations under the License.
  */
 
+import React from 'react';
+import { useDeviceOrientation, useMessageProps } from '../hooks';
+import { MessageLayout } from '../MessageLayout';
+import MessageWrapper from '../MessageWrapper';
+
+import { getLandscapeStyles, getPortraitStyles } from './styles';
 import { ModalMessageProps } from './types';
 
-export default function ModalMessage(_: ModalMessageProps) {
-	return null;
+export default function ModalMessage(props: ModalMessageProps) {
+	const { deviceOrientation, isPortraitMode } = useDeviceOrientation();
+	const messageProps = useMessageProps(
+		props,
+		isPortraitMode ? getPortraitStyles : getLandscapeStyles,
+		deviceOrientation
+	);
+	const { shouldRenderMessage, styles } = messageProps;
+
+	if (!shouldRenderMessage) {
+		return null;
+	}
+
+	return (
+		<MessageWrapper style={styles.componentWrapper}>
+			<MessageLayout {...props} {...messageProps} orientation={deviceOrientation} />
+		</MessageWrapper>
+	);
 }

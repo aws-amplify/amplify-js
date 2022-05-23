@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -20,7 +20,9 @@ import { getLineHeight } from './utils';
 
 // color
 export const COLOR_BLACK = '#000';
+export const COLOR_GREY = '#a1a1a1';
 export const COLOR_LIGHT_GREY = '#e8e8e8';
+export const COLOR_LIGHT_GREY_2 = '#d8d8d8';
 export const COLOR_WHITE = '#fff';
 
 // spacing
@@ -45,19 +47,20 @@ export const FONT_WEIGHT_BASE = '400';
 export const ICON_BUTTON_SIZE = 20;
 export const ICON_BUTTON_HIT_SLOP = 10;
 
+// shadow properties
+
+// iOS shadow values
+export const MESSAGE_SHADOW_HEIGHT = 2;
+export const MESSAGE_SHADOW_WIDTH = 2;
+export const MESSAGE_SHADOW_OPACITY = 0.1;
+export const MESSAGE_SHADOW_RADIUS = 2;
+
+// android shadow values
+export const MESSAGE_ELEVATION = 3;
+
 // component specific constants
 
 // Message UI Buttons
 
 // default value applied in React Native TouchableOpacity
-export const BUTTON_PRESSED_OPACITY = 0.2;
-
-// BannerMessage
-// iOS shadow values
-export const BANNER_SHADOW_HEIGHT = 2;
-export const BANNER_SHADOW_WIDTH = 2;
-export const BANNER_SHADOW_OPACITY = 0.1;
-export const BANNER_SHADOW_RADIUS = 2;
-
-// android shadow values
-export const BANNER_ELEVATION = 3;
+export const BUTTON_PRESSED_OPACITY = 0.8;

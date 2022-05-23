@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -12,15 +12,30 @@
  */
 
 import React from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import { Modal, ModalPropsIOS } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { styles } from './styles';
 import { MessageWrapperProps } from './types';
 
-export default function MessageWrapper({ children, style }: MessageWrapperProps) {
+const SUPPORTED_ORIENTATIONS: ModalPropsIOS['supportedOrientations'] = [
+	'portrait',
+	'portrait-upside-down',
+	'landscape',
+	'landscape-left',
+	'landscape-right',
+];
+
+export default function MessageWrapper({ children, disableSafeAreaView, style }: MessageWrapperProps) {
 	return (
-		<Modal transparent visible>
-			<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
+		<Modal transparent visible supportedOrientations={SUPPORTED_ORIENTATIONS}>
+			<SafeAreaProvider>
+				{disableSafeAreaView ? (
+					children
+				) : (
+					<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
+				)}
+			</SafeAreaProvider>
 		</Modal>
 	);
 }

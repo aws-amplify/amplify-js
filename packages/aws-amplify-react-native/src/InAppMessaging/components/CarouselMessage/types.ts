@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,8 +11,23 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentContentProps } from '../types';
+import { ViewStyle } from 'react-native';
+import {
+	InAppMessageComponentBaseProps,
+	InAppMessageComponentBaseStyle,
+	InAppMessageComponentCommonProps,
+	InAppMessageComponentContentProps,
+} from '../types';
 
-export interface CarouselMessageProps extends Omit<InAppMessageComponentBaseProps, 'content'> {
+export interface CarouselMessageProps extends InAppMessageComponentCommonProps {
 	data: InAppMessageComponentContentProps[];
+}
+
+export interface CarouselMessageItemProps extends InAppMessageComponentBaseProps {}
+
+export interface CarouselMessageStyle extends InAppMessageComponentBaseStyle {}
+
+export interface CarouselMessageComponentStyle {
+	pageIndicatorActive: ViewStyle;
+	pageIndicatorInactive: ViewStyle;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -17,7 +17,6 @@ import { Image } from 'react-native';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
-import { INITIAL_IMAGE_DIMENSIONS } from './constants';
 import { ImageDimensions, ImagePrefetchStatus, UseMessageImage } from './types';
 import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
 
@@ -39,7 +38,7 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(
 		shouldPrefetch ? ImagePrefetchStatus.FETCHING : null
 	);
-	const imageDimensions = useRef<ImageDimensions>(INITIAL_IMAGE_DIMENSIONS).current;
+	const imageDimensions = useRef<ImageDimensions>({ height: null, width: null }).current;
 
 	const isImageFetching = prefetchStatus === ImagePrefetchStatus.FETCHING;
 	const hasRenderableImage = prefetchStatus === ImagePrefetchStatus.SUCCESS;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -15,10 +15,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import isEmpty from 'lodash/isEmpty';
 
 import useMessageImage from '../useMessageImage';
-import { InAppMessageComponentProps } from '../useMessage';
+import { InAppMessageComponentBaseProps } from '../../types';
 
 import { getMessageStyle, getMessageStyleProps } from './utils';
 import { GetDefaultStyle, UseMessageProps } from './types';
+import { DeviceOrientation } from '../useDeviceOrientation';
 
 /**
  * Handle common message UI component prop logic including setting of image dimensions,
@@ -31,8 +32,9 @@ import { GetDefaultStyle, UseMessageProps } from './types';
  */
 
 export default function useMessageProps(
-	props: InAppMessageComponentProps,
-	getDefaultStyle: GetDefaultStyle
+	props: InAppMessageComponentBaseProps,
+	getDefaultStyle: GetDefaultStyle,
+	orientation: DeviceOrientation = 'portrait'
 ): UseMessageProps {
 	const { image, layout, onDisplay, primaryButton, secondaryButton } = props;
 	const hasDisplayed = useRef(false);
@@ -62,8 +64,8 @@ export default function useMessageProps(
 		const messageStyle = getMessageStyle(props);
 		const overrideStyle = props.style;
 
-		return getMessageStyleProps({ styleParams: { defaultStyle, messageStyle, overrideStyle }, layout });
-	}, [getDefaultStyle, layout, imageDimensions, props, shouldRenderMessage]);
+		return getMessageStyleProps({ styleParams: { defaultStyle, messageStyle, overrideStyle }, layout, orientation });
+	}, [getDefaultStyle, layout, imageDimensions, orientation, props, shouldRenderMessage]);
 
 	return {
 		hasButtons,

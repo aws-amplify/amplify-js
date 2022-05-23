@@ -33,6 +33,94 @@ Object {
 }
 `;
 
+exports[`getMessageStyleProps adds a bottom padding for carousel page indicators 1`] = `
+Object {
+  "body": Array [
+    Object {
+      "color": "fuschia",
+    },
+    undefined,
+    undefined,
+  ],
+  "buttonsContainer": Object {
+    "backgroundColor": "teal",
+  },
+  "componentWrapper": Array [
+    Object {
+      "backgroundColor": "gray",
+    },
+    Object {
+      "backgroundColor": "red",
+    },
+    Object {},
+    Object {},
+  ],
+  "container": Array [
+    Array [
+      Object {
+        "borderRadius": 1,
+      },
+      Object {},
+      Object {},
+    ],
+    Object {
+      "paddingBottom": 36,
+    },
+  ],
+  "contentContainer": Object {
+    "backgroundColor": "lightblue",
+  },
+  "header": Array [
+    Object {
+      "backgroundColor": "purple",
+    },
+    undefined,
+    undefined,
+  ],
+  "iconButton": Object {
+    "container": Array [
+      Object {
+        "backgroundColor": "blue",
+      },
+      undefined,
+    ],
+    "iconColor": undefined,
+  },
+  "image": Array [
+    Object {
+      "backgroundColor": "yellow",
+    },
+    undefined,
+  ],
+  "imageContainer": Object {
+    "backgroundColor": "green",
+  },
+  "primaryButton": Object {
+    "container": [Function],
+    "text": Array [
+      Object {
+        "color": "pink",
+      },
+      Object {},
+      Object {},
+    ],
+  },
+  "secondaryButton": Object {
+    "container": [Function],
+    "text": Array [
+      Object {
+        "color": "pink",
+      },
+      Object {},
+      Object {},
+    ],
+  },
+  "textContainer": Object {
+    "backgroundColor": "antiquewhite",
+  },
+}
+`;
+
 exports[`getMessageStyleProps returns the expected output in the happy path 1`] = `
 Object {
   "body": Array [
@@ -152,12 +240,7 @@ Object {
     undefined,
   ],
   "buttonsContainer": undefined,
-  "componentWrapper": Array [
-    Object {},
-    Object {},
-    Object {},
-    Object {},
-  ],
+  "componentWrapper": Object {},
   "container": Array [
     Object {},
     Object {},

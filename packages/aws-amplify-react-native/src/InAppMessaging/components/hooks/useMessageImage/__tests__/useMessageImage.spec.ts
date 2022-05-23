@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -16,7 +16,6 @@ import { renderHook } from '@testing-library/react-hooks';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage } from '@aws-amplify/notifications';
 
-import { INITIAL_IMAGE_DIMENSIONS } from '../constants';
 import { getLayoutImageDimensions, prefetchNetworkImage } from '../utils';
 import useMessageImage from '../useMessageImage';
 
@@ -50,7 +49,7 @@ describe('useMessageImage', () => {
 		// first render
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: true,
 		});
 
@@ -76,7 +75,7 @@ describe('useMessageImage', () => {
 		// first render
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: true,
 		});
 
@@ -87,7 +86,7 @@ describe('useMessageImage', () => {
 
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 	});
@@ -100,7 +99,7 @@ describe('useMessageImage', () => {
 		// first render
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: true,
 		});
 
@@ -110,7 +109,7 @@ describe('useMessageImage', () => {
 
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 	});
@@ -120,7 +119,7 @@ describe('useMessageImage', () => {
 
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 	});
@@ -130,7 +129,7 @@ describe('useMessageImage', () => {
 
 		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
+			imageDimensions: { height: null, width: null },
 			isImageFetching: false,
 		});
 	});

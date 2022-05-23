@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -14,12 +14,8 @@
 import { ReactElement } from 'react';
 import { InAppMessageAction } from '@aws-amplify/notifications';
 
-import { BannerMessageProps } from '../../BannerMessage';
-import { CarouselMessageProps } from '../../CarouselMessage';
-import { FullScreenMessageProps } from '../../FullScreenMessage';
+import { InAppMessageComponentCommonProps } from '../../types';
 
 export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
 
-export type InAppMessageComponent = (props: InAppMessageComponentProps) => ReactElement;
-
-export type InAppMessageComponentProps = BannerMessageProps | CarouselMessageProps | FullScreenMessageProps;
+export type InAppMessageComponent = (props: InAppMessageComponentCommonProps) => ReactElement;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -13,11 +13,6 @@
 
 import { ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import {
-	BANNER_ELEVATION,
-	BANNER_SHADOW_HEIGHT,
-	BANNER_SHADOW_OPACITY,
-	BANNER_SHADOW_RADIUS,
-	BANNER_SHADOW_WIDTH,
 	BORDER_RADIUS_BASE,
 	COLOR_BLACK,
 	COLOR_LIGHT_GREY,
@@ -27,6 +22,11 @@ import {
 	FONT_WEIGHT_BASE,
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
+	MESSAGE_ELEVATION,
+	MESSAGE_SHADOW_HEIGHT,
+	MESSAGE_SHADOW_OPACITY,
+	MESSAGE_SHADOW_RADIUS,
+	MESSAGE_SHADOW_WIDTH,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
@@ -63,7 +63,7 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		buttonsContainer: {
 			flexDirection: 'row',
 			justifyContent: 'center',
-			paddingHorizontal: SPACING_SMALL,
+			padding: SPACING_SMALL,
 		},
 		buttonText: {
 			fontSize: FONT_SIZE_BASE,
@@ -78,15 +78,15 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		},
 		container: {
 			backgroundColor: COLOR_WHITE,
-			elevation: BANNER_ELEVATION,
+			elevation: MESSAGE_ELEVATION,
 			margin: SPACING_EXTRA_LARGE,
 			shadowColor: COLOR_BLACK,
 			shadowOffset: {
-				width: BANNER_SHADOW_WIDTH,
-				height: BANNER_SHADOW_HEIGHT,
+				width: MESSAGE_SHADOW_WIDTH,
+				height: MESSAGE_SHADOW_HEIGHT,
 			},
-			shadowOpacity: BANNER_SHADOW_OPACITY,
-			shadowRadius: BANNER_SHADOW_RADIUS,
+			shadowOpacity: MESSAGE_SHADOW_OPACITY,
+			shadowRadius: MESSAGE_SHADOW_RADIUS,
 		},
 		contentContainer: {
 			flexDirection: 'row',
@@ -109,7 +109,6 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 		},
 		textContainer: {
 			flex: 1,
-			marginHorizontal: SPACING_SMALL,
-			paddingLeft: SPACING_MEDIUM,
+			paddingHorizontal: SPACING_MEDIUM,
 		},
 	});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -12,7 +12,6 @@
  */
 
 import { Dimensions } from 'react-native';
-import { ImageDimensions } from './types';
 
 // as images are not expected to be responsive to orientation changes get screen dimensions at app start
 const SCREEN_DIMENSIONS = Dimensions.get('screen');
@@ -33,5 +32,3 @@ export const BANNER_IMAGE_SCREEN_SIZE = BANNER_IMAGE_SCREEN_MULTIPLIER * BASE_SC
 export const CAROUSEL_IMAGE_SCREEN_SIZE = CAROUSEL_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
 export const FULL_SCREEN_IMAGE_SCREEN_SIZE = FULL_SCREEN_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
 export const MODAL_IMAGE_SCREEN_SIZE = MODAL_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
-
-export const INITIAL_IMAGE_DIMENSIONS: ImageDimensions = { height: null, width: null };

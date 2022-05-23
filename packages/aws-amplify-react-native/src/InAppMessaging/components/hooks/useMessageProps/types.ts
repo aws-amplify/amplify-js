@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -19,6 +19,7 @@ import {
 	InAppMessageComponentButtonStyle,
 	InAppMessageComponentStyle,
 } from '../../types';
+import { DeviceOrientation } from '../useDeviceOrientation';
 import { ImageDimensions } from '../useMessageImage';
 
 type InAppMessagePayloadStyle = {
@@ -39,6 +40,7 @@ export type MessageStyleProps = {
 	iconButton: { container: StyleProp<ViewStyle>; iconColor: ColorValue };
 	imageContainer: StyleProp<ViewStyle>;
 	image: StyleProp<ImageStyle>;
+	pageIndicator?: { active: StyleProp<ViewStyle>; inactive: StyleProp<ViewStyle> };
 	primaryButton: InAppMessageComponentButtonStyle;
 	secondaryButton: InAppMessageComponentButtonStyle;
 	textContainer: StyleProp<ViewStyle>;
@@ -80,6 +82,11 @@ export type MessageStylePropParams = {
 	 * message specific layout
 	 */
 	layout: InAppMessageLayout;
+
+	/**
+	 * current device orientation
+	 */
+	orientation: DeviceOrientation;
 
 	/**
 	 * style params to derive resolved style from

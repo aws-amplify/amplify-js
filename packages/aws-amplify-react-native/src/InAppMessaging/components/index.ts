@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -17,4 +17,10 @@ export { default as FullScreenMessage, FullScreenMessageProps } from './FullScre
 export { default as ModalMessage, ModalMessageProps } from './ModalMessage';
 export { default as InAppMessageDisplay } from './InAppMessageDisplay';
 
-export { InAppMessageComponentStyle, InAppMessageComponentStyles } from './types';
+export {
+	InAppMessageComponentStyle,
+	InAppMessageBannerMessageStyle,
+	InAppMessageCarouselMessageStyle,
+	InAppMessageFullScreenMessageStyle,
+	InAppMessageModalMessageStyle,
+} from './types';

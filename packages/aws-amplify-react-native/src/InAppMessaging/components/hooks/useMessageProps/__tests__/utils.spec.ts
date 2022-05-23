@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -12,17 +12,26 @@
  */
 
 import { PressableStateCallbackType, StyleProp, ViewStyle } from 'react-native';
-import { InAppMessageTextAlign } from '@aws-amplify/notifications';
+import { InAppMessageLayout, InAppMessageTextAlign } from '@aws-amplify/notifications';
 
 import { BUTTON_PRESSED_OPACITY } from '../../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../../../types';
 import { StyleParams } from '../types';
 
-import { getComponentButtonStyle, getContainerAndWrapperStyle, getMessageStyle, getMessageStyleProps } from '../utils';
+import {
+	getComponentButtonStyle,
+	getContainerAndWrapperStyle,
+	getMessageStyle,
+	getMessageStyleProps,
+	shouldFillDeviceScreen,
+} from '../utils';
+import { DeviceOrientation } from '../../useDeviceOrientation';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
 const EMPTY_STYLE = Object.freeze({});
+
+const orientation = 'portrait';
 
 describe('getComponentButtonStyle', () => {
 	const pressedOpacity = { opacity: BUTTON_PRESSED_OPACITY };
@@ -135,6 +144,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'TOP_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -160,6 +170,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -186,6 +197,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -209,6 +221,7 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const output = getContainerAndWrapperStyle({
 			layout: 'BOTTOM_BANNER',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -226,7 +239,8 @@ describe('getContainerAndWrapperStyle', () => {
 		const overrideStyle: StyleParams['overrideStyle'] = null;
 
 		const output = getContainerAndWrapperStyle({
-			layout: 'MODAL',
+			layout: 'CAROUSEL',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
@@ -266,59 +280,80 @@ describe('getMessageStyle', () => {
 });
 
 describe('getMessageStyleProps', () => {
+	const defaultStyle = {
+		body: { color: 'fuschia' },
+		buttonContainer: { backgroundColor: 'chartreuse' },
+		buttonText: { color: 'pink' },
+		buttonsContainer: { backgroundColor: 'teal' },
+		componentWrapper: { backgroundColor: 'gray' },
+		contentContainer: { backgroundColor: 'lightblue' },
+		container: { backgroundColor: 'red', borderRadius: 1 },
+		header: { backgroundColor: 'purple' },
+		iconButton: { backgroundColor: 'blue' },
+		image: { backgroundColor: 'yellow' },
+		imageContainer: { backgroundColor: 'green' },
+		textContainer: { backgroundColor: 'antiquewhite' },
+	};
+
+	const messageStyle: StyleParams['messageStyle'] = {
+		body: { textAlign: 'left' as InAppMessageTextAlign },
+		container: { backgroundColor: 'lightgray', borderRadius: 2 },
+		header: { textAlign: 'center' as InAppMessageTextAlign },
+		primaryButton: { backgroundColor: 'salmon', color: 'olive' },
+		secondaryButton: { backgroundColor: 'sand', color: 'peru' },
+	};
+
+	const overrideStyle = {
+		body: { color: 'white' },
+		closeIconButton: { backgroundColor: 'turquoise' },
+		closeIconColor: 'darkcyan',
+		container: { backgroundColor: 'lawngreen', borderRadius: 3 },
+		header: { backgroundColor: 'lightpink' },
+		image: { backgroundColor: 'royalblue' },
+		primaryButton: { container: { backgroundColor: 'seagreen' }, text: { color: 'black' } },
+		secondaryButton: { container: { backgroundColor: 'sienna' }, text: { color: 'orchid' } },
+	};
 	it('returns the expected output in the happy path', () => {
-		const defaultStyle = {
-			body: { color: 'fuschia' },
-			buttonContainer: { backgroundColor: 'chartreuse' },
-			buttonText: { color: 'pink' },
-			buttonsContainer: { backgroundColor: 'teal' },
-			componentWrapper: { backgroundColor: 'gray' },
-			contentContainer: { backgroundColor: 'lightblue' },
-			container: { backgroundColor: 'red', borderRadius: 1 },
-			header: { backgroundColor: 'purple' },
-			iconButton: { backgroundColor: 'blue' },
-			image: { backgroundColor: 'yellow' },
-			imageContainer: { backgroundColor: 'green' },
-			textContainer: { backgroundColor: 'antiquewhite' },
-		};
-
-		const messageStyle: StyleParams['messageStyle'] = {
-			body: { textAlign: 'left' as InAppMessageTextAlign },
-			container: { backgroundColor: 'lightgray', borderRadius: 2 },
-			header: { textAlign: 'center' as InAppMessageTextAlign },
-			primaryButton: { backgroundColor: 'salmon', color: 'olive' },
-			secondaryButton: { backgroundColor: 'sand', color: 'peru' },
-		};
-
-		const overrideStyle = {
-			body: { color: 'white' },
-			closeIconButton: { backgroundColor: 'turquoise' },
-			closeIconColor: 'darkcyan',
-			container: { backgroundColor: 'lawngreen', borderRadius: 3 },
-			header: { backgroundColor: 'lightpink' },
-			image: { backgroundColor: 'royalblue' },
-			primaryButton: { container: { backgroundColor: 'seagreen' }, text: { color: 'black' } },
-			secondaryButton: { container: { backgroundColor: 'sienna' }, text: { color: 'orchid' } },
-		};
-
 		const output = getMessageStyleProps({
 			layout: 'FULL_SCREEN',
+			orientation,
 			styleParams: { defaultStyle, messageStyle, overrideStyle },
 		});
 
 		expect(output).toMatchSnapshot();
 	});
 
-	it('returns the expected output when provided null style params', () => {
-		const defaultStyle: StyleParams['defaultStyle'] = null;
-		const messageStyle: StyleParams['messageStyle'] = null;
-		const overrideStyle: StyleParams['overrideStyle'] = null;
-
+	it('adds a bottom padding for carousel page indicators', () => {
 		const output = getMessageStyleProps({
-			layout: 'MODAL',
-			styleParams: { defaultStyle, messageStyle, overrideStyle },
+			layout: 'CAROUSEL',
+			orientation,
+			styleParams: { defaultStyle, messageStyle: null, overrideStyle: null },
 		});
 
 		expect(output).toMatchSnapshot();
+	});
+
+	it('returns the expected output when provided null style params', () => {
+		const output = getMessageStyleProps({
+			layout: 'MODAL',
+			orientation,
+			styleParams: { defaultStyle: null, messageStyle: null, overrideStyle: null },
+		});
+
+		expect(output).toMatchSnapshot();
+	});
+});
+
+describe('shouldFillDeviceScreen', () => {
+	it.each([
+		['BOTTOM_BANNER', 'portrait', false],
+		['MIDDLE_BANNER', 'portrait', false],
+		['TOP_BANNER', 'portrait', false],
+		['CAROUSEL', 'portrait', true],
+		['FULL_SCREEN', 'portrait', true],
+		['MODAL', 'portrait', false],
+		['MODAL', 'landscape', true],
+	])('returns the expected output for a %s layout', (layout, deviceOrientation, expected) => {
+		expect(shouldFillDeviceScreen(layout as InAppMessageLayout, deviceOrientation as DeviceOrientation)).toBe(expected);
 	});
 });

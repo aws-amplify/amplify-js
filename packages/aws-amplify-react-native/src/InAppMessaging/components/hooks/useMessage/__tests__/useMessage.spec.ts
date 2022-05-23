@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -15,7 +15,7 @@ import { InAppMessage, InAppMessageInteractionEvent, Notifications } from '@aws-
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import useInAppMessaging from '../../../../hooks/useInAppMessaging';
-import BannerMessage from '../../../BannerMessage';
+import BannerMessage, { BannerMessageProps } from '../../../BannerMessage';
 import CarouselMessage from '../../../CarouselMessage';
 import FullScreenMessage from '../../../FullScreenMessage';
 import ModalMessage from '../../../ModalMessage';
@@ -202,7 +202,7 @@ describe('useMessage', () => {
 			it('calls the expected methods via the onPress function of the primary button', () => {
 				const { props } = useMessage();
 
-				props.primaryButton.onPress();
+				(props as BannerMessageProps).primaryButton.onPress();
 
 				jest.runAllTimers();
 

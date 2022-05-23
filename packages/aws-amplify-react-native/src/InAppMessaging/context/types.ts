@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -14,13 +14,8 @@
 import { ReactNode, ReactElement } from 'react';
 import { InAppMessage } from '@aws-amplify/notifications';
 
-import {
-	BannerMessageProps,
-	CarouselMessageProps,
-	FullScreenMessageProps,
-	ModalMessageProps,
-	InAppMessageComponentStyles,
-} from '../components';
+import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps, ModalMessageProps } from '../components';
+import { InAppMessageComponentStyles } from '../components/types';
 
 export type InAppMessageComponents = {
 	BannerMessage?: (props: BannerMessageProps) => ReactElement;
