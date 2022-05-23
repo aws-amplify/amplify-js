@@ -30,11 +30,11 @@ export const subscriptionErrorMap: ErrorMap = {
 	BadRecord: () => false,
 	ConfigError: () => false,
 	Transient: observableError => {
-		const error = unwrapObserbableError(observableError);
+		const error = unwrapObservableError(observableError);
 		return connectionTimeout(error) || serverError(error);
 	},
 	Unauthorized: observableError => {
-		const error = unwrapObserbableError(observableError);
+		const error = unwrapObservableError(observableError);
 		return /Connection failed.+Unauthorized/.test(error.message);
 	},
 };
@@ -47,7 +47,13 @@ export const syncErrorMap: ErrorMap = {
 	Unauthorized: () => false,
 };
 
-function unwrapObserbableError(observableError: any) {
+/**
+ * Get the first error reason of an observable.
+ * Allows for error maps to be easily applied to observable errors
+ *
+ * @param observableError an error from ZenObservable subscribe error callback
+ */
+function unwrapObservableError(observableError: any) {
 	const {
 		error: { errors: [error] } = {
 			errors: [],
