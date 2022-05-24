@@ -469,7 +469,8 @@ export default class CognitoUser {
 			let userAttributes = null;
 			let rawRequiredAttributes = null;
 			const requiredAttributes = [];
-			const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+			const userAttributesPrefix =
+				authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 			if (challengeParameters) {
 				userAttributes = JSON.parse(
@@ -587,9 +588,10 @@ export default class CognitoUser {
 			return callback.onFailure(new Error('New password is required.'));
 		}
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
-		const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+		const userAttributesPrefix =
+			authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 		const finalUserAttributes = {};
 		if (requiredAttributeData) {
@@ -1485,9 +1487,8 @@ export default class CognitoUser {
 				) {
 					authenticationResult.RefreshToken = refreshToken.getToken();
 				}
-				this.signInUserSession = this.getCognitoUserSession(
-					authenticationResult
-				);
+				this.signInUserSession =
+					this.getCognitoUserSession(authenticationResult);
 				this.cacheTokens();
 				return wrappedCallback(null, this.signInUserSession);
 			}
