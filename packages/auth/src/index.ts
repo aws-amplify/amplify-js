@@ -32,12 +32,6 @@ export {
 	isAuthorizationToken,
 } from './types';
 
-// NOTE: temporary type to satisfy the Typescript compiler
-enum o {
-	A = 'A',
-}
-export { o as GRAPHQL_AUTH_MODE };
-
 export { Auth } from './Auth';
 export { Auth as default } from './Auth';
 export * from './types';
