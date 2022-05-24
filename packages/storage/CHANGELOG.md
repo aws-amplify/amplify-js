@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.24...@aws-amplify/storage@4.4.25) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.23...@aws-amplify/storage@4.4.24) (2022-05-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** throw error if all upload parts complete but upload cannot be finished ([#9317](https://github.com/aws-amplify/amplify-js/issues/9317)) ([798a8f0](https://github.com/aws-amplify/amplify-js/commit/798a8f075021582cc3e1f4f8ad239562ec4de566))
+
+
+
+
+
 ## [4.4.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.22...@aws-amplify/storage@4.4.23) (2022-05-12)
 
 **Note:** Version bump only for package @aws-amplify/storage
