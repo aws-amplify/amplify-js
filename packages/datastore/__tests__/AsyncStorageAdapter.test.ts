@@ -4,8 +4,9 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, testSchema } from './helpers';
+import { pause, Model, User, Profile, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
+import { addCommonQueryTests } from './commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -15,6 +16,19 @@ const ASAdapter = <any>AsyncStorageAdapter;
 describe('AsyncStorageAdapter tests', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	async function getMutations(adapter) {
+		await pause(250);
+		return await adapter.getAll('sync_MutationEvent');
+	}
+
+	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	addCommonQueryTests({
+		initSchema,
+		DataStore,
+		storageAdapter: AsyncStorageAdapter,
+		getMutations,
 	});
 
 	describe('Query', () => {
@@ -65,6 +79,10 @@ describe('AsyncStorageAdapter tests', () => {
 					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
+		});
+
+		afterAll(async () => {
+			await DataStore.clear();
 		});
 
 		it('Should call getById for query by id', async () => {
