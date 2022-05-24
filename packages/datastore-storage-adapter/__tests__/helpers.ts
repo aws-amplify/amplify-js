@@ -3,7 +3,6 @@ import {
 	MutableModel,
 	Schema,
 	InternalSchema,
-	SchemaModel,
 } from '@aws-amplify/datastore';
 
 export declare class Model {

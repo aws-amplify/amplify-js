@@ -5,8 +5,18 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, testSchema } from './helpers';
+import {
+	pause,
+	expectMutation,
+	Model,
+	User,
+	Profile,
+	Post,
+	Comment,
+	testSchema,
+} from './helpers';
 import { Predicates } from '../src/predicates';
+import { addCommonQueryTests } from './commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -14,9 +24,23 @@ let DataStore: typeof DataStoreType;
 const IDBAdapter = <any>Adapter;
 
 describe('IndexedDBAdapter tests', () => {
+	async function getMutations(adapter) {
+		await pause(250);
+		return await adapter.getAll('sync_MutationEvent');
+	}
+
+	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	addCommonQueryTests({
+		initSchema,
+		DataStore,
+		storageAdapter: Adapter,
+		getMutations,
+	});
+
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
+
 		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getById');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
@@ -24,6 +48,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			DataStore.configure({ storageAdapter: Adapter });
 
 			const classes = initSchema(testSchema());
 
@@ -31,22 +56,32 @@ describe('IndexedDBAdapter tests', () => {
 				Model: PersistentModelConstructor<Model>;
 			});
 
+			// NOTE: sort() test on these models can be flaky unless we
+			// strictly control the datestring of each! In a non-negligible percentage
+			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
+			// quickly enough that dates were colliding. (or so it seemed!)
+
+			const baseDate = new Date();
+
+			await DataStore.start();
+			await DataStore.clear();
+
 			({ id: model1Id } = await DataStore.save(
 				new Model({
-					field1: 'Some value',
-					dateCreated: new Date().toISOString(),
+					field1: 'field1 value 0',
+					dateCreated: baseDate.toISOString(),
 				})
 			));
 			await DataStore.save(
 				new Model({
-					field1: 'another value',
-					dateCreated: new Date().toISOString(),
+					field1: 'field1 value 1',
+					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
 				})
 			);
 			await DataStore.save(
 				new Model({
-					field1: 'a third value',
-					dateCreated: new Date().toISOString(),
+					field1: 'field1 value 2',
+					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
 		});
@@ -58,7 +93,7 @@ describe('IndexedDBAdapter tests', () => {
 		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
-			expect(result.field1).toEqual('Some value');
+			expect(result.field1).toEqual('field1 value 0');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
@@ -67,7 +102,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1('eq', 'another value')
+				c.field1('eq', 'field1 value 1')
 			);
 
 			expect(results.length).toEqual(1);
@@ -82,7 +117,7 @@ describe('IndexedDBAdapter tests', () => {
 			});
 
 			expect(results.length).toEqual(3);
-			expect(results[0].field1).toEqual('a third value');
+			expect(results[0].field1).toEqual('field1 value 2');
 			expect(spyOnGetAll).toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
 			expect(spyOnMemory).toHaveBeenCalled();
@@ -153,52 +188,6 @@ describe('IndexedDBAdapter tests', () => {
 			// both should be undefined, even though we only explicitly deleted the user
 			expect(user).toBeUndefined;
 			expect(profile).toBeUndefined;
-		});
-	});
-
-	describe('Save', () => {
-		let User: PersistentModelConstructor<User>;
-		let Profile: PersistentModelConstructor<Profile>;
-		let profile: Profile;
-
-		beforeAll(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-
-			const classes = initSchema(testSchema());
-
-			({ User } = classes as {
-				User: PersistentModelConstructor<User>;
-			});
-
-			({ Profile } = classes as {
-				Profile: PersistentModelConstructor<Profile>;
-			});
-
-			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			);
-		});
-
-		it('should allow linking model via model field', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
-			);
-			const user1Id = savedUser.id;
-
-			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
-		});
-
-		it('should allow linking model via FK', async () => {
-			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
-			);
-			const user1Id = savedUser.id;
-
-			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
 		});
 	});
 });

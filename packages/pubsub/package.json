@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "4.3.0",
+  "version": "4.4.3",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -45,9 +45,9 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "@aws-amplify/auth": "4.5.0",
-    "@aws-amplify/cache": "4.0.38",
-    "@aws-amplify/core": "4.5.0",
+    "@aws-amplify/auth": "4.5.6",
+    "@aws-amplify/cache": "4.0.44",
+    "@aws-amplify/core": "4.5.6",
     "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",
@@ -67,12 +67,18 @@
           ],
           "allowJs": true
         }
-      }
+      },
+      "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+      "testPathIgnorePatterns": [
+        "__tests__/helpers.ts"
+      ]
     },
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testPathIgnorePatterns": [
+      "__tests__/helpers.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",

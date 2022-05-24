@@ -370,6 +370,12 @@ jobs:
       - attach_workspace:
           at: /root
       - run:
+          name: 'build sqlite3 binaries'
+          # https://github.com/TryGhost/node-sqlite3#source-install
+          command: |
+            cd packages/datastore-storage-adapter
+            npm install --build-from-source
+      - run:
           name: 'Run Amplify JS unit tests'
           command: |
             yarn test
@@ -874,6 +880,22 @@ jobs:
           sample_name: multi-part-copy-with-progress
           spec: multi-part-copy-with-progress
           browser: << parameters.browser >>
+  integ_react_graphql_api:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/api/graphql
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React GraphQL API'
+          framework: react
+          category: api
+          sample_name: graphql
+          spec: graphql
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -1049,24 +1071,25 @@ jobs:
           category: datastore
           sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
-          browser: firefox
+          browser:
+            firefox
 
-  integ_duplicate_packages:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Duplicate Package Errors'
-          framework: react
-          category: version-conflict
-          sample_name: duplicate-packages
-          spec: duplicate-packages
-          browser: << parameters.browser >>
+            # integ_duplicate_packages:
+            #   parameters:
+            #     browser:
+            #       type: string
+            #   executor: js-test-executor
+            #   <<: *test_env_vars
+            #   working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+            #   steps:
+            #     - prepare_test_env
+            #     - integ_test_js:
+            #         test_name: 'Duplicate Package Errors'
+            #         framework: react
+            #         category: version-conflict
+            #         sample_name: duplicate-packages
+            #         spec: duplicate-packages
+            #         browser: << parameters.browser >>
   integ_auth_test_cypress_no_ui:
     working_directory: ~/amplify-js-samples-staging/
     executor: js-test-executor
@@ -1091,27 +1114,6 @@ jobs:
           category: geo
           sample_name: display-map
           spec: display-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Marker Map'
-          framework: react
-          category: geo
-          sample_name: marker-map
-          spec: marker-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Cluster Map'
-          framework: react
-          category: geo
-          sample_name: cluster-marker-map
-          spec: cluster-marker-map
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Search Map'
-          framework: react
-          category: geo
-          sample_name: search-map
-          spec: search-map
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Search Outside Map'
@@ -1213,6 +1215,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_graphql_api:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -1521,16 +1532,17 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *datastore_auth_scenarios
-      - integ_duplicate_packages:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+              <<:
+                *datastore_auth_scenarios
+                # - integ_duplicate_packages:
+                #     requires:
+                #       - integ_setup
+                #       - build
+                #     filters:
+                #       <<: *releasable_branches
+                #     matrix:
+                #       parameters:
+                #         <<: *test_browsers
       - integ_react_geo:
           requires:
             - integ_setup
@@ -1582,8 +1594,9 @@ workflows:
             - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
             - integ_datastore_auth_v2
-            - integ_duplicate_packages
+              # - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
+            - integ_react_graphql_api
             - integ_react_geo
       - post_release:
           filters:
