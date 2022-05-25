@@ -138,6 +138,9 @@ export const signInMachineConfig: MachineConfig<
 					target: 'initiatingPlainUsernamePasswordSignIn',
 					cond: 'isUsernamePasswordFlow',
 				},
+				{
+					target: 'error',
+				},
 			],
 		},
 		initiatingPlainUsernamePasswordSignIn: {

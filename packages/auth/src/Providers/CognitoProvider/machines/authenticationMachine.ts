@@ -109,6 +109,7 @@ const authenticationStateMachineActions: Record<
 	),
 };
 
+// TODO: How to make this more easily extensible?
 // AuthenticationState state machine
 const authenticationStateMachine: MachineConfig<
 	AuthMachineContext,

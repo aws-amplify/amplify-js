@@ -30,6 +30,7 @@ export {
 	isAWSCredentials,
 	isApiKey,
 	isAuthorizationToken,
+	GRAPHQL_AUTH_MODE,
 } from './types';
 
 export { Auth } from './Auth';
