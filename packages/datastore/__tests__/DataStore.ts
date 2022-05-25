@@ -654,6 +654,77 @@ describe('DataStore tests', () => {
 			expect(model2.optionalField1).toBeNull();
 		});
 
+		test('multiple copyOf operations carry all changes on save', async () => {
+			let model: Model;
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			const model1 = new Model({
+				dateCreated: new Date().toISOString(),
+				field1: 'original',
+				optionalField1: 'original',
+			});
+			model = model1;
+
+			await DataStore.save(model1);
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).field1 = 'field1Change1';
+				(<any>draft).optionalField1 = 'optionalField1Change1';
+			});
+
+			const model3 = Model.copyOf(model2, draft => {
+				(<any>draft).field1 = 'field1Change2';
+			});
+			model = model3;
+
+			let result = await DataStore.save(model3);
+
+			const [settingsSave, saveOriginalModel, saveModel3] = <any>(
+				save.mock.calls
+			);
+
+			const [_model, _condition, _mutator, [patches]] = saveModel3;
+
+			const expectedPatches = [
+				{
+					op: 'replace',
+					path: ['field1'],
+					value: 'field1Change2',
+				},
+				{
+					op: 'replace',
+					path: ['optionalField1'],
+					value: 'opitionalField1Change1',
+				},
+			];
+			expect(patches).toMatchObject(expectedPatches);
+		});
+
 		test('Non @model - Field cannot be changed', () => {
 			const { Metadata } = initSchema(testSchema()) as {
 				Metadata: NonModelTypeConstructor<Metadata>;
