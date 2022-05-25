@@ -1,9 +1,30 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import Observable from 'zen-observable-ts';
 import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
 } from '../src/sync/processors/subscription';
-import { SchemaModel } from '../src/types';
+import {
+	internalTestSchema,
+	Model as ModelType,
+	smallTestSchema,
+} from './helpers';
+import {
+	SchemaModel,
+	InternalSchema,
+	PersistentModelConstructor,
+} from '../src/types';
+
+let mockObservable = new Observable(() => {});
+
+// mock graphql to return a mockable observable
+jest.mock('@aws-amplify/api', () => {
+	return {
+		...jest.requireActual('@aws-amplify/api'),
+		graphql: jest.fn(() => mockObservable),
+	};
+});
 
 describe('sync engine subscription module', () => {
 	test('owner authorization', () => {
@@ -564,6 +585,111 @@ describe('sync engine subscription module', () => {
 			)
 		).toEqual(authInfo);
 	});
+});
+
+describe('error handler', () => {
+	let syncClasses: any;
+	let modelInstanceCreator: any;
+	let Model: PersistentModelConstructor<ModelType>;
+
+	let subscriptionProcessor: SubscriptionProcessor;
+	const errorHandler = jest.fn();
+	beforeEach(async () => {
+		errorHandler.mockClear();
+		subscriptionProcessor = await instantiateSubscriptionProcessor({
+			errorHandler,
+		});
+	});
+
+	test('error handler once after all retires have failed', done => {
+		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
+		mockObservable = new Observable(observer => {
+			observer.error({
+				error: {
+					errors: [
+						{
+							message,
+						},
+					],
+				},
+			});
+		});
+
+		const { DataStore } = require('../src/datastore/datastore');
+		const subscription = subscriptionProcessor.start();
+		subscription[0].subscribe({
+			error: data => {
+				console.log(data);
+				console.log(errorHandler.mock.calls);
+				// call once each for Create, Update, and Delete
+				expect(errorHandler).toHaveBeenCalledTimes(3);
+				const expected = {
+					process: 'subscribe',
+					errorType: 'Unknown',
+					message,
+					model: 'Model',
+				};
+				expect(errorHandler).toHaveBeenCalledWith(
+					expect.objectContaining({
+						...expected,
+						operation: 'Create',
+					})
+				);
+				expect(errorHandler).toHaveBeenCalledWith(
+					expect.objectContaining({
+						...expected,
+						operation: 'Update',
+					})
+				);
+				expect(errorHandler).toHaveBeenCalledWith(
+					expect.objectContaining({
+						...expected,
+						operation: 'Delete',
+					})
+				);
+
+				done();
+			},
+		});
+	}, 500);
+
+	async function instantiateSubscriptionProcessor({
+		errorHandler = () => null,
+	}) {
+		let schema: InternalSchema = internalTestSchema();
+
+		const { initSchema, DataStore } = require('../src/datastore/datastore');
+		const classes = initSchema(smallTestSchema());
+
+		({ Model } = classes as {
+			Model: PersistentModelConstructor<ModelType>;
+		});
+
+		const userClasses = {
+			Model,
+		};
+
+		await DataStore.start();
+		({ schema } = (DataStore as any).storage.storage);
+		const syncPredicates = new WeakMap();
+
+		const subscriptionProcessor = new SubscriptionProcessor(
+			schema,
+			syncPredicates,
+			{
+				aws_project_region: 'us-west-2',
+				aws_appsync_graphqlEndpoint:
+					'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+				aws_appsync_region: 'us-west-2',
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+			},
+			() => null,
+			errorHandler
+		);
+
+		return subscriptionProcessor;
+	}
 });
 
 const accessTokenPayload = {

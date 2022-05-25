@@ -994,3 +994,13 @@ export function internalTestSchema(): InternalSchema {
 		version: '1',
 	};
 }
+
+export function smallTestSchema(): Schema {
+	const schema = testSchema();
+	return {
+		...schema,
+		models: {
+			Model: schema.models.Model,
+		},
+	};
+}
