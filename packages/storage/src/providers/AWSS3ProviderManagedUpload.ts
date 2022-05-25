@@ -58,8 +58,8 @@ export class AWSS3ProviderManagedUpload {
 	private params: PutObjectRequest = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private cancel = false;
 	private s3client: S3Client;
+	private uploadId = null;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -74,79 +74,87 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	public async upload() {
-		this.body = await this.validateAndSanitizeBody(this.params.Body);
-		this.totalBytesToUpload = this.byteLength(this.body);
-		if (this.totalBytesToUpload <= this.minPartSize) {
-			// Multipart upload is not required. Upload the sanitized body as is
-			this.params.Body = this.body;
-			const putObjectCommand = new PutObjectCommand(this.params);
-			return this.s3client.send(putObjectCommand);
-		} else {
-			// Step 1: Initiate the multi part upload
-			const uploadId = await this.createMultiPartUpload();
+		try {
+			this.body = await this.validateAndSanitizeBody(this.params.Body);
+			this.totalBytesToUpload = this.byteLength(this.body);
+			if (this.totalBytesToUpload <= this.minPartSize) {
+				// Multipart upload is not required. Upload the sanitized body as is
+				this.params.Body = this.body;
+				const putObjectCommand = new PutObjectCommand(this.params);
+				return this.s3client.send(putObjectCommand);
+			} else {
+				// Step 1: Initiate the multi part upload
+				this.uploadId = await this.createMultiPartUpload();
 
-			// Step 2: Upload chunks in parallel as requested
-			const numberOfPartsToUpload = Math.ceil(
-				this.totalBytesToUpload / this.minPartSize
-			);
-
-			const parts: Part[] = this.createParts();
-			for (
-				let start = 0;
-				start < numberOfPartsToUpload;
-				start += this.queueSize
-			) {
-				/** This first block will try to cancel the upload if the cancel
-				 *	request came before any parts uploads have started.
-				 **/
-				await this.checkIfUploadCancelled(uploadId);
-
-				// Upload as many as `queueSize` parts simultaneously
-				await this.uploadParts(
-					uploadId,
-					parts.slice(start, start + this.queueSize)
+				// Step 2: Upload chunks in parallel as requested
+				const numberOfPartsToUpload = Math.ceil(
+					this.totalBytesToUpload / this.minPartSize
 				);
 
-				/** Call cleanup a second time in case there were part upload requests
-				 *  in flight. This is to ensure that all parts are cleaned up.
-				 */
-				await this.checkIfUploadCancelled(uploadId);
+				const parts: Part[] = this.createParts();
+				for (
+					let start = 0;
+					start < numberOfPartsToUpload;
+					start += this.queueSize
+				) {
+
+					// Upload as many as `queueSize` parts simultaneously
+					await this.uploadParts(
+						this.uploadId,
+						parts.slice(start, start + this.queueSize)
+					);
+				}
+
+				parts.map(part => {
+					this.removeEventListener(part);
+				});
+
+				// Step 3: Finalize the upload such that S3 can recreate the file
+				return await this.finishMultiPartUpload(this.uploadId);
 			}
-
-			parts.map(part => {
-				this.removeEventListener(part);
-			});
-
-			// Step 3: Finalize the upload such that S3 can recreate the file
-			return await this.finishMultiPartUpload(uploadId);
+		} catch (error) {
+			// if any error is thrown, call cleanup
+			await this.cleanup(this.uploadId);
+			logger.error('Error. Cancelling the multipart upload.');
+			throw error;
 		}
 	}
 
 	private createParts(): Part[] {
-		const parts: Part[] = [];
-		for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
-			const bodyEnd = Math.min(
-				bodyStart + this.minPartSize,
-				this.totalBytesToUpload
-			);
-			parts.push({
-				bodyPart: this.body.slice(bodyStart, bodyEnd),
-				partNumber: parts.length + 1,
-				emitter: new events.EventEmitter(),
-				_lastUploadedBytes: 0,
-			});
-			bodyStart += this.minPartSize;
+		try {
+			const parts: Part[] = [];
+			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
+				const bodyEnd = Math.min(
+					bodyStart + this.minPartSize,
+					this.totalBytesToUpload
+				);
+				parts.push({
+					bodyPart: this.body.slice(bodyStart, bodyEnd),
+					partNumber: parts.length + 1,
+					emitter: new events.EventEmitter(),
+					_lastUploadedBytes: 0,
+				});
+				bodyStart += this.minPartSize;
+			}
+			return parts;
+		} catch (error) {
+			logger.error(error);
+			throw error;
 		}
-		return parts;
 	}
 
 	private async createMultiPartUpload() {
-		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
-			this.params
-		);
-		const response = await this.s3client.send(createMultiPartUploadCommand);
-		logger.debug(response.UploadId);
-		return response.UploadId;
+		try {
+			const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
+				this.params
+			);
+			const response = await this.s3client.send(createMultiPartUploadCommand);
+			logger.debug(response.UploadId);
+			return response.UploadId;
+		} catch (error) {
+			logger.error(error);
+			throw error;
+		}
 	}
 
 	/**
@@ -191,11 +199,9 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			logger.error(
-				'error happened while uploading a part. Cancelling the multipart upload',
-				error
+				'Error happened while uploading a part. Cancelling the multipart upload'
 			);
-			this.cancelUpload();
-			return;
+			throw error;
 		}
 	}
 
@@ -211,29 +217,9 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-			logger.error(
-				'error happened while finishing the upload. Cancelling the multipart upload',
-				error
-			);
-			this.cancelUpload();
-			return;
+			logger.error('Error happened while finishing the upload.');
+			throw error;
 		}
-	}
-
-	private async checkIfUploadCancelled(uploadId: string) {
-		if (this.cancel) {
-			let errorMessage = 'Upload was cancelled.';
-			try {
-				await this.cleanup(uploadId);
-			} catch (error) {
-				errorMessage += ` ${error.message}`;
-			}
-			throw new Error(errorMessage);
-		}
-	}
-
-	public cancelUpload() {
-		this.cancel = true;
 	}
 
 	private async cleanup(uploadId: string) {
@@ -255,7 +241,7 @@ export class AWSS3ProviderManagedUpload {
 		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
-			throw new Error('Multi Part upload clean up failed');
+			throw new Error('Multipart upload clean up failed.');
 		}
 	}
 
