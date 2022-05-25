@@ -70,6 +70,7 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	mergePatches,
 } from '../util';
 
 setAutoFreeze(true);
@@ -483,9 +484,21 @@ const createModelClass = <T extends PersistentModel>(
 				p => (patches = p)
 			);
 
-			if (patches.length) {
-				modelPatchesMap.set(model, [patches, source]);
-				checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
+			const hasExistingPatches = modelPatchesMap.has(source);
+			if (patches.length || hasExistingPatches) {
+				if (hasExistingPatches) {
+					const [existingPatches, existingSource] = modelPatchesMap.get(source);
+					const mergedPatches = mergePatches(
+						existingSource,
+						existingPatches,
+						patches
+					);
+					modelPatchesMap.set(model, [mergedPatches, existingSource]);
+					checkReadOnlyPropertyOnUpdate(mergedPatches, modelDefinition);
+				} else {
+					modelPatchesMap.set(model, [patches, source]);
+					checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
+				}
 			}
 
 			return model;

@@ -702,7 +702,7 @@ describe('DataStore tests', () => {
 			});
 			model = model3;
 
-			let result = await DataStore.save(model3);
+			await DataStore.save(model3);
 
 			const [settingsSave, saveOriginalModel, saveModel3] = <any>(
 				save.mock.calls
@@ -719,7 +719,7 @@ describe('DataStore tests', () => {
 				{
 					op: 'replace',
 					path: ['optionalField1'],
-					value: 'opitionalField1Change1',
+					value: 'optionalField1Change1',
 				},
 			];
 			expect(patches).toMatchObject(expectedPatches);
@@ -972,9 +972,9 @@ describe('DataStore tests', () => {
 
 			const expectedPatches2 = [
 				{
-					op: 'add',
-					path: ['emails', 3],
-					value: 'joe@doe.com',
+					op: 'replace',
+					path: ['emails'],
+					value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com', 'joe@doe.com'],
 				},
 			];
 
