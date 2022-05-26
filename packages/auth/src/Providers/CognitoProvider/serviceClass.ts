@@ -30,6 +30,7 @@ import {
 	ConfirmSignInParams,
 	AmplifyUser,
 	AWSCredentials,
+	ConfirmSignUpResult,
 } from '../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from './Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
@@ -252,7 +253,7 @@ export class CognitoService {
 	async cognitoConfirmSignUp(
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
-	): Promise<SignUpResult> {
+	): Promise<ConfirmSignUpResult> {
 		const client = this.createCognitoClient(clientConfig);
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {

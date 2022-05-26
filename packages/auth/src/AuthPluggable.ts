@@ -25,6 +25,7 @@ import {
 	RequestScopeResponse,
 	AuthZOptions,
 	AuthorizationResponse,
+	ConfirmSignUpResult,
 } from './types';
 import { AuthProvider } from './types/Provider';
 
@@ -144,7 +145,7 @@ export class AuthPlugClass {
 
 	public confirmSignUp(
 		confirmSignUpParams: ConfirmSignUpParams
-	): Promise<SignUpResult> {
+	): Promise<ConfirmSignUpResult> {
 		if (this._pluggables.length > 0) {
 			return this._pluggables[0].confirmSignUp(confirmSignUpParams);
 		}

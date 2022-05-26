@@ -24,6 +24,7 @@ import {
 import {
 	SignInParams,
 	SignUpResult,
+	ConfirmSignUpResult,
 	SignUpParams,
 	ConfirmSignUpParams,
 	SignInWithPassword,
@@ -256,7 +257,7 @@ export class CognitoService {
 	async cognitoConfirmSignUp(
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
-	): Promise<SignUpResult> {
+	): Promise<ConfirmSignUpResult> {
 		const client = createCognitoClient(clientConfig);
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
@@ -515,7 +516,7 @@ async function initiateAuthPlainUsernamePassword(
 export async function cognitoConfirmSignUp(
 	clientConfig: CognitoIdentityProviderClientConfig,
 	params: ConfirmSignUpParams & { clientId: string }
-): Promise<SignUpResult> {
+): Promise<ConfirmSignUpResult> {
 	const client = createCognitoClient(clientConfig);
 	const { clientId, username, confirmationCode } = params;
 	const input: ConfirmSignUpCommandInput = {

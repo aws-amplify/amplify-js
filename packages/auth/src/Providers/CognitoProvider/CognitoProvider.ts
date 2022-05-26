@@ -13,6 +13,7 @@ import {
 	SignUpParams,
 	SignUpResult,
 	AWSCredentials,
+	ConfirmSignUpResult,
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
@@ -123,23 +124,22 @@ export class CognitoProvider implements AuthProvider {
 		return CognitoProvider.PROVIDER_NAME;
 	}
 	async signUp(params: SignUpParams): Promise<SignUpResult> {
+		if (!this.isConfigured()) {
+			throw new Error('Plugin not configured');
+		}
+		// TODO: add error handling for other edge cases...
+
 		// kick off the sign up request
 		this._authService.send(authMachineEvents.initiateSignUp(params));
 
 		// TODO: move this to the state machine, and `waitFor` the result of the promise
 		// https://xstate.js.org/docs/guides/interpretation.html#waitfor
-		const signUpRes = cognitoSignUp(
-			{
-				region: this._config.region,
-			},
-			{
-				...params,
-				clientId: this._config.clientId,
-			}
-		);
-		return signUpRes;
+
+		return this.waitForSignUpComplete();
 	}
-	async confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult> {
+	async confirmSignUp(
+		params: ConfirmSignUpParams
+	): Promise<ConfirmSignUpResult> {
 		const { username, confirmationCode } = params;
 		try {
 			const res = await cognitoConfirmSignUp(
@@ -207,6 +207,26 @@ export class CognitoProvider implements AuthProvider {
 						rej(event.error);
 					} else {
 						rej(new Error('Something went wrong during sign in'));
+					}
+				}
+			});
+		});
+	}
+
+	private async waitForSignUpComplete(): Promise<SignUpResult> {
+		console.log('awaiting sign up to complete...');
+		return new Promise<SignUpResult>((res, rej) => {
+			this._authService.onTransition((state, event) => {
+				console.log('signUp: this._authService.onTransition', { state, event });
+				if (state.matches('signedUp')) {
+					console.log(`state.matches('signedUp')`);
+					// @ts-ignore
+					res('result from promise in waitForSignUpComplete');
+				} else if (state.matches('error')) {
+					if (event.type === 'error') {
+						rej(event.error);
+					} else {
+						rej(new Error('Something went wrong during sign up'));
 					}
 				}
 			});

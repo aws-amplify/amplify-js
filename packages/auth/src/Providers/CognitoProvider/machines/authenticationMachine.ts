@@ -63,6 +63,13 @@ type AuthTypestate =
 			value: 'signingUp';
 			context: AuthMachineContext;
 	  }
+	| {
+			value: 'signedUp';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
 	| { value: 'error'; context: AuthMachineContext }
 	| {
 			value: 'signingIn';
@@ -170,6 +177,9 @@ const authenticationStateMachineActions: Record<
 					authConfig: context.config,
 					username: event.params.username,
 					password: event.params.password,
+					attributes: event.params.attributes,
+					validationData: event.params.validationData,
+					clientMetadata: event.params.clientMetadata,
 					service: context.service,
 				});
 				const signUpActorRef = spawn(machine, {
@@ -293,6 +303,6 @@ export const authMachine = createMachine<
 	guards: {},
 });
 
-const authMachineService = interpret(authMachine);
+const authMachineService = interpret(authMachine, { devTools: true });
 export type AuthMachineService = typeof authMachineService;
 export const authMachineEvents = authenticationMachineModel.events;

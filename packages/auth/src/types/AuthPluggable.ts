@@ -87,7 +87,19 @@ type ConfirmSignUpParams = {
 	username: string;
 };
 
-type SignUpResult = {};
+type SignUpResult = {
+	$metadata?: object;
+	CodeDeliveryDetails?: {
+		AttributeName?: string;
+		DeliveryMedium?: string;
+		Destination?: string;
+	};
+	UserConfirmed: boolean;
+	UserSub: string;
+	user?: AmplifyUser;
+};
+
+type ConfirmSignUpResult = {};
 
 type ConfirmSignInParams = {
 	confirmationCode: string;
@@ -187,6 +199,7 @@ export {
 	SignInParams,
 	ConfirmSignUpParams,
 	SignUpResult,
+	ConfirmSignUpResult,
 	ConfirmSignInParams,
 	AmplifyUser,
 	PluginConfig,
