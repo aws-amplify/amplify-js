@@ -43,6 +43,7 @@ import {
 	authMachineEvents,
 } from './machines/authenticationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
+import { signUpMachine, signUpMachineEvents } from './machines/signUpMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -140,24 +141,20 @@ export class CognitoProvider implements AuthProvider {
 	async confirmSignUp(
 		params: ConfirmSignUpParams
 	): Promise<ConfirmSignUpResult> {
-		const { username, confirmationCode } = params;
-		try {
-			const res = await cognitoConfirmSignUp(
-				{
-					region: this._config.region,
-				},
-				{
-					clientId: this._config.clientId,
-					username,
-					confirmationCode,
-				}
+		const { actorRef } = this._authService.state.context;
+		if (!actorRef && !this._authService.state.matches('signingUp')) {
+			throw new Error(
+				'Sign up proccess has not been initiated, have you called .signUp?'
 			);
-			console.log(res);
-			return res;
-		} catch (err) {
-			logger.error(err);
-			throw err;
 		}
+		const signUpActorRef = actorRef as ActorRefFrom<typeof signUpMachine>;
+		// DEBUGGING
+		signUpActorRef.subscribe(state => {
+			console.log(state);
+		});
+
+		signUpActorRef.send(signUpMachineEvents.confirmSignUp(params));
+		return this.waitForSignUpComplete();
 	}
 	private isAuthenticated() {
 		// TODO: should also check if token has expired?

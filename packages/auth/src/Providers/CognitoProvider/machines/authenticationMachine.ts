@@ -114,6 +114,7 @@ export const authenticationMachineModel = createModel(
 			) => ({ params, signInFlow }),
 			initiateSignUp: (params: SignUpParams) => ({ params }),
 			signInSuccessful: () => ({}),
+			signUpSuccessful: () => ({}),
 		},
 	}
 );
@@ -258,8 +259,28 @@ const authenticationStateMachine: MachineConfig<
 		signingUp: {
 			onEntry: [authenticationStateMachineActions.spawnSignUpActor],
 			on: {
-				cancelSignUp: 'signedOut',
-				error: 'error',
+				cancelSignUp: {
+					target: '#authenticationMachine.signedOut',
+				},
+				error: {
+					target: '#authenticationMachine.error',
+				},
+				signUpSuccessful: {
+					target: '#authenticationMachine.signedUp',
+				},
+			},
+			onExit: [
+				'stopSignUpActor',
+				(context, event) => {
+					console.log(context);
+					console.log(event);
+				},
+			],
+		},
+		signedUp: {
+			on: {
+				// TODO: what should this be?
+				// signOutRequested: 'signedOut',
 			},
 		},
 		signingIn: {

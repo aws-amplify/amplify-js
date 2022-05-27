@@ -41,7 +41,11 @@ type SignUpMachineTypestate =
 			value: 'error';
 			context: SignUpMachineContext & { error: any };
 	  }
-	| { value: 'confirmingSignUp'; context: SignUpMachineContext };
+	| { value: 'confirmingSignUp'; context: SignUpMachineContext }
+	| {
+			value: 'respondingToConfirmSignUp';
+			context: SignUpMachineContext & { confirmationCode: string };
+	  };
 
 export const signUpMachineModel = createModel(
 	{
@@ -60,17 +64,9 @@ export const signUpMachineModel = createModel(
 	} as SignUpMachineContext,
 	{
 		events: {
-			initiateSignUp: (params: {
-				username: string;
-				password: string;
-				attributes?: object;
-				validationData?: { [key: string]: any };
-				clientMetadata?: { [key: string]: string };
-			}) => ({ params }),
-			// initiateSignUp: () => ({}),
-			confirmSignUp: () => ({}),
-			// confirmSignUpSuccess: () => ({}),
-			// confirmSignUpFailure: () => ({}),
+			confirmSignUp: (params: { confirmationCode: string }) => ({
+				params,
+			}),
 		},
 	}
 );
@@ -138,6 +134,7 @@ const signUpStateMachine: MachineConfig<
 						return res;
 					} catch (err) {
 						console.error('initiatingSigningUp error: ', err);
+						throw err;
 					}
 				},
 				onDone: [
@@ -168,24 +165,39 @@ const signUpStateMachine: MachineConfig<
 			},
 		},
 		confirmingSignUp: {
-			entry: (_context, _event) => {
-				console.log('signingUpInitiated! 159', {
-					_context,
-					_event,
-				});
-			},
 			on: {
 				confirmSignUp: {
-					target: 'confirmingSignUp',
+					target: 'respondingToConfirmSignUp',
 					// TODO: what's this?
 					internal: false,
 				},
-				// confirmSignUpSuccess: {
-				// 	target: 'signedUp',
-				// },
-				// confirmSignUpFailure: {
-				// 	target: 'error',
-				// },
+			},
+		},
+		respondingToConfirmSignUp: {
+			invoke: {
+				src: async (context, event) => {
+					try {
+						const res = await context.service?.cognitoConfirmSignUp(
+							context.clientConfig,
+							{
+								clientId: context.authConfig.clientId,
+								confirmationCode: event.params.confirmationCode,
+								username: context.username,
+							}
+						);
+						console.log('respondingToConfirmSignUp', { res });
+						return res;
+					} catch (err) {
+						console.error('respondingToConfirmSignUp error: ', err);
+						throw err;
+					}
+				},
+				onDone: {
+					target: 'signedUp',
+				},
+				onError: {
+					target: 'error',
+				},
 			},
 		},
 		signedUp: {
