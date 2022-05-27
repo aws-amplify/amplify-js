@@ -32,7 +32,6 @@ type SignUpMachineTypestate =
 			value: 'initiatingSigningUp';
 			context: SignUpMachineContext;
 	  }
-	| { value: 'signingUpInitiated'; context: SignUpMachineContext }
 	| {
 			value: 'signedUp';
 			context: SignUpMachineContext;
@@ -78,8 +77,6 @@ const signUpStateMachine: MachineConfig<
 	any,
 	SignUpMachineEvents
 > = {
-	id: 'signUpState',
-	initial: 'notStarted',
 	context: {
 		service: null,
 		authConfig: {
@@ -97,6 +94,8 @@ const signUpStateMachine: MachineConfig<
 		error: undefined,
 		signUpResult: null,
 	},
+	id: 'signUpState',
+	initial: 'notStarted',
 	states: {
 		notStarted: {
 			entry: (_context, _event) => {
@@ -106,13 +105,11 @@ const signUpStateMachine: MachineConfig<
 				});
 			},
 			always: {
-				cond: 'someCond',
 				target: 'initiatingSigningUp',
 			},
 		},
 		initiatingSigningUp: {
 			invoke: {
-				id: 'InitiateSignUp',
 				src: async (context, _event) => {
 					try {
 						const res = await context.service?.cognitoSignUp(
@@ -137,39 +134,31 @@ const signUpStateMachine: MachineConfig<
 						throw err;
 					}
 				},
+				id: 'InitiateSignUp',
 				onDone: [
 					{
-						target: 'confirmingSignUp',
+						actions: assign((_context, event) => ({
+							signUpResult: { ...event.data },
+						})),
 						cond: 'needsConfirmation',
-						actions: [
-							assign((_context, event) => ({
-								signUpResult: { ...event.data },
-							})),
-						],
+						target: 'confirmingSignUp',
 					},
 					{
 						target: 'signedUp',
 					},
 				],
-				onError: {
-					target: 'error',
-					actions: [assign({ error: (_context, event) => event.data })],
-				},
-			},
-		},
-		signingUpInitiated: {
-			invoke: {
-				src: async (_context, _event) => {
-					console.log('signingUpInitiated!! 146');
-				},
+				onError: [
+					{
+						actions: assign({ error: (_context, event) => event.data }),
+						target: 'error',
+					},
+				],
 			},
 		},
 		confirmingSignUp: {
 			on: {
 				confirmSignUp: {
 					target: 'respondingToConfirmSignUp',
-					// TODO: what's this?
-					internal: false,
 				},
 			},
 		},
@@ -192,26 +181,30 @@ const signUpStateMachine: MachineConfig<
 						throw err;
 					}
 				},
-				onDone: {
-					target: 'signedUp',
-				},
-				onError: {
-					target: 'error',
-				},
+				onDone: [
+					{
+						target: 'signedUp',
+					},
+				],
+				onError: [
+					{
+						target: 'error',
+					},
+				],
 			},
 		},
 		signedUp: {
 			type: 'final',
 		},
 		error: {
+			entry: 'sendErrorToParent',
 			type: 'final',
-			entry: ['sendErrorToParent'],
 		},
 	},
 };
 
 export const signUpMachine =
-	/** @xstate-layout N4IgpgJg5mDOIC5SwJZQHYFUAOBlALgIb5gB06A9vgYQE4kQDEK6K+KxYuaW2io2CqnYV0-EAA9EAWgBsARgBMpAKwAGAOxrZATkU6AHGrXyALABoQATxmK1K0vZ3Ol89QGYNBgwF8fl1AwcGhJyKhp6SEYAY1EAMxRaAFtuIL4kEEFhFFFxKQR5DXlSHXt3eXkdIo1ZNQNLGwQ7WRLvHRUlUtl3NVMNPwCeYKJQymoiSKZxLLYcsQz86VNZDVJ3RW75bQMVxXcdBsR5dwNSRUUNHpV22T6VWUUBkEDeELIWWeIWKFTWdCgcMxWOxOL9ggBXaLRODwDIzETzUCLfQOXqmfbHYzyAzyWSHBAGUxnPTtLymDoqUymXz+Z5DPAjd7Ajjsf6-b6Aj4gkhg7AAMUIKAANuDaGBpkJZrkFjJaqd1gZyipPF5tCp8YTiSiyRSqbIni9hpxSC8OdgAJLMzhMLksrj0iXZaVI2ymHSqPQqLw9ZbOHb46R2VHXFyKNxqTwGFQG+lvE08M2Wz4MGLxRIpB1wyUIvJHEok7oaDSmRQ45buCzWRCa-Tawm6t0xtJx2LoBLJb681Nt9O8x1SxGSasOWqUxTUgwbfYadVVgonM4XK43O4PJuvRmkVvtpKd+ndne83CQ6GwWECbNzXNNbz5nTlcm9WQddyzxo1kle+tuKk0wbNzdt3TPc0gPXt6QFYVRXFLMnUHfIKxaCpix0Mxn16Us8TncdVhMHYw2cYwJz8WlKAgOBxENBljTGCIGH7HMZQQaQNFQtYFF0MM1GcXZ8TDYoCMUEM1AuCpHlpKi41tL42QTf4cAYq8mKWViSmxZVST0IT6jnaRClIZ8ahUYzZGfa4NCE9cjVCU15ItK16Nggdrz0ylSC8S4VAMYtjMKLDGj01ZDLM+4zKqSyJNjQC0w7WS0kU50hwKUxincNLqW6LSzGxAN9OC4zQuM8Lo0igDjReSAFKcxiXQQKk1FUXFqWM0wRO8nSAryr0QtMoqLJK-8N2NMBaFoChaAS+CZC9IlLmLViegMUohPxE4WkpBQtl0FQ9n2KzqJISaXJxBx3A4vQth4iyAwuU4RNQ9o+kKNKNhInwgA */
+	/** @xstate-layout N4IgpgJg5mDOIC5SwJZQHYFUAOBlALgIb5gB06A9vgYQE4kQDEio2Fq+KF6LIAHogAsAdgAMpAKwBGKQA4ATADYAnAGZhq2YqkAaEAE9EsiaU3DBEkZamLRq1QF8He1Bhw0SpFOhSdi3qFw0H3QoHEYIbjJvADcKAGsyAEkfPxIgt2xeNg4uHiR+RHNFUnllUVl1YWNRQUFFPUMEQWVSWqlhYWVFbVF5euEnF2D3Ik9vXxR-UIyQsOxGMFpaClpSbAAbYgAzVYBbUhTJ4jBZnGz2Se5eAWb5VVNROTVVbp6rRqFFeVJbaXl5HYeooJPIhiBXFg8GMyABjbjbFC0PYBM4LeHoRHItEXXLXAq3GSicTdCzyKSqCryWTCeSfBDkkyyUTlAG1ZkSZRg5wQkbQk6kWhwNjoCABAAqFAAwgikXs0REol50HFEqRIaMBULYCKxaFJTLMXK0QhYhRYf5uABtUQAXVxV3yoFuxmEpBELWUylksikb1k9NUZV+gikElp-WUEnsgnBGv5nm1uol0tl2L5i2Wq3WW3wu2R6r5HjISe4eqgBrT8r5ppV5st6Bt9oKOUdN0QRJMglUNnkGhBcjpBiEClKUejrxpfqeTh5lAgcF48eL5CoNHokAdnHxzsQ-RM5Wkg5ZfTJ9Oj7tEEivxM6omEHVUEjjRZhyuOnBmwQC5xbl23TqFM0UjiE+KiyFGFjmEG9L7qUlLEhS0bCCCEEvpkK4YliKJfpkW55O2CAgWIphcio9jUoCyi6MORFSIIpj1N65jUlyFKxjyy5vqWoopoa2E4n+eKAYSdg-MI4ZXh0LGobByhutUYhaJ0ykdOhUIrpCkC-qw-4EQSiCKA+pAKAorzKIIgISBIgb3KQ9GAve17MvREiKOpmqeEsKy0PhO5AShJggfI1mCFS94wbRFjiHI0g+tREiyGF5geQmYB+SJe7kqQh4yAoJ77kOTQALR2VyLF9MyvrVIojizkAA */
 	createMachine<
 		SignUpMachineContext,
 		SignUpMachineEvents,
@@ -224,10 +217,6 @@ export const signUpMachine =
 			})),
 		},
 		guards: {
-			someCond: () => {
-				console.log('testing `someCond`');
-				return true;
-			},
 			needsConfirmation: (_context, event) => {
 				console.log(
 					{ _context, event },
