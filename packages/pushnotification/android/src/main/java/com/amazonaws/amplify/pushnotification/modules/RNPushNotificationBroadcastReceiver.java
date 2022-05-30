@@ -15,6 +15,8 @@ package com.amazonaws.amplify.pushnotification.modules;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
@@ -22,12 +24,16 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * The Amazon Pinpoint push notification receiver.
  */
 public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
 
     private final static String LOG_TAG = "RNPushNotificationBroadcastReceiver";
+    private final static String PINPOINT_DEEPLINK_PROPERTY = "pinpoint.deeplink";
 
     private Class getMainActivityClass(Context context) {
         String packageName = context.getPackageName();
@@ -41,7 +47,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private void openApp(Context context) {
+    private void openApp(Context context, Intent notificationIntent) {
         Class intentClass = getMainActivityClass(context);
         Intent launchIntent = new Intent(context, intentClass);
         if (launchIntent == null) {
@@ -51,6 +57,21 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
 
         launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         launchIntent.setPackage(null);
+
+        Bundle notificationBundle = notificationIntent.getBundleExtra("notification");
+
+        try {
+            JSONObject json = RNPushNotificationCommon.convertJSONObject(notificationBundle);
+            if (json.has(PINPOINT_DEEPLINK_PROPERTY)) {
+                // Required to open "killed" app
+                launchIntent.setAction(Intent.ACTION_VIEW);
+                // Send deeplink to react-native's "Linking.getInitialURL()"
+                launchIntent.setData(Uri.parse(json.getString(PINPOINT_DEEPLINK_PROPERTY)));
+            }
+        } catch (JSONException e) {
+            // Do nothing
+        }
+
         context.startActivity(launchIntent);
     }
 
@@ -77,7 +98,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
                 mReactInstanceManager.createReactContextInBackground();
             }
         }
-        openApp(context);
+        openApp(context, intent);
     }
 
     private void emitNotificationOpenedEvent(ReactContext reactContext, Intent intent){
