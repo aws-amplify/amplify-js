@@ -70,7 +70,9 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	validatePredicate,
 } from '../util';
+import { has } from 'immer/dist/internal';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1188,6 +1190,7 @@ class DataStore {
 			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
+			let predicate: ModelPredicate<T>;
 
 			const generateAndEmitSnapshot = (): void => {
 				const snapshot = generateSnapshot();
@@ -1205,6 +1208,28 @@ class DataStore {
 			const { sort } = options || {};
 			const sortOptions = sort ? { sort } : undefined;
 
+			const modelDefinition = getModelDefinition(model);
+			if (isQueryOne(criteria)) {
+				predicate = ModelPredicateCreator.createForId<T>(
+					modelDefinition,
+					criteria
+				);
+			} else {
+				if (isPredicatesAll(criteria)) {
+					// Predicates.ALL means "all records", so no predicate (undefined)
+					predicate = undefined;
+				} else {
+					predicate = ModelPredicateCreator.createFromExisting(
+						modelDefinition,
+						criteria
+					);
+				}
+			}
+
+			const { predicates, type: predicateGroupType } =
+				ModelPredicateCreator.getPredicates(predicate, false) || {};
+			const hasPredicate = !!predicates;
+
 			(async () => {
 				try {
 					// first, query and return any locally-available records
@@ -1214,10 +1239,29 @@ class DataStore {
 
 					// observe the model and send a stream of updates (debounced)
 					handle = this.observe(
-						model,
+						model
 						// @ts-ignore TODO: fix this TSlint error
-						criteria
+						// criteria
 					).subscribe(({ element, model, opType }) => {
+						// We need to filter HERE instead of in `observe()` to ensure we see updated for
+						// items that ~become~ filtered-out as the result of a save. We need to remove
+						// those items from the existing snapshot.
+						if (
+							hasPredicate &&
+							!validatePredicate(element, predicateGroupType, predicates)
+						) {
+							if (
+								opType === 'UPDATE' &&
+								(items.has(element.id) || itemsChanged.has(element.id))
+							) {
+								// we need to track this as a "deleted item" to calcuate a correct page `limit`.
+								deletedItemIds.push(element.id);
+							} else {
+								// ignore updates for irrelevant/filtered items.
+								return;
+							}
+						}
+
 						// Flag items which have been recently deleted
 						// NOTE: Merging of separate operations to the same model instance is handled upstream
 						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
