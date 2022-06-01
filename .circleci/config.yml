@@ -34,7 +34,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.3.1
+      xcode: 13.4.0
     resource_class: large
 
   # For RN apps that need to be upgraded before using latest iOS/macOS
@@ -1191,6 +1191,12 @@ datastore_auth_scenarios: &datastore_auth_scenarios
 
 workflows:
   build_test_deploy:
+    # Tells CircleCI to skip this workflow when the pipeline is triggered by the scheduled source,
+    # i.e. when the canaries workflow executes
+    # https://circleci.com/docs/2.0/scheduled-pipelines/#workflows-filtering
+    when:
+      not:
+        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build:
           # TODO: remove after testing
@@ -1611,16 +1617,10 @@ workflows:
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
-    # triggers:
-    #   - schedule:
-    #       # cron: 0 12 * * 1,2,3,4,5 # noon GMT (5am PT) every weekday
-    #       cron: 40,45 * * * * # test schedule
-    #       # only adding `filters` here because it's required when using the `schedule` property
-    #       # in reality, the branch doesn't matter since we're installing amplify-js from NPM in this workflow
-    #       filters:
-    #         branches:
-    #           only:
-    #             - test-getting-started-flow
+    when:
+      and:
+        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - equal: ['Canaries', << pipeline.schedule.name >>]
     jobs:
       ## Web
       # React
