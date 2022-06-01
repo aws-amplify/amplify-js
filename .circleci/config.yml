@@ -880,6 +880,22 @@ jobs:
           sample_name: multi-part-copy-with-progress
           spec: multi-part-copy-with-progress
           browser: << parameters.browser >>
+  integ_react_graphql_api:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/api/graphql
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React GraphQL API'
+          framework: react
+          category: api
+          sample_name: graphql
+          spec: graphql
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -1057,22 +1073,22 @@ jobs:
           spec: << parameters.scenario >>
           browser: firefox
 
-  integ_duplicate_packages:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Duplicate Package Errors'
-          framework: react
-          category: version-conflict
-          sample_name: duplicate-packages
-          spec: duplicate-packages
-          browser: << parameters.browser >>
+            # integ_duplicate_packages:
+            #   parameters:
+            #     browser:
+            #       type: string
+            #   executor: js-test-executor
+            #   <<: *test_env_vars
+            #   working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+            #   steps:
+            #     - prepare_test_env
+            #     - integ_test_js:
+            #         test_name: 'Duplicate Package Errors'
+            #         framework: react
+            #         category: version-conflict
+            #         sample_name: duplicate-packages
+            #         spec: duplicate-packages
+            #         browser: << parameters.browser >>
   integ_auth_test_cypress_no_ui:
     working_directory: ~/amplify-js-samples-staging/
     executor: js-test-executor
@@ -1198,6 +1214,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_graphql_api:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -1507,15 +1532,15 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
-      - integ_duplicate_packages:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+                # - integ_duplicate_packages:
+                #     requires:
+                #       - integ_setup
+                #       - build
+                #     filters:
+                #       <<: *releasable_branches
+                #     matrix:
+                #       parameters:
+                #         <<: *test_browsers
       - integ_react_geo:
           requires:
             - integ_setup
@@ -1567,8 +1592,9 @@ workflows:
             - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
             - integ_datastore_auth_v2
-            - integ_duplicate_packages
+              # - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
+            - integ_react_graphql_api
             - integ_react_geo
       - post_release:
           filters:
