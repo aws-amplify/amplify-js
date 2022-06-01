@@ -1071,7 +1071,8 @@ jobs:
           category: datastore
           sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
-          browser: firefox
+          browser:
+            firefox
 
             # integ_duplicate_packages:
             #   parameters:
@@ -1198,12 +1199,7 @@ workflows:
       not:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
-      - build:
-          # TODO: remove after testing
-          filters:
-            branches:
-              ignore:
-                - test-getting-started-flow
+      - build
       - integ_setup:
           filters:
             <<: *releasable_branches
@@ -1542,7 +1538,8 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *datastore_auth_scenarios
+              <<:
+                *datastore_auth_scenarios
                 # - integ_duplicate_packages:
                 #     requires:
                 #       - integ_setup
@@ -1620,7 +1617,7 @@ workflows:
     when:
       and:
         - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - equal: ['Canaries', << pipeline.schedule.name >>]
+        # - equal: ['canaries', << pipeline.schedule.name >>]
     jobs:
       ## Web
       # React
