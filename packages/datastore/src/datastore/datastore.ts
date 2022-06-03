@@ -1293,6 +1293,13 @@ class DataStore {
 			})();
 
 			// TODO: abstract this function into a util file to be able to write better unit tests
+
+			/**
+			 * Combines the `items`, `itemsChanged`, and `deletedItemIds` collections into
+			 * a snapshot in the form of `{ items: T[], isSynced: boolean}`.
+			 *
+			 * SIDE EFFECT: The shared `items` collection is recreated.
+			 */
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
 				const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 				const itemsArray = [
@@ -1316,6 +1323,14 @@ class DataStore {
 				};
 			};
 
+			/**
+			 * Emits the list of items to the observer.
+			 *
+			 * SIDE EFFECT: `itemsChanged` and `deletedItemIds` are cleared to prepare
+			 * for the next snapshot.
+			 *
+			 * @param snapshot The generated items data to emit.
+			 */
 			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
 				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
@@ -1325,6 +1340,12 @@ class DataStore {
 				deletedItemIds = [];
 			};
 
+			/**
+			 * Sorts an `Array` of `T` according to the sort instructions given in the
+			 * original  `observeQuery()` call.
+			 *
+			 * @param itemsToSort A array of model type.
+			 */
 			const sortItems = (itemsToSort: T[]): void => {
 				const modelDefinition = getModelDefinition(model);
 				const pagination = this.processPagination(modelDefinition, options);
@@ -1339,7 +1360,14 @@ class DataStore {
 				}
 			};
 
-			// send one last snapshot when the model is fully synced
+			/**
+			 * Force one last snapshot when the model is fully synced.
+			 *
+			 * This reduces latency for that last snapshot, which will otherwise
+			 * wait for the configured timeout.
+			 *
+			 * @param payload The payload from the Hub event.
+			 */
 			const hubCallback = ({ payload }): void => {
 				const { event, data } = payload;
 				if (

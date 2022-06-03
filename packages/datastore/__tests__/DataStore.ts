@@ -302,11 +302,13 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		//
 		//      ( cover your eyes )
 		//
-		// this prevents pollution between tests, especially those that test observe
-		// behavior. it would seem that, due to the order in which DataStore processes
-		// observers internally, we need to inject a small async pause to let DataStore
-		// "settle" before clearing it and starting the next test -- IF NOT, we get
-		// spooky contamination between tests.
+		// this prevents pollution between tests that may include observe() calls.
+		// This is a cheap solution let DataStore "settle" before clearing it and
+		// starting the next test. If we don't do this, we get "spooky"
+		// contamination between tests.
+		//
+		// NOTE: If you know of a better way to isolate these tests, please
+		// replace this pause!
 		//
 		await pause(10);
 
