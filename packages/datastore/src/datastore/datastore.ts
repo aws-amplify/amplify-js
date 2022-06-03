@@ -1191,6 +1191,18 @@ class DataStore {
 			let handle: ZenObservable.Subscription;
 			let predicate: ModelPredicate<T>;
 
+			/**
+			 * As the name suggests, this geneates a snapshot in the form of
+			 * 	`{items: T[], isSynced: boolean}`
+			 * and sends it to the observer.
+			 *
+			 * SIDE EFFECT: The underlying generation and emission methods may touch:
+			 * 	1. `items`
+			 * 	2. `itemsChanged
+			 *  3. `deletedItemIds`
+			 *
+			 * Refer to `generateSnapshot` and `emitSnapshot` for more details.
+			 */
 			const generateAndEmitSnapshot = (): void => {
 				const snapshot = generateSnapshot();
 				emitSnapshot(snapshot);
@@ -1291,8 +1303,6 @@ class DataStore {
 					observer.error(err);
 				}
 			})();
-
-			// TODO: abstract this function into a util file to be able to write better unit tests
 
 			/**
 			 * Combines the `items`, `itemsChanged`, and `deletedItemIds` collections into
