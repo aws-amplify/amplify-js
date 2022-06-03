@@ -302,7 +302,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		//
 		//      ( cover your eyes )
 		//
-		// this prevents pollutions between tests, especially those that test observe
+		// this prevents pollution between tests, especially those that test observe
 		// behavior. it would seem that, due to the order in which DataStore processes
 		// observers internally, we need to inject a small async pause to let DataStore
 		// "settle" before clearing it and starting the next test -- IF NOT, we get
@@ -310,7 +310,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		//
 		await pause(10);
 
-		// and out of an abundance of caution:
+		// an abundance of caution
 		await DataStore.start();
 		await DataStore.clear();
 	});
@@ -404,11 +404,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}
 	});
 
-	// TODO: fix.
-	// See: https://github.com/aws-amplify/amplify-js/issues/9325
-	// The test currently times out, because the mutation is filtered before
-	// observeQuery can get ahold of it, so the last expected subscription
-	// message never even arrives.
+	// Fix for: https://github.com/aws-amplify/amplify-js/issues/9325
 	test('can remove newly-unmatched items out of the snapshot on subsequent saves', async done => {
 		try {
 			// watch for post snapshots.
@@ -427,13 +423,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 
 				if (expecteds.length === 1) {
-					// after the second snapshot arrives, changes a single post from
+					// After the second snapshot arrives, changes a single post from
 					//   "the post # - include"
 					// to
 					//   "edited post - omit"
 
-					// because this is intended to trigger a new, post-sync'd snapshot,
-					// we'll start with a little sanity check:
+					// This is intended to trigger a new, after-sync'd snapshot.
+					// This sanity-checks helps confirms we're testing what we think
+					// we're testing:
 					expect(
 						((DataStore as any).sync as any).getModelSyncedStatus({})
 					).toBe(true);
@@ -454,7 +451,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			});
 
 			setTimeout(async () => {
-				// creates posts like:
+				// Creates posts like:
 				//
 				// "the post 0 - include"
 				// "the post 1 - omit"
@@ -471,7 +468,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					);
 				}
 
-				// changes a single post from
+				// Changes a single post from
 				//   "the post # - include"
 				// to
 				//   "edited post - omit"

@@ -72,7 +72,6 @@ import {
 	DeferredCallbackResolver,
 	validatePredicate,
 } from '../util';
-import { has } from 'immer/dist/internal';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1237,53 +1236,54 @@ class DataStore {
 						items.set(item.id, item)
 					);
 
-					// observe the model and send a stream of updates (debounced)
-					handle = this.observe(
-						model
-						// @ts-ignore TODO: fix this TSlint error
-						// criteria
-					).subscribe(({ element, model, opType }) => {
-						// We need to filter HERE instead of in `observe()` to ensure we see updated for
-						// items that ~become~ filtered-out as the result of a save. We need to remove
-						// those items from the existing snapshot.
-						if (
-							hasPredicate &&
-							!validatePredicate(element, predicateGroupType, predicates)
-						) {
+					// Observe the model and send a stream of updates (debounced).
+					// We need to post-filter results instead of passing criteria through
+					// to have visibility into items that move from in-set to out-of-set.
+					// We need to explicitly remove those items from the existing snapshot.
+					handle = this.observe(model).subscribe(
+						({ element, model, opType }) => {
 							if (
-								opType === 'UPDATE' &&
-								(items.has(element.id) || itemsChanged.has(element.id))
+								hasPredicate &&
+								!validatePredicate(element, predicateGroupType, predicates)
 							) {
-								// we need to track this as a "deleted item" to calcuate a correct page `limit`.
+								if (
+									opType === 'UPDATE' &&
+									(items.has(element.id) || itemsChanged.has(element.id))
+								) {
+									// tracking as a "deleted item" will include the item in
+									// page limit calculations and ensure it is removed from the
+									// final items collection, regardless of which collection(s)
+									// it is currently in. (I mean, it could be in both, right!?)
+									deletedItemIds.push(element.id);
+								} else {
+									// ignore updates for irrelevant/filtered items.
+									return;
+								}
+							}
+
+							// Flag items which have been recently deleted
+							// NOTE: Merging of separate operations to the same model instance is handled upstream
+							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+							// depends on the LATEST record (for a given id).
+							if (opType === 'DELETE') {
 								deletedItemIds.push(element.id);
 							} else {
-								// ignore updates for irrelevant/filtered items.
-								return;
+								itemsChanged.set(element.id, element);
 							}
+
+							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
+
+							const limit =
+								itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
+
+							if (limit || isSynced) {
+								limitTimerRace.resolve();
+							}
+
+							// kicks off every subsequent race as results sync down
+							limitTimerRace.start();
 						}
-
-						// Flag items which have been recently deleted
-						// NOTE: Merging of separate operations to the same model instance is handled upstream
-						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
-						// depends on the LATEST record (for a given id).
-						if (opType === 'DELETE') {
-							deletedItemIds.push(element.id);
-						} else {
-							itemsChanged.set(element.id, element);
-						}
-
-						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
-
-						const limit =
-							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
-
-						if (limit || isSynced) {
-							limitTimerRace.resolve();
-						}
-
-						// kicks off every subsequent race as results sync down
-						limitTimerRace.start();
-					});
+					);
 
 					// returns a set of initial/locally-available results
 					generateAndEmitSnapshot();
