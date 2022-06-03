@@ -1197,9 +1197,7 @@ class DataStore {
 			 * and sends it to the observer.
 			 *
 			 * SIDE EFFECT: The underlying generation and emission methods may touch:
-			 * 	1. `items`
-			 * 	2. `itemsChanged
-			 *  3. `deletedItemIds`
+			 * `items`, `itemsChanged`, and `deletedItemIds`.
 			 *
 			 * Refer to `generateSnapshot` and `emitSnapshot` for more details.
 			 */
