@@ -1,19 +1,16 @@
 import {
 	createMachine,
 	MachineConfig,
-	interpret,
 	spawn,
 	assign,
 	EventFrom,
-	ActionFunctionMap,
 	AssignAction,
-	ActorRefFrom,
 } from 'xstate';
 import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
-import { SignInParams } from '../../../types';
+import { SignInParams, SignInWithSocial } from '../../../types';
 import { AuthMachineContext, AuthTypestate } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
@@ -21,15 +18,19 @@ import { CognitoService } from '../serviceClass';
 const signInActorName = 'signInActor';
 
 async function checkActiveSession(context: AuthMachineContext) {
-	if (
-		!context.config?.identityPoolId ||
-		!context.config.userPoolId ||
-		!context.service
-	) {
-		throw new Error('no configured identityPoolId and userPoolId');
+	try {
+		if (
+			!context.config?.identityPoolId ||
+			!context.config.userPoolId ||
+			!context.service
+		) {
+			throw new Error('no configured identityPoolId and userPoolId');
+		}
+		const session = await context.service.fetchSession();
+		return session;
+	} catch (err) {
+		return false;
 	}
-	const session = await context.service.fetchSession();
-	return session;
 }
 
 export const authenticationMachineModel = createModel(
@@ -47,13 +48,15 @@ export const authenticationMachineModel = createModel(
 			error: (error: any) => ({ error }),
 			signOutRequested: () => ({}),
 			signInRequested: (
-				params: SignInParams & { password?: string },
-				signInFlow: AuthFlowType
+				signInEventParams:
+					| (SignInParams & {
+							signInFlow: AuthFlowType;
+					  })
+					| SignInWithSocial
 			) => {
 				console.log('request sign in');
-				return { params, signInFlow };
+				return { signInEventParams };
 			},
-			// ({ params, signInFlow }),
 			initiateSignUp: () => ({}),
 			signInSuccessful: () => ({}),
 		},
@@ -87,22 +90,50 @@ const authenticationStateMachineActions: Record<
 	spawnSignInActor: authenticationMachineModel.assign(
 		{
 			actorRef: (context, event) => {
-				if (!context.config || event.params.signInType !== 'Password') {
+				if (
+					!context.config ||
+					(event.signInEventParams.signInType !== 'Social' &&
+						event.signInEventParams.signInType !== 'Password')
+				) {
 					// not implemented
 					return context.actorRef;
 				}
-				const machine = signInMachine.withContext({
-					clientConfig: { region: context.config?.region },
-					authConfig: context.config,
-					username: event.params.username,
-					password: event.params.password,
-					authFlow: event.signInFlow,
-					service: context.service,
-				});
-				const signInActorRef = spawn(machine, {
-					name: signInActorName,
-				});
-				return signInActorRef;
+				if (event.signInEventParams.signInType === 'Password') {
+					if (
+						event.signInEventParams.signInFlow ===
+						AuthFlowType.USER_PASSWORD_AUTH
+					) {
+						if (!event.signInEventParams.password) {
+							throw new Error('Password is required for USER_PASSWORD_AUTH');
+						}
+						const machine = signInMachine.withContext({
+							clientConfig: { region: context.config?.region },
+							authConfig: context.config,
+							username: event.signInEventParams.username,
+							password: event.signInEventParams.password,
+							authFlow: event.signInEventParams.signInFlow,
+
+							service: context.service,
+						});
+						const signInActorRef = spawn(machine, {
+							name: signInActorName,
+						});
+						return signInActorRef;
+					}
+				}
+				if (event.signInEventParams.signInType === 'Social') {
+					const machine = signInMachine.withContext({
+						clientConfig: { region: context.config?.region },
+						authConfig: context.config,
+						authFlow: 'federated',
+						service: context.service,
+						oAuthProvider: event.signInEventParams?.social?.provider,
+					});
+					const signInActorRef = spawn(machine, {
+						name: signInActorName,
+					});
+					return signInActorRef;
+				}
 			},
 		},
 		'signInRequested'
@@ -133,7 +164,7 @@ const authenticationStateMachine: MachineConfig<
 		},
 		configured: {
 			invoke: {
-				src: checkActiveSession,
+				src: 'checkActiveSession',
 				onDone: [
 					{
 						cond: (_context, event) => !!event.data,
@@ -217,6 +248,23 @@ export const authMachine = createMachine<
 		stopSignInActor: stop(signInActorName),
 	},
 	guards: {},
+	services: {
+		checkActiveSession: async context => {
+			try {
+				if (
+					!context.config?.identityPoolId ||
+					!context.config.userPoolId ||
+					!context.service
+				) {
+					throw new Error('no configured identityPoolId and userPoolId');
+				}
+				const session = await context.service.fetchSession();
+				return session;
+			} catch (err) {
+				return false;
+			}
+		},
+	},
 });
 
 export const authMachineEvents = authenticationMachineModel.events;

@@ -20,7 +20,9 @@ import {
 	RespondToMFAChallengeOptions,
 	RespondToCompleteNewPasswordChallengeOptions,
 	assertEventType,
+	assertUserPasswordSignInContext,
 } from '../types/machines';
+import { federatedSignInMachine } from './oAuthSignInMachine';
 
 export const signInMachineModel = createModel(
 	{
@@ -30,7 +32,6 @@ export const signInMachineModel = createModel(
 			clientId: '',
 			region: '',
 		},
-		username: '',
 		service: null,
 	} as SignInMachineContext,
 	{
@@ -79,6 +80,7 @@ async function respondToNewPasswordChallenge(
 	context: SignInMachineContext,
 	respondToAuthChallengeOptions: RespondToCompleteNewPasswordChallengeOptions
 ) {
+	assertUserPasswordSignInContext(context);
 	return await context.service?.completeNewPassword({
 		username: context.username,
 		newPassword: respondToAuthChallengeOptions.newPassword!,
@@ -91,6 +93,7 @@ async function respondToMFAChallenge(
 	context: SignInMachineContext,
 	respondToAuthChallengeOptions: RespondToMFAChallengeOptions
 ) {
+	assertUserPasswordSignInContext(context);
 	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
 		mfaType: respondToAuthChallengeOptions.challengeName as
 			| ChallengeNameType.SOFTWARE_TOKEN_MFA
@@ -110,18 +113,7 @@ export const signInMachineConfig: MachineConfig<
 > = {
 	id: 'signInMachine',
 	initial: 'notStarted',
-	context: {
-		// TODO: should have config passed down from the parent machine
-		clientConfig: {},
-		authConfig: {
-			userPoolId: '',
-			clientId: '',
-			// hardcoded
-			region: '',
-		},
-		username: '',
-		service: null,
-	},
+	context: signInMachineModel.initialContext,
 	states: {
 		notStarted: {
 			onEntry: [
@@ -139,15 +131,38 @@ export const signInMachineConfig: MachineConfig<
 					cond: 'isUsernamePasswordFlow',
 				},
 				{
+					target: 'federatedSignIn',
+					cond: 'isFederatedSignIn',
+				},
+				{
 					target: 'error',
 				},
 			],
+		},
+		federatedSignIn: {
+			invoke: {
+				src: federatedSignInMachine,
+				data: {
+					authConfig: (context, _event) => context.authConfig,
+					oAuthStorage: (_context, _event) => window.sessionStorage,
+					scopes: (_context, _event) => [] as string[],
+					oAuthProvider: (context, _event) => context.oAuthProvider,
+				},
+				// there shouldn't be on done
+				onDone: [
+					{
+						target: 'signedIn',
+					},
+				],
+				onError: 'error',
+			},
 		},
 		initiatingPlainUsernamePasswordSignIn: {
 			invoke: {
 				id: 'InitiateAuth',
 				src: async (context, _event) => {
 					try {
+						assertUserPasswordSignInContext(context);
 						const res = await context.service?.signIn(context.clientConfig, {
 							signInType: 'Password',
 							username: context.username,
@@ -285,7 +300,11 @@ export const signInMachine = createMachine<
 			return context.authFlow === AuthFlowType.USER_PASSWORD_AUTH;
 		},
 		isSRPFlow: context => {
+			// @ts-ignore
 			return context.authFlow === AuthFlowType.USER_SRP_AUTH;
+		},
+		isFederatedSignIn: context => {
+			return context.authFlow === 'federated';
 		},
 		hasNextChallenge: (_context, event) => {
 			return (
@@ -295,6 +314,7 @@ export const signInMachine = createMachine<
 			);
 		},
 	},
+	services: {},
 });
 
 export const signInMachineEvents = signInMachineModel.events;

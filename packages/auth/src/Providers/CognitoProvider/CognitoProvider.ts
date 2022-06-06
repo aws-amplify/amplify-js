@@ -13,6 +13,7 @@ import {
 	SignUpParams,
 	SignUpResult,
 	AWSCredentials,
+	SOCIAL_PROVIDER,
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
@@ -29,6 +30,7 @@ import {
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom } from 'xstate';
+import { inspect } from '@xstate/inspect';
 import { waitFor } from 'xstate/lib/waitFor';
 import { cognitoSignUp, cognitoConfirmSignUp } from './service';
 import {
@@ -52,6 +54,18 @@ export type CognitoChallenge =
 	| 'DEVICE_PASSWORD_VERIFIER'
 	| 'ADMIN_NOSRP_AUTH';
 
+export type CognitoProviderOAuthConfig = {
+	oauth?: {
+		domain: string;
+		scope: string[];
+		redirectSignIn: string;
+		redirectSignOut: string;
+		responseType: string;
+		options?: object;
+		urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
+	};
+};
+
 export type CognitoProviderConfig = {
 	userPoolId: string;
 	clientId: string;
@@ -59,13 +73,19 @@ export type CognitoProviderConfig = {
 	storage?: Storage;
 	identityPoolId?: string;
 	clientMetadata?: { [key: string]: string };
-};
+} & CognitoProviderOAuthConfig;
 
+// FOR DEBUGGING/TESTING
 function listenToAuthHub(send: any) {
 	return Hub.listen('auth', data => {
 		send(data.payload.event);
 	});
 }
+
+// For visualization of state diagram
+inspect({
+	iframe: false,
+});
 
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
@@ -73,6 +93,7 @@ export class CognitoProvider implements AuthProvider {
 	private _authService = interpret(authMachine, { devTools: true }).start();
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
+	// TODO: we should do _storageSync where it should for React Native
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
@@ -100,12 +121,31 @@ export class CognitoProvider implements AuthProvider {
 			region: config.region,
 			clientId: config.clientId,
 			identityPoolId: config.identityPoolId,
+			oauth: config.oauth,
 		};
 		if (config.storage) {
 			this._userStorage = config.storage;
 		}
-		console.log('successfully configured cognito provider');
 		this._authService.send(authMachineEvents.configure(this._config));
+		console.log('successfully configured cognito provider');
+		if (this._handlingOAuthCodeResponse()) {
+			// wait for state machine to finish transitioning to signed out state
+			waitFor(this._authService, state => state.matches('signedOut')).then(
+				() => {
+					this._authService.send(
+						authMachineEvents.signInRequested({
+							signInType: 'Social',
+						})
+					);
+				}
+			);
+		}
+	}
+
+	private _handlingOAuthCodeResponse(): boolean {
+		if (typeof window === undefined) return false;
+		const url = new URL(window.location.href);
+		return url.search.substr(1).startsWith('code');
 	}
 
 	getCategory(): string {
@@ -158,11 +198,7 @@ export class CognitoProvider implements AuthProvider {
 			throw new Error('Plugin not configured');
 		}
 		// TODO: implement the other sign in method
-		if (
-			params.signInType === 'Link' ||
-			params.signInType === 'Social' ||
-			params.signInType === 'WebAuthn'
-		) {
+		if (params.signInType === 'Link' || params.signInType === 'WebAuthn') {
 			throw new Error('Not implemented');
 		}
 		// throw error if user is already signed in
@@ -174,7 +210,10 @@ export class CognitoProvider implements AuthProvider {
 		}
 		// kick off the sign in request
 		this._authService.send(
-			authMachineEvents.signInRequested(params, this._authFlow)
+			authMachineEvents.signInRequested({
+				...params,
+				signInFlow: this._authFlow,
+			})
 		);
 		return await this.waitForSignInComplete();
 	}
@@ -413,10 +452,12 @@ export class CognitoProvider implements AuthProvider {
 		return Boolean(this._config?.userPoolId) && Boolean(this._config?.region);
 	}
 
+	// TODO: remove this, should live inside the AuthZ machine
 	private clearCachedTokens() {
 		this._userStorage.removeItem(COGNITO_CACHE_KEY);
 	}
 
+	// TODO: remove this, should use CognitoService class
 	private createNewCognitoClient(config: {
 		region?: string;
 	}): CognitoIdentityProviderClient {
@@ -426,6 +467,7 @@ export class CognitoProvider implements AuthProvider {
 		return cognitoIdentityProviderClient;
 	}
 
+	// TODO: remove this, should use CognitoService class
 	private createNewCognitoIdentityClient(config: {
 		region?: string;
 	}): CognitoIdentityClient {

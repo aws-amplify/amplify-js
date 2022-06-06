@@ -6,7 +6,8 @@ export enum USER_PARAM_TYPE {
 }
 
 export enum SOCIAL_PROVIDER {
-	FACEBOOK = 'facebook',
+	FACEBOOK = 'Facebook',
+	GOOGLE = 'Google',
 }
 
 type SignInResult = {
@@ -53,7 +54,7 @@ export type SignInWithWebAuthn = {
 
 export type SignInWithSocial = {
 	signInType: 'Social';
-	social: {
+	social?: {
 		provider: SOCIAL_PROVIDER;
 	};
 };
