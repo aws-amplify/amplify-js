@@ -3,6 +3,9 @@
 	"plugins": ["prettier"],
 	"extends": [],
 	"jsRules": {},
+	"linterOptions": {
+		"exclude": "src/data.ts"
+	},
 	"rules": {
 		"prefer-const": true,
 		"max-line-length": [true, 120],

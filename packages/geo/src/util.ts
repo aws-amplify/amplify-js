@@ -12,6 +12,8 @@
  */
 import booleanClockwise from '@turf/boolean-clockwise';
 
+import { UNICODE_LETTER, UNICODE_NUMBER } from './data';
+
 import {
 	Longitude,
 	Latitude,
@@ -35,7 +37,10 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 }
 
 export function validateGeofenceId(geofenceId: GeofenceId): void {
-	const geofenceIdRegex = /^[-._\p{L}\p{N}]+$/iu;
+	const geofenceIdRegex = new RegExp(
+		`^[-._${UNICODE_LETTER}${UNICODE_NUMBER}]+$`,
+		'i'
+	);
 
 	// Check if geofenceId is valid
 	if (!geofenceIdRegex.test(geofenceId)) {
