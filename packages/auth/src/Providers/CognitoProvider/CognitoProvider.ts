@@ -21,6 +21,7 @@ import {
 	GetUserCommand,
 	AuthFlowType,
 	ChallengeNameType,
+	InitiateAuthCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClient,
@@ -174,6 +175,7 @@ export class CognitoProvider implements AuthProvider {
 				'Sign up proccess has not been initiated, have you called .signUp?'
 			);
 		}
+		// @ts-ignore TEMPORARY
 		const signUpActorRef = actorRef as ActorRefFrom<typeof signUpMachine>;
 		// DEBUGGING
 		signUpActorRef.subscribe(state => {

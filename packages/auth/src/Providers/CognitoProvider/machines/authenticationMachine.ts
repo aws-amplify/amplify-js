@@ -10,7 +10,7 @@ import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
-import { SignInParams, SignInWithSocial } from '../../../types';
+import { SignInParams, SignInWithSocial, SignUpParams } from '../../../types';
 import { AuthMachineContext, AuthTypestate } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
@@ -57,8 +57,9 @@ export const authenticationMachineModel = createModel(
 				console.log('request sign in');
 				return { signInEventParams };
 			},
-			initiateSignUp: () => ({}),
+			initiateSignUp: (params: SignUpParams) => ({ params }),
 			signInSuccessful: () => ({}),
+			signUpSuccessful: () => ({}),
 		},
 	}
 );

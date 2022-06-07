@@ -51,6 +51,13 @@ export type AuthTypestate =
 	  }
 	| { value: 'error'; context: AuthMachineContext }
 	| {
+			value: 'signedUp';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
 			value: 'signingIn';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
