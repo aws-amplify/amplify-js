@@ -3,12 +3,14 @@ import { CognitoService } from '../../serviceClass';
 import { AmplifyUser } from '../../../../types';
 import { ActorRefFrom } from 'xstate';
 import { signInMachine } from '../../machines/signInMachine';
+import { signUpMachine } from '../../machines/signUpMachine';
 
 export type SignInActorRef = ActorRefFrom<typeof signInMachine>;
+export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 
 export interface AuthMachineContext {
 	// TODO: union other valid actor refs here when we add more actors
-	actorRef?: SignInActorRef;
+	actorRef?: SignInActorRef | SignUpActorRef;
 	config: null | CognitoProviderConfig;
 	service: null | CognitoService;
 	session?: AmplifyUser;

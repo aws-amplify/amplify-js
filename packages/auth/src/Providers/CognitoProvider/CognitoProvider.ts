@@ -32,7 +32,6 @@ import {
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom } from 'xstate';
-import { inspect } from '@xstate/inspect';
 import { waitFor } from 'xstate/lib/waitFor';
 import { cognitoSignUp, cognitoConfirmSignUp } from './service';
 import {

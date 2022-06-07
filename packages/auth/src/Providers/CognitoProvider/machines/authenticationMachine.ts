@@ -10,12 +10,14 @@ import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
+import { signUpMachine } from './signUpMachine';
 import { SignInParams, SignInWithSocial, SignUpParams } from '../../../types';
 import { AuthMachineContext, AuthTypestate } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 
 const signInActorName = 'signInActor';
+const signUpActorName = 'signUpActor';
 
 async function checkActiveSession(context: AuthMachineContext) {
 	try {
@@ -139,6 +141,32 @@ const authenticationStateMachineActions: Record<
 		},
 		'signInRequested'
 	),
+	spawnSignUpActor: authenticationMachineModel.assign(
+		{
+			actorRef: (context, event) => {
+				if (!context.config) {
+					return context.actorRef;
+				}
+
+				// TODO: discover what context is necessary for `signUp` event
+				const machine = signUpMachine.withContext({
+					clientConfig: { region: context.config?.region },
+					authConfig: context.config,
+					username: event.params.username,
+					password: event.params.password,
+					attributes: event.params.attributes,
+					validationData: event.params.validationData,
+					clientMetadata: event.params.clientMetadata,
+					service: context.service,
+				});
+				const signUpActorRef = spawn(machine, {
+					name: signUpActorName,
+				});
+				return signUpActorRef;
+			},
+		},
+		'initiateSignUp'
+	),
 };
 
 // TODO: How to make this more easily extensible?
@@ -165,7 +193,7 @@ const authenticationStateMachine: MachineConfig<
 		},
 		configured: {
 			invoke: {
-				src: 'checkActiveSession',
+				src: checkActiveSession,
 				onDone: [
 					{
 						cond: (_context, event) => !!event.data,
