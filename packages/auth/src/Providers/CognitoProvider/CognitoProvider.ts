@@ -174,7 +174,6 @@ export class CognitoProvider implements AuthProvider {
 				'Sign up proccess has not been initiated, have you called .signUp?'
 			);
 		}
-		// @ts-ignore TEMPORARY
 		const signUpActorRef = actorRef as ActorRefFrom<typeof signUpMachine>;
 		// DEBUGGING
 		signUpActorRef.subscribe(state => {

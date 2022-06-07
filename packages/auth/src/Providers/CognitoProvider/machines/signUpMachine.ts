@@ -112,17 +112,14 @@ const signUpStateMachine: MachineConfig<
 			invoke: {
 				src: async (context, _event) => {
 					try {
-						const res = await context.service?.cognitoSignUp(
-							context.clientConfig,
-							{
-								username: context.username,
-								password: context.password,
-								attributes: context.attributes,
-								validationData: context.validationData,
-								clientMetadata: context.clientMetadata,
-								clientId: context.authConfig.clientId,
-							}
-						);
+						const res = await context.service?.signUp({
+							username: context.username,
+							password: context.password,
+							attributes: context.attributes,
+							validationData: context.validationData,
+							clientMetadata: context.clientMetadata,
+							clientId: context.authConfig.clientId,
+						});
 						console.log('signUpMachine 97!!!', { res });
 						// TODO: ask James about this
 						// if (res && typeof res.AuthenticationResult !== 'undefined') {
@@ -166,14 +163,11 @@ const signUpStateMachine: MachineConfig<
 			invoke: {
 				src: async (context, event) => {
 					try {
-						const res = await context.service?.cognitoConfirmSignUp(
-							context.clientConfig,
-							{
-								clientId: context.authConfig.clientId,
-								confirmationCode: event.params.confirmationCode,
-								username: context.username,
-							}
-						);
+						const res = await context.service?.confirmSignUp({
+							clientId: context.authConfig.clientId,
+							confirmationCode: event.params.confirmationCode,
+							username: context.username,
+						});
 						console.log('respondingToConfirmSignUp', { res });
 						return res;
 					} catch (err) {

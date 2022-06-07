@@ -94,7 +94,7 @@ async function respondToMFAChallenge(
 	respondToAuthChallengeOptions: RespondToMFAChallengeOptions
 ) {
 	assertUserPasswordSignInContext(context);
-	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
+	return await context.service?.confirmSignIn({
 		mfaType: respondToAuthChallengeOptions.challengeName as
 			| ChallengeNameType.SOFTWARE_TOKEN_MFA
 			| ChallengeNameType.SMS_MFA,
@@ -163,7 +163,7 @@ export const signInMachineConfig: MachineConfig<
 				src: async (context, _event) => {
 					try {
 						assertUserPasswordSignInContext(context);
-						const res = await context.service?.signIn(context.clientConfig, {
+						const res = await context.service?.signIn({
 							signInType: 'Password',
 							username: context.username,
 							clientId: context.authConfig.clientId,

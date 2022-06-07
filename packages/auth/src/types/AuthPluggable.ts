@@ -105,7 +105,7 @@ type SignUpResult = {
 type ConfirmSignUpResult = {};
 
 type ConfirmSignInParams = {
-	confirmationCode?: string;
+	confirmationCode: string;
 	newPassword?: string;
 	challengeName:
 		| ChallengeNameType.SMS_MFA

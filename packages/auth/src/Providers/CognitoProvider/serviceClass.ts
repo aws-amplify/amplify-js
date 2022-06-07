@@ -67,9 +67,21 @@ interface CognitoServiceConfig {
 	clientId: string;
 }
 
+/**
+ * This class serves as a layer between the CognitoProvider & the AWS SDK to make API calls to Cognito Userpool &
+ * Identity Pool a little bit easier.
+ * Client Configurations are done during the creation of the instance, so it doesn't need to be repeated on every
+ * single API call.
+ *
+ * Note: We can potentially split this into AuthN and AuthZ for users who only wants to use either Cognito Userpool &
+ * Cognito Identity Pool.
+ */
 export class CognitoService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
+	private readonly cognitoUserpoolClient: CognitoIdentityProviderClient;
+	private readonly cognitoIdentityPoolClient: CognitoIdentityClient;
+
 	constructor(
 		config: CognitoServiceConfig,
 		clientConfig: CognitoIdentityClientConfig = {}
@@ -79,6 +91,12 @@ export class CognitoService {
 			region: this.config.region,
 			...clientConfig,
 		};
+		this.cognitoUserpoolClient = new CognitoIdentityProviderClient(
+			this.clientConfig
+		);
+		this.cognitoIdentityPoolClient = new CognitoIdentityClient(
+			this.clientConfig
+		);
 	}
 	createCognitoClient() {
 		return new CognitoIdentityProviderClient(this.clientConfig);
@@ -88,12 +106,9 @@ export class CognitoService {
 		return new CognitoIdentityClient(this.clientConfig);
 	}
 
-	getSessionData(userStorage = new StorageHelper().getStorage()): {
-		accessToken: string;
-		idToken: string;
-		refreshToken: string;
-		expiration: number;
-	} | null {
+	getSessionData(
+		userStorage = new StorageHelper().getStorage()
+	): CognitoSessionData | null {
 		if (typeof userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(userStorage.getItem(COGNITO_CACHE_KEY) as string);
 		}
@@ -119,9 +134,6 @@ export class CognitoService {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
-		const cognitoIdentityClient = this.createCognitoIdentityClient();
-		// TODO: add param for cognito client config
-		const cognitoClient = this.createCognitoClient();
 		const session = this.getSessionData();
 		if (session === null) {
 			throw new Error(
@@ -132,7 +144,7 @@ export class CognitoService {
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		const getIdRes = await cognitoIdentityClient.send(
+		const getIdRes = await this.cognitoIdentityPoolClient.send(
 			new GetIdCommand({
 				IdentityPoolId: this.config.identityPoolId,
 				Logins: {
@@ -143,7 +155,7 @@ export class CognitoService {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		const getCredentialsRes = await cognitoIdentityClient.send(
+		const getCredentialsRes = await this.cognitoIdentityPoolClient.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: getIdRes.IdentityId,
 				Logins: {
@@ -156,7 +168,7 @@ export class CognitoService {
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const getUserRes = await cognitoClient.send(
+		const getUserRes = await this.cognitoUserpoolClient.send(
 			new GetUserCommand({
 				AccessToken: accessToken,
 			})
@@ -190,7 +202,6 @@ export class CognitoService {
 	}
 
 	async signIn(
-		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignInParams & {
 			password?: string;
 			clientId: string;
@@ -209,7 +220,7 @@ export class CognitoService {
 		}
 		switch (authFlow) {
 			case AuthFlowType.USER_PASSWORD_AUTH:
-				return this.initiateAuthPlainUsernamePassword(clientConfig, params);
+				return this.initiateAuthPlainUsernamePassword(params);
 			default:
 				throw new Error('Cagamos');
 		}
@@ -245,7 +256,6 @@ export class CognitoService {
 	}
 
 	async initiateAuthPlainUsernamePassword(
-		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignInWithPassword & { authFlow: AuthFlowType; clientId: string }
 	): Promise<InitiateAuthCommandOutput> {
 		const { username, password, authFlow, clientId, clientMetadata } = params;
@@ -259,28 +269,28 @@ export class CognitoService {
 			},
 			ClientMetadata: clientMetadata,
 		};
-		const client = this.createCognitoClient();
-		const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
+		const res = await this.cognitoUserpoolClient.send(
+			new InitiateAuthCommand(initiateAuthInput)
+		);
 		return res;
 	}
 
-	async cognitoConfirmSignUp(
-		clientConfig: CognitoIdentityProviderClientConfig,
+	async confirmSignUp(
 		params: ConfirmSignUpParams & { clientId: string }
 	): Promise<ConfirmSignUpResult> {
-		const client = this.createCognitoClient();
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
 			ClientId: clientId,
 			Username: username,
 			ConfirmationCode: confirmationCode,
 		};
-		const res = await client.send(new ConfirmSignUpCommand(input));
+		const res = await this.cognitoUserpoolClient.send(
+			new ConfirmSignUpCommand(input)
+		);
 		return res;
 	}
 
-	async cognitoConfirmSignIn(
-		clientConfig: CognitoIdentityProviderClientConfig,
+	async confirmSignIn(
 		params: CognitoConfirmSignInOptions
 	): Promise<RespondToAuthChallengeCommandOutput> {
 		const {
@@ -296,8 +306,7 @@ export class CognitoService {
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 		] = confirmationCode;
-		const client = this.createCognitoClient();
-		const res = await client.send(
+		const res = await this.cognitoUserpoolClient.send(
 			new RespondToAuthChallengeCommand({
 				ChallengeName: mfaType,
 				ChallengeResponses: challengeResponses,
@@ -308,11 +317,9 @@ export class CognitoService {
 		return res;
 	}
 
-	async cognitoSignUp(
-		clientConfig: CognitoIdentityProviderClientConfig,
+	async signUp(
 		params: SignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
-		const client = this.createCognitoClient();
 		const { username, password, clientId, attributes } = params;
 		const input: SignUpCommandInput = {
 			Username: username,
@@ -326,7 +333,9 @@ export class CognitoService {
 			}),
 		};
 		try {
-			const res = await client.send(new SignUpCommand(input));
+			const res = await this.cognitoUserpoolClient.send(
+				new SignUpCommand(input)
+			);
 			console.log(res);
 			return res;
 		} catch (err) {
