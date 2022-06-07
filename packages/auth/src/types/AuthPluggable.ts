@@ -1,10 +1,13 @@
+import { ChallengeNameType } from '@aws-sdk/client-cognito-identity-provider';
+
 export enum USER_PARAM_TYPE {
 	EMAIL = 'email',
 	PHONE = 'phone',
 }
 
 export enum SOCIAL_PROVIDER {
-	FACEBOOK = 'facebook',
+	FACEBOOK = 'Facebook',
+	GOOGLE = 'Google',
 }
 
 type SignInResult = {
@@ -51,7 +54,7 @@ export type SignInWithWebAuthn = {
 
 export type SignInWithSocial = {
 	signInType: 'Social';
-	social: {
+	social?: {
 		provider: SOCIAL_PROVIDER;
 	};
 };
@@ -102,7 +105,13 @@ type SignUpResult = {
 type ConfirmSignUpResult = {};
 
 type ConfirmSignInParams = {
-	confirmationCode: string;
+	confirmationCode?: string;
+	newPassword?: string;
+	challengeName:
+		| ChallengeNameType.SMS_MFA
+		| ChallengeNameType.SOFTWARE_TOKEN_MFA
+		| ChallengeNameType.NEW_PASSWORD_REQUIRED;
+	// challengeName: ChallengeNameType;
 	// default to SMS_MFA
 	mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
 	clientMetadata?: { [key: string]: string };
