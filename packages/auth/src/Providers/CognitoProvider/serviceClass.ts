@@ -2,6 +2,7 @@ import {
 	CognitoIdentityProviderClient,
 	SignUpCommandInput,
 	SignUpCommand,
+	SignUpCommandOutput,
 	ConfirmSignUpCommandInput,
 	ConfirmSignUpCommand,
 	CognitoIdentityProviderClientConfig,
@@ -125,11 +126,14 @@ export class CognitoService {
 		}
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
+		if (!AccessKeyId || !SecretKey || !Expiration) {
+			throw new Error('Invalid GetCredentialsForIdentity output shape');
+		}
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,
-			sessionToken: SessionToken,
 			expiration: Expiration,
+			sessionToken: SessionToken,
 		};
 	}
 
@@ -319,7 +323,7 @@ export class CognitoService {
 
 	async signUp(
 		params: SignUpParams & { clientId: string }
-	): Promise<SignUpResult> {
+	): Promise<SignUpCommandOutput> {
 		const { username, password, clientId, attributes } = params;
 		const input: SignUpCommandInput = {
 			Username: username,

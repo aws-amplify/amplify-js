@@ -7,7 +7,6 @@ import {
 	AssignAction,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { cacheInitiateAuthResult } from '../service';
 import {
 	AuthFlowType,
 	ChallengeNameType,
@@ -42,6 +41,7 @@ export const signInMachineModel = createModel(
 			'done.invoke.InitiateAuth': (data: InitiateAuthCommandOutput) => ({
 				data,
 			}),
+			respondPasswordVerifier: () => ({}),
 		},
 	}
 );
@@ -143,12 +143,13 @@ export const signInMachineConfig: MachineConfig<
 			invoke: {
 				src: federatedSignInMachine,
 				data: {
-					authConfig: (context, _event) => context.authConfig,
-					oAuthStorage: (_context, _event) => window.sessionStorage,
-					scopes: (_context, _event) => [] as string[],
-					oAuthProvider: (context, _event) => context.oAuthProvider,
+					// TODO: make this play well with typescript
+					authConfig: (context: any, _event: any) => context.authConfig,
+					oAuthStorage: (_context: any, _event: any) => window.sessionStorage,
+					scopes: (_context: any, _event: any) => [] as string[],
+					oAuthProvider: (context: any, _event: any) => context.oAuthProvider,
 				},
-				// there shouldn't be on done
+				// there shouldn't be on done since the user should be redirected to HostedUI
 				onDone: [
 					{
 						target: 'signedIn',
@@ -171,7 +172,10 @@ export const signInMachineConfig: MachineConfig<
 							password: context.password,
 						});
 						if (res && typeof res.AuthenticationResult !== 'undefined') {
-							cacheInitiateAuthResult(res, context.authConfig.storage);
+							context.service?.cacheInitiateAuthResult(
+								res,
+								context.authConfig.storage
+							);
 						}
 						return res;
 					} catch (err) {
@@ -210,7 +214,10 @@ export const signInMachineConfig: MachineConfig<
 					assertEventType(event, 'respondToAuthChallenge');
 					const res = await respondToAuthChallenge(context, event);
 					if (res && typeof res.AuthenticationResult !== 'undefined') {
-						cacheInitiateAuthResult(res, context.authConfig.storage);
+						context.service?.cacheInitiateAuthResult(
+							res,
+							context.authConfig.storage
+						);
 					}
 					return res;
 				},
@@ -249,12 +256,13 @@ export const signInMachineConfig: MachineConfig<
 		},
 		// these are from Preamp
 		initiatingSRPA: {
-			// on: {
-			// 	respondPasswordVerifier: 'respondingPasswordVerifier',
-			// 	throwPasswordVerifierError: 'error',
-			// 	throwAuthError: 'error',
-			// 	cancelSRPSignIn: 'cancelling',
-			// },
+			on: {
+				respondPasswordVerifier: 'respondingPasswordVerifier',
+				// error: 'error',
+				// throwPasswordVerifierError: 'error',
+				// throwAuthError: 'error',
+				// cancelSRPSignIn: 'cancelling',
+			},
 		},
 		// notStarted: {
 		// 	on: {

@@ -19,6 +19,7 @@ import { CognitoService } from '../serviceClass';
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
 
+// Note: Might be better to live inside the AuthZ machine instead of here!
 async function checkActiveSession(context: AuthMachineContext) {
 	try {
 		if (

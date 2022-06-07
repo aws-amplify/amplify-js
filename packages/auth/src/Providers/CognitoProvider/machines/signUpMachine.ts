@@ -9,7 +9,6 @@ import {
 import { createModel } from 'xstate/lib/model';
 import { CognitoService } from '../serviceClass';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { cacheInitiateAuthResult } from '../service';
 import { SignUpResult } from '../../../types/AuthPluggable';
 
 // TODO: what should we store here?
@@ -197,30 +196,28 @@ const signUpStateMachine: MachineConfig<
 	},
 };
 
-export const signUpMachine =
-	/** @xstate-layout N4IgpgJg5mDOIC5SwJZQHYFUAOBlALgIb5gB06A9vgYQE4kQDEio2Fq+KF6LIAHogAsAdgAMpAKwBGKQA4ATADYAnAGZhq2YqkAaEAE9EsiaU3DBEkZamLRq1QF8He1Bhw0SpFOhSdi3qFw0H3QoHEYIbjJvADcKAGsyAEkfPxIgt2xeNg4uHiR+RHNFUnllUVl1YWNRQUFFPUMEQWVSWqlhYWVFbVF5euEnF2D3Ik9vXxR-UIyQsOxGMFpaClpSbAAbYgAzVYBbUhTJ4jBZnGz2Se5eAWb5VVNROTVVbp6rRqFFeVJbaXl5HYeooJPIhiBXFg8GMyABjbjbFC0PYBM4LeHoRHItEXXLXAq3GSicTdCzyKSqCryWTCeSfBDkkyyUTlAG1ZkSZRg5wQkbQk6kWhwNjoCABAAqFAAwgikXs0REol50HFEqRIaMBULYCKxaFJTLMXK0QhYhRYf5uABtUQAXVxV3yoFuxmEpBELWUylksikb1k9NUZV+gikElp-WUEnsgnBGv5nm1uol0tl2L5i2Wq3WW3wu2R6r5HjISe4eqgBrT8r5ppV5st6Bt9oKOUdN0QRJMglUNnkGhBcjpBiEClKUejrxpfqeTh5lAgcF48eL5CoNHokAdnHxzsQ-RM5Wkg5ZfTJ9Oj7tEEivxM6omEHVUEjjRZhyuOnBmwQC5xbl23TqFM0UjiE+KiyFGFjmEG9L7qUlLEhS0bCCCEEvpkK4YliKJfpkW55O2CAgWIphcio9jUoCyi6MORFSIIpj1N65jUlyFKxjyy5vqWoopoa2E4n+eKAYSdg-MI4ZXh0LGobByhutUYhaJ0ykdOhUIrpCkC-qw-4EQSiCKA+pAKAorzKIIgISBIgb3KQ9GAve17MvREiKOpmqeEsKy0PhO5AShJggfI1mCFS94wbRFjiHI0g+tREiyGF5geQmYB+SJe7kqQh4yAoJ77kOTQALR2VyLF9MyvrVIojizkAA */
-	createMachine<
-		SignUpMachineContext,
-		SignUpMachineEvents,
-		SignUpMachineTypestate
-	>(signUpStateMachine, {
-		actions: {
-			sendErrorToParent: sendParent((context, _event) => ({
-				type: 'error',
-				error: context.error,
-			})),
-		},
-		guards: {
-			needsConfirmation: (_context, event) => {
-				console.log(
-					{ _context, event },
-					// @ts-ignore
-					`needsConfirmation: ${event.data.UserConfirmed === false}`
-				);
+export const signUpMachine = createMachine<
+	SignUpMachineContext,
+	SignUpMachineEvents,
+	SignUpMachineTypestate
+>(signUpStateMachine, {
+	actions: {
+		sendErrorToParent: sendParent((context, _event) => ({
+			type: 'error',
+			error: context.error,
+		})),
+	},
+	guards: {
+		needsConfirmation: (_context, event) => {
+			console.log(
+				{ _context, event },
 				// @ts-ignore
-				return event.data.UserConfirmed === false;
-			},
+				`needsConfirmation: ${event.data.UserConfirmed === false}`
+			);
+			// @ts-ignore
+			return event.data.UserConfirmed === false;
 		},
-	});
+	},
+});
 
 export const signUpMachineEvents = signUpMachineModel.events;
