@@ -274,6 +274,10 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			Post: PersistentModelConstructor<Post>;
 		});
 
+		// This prevents pollution between tests. DataStore may have processes in
+		// flight that need to settle. If we stampede ahead before we do this,
+		// we can end up in very goofy states when we try to re-init the schema.
+		await DataStore.stop();
 		await DataStore.start();
 		await DataStore.clear();
 
@@ -294,27 +298,6 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		// how many items to accumulate before `observeQuery()` sends the items
 		// to its subscriber.
 		(DataStore as any).syncPageSize = 1000;
-	});
-
-	afterEach(async () => {
-		//
-		// ~~~~ NAUGHTINESS WARNING! ~~~~
-		//
-		//      ( cover your eyes )
-		//
-		// this prevents pollution between tests that may include observe() calls.
-		// This is a cheap solution let DataStore "settle" before clearing it and
-		// starting the next test. If we don't do this, we get "spooky"
-		// contamination between tests.
-		//
-		// NOTE: If you know of a better way to isolate these tests, please
-		// replace this pause!
-		//
-		await pause(10);
-
-		// an abundance of caution
-		await DataStore.start();
-		await DataStore.clear();
 	});
 
 	test('publishes preexisting local data immediately', async done => {
