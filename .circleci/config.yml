@@ -34,7 +34,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.4.0
+      xcode: 13.2.1
     resource_class: large
 
   # For RN apps that need to be upgraded before using latest iOS/macOS
