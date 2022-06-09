@@ -383,7 +383,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						})
 					);
 				}
-			}, 100);
+			}, 1);
 		} catch (error) {
 			done(error);
 		}
@@ -515,6 +515,84 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						);
 					}
 				}, 100);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post).subscribe(
+					({ items, isSynced }) => {
+						const expected = expecteds.shift() || 0;
+						expect(items.length).toBe(expected);
+
+						for (let i = 0; i < expected; i++) {
+							expect(items[i].title).toContain(`the post`);
+						}
+
+						if (expecteds.length === 0) {
+							sub.unsubscribe();
+							done();
+						}
+					}
+				);
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 1);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot with a predicate', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post, p =>
+					p.title('beginsWith', 'the post')
+				).subscribe(({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].title).toContain(`the post`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 1);
 			} catch (error) {
 				done(error);
 			}
