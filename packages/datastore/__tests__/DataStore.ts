@@ -13,7 +13,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Comment, Model, Post, Metadata, testSchema } from './helpers';
+import { Comment, Model, Post, Metadata, testSchema, pause } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -273,6 +273,12 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			Comment: PersistentModelConstructor<Comment>;
 			Post: PersistentModelConstructor<Post>;
 		});
+
+		// This prevents pollution between tests. DataStore may have processes in
+		// flight that need to settle. If we stampede ahead before we do this,
+		// we can end up in very goofy states when we try to re-init the schema.
+		await DataStore.stop();
+		await DataStore.start();
 		await DataStore.clear();
 
 		// Fully faking or mocking the sync engine would be pretty significant.
@@ -349,46 +355,248 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}
 	});
 
-	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
+	test('can filter items', async done => {
 		try {
-			const expecteds = [5, 15];
+			const expecteds = [0, 5];
 
-			for (let i = 0; i < 5; i++) {
-				await DataStore.save(
-					new Post({
-						title: `the post ${i}`,
-					})
-				);
-			}
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
 
-			const sub = DataStore.observeQuery(Post).subscribe(
-				({ items, isSynced }) => {
-					const expected = expecteds.shift() || 0;
-					expect(items.length).toBe(expected);
-
-					for (let i = 0; i < expected; i++) {
-						expect(items[i].title).toEqual(`the post ${i}`);
-					}
-
-					if (expecteds.length === 0) {
-						sub.unsubscribe();
-						done();
-					}
+				for (const item of items) {
+					expect(item.title).toMatch('include');
 				}
-			);
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
 
 			setTimeout(async () => {
-				for (let i = 5; i < 15; i++) {
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	// Fix for: https://github.com/aws-amplify/amplify-js/issues/9325
+	test('can remove newly-unmatched items out of the snapshot on subsequent saves', async done => {
+		try {
+			// watch for post snapshots.
+			// the first "real" snapshot should include all five posts with "include"
+			// in the title. after the update to change ONE of those posts to "omit" instead,
+			// we should see a snapshot of 4 posts with the updated post removed.
+			const expecteds = [0, 4, 3];
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(async ({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (const item of items) {
+					expect(item.title).toMatch('include');
+				}
+
+				if (expecteds.length === 1) {
+					// After the second snapshot arrives, changes a single post from
+					//   "the post # - include"
+					// to
+					//   "edited post - omit"
+
+					// This is intended to trigger a new, after-sync'd snapshot.
+					// This sanity-checks helps confirms we're testing what we think
+					// we're testing:
+					expect(
+						((DataStore as any).sync as any).getModelSyncedStatus({})
+					).toBe(true);
+
+					await pause(1);
+					const itemToEdit = (
+						await DataStore.query(Post, p => p.title('contains', 'include'))
+					).pop();
+					await DataStore.save(
+						Post.copyOf(itemToEdit, draft => {
+							draft.title = 'second edited post - omit';
+						})
+					);
+				} else if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				// Creates posts like:
+				//
+				// "the post 0 - include"
+				// "the post 1 - omit"
+				// "the post 2 - include"
+				// "the post 3 - omit"
+				//
+				// etc.
+				//
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+
+				// Changes a single post from
+				//   "the post # - include"
+				// to
+				//   "edited post - omit"
+				await pause(1);
+				((DataStore as any).sync as any).getModelSyncedStatus = (model: any) =>
+					true;
+
+				// the first edit simulates a quick-turnaround update that gets
+				// applied while the first snapshot is still being generated
+				const itemToEdit = (
+					await DataStore.query(Post, p => p.title('contains', 'include'))
+				).pop();
+				await DataStore.save(
+					Post.copyOf(itemToEdit, draft => {
+						draft.title = 'first edited post - omit';
+					})
+				);
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 15];
+
+				for (let i = 0; i < 5; i++) {
 					await DataStore.save(
 						new Post({
 							title: `the post ${i}`,
 						})
 					);
 				}
-			}, 100);
-		} catch (error) {
-			done(error);
-		}
+
+				const sub = DataStore.observeQuery(Post).subscribe(
+					({ items, isSynced }) => {
+						const expected = expecteds.shift() || 0;
+						expect(items.length).toBe(expected);
+
+						for (let i = 0; i < expected; i++) {
+							expect(items[i].title).toEqual(`the post ${i}`);
+						}
+
+						if (expecteds.length === 0) {
+							sub.unsubscribe();
+							done();
+						}
+					}
+				);
+
+				setTimeout(async () => {
+					for (let i = 5; i < 15; i++) {
+						await DataStore.save(
+							new Post({
+								title: `the post ${i}`,
+							})
+						);
+					}
+				}, 100);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post).subscribe(
+					({ items, isSynced }) => {
+						const expected = expecteds.shift() || 0;
+						expect(items.length).toBe(expected);
+
+						for (let i = 0; i < expected; i++) {
+							expect(items[i].title).toContain(`the post`);
+						}
+
+						if (expecteds.length === 0) {
+							sub.unsubscribe();
+							done();
+						}
+					}
+				);
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 1);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot with a predicate', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post, p =>
+					p.title('beginsWith', 'the post')
+				).subscribe(({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].title).toContain(`the post`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 1);
+			} catch (error) {
+				done(error);
+			}
+		})();
 	});
 });
 

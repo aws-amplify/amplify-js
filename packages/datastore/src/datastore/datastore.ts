@@ -70,6 +70,7 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	validatePredicate,
 	mergePatches,
 } from '../util';
 
@@ -1201,7 +1202,18 @@ class DataStore {
 			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
+			let predicate: ModelPredicate<T>;
 
+			/**
+			 * As the name suggests, this geneates a snapshot in the form of
+			 * 	`{items: T[], isSynced: boolean}`
+			 * and sends it to the observer.
+			 *
+			 * SIDE EFFECT: The underlying generation and emission methods may touch:
+			 * `items`, `itemsChanged`, and `deletedItemIds`.
+			 *
+			 * Refer to `generateSnapshot` and `emitSnapshot` for more details.
+			 */
 			const generateAndEmitSnapshot = (): void => {
 				const snapshot = generateSnapshot();
 				emitSnapshot(snapshot);
@@ -1218,6 +1230,28 @@ class DataStore {
 			const { sort } = options || {};
 			const sortOptions = sort ? { sort } : undefined;
 
+			const modelDefinition = getModelDefinition(model);
+			if (isQueryOne(criteria)) {
+				predicate = ModelPredicateCreator.createForId<T>(
+					modelDefinition,
+					criteria
+				);
+			} else {
+				if (isPredicatesAll(criteria)) {
+					// Predicates.ALL means "all records", so no predicate (undefined)
+					predicate = undefined;
+				} else {
+					predicate = ModelPredicateCreator.createFromExisting(
+						modelDefinition,
+						criteria
+					);
+				}
+			}
+
+			const { predicates, type: predicateGroupType } =
+				ModelPredicateCreator.getPredicates(predicate, false) || {};
+			const hasPredicate = !!predicates;
+
 			(async () => {
 				try {
 					// first, query and return any locally-available records
@@ -1225,34 +1259,54 @@ class DataStore {
 						items.set(item.id, item)
 					);
 
-					// observe the model and send a stream of updates (debounced)
-					handle = this.observe(
-						model,
-						// @ts-ignore TODO: fix this TSlint error
-						criteria
-					).subscribe(({ element, model, opType }) => {
-						// Flag items which have been recently deleted
-						// NOTE: Merging of separate operations to the same model instance is handled upstream
-						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
-						// depends on the LATEST record (for a given id).
-						if (opType === 'DELETE') {
-							deletedItemIds.push(element.id);
-						} else {
-							itemsChanged.set(element.id, element);
+					// Observe the model and send a stream of updates (debounced).
+					// We need to post-filter results instead of passing criteria through
+					// to have visibility into items that move from in-set to out-of-set.
+					// We need to explicitly remove those items from the existing snapshot.
+					handle = this.observe(model).subscribe(
+						({ element, model, opType }) => {
+							if (
+								hasPredicate &&
+								!validatePredicate(element, predicateGroupType, predicates)
+							) {
+								if (
+									opType === 'UPDATE' &&
+									(items.has(element.id) || itemsChanged.has(element.id))
+								) {
+									// tracking as a "deleted item" will include the item in
+									// page limit calculations and ensure it is removed from the
+									// final items collection, regardless of which collection(s)
+									// it is currently in. (I mean, it could be in both, right!?)
+									deletedItemIds.push(element.id);
+								} else {
+									// ignore updates for irrelevant/filtered items.
+									return;
+								}
+							}
+
+							// Flag items which have been recently deleted
+							// NOTE: Merging of separate operations to the same model instance is handled upstream
+							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+							// depends on the LATEST record (for a given id).
+							if (opType === 'DELETE') {
+								deletedItemIds.push(element.id);
+							} else {
+								itemsChanged.set(element.id, element);
+							}
+
+							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
+
+							const limit =
+								itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
+
+							if (limit || isSynced) {
+								limitTimerRace.resolve();
+							}
+
+							// kicks off every subsequent race as results sync down
+							limitTimerRace.start();
 						}
-
-						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
-
-						const limit =
-							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
-
-						if (limit || isSynced) {
-							limitTimerRace.resolve();
-						}
-
-						// kicks off every subsequent race as results sync down
-						limitTimerRace.start();
-					});
+					);
 
 					// returns a set of initial/locally-available results
 					generateAndEmitSnapshot();
@@ -1261,7 +1315,12 @@ class DataStore {
 				}
 			})();
 
-			// TODO: abstract this function into a util file to be able to write better unit tests
+			/**
+			 * Combines the `items`, `itemsChanged`, and `deletedItemIds` collections into
+			 * a snapshot in the form of `{ items: T[], isSynced: boolean}`.
+			 *
+			 * SIDE EFFECT: The shared `items` collection is recreated.
+			 */
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
 				const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 				const itemsArray = [
@@ -1285,6 +1344,14 @@ class DataStore {
 				};
 			};
 
+			/**
+			 * Emits the list of items to the observer.
+			 *
+			 * SIDE EFFECT: `itemsChanged` and `deletedItemIds` are cleared to prepare
+			 * for the next snapshot.
+			 *
+			 * @param snapshot The generated items data to emit.
+			 */
 			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
 				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
@@ -1294,6 +1361,12 @@ class DataStore {
 				deletedItemIds = [];
 			};
 
+			/**
+			 * Sorts an `Array` of `T` according to the sort instructions given in the
+			 * original  `observeQuery()` call.
+			 *
+			 * @param itemsToSort A array of model type.
+			 */
 			const sortItems = (itemsToSort: T[]): void => {
 				const modelDefinition = getModelDefinition(model);
 				const pagination = this.processPagination(modelDefinition, options);
@@ -1308,7 +1381,14 @@ class DataStore {
 				}
 			};
 
-			// send one last snapshot when the model is fully synced
+			/**
+			 * Force one last snapshot when the model is fully synced.
+			 *
+			 * This reduces latency for that last snapshot, which will otherwise
+			 * wait for the configured timeout.
+			 *
+			 * @param payload The payload from the Hub event.
+			 */
 			const hubCallback = ({ payload }): void => {
 				const { event, data } = payload;
 				if (
