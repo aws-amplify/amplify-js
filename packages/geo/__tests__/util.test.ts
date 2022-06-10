@@ -15,6 +15,7 @@ import {
 	validateCoordinates,
 	validateLinearRing,
 	validatePolygon,
+	validateGeofenceId,
 	validateGeofencesInput,
 } from '../src/util';
 
@@ -124,6 +125,40 @@ describe('Geo utility functions', () => {
 			).toThrowError(
 				'polygonTooManyVertices: Polygon has more than the maximum 1000 vertices.'
 			);
+		});
+	});
+
+	describe('validateGeofenceId', () => {
+		test('should not throw an error for a geofence ID with letters and numbers', () => {
+			expect(() => validateGeofenceId('ExampleGeofence1')).not.toThrowError();
+		});
+
+		test('should not throw an error for a geofence ID with a dash', () => {
+			expect(() => validateGeofenceId('ExampleGeofence-1')).not.toThrowError();
+		});
+
+		test('should not throw an error for a geofence ID with a period', () => {
+			expect(() => validateGeofenceId('ExampleGeofence.1')).not.toThrowError();
+		});
+
+		test('should not throw an error for a geofence ID with an underscore', () => {
+			expect(() => validateGeofenceId('ExampleGeofence_1')).not.toThrowError();
+		});
+
+		test('should not throw an error for a geofence ID with non-basic Latin character', () => {
+			expect(() => validateGeofenceId('ExampleGeòfence-1')).not.toThrowError();
+		});
+
+		test('should not throw an error for a geofence ID with superscript and subscript numbers', () => {
+			expect(() => validateGeofenceId('ExampleGeofence-⁴₆')).not.toThrowError();
+		});
+
+		test('should throw an error for an empty string', () => {
+			expect(() => validateGeofenceId('')).toThrowError();
+		});
+
+		test('should throw an error for a geofence ID with an invalid character', () => {
+			expect(() => validateGeofenceId('ExampleGeofence-1&')).toThrowError();
 		});
 	});
 
