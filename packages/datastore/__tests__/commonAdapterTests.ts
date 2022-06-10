@@ -361,7 +361,6 @@ export function addCommonQueryTests({
 			expect(mutations.length).toBe(1);
 			expectMutation(mutations[0], {
 				firstName: 'new first',
-				lastName: undefined,
 				_version: v => v === undefined || v === null,
 				_lastChangedAt: v => v === undefined || v === null,
 				_deleted: v => v === undefined || v === null,

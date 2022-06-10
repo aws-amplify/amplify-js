@@ -43,7 +43,6 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
-	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
