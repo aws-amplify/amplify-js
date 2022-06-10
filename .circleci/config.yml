@@ -1194,9 +1194,8 @@ workflows:
     # i.e. when the canaries workflow executes
     # https://circleci.com/docs/2.0/scheduled-pipelines/#workflows-filtering
     when:
-      # TODO undo
-      # not:
-      equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+      not:
+        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
       - integ_setup:
@@ -1612,10 +1611,10 @@ workflows:
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
-    # when:
-    #   and:
-    #     - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-    #     - equal: [canaries, << pipeline.schedule.name >>]
+    when:
+      and:
+        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - equal: [canaries, << pipeline.schedule.name >>]
     jobs:
       ## Web
       # React
@@ -1762,7 +1761,7 @@ orbs:
                   n=0
                   until [ $n -ge $MAX_RETRY ]
                   do
-                      "<< parameters.command >>" && break
+                      "$@" && break
                       n=$[$n+1]
                       sleep << parameters.sleep >>
                   done
@@ -1771,7 +1770,7 @@ orbs:
                     exit 1
                   fi
                 }
-                retry
+                retry << parameters.command >>
               no_output_timeout: << parameters.no_output_timeout >>
 
     jobs:
