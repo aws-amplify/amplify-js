@@ -28,6 +28,7 @@ export function addCommonQueryTests({
 	DataStore,
 	storageAdapter,
 	getMutations,
+	clearOutbox,
 }) {
 	describe('Common `query()` cases', () => {
 		let Model: PersistentModelConstructor<Model>;
@@ -339,6 +340,31 @@ export function addCommonQueryTests({
 			expectMutation(mutations[1], {
 				content: 'newly created comment',
 				postId: mutations[0].modelId,
+			});
+		});
+
+		it('only includes changed fields in mutations', async () => {
+			const profile = await DataStore.save(
+				new Profile({ firstName: 'original first', lastName: 'original last' })
+			);
+
+			await clearOutbox(adapter);
+
+			await DataStore.save(
+				Profile.copyOf(profile, draft => {
+					draft.firstName = 'new first';
+				})
+			);
+
+			const mutations = await getMutations(adapter);
+
+			expect(mutations.length).toBe(1);
+			expectMutation(mutations[0], {
+				firstName: 'new first',
+				lastName: undefined,
+				_version: v => v === undefined || v === null,
+				_lastChangedAt: v => v === undefined || v === null,
+				_deleted: v => v === undefined || v === null,
 			});
 		});
 	});
