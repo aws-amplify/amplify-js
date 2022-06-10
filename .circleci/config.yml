@@ -1761,7 +1761,7 @@ orbs:
                   n=0
                   until [ $n -ge $MAX_RETRY ]
                   do
-                      << parameters.command >> && break
+                      "$@" && break
                       n=$[$n+1]
                       sleep << parameters.sleep >>
                   done
@@ -1770,7 +1770,7 @@ orbs:
                     exit 1
                   fi
                 }
-                retry
+                retry << parameters.command >>
               no_output_timeout: << parameters.no_output_timeout >>
 
     jobs:
