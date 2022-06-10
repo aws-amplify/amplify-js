@@ -4,34 +4,64 @@ export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
 }>;
 
+const connectionTimeout = error =>
+	/^Connection failed: Connection Timeout/.test(error.message);
+
+const serverError = error =>
+	/^Error: Request failed with status code 5\d\d/.test(error.message);
+
 export const mutationErrorMap: ErrorMap = {
-	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
+	BadModel: () => false,
+	BadRecord: error => {
+		const { message } = error;
+		return (
+			/^Cannot return \w+ for [\w-_]+ type/.test(message) ||
+			/^Variable '.+' has coerced Null value for NonNull type/.test(message)
+		); // newly required field, out of date client
+	},
 	ConfigError: () => false,
-	Transient: () => false,
-	Unauthorized: () => false,
+	Transient: error => connectionTimeout(error) || serverError(error),
+	Unauthorized: error =>
+		/^Request failed with status code 401/.test(error.message),
 };
 
 export const subscriptionErrorMap: ErrorMap = {
+	BadModel: () => false,
 	BadRecord: () => false,
 	ConfigError: () => false,
-	Transient: () => false,
-	Unauthorized: (givenError: any) => {
-		const {
-			error: { errors: [{ message = '' } = {}] } = {
-				errors: [],
-			},
-		} = givenError;
-		const regex = /Connection failed.+Unauthorized/;
-		return regex.test(message);
+	Transient: observableError => {
+		const error = unwrapObservableError(observableError);
+		return connectionTimeout(error) || serverError(error);
+	},
+	Unauthorized: observableError => {
+		const error = unwrapObservableError(observableError);
+		return /Connection failed.+Unauthorized/.test(error.message);
 	},
 };
 
 export const syncErrorMap: ErrorMap = {
+	BadModel: () => false,
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
-	Transient: () => false,
+	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: () => false,
 };
+
+/**
+ * Get the first error reason of an observable.
+ * Allows for error maps to be easily applied to observable errors
+ *
+ * @param observableError an error from ZenObservable subscribe error callback
+ */
+function unwrapObservableError(observableError: any) {
+	const {
+		error: { errors: [error] } = {
+			errors: [],
+		},
+	} = observableError;
+
+	return error;
+}
 
 export function getMutationErrorType(error: Error): ErrorType {
 	return mapErrorToType(mutationErrorMap, error);

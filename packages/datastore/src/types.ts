@@ -790,6 +790,7 @@ export type SyncError<T extends PersistentModel> = {
 
 export type ErrorType =
 	| 'ConfigError'
+	| 'BadModel'
 	| 'BadRecord'
 	| 'Unauthorized'
 	| 'Transient'
