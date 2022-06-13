@@ -588,8 +588,6 @@ describe('sync engine subscription module', () => {
 });
 
 describe('error handler', () => {
-	let syncClasses: any;
-	let modelInstanceCreator: any;
 	let Model: PersistentModelConstructor<ModelType>;
 
 	let subscriptionProcessor: SubscriptionProcessor;
