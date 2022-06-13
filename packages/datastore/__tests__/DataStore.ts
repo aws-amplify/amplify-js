@@ -13,7 +13,16 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Comment, Model, Post, Metadata, testSchema, pause } from './helpers';
+import {
+	Comment,
+	Model,
+	Post,
+	Profile,
+	Metadata,
+	User,
+	testSchema,
+	pause,
+} from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -265,13 +274,17 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 	let Comment: PersistentModelConstructor<Comment>;
 	let Post: PersistentModelConstructor<Post>;
+	let User: PersistentModelConstructor<User>;
+	let Profile: PersistentModelConstructor<Profile>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
-		({ Comment, Post } = classes as {
+		({ Comment, Post, User, Profile } = classes as {
 			Comment: PersistentModelConstructor<Comment>;
 			Post: PersistentModelConstructor<Post>;
+			User: PersistentModelConstructor<User>;
+			Profile: PersistentModelConstructor<Profile>;
 		});
 
 		// This prevents pollution between tests. DataStore may have processes in
@@ -597,6 +610,249 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				done(error);
 			}
 		})();
+	});
+
+	test('attaches related belongsTo properties consistently with query() on INSERT', async done => {
+		try {
+			const expecteds = [5, 15];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new Comment({
+						content: `comment content ${i}`,
+						post: await DataStore.save(
+							new Post({
+								title: `new post ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(Comment).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].content).toEqual(`comment content ${i}`);
+						expect(items[i].post.title).toEqual(`new post ${i}`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				for (let i = 5; i < 15; i++) {
+					await DataStore.save(
+						new Comment({
+							content: `comment content ${i}`,
+							post: await DataStore.save(
+								new Post({
+									title: `new post ${i}`,
+								})
+							),
+						})
+					);
+				}
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related hasOne properties consistently with query() on INSERT', async done => {
+		try {
+			const expecteds = [5, 15];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new User({
+						name: `user ${i}`,
+						profile: await DataStore.save(
+							new Profile({
+								firstName: `firstName ${i}`,
+								lastName: `lastName ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(User).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].name).toEqual(`user ${i}`);
+						expect(items[i].profile.firstName).toEqual(`firstName ${i}`);
+						expect(items[i].profile.lastName).toEqual(`lastName ${i}`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				for (let i = 5; i < 15; i++) {
+					await DataStore.save(
+						new User({
+							name: `user ${i}`,
+							profile: await DataStore.save(
+								new Profile({
+									firstName: `firstName ${i}`,
+									lastName: `lastName ${i}`,
+								})
+							),
+						})
+					);
+				}
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related belongsTo properties consistently with query() on UPDATE', async done => {
+		try {
+			const expecteds = [
+				['old post 0', 'old post 1', 'old post 2', 'old post 3', 'old post 4'],
+				['new post 0', 'new post 1', 'new post 2', 'new post 3', 'new post 4'],
+			];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new Comment({
+						content: `comment content ${i}`,
+						post: await DataStore.save(
+							new Post({
+								title: `old post ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(Comment).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || [];
+					expect(items.length).toBe(expected.length);
+
+					for (let i = 0; i < expected.length; i++) {
+						expect(items[i].content).toContain(`comment content ${i}`);
+						expect(items[i].post.title).toEqual(expected[i]);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				let postIndex = 0;
+				const comments = await DataStore.query(Comment);
+				for (const comment of comments) {
+					const newPost = await DataStore.save(
+						new Post({
+							title: `new post ${postIndex++}`,
+						})
+					);
+
+					await DataStore.save(
+						Comment.copyOf(comment, draft => {
+							draft.content = `updated: ${comment.content}`;
+							draft.post = newPost;
+						})
+					);
+				}
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related hasOne properties consistently with query() on UPDATE', async done => {
+		try {
+			const expecteds = [
+				[
+					'first name 0',
+					'first name 1',
+					'first name 2',
+					'first name 3',
+					'first name 4',
+				],
+				[
+					'new first name 0',
+					'new first name 1',
+					'new first name 2',
+					'new first name 3',
+					'new first name 4',
+				],
+			];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new User({
+						name: `user ${i}`,
+						profile: await DataStore.save(
+							new Profile({
+								firstName: `first name ${i}`,
+								lastName: `last name ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(User).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || [];
+					expect(items.length).toBe(expected.length);
+
+					for (let i = 0; i < expected.length; i++) {
+						expect(items[i].name).toContain(`user ${i}`);
+						expect(items[i].profile.firstName).toEqual(expected[i]);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				let userIndex = 0;
+				const users = await DataStore.query(User);
+				for (const user of users) {
+					const newProfile = await DataStore.save(
+						new Profile({
+							firstName: `new first name ${userIndex++}`,
+							lastName: `new last name ${userIndex}`,
+						})
+					);
+
+					await DataStore.save(
+						User.copyOf(user, draft => {
+							draft.name = `updated: ${user.name}`;
+							draft.profile = newProfile;
+						})
+					);
+				}
+			}, 1);
+		} catch (error) {
+			done(error);
+		}
 	});
 });
 

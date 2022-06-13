@@ -43,7 +43,6 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
-	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
@@ -1158,24 +1157,32 @@ class DataStore {
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.map(
-						(event: InternalSubscriptionMessage<T>): SubscriptionMessage<T> => {
-							// The `element` returned by storage only contains updated fields.
-							// Intercept the event to send the `savedElement` so that the first
-							// snapshot returned to the consumer contains all fields.
-							// In the event of a delete we return `element`, as `savedElement`
-							// here is undefined.
-							const { opType, model, condition, element, savedElement } = event;
+					.subscribe({
+						next: async item => {
+							// the `element` doesn't necessarily contain all item details or
+							// have related records attached consistently with that of a query()
+							// result item. for consistency, we attach them here.
 
-							return {
-								opType,
-								element: savedElement || element,
-								model,
-								condition,
-							};
-						}
-					)
-					.subscribe(observer);
+							let message = item;
+
+							// as lnog as we're not dealing with a DELETE, we need to fetch a fresh
+							// item from storage to ensure it's fully populated.
+							if (item.opType !== 'DELETE') {
+								const freshElement = await this.query(
+									item.model,
+									item.element.id
+								);
+								message = {
+									...message,
+									element: freshElement as T,
+								};
+							}
+
+							observer.next(message as SubscriptionMessage<T>);
+						},
+						error: err => observer.error(err),
+						complete: () => observer.complete(),
+					});
 			})();
 
 			return () => {
