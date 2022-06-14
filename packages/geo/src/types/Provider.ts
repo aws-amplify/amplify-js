@@ -13,6 +13,7 @@
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
+	SearchForSuggestionsResults,
 	Coordinates,
 	Place,
 	MapStyle,
@@ -50,6 +51,12 @@ export interface GeoProvider {
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
+
+	// search for suggestions based on a text string
+	searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<SearchForSuggestionsResults>;
 
 	// create geofences
 	saveGeofences(

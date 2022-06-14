@@ -84,6 +84,9 @@ export type SearchByCoordinatesOptions = {
 	providerName?: string;
 };
 
+// Return type for searchForSuggestions
+export type SearchForSuggestionsResults = string[];
+
 // Geometry object for Place points
 export type PlaceGeometry = {
 	point: Coordinates;
