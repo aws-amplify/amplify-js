@@ -120,12 +120,20 @@ describe('SQLiteAdapter', () => {
 		return await db.getAll('select * from MutationEvent', []);
 	}
 
+	async function clearOutbox() {
+		await pause(250);
+		const adapter = (DataStore as any).storageAdapter;
+		const db = (adapter as any).db;
+		return await db.executeStatements(['delete from MutationEvent']);
+	}
+
 	({ initSchema, DataStore } = require('@aws-amplify/datastore'));
 	addCommonQueryTests({
 		initSchema,
 		DataStore,
 		storageAdapter: SQLiteAdapter,
 		getMutations,
+		clearOutbox,
 	});
 
 	describe('something', () => {
