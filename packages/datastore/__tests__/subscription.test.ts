@@ -1,3 +1,4 @@
+import Amplify from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable from 'zen-observable-ts';
@@ -600,6 +601,8 @@ describe('error handler', () => {
 	});
 
 	test('error handler once after all retires have failed', done => {
+		Amplify.Logger.LOG_LEVEL = 'DEBUG';
+		const debugLog = jest.spyOn(console, 'log');
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
 		mockObservable = new Observable(observer => {
 			observer.error({
@@ -613,38 +616,41 @@ describe('error handler', () => {
 			});
 		});
 
-		const { DataStore } = require('../src/datastore/datastore');
 		const subscription = subscriptionProcessor.start();
 		subscription[0].subscribe({
 			error: data => {
 				console.log(data);
 				console.log(errorHandler.mock.calls);
+
 				// call once each for Create, Update, and Delete
 				expect(errorHandler).toHaveBeenCalledTimes(3);
-				const expected = {
-					process: 'subscribe',
-					errorType: 'Unknown',
-					message,
-					model: 'Model',
-				};
-				expect(errorHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						...expected,
-						operation: 'Create',
-					})
-				);
-				expect(errorHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						...expected,
-						operation: 'Update',
-					})
-				);
-				expect(errorHandler).toHaveBeenCalledWith(
-					expect.objectContaining({
-						...expected,
-						operation: 'Delete',
-					})
-				);
+				['Create', 'Update', 'Delete'].forEach(operation => {
+					expect(errorHandler).toHaveBeenCalledWith(
+						expect.objectContaining({
+							process: 'subscribe',
+							errorType: 'Unknown',
+							message,
+							model: 'Model',
+							operation,
+						})
+					);
+					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
+					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
+					expect(debugLog).toHaveBeenCalledWith(
+						expect.stringMatching(
+							new RegExp(
+								`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
+							)
+						)
+					);
+					expect(debugLog).toHaveBeenCalledWith(
+						expect.stringMatching(
+							new RegExp(
+								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
+							)
+						)
+					);
+				});
 
 				done();
 			},
@@ -682,7 +688,10 @@ describe('error handler', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 			},
-			() => null,
+			() => [
+				GRAPHQL_AUTH_MODE.API_KEY,
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+			],
 			errorHandler
 		);
 
