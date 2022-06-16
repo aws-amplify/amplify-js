@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -18,12 +18,28 @@ import axios, {
 	AxiosRequestConfig,
 	Method,
 	CancelTokenSource,
-	AxiosTransformer,
+	AxiosRequestHeaders,
+	AxiosRequestTransformer,
 } from 'axios';
 import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
+
+// FEEDBACK REQUIRED: I'm extending the axios interface to make headers required, 
+// (previously, they were not required on the type we were using, but our implementation
+// does not currently account for missing headers. This worked, because the previous type
+// `headers` was `any`.
+// If we believe this is a breaking change, we can implement our own interface,
+// and consider using axios types in the future as a fast follow.
+interface AxiosTransformer extends Partial<AxiosRequestTransformer> {
+	(data: any, headers: AxiosRequestHeaders): any;
+}
+
+// Alternative approach, without using Axios types:
+// interface AxiosTransformer  {
+// 	(data: any, headers?: any): any;
+// }
 
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
@@ -48,7 +64,7 @@ function hasErrorResponse(error: any): error is ErrorWithResponse {
 }
 
 const normalizeHeaders = (
-	headers: Record<string, string>,
+	headers: AxiosRequestHeaders,
 	normalizedName: string
 ) => {
 	for (const [k, v] of Object.entries(headers)) {
@@ -63,7 +79,14 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function(data, headers) {
+	// FEEDBACK REQUIRED: headers were previously of type `Record<string, string>`, 
+	// and now are of type `Record<string, string | number | boolean>`.
+	// If we believe this is a potential breaking change, we can
+	// abandon using the axios types for now, and define our own interfaces,
+	// which would comply with axios, just be more limited. 
+	// Using our own type would also require that we define our own 
+	// `AxiosTransformer` type.
+	(data: any, headers: AxiosRequestHeaders): any => {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -151,10 +174,12 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
+			// TODO: Unify linting rules across JS repo
 			axiosRequest.onUploadProgress = function(event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
+			// TODO: Unify linting rules across JS repo
 			axiosRequest.onDownloadProgress = function(event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
