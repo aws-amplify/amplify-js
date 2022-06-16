@@ -1,7 +1,7 @@
 {
 	"name": "aws-amplify-react",
 	"private": "true",
-	"version": "5.1.25",
+	"version": "5.1.26",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -39,7 +39,7 @@
 		"@types/enzyme-adapter-react-16": "^1.0.3",
 		"@types/react": "^16.0.41",
 		"@types/react-dom": "^16.0.11",
-		"aws-amplify": "4.3.24",
+		"aws-amplify": "4.3.25",
 		"enzyme": "^3.1.0",
 		"enzyme-adapter-react-16": "^1.0.3",
 		"enzyme-to-json": "^3.2.1",
