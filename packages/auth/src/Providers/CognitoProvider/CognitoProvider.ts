@@ -37,6 +37,10 @@ import {
 	authMachine,
 	authMachineEvents,
 } from './machines/authenticationMachine';
+import {
+	authzMachine,
+	authzMachineEvents,
+} from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
 
 const logger = new Logger('CognitoProvider');
@@ -91,6 +95,7 @@ export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
 	private _authService = interpret(authMachine, { devTools: true }).start();
+	private _authzService = interpret(authzMachine, { devTools: true }).start();
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
 	// TODO: we should do _storageSync where it should for React Native
@@ -127,6 +132,7 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		this._authService.send(authMachineEvents.configure(this._config));
+		this._authzService.send(authMachineEvents.configure(this._config));
 		console.log('successfully configured cognito provider');
 		if (this._handlingOAuthCodeResponse()) {
 			// wait for state machine to finish transitioning to signed out state
@@ -215,6 +221,13 @@ export class CognitoProvider implements AuthProvider {
 				signInFlow: this._authFlow,
 			})
 		);
+		// this._authService.send({
+		// 	type: 'signInRequested',
+		// 	signInEventParams: {
+		// 		...params,
+		// 		signInFlow: this._authFlow,
+		// 	},
+		// })
 		return await this.waitForSignInComplete();
 	}
 
@@ -315,9 +328,11 @@ export class CognitoProvider implements AuthProvider {
 		return null;
 	}
 	async fetchSession(): Promise<AmplifyUser> {
+		// checks to see if the identity pool and region are already configured
 		if (!this.isConfigured()) {
 			throw new Error();
 		}
+
 		// if (this._authService.state.matches('signedIn')) {
 		// 	return this._authService.state.context.session!;
 		// }
@@ -329,6 +344,11 @@ export class CognitoProvider implements AuthProvider {
 		// 		}
 		// 	});
 		// });
+
+		// runs fetch session
+		this._authzService.send(authzMachineEvents.fetchAuthSession());
+
+		// makes sure the config has both the region and an identity pool
 		const { region, identityPoolId } = this._config;
 		if (!region) {
 			logger.debug('region is not configured for getting the credentials');
@@ -341,8 +361,12 @@ export class CognitoProvider implements AuthProvider {
 		const cognitoIdentityClient = this.createNewCognitoIdentityClient({
 			region: this._config.region,
 		});
+		// gets tokens
 		const session = this.getSessionData();
+
+		// makes sure session is valid
 		if (session === null) {
+			this._authzService.send(authzMachineEvents.noSession());
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);
@@ -362,6 +386,8 @@ export class CognitoProvider implements AuthProvider {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
+		// console.log('IDENTITY ID: ');
+		// console.log(getIdRes.IdentityId);
 		const getCredentialsRes = await cognitoIdentityClient.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: getIdRes.IdentityId,
@@ -375,6 +401,8 @@ export class CognitoProvider implements AuthProvider {
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
+		// console.log('CREDENTIALS: ');
+		// console.log(getCredentialsRes.Credentials);
 		const cognitoClient = this.createNewCognitoClient({
 			region: this._config.region,
 		});
@@ -390,6 +418,10 @@ export class CognitoProvider implements AuthProvider {
 				'sub does not exist inside the JWT token or is not a string'
 			);
 		}
+
+		// runs after fetchSession has successfully occurred
+		this._authzService.send(authzMachineEvents.fetchedAuthSession());
+
 		return {
 			sessionId: '',
 			user: {
