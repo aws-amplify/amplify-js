@@ -12,33 +12,76 @@ import { exhaustiveCheck } from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 
+/**
+ * Container for all predicates produced with `Predicates.ALL`.
+ * Used for quickly determining if a predicate is a `Predicates.ALL`.
+ */
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
+/**
+ * Determines whether a given predicate is *clearly known* to be generated
+ * from `Predicates.ALL`.
+ *
+ * This may be useful to know for some optimizations.
+ *
+ * @param predicate the predicate to test
+ * @returns `true` if *known* `Predicate.ALL` and `false` otherwise.
+ */
 export function isPredicatesAll(
 	predicate: any
 ): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
 
-// This symbol is not used at runtime, only its type (unique symbol)
+/**
+ * A symbol used exclusively for its type.
+ */
 export const PredicateAll = Symbol('A predicate that matches all records');
 
+/**
+ * Namespace class for common predicate generators.
+ *
+ * Currently used to expose `Predicates.ALL`.
+ */
 export class Predicates {
+	/**
+	 * Produces a predicate that matches all records.
+	 */
 	public static get ALL(): typeof PredicateAll {
 		const predicate = <ProducerModelPredicate<any>>(c => c);
-
 		predicatesAllSet.add(predicate);
-
 		return <typeof PredicateAll>(<unknown>predicate);
 	}
 }
 
+/**
+ * Namespace class for predicate creation functions.
+ */
 export class ModelPredicateCreator {
+	/**
+	 * Maps predicates to predicate groups.
+	 */
 	private static predicateGroupsMap = new WeakMap<
 		ModelPredicate<any>,
 		PredicatesGroup<any>
 	>();
 
+	/**
+	 * Creates a predicate builder for use against a model managed by DataStore. The builder is
+	 * provided as the second argument to DataStore `save()`, `query()`, or `delete()` when a
+	 * predicate function is given. E.g.,
+	 *
+	 * ```ts
+	 * const items = await DataStore.query(
+	 * 	MyModel,
+	 * 	predicateBuilder => predicateBuilder.name('contains', 'Jones')
+	 * );
+	 * ```
+	 *
+	 *
+	 *
+	 * @param modelDefinition model definition which the predicate is intended to test.
+	 */
 	private static createPredicateBuilder<T extends PersistentModel>(
 		modelDefinition: SchemaModel
 	) {
@@ -127,12 +170,23 @@ export class ModelPredicateCreator {
 		return predicate;
 	}
 
+	/**
+	 * Determines whether a given object can be used as a predicate.
+	 *
+	 * @param predicate The object to test.
+	 * @returns `true` if the object is a predicate.
+	 */
 	static isValidPredicate<T extends PersistentModel>(
 		predicate: any
 	): predicate is ModelPredicate<T> {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
 
+	/**
+	 *
+	 * @param predicate
+	 * @param throwOnInvalid
+	 */
 	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
 		throwOnInvalid: boolean = true

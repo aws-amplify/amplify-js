@@ -7,6 +7,12 @@ import {
 	ModelAttributeAuthAllow,
 } from '../types';
 
+/**
+ * Determines which auth provider should be used to evaluate a given auth rule.
+ *
+ * @param rule The auth rules to check
+ * @returns The provider name to use.
+ */
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
 ): ModelAttributeAuthProvider {
@@ -21,6 +27,21 @@ function getProviderFromRule(
 	return rule.provider;
 }
 
+/**
+ * Returns the given auth rules in order they should be attempted.
+ *
+ * In general, this means rules are sorted from most to least specific.
+ * E.g., a user-provided function can perform highly specific, fine-grained
+ * authorization, whereas an API key is very coarse. Similarly, owner-based auth
+ * is fine-grained, authorizing an individual user to particular operations on
+ * particular records. This is in contrast to public authorization, which is
+ * non-sepcific to any individual user.
+ *
+ * SIDE EFFECT FREE: This function leaves the provided list intact.
+ *
+ * @param rules An array of auth rules.
+ * @returns The sorted array of auth rules.
+ */
 function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 	const allowSortPriority = [
 		ModelAttributeAuthAllow.CUSTOM,
@@ -52,6 +73,12 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 	);
 }
 
+/**
+ * Given a list of auth rules and a user, returns the applicable rules.
+ *
+ * @param param0 `{rules, currentUser}` to compare.
+ * @returns an array of the applicable rules.
+ */
 function getAuthRules({
 	rules,
 	currentUser,
@@ -121,6 +148,17 @@ function getAuthRules({
 	return Array.from(authModes);
 }
 
+/**
+ * Returns an array of auth modes to try based on the schema, model, and
+ * authenticated user (or lack thereof). Rules are sourced from `getAgetAuthRules`
+ * and returned in the order they ought to be attempted.
+ *
+ * @see sortAuthRulesWithPriority
+ * @see getAuthRules
+ *
+ * @param param0 The `{schema, modelName}` to inspect.
+ * @returns A sorted array of auth modes to attempt.
+ */
 export const multiAuthStrategy: AuthModeStrategy = async ({
 	schema,
 	modelName,

@@ -29,16 +29,45 @@ import {
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
+/**
+ * Intended to provide a build-time assurance that a branch is never followed.
+ *
+ * Used in `finally` blocks to assure TypeScript that the branch is `never` followed.
+ *
+ * At runtime, if the `throwOnError` is given as `true`, this function
+ * simply raises an error regardless.
+ *
+ * TODO: As a spike and/or when turning to stricter modes, evaluate whether this function
+ * actually does what it is intended to do. Some testing in the datastore-laziness
+ * branch suggested this function isn't making the assurances it is intended to.
+ *
+ * @param obj the object we want to (probably) lie about.
+ * @param throwOnError whether to throw an Error at runtime.
+ */
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
 	}
 };
 
+/**
+ * Tests whether a given value is exactly `null` or `undefined`.
+ *
+ * @param val value to test.
+ * @returns `true` if `null` or `undefined`; false in all other cases.
+ */
 export const isNullOrUndefined = (val: any): boolean => {
 	return typeof val === 'undefined' || val === undefined || val === null;
 };
 
+/**
+ * Tests whether a model instance matches a predicate.
+ *
+ * @param model A model instance to test.
+ * @param groupType The logical joiner (`and`|`or`|`not`) for the predicate/groups.
+ * @param predicatesOrGroups The predicate or list of predicate groups to test with.
+ * @returns `true` if the model matches; `false` otherwise.
+ */
 export const validatePredicate = <T extends PersistentModel>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
@@ -85,6 +114,16 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
+/**
+ * Determines whether a value object satisfies a given comparison operator and operand.
+ *
+ * This is a terminating "leaf step" in testing a model instance against a predicate.
+ *
+ * @param value A value object to test.
+ * @param operator Logical operator/comparison.
+ * @param operand Value(s) to compare with.
+ * @returns `true` if the value matches; `false` otherwise.
+ */
 export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
@@ -127,6 +166,19 @@ export const validatePredicateField = <T>(
 	}
 };
 
+/**
+ * Checks whether a given object is a `ModelConstructor` and capable of
+ * being used to create model instances that `DataStore` can manage.
+ *
+ * This test is **primarily useful at build time** for which this assurance
+ * is firmly validated by typescript.
+ *
+ * *At runtime*, **this check is very cheap and shallow**, testing only whether
+ * the given object supports `copyOf()`.
+ *
+ * @param obj object to test.
+ * @returns `true` if `obj` is a model constructor.
+ */
 export const isModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
@@ -147,38 +199,55 @@ export const isNonModelConstructor = (
 	return nonModelClasses.has(obj);
 };
 
-/*
-  When we have GSI(s) with composite sort keys defined on a model
-	There are some very particular rules regarding which fields must be included in the update mutation input
-	The field selection becomes more complex as the number of GSIs with composite sort keys grows
-
-	To summarize: any time we update a field that is part of the composite sort key of a GSI, we must include:
-	 1. all of the other fields in that composite sort key
-	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
-
-	 E.g.,
-	 Model @model
-		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
-		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
-		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
-
-	Model.a is updated => include ['a', 'b', 'c', 'd']
-	Model.c is updated => include ['a', 'b', 'c', 'd']
-	Model.d is updated => include ['a', 'b', 'c', 'd']
-	Model.x is updated => include ['x', 'y', 'z']
-
-	This function accepts a model's attributes and returns grouped sets of composite key fields
-	Using our example Model above, the function will return:
-	[
-		Set('a', 'b', 'c', 'd'),
-		Set('x', 'y', 'z'),
-	]
-
-	This gives us the opportunity to correctly include the required fields for composite keys
-	When crafting the mutation input in Storage.getUpdateMutationInput
-
-	See 'processCompositeKeys' test in util.test.ts for more examples
-*/
+/**
+ *
+ * When we have GSI(s) with composite sort keys defined on a model
+ * There are some very particular rules regarding which fields must be included in the
+ * update mutation input. The field selection becomes more complex as the number of GSIs
+ * with composite sort keys grows.
+ *
+ * To summarize: any time we update a field that is part of the composite sort key of a GSI,
+ * we must include:
+ *
+ * 1. all of the other fields in that composite sort key
+ * 2. all of the fields from any other composite sort key that intersect with the fields from 1.
+ *
+ * E.g., for a model containing the following:
+ *
+ * ```
+ * Model @model
+ * ... @key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
+ * ... @key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
+ * ... @key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
+ * ... etc. ...
+ * ```
+ *
+ * (Elipses above not part of the schema, but to force VS Code to render graphql correctly.)
+ *
+ * We expect the following behavior:
+ * ```
+ * Model.a is updated => include ['a', 'b', 'c', 'd']
+ * Model.c is updated => include ['a', 'b', 'c', 'd']
+ * Model.d is updated => include ['a', 'b', 'c', 'd']
+ * Model.x is updated => include ['x', 'y', 'z']
+ * ```
+ * This function accepts a model's attributes and returns grouped sets of composite key fields
+ * Using our example Model above, the function will return:
+ *
+ * ```js
+ * [
+ * 	Set('a', 'b', 'c', 'd'),
+ * 	Set('x', 'y', 'z'),
+ * ]
+ * ```
+ *
+ * This gives us the opportunity to correctly include the required fields for composite keys
+ * When crafting the mutation input in Storage.getUpdateMutationInput
+ *
+ * @see processCompositeKeys test in util.test.ts for more examples
+ *
+ * @param attributes
+ */
 export const processCompositeKeys = (
 	attributes: ModelAttributes
 ): Set<string>[] => {
@@ -234,6 +303,38 @@ export const processCompositeKeys = (
 	return combined;
 };
 
+/**
+ * Inspects a namespace to produce a pair of indexes, `[relationships, keys]`.
+ *
+ * #### Relationships
+ *
+ * Used to quickly determine what models are related to a given model by name
+ * and *how* they're related.
+ *
+ * ```js
+ * { [MODEL_NAME]: [{
+ * 	fieldName,
+ * 	modelName,
+ * 	relationshipType,
+ * 	targetName,
+ * 	associatedWith
+ * }] },
+ * ```
+ *
+ * #### Keys
+ *
+ * Used to quickly determine what keys are on a model.
+ *
+ * ```js
+ * { [MODEL_NAME]: {
+ * 	primaryKey,
+ * 	compositeKeys
+ * } }
+ * ```
+ *
+ * @param namespace the namespace object to inspect.
+ * @returns a tuple, `[relationships, keys]`
+ */
 export const establishRelationAndKeys = (
 	namespace: SchemaNamespace
 ): [RelationshipType, ModelKeys] => {
@@ -297,6 +398,14 @@ export const establishRelationAndKeys = (
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 
+/**
+ *
+ * @param srcModelName
+ * @param instance
+ * @param namespace
+ * @param modelInstanceCreator
+ * @param getModelConstructorByModelName
+ */
 export const traverseModel = <T extends PersistentModel>(
 	srcModelName: string,
 	instance: T,
@@ -463,8 +572,21 @@ const STORAGE = NAMESPACES.STORAGE;
 
 export { USER, SYNC, STORAGE, DATASTORE };
 
+/**
+ * Memoizaton for `isPrivateMode` test.
+ *
+ * @see isPrivateMode
+ */
 let privateModeCheckResult;
 
+/**
+ * Tests whether IndexedDB is **unavailable**, presumably because the browser
+ * is opened in private mode.
+ *
+ * NOTE: This function is memoized.
+ *
+ * @returns `true` if `IndexedDB` is **unavailable**, which suggests private mode.
+ */
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
 		const dbname = uuid();
@@ -697,6 +819,41 @@ export const isAWSIPAddress = (val: string): boolean => {
 	);
 };
 
+/**
+ * A wrapper for a `Promise` that exposes it's `resolve()` and `reject()` functions
+ * as instance properties. This can useful for creating promises in a single scope
+ * that need to race each other or aggregate callbacks.
+ *
+ * E.g., we may need to call several endpoints that use callbacks:
+ *
+ * ```typescript
+ * const callback_A = new DeferredPromise();
+ * const callback_B = new DeferredPromise();
+ *
+ * callEndpoint('a', callback_A.resolve);
+ * callEndpoint('b', callback_B.resolve);
+ * ```
+ *
+ * And, we may need to wait for both:
+ *
+ * ```typescript
+ * await Promise.all([
+ * 	callback_A.promise,
+ * 	callback_B.promise
+ * ]);
+ * ```
+ *
+ * Or maybe we want the result of whichever finishes first:
+ *
+ * ```typescript
+ * await Promise.race([
+ * 	callback_A.promise,
+ * 	callback_B.promise
+ * ]);
+ * ```
+ *
+ * @see DeferredCallbackResolver
+ */
 export class DeferredPromise {
 	public promise: Promise<string>;
 	public resolve: (value: string | PromiseLike<string>) => void;
@@ -712,6 +869,12 @@ export class DeferredPromise {
 	}
 }
 
+/**
+ * Essentially a timeout for a callback.
+ *
+ * A callback is provided, which is called within `maxInterval` or when `resolve()`
+ * on the `DeferredCallbackResolver` is called &mdash; whichever happens first.
+ */
 export class DeferredCallbackResolver {
 	private limitPromise = new DeferredPromise();
 	private timerPromise: Promise<string>;
@@ -776,16 +939,19 @@ export class DeferredCallbackResolver {
 }
 
 /**
- * merge two sets of patches created by immer produce.
- * newPatches take precedent over oldPatches for patches modifying the same path.
+ * Merge two sets of patches created by immer produce.
+ * `newPatches` takes precedence over `oldPatches` for patches modifying the same path.
  * In the case many consecutive pathces are merged the original model should
  * always be the root model.
  *
  * Example:
+ *
+ * ```
  * A -> B, patches1
  * B -> C, patches2
+ * ```
  *
- * mergePatches(A, patches1, patches2) to get patches for A -> C
+ * `mergePatches(A, patches1, patches2)` to get patches for A -> C
  *
  * @param originalSource the original Model the patches should be applied to
  * @param oldPatches immer produce patch list

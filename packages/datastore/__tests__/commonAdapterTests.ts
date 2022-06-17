@@ -18,6 +18,34 @@ import {
 export { pause };
 
 /**
+ * Checks status of and waits for a DataStore instance to settle, including:
+ *
+ * - mutations waiting to be written to the outbox
+ * - scheduled network requests for mutations from the outbox
+ * - in-flight saves
+ * - in-flight queries
+ *
+ * @param DataStore The DataStore instance/singleton to monitor.
+ */
+export async function settle(DataStore) {
+	throw new Error('Not yet implemented.');
+}
+
+/**
+ * Puts DataStore back into a fresh, clean state for testing. This include:
+ *
+ * - waiting for DataStore to settle
+ * - clearing underlying storage
+ * - removing any mocked sync engine
+ * - putting configuration back into a "vanilla" state with the given adapter
+ *
+ * @param DataStore The DataStore instance/singleton to reset.
+ */
+export async function reset(DataStore, adapter) {
+	throw new Error('Not yet implemented.');
+}
+
+/**
  * Adds common query test cases that all adapters should support.
  *
  * @param ctx A context object that provides a DataStore property, which returns
