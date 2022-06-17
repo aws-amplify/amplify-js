@@ -26,20 +26,15 @@ import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 
-// FEEDBACK REQUIRED: I'm extending the axios interface to make headers required, 
-// (previously, they were not required on the type we were using, but our implementation
-// does not currently account for missing headers. This worked, because the previous type
-// `headers` was `any`.
-// If we believe this is a breaking change, we can implement our own interface,
-// and consider using axios types in the future as a fast follow.
+/**
+Extending the axios interface here to make headers required, (previously, 
+they were not required on the type we were using, but our implementation
+does not currently account for missing headers. This worked previously, 
+because the previous `headers` type was `any`.
+*/
 interface AxiosTransformer extends Partial<AxiosRequestTransformer> {
 	(data: any, headers: AxiosRequestHeaders): any;
 }
-
-// Alternative approach, without using Axios types:
-// interface AxiosTransformer  {
-// 	(data: any, headers?: any): any;
-// }
 
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
@@ -79,13 +74,6 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	// FEEDBACK REQUIRED: headers were previously of type `Record<string, string>`, 
-	// and now are of type `Record<string, string | number | boolean>`.
-	// If we believe this is a potential breaking change, we can
-	// abandon using the axios types for now, and define our own interfaces,
-	// which would comply with axios, just be more limited. 
-	// Using our own type would also require that we define our own 
-	// `AxiosTransformer` type.
 	(data: any, headers: AxiosRequestHeaders): any => {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
