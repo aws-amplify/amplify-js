@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.44](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@2.0.43...@aws-amplify/api-rest@2.0.44) (2022-06-18)
+
+
+### Bug Fixes
+
+* update axios ([67316d7](https://github.com/aws-amplify/amplify-js/commit/67316d78fd829b9d4875a25d00719b175738e594))
+
+
+
+
+
 ## [2.0.43](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@2.0.42...@aws-amplify/api-rest@2.0.43) (2022-06-15)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

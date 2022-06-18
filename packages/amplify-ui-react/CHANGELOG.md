@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.44](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.43...@aws-amplify/ui-react@1.2.44) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
 ## [1.2.43](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.42...@aws-amplify/ui-react@1.2.43) (2022-06-15)
 
 **Note:** Version bump only for package @aws-amplify/ui-react
