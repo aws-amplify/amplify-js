@@ -394,9 +394,7 @@ class SubscriptionProcessor {
 									transformerMutationType
 								].push(
 									queryObservable
-										.map(({ value }) => {
-											return value;
-										})
+										.map(({ value }) => value)
 										.subscribe({
 											next: ({ data, errors }) => {
 												if (Array.isArray(errors) && errors.length > 0) {
@@ -448,6 +446,23 @@ class SubscriptionProcessor {
 														errors: [],
 													},
 												} = subscriptionError;
+												try {
+													await this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null,
+														message,
+														model: modelDefinition.name,
+														operation,
+														errorType:
+															getSubscriptionErrorType(subscriptionError),
+														process: ProcessName.subscribe,
+														remoteModel: null,
+														cause: subscriptionError,
+													});
+												} catch (e) {
+													logger.error('Sync error handler failed with:', e);
+												}
 
 												if (
 													message.includes(
@@ -468,7 +483,6 @@ class SubscriptionProcessor {
 														operationAuthModeAttempts[operation] >=
 														readAuthModes.length
 													) {
-														// last auth mode retry. Continue with error
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
 																readAuthModes[
@@ -476,9 +490,9 @@ class SubscriptionProcessor {
 																]
 															}`
 														);
+														logger.warn('subscriptionError', message);
+														return;
 													} else {
-														// retry with different auth mode. Do not trigger
-														// observer error or error handler
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
 																readAuthModes[
@@ -494,27 +508,7 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
-
-												try {
-													await this.errorHandler({
-														recoverySuggestion:
-															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-														localModel: null,
-														message,
-														model: modelDefinition.name,
-														operation,
-														errorType:
-															getSubscriptionErrorType(subscriptionError),
-														process: ProcessName.subscribe,
-														remoteModel: null,
-														cause: subscriptionError,
-													});
-												} catch (e) {
-													logger.error(
-														'Subscription error handler failed with:',
-														e
-													);
-												}
+												logger.warn('subscriptionError', message);
 
 												if (typeof subscriptionReadyCallback === 'function') {
 													subscriptionReadyCallback();

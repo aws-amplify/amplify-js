@@ -1,31 +1,9 @@
-import Amplify from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
-import Observable from 'zen-observable-ts';
 import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
 } from '../src/sync/processors/subscription';
-import {
-	internalTestSchema,
-	Model as ModelType,
-	smallTestSchema,
-} from './helpers';
-import {
-	SchemaModel,
-	InternalSchema,
-	PersistentModelConstructor,
-} from '../src/types';
-
-let mockObservable = new Observable(() => {});
-
-// mock graphql to return a mockable observable
-jest.mock('@aws-amplify/api', () => {
-	return {
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: jest.fn(() => mockObservable),
-	};
-});
+import { SchemaModel } from '../src/types';
 
 describe('sync engine subscription module', () => {
 	test('owner authorization', () => {
@@ -586,117 +564,6 @@ describe('sync engine subscription module', () => {
 			)
 		).toEqual(authInfo);
 	});
-});
-
-describe('error handler', () => {
-	let Model: PersistentModelConstructor<ModelType>;
-
-	let subscriptionProcessor: SubscriptionProcessor;
-	const errorHandler = jest.fn();
-	beforeEach(async () => {
-		errorHandler.mockClear();
-		subscriptionProcessor = await instantiateSubscriptionProcessor({
-			errorHandler,
-		});
-	});
-
-	test('error handler once after all retires have failed', done => {
-		Amplify.Logger.LOG_LEVEL = 'DEBUG';
-		const debugLog = jest.spyOn(console, 'log');
-		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
-		mockObservable = new Observable(observer => {
-			observer.error({
-				error: {
-					errors: [
-						{
-							message,
-						},
-					],
-				},
-			});
-		});
-
-		const subscription = subscriptionProcessor.start();
-		subscription[0].subscribe({
-			error: data => {
-				console.log(data);
-				console.log(errorHandler.mock.calls);
-
-				// call once each for Create, Update, and Delete
-				expect(errorHandler).toHaveBeenCalledTimes(3);
-				['Create', 'Update', 'Delete'].forEach(operation => {
-					expect(errorHandler).toHaveBeenCalledWith(
-						expect.objectContaining({
-							process: 'subscribe',
-							errorType: 'Unknown',
-							message,
-							model: 'Model',
-							operation,
-						})
-					);
-					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
-					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
-					expect(debugLog).toHaveBeenCalledWith(
-						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
-							)
-						)
-					);
-					expect(debugLog).toHaveBeenCalledWith(
-						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
-							)
-						)
-					);
-				});
-
-				done();
-			},
-		});
-	}, 500);
-
-	async function instantiateSubscriptionProcessor({
-		errorHandler = () => null,
-	}) {
-		let schema: InternalSchema = internalTestSchema();
-
-		const { initSchema, DataStore } = require('../src/datastore/datastore');
-		const classes = initSchema(smallTestSchema());
-
-		({ Model } = classes as {
-			Model: PersistentModelConstructor<ModelType>;
-		});
-
-		const userClasses = {
-			Model,
-		};
-
-		await DataStore.start();
-		({ schema } = (DataStore as any).storage.storage);
-		const syncPredicates = new WeakMap();
-
-		const subscriptionProcessor = new SubscriptionProcessor(
-			schema,
-			syncPredicates,
-			{
-				aws_project_region: 'us-west-2',
-				aws_appsync_graphqlEndpoint:
-					'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
-				aws_appsync_region: 'us-west-2',
-				aws_appsync_authenticationType: 'API_KEY',
-				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
-			},
-			() => [
-				GRAPHQL_AUTH_MODE.API_KEY,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-			],
-			errorHandler
-		);
-
-		return subscriptionProcessor;
-	}
 });
 
 const accessTokenPayload = {
