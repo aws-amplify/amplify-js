@@ -124,7 +124,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			OutputFormat: 'mp3',
 			Text: input.textToSpeech.source.text,
 			VoiceId: voiceId,
-			TextType: 'text',
+			TextType: input.textToSpeech.source.textType || 'text',
 			SampleRate: '24000',
 			// tslint:disable-next-line: align
 		});
@@ -254,9 +254,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
-					const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-						message
-					);
+					const decodedMessage =
+						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
+							message
+						);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}

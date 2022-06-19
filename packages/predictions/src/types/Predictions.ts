@@ -103,6 +103,7 @@ export interface TextToSpeechInput {
 	textToSpeech: {
 		source: {
 			text: string;
+			textType?: 'text' | 'ssml';
 		};
 		terminology?: string;
 		voiceId?: string;
