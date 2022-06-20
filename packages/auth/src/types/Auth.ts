@@ -14,6 +14,7 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
+	CognitoUser,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -25,6 +26,9 @@ export interface SignUpParams {
 	attributes?: object;
 	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
+	autoSignIn?: boolean;
+	confirmSignUp?: boolean;
+	confirmSignUpOption?: string;
 }
 
 export interface AuthCache {
@@ -50,6 +54,9 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
+	autoSignIn?: boolean;
+	confirmSignUp?: boolean;
+	confirmSignUpOption?: string;
 }
 
 export enum CognitoHostedUIIdentityProvider {
@@ -166,6 +173,7 @@ export type OAuthOpts = AwsCognitoOAuthOpts | Auth0OAuthOpts;
 export interface ConfirmSignUpOptions {
 	forceAliasCreation?: boolean;
 	clientMetadata?: ClientMetaData;
+	autoSignIn?: boolean;
 }
 
 export interface SignOutOpts {
@@ -234,4 +242,14 @@ export enum GRAPHQL_AUTH_MODE {
 	OPENID_CONNECT = 'OPENID_CONNECT',
 	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
 	AWS_LAMBDA = 'AWS_LAMBDA',
+}
+
+/**
+ * interface for signUpResponse
+ */
+
+export interface AutoSignInResponse {
+	operationResult: string;
+	user?: CognitoUser;
+	userConfirmed: boolean;
 }
