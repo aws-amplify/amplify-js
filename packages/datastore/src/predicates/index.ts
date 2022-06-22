@@ -78,8 +78,6 @@ export class ModelPredicateCreator {
 	 * );
 	 * ```
 	 *
-	 *
-	 *
 	 * @param modelDefinition model definition which the predicate is intended to test.
 	 */
 	private static createPredicateBuilder<T extends PersistentModel>(
