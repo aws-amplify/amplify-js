@@ -40,6 +40,14 @@ import { mockInAppMessagingProvider, mockStorage } from '../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/InAppMessaging/eventListeners');
+jest.mock('../../src/InAppMessaging/Providers', () => ({
+	AWSPinpointProvider: () => ({
+		getCategory: jest.fn,
+		getSubCategory: jest.fn,
+		getProviderName: jest.fn,
+		configure: jest.fn,
+	}),
+}));
 
 const PROVIDER_NAME = 'InAppMessagingProvider';
 

@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import noop from 'lodash/noop';
 import {
 	SessionState,
@@ -21,8 +21,9 @@ import {
 // Per https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
 let hidden: string;
 let visibilityChange: string;
+const { isBrowser } = browserOrNode();
 
-if (document) {
+if (isBrowser && document) {
 	if (typeof document.hidden !== 'undefined') {
 		hidden = 'hidden';
 		visibilityChange = 'visibilitychange';
@@ -45,20 +46,27 @@ export default class SessionTracker implements SessionTrackerInterface {
 	}
 
 	start = (): SessionState => {
-		document?.addEventListener(visibilityChange, this.visibilityChangeHandler);
+		if (isBrowser) {
+			document?.addEventListener(
+				visibilityChange,
+				this.visibilityChangeHandler
+			);
+		}
 		return this.getSessionState();
 	};
 
 	end = (): SessionState => {
-		document?.removeEventListener(
-			visibilityChange,
-			this.visibilityChangeHandler
-		);
+		if (isBrowser) {
+			document?.removeEventListener(
+				visibilityChange,
+				this.visibilityChangeHandler
+			);
+		}
 		return this.getSessionState();
 	};
 
 	private getSessionState = (): SessionState => {
-		if (document && !document[hidden]) {
+		if (isBrowser && document && !document[hidden]) {
 			return 'started';
 		}
 		// If, for any reason, document is undefined the session will never start
@@ -66,7 +74,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	private visibilityChangeHandler = () => {
-		if (!document) {
+		if (!isBrowser || !document) {
 			return;
 		}
 		if (document[hidden]) {
