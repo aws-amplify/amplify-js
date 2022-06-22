@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.0...@aws-amplify/datastore@3.12.1) (2022-06-18)
+
+
+### Bug Fixes
+
+* decrease error handler verbosity on self recovering errors ([#9987](https://github.com/aws-amplify/amplify-js/issues/9987)) ([67ccf09](https://github.com/aws-amplify/amplify-js/commit/67ccf09a93221a06d4560300cfd67fdd9efeda71))
+
+
+### Reverts
+
+* Revert "fix: decrease error handler verbosity on self recovering errors (#9987)" (#10004) ([eb73ad7](https://github.com/aws-amplify/amplify-js/commit/eb73ad70b3eee0632eaed4bae00f1d2179ae45b5)), closes [#9987](https://github.com/aws-amplify/amplify-js/issues/9987) [#10004](https://github.com/aws-amplify/amplify-js/issues/10004)
+
+
+
+
+
 # [3.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.11.3...@aws-amplify/datastore@3.12.0) (2022-06-15)
 
 
