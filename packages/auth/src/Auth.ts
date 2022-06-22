@@ -31,7 +31,6 @@ import {
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
 	ClientMetaData,
-	AutoSignInResponse,
 } from './types';
 
 import {
@@ -286,36 +285,23 @@ export class AuthClass {
 	public signUp(
 		params: string | SignUpParams,
 		...restOfAttrs: string[]
-	): Promise<ISignUpResult | AutoSignInResponse> {
+	): Promise<ISignUpResult> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
+
 		let username: string = null;
 		let password: string = null;
 		const attributes: CognitoUserAttribute[] = [];
 		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
 		let autoSignIn = false;
-		let confirmSignUp = true;
-		let confirmSignUpOption = 'code';
 
 		if (params && typeof params === 'string') {
 			username = params;
 			password = restOfAttrs ? restOfAttrs[0] : null;
 			const email: string = restOfAttrs ? restOfAttrs[1] : null;
 			const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
-
-			if (restOfAttrs && restOfAttrs[3] && restOfAttrs[3] === 'true') {
-				autoSignIn = true;
-			}
-
-			if (restOfAttrs && restOfAttrs[4] && restOfAttrs[4] === 'false') {
-				confirmSignUp = false;
-			}
-
-			if (restOfAttrs && restOfAttrs[5]) {
-				confirmSignUpOption = restOfAttrs[5];
-			}
 
 			if (email)
 				attributes.push(
@@ -360,15 +346,7 @@ export class AuthClass {
 					);
 				});
 			}
-			if (params['autoSignIn']) {
-				autoSignIn = params['autoSignIn'];
-			}
-			if (params['confirmSignUp']) {
-				confirmSignUp = params['confirmSignUp'];
-			}
-			if (params['confirmSignUpOption']) {
-				confirmSignUpOption = params['confirmSignUpOption'];
-			}
+			autoSignIn = params['autoSignIn'] ? params['autoSignIn'] : false;
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -378,9 +356,6 @@ export class AuthClass {
 		}
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
-		}
-		if (autoSignIn && confirmSignUpOption === 'code') {
-			this._storage.setItem('user_password', password);
 		}
 
 		logger.debug('signUp attrs:', attributes);
@@ -406,65 +381,51 @@ export class AuthClass {
 							data,
 							`${username} has signed up successfully`
 						);
-						if (
-							autoSignIn &&
-							(!confirmSignUp || confirmSignUpOption === 'link')
-						) {
-							let times = 0;
-							const user = this.createCognitoUser(username);
-							const authDetails = new AuthenticationDetails({
-								Username: username,
-								Password: password,
-								ValidationData: validationData,
-								ClientMetadata: clientMetadata,
-							});
-							let result = null;
-							const interval = setInterval(async () => {
-								await user.authenticateUser(
-									authDetails,
-									this.authCallbacks(
-										user,
-										value => {
-											dispatchAuthEvent(
-												'signIn',
-												data,
-												`${username} has signed in successfully`
-											);
-											result = value;
-										},
-										error => {
-											dispatchAuthEvent(
-												'signIn',
-												error,
-												`${username} failed to sign in`
-											);
-										}
-									)
-								);
-								times += 1;
-								if (times >= 120 || result) {
-									clearInterval(interval);
-									result
-										? resolve({
-												operationResult: 'success',
-												user: result,
-												userConfirmed: true,
-										  })
-										: resolve({
-												operationResult: 'success',
-												user: null,
-												userConfirmed: false,
-										  });
+						if (autoSignIn) {
+							Hub.listen('auth', resp => {
+								let { payload } = resp;
+								if (payload.event === 'confirmSignUp') {
+									const authDetails = new AuthenticationDetails({
+										Username: username,
+										Password: password,
+										ValidationData: validationData,
+										ClientMetadata: clientMetadata,
+									});
+
+									this.onConfirmSignUp(authDetails);
 								}
-							}, 5000);
-						} else {
-							resolve(data);
+							});
 						}
+						resolve(data);
 					}
 				},
 				clientMetadata
 			);
 		});
+	}
+
+	private async onConfirmSignUp(authDetails?) {
+		const user = this.createCognitoUser(authDetails.getUsername());
+		try {
+			await user.authenticateUser(
+				authDetails,
+				this.authCallbacks(
+					user,
+					value => {
+						dispatchAuthEvent(
+							'AutoSignIn',
+							value,
+							`${authDetails.getUsername()} has signed in successfully`
+						);
+					},
+					error => {
+						logger.error(error);
+					}
+				)
+			);
+		} catch (error) {
+			logger.error(error);
+		}
 	}
 
 	/**
@@ -478,7 +439,7 @@ export class AuthClass {
 		username: string,
 		code: string,
 		options?: ConfirmSignUpOptions
-	): Promise<AutoSignInResponse | any> {
+	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -508,47 +469,12 @@ export class AuthClass {
 				(err, data) => {
 					if (err) {
 						reject(err);
-					} else if (options && options.autoSignIn) {
+					} else {
 						dispatchAuthEvent(
 							'confirmSignUp',
 							data,
 							`${username} has been confirmed successfully`
 						);
-						let password = null;
-						password = this._storage.getItem('user_password');
-						if (password) {
-							const validationData = {};
-							const authDetails = new AuthenticationDetails({
-								Username: username,
-								Password: password,
-								ValidationData: validationData,
-								ClientMetadata: clientMetadata,
-							});
-							user.authenticateUser(
-								authDetails,
-								this.authCallbacks(
-									user,
-									value => {
-										this._storage.removeItem('user_password');
-										resolve({
-											operationResult: 'success',
-											user: value,
-											userConfirmed: true,
-										});
-									},
-									error => {
-										reject(error);
-									}
-								)
-							);
-						} else {
-							resolve({
-								operationResult: 'success',
-								user: null,
-								userConfirmed: true,
-							});
-						}
-					} else {
 						resolve(data);
 					}
 				},
