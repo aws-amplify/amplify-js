@@ -494,6 +494,7 @@ class SubscriptionProcessor {
 														return;
 													}
 												}
+												logger.warn('subscriptionError', message);
 
 												try {
 													await this.errorHandler({
