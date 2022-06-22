@@ -14,7 +14,6 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
-	CognitoUser,
 } from 'amazon-cognito-identity-js';
 
 /**

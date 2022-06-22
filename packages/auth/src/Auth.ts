@@ -346,7 +346,7 @@ export class AuthClass {
 					);
 				});
 			}
-			autoSignIn = params['autoSignIn'] ? params['autoSignIn'] : false;
+			autoSignIn = params['autoSignIn'] || false;
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -382,8 +382,7 @@ export class AuthClass {
 							`${username} has signed up successfully`
 						);
 						if (autoSignIn) {
-							Hub.listen('auth', resp => {
-								let { payload } = resp;
+							Hub.listen('auth', ({ payload }) => {
 								if (payload.event === 'confirmSignUp') {
 									const authDetails = new AuthenticationDetails({
 										Username: username,
@@ -392,7 +391,7 @@ export class AuthClass {
 										ClientMetadata: clientMetadata,
 									});
 
-									this.onConfirmSignUp(authDetails);
+									this.onConfirmSignUp(authDetails, payload);
 								}
 							});
 						}
@@ -404,7 +403,7 @@ export class AuthClass {
 		});
 	}
 
-	private async onConfirmSignUp(authDetails?) {
+	private async onConfirmSignUp(authDetails: AuthenticationDetails, payload) {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		try {
 			await user.authenticateUser(
@@ -417,6 +416,7 @@ export class AuthClass {
 							value,
 							`${authDetails.getUsername()} has signed in successfully`
 						);
+						Hub.remove('auth', payload);
 					},
 					error => {
 						logger.error(error);
