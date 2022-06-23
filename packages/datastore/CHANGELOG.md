@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.0...@aws-amplify/datastore@3.12.1) (2022-06-18)
+
+
+### Bug Fixes
+
+* decrease error handler verbosity on self recovering errors ([#9987](https://github.com/aws-amplify/amplify-js/issues/9987)) ([67ccf09](https://github.com/aws-amplify/amplify-js/commit/67ccf09a93221a06d4560300cfd67fdd9efeda71))
+
+
+### Reverts
+
+* Revert "fix: decrease error handler verbosity on self recovering errors (#9987)" (#10004) ([eb73ad7](https://github.com/aws-amplify/amplify-js/commit/eb73ad70b3eee0632eaed4bae00f1d2179ae45b5)), closes [#9987](https://github.com/aws-amplify/amplify-js/issues/9987) [#10004](https://github.com/aws-amplify/amplify-js/issues/10004)
+
+
+
+
+
+# [3.12.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.11.3...@aws-amplify/datastore@3.12.0) (2022-06-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** adds missing fields to items sent through observe/observeQuery ([#9973](https://github.com/aws-amplify/amplify-js/issues/9973)) ([ca2a11b](https://github.com/aws-amplify/amplify-js/commit/ca2a11b5bc987e71ce3344058a4886bf067cb17b))
+* merge patches for consecutive copyOf ([#9936](https://github.com/aws-amplify/amplify-js/issues/9936)) ([d5dd9cb](https://github.com/aws-amplify/amplify-js/commit/d5dd9cb5bf46131fb046cfe55e4899444f9d789e))
+* **@aws-amplify/datastore:** fixes observeQuery not removing newly-filtered items from snapshot ([#9879](https://github.com/aws-amplify/amplify-js/issues/9879)) ([d1356b1](https://github.com/aws-amplify/amplify-js/commit/d1356b1e498eb71a4902892afbb41f6ff88abb6f))
+
+
+### Features
+
+* **datastore:** add error maps for error handler ([#9918](https://github.com/aws-amplify/amplify-js/issues/9918)) ([3a27096](https://github.com/aws-amplify/amplify-js/commit/3a270969b6e097eeed73368091ace191cbc05511))
+
+
+
+
+
 ## [3.11.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.11.2...@aws-amplify/datastore@3.11.3) (2022-05-24)
 
 **Note:** Version bump only for package @aws-amplify/datastore
