@@ -42,6 +42,7 @@ import {
 	authzMachineEvents,
 } from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
+import { access } from 'fs';
 
 const logger = new Logger('CognitoProvider');
 
@@ -346,7 +347,7 @@ export class CognitoProvider implements AuthProvider {
 		// });
 
 		// runs fetch session
-		this._authzService.send(authzMachineEvents.fetchAuthSession());
+		this._authzService.send(authzMachineEvents.signInRequested());
 
 		// makes sure the config has both the region and an identity pool
 		const { region, identityPoolId } = this._config;
@@ -361,17 +362,25 @@ export class CognitoProvider implements AuthProvider {
 		const cognitoIdentityClient = this.createNewCognitoIdentityClient({
 			region: this._config.region,
 		});
-		// gets tokens
+		// gets tokens from userpool
 		const session = this.getSessionData();
 
 		// makes sure session is valid
 		if (session === null) {
-			this._authzService.send(authzMachineEvents.noSession());
+			// this._authzService.send(authzMachineEvents.noSession());
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);
 		}
+
+		// console.log('SESSION ID Token: ' + session.idToken);
+		// console.log('SESSION ACCESS TOKEN: ' + session.accessToken);
+		// console.log('SESSION REFRESH TOKEN: ' + session.refreshToken);
+
 		const { idToken, accessToken, refreshToken } = session;
+		this._authzService.send(
+			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
+		);
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
@@ -386,7 +395,7 @@ export class CognitoProvider implements AuthProvider {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		// console.log('IDENTITY ID: ');
+		// console.log('IDENTITY ID: ' + getIdRes.IdentityId);
 		// console.log(getIdRes.IdentityId);
 		const getCredentialsRes = await cognitoIdentityClient.send(
 			new GetCredentialsForIdentityCommand({
@@ -420,7 +429,7 @@ export class CognitoProvider implements AuthProvider {
 		}
 
 		// runs after fetchSession has successfully occurred
-		this._authzService.send(authzMachineEvents.fetchedAuthSession());
+		this._authzService.send(authzMachineEvents.fetched());
 
 		return {
 			sessionId: '',
@@ -471,6 +480,7 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
+		this._authzService.send(authzMachineEvents.signInRequested());
 		this.clearCachedTokens();
 		dispatchAuthEvent(
 			'signOut',

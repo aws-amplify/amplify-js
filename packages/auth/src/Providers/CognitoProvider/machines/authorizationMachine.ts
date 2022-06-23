@@ -8,64 +8,175 @@ import {
 } from 'xstate';
 import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
-import { signInMachine } from './signInMachine';
-import { SignInParams, SignInWithSocial } from '../../../types';
-import { AuthMachineContext, AuthTypestate } from '../types/machines';
+import {
+	AuthMachineContext,
+	AuthTypestate,
+	AuthorizationMachineContext,
+} from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
-import fetchAuthSessionStateMachine from './fetchAuthSessionStateMachine';
+import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 
-// events
+// state machine events
 export const authorizationMachineModel = createModel(
 	{
 		config: null,
 		service: null,
-	} as AuthMachineContext,
+	} as AuthorizationMachineContext,
 	{
 		events: {
+			cachedCredentialAvailable: () => ({}),
+			cancelSignIn: () => ({}),
+			// configures the cognito provider
 			configure: (config: CognitoProviderConfig) => ({ config }),
 			fetchAuthSession: () => {
 				const test: string = 'fetch test from state machine';
 				console.log(test);
 				return { test };
 			},
-			fetchedAuthSession: () => ({}),
+			fetched: () => {
+				console.log('fetch test from state machine');
+				return {};
+			},
+			fetchUnAuthSession: () => ({}),
 			noSession: () => ({}),
-			error: (error: any) => ({ error }),
+			receivedCachedCredentials: () => ({}),
+			refreshSession: () => ({}),
+			signInRequested: () => ({}),
+			signInCompleted: (userPoolTokens: {
+				idToken: string;
+				accessToken: string;
+				refreshToken: string;
+			}) => {
+				// console.log('idToken: ' + userPoolTokens.idToken);
+				console.log({ userPoolTokens });
+				return { userPoolTokens };
+			},
+			signOut: () => ({}),
+			throwError: (error: any) => ({ error }),
 		},
 	}
 );
 
+// State machine actions
+const authorizationStateMachineActions: Record<
+	string,
+	AssignAction<AuthorizationMachineContext, any>
+> = {
+	assignConfig: authorizationMachineModel.assign(
+		{
+			config: (_context, event) => event.config,
+		},
+		'configure'
+	),
+	assignService: authorizationMachineModel.assign(
+		{
+			service: (_context, event) =>
+				new CognitoService({
+					region: event.config.region,
+					userPoolId: event.config.userPoolId,
+					identityPoolId: event.config.identityPoolId,
+					clientId: event.config.clientId,
+				}),
+		},
+		'configure'
+	),
+	spawnFetchAuthSessionActor: authorizationMachineModel.assign(
+		{
+			actorRef: (context, event) => {
+				const machine = fetchAuthSessionStateMachine.withContext({
+					clientConfig: { region: context.config?.region },
+					service: context.service,
+					userPoolTokens: event.userPoolTokens,
+				});
+				const fetchAuthSessionActorRef = spawn(machine, {
+					name: 'fetchAuthSessionActor',
+				});
+				return fetchAuthSessionActorRef;
+			},
+		},
+		'signInCompleted'
+	),
+};
+
 // Authorization state machine
-const authorizationStateMachine: MachineConfig<any, any, any> = {
+const authorizationStateMachine: MachineConfig<
+	AuthorizationMachineContext,
+	any,
+	any
+> = {
 	id: 'authorizationStateMachine',
 	initial: 'notConfigured',
-	context: {},
+	context: authorizationMachineModel.initialContext,
 	states: {
 		notConfigured: {
 			on: {
 				configure: 'configured',
+				cachedCredentialAvailable: 'sessionEstablished',
+				throwError: 'error',
 			},
 		},
 		configured: {
 			on: {
-				fetchAuthSession: 'fetchingAuthSession',
+				// fetchAuthSession: 'fetchingAuthSession',
+				signInRequested: 'signingIn',
+				fetchUnAuthSession: 'fetchingUnAuthSession',
 			},
 		},
-		fetchingAuthSession: {
+		signingIn: {
 			on: {
-				fetchedAuthSession: 'sessionEstablished',
-				noSession: 'configured',
+				cancelSignIn: 'fetchingUnAuthSession',
+				signInCompleted: 'fetchAuthSessionWithUserPool',
+			},
+		},
+		fetchAuthSessionWithUserPool: {
+			onEntry: [authorizationStateMachineActions.spawnFetchAuthSessionActor],
+			on: {
+				fetched: 'sessionEstablished',
 			},
 			invoke: {
 				src: 'fetchAuthSessionStateMachine',
 			},
-			// ...fetchAuthSessionStateMachine,
 		},
+		// for fetching session for users that haven't signed in
+		fetchingUnAuthSession: {
+			on: {
+				fetched: 'sessionEstablished',
+			},
+			invoke: {
+				src: 'fetchAuthSessionStateMachine',
+			},
+		},
+		refreshingSession: {
+			on: {
+				refreshed: 'sessionEstablished',
+			},
+		},
+		// waitingToStore: {
+		// 	always: {
+		// 		target: 'sessionEstablished',
+		// 	},
+		// 	on: {
+		// 		error: 'error',
+		// 		receivedCachedCredentials: 'sessionEstablished',
+		// 	},
+		// },
+		// fetchingAuthSession: {
+		// 	on: {
+		// 		fetchedAuthSession: 'sessionEstablished',
+		// 		noSession: 'configured',
+		// 	},
+		// 	invoke: {
+		// 		src: 'fetchAuthSessionStateMachine',
+		// 	},
+		// 	// ...fetchAuthSessionStateMachine,
+		// },
 		sessionEstablished: {
 			on: {
-				fetchAuthSession: 'fetchingAuthSession',
+				// fetchAuthSession: 'fetchingAuthSession',
+				// signOut: 'configured',
+				signInRequested: 'signingIn',
+				refreshSession: 'refreshingSession',
 			},
 		},
 		error: {
@@ -73,12 +184,6 @@ const authorizationStateMachine: MachineConfig<any, any, any> = {
 		},
 	},
 };
-
-// State machine actions
-const authorizationStateMachineActions: Record<
-	string,
-	AssignAction<AuthMachineContext, any>
-> = {};
 
 export const authzMachine = createMachine(authorizationStateMachine);
 export const authzMachineEvents = authorizationMachineModel.events;

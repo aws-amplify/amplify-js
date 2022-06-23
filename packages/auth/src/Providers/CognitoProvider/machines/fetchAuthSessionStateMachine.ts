@@ -1,51 +1,65 @@
 import { createMachine, MachineConfig } from 'xstate';
-import fetchAwsCredentialsStateMachine from './fetchAwsCredentialsStateMachine';
-import fetchUserPoolTokensStateMachine from './fetchUserPoolTokensStateMachine';
-import fetchIdentityStateMachine from './fetchIdentityStateMachine';
+import { createModel } from 'xstate/lib/model';
+
+// info/context needed to fetch session
+// First, fetch user pool tokens (JWT) from the user pool
+// - session = this.getSessionData();
+
+// Second, fetch the identity ID from the identity pool using the idToken from the first step
+// - need idToken passed in as argument for the call
+
+// Third, fetch the AWS Credentials from the identity pool
+// - need idToken passed in as argument for the call
+// - need identityID passed in as argument for the call as well
+
+export const fetchAuthSessionMachineModel = createModel({
+	events: {
+		fetchUnAuthIdentityID: () => ({}),
+		fetchAuthenticatedIdentityID: () => ({}),
+		fetchedIdentityID: () => ({}),
+		throwError: () => ({}),
+		fetchedAWSCredentials: () => ({}),
+	},
+});
 
 // Fetch Auth Session state machine
-const fetchAuthSessionStateMachine: MachineConfig<any, any, any> = {
-	id: 'fetchAuthSessionStateMachine',
-	initial: 'initializingFetchAuthSession',
-	context: {},
-	states: {
-		initializingFetchAuthSession: {
-			on: {
-				fetchUserPoolTokens: 'fetchingUserPoolTokens',
-				fetchIdentity: 'fetchingIdentity',
-				throwError: 'error',
+export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
+	{
+		id: 'fetchAuthSessionStateMachine',
+		initial: 'notStarted',
+		context: {},
+		states: {
+			notStarted: {
+				on: {
+					fetchUnAuthIdentityID: 'fetchingIdentityID',
+					fetchAuthenticatedIdentityID: 'fetchingIdentityID',
+				},
+			},
+			fetchingIdentityID: {
+				on: {
+					fetchedIdentityID: 'fetchingAWSCredentials',
+					throwError: 'error',
+				},
+			},
+			fetchingAWSCredentials: {
+				on: {
+					fetchedAWSCredentials: 'fetched',
+					throwError: 'error',
+				},
+			},
+			fetched: {
+				type: 'final',
+			},
+			error: {
+				type: 'final',
 			},
 		},
-		fetchingUserPoolTokens: {
-			on: {
-				fetchIdentity: 'fetchingIdentity',
-				throwError: 'error',
-			},
-			...fetchUserPoolTokensStateMachine,
-		},
-		fetchingIdentity: {
-			on: {
-				fetchAwsCredentials: 'fetchingAWSCredentials',
-				throwError: 'error',
-			},
-			...fetchIdentityStateMachine,
-		},
-		fetchingAWSCredentials: {
-			on: {
-				fetchedAuthSession: 'sessionEstablished',
-				throwError: 'error',
-			},
-			...fetchAwsCredentialsStateMachine,
-		},
-		sessionEstablished: {
-			type: 'final',
-		},
-		error: {
-			type: 'final',
-		},
-	},
-};
+	};
 
-const finalMachine = createMachine(fetchAuthSessionStateMachine);
+export const fetchAuthSessionStateMachine = createMachine(
+	fetchAuthSessionStateMachineConfig
+);
 
-export default fetchAuthSessionStateMachine;
+// const finalMachine = createMachine(fetchAuthSessionStateMachine);
+
+// fetchAuthSessionStateMachine;

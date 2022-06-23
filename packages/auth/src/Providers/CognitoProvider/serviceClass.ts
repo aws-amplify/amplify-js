@@ -34,6 +34,7 @@ import {
 } from '../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from './Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
+import { CognitoIdToken } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('CognitoStatelessService');
 
@@ -69,6 +70,9 @@ interface CognitoServiceConfig {
 export class CognitoService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
+	private cognitoIdentityClient = this.createCognitoIdentityClient();
+	private cognitoIDPLoginKey: string;
+
 	constructor(
 		config: CognitoServiceConfig,
 		clientConfig: CognitoIdentityClientConfig = {}
@@ -78,6 +82,7 @@ export class CognitoService {
 			region: this.config.region,
 			...clientConfig,
 		};
+		this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
 	}
 	createCognitoClient() {
 		return new CognitoIdentityProviderClient(this.clientConfig);
@@ -186,6 +191,60 @@ export class CognitoService {
 				},
 			},
 		};
+	}
+
+	async fetchUserPoolTokens() {
+		const session = this.getSessionData();
+		if (session === null) {
+			throw new Error(
+				'Does not have active user session, have you called .signIn?'
+			);
+		}
+		const { idToken, accessToken, refreshToken } = session;
+		// this.userPoolIdToken = idToken;
+		const expiration = getExpirationTimeFromJWT(idToken);
+		console.log({ expiration });
+		return {
+			jwt: {
+				idToken: idToken,
+				accessToken: accessToken,
+				refreshToken: refreshToken,
+			},
+		};
+	}
+
+	async fetchIdentityId(idToken: string) {
+		// const cognitoIdentityClient = this.createCognitoIdentityClient();
+		// const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
+		const getIdRes = await this.cognitoIdentityClient.send(
+			new GetIdCommand({
+				IdentityPoolId: this.config.identityPoolId,
+				Logins: {
+					[this.cognitoIDPLoginKey]: idToken,
+				},
+			})
+		);
+		if (!getIdRes.IdentityId) {
+			throw new Error('Could not get Identity ID');
+		}
+		// this.identityPoolIdentityId = getIdRes.IdentityId;
+		return getIdRes.IdentityId;
+	}
+
+	async fetchAWSCredentials(identityID: string, idToken: string) {
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
+			new GetCredentialsForIdentityCommand({
+				IdentityId: identityID,
+				Logins: {
+					[this.cognitoIDPLoginKey]: idToken,
+				},
+			})
+		);
+		if (!getCredentialsRes.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
 	}
 
 	async signIn(
