@@ -1687,20 +1687,26 @@ workflows:
           name: RN iOS - latest
           framework: rn_ios
           main-file-path: ./App.js
+          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
+          tag: 0.68.2
       - getting-started-smoke-test/rn-android:
           name: RN Android - latest
           framework: rn_android
           main-file-path: ./App.js
-      - getting-started-smoke-test/rn-ios:
-          name: RN iOS - next
-          framework: rn_ios
-          main-file-path: ./App.js
-          tag: next
-      - getting-started-smoke-test/rn-android:
-          name: RN Android - next
-          framework: rn_android
-          main-file-path: ./App.js
-          tag: next
+          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
+          tag: 0.68.2
+
+      # TODO: re-enable the following 2 jobs after https://github.com/react-native-picker/picker/issues/425 is resolved
+      # - getting-started-smoke-test/rn-ios:
+      #     name: RN iOS - next
+      #     framework: rn_ios
+      #     main-file-path: ./App.js
+      #     tag: next
+      # - getting-started-smoke-test/rn-android:
+      #     name: RN Android - next
+      #     framework: rn_android
+      #     main-file-path: ./App.js
+      #     tag: next
       # Expo
       - getting-started-smoke-test/expo:
           name: Expo - latest
