@@ -16,7 +16,7 @@
 		"lint": "eslint src"
 	},
 	"devDependencies": {
-		"@aws-amplify/notifications": "0.2.2",
+		"@aws-amplify/notifications": "0.2.3",
 		"@babel/cli": "^7.15.7",
 		"@babel/core": "7.15.5",
 		"@babel/preset-env": "7.15.6",
