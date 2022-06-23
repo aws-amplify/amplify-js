@@ -15,6 +15,9 @@ import Notifications from '../src/Notifications';
 import { adhocConfig, awsConfig, notificationsConfig } from '../__mocks__/data';
 
 jest.mock('@aws-amplify/core');
+jest.mock('../src/InAppMessaging', () =>
+	jest.fn(() => ({ configure: () => {} }))
+);
 
 describe('Notifications', () => {
 	test('registers with Amplify', () => {
