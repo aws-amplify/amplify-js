@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.4...aws-amplify-react-native@6.0.5) (2022-06-15)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** set Resend Code enabled/disabled from current username value ([#9767](https://github.com/aws-amplify/amplify-js/issues/9767)) ([94813a9](https://github.com/aws-amplify/amplify-js/commit/94813a9b364f9d13c72da38c0c13aefbe52157d7))
+
+
+
+
+
 ## [6.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.3...aws-amplify-react-native@6.0.4) (2022-03-28)
 
 ### Bug Fixes

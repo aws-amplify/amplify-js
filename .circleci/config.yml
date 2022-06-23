@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:9.4.1
+      - image: cypress/included:8.7.0
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -1072,23 +1072,22 @@ jobs:
           sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
           browser: firefox
-
-  integ_duplicate_packages:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Duplicate Package Errors'
-          framework: react
-          category: version-conflict
-          sample_name: duplicate-packages
-          spec: duplicate-packages
-          browser: << parameters.browser >>
+      # integ_duplicate_packages:
+      #   parameters:
+      #     browser:
+      #       type: string
+      #   executor: js-test-executor
+      #   <<: *test_env_vars
+      #   working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+      #   steps:
+      #     - prepare_test_env
+      #     - integ_test_js:
+      #         test_name: 'Duplicate Package Errors'
+      #         framework: react
+      #         category: version-conflict
+      #         sample_name: duplicate-packages
+      #         spec: duplicate-packages
+      #         browser: << parameters.browser >>
   integ_auth_test_cypress_no_ui:
     working_directory: ~/amplify-js-samples-staging/
     executor: js-test-executor
@@ -1113,14 +1112,16 @@ jobs:
           category: geo
           sample_name: display-map
           spec: display-map
-          browser: << parameters.browser >>
+          # Temp fix:
+          browser: chrome
       - integ_test_js:
           test_name: 'Search Outside Map'
           framework: react
           category: geo
           sample_name: search-outside-map
           spec: search-outside-map
-          browser: << parameters.browser >>
+          # Temp fix:
+          browser: chrome
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1192,6 +1193,12 @@ datastore_auth_scenarios: &datastore_auth_scenarios
 
 workflows:
   build_test_deploy:
+    # Tells CircleCI to skip this workflow when the pipeline is triggered by the scheduled source,
+    # i.e. when the canaries workflow executes
+    # https://circleci.com/docs/2.0/scheduled-pipelines/#workflows-filtering
+    when:
+      not:
+        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
       - integ_setup:
@@ -1533,15 +1540,15 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
-      - integ_duplicate_packages:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_duplicate_packages:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - integ_react_geo:
           requires:
             - integ_setup
@@ -1593,7 +1600,7 @@ workflows:
             - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
             - integ_datastore_auth_v2
-            - integ_duplicate_packages
+              # - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_graphql_api
             - integ_react_geo
@@ -1604,3 +1611,361 @@ workflows:
                 - release
           requires:
             - deploy
+  # Scheduled smoke test workflow
+  # Jobs are pulled from the getting-started-smoke-test inline orb defined below
+  canaries:
+    when:
+      and:
+        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - equal: [canaries, << pipeline.schedule.name >>]
+    jobs:
+      ## Web
+      # React
+      - getting-started-smoke-test/web:
+          name: React - latest
+          npx-command: create-react-app
+          framework: react
+          main-file-path: src/App.js
+          build-dir: build
+      - getting-started-smoke-test/web:
+          name: React - next
+          npx-command: create-react-app@next
+          framework: react
+          main-file-path: src/App.js
+          build-dir: build
+      # Next
+      - getting-started-smoke-test/web:
+          name: Next.js - latest
+          npx-command: create-next-app
+          framework: nextjs
+          main-file-path: pages/_app.js
+          dev-start: dev
+          build-dir: build
+          ssr: true
+      - getting-started-smoke-test/web:
+          name: Next.js - next
+          npx-command: create-next-app@canary
+          framework: nextjs
+          main-file-path: pages/_app.js
+          dev-start: dev
+          build-dir: build
+          ssr: true
+      # Angular
+      - getting-started-smoke-test/web:
+          name: Angular - latest
+          npx-command: -p @angular/cli ng new --defaults true --force
+          framework: angular
+          main-file-path: src/main.ts
+          dev-port: 4200
+          build-dir: dist
+      - getting-started-smoke-test/web:
+          name: Angular - next
+          npx-command: -p @angular/cli@next ng new --defaults true --force
+          framework: angular
+          main-file-path: src/main.ts
+          dev-port: 4200
+          build-dir: dist
+      # Vue
+      - getting-started-smoke-test/web:
+          name: Vue - latest
+          npx-command: -p @vue/cli vue create --default --force --registry "https://registry.npmmirror.com" # npmmirror works better with vue create specifically in CCI
+          framework: vue
+          main-file-path: src/main.js
+          dev-start: serve
+          dev-port: 8080
+          build-dir: dist
+      - getting-started-smoke-test/web:
+          name: Vue - next
+          npx-command: -p @vue/cli@next vue create --default --force --registry "https://registry.npmmirror.com"
+          framework: vue
+          main-file-path: src/main.js
+          dev-start: serve
+          dev-port: 8080
+          build-dir: dist
+      ## Mobile
+      # RN CLI
+      - getting-started-smoke-test/rn-ios:
+          name: RN iOS - latest
+          framework: rn_ios
+          main-file-path: ./App.js
+      - getting-started-smoke-test/rn-android:
+          name: RN Android - latest
+          framework: rn_android
+          main-file-path: ./App.js
+      - getting-started-smoke-test/rn-ios:
+          name: RN iOS - next
+          framework: rn_ios
+          main-file-path: ./App.js
+          tag: next
+      - getting-started-smoke-test/rn-android:
+          name: RN Android - next
+          framework: rn_android
+          main-file-path: ./App.js
+          tag: next
+      # Expo
+      - getting-started-smoke-test/expo:
+          name: Expo - latest
+          framework: expo_ios
+          main-file-path: ./App.js
+      - getting-started-smoke-test/expo:
+          name: Expo - next
+          framework: expo_ios
+          main-file-path: ./App.js
+          tag: next
+
+# Start Canary Orb
+orbs:
+  getting-started-smoke-test:
+    executors:
+      web-executor:
+        docker:
+          - image: cimg/node:lts
+        resource_class: large
+
+      android-executor:
+        machine:
+          image: android:202102-01
+        resource_class: large
+
+    common_env_vars: &common_env_vars
+      environment:
+        IMPORT_STATEMENT: import {Logger} from 'aws-amplify';
+        LIBRARY_STATEMENT: Logger.LOG_LEVEL='DEBUG';
+        MAX_WAIT_ON_TIMEOUT: 180000 # 3 minutes; how long we wait for the build to succeed before failing the job
+
+    commands:
+      run-with-retry:
+        description: Run command with retry
+        parameters:
+          label:
+            description: Display name
+            type: string
+          pre-command:
+            description: This command will be executed once, but will not be retried
+            type: string
+            default: ''
+          command:
+            description: Command to run
+            type: string
+          retry-count:
+            description: Number of retry
+            type: integer
+            default: 3
+          sleep:
+            description: Wait duration until next retry
+            type: integer
+            default: 5
+          no_output_timeout:
+            description: Elapsed time the command can run without output
+            type: string
+            default: 10m
+        steps:
+          - run:
+              name: << parameters.label >>
+              command: |
+                retry() {
+                  MAX_RETRY=<< parameters.retry-count >>
+                  n=0
+                  until [ $n -ge $MAX_RETRY ]
+                  do
+                      bash -c "$@" && exit 0
+                      n=$[$n+1]
+                      echo "retry $n of $MAX_RETRY"
+                      sleep << parameters.sleep >>
+                  done
+                  if [ $n -ge $MAX_RETRY ]; then
+                    echo "failed: ${@}" >&2
+                    exit 1
+                  fi
+                }
+                eval << parameters.pre-command >> 
+                retry "<< parameters.command >>"
+              no_output_timeout: << parameters.no_output_timeout >>
+
+    jobs:
+      web:
+        parameters:
+          framework:
+            type: string
+          npx-command:
+            type: string
+          npx-post:
+            type: string
+            default: ''
+          main-file-path:
+            type: string
+          dev-start:
+            type: string
+            default: start
+          dev-port:
+            type: integer
+            default: 3000
+          build-dir:
+            type: string
+          ssr:
+            type: boolean
+            default: false
+        executor: web-executor
+        <<: *common_env_vars
+        working_directory: ~/project/amplify-getting-started-<< parameters.framework >>
+        steps:
+          - run-with-retry:
+              label: Scaffold App
+              pre-command: cd ../
+              command: npx -y << parameters.npx-command >> amplify-getting-started-<< parameters.framework >> << parameters.npx-post >>
+              no_output_timeout: 2m
+          - run-with-retry:
+              label: Install AmplifyJS
+              command: npm i -S aws-amplify && npm i -g wait-on serve
+          - run:
+              name: Call Amplify library in code
+              command: |
+                echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
+                echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
+          - run-with-retry:
+              label: Run in Dev Mode
+              command: npm run << parameters.dev-start >> & wait-on http://localhost:<< parameters.dev-port >> -t $MAX_WAIT_ON_TIMEOUT
+          - unless:
+              condition: << parameters.ssr >>
+              steps:
+                - run-with-retry:
+                    label: Run in Prod Mode
+                    command: npm run build && (serve -n -s << parameters.build-dir >> -l 4000 & wait-on http://localhost:4000  -t $MAX_WAIT_ON_TIMEOUT)
+          - when:
+              condition: << parameters.ssr >>
+              steps:
+                - run-with-retry:
+                    label: Run in Prod Mode
+                    command: npm run build && (npm start & wait-on http://localhost:3000 -t $MAX_WAIT_ON_TIMEOUT)
+
+      rn-ios:
+        parameters:
+          framework:
+            type: string
+          main-file-path:
+            type: string
+          tag:
+            type: string
+            default: latest
+          xcode-version:
+            type: string
+            default: 13.4.0
+          ios-device:
+            type: string
+            default: iPhone 13
+        macos:
+          xcode: << parameters.xcode-version >>
+        resource_class: large
+        working_directory: ~/amplify_getting_started_<< parameters.framework >>
+        steps:
+          - run-with-retry:
+              label: Scaffold App
+              pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
+              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >>
+              no_output_timeout: 10m
+          - run-with-retry:
+              label: Install Amplify dependencies
+              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - run-with-retry:
+              label: Pod Install
+              command: npx pod-install
+          - run:
+              name: Call Amplify library in code
+              command: |
+                echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
+                echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
+          - run:
+              background: true
+              name: Start iOS simulator (background)
+              command: xcrun simctl boot "<< parameters.ios-device >>" || true
+          - run-with-retry:
+              label: Start App
+              command: npm run ios
+
+      rn-android:
+        parameters:
+          framework:
+            type: string
+          main-file-path:
+            type: string
+          tag:
+            type: string
+            default: latest
+        executor: android-executor
+        working_directory: ~/amplify_getting_started_<< parameters.framework >>
+        steps:
+          - run:
+              name: Create avd
+              command: |
+                SYSTEM_IMAGES="system-images;android-29;default;x86"
+                sdkmanager "$SYSTEM_IMAGES"
+                echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
+          - run:
+              name: Launch emulator
+              command: |
+                emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+              background: true
+          - run:
+              name: Generate cache key
+              command: |
+                find . -name 'build.gradle' | sort | xargs cat |
+                shasum | awk '{print $1}' > /tmp/gradle_cache_seed
+          - run-with-retry:
+              label: Scaffold App
+              pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
+              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >>
+              no_output_timeout: 10m
+          - run-with-retry:
+              label: Install Amplify dependencies
+              command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - run:
+              name: Call Amplify library in code
+              command: |
+                echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
+                echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
+          - run:
+              name: Wait for emulator to start
+              command: |
+                circle-android wait-for-boot
+          - run:
+              name: Disable emulator animations
+              command: |
+                adb shell settings put global window_animation_scale 0.0
+                adb shell settings put global transition_animation_scale 0.0
+                adb shell settings put global animator_duration_scale 0.0
+          - run-with-retry:
+              label: Start App
+              command: npm run android
+
+      expo:
+        parameters:
+          framework:
+            type: string
+          main-file-path:
+            type: string
+          tag:
+            type: string
+            default: latest
+        executor: web-executor
+        <<: *common_env_vars
+        working_directory: ~/amplify_getting_started_<< parameters.framework >>
+        steps:
+          - run-with-retry:
+              label: Install Expo
+              command: npm i -g expo-cli@<< parameters.tag >> wait-on
+          - run-with-retry:
+              label: Scaffold App
+              command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && expo-cli init amplify_getting_started_<< parameters.framework >> --yes
+              no_output_timeout: 5m
+          - run-with-retry:
+              label: Install Amplify dependencies
+              command: yarn add aws-amplify aws-amplify-react-native @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+          - run-with-retry:
+              label: Call Amplify library in code
+              command: |
+                echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
+                echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
+          - run-with-retry:
+              label: Start App
+              command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
+# End Canary Orb
