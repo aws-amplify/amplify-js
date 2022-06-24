@@ -33,19 +33,43 @@ export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {
 		mutator?: Symbol;
 	};
-
 export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
 
 const logger = new Logger('DataStore');
+
+/**
+ * A wrapper that manages a storage adapter and provides common functionality, such
+ * as observability, that would otherwise need to be implemented in each individual adapter.
+ */
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void>;
+
+	/**
+	 * The inner observable-like thing (`PushStream`) that collects all data
+	 * operations and provides a "deferred" and "multi-cast-like" API. I.e.:
+	 *
+	 * `pushStream` can produce an `observable` via `.observable`, and items
+	 * can be broadcast to all generated observables (subscribers) by calling
+	 * `.next(item)` on the `PushStream`.
+	 *
+	 * @see https://www.npmjs.com/package/zen-push
+	 */
 	private readonly pushStream: {
 		observable: Observable<StorageSubscriptionMessage<PersistentModel>>;
 	} & Required<
 		ZenObservable.Observer<StorageSubscriptionMessage<PersistentModel>>
 	>;
 
+	/**
+	 * Constructs a
+	 * @param schema This schema will be initialized against the storage adapter.
+	 * @param namespaceResolver Used to separate collections of models and avoid name conflicts.
+	 * @param getModelConstructorByModelName A function to find the model constructor for a model by namespace and name.
+	 * @param modelInstanceCreator
+	 * @param adapter The storage adapter to use as a final local persistence layer.
+	 * @param sessionId
+	 */
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
@@ -61,6 +85,9 @@ class StorageClass implements StorageFacade {
 		this.pushStream = new PushStream();
 	}
 
+	/**
+	 * The namespace for STORAGE tables.
+	 */
 	static getNamespace() {
 		const namespace: SchemaNamespace = {
 			name: STORAGE,
@@ -73,7 +100,21 @@ class StorageClass implements StorageFacade {
 		return namespace;
 	}
 
+	/**
+	 * If not already initalized, hands off schema and sessionId to the storage adapter
+	 * and `awaits` downstream/inner initialization.
+	 */
 	async init() {
+		// Using `this.initialized` and local `resolve` and `reject` vars to essentially connect
+		// these promises together and prevent re-invocations of `this.adapter.setUp()`.
+		//
+		// Can this be done more simply like this?
+		//
+		// this.initialized = this.initialized ?? this.adapter.setUp(...);
+		// return this.initialized;
+		//
+		// Or am I overlooking something?
+
 		if (this.initialized !== undefined) {
 			await this.initialized;
 			return;
@@ -82,7 +123,6 @@ class StorageClass implements StorageFacade {
 
 		let resolve: (value?: void | PromiseLike<void>) => void;
 		let reject: (value?: void | PromiseLike<void>) => void;
-
 		this.initialized = new Promise<void>((res, rej) => {
 			resolve = res;
 			reject = rej;
@@ -101,6 +141,14 @@ class StorageClass implements StorageFacade {
 		await this.initialized;
 	}
 
+	/**
+	 *
+	 * @param model The model instance to save.
+	 * @param condition The conditions under which the save should succeed.
+	 * Omission attempts to save unconditionally.
+	 * @param mutator
+	 * @param patchesTuple
+	 */
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
@@ -386,6 +434,12 @@ class StorageClass implements StorageFacade {
 	}
 }
 
+/**
+ * Enforces linearity of data access calls to a storage adapter as managed by the Storage class.
+ * Uses a mutex
+ *
+ * @see StorageClass
+ */
 class ExclusiveStorage implements StorageFacade {
 	private storage: StorageClass;
 	private readonly mutex = new Mutex();
@@ -410,10 +464,27 @@ class ExclusiveStorage implements StorageFacade {
 		);
 	}
 
+	/**
+	 * Runs a function under an exclusive lock against the storage layer.
+	 *
+	 * Used by all data access methods functions in the `ExclusiveStorage` layer.
+	 *
+	 * SIDE EFFECT: Acquires a lock on `this` and doesn't let go until the function completes.
+	 *
+	 * @param fn The function to run.
+	 * @returns The result of the function.
+	 */
 	runExclusive<T>(fn: (storage: StorageClass) => Promise<T>) {
 		return <Promise<T>>this.mutex.runExclusive(fn.bind(this, this.storage));
 	}
 
+	/**
+	 *
+	 * @param model
+	 * @param condition
+	 * @param mutator
+	 * @param patchesTuple
+	 */
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,

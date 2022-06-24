@@ -260,11 +260,31 @@ const createTypeClasses: (
 	return classes;
 };
 
+/**
+ * Constructs a model and records it with its metadata in a weakset. Allows for
+ * the separate storage of core model fields and Amplify/DataStore metadata
+ * fields that the customer app does not want exposed.
+ *
+ * @param modelConstructor The model constructor.
+ * @param init Init data that would normally be passed to the constructor.
+ * @returns The initialized model.
+ */
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
+/**
+ * Collection of instantiated models to allow storage of metadata apart from
+ * the model visible to the consuming app -- in case the app doesn't have
+ * metadata fields (_version, _deleted, etc.) exposed on the model itself.
+ *
+ * TODO: Am I understanding this correctly?
+ */
 const instancesMetadata = new WeakSet<
 	ModelInit<PersistentModel & Partial<ModelInstanceMetadata>>
 >();
+
+/**
+ * @see ModelInstanceCreator
+ */
 function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
 	init: ModelInit<T> & Partial<ModelInstanceMetadata>

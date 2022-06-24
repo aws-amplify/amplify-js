@@ -615,6 +615,13 @@ export type SystemComponent = {
 	): Promise<void>;
 };
 
+/**
+ * A function that accepts a Model constructor and determines the namespace the
+ * model lives in.
+ *
+ * @param modelConstructor The Model constructor to inspect.
+ * @returns The namespace as a string.
+ */
 export type NamespaceResolver = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => string;
