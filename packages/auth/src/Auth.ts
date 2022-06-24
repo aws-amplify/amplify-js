@@ -73,7 +73,6 @@ import {
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
 } from './types/Auth';
-import { resolve } from 'dns';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -1866,7 +1865,7 @@ export class AuthClass {
 			this._oAuthHandler &&
 			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
-		return new Promise(async (res, rej) => {
+		return new Promise((res, rej) => {
 			if (opts && opts.global) {
 				logger.debug('user global sign out', user);
 				// in order to use global signout
