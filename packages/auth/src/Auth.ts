@@ -95,6 +95,8 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
 
+const MAX_AUTOSIGNIN_POLLING_TIME = 180000;
+
 /**
  * Provide authentication steps
  */
@@ -382,18 +384,34 @@ export class AuthClass {
 							`${username} has signed up successfully`
 						);
 						if (autoSignIn) {
-							Hub.listen('auth', ({ payload }) => {
-								if (payload.event === 'confirmSignUp') {
-									const authDetails = new AuthenticationDetails({
-										Username: username,
-										Password: password,
-										ValidationData: validationData,
-										ClientMetadata: clientMetadata,
-									});
-
-									this.onConfirmSignUp(authDetails, payload);
-								}
+							const authDetails = new AuthenticationDetails({
+								Username: username,
+								Password: password,
+								ValidationData: validationData,
+								ClientMetadata: clientMetadata,
 							});
+							if (data.userConfirmed) {
+								this.onConfirmSignUp(authDetails);
+							} else if (this._config.verificationMethod === 'link') {
+								const start = Date.now();
+								const autoSignInPolling = setInterval(() => {
+									if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_TIME) {
+										clearInterval(autoSignInPolling);
+										dispatchAuthEvent(
+											'SignIn',
+											null,
+											'Sorry, you have timed out...'
+										);
+									}
+									this.onConfirmSignUp(authDetails, null, autoSignInPolling);
+								}, 5000);
+							} else {
+								Hub.listen('auth', ({ payload }) => {
+									if (payload.event === 'confirmSignUp') {
+										this.onConfirmSignUp(authDetails, payload);
+									}
+								});
+							}
 						}
 						resolve(data);
 					}
@@ -403,7 +421,11 @@ export class AuthClass {
 		});
 	}
 
-	private async onConfirmSignUp(authDetails: AuthenticationDetails, payload) {
+	private async onConfirmSignUp(
+		authDetails: AuthenticationDetails,
+		payload?,
+		autoSignInPolling?
+	) {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		try {
 			await user.authenticateUser(
@@ -412,11 +434,16 @@ export class AuthClass {
 					user,
 					value => {
 						dispatchAuthEvent(
-							'AutoSignIn',
+							'SignIn',
 							value,
 							`${authDetails.getUsername()} has signed in successfully`
 						);
-						Hub.remove('auth', payload);
+						if (payload) {
+							Hub.remove('auth', payload);
+						}
+						if (autoSignInPolling) {
+							clearInterval(autoSignInPolling);
+						}
 					},
 					error => {
 						logger.error(error);

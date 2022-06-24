@@ -51,7 +51,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
-	autoSignIn?: boolean;
+	verificationMethod?: string;
 }
 
 export enum CognitoHostedUIIdentityProvider {
