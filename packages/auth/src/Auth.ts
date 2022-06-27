@@ -45,7 +45,6 @@ import {
 	UniversalStorage,
 	urlSafeDecode,
 	HubCallback,
-	HubPayload,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
