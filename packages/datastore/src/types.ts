@@ -392,11 +392,17 @@ export enum OpType {
 	DELETE = 'DELETE',
 }
 
-export type SubscriptionMessage<T extends PersistentModel> = {
+export type SubscriptionMessage<T extends PersistentModel> = Pick<
+	InternalSubscriptionMessage<T>,
+	'opType' | 'element' | 'model' | 'condition'
+>;
+
+export type InternalSubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
+	savedElement?: T;
 };
 
 export type DataStoreSnapshot<T extends PersistentModel> = {
@@ -407,15 +413,14 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 
 //#region Predicates
 
-export type PredicateExpression<M extends PersistentModel, FT> = TypeName<
+export type PredicateExpression<
+	M extends PersistentModel,
 	FT
-> extends keyof MapTypeToOperands<FT>
+> = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
 			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
 			// make the operand type match the type they're trying to filter on
-			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<
-				FT
-			>[TypeName<FT>]]
+			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]]
 	  ) => ModelPredicate<M>
 	: never;
 
@@ -483,8 +488,7 @@ export type PredicateGroups<T extends PersistentModel> = {
 
 export type ModelPredicate<M extends PersistentModel> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
-} &
-	PredicateGroups<M>;
+} & PredicateGroups<M>;
 
 export type ProducerModelPredicate<M extends PersistentModel> = (
 	condition: ModelPredicate<M>
@@ -574,9 +578,10 @@ export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
-export type SortPredicateExpression<M extends PersistentModel, FT> = TypeName<
+export type SortPredicateExpression<
+	M extends PersistentModel,
 	FT
-> extends keyof MapTypeToOperands<FT>
+> = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
 	: never;
 
@@ -585,9 +590,8 @@ export enum SortDirection {
 	DESCENDING = 'DESCENDING',
 }
 
-export type SortPredicatesGroup<
-	T extends PersistentModel
-> = SortPredicateObject<T>[];
+export type SortPredicatesGroup<T extends PersistentModel> =
+	SortPredicateObject<T>[];
 
 export type SortPredicateObject<T extends PersistentModel> = {
 	field: keyof T;
@@ -654,7 +658,7 @@ export type DataStoreConfig = {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (error: SyncError) => void; // default : logger.warn
+		errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -664,7 +668,7 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (error: SyncError) => void; // default : logger.warn
+	errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
@@ -771,14 +775,32 @@ export type SyncConflict = {
 	attempts: number;
 };
 
-export type SyncError = {
+export type SyncError<T extends PersistentModel> = {
 	message: string;
-	errorType: string;
-	errorInfo: string;
-	localModel: PersistentModel;
-	remoteModel: PersistentModel;
+	errorType: ErrorType;
+	errorInfo?: string;
+	recoverySuggestion?: string;
+	model?: string;
+	localModel: T;
+	remoteModel: T;
+	process: ProcessName;
 	operation: string;
+	cause?: Error;
 };
+
+export type ErrorType =
+	| 'ConfigError'
+	| 'BadModel'
+	| 'BadRecord'
+	| 'Unauthorized'
+	| 'Transient'
+	| 'Unknown';
+
+export enum ProcessName {
+	'sync' = 'sync',
+	'mutate' = 'mutate',
+	'subscribe' = 'subscribe',
+}
 
 export const DISCARD = Symbol('DISCARD');
 
@@ -788,7 +810,7 @@ export type ConflictHandler = (
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
-export type ErrorHandler = (error: SyncError) => void;
+export type ErrorHandler = (error: SyncError<PersistentModel>) => void;
 
 export type DeferredCallbackResolverOptions = {
 	callback: () => void;

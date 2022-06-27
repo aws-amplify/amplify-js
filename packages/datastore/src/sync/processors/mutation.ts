@@ -1,8 +1,9 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
 	ConsoleLogger as Logger,
-	jitteredExponentialRetry,
+	jitteredBackoff,
 	NonRetryableError,
+	retry,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -23,6 +24,7 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 	TypeConstructorMap,
+	ProcessName,
 } from '../../types';
 import { exhaustiveCheck, USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
@@ -33,6 +35,7 @@ import {
 	TransformerMutationType,
 	getTokenForCustomAuth,
 } from '../utils';
+import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
 
@@ -62,8 +65,8 @@ class MutationProcessor {
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly conflictHandler?: ConflictHandler,
-		private readonly errorHandler?: ErrorHandler
+		private readonly errorHandler: ErrorHandler,
+		private readonly conflictHandler?: ConflictHandler
 	) {
 		this.generateQueries();
 	}
@@ -241,7 +244,7 @@ class MutationProcessor {
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
-		return await jitteredExponentialRetry(
+		return await retry(
 			async (
 				model: string,
 				operation: TransformerMutationType,
@@ -251,19 +254,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -358,17 +356,18 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
 
 								await this.storage.save(updatedMutation);
 
@@ -376,20 +375,21 @@ class MutationProcessor {
 							} else {
 								try {
 									await this.errorHandler({
-										localModel: this.modelInstanceCreator(
-											modelConstructor,
-											variables.input
-										),
+										recoverySuggestion:
+											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+										localModel: variables.input,
 										message: error.message,
 										operation,
-										errorType: error.errorType,
+										errorType: getMutationErrorType(error),
 										errorInfo: error.errorInfo,
+										process: ProcessName.mutate,
+										cause: error,
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
 											: null,
 									});
 								} catch (err) {
-									logger.warn('failed to execute errorHandler', err);
+									logger.warn('Mutation error handler failed with:', err);
 								} finally {
 									// Return empty tuple, dequeues the mutation
 									return error.data
@@ -417,7 +417,8 @@ class MutationProcessor {
 				modelConstructor,
 				MutationEvent,
 				mutationEvent,
-			]
+			],
+			safeJitteredBackoff
 		);
 	}
 
@@ -538,5 +539,38 @@ class MutationProcessor {
 		this.processing = false;
 	}
 }
+
+const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;
+const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Wraps the jittered backoff calculation to retry Network Errors indefinitely.
+ * Backs off according to original jittered retry logic until the original retry
+ * logic hits its max. After this occurs, if the error is a Network Error, we
+ * ignore the attempt count and return MAX_RETRY_DELAY_MS to retry forever (until
+ * the request succeeds).
+ *
+ * @param attempt ignored
+ * @param _args ignored
+ * @param error tested to see if `.message` is 'Network Error'
+ * @returns number | false :
+ */
+export const safeJitteredBackoff: typeof originalJitteredBackoff = (
+	attempt,
+	_args,
+	error
+) => {
+	const attemptResult = originalJitteredBackoff(attempt);
+
+	// If this is the last attempt and it is a network error, we retry indefinitively every 5 minutes
+	if (attemptResult === false && error?.message === 'Network Error') {
+		return MAX_RETRY_DELAY_MS;
+	}
+
+	return attemptResult;
+};
 
 export { MutationProcessor };

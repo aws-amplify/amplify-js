@@ -3,6 +3,138 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.7...@aws-amplify/core@4.5.8) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.6...@aws-amplify/core@4.5.7) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.5...@aws-amplify/core@4.5.6) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.4...@aws-amplify/core@4.5.5) (2022-05-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.3...@aws-amplify/core@4.5.4) (2022-05-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.2...@aws-amplify/core@4.5.3) (2022-05-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.1...@aws-amplify/core@4.5.2) (2022-04-14)
+
+
+### Bug Fixes
+
+* PubSub - Resolve ts strict errors in the AWSAppSyncRealTimeProvider ([#9731](https://github.com/aws-amplify/amplify-js/issues/9731)) ([0c9c401](https://github.com/aws-amplify/amplify-js/commit/0c9c4018573df31f7e4739207be22eefb8bf8a56))
+
+
+
+
+
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.0...@aws-amplify/core@4.5.1) (2022-04-04)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.2...@aws-amplify/core@4.5.0) (2022-03-28)
+
+
+### Features
+
+* PubSub Add Options objects for all Providers and fix: Spelling error and deprecation of old exports ([#9683](https://github.com/aws-amplify/amplify-js/issues/9683)) ([b535af2](https://github.com/aws-amplify/amplify-js/commit/b535af2133b5460c6e8e2fcfd89e1fe235872c27))
+
+
+
+
+
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.1...@aws-amplify/core@4.4.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix mutations to retry indefinitely on network error ([#9724](https://github.com/aws-amplify/amplify-js/issues/9724)) ([5371380](https://github.com/aws-amplify/amplify-js/commit/53713804b79df9c69ac29b75ffc576b4c2002507))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.4.0...@aws-amplify/core@4.4.1) (2022-03-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.14...@aws-amplify/core@4.4.0) (2022-02-28)
+
+
+### Bug Fixes
+
+* pin async storage to 1.15.17 ([#9570](https://github.com/aws-amplify/amplify-js/issues/9570)) ([bc5235a](https://github.com/aws-amplify/amplify-js/commit/bc5235ac0d15242f7a13457f40999b5331823395))
+
+
+### Features
+
+* **@aws-amplify/core:** add ui protected channel ([#9554](https://github.com/aws-amplify/amplify-js/issues/9554)) ([86e07fc](https://github.com/aws-amplify/amplify-js/commit/86e07fcd3ebbaa5f03d65ed8009b7531ee300e39))
+
+
+
+
+
+## [4.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.13...@aws-amplify/core@4.3.14) (2022-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.12...@aws-amplify/core@4.3.13) (2022-01-27)
+
+
+### Reverts
+
+* Revert "chore(amplify-js): consolidate react-native dependencies (#9451)" (#9473) ([9924a31](https://github.com/aws-amplify/amplify-js/commit/9924a31397761fccd03f53336d754b98367199a8)), closes [#9451](https://github.com/aws-amplify/amplify-js/issues/9451) [#9473](https://github.com/aws-amplify/amplify-js/issues/9473)
+
+
+
+
+
 ## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.11...@aws-amplify/core@4.3.12) (2022-01-07)
 
 

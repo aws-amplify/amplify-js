@@ -294,8 +294,18 @@ export class RestClient {
 		const source = this._cancelTokenMap.get(request);
 		if (source) {
 			source.cancel(message);
+			return true;
 		}
-		return true;
+		return false;
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._cancelTokenMap.has(request);
 	}
 
 	/**
@@ -366,10 +376,8 @@ export class RestClient {
 	/** private methods **/
 
 	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;

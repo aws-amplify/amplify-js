@@ -8,6 +8,8 @@ import {
 	PredicatesGroup,
 	GraphQLFilter,
 	AuthModeStrategy,
+	ErrorHandler,
+	ProcessName,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -24,7 +26,8 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
-
+import { ModelInstanceCreator } from '../../datastore/datastore';
+import { getSyncErrorType } from './errorMaps';
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -40,7 +43,9 @@ class SyncProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler: ErrorHandler,
+		private readonly modelInstanceCreator?: ModelInstanceCreator
 	) {
 		this.generateQueries();
 	}
@@ -65,10 +70,11 @@ class SyncProcessor {
 		if (!this.syncPredicates) {
 			return null;
 		}
-		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
-			this.syncPredicates.get(model),
-			false
-		);
+		const predicatesGroup: PredicatesGroup<any> =
+			ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
 
 		if (!predicatesGroup) {
 			return null;
@@ -222,15 +228,33 @@ class SyncProcessor {
 							error.data[opName] &&
 							error.data[opName].items
 					);
-
 					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
 								item => item !== null
 							);
-
 							if (error.errors) {
+								await Promise.all(
+									error.errors.map(async err => {
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null,
+												message: err.message,
+												model: modelDefinition.name,
+												operation: opName,
+												errorType: getSyncErrorType(err),
+												process: ProcessName.sync,
+												remoteModel: null,
+												cause: err,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+									})
+								);
 								Hub.dispatch('datastore', {
 									event: 'syncQueriesPartialSyncError',
 									data: {

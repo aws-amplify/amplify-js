@@ -82,6 +82,40 @@ describe('API test', () => {
 			.spyOn(GraphQLAPIClass.prototype, 'graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
-		expect(await api.graphql(null)).toBe('grapqhqlResponse');
+		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');
+	});
+
+	describe('cancel', () => {
+		test('cancel RestAPI request', async () => {
+			jest
+				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => false);
+			const restAPICancelSpy = jest
+				.spyOn(RestAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => true);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(restAPICancelSpy).toHaveBeenCalled();
+		});
+
+		test('cancel GraphQLAPI request', async () => {
+			jest
+				.spyOn(GraphQLAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => true);
+			const graphQLAPICancelSpy = jest
+				.spyOn(GraphQLAPIClass.prototype, 'cancel')
+				.mockImplementation(() => true);
+			jest
+				.spyOn(RestAPIClass.prototype, 'hasCancelToken')
+				.mockImplementation(() => false);
+			const api = new API(null);
+			const request = Promise.resolve();
+			expect(api.cancel(request)).toBe(true);
+			expect(graphQLAPICancelSpy).toHaveBeenCalled();
+		});
 	});
 });
