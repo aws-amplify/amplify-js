@@ -44,6 +44,8 @@ import {
 	JS,
 	UniversalStorage,
 	urlSafeDecode,
+	HubCallback,
+	HubPayload,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -406,11 +408,12 @@ export class AuthClass {
 									this.onConfirmSignUp(authDetails, null, autoSignInPolling);
 								}, 5000);
 							} else {
-								Hub.listen('auth', ({ payload }) => {
+								const listenEvent = ({ payload }) => {
 									if (payload.event === 'confirmSignUp') {
-										this.onConfirmSignUp(authDetails, payload);
+										this.onConfirmSignUp(authDetails, listenEvent);
 									}
-								});
+								};
+								Hub.listen('auth', listenEvent);
 							}
 						}
 						resolve(data);
@@ -423,8 +426,8 @@ export class AuthClass {
 
 	private async onConfirmSignUp(
 		authDetails: AuthenticationDetails,
-		payload?,
-		autoSignInPolling?
+		listenEvent?: HubCallback,
+		autoSignInPolling?: NodeJS.Timer
 	) {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		try {
@@ -438,8 +441,8 @@ export class AuthClass {
 							value,
 							`${authDetails.getUsername()} has signed in successfully`
 						);
-						if (payload) {
-							Hub.remove('auth', payload);
+						if (listenEvent) {
+							Hub.remove('auth', listenEvent);
 						}
 						if (autoSignInPolling) {
 							clearInterval(autoSignInPolling);
