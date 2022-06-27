@@ -20,8 +20,6 @@ export default async callback => {
 	if (handler) {
 		return;
 	}
-	let linkingSubscription;
-	let appStateEventSubscription;
 	handler =
 		handler ||
 		(({ url, ...rest }: { url: string }) => {
@@ -29,11 +27,9 @@ export default async callback => {
 			callback({ url });
 		});
 
-	linkingSubscription?.remove?.();
-	linkingSubscription = Linking.addEventListener('url', handler);
+	const linkingSubscription = Linking.addEventListener('url', handler);
 
-	appStateEventSubscription?.remove?.();
-	appStateEventSubscription = AppState.addEventListener(
+	const appStateEventSubscription = AppState.addEventListener(
 		'change',
 		async newAppState => {
 			if (newAppState === 'active') {
@@ -42,9 +38,4 @@ export default async callback => {
 			}
 		}
 	);
-
-	return () => {
-		linkingSubscription?.remove?.();
-		appStateEventSubscription?.remove?.();
-	};
 };
