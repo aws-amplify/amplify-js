@@ -37,8 +37,7 @@ const logger = new Logger('DataStore');
 /**
  * Static name to use for IndexedDB database.
  *
- * Dynamic naming could allow separate apps per domain, but come with the
- * added complexity of bookkeeping, cleanup, and permissions between apps.
+ * Serves as a **base name** when a `sessionId` is set.
  *
  * DO NOT CHANGE THIS value without a full design and security review.
  */
@@ -139,6 +138,30 @@ class IndexedDBAdapter implements Adapter {
 		return storeName;
 	}
 
+	/**
+	 * Initializes a local database with the tables and indexes specified in
+	 * the given schema.
+	 *
+	 * Also accepts methods that the adapter should use when determining
+	 * namespaces for fully qualified names, the reverse of this operation,
+	 * and a preferred function to use for model instantiation.
+	 *
+	 * Accepting a preferred function for model instantiation comes with
+	 * possible side effects. E.g., it is completely expected that the instance
+	 * creator function may keep a record metadata in a WeakMap for every
+	 * known Model instance.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Potentially clobbers local database.
+	 * 1. Places the `resolve()` and `reject()` methods on `this` to use as
+	 * "cross-thread" communcation between `setUp()` attempts.
+	 *
+	 * @param theSchema
+	 * @param namespaceResolver
+	 * @param modelInstanceCreator
+	 * @param getModelConstructorByModelName
+	 * @param sessionId
+	 */
 	async setUp(
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
@@ -150,6 +173,9 @@ class IndexedDBAdapter implements Adapter {
 		sessionId?: string
 	) {
 		await this.checkPrivate();
+
+		// We use `initPromise()` to block if another "thread" is already
+		// trying `setUp()` the database.
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -158,9 +184,18 @@ class IndexedDBAdapter implements Adapter {
 		} else {
 			await this.initPromise;
 		}
+
+		/**
+		 * When provided, `sessionId` adds namespaces to the database name.
+		 * This is used by Studio let customers manage multiple databases in
+		 * the CMS in a single Studio user session.
+		 *
+		 * @see https://github.com/aws-amplify/amplify-js/pull/7304/files
+		 */
 		if (sessionId) {
 			this.dbName = `${DB_NAME}-${sessionId}`;
 		}
+
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
@@ -274,7 +309,7 @@ class IndexedDBAdapter implements Adapter {
 	 *
 	 * @param storeOrStoreName IDB object store or name to acquire one.
 	 * @param id Record ID/PK to fetch.
-	 * @returns
+	 * @returns Model DTO.
 	 */
 	private async _get<T>(
 		storeOrStoreName: idb.IDBPObjectStore | string,
@@ -379,10 +414,12 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	/**
+	 * Attaches related HAS_ONE and BELONGS_TO records (non-recursively / only
+	 * ONE level deep) and instantiates a Model instance from the DTO.
 	 *
-	 * @param namespaceName
-	 * @param srcModelName
-	 * @param records
+	 * @param namespaceName The model namespace to extract schema info from.
+	 * @param srcModelName The model type name to look for schema info from.
+	 * @param records The instantiated Model records.
 	 */
 	private async load<T>(
 		namespaceName: string,
@@ -406,6 +443,8 @@ class IndexedDBAdapter implements Adapter {
 		}
 
 		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
+
+		// TODO: dive on this.
 
 		for await (const relation of relations) {
 			const { fieldName, modelName, targetName } = relation;
