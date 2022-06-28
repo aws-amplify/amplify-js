@@ -13,7 +13,7 @@ import {
 	groupSchema,
 	implicitOwnerSchema,
 	newSchema,
-} from './schema';
+} from './__utils__/schema';
 
 const postSelectionSet = `
 id

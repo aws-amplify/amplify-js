@@ -4,7 +4,7 @@ import {
 	PersistentModelConstructor,
 } from '@aws-amplify/datastore';
 
-import { initSchema, NonModelTypeConstructor } from '../src/index';
+import { initSchema, NonModelTypeConstructor } from '../../src/index';
 import { newSchema } from './schema';
 
 declare class BlogModel {

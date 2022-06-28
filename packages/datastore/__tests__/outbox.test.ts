@@ -7,7 +7,11 @@ import {
 import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import { MutationEventOutbox } from '../src/sync/outbox';
 import { ModelMerger } from '../src/sync/merger';
-import { Model as ModelType, testSchema, internalTestSchema } from './helpers';
+import {
+	Model as ModelType,
+	testSchema,
+	internalTestSchema,
+} from './__utils__/helpers';
 import {
 	TransformerMutationType,
 	createMutationInstanceFromModelOperation,

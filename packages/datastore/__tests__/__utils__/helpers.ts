@@ -4,7 +4,7 @@ import {
 	Schema,
 	InternalSchema,
 	SchemaModel,
-} from '../src/types';
+} from '../../src/types';
 
 /**
  * Convenience function to wait for a number of ms.

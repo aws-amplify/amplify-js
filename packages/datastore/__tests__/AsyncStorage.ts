@@ -15,8 +15,8 @@ import {
 	PostAuthorJoin as PostAuthorJoinType,
 	PostMetadata as PostMetadataType,
 	Person as PersonType,
-} from './model';
-import { newSchema } from './schema';
+} from './__utils__/model';
+import { newSchema } from './__utils__/schema';
 import { SortDirection } from '../src/types';
 
 let AsyncStorageAdapter: typeof AsyncStorageAdapterType;

@@ -4,7 +4,7 @@ import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
-import { Model as ModelType, testSchema } from './helpers';
+import { Model as ModelType, testSchema } from './__utils__/helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;

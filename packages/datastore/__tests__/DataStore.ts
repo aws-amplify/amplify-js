@@ -22,7 +22,7 @@ import {
 	User,
 	testSchema,
 	pause,
-} from './helpers';
+} from './__utils__/helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;

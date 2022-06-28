@@ -9,7 +9,7 @@ import {
 	PostCustomPKSort as PostCustomPKSortType,
 	testSchema,
 	internalTestSchema,
-} from './helpers';
+} from './__utils__/helpers';
 import {
 	PersistentModelConstructor,
 	InternalSchema,

@@ -13,7 +13,7 @@ import {
 	PostCustomPKSort,
 	PostCustomPKComposite,
 	testSchema,
-} from './helpers';
+} from './__utils__/helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;

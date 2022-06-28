@@ -83,10 +83,7 @@
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testPathIgnorePatterns": [
-			"__tests__/model.ts",
-			"__tests__/schema.ts",
-			"__tests__/helpers.ts",
-			"__tests__/commonAdapterTests.ts"
+			"__tests__/__utils__"
 		],
 		"moduleFileExtensions": [
 			"ts",
@@ -109,7 +106,8 @@
 			"/node_modules/",
 			"dist",
 			"lib",
-			"lib-esm"
+			"lib-esm",
+			"__tests__/__utils__"
 		]
 	}
 }

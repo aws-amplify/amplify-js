@@ -5,9 +5,9 @@ import {
 	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { pause, Model, User, Profile, testSchema } from './helpers';
+import { pause, Model, User, Profile, testSchema } from './__utils__/helpers';
 import { Predicates } from '../src/predicates';
-import { addCommonQueryTests } from './commonAdapterTests';
+import { addCommonQueryTests } from './__utils__/commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;

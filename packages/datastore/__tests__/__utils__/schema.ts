@@ -1,4 +1,4 @@
-import { Schema } from '../src/types';
+import { Schema } from '../../src/types';
 
 export const newSchema: Schema = {
 	models: {

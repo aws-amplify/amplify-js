@@ -14,7 +14,7 @@ import {
 	PostAuthorJoin,
 	PostMetadata,
 	Person,
-} from './model';
+} from './__utils__/model';
 let db: idb.IDBPDatabase;
 
 const indexedDB = require('fake-indexeddb');

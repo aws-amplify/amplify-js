@@ -15,9 +15,9 @@ import {
 	Post,
 	Comment,
 	testSchema,
-} from './helpers';
+} from './__utils__/helpers';
 import { Predicates } from '../src/predicates';
-import { addCommonQueryTests } from './commonAdapterTests';
+import { addCommonQueryTests } from './__utils__/commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;

@@ -2,7 +2,7 @@ import {
 	DataStore as DataStoreType,
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
-} from '../src/';
+} from '../../src/';
 
 import {
 	pause,
