@@ -16,7 +16,7 @@ import Observable from 'zen-observable';
 import {
 	pause,
 	addCommonQueryTests,
-} from '../../datastore/__tests__/commonAdapterTests';
+} from '../../datastore/__tests__/__utils__/commonAdapterTests';
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
