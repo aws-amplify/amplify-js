@@ -382,7 +382,7 @@ export class CognitoProvider implements AuthProvider {
 			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
 		);
 		const expiration = getExpirationTimeFromJWT(idToken);
-		console.log({ expiration });
+		// console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
 		const getIdRes = await cognitoIdentityClient.send(
 			new GetIdCommand({
@@ -420,7 +420,7 @@ export class CognitoProvider implements AuthProvider {
 				AccessToken: accessToken,
 			})
 		);
-		console.log({ getUserRes });
+		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -430,6 +430,16 @@ export class CognitoProvider implements AuthProvider {
 
 		// runs after fetchSession has successfully occurred
 		this._authzService.send(authzMachineEvents.fetched());
+
+		// wait for sign in th complete
+		const authzService = this._authzService;
+		const sessionEstablishedState = await waitFor(authzService, state =>
+			state.matches('sessionEstablished')
+		);
+
+		console.log('AUTHZ SERVICE TEST: ');
+
+		console.log(sessionEstablishedState.context.getSession);
 
 		return {
 			sessionId: '',

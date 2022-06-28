@@ -27,6 +27,9 @@ export interface AuthorizationMachineContext {
 		accessToken: string;
 		refreshToken: string;
 	};
+	identityID: null;
+	AWSCredentials: null;
+	getSession: any;
 }
 
 export type AuthorizationTypestate =

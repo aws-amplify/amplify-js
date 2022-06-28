@@ -22,6 +22,8 @@ export const authorizationMachineModel = createModel(
 	{
 		config: null,
 		service: null,
+		identityID: null,
+		AWSCredentials: null,
 	} as AuthorizationMachineContext,
 	{
 		events: {
@@ -49,6 +51,7 @@ export const authorizationMachineModel = createModel(
 				refreshToken: string;
 			}) => {
 				// console.log('idToken: ' + userPoolTokens.idToken);
+				console.log('UserPool Tokens: ');
 				console.log({ userPoolTokens });
 				return { userPoolTokens };
 			},
@@ -97,6 +100,15 @@ const authorizationStateMachineActions: Record<
 		},
 		'signInCompleted'
 	),
+	getSession: authorizationMachineModel.assign({
+		getSession: (context: any, event: any) => {
+			console.log('GET SESSION ACTION FROM AUTHORIZATION MACHINE: ');
+			console.log([event.data.identityID, event.data.AWSCredentials]);
+			// context.identityID = event.data.identityID;
+			// context.AWSCredentials = event.data.AWSCredentials;
+			return [event.data.identityID, event.data.AWSCredentials];
+		},
+	}),
 };
 
 // Authorization state machine
@@ -111,7 +123,13 @@ const authorizationStateMachine: MachineConfig<
 	states: {
 		notConfigured: {
 			on: {
-				configure: 'configured',
+				configure: {
+					target: 'configured',
+					actions: [
+						authorizationStateMachineActions.assignConfig,
+						authorizationStateMachineActions.assignService,
+					],
+				},
 				cachedCredentialAvailable: 'sessionEstablished',
 				throwError: 'error',
 			},
@@ -130,12 +148,32 @@ const authorizationStateMachine: MachineConfig<
 			},
 		},
 		fetchAuthSessionWithUserPool: {
-			onEntry: [authorizationStateMachineActions.spawnFetchAuthSessionActor],
+			// onEntry: [authorizationStateMachineActions.spawnFetchAuthSessionActor],
+			invoke: {
+				id: 'SpawnfetchAuthSessionActor',
+				src: fetchAuthSessionStateMachine,
+				data: {
+					clientConfig: (context: any, event: any) => context.config?.region,
+					service: (context: any, event: any) => context.service,
+					userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+				},
+				onDone: {
+					target: 'sessionEstablished',
+					actions: [
+						// assign({
+						// 	getSession: (context: any, event: any) => {
+						// 		return event.data.identityID;
+						// 	},
+						// }),
+						authorizationStateMachineActions.getSession,
+					],
+				},
+				onError: {
+					target: 'error',
+				},
+			},
 			on: {
 				fetched: 'sessionEstablished',
-			},
-			invoke: {
-				src: 'fetchAuthSessionStateMachine',
 			},
 		},
 		// for fetching session for users that haven't signed in
@@ -173,8 +211,6 @@ const authorizationStateMachine: MachineConfig<
 		// },
 		sessionEstablished: {
 			on: {
-				// fetchAuthSession: 'fetchingAuthSession',
-				// signOut: 'configured',
 				signInRequested: 'signingIn',
 				refreshSession: 'refreshingSession',
 			},
@@ -185,5 +221,9 @@ const authorizationStateMachine: MachineConfig<
 	},
 };
 
-export const authzMachine = createMachine(authorizationStateMachine);
+export const authzMachine = createMachine(authorizationStateMachine, {
+	actions: {
+		stopFetchAuthSessionActor: stop('fetchAuthSessionActor'),
+	},
+});
 export const authzMachineEvents = authorizationMachineModel.events;
