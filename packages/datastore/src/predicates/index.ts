@@ -59,7 +59,14 @@ export class Predicates {
  */
 export class ModelPredicateCreator {
 	/**
-	 * Maps predicates to predicate groups.
+	 * Maps predicate nodes to logical predicate groups (and/or/not).
+	 *
+	 * As predicates are built up, they essentially form a tree. This map
+	 * allows us to take a node (like an 'eq' condition) and fetch the subtree
+	 * the node is attached to.
+	 *
+	 * This is essentially an alternative to putting a reference from each node
+	 * in the predicate tree to its parent.
 	 */
 	private static predicateGroupsMap = new WeakMap<
 		ModelPredicate<any>,
@@ -77,6 +84,12 @@ export class ModelPredicateCreator {
 	 * 	predicateBuilder => predicateBuilder.name('contains', 'Jones')
 	 * );
 	 * ```
+	 *
+	 * This function returns the `predicateBuilder` like the one used above, and creates
+	 * a "hidden" `and` logical group (and/or/not), which is stored in a static WeakMap
+	 * (`predicateGroupsMap`) and is used to accumulate downstream predicates / conditions.
+	 *
+	 * SIDE EFFECT: Records predicate -> group entries in a static WeakMap.
 	 *
 	 * @param modelDefinition model definition which the predicate is intended to test.
 	 */
@@ -97,6 +110,9 @@ export class ModelPredicateCreator {
 				): PredicateExpression<T, any> {
 					const groupType = propertyKey as keyof PredicateGroups<T>;
 
+					// If the property key being accessed is a logical grouping type, we
+					// will create a new predicate builder with a new implicit logical group
+					// to accumulate subsequent predicate conditions.
 					switch (groupType) {
 						case 'and':
 						case 'or':
@@ -136,6 +152,9 @@ export class ModelPredicateCreator {
 						default:
 							exhaustiveCheck(groupType, false);
 					}
+
+					// if the given property is *not* a logical grouping, we add the condition
+					// to the currently scoped logical group.
 
 					const field = propertyKey as keyof T;
 
@@ -181,9 +200,13 @@ export class ModelPredicateCreator {
 	}
 
 	/**
+	 * Takes a predicate leaf and returns the implicit, containing logical
+	 * group (and/or/not), which will then contain the sibling predicates.
 	 *
-	 * @param predicate
-	 * @param throwOnInvalid
+	 * @param predicate The predicate to lookup.
+	 * @param throwOnInvalid Whether a missing predicate group shoud result
+	 * in an error.
+	 * @returns The logical group / predicate subtree.
 	 */
 	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
@@ -196,7 +219,21 @@ export class ModelPredicateCreator {
 		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
 	}
 
-	// transforms cb-style predicate into Proxy
+	/**
+	 * Injects the predicate `builder` object into an app-level predicate
+	 * builder function like this:
+	 *
+	 * ```
+	 * builder => builder.field('eq', 'whatever')
+	 * ```
+	 *
+	 * ... and *executes* the function to produce a `ModelPredicate<T>`, which
+	 * can then be used by adapters for searching and filtering.
+	 *
+	 * @param modelDefinition A Model type to generate the predicate for.
+	 * @param existing The app-level predicate function.
+	 * @returns a traversable predicate tree.
+	 */
 	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		existing: ProducerModelPredicate<T>
@@ -210,6 +247,14 @@ export class ModelPredicateCreator {
 		);
 	}
 
+	/**
+	 * Creates a predicate that simply searches or filters a model type by a
+	 * given `id` value.
+	 *
+	 * @param modelDefinition A model type to search.
+	 * @param id The id to search for.
+	 * @returns A predicate that matches the model by the given id.
+	 */
 	static createForId<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		id: string
