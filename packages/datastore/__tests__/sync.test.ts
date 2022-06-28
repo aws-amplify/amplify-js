@@ -25,10 +25,7 @@ const sessionStorageMock = (() => {
 Object.defineProperty(window, 'sessionStorage', {
 	value: sessionStorageMock,
 });
-
-describe('Sync', () => {
-	describe('jitteredRetry', () => {
-		const defaultQuery = `query {
+const defaultQuery = `query {
 			syncPosts {
 				items {
 					id
@@ -42,11 +39,13 @@ describe('Sync', () => {
 				startedAt
 			}
 		}`;
-		const defaultVariables = {};
-		const defaultOpName = 'syncPosts';
-		const defaultModelDefinition = { name: 'Post' };
-		const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+const defaultVariables = {};
+const defaultOpName = 'syncPosts';
+const defaultModelDefinition = { name: 'Post' };
+const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
+describe('Sync', () => {
+	describe('jitteredRetry', () => {
 		beforeEach(() => {
 			window.sessionStorage.clear();
 			jest.resetModules();
@@ -316,16 +315,132 @@ describe('Sync', () => {
 			});
 		});
 	});
+
+	describe('error handler', () => {
+		const errorHandler = jest.fn();
+		const data = {
+			syncPosts: {
+				items: [
+					{
+						id: '1',
+						title: 'Item 1',
+					},
+					null,
+					{
+						id: '3',
+						title: 'Item 3',
+					},
+				],
+			},
+		};
+
+		beforeEach(async () => {
+			window.sessionStorage.clear();
+			jest.resetModules();
+			jest.resetAllMocks();
+			errorHandler.mockClear();
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+		});
+
+		test('bad record', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Cannot return boolean for string type',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'BadRecord',
+				})
+			);
+		});
+
+		test('connection timeout', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Connection failed: Connection Timeout',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'Transient',
+				})
+			);
+		});
+
+		test('server error', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Error: Request failed with status code 500',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'Transient',
+				})
+			);
+		});
+	});
 });
 
 function jitteredRetrySyncProcessorSetup({
 	rejectResponse,
 	resolveResponse,
 	coreMocks,
+	errorHandler = () => null,
 }: {
 	rejectResponse?: any;
 	resolveResponse?: any;
 	coreMocks?: object;
+	errorHandler?: () => null;
 }) {
 	jest.mock('@aws-amplify/api', () => ({
 		...jest.requireActual('@aws-amplify/api'),
@@ -359,7 +474,8 @@ function jitteredRetrySyncProcessorSetup({
 		testInternalSchema,
 		null, // syncPredicates
 		{ aws_appsync_authenticationType: 'userPools' },
-		defaultAuthStrategy
+		defaultAuthStrategy,
+		errorHandler
 	);
 
 	return SyncProcessor;

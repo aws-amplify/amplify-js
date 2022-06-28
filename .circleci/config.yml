@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:9.4.1
+      - image: cypress/included:8.7.0
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -34,7 +34,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 13.4.0
+      xcode: 13.2.1
     resource_class: large
 
   # For RN apps that need to be upgraded before using latest iOS/macOS
@@ -1112,14 +1112,16 @@ jobs:
           category: geo
           sample_name: display-map
           spec: display-map
-          browser: << parameters.browser >>
+          # Temp fix:
+          browser: chrome
       - integ_test_js:
           test_name: 'Search Outside Map'
           framework: react
           category: geo
           sample_name: search-outside-map
           spec: search-outside-map
-          browser: << parameters.browser >>
+          # Temp fix:
+          browser: chrome
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1686,20 +1688,26 @@ workflows:
           name: RN iOS - latest
           framework: rn_ios
           main-file-path: ./App.js
+          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
+          tag: 0.68.2
       - getting-started-smoke-test/rn-android:
           name: RN Android - latest
           framework: rn_android
           main-file-path: ./App.js
-      - getting-started-smoke-test/rn-ios:
-          name: RN iOS - next
-          framework: rn_ios
-          main-file-path: ./App.js
-          tag: next
-      - getting-started-smoke-test/rn-android:
-          name: RN Android - next
-          framework: rn_android
-          main-file-path: ./App.js
-          tag: next
+          # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
+          tag: 0.68.2
+
+      # TODO: re-enable the following 2 jobs after https://github.com/react-native-picker/picker/issues/425 is resolved
+      # - getting-started-smoke-test/rn-ios:
+      #     name: RN iOS - next
+      #     framework: rn_ios
+      #     main-file-path: ./App.js
+      #     tag: next
+      # - getting-started-smoke-test/rn-android:
+      #     name: RN Android - next
+      #     framework: rn_android
+      #     main-file-path: ./App.js
+      #     tag: next
       # Expo
       - getting-started-smoke-test/expo:
           name: Expo - latest
@@ -1738,6 +1746,10 @@ orbs:
           label:
             description: Display name
             type: string
+          pre-command:
+            description: This command will be executed once, but will not be retried
+            type: string
+            default: ''
           command:
             description: Command to run
             type: string
@@ -1762,8 +1774,9 @@ orbs:
                   n=0
                   until [ $n -ge $MAX_RETRY ]
                   do
-                      "$@" && break
+                      bash -c "$@" && exit 0
                       n=$[$n+1]
+                      echo "retry $n of $MAX_RETRY"
                       sleep << parameters.sleep >>
                   done
                   if [ $n -ge $MAX_RETRY ]; then
@@ -1771,7 +1784,8 @@ orbs:
                     exit 1
                   fi
                 }
-                retry << parameters.command >>
+                eval << parameters.pre-command >> 
+                retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 
     jobs:
@@ -1803,13 +1817,14 @@ orbs:
         steps:
           - run-with-retry:
               label: Scaffold App
-              command: cd ../ && npx -y << parameters.npx-command >> amplify-getting-started-<< parameters.framework >> << parameters.npx-post >>
+              pre-command: cd ../
+              command: npx -y << parameters.npx-command >> amplify-getting-started-<< parameters.framework >> << parameters.npx-post >>
               no_output_timeout: 2m
           - run-with-retry:
               label: Install AmplifyJS
               command: npm i -S aws-amplify && npm i -g wait-on serve
-          - run-with-retry:
-              label: Call Amplify library in code
+          - run:
+              name: Call Amplify library in code
               command: |
                 echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
                 echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
@@ -1827,7 +1842,7 @@ orbs:
               steps:
                 - run-with-retry:
                     label: Run in Prod Mode
-                    command: npm run build && (npm start & wait-on http://localhost:3000  -t $MAX_WAIT_ON_TIMEOUT)
+                    command: npm run build && (npm start & wait-on http://localhost:3000 -t $MAX_WAIT_ON_TIMEOUT)
 
       rn-ios:
         parameters:
@@ -1851,7 +1866,8 @@ orbs:
         steps:
           - run-with-retry:
               label: Scaffold App
-              command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >>
+              pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
+              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
           - run-with-retry:
               label: Install Amplify dependencies
@@ -1859,8 +1875,8 @@ orbs:
           - run-with-retry:
               label: Pod Install
               command: npx pod-install
-          - run-with-retry:
-              label: Call Amplify library in code
+          - run:
+              name: Call Amplify library in code
               command: |
                 echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
                 echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
@@ -1902,13 +1918,14 @@ orbs:
                 shasum | awk '{print $1}' > /tmp/gradle_cache_seed
           - run-with-retry:
               label: Scaffold App
-              command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >>
+              pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
+              command: npx react-native@<< parameters.tag >> init amplify_getting_started_<< parameters.framework >> --version << parameters.tag >>
               no_output_timeout: 10m
           - run-with-retry:
               label: Install Amplify dependencies
               command: npm install aws-amplify aws-amplify-react-native amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
-          - run-with-retry:
-              label: Call Amplify library in code
+          - run:
+              name: Call Amplify library in code
               command: |
                 echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
                 echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>

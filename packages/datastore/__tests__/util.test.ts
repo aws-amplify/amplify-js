@@ -1,3 +1,4 @@
+import { enablePatches, produce, Patch } from 'immer';
 import {
 	extractKeyIfExists,
 	extractPrimaryKeyFieldNames,
@@ -13,6 +14,7 @@ import {
 	validatePredicateField,
 	valuesEqual,
 	processCompositeKeys,
+	mergePatches,
 } from '../src/util';
 
 import { testSchema } from './helpers';
@@ -637,6 +639,129 @@ describe('datastore util', () => {
 			const result = extractPrimaryKeyFieldNames(testUserSchema.models.Model);
 			expect(result.length).toBe(1);
 			expect(result[0]).toBe('id');
+		});
+	});
+	describe('mergePatches', () => {
+		enablePatches();
+		test('merge patches with no conflict', () => {
+			const modelA = {
+				foo: 'originalFoo',
+				bar: 'originalBar',
+			};
+			let patchesAB;
+			let patchesBC;
+			const modelB = produce(
+				modelA,
+				draft => {
+					draft.foo = 'newFoo';
+				},
+				patches => {
+					patchesAB = patches;
+				}
+			);
+			const modelC = produce(
+				modelB,
+				draft => {
+					draft.bar = 'newBar';
+				},
+				patches => {
+					patchesBC = patches;
+				}
+			);
+
+			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
+			expect(mergedPatches).toEqual([
+				{
+					op: 'replace',
+					path: ['foo'],
+					value: 'newFoo',
+				},
+				{
+					op: 'replace',
+					path: ['bar'],
+					value: 'newBar',
+				},
+			]);
+		});
+		test('merge patches with conflict', () => {
+			const modelA = {
+				foo: 'originalFoo',
+				bar: 'originalBar',
+			};
+			let patchesAB;
+			let patchesBC;
+			const modelB = produce(
+				modelA,
+				draft => {
+					draft.foo = 'newFoo';
+					draft.bar = 'newBar';
+				},
+				patches => {
+					patchesAB = patches;
+				}
+			);
+			const modelC = produce(
+				modelB,
+				draft => {
+					draft.bar = 'newestBar';
+				},
+				patches => {
+					patchesBC = patches;
+				}
+			);
+
+			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
+			expect(mergedPatches).toEqual([
+				{
+					op: 'replace',
+					path: ['foo'],
+					value: 'newFoo',
+				},
+				{
+					op: 'replace',
+					path: ['bar'],
+					value: 'newestBar',
+				},
+			]);
+		});
+		test('merge patches with conflict - list', () => {
+			const modelA = {
+				foo: [1, 2, 3],
+			};
+			let patchesAB;
+			let patchesBC;
+			const modelB = produce(
+				modelA,
+				draft => {
+					draft.foo.push(4);
+				},
+				patches => {
+					patchesAB = patches;
+				}
+			);
+			const modelC = produce(
+				modelB,
+				draft => {
+					draft.foo.push(5);
+				},
+				patches => {
+					patchesBC = patches;
+				}
+			);
+
+			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
+			expect(mergedPatches).toEqual([
+				{
+					op: 'add',
+					path: ['foo', 3],
+					value: 4,
+				},
+				{
+					op: 'add',
+					path: ['foo', 4],
+					value: 5,
+				},
+			]);
 		});
 	});
 });

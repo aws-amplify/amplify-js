@@ -3,6 +3,7 @@ import 'fake-indexeddb/auto';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
+	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
 import {
@@ -29,12 +30,18 @@ describe('IndexedDBAdapter tests', () => {
 		return await adapter.getAll('sync_MutationEvent');
 	}
 
+	async function clearOutbox(adapter) {
+		await pause(250);
+		return await adapter.delete(syncClasses['MutationEvent']);
+	}
+
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 	addCommonQueryTests({
 		initSchema,
 		DataStore,
 		storageAdapter: Adapter,
 		getMutations,
+		clearOutbox,
 	});
 
 	describe('Query', () => {
