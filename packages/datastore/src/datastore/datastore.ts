@@ -1327,12 +1327,18 @@ class DataStore {
 			const sortOptions = sort ? { sort } : undefined;
 
 			const modelDefinition = getModelDefinition(model);
+			const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+			console.log('check key fields', keyFields);
+			debugger;
+
 			if (isQueryOne(criteria)) {
-				predicate = ModelPredicateCreator.createForId<T>(
+				predicate = ModelPredicateCreator.createForSingleField<T>(
 					modelDefinition,
+					keyFields[0],
 					criteria
 				);
 			} else {
+				// TODO: check when object is being queried using object literal syntax, see snippet below
 				if (isPredicatesAll(criteria)) {
 					// Predicates.ALL means "all records", so no predicate (undefined)
 					predicate = undefined;
@@ -1343,6 +1349,30 @@ class DataStore {
 					);
 				}
 			}
+
+			// if (isQueryOne(criteria)) {
+			// 	predicate = ModelPredicateCreator.createForSingleField<T>(
+			// 		modelDefinition,
+			// 		keyFields[0],
+			// 		criteria
+			// 	);
+			// } else {
+			// 	// Object is being queried using object literal syntax
+			// 	if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
+			// 		predicate = ModelPredicateCreator.createForPk<T>(
+			// 			modelDefinition,
+			// 			<T>identifierOrCriteria
+			// 		);
+			// 	} else if (isPredicatesAll(identifierOrCriteria)) {
+			// 		// Predicates.ALL means "all records", so no predicate (undefined)
+			// 		predicate = undefined;
+			// 	} else {
+			// 		predicate = ModelPredicateCreator.createFromExisting(
+			// 			modelDefinition,
+			// 			<any>identifierOrCriteria
+			// 		);
+			// 	}
+			// }
 
 			const { predicates, type: predicateGroupType } =
 				ModelPredicateCreator.getPredicates(predicate, false) || {};
