@@ -157,7 +157,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { Hub, Credentials, StorageHelper, JS } from '@aws-amplify/core';
+import * as AmplifyCore from '@aws-amplify/core';
+const { Hub, Credentials, StorageHelper } = AmplifyCore;
 
 const authOptionsWithOAuth: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -263,7 +264,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
@@ -317,7 +318,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -371,7 +372,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -417,7 +418,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
