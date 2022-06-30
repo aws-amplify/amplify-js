@@ -67,8 +67,18 @@ declare module 'amazon-cognito-identity-js' {
 		clientMetadata: Record<string, string>;
 	}
 
+	export type ChallengeName =
+		| 'CUSTOM_CHALLENGE'
+		| 'MFA_SETUP'
+		| 'NEW_PASSWORD_REQUIRED'
+		| 'SELECT_MFA_TYPE'
+		| 'SMS_MFA'
+		| 'SOFTWARE_TOKEN_MFA';
+
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
+
+		challengeName?: ChallengeName;
 
 		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
 		public getSignInUserSession(): CognitoUserSession | null;
