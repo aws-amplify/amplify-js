@@ -1,23 +1,13 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import Client from './Client';
 import CognitoUser from './CognitoUser';
 import StorageHelper from './StorageHelper';
+
+const USER_POOL_ID_MAX_LENGTH = 55;
 
 /** @class */
 export default class CognitoUserPool {
@@ -35,7 +25,7 @@ export default class CognitoUserPool {
 	 *        to support cognito advanced security features. By default, this
 	 *        flag is set to true.
 	 */
-	constructor(data) {
+	constructor(data, wrapRefreshSessionCallback) {
 		const {
 			UserPoolId,
 			ClientId,
@@ -46,7 +36,7 @@ export default class CognitoUserPool {
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (!/^[\w-]+_.+$/.test(UserPoolId)) {
+		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
@@ -64,6 +54,10 @@ export default class CognitoUserPool {
 			AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
+
+		if (wrapRefreshSessionCallback) {
+			this.wrapRefreshSessionCallback = wrapRefreshSessionCallback;
+		}
 	}
 
 	/**
@@ -143,9 +137,7 @@ export default class CognitoUserPool {
 	 * @returns {CognitoUser} the user retrieved from storage
 	 */
 	getCurrentUser() {
-		const lastUserKey = `CognitoIdentityServiceProvider.${
-			this.clientId
-		}.LastAuthUser`;
+		const lastUserKey = `CognitoIdentityServiceProvider.${this.clientId}.LastAuthUser`;
 
 		const lastAuthUser = this.storage.getItem(lastUserKey);
 		if (lastAuthUser) {

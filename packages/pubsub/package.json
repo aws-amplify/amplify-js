@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "3.2.5",
+  "version": "4.4.5",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -45,10 +45,10 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^3.4.7",
-    "@aws-amplify/cache": "^3.1.32",
-    "@aws-amplify/core": "^3.7.0",
-    "graphql": "14.0.0",
+    "@aws-amplify/auth": "4.5.8",
+    "@aws-amplify/cache": "4.0.46",
+    "@aws-amplify/core": "4.5.8",
+    "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
@@ -67,12 +67,18 @@
           ],
           "allowJs": true
         }
-      }
+      },
+      "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+      "testPathIgnorePatterns": [
+        "__tests__/helpers.ts"
+      ]
     },
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testPathIgnorePatterns": [
+      "__tests__/helpers.ts"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -91,7 +97,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

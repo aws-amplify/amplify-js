@@ -3,7 +3,7 @@ import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
-import { default as AsyncStorageAdapterType } from '../src/storage/adapter/asyncstorage';
+import { default as AsyncStorageAdapterType } from '../src/storage/adapter/AsyncStorageAdapter';
 import { DATASTORE, USER } from '../src/util';
 import {
 	Author as AuthorType,
@@ -31,12 +31,12 @@ let Comment: PersistentModelConstructor<InstanceType<typeof CommentType>>;
 let Nested: NonModelTypeConstructor<InstanceType<typeof NestedType>>;
 let Post: PersistentModelConstructor<InstanceType<typeof PostType>>;
 let Person: PersistentModelConstructor<InstanceType<typeof PersonType>>;
-let PostAuthorJoin: PersistentModelConstructor<InstanceType<
-	typeof PostAuthorJoinType
->>;
-let PostMetadata: NonModelTypeConstructor<InstanceType<
-	typeof PostMetadataType
->>;
+let PostAuthorJoin: PersistentModelConstructor<
+	InstanceType<typeof PostAuthorJoinType>
+>;
+let PostMetadata: NonModelTypeConstructor<
+	InstanceType<typeof PostMetadataType>
+>;
 
 const inmemoryMap = new Map<string, string>();
 
@@ -75,8 +75,9 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 	};
 });
 
-jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () =>
-	AsyncStorageAdapter
+jest.mock(
+	'../src/storage/adapter/getDefaultAdapter/index',
+	() => () => AsyncStorageAdapter
 );
 
 /**
@@ -93,7 +94,7 @@ function setUpSchema(beforeSetUp?: Function) {
 
 	({
 		default: AsyncStorageAdapter,
-	} = require('../src/storage/adapter/asyncstorage'));
+	} = require('../src/storage/adapter/AsyncStorageAdapter'));
 
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 

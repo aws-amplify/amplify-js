@@ -58,16 +58,13 @@ interface IWithAuthenticatorState {
 
 export function withAuthenticator<Props extends object>(
 	Comp: React.ComponentType<Props>,
-	includeGreetings = false,
+	includeGreetings: boolean | { [index: string]: any } = false,
 	authenticatorComponents = [],
 	federated = null,
 	theme: AmplifyThemeType = null,
 	signUpConfig: ISignUpConfig = {}
 ) {
-	class Wrapper extends React.Component<
-		Props & IWithAuthenticatorProps,
-		IWithAuthenticatorState
-	> {
+	class Wrapper extends React.Component<Props & IWithAuthenticatorProps, IWithAuthenticatorState> {
 		authConfig: any;
 
 		constructor(props: Props & IWithAuthenticatorProps) {
@@ -80,6 +77,9 @@ export function withAuthenticator<Props extends object>(
 			this.authConfig = {};
 
 			if (typeof includeGreetings === 'object' && includeGreetings !== null) {
+				if (includeGreetings.theme) {
+					theme = includeGreetings.theme;
+				}
 				this.authConfig = Object.assign(this.authConfig, includeGreetings);
 			} else {
 				this.authConfig = {
@@ -134,10 +134,7 @@ export function withAuthenticator<Props extends object>(
 			return (
 				<Authenticator
 					{...this.props}
-					hideDefault={
-						this.authConfig.authenticatorComponents &&
-						this.authConfig.authenticatorComponents.length > 0
-					}
+					hideDefault={this.authConfig.authenticatorComponents && this.authConfig.authenticatorComponents.length > 0}
 					signUpConfig={this.authConfig.signUpConfig}
 					onStateChange={this.handleAuthStateChange}
 					children={this.authConfig.authenticatorComponents}
@@ -148,7 +145,7 @@ export function withAuthenticator<Props extends object>(
 		}
 	}
 
-	Object.keys(Comp).forEach(key => {
+	Object.keys(Comp).forEach((key) => {
 		// Copy static properties in order to be as close to Comp as possible.
 		// One particular case is navigationOptions
 		try {

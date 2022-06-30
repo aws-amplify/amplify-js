@@ -14,7 +14,6 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
-	CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -24,7 +23,7 @@ export interface SignUpParams {
 	username: string;
 	password: string;
 	attributes?: object;
-	validationData?: CognitoUserAttribute[];
+	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
 }
 
@@ -200,6 +199,8 @@ export enum AuthErrorTypes {
 	EmptyChallengeResponse = 'emptyChallengeResponse',
 	NoUserSession = 'noUserSession',
 	Default = 'default',
+	DeviceConfig = 'deviceConfig',
+	NetworkError = 'networkError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
@@ -220,4 +221,17 @@ export type ClientMetaData =
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;
+}
+
+export interface IAuthDevice {
+	id: string;
+	name: string;
+}
+
+export enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
 }

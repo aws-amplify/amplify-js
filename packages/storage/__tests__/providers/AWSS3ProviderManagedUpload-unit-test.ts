@@ -10,22 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-	AWSS3ProviderManagedUpload,
-	BodyPart,
-} from '../../src/providers/AWSS3ProviderManagedUpload';
-import { Credentials } from '@aws-amplify/core';
+import { AWSS3ProviderManagedUpload, Part } from '../../src/providers/AWSS3ProviderManagedUpload';
 import {
 	S3Client,
 	PutObjectCommand,
 	UploadPartCommand,
-	ListPartsCommand,
-	AbortMultipartUploadCommand,
 	CompleteMultipartUploadCommand,
 	CreateMultipartUploadCommand,
+	AbortMultipartUploadCommand,
+	ListPartsCommand,
 } from '@aws-sdk/client-s3';
+import { Logger } from '@aws-amplify/core';
 import * as events from 'events';
-import * as sinon from 'sinon';
 
 jest.useRealTimers();
 
@@ -36,6 +32,8 @@ const testParams: any = {
 	Key: 'testKey',
 	Body: 'testDataBody',
 	ContentType: 'testContentType',
+	SSECustomerAlgorithm: 'AES256',
+	SSECustomerKey: '1234567890',
 };
 
 const credentials = {
@@ -54,6 +52,24 @@ const testOpts: any = {
 };
 
 const testMinPartSize = 10; // Merely 10 Bytes
+
+/** Extend our test class such that minPartSize is reasonable
+ * and we can mock emit the progress events
+ */
+class TestClass extends AWSS3ProviderManagedUpload {
+	protected minPartSize = testMinPartSize;
+	protected async uploadParts(uploadId: string, parts: Part[]) {
+		// Make service calls and set the event listeners first
+		await super.uploadParts(uploadId, parts);
+		// Now trigger some notifications from the event listeners
+		for (const part of parts) {
+			part.emitter.emit('sendUploadProgress', {
+				// Assume that the notification is send when 100% of part is uploaded
+				loaded: (part.bodyPart as string).length,
+			});
+		}
+	}
+}
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -127,26 +143,8 @@ describe('multi part upload tests', () => {
 	test('happy case: upload a string as body that splits in two parts', async () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
-		const eventSpy = sinon.spy();
-		emitter.on('sendProgress', eventSpy);
-
-		/** Extend our test class such that minPartSize is reasonable
-		 * and we can mock emit the progress events
-		 */
-		class TestClass extends AWSS3ProviderManagedUpload {
-			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
-				// Make service calls and set the event listeners first from the base impl
-				await super.uploadParts(uploadId, parts);
-				// Now trigger some notifications from the event listeners
-				for (const part of parts) {
-					part.emitter.emit('sendProgress', {
-						// Assume that the notification is sent when 100% of part is uploaded
-						loaded: part.bodyPart.length,
-					});
-				}
-			}
-		}
+		const eventSpy = jest.fn();
+		emitter.on('sendUploadProgress', eventSpy);
 
 		// Setup Spy for S3 service calls
 		const s3ServiceCallSpy = jest
@@ -181,6 +179,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
 			Body: testParams.Body.slice(testMinPartSize, testParams.Body.length),
@@ -188,6 +188,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 2,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// Lastly complete multi part upload call
@@ -211,14 +213,14 @@ describe('multi part upload tests', () => {
 
 		// Progress report testing
 		// First progress is reported at the end, when first full part is uploaded
-		expect(eventSpy.getCall(0).args[0]).toStrictEqual({
+		expect(eventSpy).toHaveBeenNthCalledWith(1, {
 			key: testParams.Key,
 			loaded: testMinPartSize,
 			part: 1,
 			total: testParams.Body.length,
 		});
 		// Second progress is reported at the end of second and final part
-		expect(eventSpy.getCall(1).args[0]).toStrictEqual({
+		expect(eventSpy).toHaveBeenNthCalledWith(2, {
 			key: testParams.Key,
 			loaded: testParams.Body.length,
 			part: 2,
@@ -229,26 +231,8 @@ describe('multi part upload tests', () => {
 	test('error case: upload a string as body that splits in two parts but second part fails', async () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
-		const eventSpy = sinon.spy();
-		emitter.on('sendProgress', eventSpy);
-
-		/** Extend our test class such that minPartSize is reasonable
-		 * and we can mock emit the progress events
-		 */
-		class TestClass extends AWSS3ProviderManagedUpload {
-			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
-				// Make service calls and set the event listeners first
-				await super.uploadParts(uploadId, parts);
-				// Now trigger some notifications from the event listeners
-				for (const part of parts) {
-					part.emitter.emit('sendProgress', {
-						// Assume that the notification is send when 100% of part is uploaded
-						loaded: part.bodyPart.length,
-					});
-				}
-			}
-		}
+		const eventSpy = jest.fn();
+		emitter.on('sendUploadProgress', eventSpy);
 
 		// Setup Spy for S3 service calls and introduce a service failure
 		const s3ServiceCallSpy = jest
@@ -285,7 +269,7 @@ describe('multi part upload tests', () => {
 		try {
 			await uploader.upload();
 		} catch (error) {
-			expect(error.message).toBe('Upload was cancelled.');
+			expect(error.message).toBe('Part 2 just going to fail in 100ms');
 		}
 
 		// Should have called 5 times =>
@@ -302,6 +286,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// Second call fails
@@ -311,6 +297,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 2,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// so we abort the multipart upload
@@ -327,18 +315,67 @@ describe('multi part upload tests', () => {
 			UploadId: testUploadId,
 		});
 
-		// Progress reporting works as well
-		expect(eventSpy.getCall(0).args[0]).toStrictEqual({
-			key: testParams.Key,
-			loaded: testMinPartSize,
-			part: 1,
-			total: testParams.Body.length,
-		});
-		expect(eventSpy.getCall(1).args[0]).toStrictEqual({
-			key: testParams.Key,
-			loaded: testParams.Body.length,
-			part: 2,
-			total: testParams.Body.length,
-		});
+		// As the 'sendUploadProgress' happens when the upload is 100% complete, 
+		// it won't be called, as an error is thrown before upload completion.
+		expect(eventSpy).toBeCalledTimes(0);
 	});
+
+	test('error case: cleanup failed', async () => {
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof CreateMultipartUploadCommand) {
+				return Promise.resolve({ UploadId: testUploadId });
+			} else if (command instanceof UploadPartCommand) {
+				return Promise.resolve({
+					PartNumber: testParams.part,
+					Body: testParams.body,
+					UploadId: testUploadId,
+					Key: testParams.key,
+					Bucket: testParams.bucket,
+				});
+			} else if (command instanceof ListPartsCommand) {
+				return Promise.resolve({
+					Parts: [
+						{
+							PartNumber: 1,
+						},
+					],
+				});
+			} else if (command instanceof AbortMultipartUploadCommand) {
+				return Promise.resolve();
+			}
+		});
+		const uploader = new TestClass(
+			testParams,
+			testOpts,
+			new events.EventEmitter()
+		);
+		await expect(uploader.upload()).rejects.toThrow(
+			'Multipart upload clean up failed.'
+		);
+	});
+
+	test('error case: finish multipart upload failed', async () => {
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof CreateMultipartUploadCommand) {
+				return Promise.resolve({ UploadId: testUploadId });
+			} else if (command instanceof UploadPartCommand) {
+				return Promise.resolve({
+					ETag: 'test_etag_' + command.input.PartNumber,
+				});
+			} else if (command instanceof CompleteMultipartUploadCommand) {
+				return Promise.reject(new Error('Error completing multipart upload.'));
+			}
+		});
+		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+		const uploader = new TestClass(
+			testParams,
+			testOpts,
+			new events.EventEmitter()
+		);
+
+		await expect(uploader.upload()).rejects.toThrow('Error completing multipart upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(1, 'DEBUG', 'testUploadId');
+		expect(loggerSpy).toHaveBeenNthCalledWith(2, 'ERROR', 'Error happened while finishing the upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(3, 'ERROR', 'Error. Cancelling the multipart upload.');
+	})
 });

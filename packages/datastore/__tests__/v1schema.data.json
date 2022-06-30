@@ -1,404 +1,367 @@
 {
-  "formatName": "dexie",
-  "formatVersion": 1,
-  "data": {
-    "databaseName": "amplify-datastore",
-    "databaseVersion": 0.1,
-    "tables": [
-      {
-        "name": "datastore_Setting",
-        "schema": "id",
-        "rowCount": 1
-      },
-      {
-        "name": "sync_ModelMetadata",
-        "schema": "id",
-        "rowCount": 0
-      },
-      {
-        "name": "sync_MutationEvent",
-        "schema": "id",
-        "rowCount": 0
-      },
-      {
-        "name": "user_Author",
-        "schema": "id",
-        "rowCount": 2
-      },
-      {
-        "name": "user_Blog",
-        "schema": "id,blogOwnerId",
-        "rowCount": 6
-      },
-      {
-        "name": "user_BlogOwner",
-        "schema": "id",
-        "rowCount": 9
-      },
-      {
-        "name": "user_Comment",
-        "schema": "id,commentPostId",
-        "rowCount": 2
-      },
-      {
-        "name": "user_Post",
-        "schema": "id,postBlogId,referencePostId",
-        "rowCount": 2
-      },
-      {
-        "name": "user_PostAuthorJoin",
-        "schema": "id,authorId,postId",
-        "rowCount": 0
-      }
-    ],
-    "data": [
-      {
-        "tableName": "datastore_Setting",
-        "inbound": true,
-        "rows": [
-          {
-            "key": "schemaVersion",
-            "value": "\"a66372d29356c40e7cd29e41527cead7\"",
-            "id": "094a722a-4f00-4723-928a-536aa04b3470"
-          }
-        ]
-      },
-      {
-        "tableName": "sync_ModelMetadata",
-        "inbound": true,
-        "rows": []
-      },
-      {
-        "tableName": "sync_MutationEvent",
-        "inbound": true,
-        "rows": []
-      },
-      {
-        "tableName": "user_Author",
-        "inbound": true,
-        "rows": [
-          {
-            "name": "author2",
-            "id": "2c1d760f-c24f-4805-b5c9-9c76b65ff371",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "author1",
-            "id": "e81717d2-420c-4df9-a752-43c06dfe3652",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          }
-        ]
-      },
-      {
-        "tableName": "user_Blog",
-        "inbound": true,
-        "rows": [
-          {
-            "name": "blog2",
-            "id": "7649de35-1602-4a60-8d3e-4aecae73ebc6",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "blogOwnerId": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "B1",
-            "owner": {
-              "name": "O1",
-              "id": "d3b11bac-699a-4ff5-8626-10cb6bda634a",
-              "_version": null,
-              "_lastChangedAt": null,
-              "_deleted": null
-            },
-            "id": "844724fe-373c-4505-b202-2852580058e3",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "owner._version": "undef",
-              "owner._lastChangedAt": "undef",
-              "owner._deleted": "undef",
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Avatar: Last Airbender",
-            "owner": {
-              "name": "Owner 1",
-              "id": "210bd12c-8ca3-4c3c-b67c-911d84a875b8",
-              "_version": null,
-              "_lastChangedAt": null,
-              "_deleted": null
-            },
-            "id": "91e67f1e-aba4-497d-a2c1-f2d3133468c0",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "owner._version": "undef",
-              "owner._lastChangedAt": "undef",
-              "owner._deleted": "undef",
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "The Blog",
-            "id": "d4512a1c-ee69-4610-81a0-c00c637294a8",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "blogOwnerId": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Avatar: Last Airbender",
-            "owner": {
-              "name": "Owner 1",
-              "id": "8619a3a0-2c6b-4e02-8cdb-db3b7f938d4a",
-              "_version": null,
-              "_lastChangedAt": null,
-              "_deleted": null
-            },
-            "id": "d5e7eb84-2aa1-4bb2-8e2a-21ccc06d2d69",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "owner._version": "undef",
-              "owner._lastChangedAt": "undef",
-              "owner._deleted": "undef",
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "blog2",
-            "id": "dd83c7af-c316-4e75-8725-f64ffe3055c5",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "blogOwnerId": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          }
-        ]
-      },
-      {
-        "tableName": "user_BlogOwner",
-        "inbound": true,
-        "rows": [
-          {
-            "name": "Owner 2",
-            "id": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 2",
-            "id": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 1",
-            "id": "349cbc01-9efe-4411-82b0-4581852be264",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "owner 3",
-            "id": "434a78a8-99b9-47b5-8df8-5e191b8c73c4",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "owner 3",
-            "id": "a39c1f9c-b24a-4345-9be7-459e816ae375",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 1",
-            "id": "ce6e25c1-a78c-4b2d-b7ce-f8288054b729",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 1",
-            "id": "d537aed5-22cf-48d5-9966-c8693ef09250",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 1",
-            "id": "e364cbb7-fa9a-4077-97a2-93e2090da5d4",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "name": "Owner 1",
-            "id": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          }
-        ]
-      },
-      {
-        "tableName": "user_Comment",
-        "inbound": true,
-        "rows": [
-          {
-            "content": "c2",
-            "id": "007ea314-6645-486f-88a9-d1aaa4fddb9e",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "content": "c1",
-            "id": "13c99f5f-1fbb-4088-aaf9-63b789e68574",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          }
-        ]
-      },
-      {
-        "tableName": "user_Post",
-        "inbound": true,
-        "rows": [
-          {
-            "title": "Post 2",
-            "id": "1d5aac5b-9016-4f27-a63e-434b8be13c8a",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "referencePostId": null,
-            "postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          },
-          {
-            "title": "Post 1",
-            "id": "d129800d-679f-4df2-92cd-2b96573a618e",
-            "_version": null,
-            "_lastChangedAt": null,
-            "_deleted": null,
-            "referencePostId": null,
-            "postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
-            "$types": {
-              "_version": "undef",
-              "_lastChangedAt": "undef",
-              "_deleted": "undef"
-            }
-          }
-        ]
-      },
-      {
-        "tableName": "user_PostAuthorJoin",
-        "inbound": true,
-        "rows": []
-      }
-    ]
-  }
+	"formatName": "dexie",
+	"formatVersion": 1,
+	"data": {
+		"databaseName": "amplify-datastore",
+		"databaseVersion": 0.1,
+		"tables": [
+			{
+				"name": "datastore_Setting",
+				"schema": "id",
+				"rowCount": 1
+			},
+			{
+				"name": "sync_ModelMetadata",
+				"schema": "id",
+				"rowCount": 0
+			},
+			{
+				"name": "sync_MutationEvent",
+				"schema": "id",
+				"rowCount": 0
+			},
+			{
+				"name": "user_Author",
+				"schema": "id",
+				"rowCount": 2
+			},
+			{
+				"name": "user_Blog",
+				"schema": "id,blogOwnerId",
+				"rowCount": 6
+			},
+			{
+				"name": "user_BlogOwner",
+				"schema": "id",
+				"rowCount": 9
+			},
+			{
+				"name": "user_Post",
+				"schema": "id,postBlogId,referencePostId",
+				"rowCount": 2
+			},
+			{
+				"name": "user_PostAuthorJoin",
+				"schema": "id,authorId,postId",
+				"rowCount": 0
+			}
+		],
+		"data": [
+			{
+				"tableName": "datastore_Setting",
+				"inbound": true,
+				"rows": [
+					{
+						"key": "schemaVersion",
+						"value": "\"a66372d29356c40e7cd29e41527cead7\"",
+						"id": "094a722a-4f00-4723-928a-536aa04b3470"
+					}
+				]
+			},
+			{
+				"tableName": "sync_ModelMetadata",
+				"inbound": true,
+				"rows": []
+			},
+			{
+				"tableName": "sync_MutationEvent",
+				"inbound": true,
+				"rows": []
+			},
+			{
+				"tableName": "user_Author",
+				"inbound": true,
+				"rows": [
+					{
+						"name": "author2",
+						"id": "2c1d760f-c24f-4805-b5c9-9c76b65ff371",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "author1",
+						"id": "e81717d2-420c-4df9-a752-43c06dfe3652",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					}
+				]
+			},
+			{
+				"tableName": "user_Blog",
+				"inbound": true,
+				"rows": [
+					{
+						"name": "blog2",
+						"id": "7649de35-1602-4a60-8d3e-4aecae73ebc6",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"blogOwnerId": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "B1",
+						"owner": {
+							"name": "O1",
+							"id": "d3b11bac-699a-4ff5-8626-10cb6bda634a",
+							"_version": null,
+							"_lastChangedAt": null,
+							"_deleted": null
+						},
+						"id": "844724fe-373c-4505-b202-2852580058e3",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"owner._version": "undef",
+							"owner._lastChangedAt": "undef",
+							"owner._deleted": "undef",
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Avatar: Last Airbender",
+						"owner": {
+							"name": "Owner 1",
+							"id": "210bd12c-8ca3-4c3c-b67c-911d84a875b8",
+							"_version": null,
+							"_lastChangedAt": null,
+							"_deleted": null
+						},
+						"id": "91e67f1e-aba4-497d-a2c1-f2d3133468c0",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"owner._version": "undef",
+							"owner._lastChangedAt": "undef",
+							"owner._deleted": "undef",
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "The Blog",
+						"id": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"blogOwnerId": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Avatar: Last Airbender",
+						"owner": {
+							"name": "Owner 1",
+							"id": "8619a3a0-2c6b-4e02-8cdb-db3b7f938d4a",
+							"_version": null,
+							"_lastChangedAt": null,
+							"_deleted": null
+						},
+						"id": "d5e7eb84-2aa1-4bb2-8e2a-21ccc06d2d69",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"owner._version": "undef",
+							"owner._lastChangedAt": "undef",
+							"owner._deleted": "undef",
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "blog2",
+						"id": "dd83c7af-c316-4e75-8725-f64ffe3055c5",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"blogOwnerId": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					}
+				]
+			},
+			{
+				"tableName": "user_BlogOwner",
+				"inbound": true,
+				"rows": [
+					{
+						"name": "Owner 2",
+						"id": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 2",
+						"id": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 1",
+						"id": "349cbc01-9efe-4411-82b0-4581852be264",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "owner 3",
+						"id": "434a78a8-99b9-47b5-8df8-5e191b8c73c4",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "owner 3",
+						"id": "a39c1f9c-b24a-4345-9be7-459e816ae375",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 1",
+						"id": "ce6e25c1-a78c-4b2d-b7ce-f8288054b729",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 1",
+						"id": "d537aed5-22cf-48d5-9966-c8693ef09250",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 1",
+						"id": "e364cbb7-fa9a-4077-97a2-93e2090da5d4",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"name": "Owner 1",
+						"id": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					}
+				]
+			},
+			{
+				"tableName": "user_Post",
+				"inbound": true,
+				"rows": [
+					{
+						"title": "Post 2",
+						"id": "1d5aac5b-9016-4f27-a63e-434b8be13c8a",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"referencePostId": null,
+						"postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					},
+					{
+						"title": "Post 1",
+						"id": "d129800d-679f-4df2-92cd-2b96573a618e",
+						"_version": null,
+						"_lastChangedAt": null,
+						"_deleted": null,
+						"referencePostId": null,
+						"postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+						"$types": {
+							"_version": "undef",
+							"_lastChangedAt": "undef",
+							"_deleted": "undef"
+						}
+					}
+				]
+			},
+			{
+				"tableName": "user_PostAuthorJoin",
+				"inbound": true,
+				"rows": []
+			}
+		]
+	}
 }

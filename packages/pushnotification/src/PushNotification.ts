@@ -14,11 +14,11 @@
 import {
 	NativeModules,
 	DeviceEventEmitter,
-	AsyncStorage,
 	Platform,
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
@@ -43,13 +43,11 @@ export default class PushNotification {
 			this._config = {};
 		}
 		this.updateEndpoint = this.updateEndpoint.bind(this);
-		this.handleNotificationReceived = this.handleNotificationReceived.bind(
-			this
-		);
+		this.handleNotificationReceived =
+			this.handleNotificationReceived.bind(this);
 		this.handleNotificationOpened = this.handleNotificationOpened.bind(this);
-		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
-			this
-		);
+		this._checkIfOpenedByNotification =
+			this._checkIfOpenedByNotification.bind(this);
 		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
@@ -133,18 +131,22 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
-		RNPushNotification.initialize();
 
 		// check if the token is cached properly
 		if (!(await this._registerTokenCached())) {
 			const { appId } = this._config;
 			const cacheKey = 'push_token' + appId;
-			RNPushNotification.getToken(token => {
-				logger.debug('Get the token from Firebase Service', token);
-				// resend the token in case it's missing in the Pinpoint service
-				// the token will also be cached locally
-				this.updateEndpoint(token);
-			});
+			RNPushNotification.getToken(
+				token => {
+					logger.debug('Get the token from Firebase Service', token);
+					// resend the token in case it's missing in the Pinpoint service
+					// the token will also be cached locally
+					this.updateEndpoint(token);
+				},
+				error => {
+					logger.error('Error getting the token from Firebase Service', error);
+				}
+			);
 		}
 	}
 
@@ -249,9 +251,8 @@ export default class PushNotification {
 
 	handleNotificationReceived(rawMessage) {
 		logger.debug('handleNotificationReceived, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');
@@ -289,9 +290,8 @@ export default class PushNotification {
 		});
 
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');

@@ -50,7 +50,7 @@ describe('credentials syncing tests', () => {
 
 		jest
 			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation(callback => {
+			.mockImplementation((callback: any) => {
 				callback(null, session);
 			});
 

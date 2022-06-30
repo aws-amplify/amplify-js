@@ -1,24 +1,12 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 let dataMemory = {};
 
 /** @class */
-class MemoryStorage {
+export class MemoryStorage {
 	/**
 	 * This is used to set a specific item in storage
 	 * @param {string} key - the key for the item
@@ -45,7 +33,7 @@ class MemoryStorage {
 	/**
 	 * This is used to remove an item from storage
 	 * @param {string} key - the key being set
-	 * @returns {string} value - value that was deleted
+	 * @returns {boolean} return true
 	 */
 	static removeItem(key) {
 		return delete dataMemory[key];

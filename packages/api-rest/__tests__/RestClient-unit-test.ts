@@ -26,6 +26,10 @@ jest.mock('axios', () => {
 					res({
 						data: 'blob' + withCredentialsSuffix,
 					});
+				} else if (signed_params && signed_params.data instanceof FormData) {
+					res({
+						data: signed_params.data.get('key') + withCredentialsSuffix,
+					});
 				} else {
 					res({
 						data: 'data' + withCredentialsSuffix,
@@ -149,6 +153,27 @@ describe('RestClient test', () => {
 			expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual(
 				'data'
 			);
+		});
+
+		test('ajax with formData', async () => {
+			const apiOptions = {
+				headers: {},
+				endpoints: {},
+				credentials: {
+					accessKeyId: 'accessKeyId',
+					secretAccessKey: 'secretAccessKey',
+					sessionToken: 'sessionToken',
+				},
+			};
+
+			const restClient = new RestClient(apiOptions);
+
+			const formData = new FormData();
+			formData.append('key', 'contents');
+
+			expect(
+				await restClient.ajax('url', 'method', { body: formData })
+			).toEqual('contents');
 		});
 
 		test('ajax with custom responseType', async () => {
@@ -427,6 +452,11 @@ describe('RestClient test', () => {
 	});
 
 	describe('Cancel Token', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.resetAllMocks();
+		});
+
 		const apiOptions = {
 			headers: {},
 			endpoints: [
@@ -449,16 +479,24 @@ describe('RestClient test', () => {
 
 		test('request non existent', () => {
 			const restClient = new RestClient(apiOptions);
-			// if the request doesn't exist we can still say it is canceled successfully
-			expect(
-				restClient.cancel(
-					new Promise<any>((req, res) => {})
-				)
-			).toBeTruthy();
+			expect(restClient.cancel(new Promise<any>((req, res) => {}))).toBe(false);
+		});
+
+		test('request exist', () => {
+			const restClient = new RestClient(apiOptions);
+			const request = Promise.resolve();
+			restClient.updateRequestToBeCancellable(
+				request,
+				restClient.getCancellableToken()
+			);
+			expect(restClient.cancel(request)).toBe(true);
 		});
 
 		test('happy case', () => {
 			const restClient = new RestClient(apiOptions);
+			jest
+				.spyOn(RestClient.prototype, 'ajax')
+				.mockImplementationOnce(() => Promise.resolve());
 
 			const cancellableToken = restClient.getCancellableToken();
 			const request = restClient.ajax('url', 'method', { cancellableToken });

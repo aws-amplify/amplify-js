@@ -11,10 +11,6 @@ jest.mock('react-native', () => ({
 		currentState: 'active',
 		addEventListener: (event, callback) => callback('active'),
 	},
-	AsyncStorage: {
-		getItem: () => new Promise(res => res('item')),
-		setItem: jest.fn(),
-	},
 	DeviceEventEmitter: {
 		addListener: jest.fn(),
 	},
@@ -27,6 +23,11 @@ jest.mock('react-native', () => ({
 	Platform: {
 		OS: defaultPlatform,
 	},
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+	getItem: () => new Promise(res => res('item')),
+	setItem: jest.fn(),
 }));
 
 jest.mock('@react-native-community/push-notification-ios', () => ({
@@ -178,20 +179,12 @@ describe('PushNotification:', () => {
 				'addEventListenerForAndroid'
 			);
 
-			const nativeInitSpy = jest.spyOn(
-				NativeModules.RNPushNotification,
-				'initialize'
-			);
-
 			const pushnotification = new PushNotification(null);
 			pushnotification.configure(defaultConfig);
 
-			expect.assertions(2);
+			expect.assertions(1);
 			expect(androidEventListenerSpy).toHaveBeenCalledTimes(3);
-			expect(nativeInitSpy).toHaveBeenCalledTimes(1);
-
 			androidEventListenerSpy.mockClear();
-			nativeInitSpy.mockClear();
 		});
 
 		test('should initialize iOS', () => {

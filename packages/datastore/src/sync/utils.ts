@@ -1,7 +1,12 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { GraphQLAuthError } from '@aws-amplify/api';
+import { Logger } from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
+	GraphQLFilter,
+	GraphQLField,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -18,9 +23,14 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	ModelOperation,
+	InternalSchema,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
+
+const logger = new Logger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -50,15 +60,20 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-function generateSelectionSet(
+export function generateSelectionSet(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
+	const implicitOwnerField = getImplicitOwnerField(
+		modelDefinition,
+		scalarFields
+	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
+		.concat(implicitOwnerField)
 		.concat(nonModelFields);
 
 	if (isSchemaModel(modelDefinition)) {
@@ -70,6 +85,35 @@ function generateSelectionSet(
 	const result = scalarAndMetadataFields.join('\n');
 
 	return result;
+}
+
+function getImplicitOwnerField(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	scalarFields: ModelFields
+) {
+	const ownerFields = getOwnerFields(modelDefinition);
+
+	if (!scalarFields.owner && ownerFields.includes('owner')) {
+		return ['owner'];
+	}
+	return [];
+}
+
+function getOwnerFields(
+	modelDefinition: SchemaModel | SchemaNonModel
+): string[] {
+	const ownerFields: string[] = [];
+	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+		modelDefinition.attributes.forEach(attr => {
+			if (attr.properties && attr.properties.rules) {
+				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				if (rule && rule.ownerField) {
+					ownerFields.push(rule.ownerField);
+				}
+			}
+		});
+	}
+	return ownerFields;
 }
 
 function getScalarFields(
@@ -271,9 +315,9 @@ export function buildGraphQLOperation(
 	switch (graphQLOpType) {
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
-			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
+			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
 			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync)';
+				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -351,9 +395,26 @@ export function createMutationInstanceFromModelOperation<
 			exhaustiveCheck(opType);
 	}
 
+	// stringify nested objects of type AWSJSON
+	// this allows us to return parsed JSON to users (see `castInstanceType()` in datastore.ts),
+	// but still send the object correctly over the wire
+	const replacer = (k, v) => {
+		const isAWSJSON =
+			k &&
+			v !== null &&
+			typeof v === 'object' &&
+			modelDefinition.fields[k] &&
+			modelDefinition.fields[k].type === 'AWSJSON';
+
+		if (isAWSJSON) {
+			return JSON.stringify(v);
+		}
+		return v;
+	};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
-		data: JSON.stringify(element),
+		data: JSON.stringify(element, replacer),
 		modelId: element.id,
 		model: model.name,
 		operation,
@@ -387,4 +448,165 @@ export function predicateToGraphQLCondition(
 	});
 
 	return result;
+}
+
+export function predicateToGraphQLFilter(
+	predicatesGroup: PredicatesGroup<any>
+): GraphQLFilter {
+	const result: GraphQLFilter = {};
+
+	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
+		return result;
+	}
+
+	const { type, predicates } = predicatesGroup;
+	const isList = type === 'and' || type === 'or';
+
+	result[type] = isList ? [] : {};
+
+	const appendToFilter = value =>
+		isList ? result[type].push(value) : (result[type] = value);
+
+	predicates.forEach(predicate => {
+		if (isPredicateObj(predicate)) {
+			const { field, operator, operand } = predicate;
+
+			const gqlField: GraphQLField = {
+				[field]: { [operator]: operand },
+			};
+
+			appendToFilter(gqlField);
+			return;
+		}
+
+		appendToFilter(predicateToGraphQLFilter(predicate));
+	});
+
+	return result;
+}
+
+export function getUserGroupsFromToken(
+	token: { [field: string]: any },
+	rule: AuthorizationRule
+): string[] {
+	// validate token against groupClaim
+	let userGroups: string[] | string = token[rule.groupClaim] || [];
+
+	if (typeof userGroups === 'string') {
+		let parsedGroups;
+		try {
+			parsedGroups = JSON.parse(userGroups);
+		} catch (e) {
+			parsedGroups = userGroups;
+		}
+		userGroups = [].concat(parsedGroups);
+	}
+
+	return userGroups;
+}
+
+export async function getModelAuthModes({
+	authModeStrategy,
+	defaultAuthMode,
+	modelName,
+	schema,
+}: {
+	authModeStrategy: AuthModeStrategy;
+	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	modelName: string;
+	schema: InternalSchema;
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
+	const operations = Object.values(ModelOperation);
+
+	const modelAuthModes: {
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	} = {
+		CREATE: [],
+		READ: [],
+		UPDATE: [],
+		DELETE: [],
+	};
+
+	try {
+		await Promise.all(
+			operations.map(async operation => {
+				const authModes = await authModeStrategy({
+					schema,
+					modelName,
+					operation,
+				});
+
+				if (typeof authModes === 'string') {
+					modelAuthModes[operation] = [authModes];
+				} else if (Array.isArray(authModes) && authModes.length) {
+					modelAuthModes[operation] = authModes;
+				} else {
+					// Use default auth mode if nothing is returned from authModeStrategy
+					modelAuthModes[operation] = [defaultAuthMode];
+				}
+			})
+		);
+	} catch (error) {
+		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
+	}
+	return modelAuthModes;
+}
+
+export function getForbiddenError(error) {
+	const forbiddenErrorMessages = [
+		'Request failed with status code 401',
+		'Request failed with status code 403',
+	];
+	let forbiddenError;
+	if (error && error.errors) {
+		forbiddenError = (error.errors as [any]).find(err =>
+			forbiddenErrorMessages.includes(err.message)
+		);
+	} else if (error && error.message) {
+		forbiddenError = error;
+	}
+
+	if (forbiddenError) {
+		return forbiddenError.message;
+	}
+	return null;
+}
+
+export function getClientSideAuthError(error) {
+	const clientSideAuthErrors = Object.values(GraphQLAuthError);
+	const clientSideError =
+		error &&
+		error.message &&
+		clientSideAuthErrors.find(clientError =>
+			error.message.includes(clientError)
+		);
+	return clientSideError || null;
+}
+
+export async function getTokenForCustomAuth(
+	authMode: GRAPHQL_AUTH_MODE,
+	amplifyConfig: Record<string, any> = {}
+): Promise<string | undefined> {
+	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+		const {
+			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
+		} = amplifyConfig;
+		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
+			try {
+				const { token } = await functionAuthProvider();
+				return token;
+			} catch (error) {
+				throw new Error(
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+				);
+			}
+		} else {
+			// TODO: add docs link once available
+			throw new Error(
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+			);
+		}
+	}
 }

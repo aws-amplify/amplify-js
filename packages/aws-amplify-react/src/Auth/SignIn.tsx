@@ -15,7 +15,7 @@ import * as React from 'react';
 import { I18n, isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
-import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
 import { SignUp } from './SignUp';
 import { ForgotPassword } from './ForgotPassword';
@@ -176,7 +176,7 @@ export class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 							/>
 							{!hideForgotPassword && (
 								<Hint theme={theme}>
-									{I18n.get('Forget your password? ')}
+									{I18n.get('Forgot your password? ')}
 									<Link
 										theme={theme}
 										onClick={() => this.changeState('forgotPassword')}

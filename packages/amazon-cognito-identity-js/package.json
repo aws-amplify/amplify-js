@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "4.5.0",
+  "version": "5.2.9",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -26,13 +26,7 @@
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
   },
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "licenses": [
-    {
-      "type": "Amazon Software License",
-      "url": "http://aws.amazon.com/asl"
-    }
-  ],
+  "license": "Apache-2.0",
   "keywords": [
     "amazon",
     "aws",
@@ -50,9 +44,10 @@
     "build:umd": "webpack",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd",
     "doc": "jsdoc src -d docs",
+    "generate-version": "genversion src/Platform/version.ts --es6 --semi",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest -w 1 --passWithNoTests",
+    "test": "jest --config ./jest.config.js",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -60,19 +55,25 @@
     "lib/index.js": "./enhance-rn.js",
     "./src/StorageHelper": "./src/StorageHelper-rn.js"
   },
+  "browser": {
+    "crypto": false
+  },
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "buffer": "4.9.1",
-    "crypto-js": "^3.3.0",
+    "buffer": "4.9.2",
+    "crypto-js": "^4.1.1",
+    "fast-base64-decode": "^1.0.0",
     "isomorphic-unfetch": "^3.0.0",
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
+    "@babel/cli": "7.17.0",
+    "@babel/core": "7.17.2",
     "@babel/preset-env": "^7.7.4",
+    "@babel/preset-react": "^7.0.0",
+    "@react-native-async-storage/async-storage": "1.15.17",
     "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
@@ -83,52 +84,10 @@
     "eslint-plugin-node": "^5.2.0",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
-    "jsdoc": "^3.4.0",
+    "genversion": "^2.2.0",
+    "jsdoc": "3.4.0",
     "react": "^16.0.0",
-    "react-native": "^0.44.0",
     "rimraf": "^2.5.4",
     "webpack": "^3.5.5"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "preset": "ts-jest",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
   }
 }

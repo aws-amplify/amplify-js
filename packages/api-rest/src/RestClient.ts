@@ -131,8 +131,16 @@ export class RestClient {
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
-			libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-			params.data = JSON.stringify(initParams.body);
+			if (
+				typeof FormData === 'function' &&
+				initParams.body instanceof FormData
+			) {
+				libraryHeaders['Content-Type'] = 'multipart/form-data';
+				params.data = initParams.body;
+			} else {
+				libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+				params.data = JSON.stringify(initParams.body);
+			}
 		}
 		if (initParams.responseType) {
 			params.responseType = initParams.responseType;
@@ -197,7 +205,8 @@ export class RestClient {
 							params.headers['x-amz-date']
 						);
 
-						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+						// Compare local clock to the server clock
+						if (DateUtils.isClockSkewed(responseDate)) {
 							DateUtils.setClockOffset(
 								responseDate.getTime() - requestDate.getTime()
 							);
@@ -285,8 +294,18 @@ export class RestClient {
 		const source = this._cancelTokenMap.get(request);
 		if (source) {
 			source.cancel(message);
+			return true;
 		}
-		return true;
+		return false;
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._cancelTokenMap.has(request);
 	}
 
 	/**
@@ -357,10 +376,8 @@ export class RestClient {
 	/** private methods **/
 
 	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;

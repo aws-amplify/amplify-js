@@ -9,12 +9,23 @@ import {
 	PersistentModel,
 	SchemaModel,
 	SchemaNamespace,
+	PredicatesGroup,
+	ModelPredicate,
+	AuthModeStrategy,
+	ErrorHandler,
+	ProcessName,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getModelAuthModes,
+	getUserGroupsFromToken,
 	TransformerMutationType,
+	getTokenForCustomAuth,
 } from '../utils';
+import { ModelPredicateCreator } from '../../predicates';
+import { validatePredicate } from '../../util';
+import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
 
@@ -28,19 +39,29 @@ export enum USER_CREDENTIALS {
 	'auth',
 }
 
+type AuthorizationInfo = {
+	authMode: GRAPHQL_AUTH_MODE;
+	isOwner: boolean;
+	ownerField?: string;
+	ownerValue?: string;
+};
+
 class SubscriptionProcessor {
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private buffer: [
-		TransformerMutationType,
-		SchemaModel,
-		PersistentModel
-	][] = [];
+	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
+		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
-	constructor(private readonly schema: InternalSchema) {}
+	constructor(
+		private readonly schema: InternalSchema,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler: ErrorHandler
+	) {}
 
 	private buildSubscription(
 		namespace: SchemaNamespace,
@@ -48,7 +69,8 @@ class SubscriptionProcessor {
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } | undefined,
-		oidcTokenPayload: { [field: string]: any } | undefined
+		oidcTokenPayload: { [field: string]: any } | undefined,
+		authMode: GRAPHQL_AUTH_MODE
 	): {
 		opType: TransformerMutationType;
 		opName: string;
@@ -58,12 +80,15 @@ class SubscriptionProcessor {
 		ownerField?: string;
 		ownerValue?: string;
 	} {
-		const { authMode, isOwner, ownerField, ownerValue } =
+		const { aws_appsync_authenticationType } = this.amplifyConfig;
+		const { isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
 				userCredentials,
+				aws_appsync_authenticationType,
 				cognitoTokenPayload,
-				oidcTokenPayload
+				oidcTokenPayload,
+				authMode
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
@@ -79,104 +104,77 @@ class SubscriptionProcessor {
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
+		defaultAuthType: GRAPHQL_AUTH_MODE,
 		cognitoTokenPayload: { [field: string]: any } = {},
-		oidcTokenPayload: { [field: string]: any } = {}
-	): {
-		authMode: GRAPHQL_AUTH_MODE;
-		isOwner: boolean;
-		ownerField?: string;
-		ownerValue?: string;
-	} {
-		let result;
+		oidcTokenPayload: { [field: string]: any } = {},
+		authMode: GRAPHQL_AUTH_MODE
+	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 
-		// check if has apiKey and public authorization
-		const apiKeyAuth = rules.find(
-			rule => rule.authStrategy === 'public' && rule.provider === 'apiKey'
-		);
-
-		if (apiKeyAuth) {
-			return { authMode: GRAPHQL_AUTH_MODE.API_KEY, isOwner: false };
-		}
-
-		// check if has iam authorization
-		if (
-			userCredentials === USER_CREDENTIALS.unauth ||
-			userCredentials === USER_CREDENTIALS.auth
-		) {
-			const iamPublicAuth = rules.find(
-				rule => rule.authStrategy === 'public' && rule.provider === 'iam'
+		// Return null if user doesn't have proper credentials for private API with IAM auth
+		const iamPrivateAuth =
+			authMode === GRAPHQL_AUTH_MODE.AWS_IAM &&
+			rules.find(
+				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
 			);
 
-			if (iamPublicAuth) {
-				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
-			}
+		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
+			return null;
+		}
 
-			const iamPrivateAuth =
-				userCredentials === USER_CREDENTIALS.auth &&
-				rules.find(
-					rule => rule.authStrategy === 'private' && rule.provider === 'iam'
+		// Group auth should take precedence over owner auth, so we are checking
+		// if rule(s) have group authorization as well as if either the Cognito or
+		// OIDC token has a groupClaim. If so, we are returning auth info before
+		// any further owner-based auth checks.
+		const groupAuthRules = rules.filter(
+			rule =>
+				rule.authStrategy === 'groups' &&
+				['userPools', 'oidc'].includes(rule.provider)
+		);
+
+		const validGroup =
+			(authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
+				authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
+			groupAuthRules.find(groupAuthRule => {
+				// validate token against groupClaim
+				const cognitoUserGroups = getUserGroupsFromToken(
+					cognitoTokenPayload,
+					groupAuthRule
+				);
+				const oidcUserGroups = getUserGroupsFromToken(
+					oidcTokenPayload,
+					groupAuthRule
 				);
 
-			if (iamPrivateAuth) {
-				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
-			}
-		}
-
-		// if not check if has groups authorization and token has groupClaim allowed for cognito token
-		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
-		);
-
-		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
-			const userGroups: string[] =
-				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
-
-			return userGroups.find(userGroup => {
-				return groupAuthRule.groups.find(group => group === userGroup);
+				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
+					return groupAuthRule.groups.find(group => group === userGroup);
+				});
 			});
-		});
 
-		if (validCognitoGroup) {
+		if (validGroup) {
 			return {
-				authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				authMode,
 				isOwner: false,
 			};
 		}
 
-		// if not check if has groups authorization and token has groupClaim allowed for oidc token
-		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
-		);
+		// Owner auth needs additional values to be returned in order to create the subscription with
+		// the correct parameters so we are getting the owner value from the Cognito token via the
+		// identityClaim from the auth rule.
+		const cognitoOwnerAuthRules =
+			authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				? rules.filter(
+						rule =>
+							rule.authStrategy === 'owner' && rule.provider === 'userPools'
+				  )
+				: [];
 
-		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
-			const userGroups: string[] =
-				oidcTokenPayload[groupAuthRule.groupClaim] || [];
-
-			userGroups.find(userGroup => {
-				return groupAuthRule.groups.find(group => group === userGroup);
-			});
-		});
-
-		if (validOidcGroup) {
-			return {
-				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-				isOwner: false,
-			};
-		}
-
-		// check if has owner auth authorization and token ownerField for cognito token
-		let ownerAuthRules = rules.filter(
-			rule => rule.authStrategy === 'owner' && rule.provider === 'userPools'
-		);
-
-		ownerAuthRules.forEach(ownerAuthRule => {
+		let ownerAuthInfo: AuthorizationInfo;
+		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
-				result = {
+				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
@@ -185,20 +183,25 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (result) {
-			return result;
+		if (ownerAuthInfo) {
+			return ownerAuthInfo;
 		}
 
-		// check if has owner auth authorization and token ownerField for oidc token
-		ownerAuthRules = rules.filter(
-			rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
-		);
+		// Owner auth needs additional values to be returned in order to create the subscription with
+		// the correct parameters so we are getting the owner value from the OIDC token via the
+		// identityClaim from the auth rule.
+		const oidcOwnerAuthRules =
+			authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT
+				? rules.filter(
+						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
+				  )
+				: [];
 
-		ownerAuthRules.forEach(ownerAuthRule => {
+		oidcOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
-				result = {
+				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
@@ -207,11 +210,15 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (result) {
-			return result;
+		if (ownerAuthInfo) {
+			return ownerAuthInfo;
 		}
 
-		return null;
+		// Fallback: return authMode or default auth type
+		return {
+			authMode: authMode || defaultAuthType,
+			isOwner: false,
+		};
 	}
 
 	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
@@ -230,7 +237,16 @@ class SubscriptionProcessor {
 	] {
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
-			const subscriptions: ZenObservable.Subscription[] = [];
+
+			// Creating subs for each model/operation combo so they can be unsubscribed
+			// independently, since the auth retry behavior is asynchronous.
+			let subscriptions: {
+				[modelName: string]: {
+					[TransformerMutationType.CREATE]: ZenObservable.Subscription[];
+					[TransformerMutationType.UPDATE]: ZenObservable.Subscription[];
+					[TransformerMutationType.DELETE]: ZenObservable.Subscription[];
+				};
+			} = {};
 			let cognitoTokenPayload: { [field: string]: any },
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
@@ -256,6 +272,14 @@ class SubscriptionProcessor {
 				}
 
 				try {
+					// Checking for the Cognito region in config to see if Auth is configured
+					// before attempting to get federated token. We're using the Cognito region
+					// because it will be there regardless of user/identity pool being present.
+					const { aws_cognito_region, Auth: AuthConfig } = this.amplifyConfig;
+					if (!aws_cognito_region || (AuthConfig && !AuthConfig.region)) {
+						throw 'Auth is not configured';
+					}
+
 					let token;
 					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
@@ -283,23 +307,41 @@ class SubscriptionProcessor {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
 						.forEach(async modelDefinition => {
-							const queriesMetadata = [
+							const modelAuthModes = await getModelAuthModes({
+								authModeStrategy: this.authModeStrategy,
+								defaultAuthMode:
+									this.amplifyConfig.aws_appsync_authenticationType,
+								modelName: modelDefinition.name,
+								schema: this.schema,
+							});
+
+							// subscriptions are created only based on the READ auth mode(s)
+							const readAuthModes = modelAuthModes.READ;
+
+							subscriptions = {
+								...subscriptions,
+								[modelDefinition.name]: {
+									[TransformerMutationType.CREATE]: [],
+									[TransformerMutationType.UPDATE]: [],
+									[TransformerMutationType.DELETE]: [],
+								},
+							};
+
+							const operations = [
 								TransformerMutationType.CREATE,
 								TransformerMutationType.UPDATE,
 								TransformerMutationType.DELETE,
-							].map(op =>
-								this.buildSubscription(
-									namespace,
-									modelDefinition,
-									op,
-									userCredentials,
-									cognitoTokenPayload,
-									oidcTokenPayload
-								)
-							);
+							];
 
-							queriesMetadata.forEach(
-								async ({
+							const operationAuthModeAttempts = {
+								[TransformerMutationType.CREATE]: 0,
+								[TransformerMutationType.UPDATE]: 0,
+								[TransformerMutationType.DELETE]: 0,
+							};
+
+							// Retry failed subscriptions with next auth mode (if available)
+							const authModeRetry = async operation => {
+								const {
 									opType: transformerMutationType,
 									opName,
 									query,
@@ -307,106 +349,225 @@ class SubscriptionProcessor {
 									ownerField,
 									ownerValue,
 									authMode,
-								}) => {
-									const variables = {};
+								} = this.buildSubscription(
+									namespace,
+									modelDefinition,
+									operation,
+									userCredentials,
+									cognitoTokenPayload,
+									oidcTokenPayload,
+									readAuthModes[operationAuthModeAttempts[operation]]
+								);
 
-									if (isOwner) {
-										if (!ownerValue) {
-											// Check if there is an owner field, check where this error should be located
-											observer.error(
-												'Owner field required, sign in is needed in order to perform this operation'
-											);
-											return;
-										}
+								const authToken = await getTokenForCustomAuth(
+									authMode,
+									this.amplifyConfig
+								);
 
-										variables[ownerField] = ownerValue;
+								const variables = {};
+
+								if (isOwner) {
+									if (!ownerValue) {
+										observer.error(
+											'Owner field required, sign in is needed in order to perform this operation'
+										);
+										return;
 									}
 
-									const queryObservable = <
-										Observable<{
-											value: GraphQLResult<Record<string, PersistentModel>>;
-										}>
-									>(<unknown>API.graphql({ query, variables, ...{ authMode } })); // use default authMode if not found
+									variables[ownerField] = ownerValue;
+								}
 
-									let subscriptionReadyCallback: () => void;
+								logger.debug(
+									`Attempting ${operation} subscription with authMode: ${
+										readAuthModes[operationAuthModeAttempts[operation]]
+									}`
+								);
 
-									subscriptions.push(
-										queryObservable
-											.map(({ value }) => value)
-											.subscribe({
-												next: ({ data, errors }) => {
-													if (Array.isArray(errors) && errors.length > 0) {
-														const messages = (<
-															{
-																message: string;
-															}[]
-														>errors).map(({ message }) => message);
+								const queryObservable = <
+									Observable<{
+										value: GraphQLResult<Record<string, PersistentModel>>;
+									}>
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
+								let subscriptionReadyCallback: () => void;
 
-														logger.warn(
-															`Skipping incoming subscription. Messages: ${messages.join(
-																'\n'
-															)}`
-														);
+								subscriptions[modelDefinition.name][
+									transformerMutationType
+								].push(
+									queryObservable
+										.map(({ value }) => {
+											return value;
+										})
+										.subscribe({
+											next: ({ data, errors }) => {
+												if (Array.isArray(errors) && errors.length > 0) {
+													const messages = (<
+														{
+															message: string;
+														}[]
+													>errors).map(({ message }) => message);
 
-														this.drainBuffer();
-														return;
-													}
+													logger.warn(
+														`Skipping incoming subscription. Messages: ${messages.join(
+															'\n'
+														)}`
+													);
 
-													const { [opName]: record } = data;
+													this.drainBuffer();
+													return;
+												}
 
+												const predicatesGroup =
+													ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
+													);
+
+												const { [opName]: record } = data;
+
+												// checking incoming subscription against syncPredicate.
+												// once AppSync implements filters on subscriptions, we'll be
+												// able to set these when establishing the subscription instead.
+												// Until then, we'll need to filter inbound
+												if (
+													this.passesPredicateValidation(
+														record,
+														predicatesGroup
+													)
+												) {
 													this.pushToBuffer(
 														transformerMutationType,
 														modelDefinition,
 														record
 													);
+												}
+												this.drainBuffer();
+											},
+											error: async subscriptionError => {
+												const {
+													error: { errors: [{ message = '' } = {}] } = {
+														errors: [],
+													},
+												} = subscriptionError;
 
-													this.drainBuffer();
-												},
-												error: subscriptionError => {
-													const {
-														error: { errors: [{ message = '' } = {}] } = {
-															errors: [],
-														},
-													} = subscriptionError;
-													logger.warn('subscriptionError', message);
+												if (
+													message.includes(
+														PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+													) ||
+													message.includes(PUBSUB_CONTROL_MSG.CONNECTION_FAILED)
+												) {
+													// Unsubscribe and clear subscription array for model/operation
+													subscriptions[modelDefinition.name][
+														transformerMutationType
+													].forEach(subscription => subscription.unsubscribe());
+													subscriptions[modelDefinition.name][
+														transformerMutationType
+													] = [];
 
-													if (typeof subscriptionReadyCallback === 'function') {
-														subscriptionReadyCallback();
-													}
-
-													if (message.includes('"errorType":"Unauthorized"')) {
+													operationAuthModeAttempts[operation]++;
+													if (
+														operationAuthModeAttempts[operation] >=
+														readAuthModes.length
+													) {
+														// last auth mode retry. Continue with error
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
+															}`
+														);
+													} else {
+														// retry with different auth mode. Do not trigger
+														// observer error or error handler
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
+															}. Retrying with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation]
+																]
+															}`
+														);
+														authModeRetry(operation);
 														return;
 													}
+												}
+												logger.warn('subscriptionError', message);
 
-													observer.error(message);
-												},
-											})
-									);
+												try {
+													await this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null,
+														message,
+														model: modelDefinition.name,
+														operation,
+														errorType:
+															getSubscriptionErrorType(subscriptionError),
+														process: ProcessName.subscribe,
+														remoteModel: null,
+														cause: subscriptionError,
+													});
+												} catch (e) {
+													logger.error(
+														'Subscription error handler failed with:',
+														e
+													);
+												}
 
-									promises.push(
-										(async () => {
-											let boundFunction: any;
+												if (typeof subscriptionReadyCallback === 'function') {
+													subscriptionReadyCallback();
+												}
 
-											await new Promise(res => {
-												subscriptionReadyCallback = res;
-												boundFunction = this.hubQueryCompletionListener.bind(
-													this,
-													res
-												);
-												Hub.listen('api', boundFunction);
-											});
-											Hub.remove('api', boundFunction);
-										})()
-									);
-								}
-							);
+												if (
+													message.includes('"errorType":"Unauthorized"') ||
+													message.includes('"errorType":"OperationDisabled"')
+												) {
+													return;
+												}
+												observer.error(message);
+											},
+										})
+								);
+
+								promises.push(
+									(async () => {
+										let boundFunction: any;
+
+										await new Promise(res => {
+											subscriptionReadyCallback = res;
+											boundFunction = this.hubQueryCompletionListener.bind(
+												this,
+												res
+											);
+											Hub.listen('api', boundFunction);
+										});
+										Hub.remove('api', boundFunction);
+									})()
+								);
+							};
+
+							operations.forEach(op => authModeRetry(op));
 						});
 				});
+
 				Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED));
 			})();
 
 			return () => {
-				subscriptions.forEach(subscription => subscription.unsubscribe());
+				Object.keys(subscriptions).forEach(modelName => {
+					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
+						subscription => subscription.unsubscribe()
+					);
+				});
 			};
 		});
 
@@ -422,6 +583,19 @@ class SubscriptionProcessor {
 		});
 
 		return [ctlObservable, dataObservable];
+	}
+
+	private passesPredicateValidation(
+		record: PersistentModel,
+		predicatesGroup: PredicatesGroup<any>
+	): boolean {
+		if (!predicatesGroup) {
+			return true;
+		}
+
+		const { predicates, type } = predicatesGroup;
+
+		return validatePredicate(record, type, predicates);
 	}
 
 	private pushToBuffer(

@@ -1,0 +1,86 @@
+name: Feature request
+description: Suggest an idea for Amplify JS
+labels: feature-request
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit a feature request! Try to include as much information as you can.
+
+  - type: dropdown
+    attributes:
+      label: Is this related to a new or existing framework?
+      description: Which framework does this request impact?
+      multiple: true
+      options:
+        - Angular
+        - React
+        - React Native
+        - Vue
+        - Web Components
+        - Next.js
+        - New framework
+
+  - type: dropdown
+    attributes:
+      label: Is this related to a new or existing API?
+      description: Which [API](https://docs.amplify.aws/lib/q/platform/js) does this request impact?
+      multiple: true
+      options:
+        - Authentication
+        - Analytics
+        - REST API
+        - GraphQL API
+        - DataStore
+        - Storage
+        - Push Notifications
+        - Interactions
+        - PubSub
+        - Internationalization
+        - Cache
+        - Predictions
+        - Geo
+        - New API
+
+  - type: input
+    attributes:
+      label: Is this related to another service?
+      placeholder: e.g. DynamoDB, S3
+
+  - type: textarea
+    attributes:
+      label: Describe the feature you'd like to request
+      description: |
+        A clear and concise description of what you want to happen. Please include **any related issues**, documentation, etc.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the solution you'd like
+      description: |
+        A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe alternatives you've considered
+      description: |
+        A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any other use cases or context about the feature request here. Please include any prototype/sandbox, workaround, reference implementation, etc.
+
+  - type: checkboxes
+    attributes:
+      label: Is this something that you'd be interested in working on?
+      options:
+        - label: 👋 I may be able to implement this feature request
+        - label: ⚠️ This feature might incur a breaking change
