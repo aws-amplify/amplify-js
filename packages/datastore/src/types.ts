@@ -35,7 +35,12 @@ export type SchemaNamespaces = Record<string, SchemaNamespace>;
 export type SchemaNamespace = UserSchema & {
 	name: string;
 };
+
 export type SchemaModels = Record<string, SchemaModel>;
+
+/**
+ * something
+ */
 export type SchemaModel = {
 	name: string;
 	pluralName: string;
@@ -43,6 +48,18 @@ export type SchemaModel = {
 	fields: ModelFields;
 	syncable?: boolean;
 };
+
+/**
+ * Type guard for `SchemaModel`.
+ *
+ * Primarily useful as a build time guard.
+ *
+ * At runtime, the type check is minimal, testing only to see whether the given
+ * object has a defined `pluralName` field.
+ *
+ * @param obj Object to test.
+ * @returns `true` if the given object roughly looks like a schema model.
+ */
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }

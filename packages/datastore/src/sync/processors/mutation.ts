@@ -101,10 +101,24 @@ class MutationProcessor {
 		});
 	}
 
+	/**
+	 * Really just indicates whether `start()` has been called by checking to
+	 * see whether an observer has been assigned.
+	 */
 	private isReady() {
 		return this.observer !== undefined;
 	}
 
+	/**
+	 * Creates an observable that can be used to cancel processing and starts
+	 * processing the outbox.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Sets isReady to true
+	 * 1. Via resume(): sets processing = true
+	 *
+	 * @returns Observable which pauses mutation processing on unsubscribe.
+	 */
 	public start(): Observable<MutationProcessorEvent> {
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
@@ -119,6 +133,16 @@ class MutationProcessor {
 		return observable;
 	}
 
+	/**
+	 * Begins processing items from the outbox if processing is enabled
+	 * (not paused) and if the invoker has triggered processing through proper
+	 * channels (via `start()`). Runs until the outbox is empty or pause() is
+	 * called.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Contains several layers of retry that are *NOT* currently affected by
+	 * calls to `pause()`.
+	 */
 	public async resume(): Promise<void> {
 		if (this.processing || !this.isReady()) {
 			return;
@@ -535,6 +559,11 @@ class MutationProcessor {
 		}
 	}
 
+	/**
+	 * Sets a flag to indicate processing should pause.
+	 *
+	 * (Does not *immedidately* stop anything.)
+	 */
 	public pause() {
 		this.processing = false;
 	}

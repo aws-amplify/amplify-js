@@ -142,6 +142,15 @@ class StorageClass implements StorageFacade {
 	}
 
 	/**
+	 * Saves the model intance against the underlying adapter and broadcasts the
+	 * update to observers.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Sends an event to observers.
+	 * 1. Updates local state via local adapter.
+	 *
+	 * Messages sent to observers may or may not have resolved when this method
+	 * returns.
 	 *
 	 * @param model The model instance to save.
 	 * @param condition The conditions under which the save should succeed.

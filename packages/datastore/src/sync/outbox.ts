@@ -90,6 +90,12 @@ class MutationEventOutbox {
 		});
 	}
 
+	/**
+	 *
+	 * @param storage
+	 * @param record
+	 * @param recordOp
+	 */
 	public async dequeue(
 		storage: StorageClass,
 		record?: PersistentModel,
@@ -108,9 +114,15 @@ class MutationEventOutbox {
 	}
 
 	/**
-	 * Doing a peek() implies that the mutation goes "inProgress"
+	 * Fetches and returns the "head" item from the queue without removing it,
+	 * and records the head item as the item in progress.
 	 *
-	 * @param storage
+	 * SIDE EFFECT:
+	 * 1. If there is an item at the head of the queue, the items `id` is
+	 * saved to `this.inProgressMutationEventId`.
+	 *
+	 * @param storage The storage mechanism the queue lives in.
+	 * @returns The head item.
 	 */
 	public async peek(storage: StorageFacade): Promise<MutationEvent> {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
@@ -120,6 +132,16 @@ class MutationEventOutbox {
 		return head;
 	}
 
+	/**
+	 * Gets the list of mutation events waiting to be sent to AppSync for a
+	 * given model instance.
+	 *
+	 * Intended to manage merging items in the outbox.
+	 *
+	 * @param storage The storage adapter managing the outbox.
+	 * @param model The model instance to search for.
+	 * @returns Array of mutations in the outbox for the model instance.
+	 */
 	public async getForModel<T extends PersistentModel>(
 		storage: StorageFacade,
 		model: T
@@ -138,6 +160,12 @@ class MutationEventOutbox {
 		return mutationEvents;
 	}
 
+	/**
+	 * Gets the full set of modelId's present in the outbox.
+	 *
+	 * @param storage The storage adapter managing the outbox.
+	 * @returns A list of ID's.
+	 */
 	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
 		const mutationEvents = await storage.query(this.MutationEvent);
 
@@ -148,9 +176,17 @@ class MutationEventOutbox {
 		return result;
 	}
 
-	// applies _version from the AppSync mutation response to other items
-	// in the mutation queue with the same id
-	// see https://github.com/aws-amplify/amplify-js/pull/7354 for more details
+	/**
+	 * Applies `_version` from the AppSync mutation response to other items
+	 * in the mutation queue with the same `id`.
+	 *
+	 * @see https://github.com/aws-amplify/amplify-js/pull/7354 for more details
+	 *
+	 * @param storage The storage mechanism the queue lives in.
+	 * @param record The record from appsync to update the queue with.
+	 * @param head The
+	 * @param recordOp
+	 */
 	private async syncOutboxVersionsOnDequeue(
 		storage: StorageClass,
 		record: PersistentModel,
@@ -220,6 +256,11 @@ class MutationEventOutbox {
 		);
 	}
 
+	/**
+	 *
+	 * @param previous
+	 * @param current
+	 */
 	private mergeUserFields(
 		previous: MutationEvent,
 		current: MutationEvent
@@ -250,23 +291,30 @@ class MutationEventOutbox {
 		});
 	}
 
-	/* 
-	if a model is using custom timestamp fields
-	the custom field names will be stored in the model attributes
-
-	e.g.
-	"attributes": [
-    {
-			"type": "model",
-			"properties": {
-				"timestamps": {
-					"createdAt": "createdOn",
-					"updatedAt": "updatedOn"
-				}
-			}
-    }
-	]
-	*/
+	/**
+	 * Deletes created and updated at timestamp fields from a model instance.
+	 *
+	 * If a schema overrides thes name fields for a model, those will be
+	 * deleted instead. E.g., from a schema json:
+	 *
+	 * ```
+	 * 	"attributes": [
+	 * 	{
+	 * 		"type": "model",
+	 *  		"properties": {
+	 * 				"timestamps": {
+	 * 				"createdAt": "createdOn",
+	 * 				"updatedAt": "updatedOn"
+	 * 			}
+	 * 		}
+	 * 	}
+	 * ]
+	 * ```
+	 *
+	 * @param model The model name.
+	 * @param record The model instance.
+	 * @returns
+	 */
 	private removeTimestampFields(
 		model: string,
 		record: PersistentModel

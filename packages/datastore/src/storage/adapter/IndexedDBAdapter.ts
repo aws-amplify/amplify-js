@@ -43,6 +43,9 @@ const logger = new Logger('DataStore');
  */
 const DB_NAME = 'amplify-datastore';
 
+/**
+ * Adapter layer intended to sit between `StorageFacade` and IndexedDB.
+ */
 class IndexedDBAdapter implements Adapter {
 	private schema: InternalSchema;
 

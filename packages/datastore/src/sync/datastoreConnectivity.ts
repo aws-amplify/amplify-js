@@ -11,6 +11,13 @@ type ConnectionStatus = {
 	online: boolean;
 };
 
+/**
+ * TODO: ... summarize why we have this intermediate class for reachability.
+ *
+ * @method status()
+ * @method unsubscribe() -
+ * @method socketDisconnected() - Feign a disconnect?
+ */
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
 	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
@@ -22,6 +29,12 @@ export default class DataStoreConnectivity {
 		};
 	}
 
+	/**
+	 * Subscribe to an observable stream of connection status updates.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Creates a subscription to `ReachabilityMonitor`.
+	 */
 	status(): Observable<ConnectionStatus> {
 		if (this.observer) {
 			throw new Error('Subscriber already exists');
@@ -39,12 +52,21 @@ export default class DataStoreConnectivity {
 			});
 
 			return () => {
+				// Am I reading this correctly? Is this a redundant clear?
 				clearTimeout(this.timeout);
 				this.unsubscribe();
 			};
 		});
 	}
 
+	/**
+	 * Stop listening for messages and clear any timeouts lingering from a
+	 * `socketDisconnected()` call.
+	 *
+	 * SIDE EFFECT / CLEAN UP:
+	 * 1. Timeout stored on `this` is cleared.
+	 * 1. Unsubscribes to `ReachabilityMonitor`.
+	 */
 	unsubscribe() {
 		if (this.subscription) {
 			clearTimeout(this.timeout);
@@ -52,6 +74,17 @@ export default class DataStoreConnectivity {
 		}
 	}
 
+	/**
+	 * Signal that a disconnect has occurred, even if we still have
+	 * connectivity. After a timeout period, the "real" network state is taken
+	 * from `ReachabilityMonitor`'s last update and sent to the subscriber.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Creates a timeout, stored on `this`.
+	 * 1. Immediately sends an `online: false` event to the subscriber.
+	 *
+	 * @see ReachabilityMonitor
+	 */
 	socketDisconnected() {
 		if (this.observer && typeof this.observer.next === 'function') {
 			this.observer.next({ online: false }); // Notify network issue from the socket

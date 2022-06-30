@@ -1700,7 +1700,10 @@ class DataStore {
 		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
 	}
 
-	// database separation for Amplify Console. Not a public API
+	/**
+	 * A session ID to allow CMS to open databases against multiple apps.
+	 * This session ID is only expected be set by AWS Amplify Studio.
+	 */
 	private retrieveSessionId(): string | undefined {
 		try {
 			const sessionId = sessionStorage.getItem('datastoreSessionId');

@@ -86,20 +86,58 @@ export enum ControlMessage {
 	SYNC_ENGINE_READY = 'ready',
 }
 
+/**
+ * Engine responsible for bidirectional synchronization between local storage
+ * and remote storage (AppSync).
+ *
+ * Establishes processors responsible for keeping local storage in sync with
+ * server storage bidirectionally.
+ *
+ * In the event of conflicts that the app may be able to resolve, the given
+ * `conflictHandler` will be invoked.
+ *
+ * In the event of an irrecoverable error, the `errorHandler` will be invoked.
+ */
 export class SyncEngine {
+	/**
+	 * A flag indicating
+	 */
 	private online = false;
 
+	/**
+	 *
+	 */
 	private readonly syncQueriesProcessor: SyncProcessor;
+
 	private readonly subscriptionsProcessor: SubscriptionProcessor;
+
 	private readonly mutationsProcessor: MutationProcessor;
+
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+
+	/**
+	 *
+	 */
 	private readonly datastoreConnectivity: DataStoreConnectivity;
+
+	/**
+	 * Flag map to indicate whether each model has fully synced from AppSync to
+	 * local storage (according to the sync expression).
+	 */
 	private readonly modelSyncedStatus: WeakMap<
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
 
+	/**
+	 * Determines whether a model is "synced", meaning that queries against it
+	 * can be trusted to contain all data specified by the sync expressions
+	 * that are in effect.
+	 *
+	 * @param modelConstructor Model type to look up.
+	 * @returns `true` if the model is synced.
+	 */
 	public getModelSyncedStatus(
 		modelConstructor: PersistentModelConstructor<any>
 	): boolean {
@@ -111,10 +149,46 @@ export class SyncEngine {
 		private readonly namespaceResolver: NamespaceResolver,
 		private readonly modelClasses: TypeConstructorMap,
 		private readonly userModelClasses: TypeConstructorMap,
+
+		/**
+		 * This is ExclusiveStorage, which should ensure operations occur in
+		 * the order they're called. This is managed with a mutex.
+		 *
+		 * **NOTE:**
+		 * This storage must also be observable. The sync engine discovers new
+		 * mutations to push to AppSync by subscribing the storage events.
+		 */
 		private readonly storage: Storage,
+
+		/**
+		 * @see ModelInstanceCreator (direct copy)
+		 *
+		 * Constructs a model and records it with its metadata in a weakset. Allows for the separate storage of core model fields and Amplify/DataStore metadata fields that the customer app does not want exposed.
+		 *
+		 * @param modelConstructor — The model constructor.
+		 * @param init — Init data that would normally be passed to the constructor.
+		 * @returns — The initialized model.
+		 */
 		private readonly modelInstanceCreator: ModelInstanceCreator,
+
+		/**
+		 * To be called when a mutation is rejected by AppSync.
+		 *
+		 * The handler is expected to return a new model to try against AppSync
+		 * or the DISCARD symbol, signalling that conflicts should simply defer
+		 * AppSync's version as the source of truth.
+		 */
 		conflictHandler: ConflictHandler,
+
+		/**
+		 * To be called for any non-recoverable sync engine error.
+		 *
+		 * The sync engine is expected to perform its own retries as-needed for
+		 * recoverable errors. The error handler should *not* be called for
+		 * those intermediate / recoverable / non-final errors.
+		 */
 		errorHandler: ErrorHandler,
+
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy
@@ -161,10 +235,38 @@ export class SyncEngine {
 		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
+	/**
+	 * Starts synchronization processors in this order:
+	 *
+	 * **Subscription:**
+	 * Watches for changes from the server, saving each record locally as it
+	 * arrives. Until the sync processer completes (next step), subscription
+	 * messagesb are enqueued.
+	 *
+	 * **Sync:**
+	 * Performs an initial fetch of the records from the server, saving each
+	 * record locally.
+	 *
+	 * **Mutation:**
+	 * Sends local mutations to the server.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Creates subscriptions and holds them in a closure; they are
+	 * removed by unsubscribing.
+	 *
+	 * @param params Used for `fullSyncInterval`, indicating how often to
+	 * perform a full resync from the server (AppSync).
+	 * @returns Observable of control messages. Unsubscribing from this should
+	 * unsubscribe/disconnect from all downstream subscriptions.
+	 */
 	start(params: StartParams) {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
+			/**
+			 * Collection of all subscriptions created by starting the sync
+			 * engine for easy cleanup later.
+			 */
 			let subscriptions: ZenObservable.Subscription[] = [];
 
 			(async () => {
@@ -175,6 +277,15 @@ export class SyncEngine {
 					return;
 				}
 
+				/**
+				 * Promise resolves when AppSync connection reports that it
+				 * is CONNECTED.
+				 *
+				 * If the connection fails, the promise fails.
+				 *
+				 * This can be used to block processes that only make sense to
+				 * start once a functional AppSync connection is confirmed.
+				 */
 				const startPromise = new Promise(resolve => {
 					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
@@ -188,7 +299,14 @@ export class SyncEngine {
 								},
 							});
 
+							/**
+							 * Connection control messages from the AppSync connection.
+							 */
 							let ctlSubsObservable: Observable<CONTROL_MSG>;
+
+							/**
+							 * The stream of app data (USER space data) from AppSync.
+							 */
 							let dataSubsObservable: Observable<
 								[TransformerMutationType, SchemaModel, PersistentModel]
 							>;
@@ -395,6 +513,7 @@ export class SyncEngine {
 
 							await startPromise;
 
+							// Q: Why is this here?
 							if (this.online) {
 								this.mutationsProcessor.resume();
 							}
@@ -427,6 +546,16 @@ export class SyncEngine {
 		});
 	}
 
+	/**
+	 * Get a mapping of all known syncable models to a tuple of their
+	 * namespace and what to sync from. Determines if a full sync is needed
+	 * based on last full sync time.
+	 *
+	 * @param currentTimeStamp The last sync time as indicated by the server
+	 * during the last sync.
+	 * @returns The map of models to their namespace and a time to sync from,
+	 * where that time is '0' if a full sync is needed.
+	 */
 	private async getModelsMetadataWithNextFullSync(
 		currentTimeStamp: number
 	): Promise<Map<SchemaModel, [string, number]>> {
@@ -683,6 +812,18 @@ export class SyncEngine {
 		});
 	}
 
+	/**
+	 * Creates a function that checks a control message to see if it indicates
+	 * a disconnect or timeout.
+	 * If so, it informs the connectivity monitor of the disconnect.
+	 *
+	 * Intended to be called when subscription processor emits an error.
+	 *
+	 * SIDE EFFECT: (downstream)
+	 * 1. The connectivity monitor will send an `online: false` message to
+	 * all subscribers &mdash; which should have the effect of terminating
+	 * the sync. (At least temporarily.)
+	 */
 	private disconnectionHandler(): (msg: string) => void {
 		return (msg: string) => {
 			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
@@ -695,18 +836,49 @@ export class SyncEngine {
 		};
 	}
 
+	/**
+	 * Stops listening for changes to connectivity status.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Unsubscribes from `datastoreConnectivity`.
+	 */
 	public unsubscribeConnectivity() {
 		this.datastoreConnectivity.unsubscribe();
 	}
 
+	/**
+	 * Saves ModelMetadata entries for each syncable model across all
+	 * discoverable namespaces, resetting last sync times if a change to the
+	 * sync predicate is detected.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Sets sync status for every discovered syncable model to `false`.
+	 * 1. Writes new model metadata information, potentially signaling a full
+	 * resync.
+	 *
+	 * @param params Initialization params, namely `{ fullSyncInterval }`
+	 * @returns A map of initialized model metadatas.
+	 */
 	private async setupModels(params: StartParams) {
 		const { fullSyncInterval } = params;
+
+		/**
+		 * The internal metadata model used to record model namespace, most
+		 * recent sync timings, and a repr of the last sync predicate used.
+		 */
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
+		/**
+		 * The list of all syncable models.
+		 */
 		const models: [string, SchemaModel][] = [];
 		let savedModel;
 
+		// Searches the full list of namespaces and each model therein to
+		// discover syncable models and record them against the `models`
+		// accumulator. As each model is encountered, it is assumed that the
+		// model is *not* sync'd. So, it sets sync status to `false`.
 		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
@@ -721,6 +893,7 @@ export class SyncEngine {
 				});
 		});
 
+		// array of promises that will be awaited on and mapped to results.
 		const promises = models.map(async ([namespace, model]) => {
 			const modelMetadata = await this.getModelMetadata(namespace, model.name);
 			const syncPredicate = ModelPredicateCreator.getPredicates(
@@ -779,6 +952,12 @@ export class SyncEngine {
 		return result;
 	}
 
+	/**
+	 * Fetches metadata (last sync details) from storage for all known syncable
+	 * models.
+	 *
+	 * @returns An array of all model metadata records.
+	 */
 	private async getModelsMetadata(): Promise<ModelMetadata[]> {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
@@ -788,6 +967,15 @@ export class SyncEngine {
 		return modelsMetadata;
 	}
 
+	/**
+	 * Fetches metadata (last sync details) from storage for a particular model
+	 * in a particular namespace, assuming the given namespace-model exists and
+	 * is syncable.
+	 *
+	 * @param namespace The namespace the model lives in.
+	 * @param model The model name to search for.
+	 * @returns Array of model metadata.
+	 */
 	private async getModelMetadata(
 		namespace: string,
 		model: string
@@ -808,6 +996,15 @@ export class SyncEngine {
 		return modelMetadata;
 	}
 
+	/**
+	 * Finds the definition for a model constructor.
+	 *
+	 * The returned definition contains schema information about the model, such
+	 * as name, fields, and other attributes included in the graphql definition.
+	 *
+	 * @param modelConstructor The model constructor to look up.
+	 * @returns the model definition or undefined
+	 */
 	private getModelDefinition(
 		modelConstructor: PersistentModelConstructor<any>
 	): SchemaModel {
@@ -819,6 +1016,19 @@ export class SyncEngine {
 		return modelDefinition;
 	}
 
+	/**
+	 * The full namespace definition for the sync engine.
+	 *
+	 * This defines the schema and naming for local tables that the sync engine
+	 * is free to use for tracking sync-related data without fear of conflict
+	 * with other DataStore or app-level models.
+	 *
+	 * The namespace is currently used for:
+	 *
+	 * 1. `MutationEvent` - Outbox / Outgoing mutations.
+	 * 1. `ModelMetadata` - Details about when a model was last synced from
+	 * AppSync and what sync expression / predicate was used.
+	 */
 	static getNamespace() {
 		const namespace: SchemaNamespace = {
 			name: SYNC,
