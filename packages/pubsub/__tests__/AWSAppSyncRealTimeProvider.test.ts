@@ -1,3 +1,14 @@
+jest.mock('@aws-amplify/core', () => ({
+	__esModule: true,
+	...jest.requireActual('@aws-amplify/core'),
+	browserOrNode() {
+		return {
+			isBrowser: true,
+			isNode: false,
+		};
+	},
+}));
+
 import { Auth } from '@aws-amplify/auth';
 import { Credentials, Logger, Signer } from '@aws-amplify/core';
 import { GraphQLError, isCompositeType } from 'graphql';
