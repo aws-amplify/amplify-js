@@ -30,12 +30,13 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONTROL_MSG } from '../../index';
+import { CONNECTION_HEALTH_CHANGE, CONTROL_MSG } from '../../index';
 import {
 	AMPLIFY_SYMBOL,
 	AWS_APPSYNC_REALTIME_HEADERS,
 	CONNECTION_INIT_TIMEOUT,
 	DEFAULT_KEEP_ALIVE_TIMEOUT,
+	KEEP_ALIVE_ALERT_TIMEOUT,
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
@@ -43,6 +44,7 @@ import {
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
 } from './constants';
+import { ConnectionStateMonitor } from '../../utils/ConnectionStateMonitor';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -89,8 +91,21 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
+	private keepAliveAlertTimeout = KEEP_ALIVE_ALERT_TIMEOUT;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
+	private readonly connectionStateMonitor = new ConnectionStateMonitor();
+
+	constructor(options: ProviderOptions = {}) {
+		super(options);
+		// Monitor the connection health state and pass changes along to Hub
+		this.connectionStateMonitor.connectionHealthStateObservable.subscribe(
+			connectionHealthState => {
+				dispatchApiEvent(CONNECTION_HEALTH_CHANGE, {}, connectionHealthState);
+			}
+		);
+	}
 
 	getNewWebSocket(url, protocol) {
 		return new WebSocket(url, protocol);
@@ -252,6 +267,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		const stringToAWSRealTime = JSON.stringify(subscriptionMessage);
 
 		try {
+			this.connectionStateMonitor.openingConnection();
 			await this._initializeWebSocketConnection({
 				apiKey,
 				appSyncGraphqlEndpoint,
@@ -262,6 +278,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		} catch (err) {
 			logger.debug({ err });
 			const message = err['message'] ?? '';
+			this.connectionStateMonitor.disconnected();
 			observer.error({
 				errors: [
 					{
@@ -371,7 +388,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			logger.debug('closing WebSocket...');
-			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
+			this.connectionStateMonitor.disconnecting();
+			if (this.keepAliveTimeoutId) {
+				clearTimeout(this.keepAliveTimeoutId);
+			}
+			if (this.keepAliveAlertTimeoutId) {
+				clearTimeout(this.keepAliveAlertTimeoutId);
+			}
 			const tempSocket = this.awsRealTimeSocket;
 			// Cleaning callbacks to avoid race condition, socket still exists
 			tempSocket.onclose = null;
@@ -439,10 +462,17 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
 			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
+			if (this.keepAliveAlertTimeoutId)
+				clearTimeout(this.keepAliveAlertTimeoutId);
 			this.keepAliveTimeoutId = setTimeout(
 				this._errorDisconnect.bind(this, CONTROL_MSG.TIMEOUT_DISCONNECT),
 				this.keepAliveTimeout
 			);
+			this.keepAliveAlertTimeoutId = setTimeout(
+				this.connectionStateMonitor.keepAliveMissed,
+				this.keepAliveAlertTimeout
+			);
+			this.connectionStateMonitor.keepAlive();
 			return;
 		}
 
@@ -489,6 +519,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		});
 		this.subscriptionObserverMap.clear();
 		if (this.awsRealTimeSocket) {
+			this.connectionStateMonitor.disconnected();
 			this.awsRealTimeSocket.close();
 		}
 
@@ -678,6 +709,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 										this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 									};
 								}
+								this.connectionStateMonitor.connectionEstablished();
 								res('Cool, connected to AWS AppSyncRealTime');
 								return;
 							}

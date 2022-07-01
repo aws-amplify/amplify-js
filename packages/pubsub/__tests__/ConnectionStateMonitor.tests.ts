@@ -26,11 +26,11 @@ import Observable from 'zen-observable-ts';
 import { Reachability } from '@aws-amplify/core';
 import {
 	ConnectionHealthState,
-	ConnectionStatusMonitor,
-} from '../src/utils/ConnectionStatusMonitor';
+	ConnectionStateMonitor,
+} from '../src/utils/ConnectionStateMonitor';
 
 describe('ConnectionStateMonitor', () => {
-	let monitor: ConnectionStatusMonitor;
+	let monitor: ConnectionStateMonitor;
 	let observedStates: ConnectionHealthState[];
 	let subscription: ZenObservable.Subscription;
 	let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
@@ -52,7 +52,7 @@ describe('ConnectionStateMonitor', () => {
 
 			observedStates = [];
 			subscription?.unsubscribe();
-			monitor = new ConnectionStatusMonitor();
+			monitor = new ConnectionStateMonitor();
 			subscription = monitor.connectionHealthStateObservable.subscribe(
 				value => {
 					observedStates.push(value);
@@ -214,7 +214,7 @@ describe('ConnectionStateMonitor', () => {
 
 			observedStates = [];
 			subscription?.unsubscribe();
-			monitor = new ConnectionStatusMonitor();
+			monitor = new ConnectionStateMonitor();
 			subscription = monitor.connectionHealthStateObservable.subscribe(
 				value => {
 					observedStates.push(value);

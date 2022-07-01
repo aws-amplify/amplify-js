@@ -34,7 +34,7 @@ export type ConnectionHealthState =
 	| 'Disconnected'
 	| 'ConnectedPendingKeepAlive';
 
-export class ConnectionStatusMonitor {
+export class ConnectionStateMonitor {
 	/**
 	 * @private
 	 */

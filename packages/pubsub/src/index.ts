@@ -22,6 +22,10 @@ enum CONTROL_MSG {
 	TIMEOUT_DISCONNECT = 'Timeout disconnect',
 }
 
+export const CONNECTION_HEALTH_CHANGE = 'ConnectionHealthChange';
+
+export { ConnectionHealthState } from './utils/ConnectionStateMonitor';
+
 export { PubSub, CONTROL_MSG };
 
 /**
