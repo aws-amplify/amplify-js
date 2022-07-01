@@ -46,13 +46,33 @@ type AuthorizationInfo = {
 	ownerValue?: string;
 };
 
+/**
+ * Responsible for establishing the correct subscriptions (with appropriate
+ * retry attempts for auth modes and transient errors) for each model in a
+ * schema and aggregating those messages for consumption by a single data
+ * subscriber.
+ *
+ * Also forwards control messages to a control message subscriber.
+ */
 class SubscriptionProcessor {
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
+
+	/**
+	 * Holds onto subscription messages prior to a processing boundary that
+	 * warrants draining the buffer to a subscriber.
+	 *
+	 * Actually waiting for an actual subscriber might be one such boundary.
+	 */
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
+
+	/**
+	 * Expected to be a subscription sitting in the core sync engine that knows
+	 * what to do with messages from AppSync.
+	 */
 	private dataObserver: ZenObservable.Observer<any>;
 
 	constructor(
@@ -63,6 +83,22 @@ class SubscriptionProcessor {
 		private readonly errorHandler: ErrorHandler
 	) {}
 
+	/**
+	 * Creates an object with the query and arguments necessary to establish a
+	 * subscription to a particular model in a namespace, assuming the given
+	 * auth mode is correct.
+	 *
+	 * It is assumed that the caller is responsible for calling for new
+	 * subscription details *if needed* in the event of an auth failure.
+	 *
+	 * @param namespace
+	 * @param model
+	 * @param transformerMutationType
+	 * @param userCredentials
+	 * @param cognitoTokenPayload
+	 * @param oidcTokenPayload
+	 * @param authMode
+	 */
 	private buildSubscription(
 		namespace: SchemaNamespace,
 		model: SchemaModel,
@@ -221,6 +257,13 @@ class SubscriptionProcessor {
 		};
 	}
 
+	/**
+	 * Calls the completion callback if the given hub capsule is a
+	 * subscriptiona ack.
+	 *
+	 * @param completed Callback function to run when SUBSCRIPTION_ACK is received.
+	 * @param capsule Capusle from Hub event.
+	 */
 	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
 		const {
 			payload: { event },
@@ -231,15 +274,35 @@ class SubscriptionProcessor {
 		}
 	}
 
+	/**
+	 * Creates a control message observable and data message observable. When
+	 * control message observable is subscribed to, connections for all models
+	 * are established and control messages will start flowing.
+	 *
+	 * When the data message observable is subscribed to, data messages will
+	 * start draining to it from the data buffer.
+	 */
 	start(): [
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
+		/**
+		 * Observable for control messages. Upon subscribing, connections are
+		 * established. Upon unsubscribing, connections are unsubscribed and
+		 * torn down.
+		 *
+		 * SIDE EFFECT:
+		 * 1. Creates subscriptions.
+		 * 1. Leverages retries, which will not necessarily be cleaned up
+		 * immediately upon unsubscribe.
+		 */
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
 
-			// Creating subs for each model/operation combo so they can be unsubscribed
-			// independently, since the auth retry behavior is asynchronous.
+			/**
+			 * Subscriptions for each model-operation. Centralized list for
+			 * unsubscribing later.
+			 */
 			let subscriptions: {
 				[modelName: string]: {
 					[TransformerMutationType.CREATE]: ZenObservable.Subscription[];
@@ -526,6 +589,8 @@ class SubscriptionProcessor {
 								);
 
 								promises.push(
+									// just a promise that won't resolve until the pubsub scription
+									// is acknowledged.
 									(async () => {
 										let boundFunction: any;
 
@@ -564,6 +629,14 @@ class SubscriptionProcessor {
 			};
 		});
 
+		/**
+		 * Observable for data events. Subscribe to start draining the event
+		 * buffer to the subscriber.
+		 *
+		 * Unsubscribing from this channel removes the subscriber, which should
+		 * effectively pause buffer draining, because buffer draining is
+		 * a no-op if there is no subscriber.
+		 */
 		const dataObservable = new Observable<
 			[TransformerMutationType, SchemaModel, PersistentModel]
 		>(observer => {
@@ -599,6 +672,12 @@ class SubscriptionProcessor {
 		this.buffer.push([transformerMutationType, modelDefinition, data]);
 	}
 
+	/**
+	 * Sends each item in the buffer to `this.dataObserver` if there *is* a
+	 * `this.dataObserver`, and *then* sets the buffer to an empty array.
+	 *
+	 * Else, does nothing.
+	 */
 	private drainBuffer() {
 		if (this.dataObserver) {
 			this.buffer.forEach(data => this.dataObserver.next(data));

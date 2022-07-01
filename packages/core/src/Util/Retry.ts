@@ -47,7 +47,7 @@ const isNonRetryableError = (obj: any): obj is NonRetryableError => {
  *
  * Internal use of Amplify only
  *
- * Retries a function on a scheduled provided by a delay function until one of
+ * Retries a function on a schedule provided by a delay function until one of
  * the following occurs:
  *
  * 1. It succeeds.

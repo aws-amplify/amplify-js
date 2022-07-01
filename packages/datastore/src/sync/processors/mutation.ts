@@ -49,11 +49,28 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
+	/**
+	 *
+	 */
 	private observer: ZenObservable.Observer<MutationProcessorEvent>;
+
+	/**
+	 * Map of pregenerated queries for each model type and operation.
+	 */
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
+
+	/**
+	 * Whether the intended state of the processor is *actively removing items
+	 * from the outbox and sending them to AppSync.*
+	 *
+	 * RELATED SIDE EFFECT:
+	 * 1. Upon being set to `false` from `true`, the processor may take some time
+	 * time to "settle" as already-active retry loops do not acknowledge this
+	 * flag.
+	 */
 	private processing: boolean = false;
 
 	constructor(
@@ -71,6 +88,12 @@ class MutationProcessor {
 		this.generateQueries();
 	}
 
+	/**
+	 * Pregenerate graphql queries for each model type and operation.
+	 *
+	 * TODO: Dive on whether this might be an unnecessary optimization, as it
+	 * adds a bit of complexity/cognitive overhead reading the code.
+	 */
 	private generateQueries() {
 		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
@@ -110,14 +133,23 @@ class MutationProcessor {
 	}
 
 	/**
-	 * Creates an observable that can be used to cancel processing and starts
-	 * processing the outbox.
+	 * Creates an observable that starts processing outbox mutations **when it
+	 * is subscribed to**. "Processing mutations" is the act of sending each
+	 * each item from the outbox to the server (AppSync) in successing,
+	 * retrying on transient errors, attempting all relevant auth modes as
+	 * needed, etc..
+	 *
+	 * Unsubscribing pauses outbox mutation processing.
 	 *
 	 * SIDE EFFECT:
 	 * 1. Sets isReady to true
-	 * 1. Via resume(): sets processing = true
+	 * 1. On subscribe, `resume()` -- @see this.resume
+	 * 1. Overwrites any existing observer upon subscription. If multiple
+	 * subscriptions are established, old subscriptions still have the power
+	 * to `pause()`, but will no longer be receiving events.
 	 *
-	 * @returns Observable which pauses mutation processing on unsubscribe.
+	 * @returns Observable for which `unsubscribe()` *eventually* pauses
+	 * mutation processing.
 	 */
 	public start(): Observable<MutationProcessorEvent> {
 		const observable = new Observable<MutationProcessorEvent>(observer => {
@@ -255,6 +287,26 @@ class MutationProcessor {
 		this.pause();
 	}
 
+	/**
+	 * Attempts to send the mutation to AppSync, retrying indefinitely on
+	 * errors that appear transient. Errors that are not transient will be
+	 * wrapped in a `NonRetryableError` when thrown to exit the retry loop.
+	 *
+	 * SIDE EFFECT:
+	 * 1. Uses `retry`, which creates hidden timeouts.
+	 *
+	 * @see retry
+	 *
+	 * @param namespaceName
+	 * @param model
+	 * @param operation
+	 * @param data
+	 * @param condition
+	 * @param modelConstructor
+	 * @param MutationEvent
+	 * @param mutationEvent
+	 * @param authMode
+	 */
 	private async jitteredRetry(
 		namespaceName: string,
 		model: string,
@@ -576,16 +628,19 @@ const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
  * @private
  * Internal use of Amplify only.
  *
+ * Calculates when the next retry should occur, and assumes retries should
+ * continue forever (barring an irrecoverable error).
+ *
  * Wraps the jittered backoff calculation to retry Network Errors indefinitely.
  * Backs off according to original jittered retry logic until the original retry
  * logic hits its max. After this occurs, if the error is a Network Error, we
- * ignore the attempt count and return MAX_RETRY_DELAY_MS to retry forever (until
- * the request succeeds).
+ * ignore the attempt count and return MAX_RETRY_DELAY_MS to retry forever until
+ * the retry succeeds.
  *
  * @param attempt ignored
  * @param _args ignored
  * @param error tested to see if `.message` is 'Network Error'
- * @returns number | false :
+ * @returns a number, up to MAX_RETRY_DELAY_MS.
  */
 export const safeJitteredBackoff: typeof originalJitteredBackoff = (
 	attempt,
