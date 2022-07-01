@@ -24,11 +24,20 @@ declare module 'amazon-cognito-identity-js' {
 			userAttributes: any,
 			requiredAttributes: any
 		) => void;
-		mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-		totpRequired?: (challengeName: any, challengeParameters: any) => void;
+		mfaRequired?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
+		totpRequired?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
 		customChallenge?: (challengeParameters: any) => void;
-		mfaSetup?: (challengeName: any, challengeParameters: any) => void;
-		selectMFAType?: (challengeName: any, challengeParameters: any) => void;
+		mfaSetup?: (challengeName: ChallengeName, challengeParameters: any) => void;
+		selectMFAType?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
 	}
 
 	export interface IMfaSettings {
@@ -256,8 +265,14 @@ declare module 'amazon-cognito-identity-js' {
 			callbacks: {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
-				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-				totpRequired?: (challengeName: any, challengeParameters: any) => void;
+				mfaRequired?: (
+					challengeName: ChallengeName,
+					challengeParameters: any
+				) => void;
+				totpRequired?: (
+					challengeName: ChallengeName,
+					challengeParameters: any
+				) => void;
 			}
 		): void;
 	}
