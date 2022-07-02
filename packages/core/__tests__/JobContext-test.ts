@@ -17,7 +17,7 @@ describe('JobContext', () => {
 				setTimeout(() => {
 					proof = true;
 					resolve();
-				}, 100);
+				}, 50);
 			});
 		});
 
@@ -43,7 +43,7 @@ describe('JobContext', () => {
 			return new Promise(resolve => {
 				setTimeout(() => {
 					resolve();
-				}, 100);
+				}, 50);
 			});
 		});
 
@@ -69,6 +69,30 @@ describe('JobContext', () => {
 		}
 	});
 
+	test('waits for multiple promises', async () => {
+		const context = new JobContext();
+
+		const results = [];
+
+		for (let i = 0; i < 10; i++) {
+			const _i = i;
+			results.push(false);
+			context.add(async () => {
+				return new Promise(resolve => {
+					setTimeout(() => {
+						results[_i] = true;
+						resolve();
+					}, 5 * _i);
+				});
+			});
+		}
+
+		await context.exit();
+
+		expect(results.length).toEqual(10); // sanity check
+		expect(results.every(v => v === true)).toBe(true);
+	});
+
 	test('can send termination signals to jobs that support termination, with resolve', async () => {
 		let completed = false;
 		const context = new JobContext();
@@ -80,7 +104,7 @@ describe('JobContext', () => {
 					// this test.
 					completed = true;
 					resolve();
-				}, 100);
+				}, 30);
 
 				// Jobs support termination by listening for `onTerminate` to
 				// complete. The job still needs to decide whether to resolve
@@ -101,7 +125,7 @@ describe('JobContext', () => {
 
 		// giving a wait, to make sure the job doesn't actually fire
 		// after being cleared with exit()
-		await new Promise(resolve => setTimeout(resolve, 200));
+		await new Promise(resolve => setTimeout(resolve, 100));
 
 		// then making sure the job really really didn't fire.
 		expect(completed).toBe(false);
@@ -119,7 +143,7 @@ describe('JobContext', () => {
 					// this test.
 					completed = true;
 					resolve();
-				}, 100);
+				}, 30);
 
 				// Jobs support termination by listening for `onTerminate` to
 				// complete. The job still needs to decide whether to resolve
@@ -146,11 +170,53 @@ describe('JobContext', () => {
 
 		// giving a wait, to make sure the job doesn't actually fire
 		// after being cleared with exit()
-		await new Promise(resolve => setTimeout(resolve, 200));
+		await new Promise(resolve => setTimeout(resolve, 100));
 
 		// then making sure the job really really didn't fire.
 		expect(completed).toBe(false);
 		expect(thrown).toEqual('badness happened');
+	});
+
+	test('attempts to terminate all, but patiently waits for persistent jobs', async () => {
+		const context = new JobContext();
+
+		let terminationAttemptCount = 0;
+		const results = [];
+
+		for (let i = 0; i < 10; i++) {
+			const _i = i;
+			results.push(false);
+			context.add(async onTerminate => {
+				return new Promise((resolve, reject) => {
+					const timer = setTimeout(() => {
+						results[_i] = true;
+						resolve();
+					}, 5 * _i);
+
+					// simulate heterogenous jobs, some of which comply with
+					// termination requests, some do not.
+					onTerminate.then(() => {
+						terminationAttemptCount++;
+						if (_i % 2 === 0) {
+							clearTimeout(timer);
+
+							// remember, if a job *does* terminate, it still
+							// needs resolve/reject to unblock `exit()`.
+							_i > 5 ? resolve() : reject();
+						}
+					});
+				});
+			});
+		}
+
+		// capture resolutions so we can ensure we actually tested this with a
+		// mix of resolves and rejects.
+		const resolutions = await context.exit();
+
+		expect(results.length).toEqual(10); // sanity check
+		expect(results.filter(v => v === true).length).toBe(5);
+		expect(terminationAttemptCount).toEqual(10);
+		expect(resolutions.filter(r => r.status === 'rejected').length).toEqual(3);
 	});
 
 	test('can be used to terminate zen subscriptions, perpetual events', async () => {
