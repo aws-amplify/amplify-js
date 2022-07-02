@@ -69,34 +69,87 @@ describe('JobContext', () => {
 		}
 	});
 
-	test('can terminate a long-running job and allows termination', async () => {
+	test('can send termination signals to jobs that support termination, with resolve', async () => {
 		let completed = false;
 		const context = new JobContext();
 
 		const resultPromise = context.add(async onTerminate => {
-			return new Promise(resolve => {
+			return new Promise((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
 					// this test.
 					completed = true;
 					resolve();
-				}, 5000);
+				}, 100);
+
+				// Jobs support termination by listening for `onTerminate` to
+				// complete. The job still needs to decide whether to resolve
+				// or reject.
+				onTerminate.then(() => {
+					clearTimeout(timer);
+					resolve();
+				});
 			});
 		});
 
+		// the job is pending
 		expect(context.length).toBe(1);
-		await resultPromise;
-		expect(context.length).toBe(0);
-
-		// just demonstrating good behavior: Always exit your contexts.
 		await context.exit();
 
+		// after exit(), the job should be cleared
+		expect(context.length).toBe(0);
+
+		// giving a wait, to make sure the job doesn't actually fire
+		// after being cleared with exit()
+		await new Promise(resolve => setTimeout(resolve, 200));
+
+		// then making sure the job really really didn't fire.
 		expect(completed).toBe(false);
 	});
 
-	// test('can pass observables through', async () => {
-	// 	const context = new JobContext();
+	test('can send termination signals to jobs that support termination, with reject', async () => {
+		let completed = false;
+		let thrown = undefined;
+		const context = new JobContext();
 
-	// 	context.add(new Observable());
-	// });
+		const resultPromise = context.add(async onTerminate => {
+			return new Promise((resolve, reject) => {
+				const timer = setTimeout(() => {
+					// this is the happy path that we plan not to reach in
+					// this test.
+					completed = true;
+					resolve();
+				}, 100);
+
+				// Jobs support termination by listening for `onTerminate` to
+				// complete. The job still needs to decide whether to resolve
+				// or reject.
+				onTerminate.then(() => {
+					clearTimeout(timer);
+					reject('badness happened');
+				});
+			});
+		});
+
+		resultPromise.catch(error => {
+			thrown = error;
+		});
+
+		// the job is pending
+		expect(context.length).toBe(1);
+
+		const results = await context.exit();
+		expect(results[0].status).toEqual('rejected');
+
+		// after exit(), the job should be cleared
+		expect(context.length).toBe(0);
+
+		// giving a wait, to make sure the job doesn't actually fire
+		// after being cleared with exit()
+		await new Promise(resolve => setTimeout(resolve, 200));
+
+		// then making sure the job really really didn't fire.
+		expect(completed).toBe(false);
+		expect(thrown).toEqual('badness happened');
+	});
 });
