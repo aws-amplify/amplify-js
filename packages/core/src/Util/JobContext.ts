@@ -109,6 +109,45 @@ export class JobContext {
 	}
 
 	/**
+	 * Creates and registers a superficial job for processes, like observables,
+	 * that need to operate with callbacks. The returned `resolve` and `reject`
+	 * functions can be used to signal the job is done successfully or not.
+	 * The returned `onTerminate` is a promise that will resolve when the
+	 * context is requesting the termination of the job.
+	 *
+	 * @returns `{ resolve, reject, onTerminate }`
+	 */
+	job() {
+		// the resolve/reject functions we'll provide to the caller to signal
+		// the state of the job.
+		let resolve: (value?: unknown) => void;
+		let reject: (reason?: any) => void;
+
+		// the underlying promise we'll use to manage it, pretty much like
+		// any other promise.
+		const promise = new Promise((res, rej) => {
+			resolve = res;
+			reject = rej;
+		});
+
+		// the function we call when we want to try to terminate this job.
+		let terminate;
+
+		// the promise the job can opt into listening to for termination.
+		const onTerminate = new Promise(resolve => {
+			terminate = resolve;
+		});
+
+		this.registerPromise(promise, terminate);
+
+		return {
+			resolve,
+			reject,
+			onTerminate,
+		};
+	}
+
+	/**
 	 * Adds a Promise based job to the list of jobs for monitoring and listens
 	 * for either a success or failure, upon which the job is considered "done"
 	 * and removed from the registry.
@@ -141,6 +180,8 @@ export class JobContext {
 	 *
 	 * We don't use this for anything. It's just informational for the caller,
 	 * and can be used in logging and testing.
+	 *
+	 * @returns the number of jobs.
 	 */
 	get length() {
 		return this.jobs.length;

@@ -152,4 +152,41 @@ describe('JobContext', () => {
 		expect(completed).toBe(false);
 		expect(thrown).toEqual('badness happened');
 	});
+
+	test('can be used to terminate zen subscriptions, perpetual events', async () => {
+		const context = new JobContext();
+		let count = 0;
+
+		// we could also put the context.job() outside the observable and call
+		// unsubscribe() on the subscription. all depends where the control
+		// needs to occur. this example explicitly intends to demonstrate
+		// that the observable constructor can manage it like a hook.
+		const subscription = new Observable(observer => {
+			const { resolve, onTerminate } = context.job();
+			const interval = setInterval(() => observer.next({}), 10);
+
+			const terminate = () => {
+				resolve();
+				clearInterval(interval);
+				observer.complete();
+			};
+
+			onTerminate.then(terminate);
+			return terminate;
+		}).subscribe(() => count++);
+
+		await new Promise(resolve => setTimeout(resolve, 50));
+
+		// this should signal to termination and end, and the observable should
+		// respond by calling its internal terminate().
+		await context.exit();
+		const countSnapshot = count;
+
+		expect(count).toBeGreaterThan(2);
+
+		// after a little more time, we should see that there have been no more
+		// messages.
+		await new Promise(resolve => setTimeout(resolve, 50));
+		expect(countSnapshot).toEqual(count);
+	});
 });
