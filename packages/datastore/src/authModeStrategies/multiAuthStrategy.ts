@@ -150,7 +150,7 @@ function getAuthRules({
 
 /**
  * Returns an array of auth modes to try based on the schema, model, and
- * authenticated user (or lack thereof). Rules are sourced from `getAgetAuthRules`
+ * authenticated user (or lack thereof). Rules are sourced from `getAuthRules`
  * and returned in the order they ought to be attempted.
  *
  * @see sortAuthRulesWithPriority
