@@ -7,7 +7,8 @@ import Observable from 'zen-observable-ts';
  * of "jobs" that may be running in the background. This context provides
  * an singular entrypoint to request termination and await completion.
  *
- * As jobs complete, they remove themselves from the registry.
+ * As jobs complete on their own prior to exit, the context removes them
+ * from the registry to avoid holding references to completed jobs.
  */
 export class JobContext {
 	/**
