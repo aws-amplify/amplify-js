@@ -3,54 +3,11 @@ import Observable from 'zen-observable-ts';
 /**
  * @private For internal Amplify use.
  *
- * A scope to collect background outstanding jobs, subscriptions, promises, and
- * callbacks that will all need to be awaited, called, canceled, etc at some
- * context exit boundary or condition.
+ * Creates a new "context" for promises, observables, and other types
+ * of "jobs" that may be running in the background. This context provides
+ * an singular entrypoint to request termination and await completion.
  *
- * Intended to herd the vast number of promises, subscriptions, etc. that occur
- * in categories like DataStore and make it easy to safely "exit" the context
- * with the confidence that all work in the context is done.
- *
- * Contexts are nestable.
- *
- * Two usage patterns are recommended.
- *
- * ```
- * // defined where you'll have access to `exit()` the context appropriately
- * const context = new JobContext();
- *
- * async function do() {
- * 	// make sure this is the first line of the function.
- * 	return context.add(async () => {
- * 		return await getResult();
- * 	});
- * };
- *
- * // later, perhaps in a class's `stop()` call:
- * await context.complete();
- * ```
- *
- * OR
- *
- * ```
- * // defined where you'll have access to `exit()` the context appropriately
- * const context = new JobContext();
- *
- * function getSubscription() {
- * 	// make sure this is your first line
- * 	return context.add(({ onTerminate, complete }) => {
- * 		const subscription = thingy.subscribe();
- * 		onTerminate.then(async () => {
- * 			await subscription.unsubscribe();
- * 			complete();
- * 		});
- * 	});
- * }
- *
- * // later, perhaps in a class's `stop()` call:
- * await context.complete();
- * ```
- *
+ * As jobs complete, they remove themselves from the registry.
  */
 export class JobContext {
 	/**
@@ -64,27 +21,95 @@ export class JobContext {
 	private jobs: JobEntry[] = [];
 
 	/**
-	 * Creates a new context for jobs, subscriptions, promises, and other
-	 * types of callback and background jobs to register themselves in an
-	 * ergonomic fashion.
+	 * Creates a new "context" for promises, observables, and other types
+	 * of "jobs" that may be running in the background. This context provides
+	 * a centralized mechanism to request termination and await completion.
 	 */
 	constructor() {}
 
 	/**
-	 * Executes a function, passing the return value through to the caller,
-	 * checking it on its way through to see if it indicates a background job.
-	 * If it does, it registers it as a running job in the context.
+	 * Executes an async `job` function, passing the return value through to
+	 * the caller, registering it as a running job in the context. When the
+	 * context *exits*, it will `await` the job.
 	 *
 	 * @param job The function to execute.
 	 * @returns The return value from the given function.
 	 */
-	add<T extends JobWrapperTypes>(job: Job<T>): T {
+	add<T>(job: () => Promise<T>): Promise<T>;
+
+	/**
+	 * Executes an async `job` function, passing the return value through to
+	 * the caller, registering it as a running job in the context. When the
+	 * context *exits*, it will request termination by resolving the
+	 * provided `onTerminate` promise. It will then `await` the job, so it is
+	 * important that the job still `resolve()` or `reject()` when responding
+	 * to a termination request.
+	 *
+	 * @param job The function to execute.
+	 * @returns The return value from the given function.
+	 */
+	add<T>(job: (onTerminate: Promise<void>) => Promise<T>): Promise<T>;
+
+	/**
+	 * Create a no-op job, registers it with the context, and returns hooks
+	 * to the caller to signal the job's completion and respond to termination
+	 * requests.
+	 *
+	 * When the context exits, the no-op job will be `await`-ed, so its
+	 * important to always `resolve()` or `reject()` when done responding to an
+	 * `onTerminate` signal.
+	 *
+	 * @returns Job promise hooks + onTerminate signaling promise
+	 */
+	add(): {
+		resolve: (value?: unknown) => void;
+		reject: (reason?: any) => void;
+		onTerminate: Promise<void>;
+	};
+
+	add(job?) {
 		if (this.locked) {
 			throw new Error(
 				'The context is locked, which occurs after exit() has been called.'
 			);
 		}
 
+		if (job === undefined) {
+			return this.addHooks();
+		} else if (typeof job === 'function') {
+			return this.addFunction(job);
+		} else {
+			throw new Error('`job` must be an Observable or Function!');
+		}
+	}
+
+	/**
+	 * Adds a **cleaner** function that doesn't immediately get executed.
+	 * Instead, the caller get a **terminate** function back. The *cleaner* is
+	 * invoked only once the context *exits* or the returned **terminate**
+	 * function is called.
+	 *
+	 * @param clean The cleanup function.
+	 * @returns A terminate function.
+	 */
+	addCleaner<T>(clean: () => Promise<T>): () => Promise<void> {
+		const { resolve, reject, onTerminate } = this.addHooks();
+
+		const proxy = async () => {
+			await clean();
+			resolve();
+		};
+
+		onTerminate.then(proxy);
+
+		return proxy;
+	}
+
+	private addFunction<T>(job: () => Promise<T>): Promise<T>;
+	private addFunction<T>(
+		job: (onTerminate: Promise<void>) => Promise<T>
+	): Promise<T>;
+	private addFunction(job) {
 		// the function we call when we want to try to terminate this job.
 		let terminate;
 
@@ -109,15 +134,15 @@ export class JobContext {
 	}
 
 	/**
-	 * Creates and registers a superficial job for processes, like observables,
-	 * that need to operate with callbacks. The returned `resolve` and `reject`
+	 * Creates and registers a fabricated job for processes that need to operate
+	 * with callbacks/hooks. The returned `resolve` and `reject`
 	 * functions can be used to signal the job is done successfully or not.
 	 * The returned `onTerminate` is a promise that will resolve when the
 	 * context is requesting the termination of the job.
 	 *
 	 * @returns `{ resolve, reject, onTerminate }`
 	 */
-	job() {
+	private addHooks() {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
 		let resolve: (value?: unknown) => void;
@@ -216,23 +241,6 @@ export class JobContext {
 		return Promise.allSettled(this.jobs.map(j => j.promise));
 	}
 }
-
-//
-// TODO: Support observables? Or just force observable makers to give us
-// a promise?
-//
-// export type JobWrapperTypes = Promise<any> | Observable<any>;
-//
-
-export type JobWrapperTypes = Promise<any>;
-
-/**
- * A thing that we can wait for completion on. When invoked, a first parameter
- * will be passed in -- a Promise signals a termination request if completed.
- */
-export type Job<T extends JobWrapperTypes> =
-	| (() => T)
-	| ((onTerminate: Promise<void>) => T);
 
 /**
  * Completely internal to `JobContext`, and describes the structure of an entry
