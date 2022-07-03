@@ -219,7 +219,7 @@ describe('JobContext', () => {
 		expect(resolutions.filter(r => r.status === 'rejected').length).toEqual(3);
 	});
 
-	test('can be used to terminate zen subscriptions, perpetual events', async () => {
+	test('can be used to terminate other types of bg jobs, like zen subscriptions', async () => {
 		const context = new JobContext();
 		let count = 0;
 
@@ -228,17 +228,17 @@ describe('JobContext', () => {
 		// needs to occur. this example explicitly intends to demonstrate
 		// that the observable constructor can manage it like a hook.
 		const subscription = new Observable(observer => {
-			const { resolve, onTerminate } = context.job();
+			const { resolve, onTerminate } = context.add();
 			const interval = setInterval(() => observer.next({}), 10);
 
-			const terminate = () => {
-				resolve();
+			const unsubscribe = () => {
+				resolve(); // always remember to resolve/reject!
 				clearInterval(interval);
 				observer.complete();
 			};
 
-			onTerminate.then(terminate);
-			return terminate;
+			onTerminate.then(unsubscribe);
+			return unsubscribe;
 		}).subscribe(() => count++);
 
 		await new Promise(resolve => setTimeout(resolve, 50));
@@ -254,5 +254,37 @@ describe('JobContext', () => {
 		// messages.
 		await new Promise(resolve => setTimeout(resolve, 50));
 		expect(countSnapshot).toEqual(count);
+	});
+
+	test('can be used in zen subscriptions cleanup functions', async () => {
+		const context = new JobContext();
+		let count = 0;
+
+		const subscription = new Observable(observer => {
+			const interval = setInterval(() => observer.next({}), 10);
+
+			// LOOK: here's the magic. (tada!)
+			return context.addCleaner(async () => {
+				clearInterval(interval);
+			});
+		}).subscribe(() => count++);
+
+		await new Promise(resolve => setTimeout(resolve, 50));
+
+		// this should signal to termination and end, and the observable should
+		// respond by calling its internal terminate().
+		await context.exit();
+		const countSnapshot = count;
+
+		expect(count).toBeGreaterThan(2);
+
+		// after a little more time, we should see that there have been no more
+		// messages.
+		await new Promise(resolve => setTimeout(resolve, 50));
+		expect(countSnapshot).toEqual(count);
+	});
+
+	test.skip('waits for zen subscription unsubscribe when async', async () => {
+		expect(true).toBe(false);
 	});
 });
