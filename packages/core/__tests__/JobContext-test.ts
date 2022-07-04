@@ -1,5 +1,6 @@
 import Observable from 'zen-observable-ts';
 import { JobContext } from '../src/Util/JobContext';
+import { SubscriptionProcessor } from '@aws-amplify/datastore/src/sync/processors/subscription';
 
 describe('JobContext', () => {
 	test('can wait for a promise to finish', async () => {
@@ -227,7 +228,7 @@ describe('JobContext', () => {
 		// unsubscribe() on the subscription. all depends where the control
 		// needs to occur. this example explicitly intends to demonstrate
 		// that the observable constructor can manage it like a hook.
-		const subscription = new Observable(observer => {
+		new Observable(observer => {
 			const { resolve, onTerminate } = context.add();
 			const interval = setInterval(() => observer.next({}), 10);
 
@@ -248,7 +249,7 @@ describe('JobContext', () => {
 		await context.exit();
 		const countSnapshot = count;
 
-		expect(count).toBeGreaterThan(2);
+		expect(count).toBeGreaterThan(0);
 
 		// after a little more time, we should see that there have been no more
 		// messages.
@@ -256,7 +257,7 @@ describe('JobContext', () => {
 		expect(countSnapshot).toEqual(count);
 	});
 
-	test('can be used in zen subscriptions cleanup functions', async () => {
+	test('can provide cleanup functions for use in zen observables', async () => {
 		const context = new JobContext();
 		let count = 0;
 
@@ -276,7 +277,7 @@ describe('JobContext', () => {
 		await context.exit();
 		const countSnapshot = count;
 
-		expect(count).toBeGreaterThan(2);
+		expect(count).toBeGreaterThan(0);
 
 		// after a little more time, we should see that there have been no more
 		// messages.
@@ -284,7 +285,117 @@ describe('JobContext', () => {
 		expect(countSnapshot).toEqual(count);
 	});
 
-	test.skip('waits for zen subscription unsubscribe when async', async () => {
-		expect(true).toBe(false);
+	test('cleaner is resolved when used as zen cleaner and subscription is unsubscribed', async () => {
+		const context = new JobContext();
+		let count = 0;
+
+		const subscription = new Observable(observer => {
+			const interval = setInterval(() => observer.next({}), 10);
+
+			// LOOK: here's the magic. (tada!)
+			return context.addCleaner(async () => {
+				clearInterval(interval);
+			});
+		}).subscribe(() => count++);
+
+		// after a short period, we should see the counter has gone up.
+		await new Promise(resolve => setTimeout(resolve, 25));
+		const countSnapshot = count;
+		expect(countSnapshot).toBeGreaterThan(0);
+
+		// after unsubscribing and waiting again, the count should have
+		// remained the same.
+		subscription.unsubscribe();
+		await new Promise(resolve => setTimeout(resolve, 25));
+		expect(count).toEqual(countSnapshot);
+
+		// we should also see zero waiting jobs
+		expect(context.length).toEqual(0);
+
+		// it's good practice always to exit() your job contexts.
+		await context.exit();
+	});
+
+	test('exit() is idempotent, firing onTerminate signals only once', async () => {
+		// As long as `onTerminate` is implemented as a `Promise`, this is kind
+		// if a silly test, because promises are idempontent. But, it's still
+		// an important test to guard against regressions if we stop using a
+		// `Promise` for `onTerminate` later.
+
+		const context = new JobContext();
+
+		let terminateSignalCount = 0;
+
+		context.add(
+			async onTerminate =>
+				new Promise(resolve => {
+					// don't actually resolve right away to ensure there is
+					// "opportunity" for `onTerminate` to trigger more than
+					// once if it is implemented wrong.
+					onTerminate.then(() => {
+						terminateSignalCount++;
+						setTimeout(resolve, 10);
+					});
+				})
+		);
+
+		// accumulate a bunch of exit promises, only the first of which should
+		// send the exit signal, but all of which should await resolution.
+		const exits = [0, 1, 2, 3, 4, 5].map(i => context.exit());
+
+		// ensure everything has settled
+		const resolved = await Promise.allSettled(exits);
+
+		expect(terminateSignalCount).toEqual(1);
+		expect(resolved.map(r => r.status).every(v => v === 'fulfilled')).toBe(
+			true
+		);
+	});
+
+	test('can contain a nested context', async () => {
+		const outer = new JobContext();
+		const inner = new JobContext();
+
+		let proof = false;
+
+		outer.add(inner);
+		inner.add(
+			async () =>
+				new Promise(resolve =>
+					setTimeout(() => {
+						proof = true;
+						resolve();
+					}, 10)
+				)
+		);
+
+		await outer.exit();
+
+		expect(proof).toBe(true);
+	});
+
+	test('calls inner context exit upon outer context exit', async () => {
+		const outer = new JobContext();
+		const inner = new JobContext();
+
+		let proof = false;
+
+		outer.add(inner);
+		inner.add(
+			async onTerminate =>
+				new Promise(resolve =>
+					onTerminate.then(() => {
+						proof = true;
+						resolve();
+					})
+				)
+		);
+
+		await new Promise(resolve => setTimeout(resolve, 1));
+		expect(proof).toBe(false);
+
+		await outer.exit();
+
+		expect(proof).toBe(true);
 	});
 });
