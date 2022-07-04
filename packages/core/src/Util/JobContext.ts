@@ -99,7 +99,7 @@ export class JobContext {
 
 	/**
 	 * Adds a **cleaner** function that doesn't immediately get executed.
-	 * Instead, the caller get a **terminate** function back. The *cleaner* is
+	 * Instead, the caller gets a **terminate** function back. The *cleaner* is
 	 * invoked only once the context *exits* or the returned **terminate**
 	 * function is called.
 	 *
