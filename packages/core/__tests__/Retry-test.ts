@@ -1,4 +1,5 @@
 import { retry, NonRetryableError } from '../src/Util/Retry';
+import { JobContext } from '../src/Util/JobContext';
 
 describe('retry', () => {
 	test('will retry a function until it succeeds', async () => {
@@ -13,7 +14,7 @@ describe('retry', () => {
 			}
 		}
 
-		const returnValue = await retry(succeedAfterThirdTry, [], () => 0.01);
+		const returnValue = await retry(succeedAfterThirdTry, [], () => 1);
 
 		expect(returnValue).toEqual('abc');
 		expect(count).toEqual(3);
@@ -26,7 +27,7 @@ describe('retry', () => {
 
 		// TODO: how the devil do you get expect().rejects.toThrow to work here?
 		try {
-			await retry(throwsNonRetryableError, [], () => 0.01);
+			await retry(throwsNonRetryableError, [], () => 1);
 			expect(true).toBe(false);
 		} catch (error) {
 			expect(error.message).toEqual('bwahahahahaha');
@@ -39,7 +40,7 @@ describe('retry', () => {
 		function toRetry(...args) {
 			receivedArgs = args;
 		}
-		await retry(toRetry, ['a', 'b', 'c'], () => 0.01);
+		await retry(toRetry, ['a', 'b', 'c'], () => 1);
 
 		expect(receivedArgs).toEqual(['a', 'b', 'c']);
 	});
@@ -62,7 +63,7 @@ describe('retry', () => {
 		function delayFunction(attempt, args) {
 			receivedAttempt = attempt;
 			receivedArgs = args;
-			return 0.01;
+			return 1;
 		}
 
 		await retry(toRetry, ['a', 'b', 'c'], delayFunction);
@@ -82,7 +83,7 @@ describe('retry', () => {
 				return false;
 			}
 			count++;
-			return 0.01;
+			return 1;
 		}
 
 		try {
@@ -95,5 +96,57 @@ describe('retry', () => {
 		}
 
 		expect(count).toEqual(3);
+	});
+
+	test('works with JobContext', async () => {
+		const context = new JobContext();
+
+		let result;
+		let count = 0;
+		function inventLightBulb() {
+			if (count === 3) {
+				return 'Oh hey, we got it!';
+			}
+			count++;
+			throw new Error('Yeah, keep trying, Tom.');
+		}
+
+		context
+			.add(() => retry(inventLightBulb, [], () => 1))
+			.then(r => (result = r));
+
+		await context.exit();
+
+		expect(result).toEqual('Oh hey, we got it!');
+		expect(count).toEqual(3);
+	});
+
+	test('retry is cancelable', async () => {
+		const context = new JobContext();
+
+		let error;
+		let count = 0;
+
+		function suchAFailure() {
+			console.log('suchAFailure');
+			count++;
+			throw new Error('I will never succeed.');
+		}
+
+		context
+			.add(async onTermiante => retry(suchAFailure, [], () => 1, onTermiante))
+			.catch(e => (error = e));
+
+		await new Promise(resolve => setTimeout(resolve, 30));
+		const countSnapshot = count;
+
+		await context.exit();
+		console.log('error', error);
+
+		await new Promise(resolve => setTimeout(resolve, 30));
+
+		expect(error).toBeTruthy();
+		expect(countSnapshot).toBeGreaterThan(0);
+		expect(count).toEqual(countSnapshot);
 	});
 });

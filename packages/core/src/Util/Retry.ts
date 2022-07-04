@@ -22,37 +22,67 @@ export async function retry(
 	functionToRetry: Function,
 	args: any[],
 	delayFn: DelayFunction,
-	attempt: number = 1
+	onTerminate: Promise<void> = new Promise<void>(() => {})
 ) {
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
-	logger.debug(
-		`${
-			functionToRetry.name
-		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
-	);
 
-	try {
-		return await functionToRetry(...args);
-	} catch (err) {
-		logger.debug(`error on ${functionToRetry.name}`, err);
+	return new Promise(async (resolve, reject) => {
+		let attempt = 0;
+		let terminated = false;
+		let timeout: any;
+		let wakeUp: any = () => {}; // will be replaced with a resolver()
 
-		if (isNonRetryableError(err)) {
-			logger.debug(`${functionToRetry.name} non retryable error`, err);
-			throw err;
+		// used after the loop if terminated while waiting for a timer.
+		let lastError: Error;
+
+		onTerminate.then(() => {
+			// signal not to try anymore.
+			terminated = true;
+
+			// stop sleeping if we're sleeping.
+			clearTimeout(timeout);
+			wakeUp();
+		});
+
+		while (!terminated) {
+			attempt++;
+
+			logger.debug(
+				`${
+					functionToRetry.name
+				} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
+			);
+
+			try {
+				return resolve(await functionToRetry(...args));
+			} catch (err) {
+				lastError = err;
+				logger.debug(`error on ${functionToRetry.name}`, err);
+
+				if (isNonRetryableError(err)) {
+					logger.debug(`${functionToRetry.name} non retryable error`, err);
+					return reject(err);
+				}
+
+				const retryIn = delayFn(attempt, args, err);
+				logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
+
+				if (retryIn === false || terminated) {
+					return reject(err);
+				} else {
+					await new Promise(r => {
+						wakeUp = r; // export wakeUp for onTerminate handling
+						timeout = setTimeout(wakeUp, retryIn);
+					});
+				}
+			}
 		}
 
-		const retryIn = delayFn(attempt, args, err);
-		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
-
-		if (retryIn !== false) {
-			await new Promise(res => setTimeout(res, retryIn));
-			return await retry(functionToRetry, args, delayFn, attempt + 1);
-		} else {
-			throw err;
-		}
-	}
+		// reached if terminated while waiting for a timer.
+		reject(lastError);
+	});
 }
 
 const MAX_DELAY_MS = 5 * 60 * 1000;
