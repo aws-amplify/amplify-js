@@ -68,6 +68,15 @@ export class JobContext {
 		onTerminate: Promise<void>;
 	};
 
+	/**
+	 * Adds another job context to await on at the time of exiting. the inner
+	 * context's termination is signaled when this context's `exit()` is
+	 * called for.
+	 *
+	 * @param job The inner job context to await.
+	 */
+	add(job: JobContext);
+
 	add(job?) {
 		if (this.locked) {
 			throw new Error(
@@ -79,8 +88,12 @@ export class JobContext {
 			return this.addHooks();
 		} else if (typeof job === 'function') {
 			return this.addFunction(job);
+		} else if (job instanceof JobContext) {
+			return this.addContext(job);
 		} else {
-			throw new Error('`job` must be an Observable or Function!');
+			throw new Error(
+				'If `job` is provied, it must be an Observable, Function, or JobContext!'
+			);
 		}
 	}
 
@@ -134,6 +147,10 @@ export class JobContext {
 		return jobResult;
 	}
 
+	private addContext(context: JobContext) {
+		this.addCleaner(async () => await context.exit());
+	}
+
 	/**
 	 * Creates and registers a fabricated job for processes that need to operate
 	 * with callbacks/hooks. The returned `resolve` and `reject`
@@ -160,8 +177,8 @@ export class JobContext {
 		let terminate;
 
 		// the promise the job can opt into listening to for termination.
-		const onTerminate = new Promise(resolve => {
-			terminate = resolve;
+		const onTerminate = new Promise(resolveTerminate => {
+			terminate = resolveTerminate;
 		});
 
 		this.registerPromise(promise, terminate);
