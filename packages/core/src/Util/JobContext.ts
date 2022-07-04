@@ -92,7 +92,7 @@ export class JobContext {
 			return this.addContext(job);
 		} else {
 			throw new Error(
-				'If `job` is provied, it must be an Observable, Function, or JobContext!'
+				'If `job` is provided, it must be an Observable, Function, or JobContext.'
 			);
 		}
 	}
