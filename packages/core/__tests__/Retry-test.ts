@@ -70,4 +70,30 @@ describe('retry', () => {
 		expect(receivedAttempt).toEqual(2);
 		expect(receivedArgs).toEqual(['a', 'b', 'c']);
 	});
+
+	test('stops retrying if delay function returns false', async () => {
+		function alwaysFails() {
+			throw new Error('not today!');
+		}
+
+		let count = 0;
+		function retryThreeTimes() {
+			if (count === 3) {
+				return false;
+			}
+			count++;
+			return 0.01;
+		}
+
+		try {
+			await retry(alwaysFails, [], retryThreeTimes);
+
+			// retry should eventually throw our 'not today!' error.
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toEqual('not today!');
+		}
+
+		expect(count).toEqual(3);
+	});
 });
