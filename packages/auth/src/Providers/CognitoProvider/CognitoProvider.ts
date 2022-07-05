@@ -222,6 +222,7 @@ export class CognitoProvider implements AuthProvider {
 				signInFlow: this._authFlow,
 			})
 		);
+		this._authzService.send(authzMachineEvents.signInRequested());
 		// this._authService.send({
 		// 	type: 'signInRequested',
 		// 	signInEventParams: {
@@ -346,8 +347,15 @@ export class CognitoProvider implements AuthProvider {
 		// 	});
 		// });
 
+		// makes sure the user is logged in from the authN machine
+		if (!this._authService.state.matches('signedIn')) {
+			// this._authzService.send(authzMachineEvents.fetchUnAuthSession());
+			throw new Error('User is not signed in.');
+		}
+
 		// runs fetch session
 		this._authzService.send(authzMachineEvents.signInRequested());
+		// this._authzService.send({type: 'signInRequested', authenticated: false});
 
 		// makes sure the config has both the region and an identity pool
 		const { region, identityPoolId } = this._config;
@@ -359,9 +367,9 @@ export class CognitoProvider implements AuthProvider {
 			logger.debug('No Cognito Federated Identity pool provided');
 			throw new Error('No Cognito Federated Identity pool provided');
 		}
-		const cognitoIdentityClient = this.createNewCognitoIdentityClient({
-			region: this._config.region,
-		});
+		// const cognitoIdentityClient = this.createNewCognitoIdentityClient({
+		// 	region: this._config.region,
+		// });
 		// gets tokens from userpool
 		const session = this.getSessionData();
 
@@ -373,43 +381,39 @@ export class CognitoProvider implements AuthProvider {
 			);
 		}
 
-		// console.log('SESSION ID Token: ' + session.idToken);
-		// console.log('SESSION ACCESS TOKEN: ' + session.accessToken);
-		// console.log('SESSION REFRESH TOKEN: ' + session.refreshToken);
-
 		const { idToken, accessToken, refreshToken } = session;
 		this._authzService.send(
 			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
 		);
-		const expiration = getExpirationTimeFromJWT(idToken);
+		// const expiration = getExpirationTimeFromJWT(idToken);
 		// console.log({ expiration });
-		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
-		const getIdRes = await cognitoIdentityClient.send(
-			new GetIdCommand({
-				IdentityPoolId: identityPoolId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
-		);
-		if (!getIdRes.IdentityId) {
-			throw new Error('Could not get Identity ID');
-		}
-		// console.log('IDENTITY ID: ' + getIdRes.IdentityId);
-		// console.log(getIdRes.IdentityId);
-		const getCredentialsRes = await cognitoIdentityClient.send(
-			new GetCredentialsForIdentityCommand({
-				IdentityId: getIdRes.IdentityId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
-		);
-		if (!getCredentialsRes.Credentials) {
-			throw new Error(
-				'No credentials from the response of GetCredentialsForIdentity call.'
-			);
-		}
+		// const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
+		// const getIdRes = await cognitoIdentityClient.send(
+		// 	new GetIdCommand({
+		// 		IdentityPoolId: identityPoolId,
+		// 		Logins: {
+		// 			[cognitoIDPLoginKey]: idToken,
+		// 		},
+		// 	})
+		// );
+		// if (!getIdRes.IdentityId) {
+		// 	throw new Error('Could not get Identity ID');
+		// }
+		// // console.log('IDENTITY ID: ' + getIdRes.IdentityId);
+		// // console.log(getIdRes.IdentityId);
+		// const getCredentialsRes = await cognitoIdentityClient.send(
+		// 	new GetCredentialsForIdentityCommand({
+		// 		IdentityId: getIdRes.IdentityId,
+		// 		Logins: {
+		// 			[cognitoIDPLoginKey]: idToken,
+		// 		},
+		// 	})
+		// );
+		// if (!getCredentialsRes.Credentials) {
+		// 	throw new Error(
+		// 		'No credentials from the response of GetCredentialsForIdentity call.'
+		// 	);
+		// }
 		// console.log('CREDENTIALS: ');
 		// console.log(getCredentialsRes.Credentials);
 		const cognitoClient = this.createNewCognitoClient({
@@ -420,6 +424,8 @@ export class CognitoProvider implements AuthProvider {
 				AccessToken: accessToken,
 			})
 		);
+		// console.log('USER RES');
+		// console.log(getUserRes);
 		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
@@ -429,7 +435,7 @@ export class CognitoProvider implements AuthProvider {
 		}
 
 		// runs after fetchSession has successfully occurred
-		this._authzService.send(authzMachineEvents.fetched());
+		// this._authzService.send(authzMachineEvents.fetched());
 
 		// wait for sign in th complete
 		const authzService = this._authzService;
@@ -437,17 +443,18 @@ export class CognitoProvider implements AuthProvider {
 			state.matches('sessionEstablished')
 		);
 
-		console.log('AUTHZ SERVICE TEST: ');
+		// console.log('AUTHZ SERVICE TEST: ');
 
-		console.log(sessionEstablishedState.context.getSession);
+		// console.log(sessionEstablishedState.context.getSession);
 
 		return {
-			sessionId: '',
+			// sessionId: '',
 			user: {
 				// sub
 				userid: sub as string,
+				username: getUserRes.Username,
 				// maybe username
-				identifiers: [],
+				// identifiers: [],
 			},
 			credentials: {
 				default: {
@@ -456,21 +463,21 @@ export class CognitoProvider implements AuthProvider {
 						accessToken,
 						refreshToken,
 					},
-					aws: this.shearAWSCredentials(getCredentialsRes),
+					// aws: sessionEstablishedState.context.getSession[1],
+					aws: this.shearAWSCredentials(
+						sessionEstablishedState.context.getSession[1]
+					),
 				},
 			},
 		};
 	}
-	private shearAWSCredentials(
-		res: GetCredentialsForIdentityCommandOutput
-	): AWSCredentials {
-		if (!res.Credentials) {
+	private shearAWSCredentials(res: any): AWSCredentials {
+		if (!res) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
-			res.Credentials;
+		const { AccessKeyId, SecretKey, SessionToken, Expiration } = res;
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,

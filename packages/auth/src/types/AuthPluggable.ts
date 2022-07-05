@@ -111,10 +111,11 @@ type UserIdentifiers = {
 };
 
 type AmplifyUser = {
-	sessionId: string;
+	sessionId?: string;
 	user?: {
 		userid: string;
 		identifiers?: UserIdentifiers[];
+		username?: string;
 	};
 	credentials?: {
 		// scope

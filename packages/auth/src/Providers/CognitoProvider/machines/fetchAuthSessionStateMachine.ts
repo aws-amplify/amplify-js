@@ -46,13 +46,29 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				invoke: {
 					id: 'fetchAuthSession',
 					src: async (_context, _event) => {
-						// console.log(_context.userPoolTokens.idToken);
-						// console.log('TEST INVOKE FETCH IDENTITY ID');
+						console.log('AUTHENTICATED?');
+						console.log(_context.authenticated);
+
+						console.log('CONTEXT: ');
+						console.log(_context);
 						const identityID = await _context.service?.fetchIdentityId(
 							_context.userPoolTokens.idToken
 						);
-						console.log('IdentityID: ');
-						console.log(identityID);
+
+						// fetch unauth identity id if user isn't authenticated
+						if (!_context.authenticated) {
+							const identityID =
+								await _context.service?.fetchUnAuthIdentityID();
+							console.log(identityID);
+							return identityID;
+						}
+
+						// const IDs = {
+						// 	identityID: identityID,
+						// 	username: username,
+						// };
+						// console.log('IdentityID: ');
+						// console.log(identityID);
 						return identityID;
 					},
 					onDone: {
@@ -80,8 +96,8 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 							_context.identityID,
 							_context.userPoolTokens.idToken
 						);
-						console.log('AWS CREDENTIALS: ');
-						console.log(AWSCreds);
+						// console.log('AWS CREDENTIALS: ');
+						// console.log(AWSCreds);
 						return AWSCreds;
 					},
 					onDone: {
@@ -97,18 +113,23 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 			},
 			fetched: {
 				type: 'final',
+				// onEntry: [
+				// 	(context, event) => {
+				// 		console.log('DONE');
+				// 	},
+				// ],
 				data: {
 					identityID: (context: any, event: any) => context.identityID,
 					AWSCredentials: (context: any, event: any) => context.AWSCreds,
-					accessKeyId: (context: any, event: any) =>
-						context.AWSCreds.AccessKeyId,
-					secretKey: (context: any, event: any) => context.AWSCreds.SecretKey,
-					sessionToken: (context: any, event: any) =>
-						context.AWSCreds.SessionToken,
 				},
 			},
 			error: {
 				type: 'final',
+				// onEntry: [
+				// 	(context, event) => {
+				// 		console.log('NOOOOOOO');
+				// 	},
+				// ],
 			},
 		},
 	};
@@ -116,7 +137,3 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 export const fetchAuthSessionStateMachine = createMachine(
 	fetchAuthSessionStateMachineConfig
 );
-
-// const finalMachine = createMachine(fetchAuthSessionStateMachine);
-
-// fetchAuthSessionStateMachine;

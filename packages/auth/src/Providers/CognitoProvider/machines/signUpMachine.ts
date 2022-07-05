@@ -1,7 +1,9 @@
 import { createMachine, MachineConfig } from 'xstate';
 
 // TODO: what should we store here?
-interface SignUpMachineContext {}
+interface SignUpMachineContext {
+	foo?: boolean;
+}
 
 type SignUpEvents =
 	| { type: 'initiateSignUp' }

@@ -8,14 +8,11 @@ import {
 } from 'xstate';
 import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
-import {
-	AuthMachineContext,
-	AuthTypestate,
-	AuthorizationMachineContext,
-} from '../types/machines';
+import { AuthorizationMachineContext } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
+import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
 
 // state machine events
 export const authorizationMachineModel = createModel(
@@ -32,12 +29,10 @@ export const authorizationMachineModel = createModel(
 			// configures the cognito provider
 			configure: (config: CognitoProviderConfig) => ({ config }),
 			fetchAuthSession: () => {
-				const test: string = 'fetch test from state machine';
-				console.log(test);
-				return { test };
+				return {};
 			},
 			fetched: () => {
-				console.log('fetch test from state machine');
+				// console.log('fetch test from state machine');
 				return {};
 			},
 			fetchUnAuthSession: () => ({}),
@@ -45,14 +40,15 @@ export const authorizationMachineModel = createModel(
 			receivedCachedCredentials: () => ({}),
 			refreshSession: () => ({}),
 			signInRequested: () => ({}),
+			// save the userpool tokens in the event for later use
 			signInCompleted: (userPoolTokens: {
 				idToken: string;
 				accessToken: string;
 				refreshToken: string;
 			}) => {
 				// console.log('idToken: ' + userPoolTokens.idToken);
-				console.log('UserPool Tokens: ');
-				console.log({ userPoolTokens });
+				// console.log('UserPool Tokens: ');
+				// console.log({ userPoolTokens });
 				return { userPoolTokens };
 			},
 			signOut: () => ({}),
@@ -100,12 +96,14 @@ const authorizationStateMachineActions: Record<
 		},
 		'signInCompleted'
 	),
+	// gets the identityID and AWS Credentials from the fetchAuthSessionStateMachine
 	getSession: authorizationMachineModel.assign({
 		getSession: (context: any, event: any) => {
-			console.log('GET SESSION ACTION FROM AUTHORIZATION MACHINE: ');
-			console.log([event.data.identityID, event.data.AWSCredentials]);
+			// console.log('GET SESSION ACTION FROM AUTHORIZATION MACHINE: ');
+			// console.log([event.data.identityID, event.data.AWSCredentials]);
 			// context.identityID = event.data.identityID;
 			// context.AWSCredentials = event.data.AWSCredentials;
+			// console.log(event);
 			return [event.data.identityID, event.data.AWSCredentials];
 		},
 	}),
@@ -134,9 +132,9 @@ const authorizationStateMachine: MachineConfig<
 				throwError: 'error',
 			},
 		},
+		// state after cognito is configured
 		configured: {
 			on: {
-				// fetchAuthSession: 'fetchingAuthSession',
 				signInRequested: 'signingIn',
 				fetchUnAuthSession: 'fetchingUnAuthSession',
 			},
@@ -150,12 +148,13 @@ const authorizationStateMachine: MachineConfig<
 		fetchAuthSessionWithUserPool: {
 			// onEntry: [authorizationStateMachineActions.spawnFetchAuthSessionActor],
 			invoke: {
-				id: 'SpawnfetchAuthSessionActor',
+				id: 'spawnFetchAuthSessionActor',
 				src: fetchAuthSessionStateMachine,
 				data: {
 					clientConfig: (context: any, event: any) => context.config?.region,
 					service: (context: any, event: any) => context.service,
 					userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+					authenticated: true,
 				},
 				onDone: {
 					target: 'sessionEstablished',
@@ -172,9 +171,9 @@ const authorizationStateMachine: MachineConfig<
 					target: 'error',
 				},
 			},
-			on: {
-				fetched: 'sessionEstablished',
-			},
+			// on: {
+			// 	fetched: 'sessionEstablished',
+			// },
 		},
 		// for fetching session for users that haven't signed in
 		fetchingUnAuthSession: {
@@ -182,10 +181,34 @@ const authorizationStateMachine: MachineConfig<
 				fetched: 'sessionEstablished',
 			},
 			invoke: {
-				src: 'fetchAuthSessionStateMachine',
+				id: 'spawnFetchAuthSessionActor',
+				src: fetchAuthSessionStateMachine,
+				data: {
+					clientConfig: (context: any, event: any) => context.config?.region,
+					service: (context: any, event: any) => context.service,
+					userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+					authenticated: false,
+				},
+				onDone: {
+					target: 'sessionEstablished',
+					actions: [
+						// assign({
+						// 	getSession: (context: any, event: any) => {
+						// 		return event.data.identityID;
+						// 	},
+						// }),
+						authorizationStateMachineActions.getSession,
+					],
+				},
+				onError: {
+					target: 'error',
+				},
 			},
 		},
 		refreshingSession: {
+			// invoke: {
+			// 	id: 'refreshSessionStateMachine',
+			// },
 			on: {
 				refreshed: 'sessionEstablished',
 			},
@@ -198,16 +221,6 @@ const authorizationStateMachine: MachineConfig<
 		// 		error: 'error',
 		// 		receivedCachedCredentials: 'sessionEstablished',
 		// 	},
-		// },
-		// fetchingAuthSession: {
-		// 	on: {
-		// 		fetchedAuthSession: 'sessionEstablished',
-		// 		noSession: 'configured',
-		// 	},
-		// 	invoke: {
-		// 		src: 'fetchAuthSessionStateMachine',
-		// 	},
-		// 	// ...fetchAuthSessionStateMachine,
 		// },
 		sessionEstablished: {
 			on: {

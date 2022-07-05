@@ -72,6 +72,7 @@ export class CognitoService {
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
 	private cognitoIdentityClient: CognitoIdentityClient;
 	private cognitoIDPLoginKey: string;
+	private cognitoClient: CognitoIdentityProviderClient;
 
 	constructor(
 		config: CognitoServiceConfig,
@@ -84,6 +85,7 @@ export class CognitoService {
 		};
 		this.cognitoIdentityClient = this.createCognitoIdentityClient();
 		this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
+		this.cognitoClient = this.createCognitoClient();
 	}
 	createCognitoClient() {
 		return new CognitoIdentityProviderClient(this.clientConfig);
@@ -116,9 +118,13 @@ export class CognitoService {
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
 		return {
+			// @ts-ignore
 			accessKeyId: AccessKeyId,
+			// @ts-ignore
 			secretAccessKey: SecretKey,
+			// @ts-ignore
 			sessionToken: SessionToken,
+			// @ts-ignore
 			expiration: Expiration,
 		};
 	}
@@ -166,7 +172,7 @@ export class CognitoService {
 				AccessToken: accessToken,
 			})
 		);
-		console.log({ getUserRes });
+		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -206,9 +212,9 @@ export class CognitoService {
 		console.log({ expiration });
 		return {
 			jwt: {
-				idToken: idToken,
-				accessToken: accessToken,
-				refreshToken: refreshToken,
+				idToken,
+				accessToken,
+				refreshToken,
 			},
 		};
 	}
@@ -235,14 +241,43 @@ export class CognitoService {
 		return getIdRes.IdentityId;
 	}
 
+	async fetchUnAuthIdentityID() {
+		const getIdRes = await this.cognitoIdentityClient.send(
+			new GetIdCommand({
+				IdentityPoolId: this.config.identityPoolId,
+			})
+		);
+		if (!getIdRes.IdentityId) {
+			throw new Error('Could not get Identity ID');
+		}
+		// console.log('IDENTITY ID: ');
+		// console.log(getIdRes.IdentityId);
+		return getIdRes.IdentityId;
+	}
+
 	async fetchAWSCredentials(identityID: string, idToken: string) {
-		// console.log('COGNITO SERVICE FETCH AWS CREDENTIALS');
 		const getCredentialsRes = await this.cognitoIdentityClient.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: identityID,
 				Logins: {
 					[this.cognitoIDPLoginKey]: idToken,
 				},
+			})
+		);
+		// console.log(getCredentialsRes.Credentials);
+		// console.log('COGNITO SERVICE CREDENTIALS FETCHED');
+		if (!getCredentialsRes.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
+		return getCredentialsRes.Credentials;
+	}
+
+	async fetchUnAuthAWSCredentials(identityID: string) {
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
+			new GetCredentialsForIdentityCommand({
+				IdentityId: identityID,
 			})
 		);
 		// console.log(getCredentialsRes.Credentials);
@@ -350,7 +385,7 @@ export class CognitoService {
 		params: CognitoConfirmSignInOptions
 	): Promise<RespondToAuthChallengeCommandOutput> {
 		const {
-			confirmationCode,
+			confirmationCode = '',
 			mfaType = 'SMS_MFA',
 			username,
 			session,
