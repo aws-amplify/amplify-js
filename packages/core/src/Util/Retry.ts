@@ -18,12 +18,12 @@ const isNonRetryableError = (obj: any): obj is NonRetryableError => {
  * @private
  * Internal use of Amplify only
  */
-export async function retry(
-	functionToRetry: Function,
+export async function retry<T>(
+	functionToRetry: (...args: any[]) => T,
 	args: any[],
 	delayFn: DelayFunction,
 	onTerminate: Promise<void> = new Promise<void>(() => {})
-) {
+): Promise<T> {
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
@@ -107,8 +107,8 @@ export function jitteredBackoff(
  * @private
  * Internal use of Amplify only
  */
-export const jitteredExponentialRetry = (
-	functionToRetry: Function,
+export const jitteredExponentialRetry = <T>(
+	functionToRetry: (...args: any[]) => T,
 	args: any[],
 	maxDelayMs: number = MAX_DELAY_MS
-) => retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
+): Promise<T> => retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
