@@ -5,6 +5,7 @@ import Observable from 'zen-observable-ts';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
+	DataStoreClass,
 } from '../src/datastore/datastore';
 import { Predicates } from '../src/predicates';
 import { ExclusiveStorage as StorageType } from '../src/storage/storage';
@@ -34,6 +35,121 @@ const nameOf = <T>(name: keyof T) => name;
  * Does nothing intentionally, we care only about type checking
  */
 const expectType: <T>(param: T) => void = () => {};
+
+describe.only('DataStore sanity testing checks', () => {
+	describe('cleans up after itself', () => {
+		// basically, if we spin up our test contexts repeatedly, put some
+		// data in there and do some things, stopping DataStore should
+		// sufficiently stop backgrounds jobs, clear data, etc. so that
+		// subsequent instantiations are not affected and no rogue, async
+		// errors show up out of nowhere (running queries against connections
+		// or other resources that no longer exist or are not ready.)
+
+		// aside from `await stop()`, we're going to be pretty careless with
+		// this test loop (e.g., skipping some awaits) to ensure DataStore
+		// *really* cleans up after itself.
+
+		let Post: PersistentModelConstructor<Post>;
+
+		function getDataStore() {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			const classes = initSchema(testSchema());
+			({ Post } = classes as {
+				Post: PersistentModelConstructor<Post>;
+			});
+
+			return {
+				DataStore,
+				Post,
+			};
+		}
+
+		async function run(
+			script: (ctx: {
+				DataStore: typeof DataStore;
+				Post: typeof Post;
+				cycle: number;
+			}) => Promise<any>
+		) {
+			for (const cycle of [1, 2, 3, 4, 5]) {
+				// basic initialization
+				const { DataStore, Post } = getDataStore();
+
+				// act
+				await script({ DataStore, Post, cycle });
+
+				// clean up
+				await DataStore.clear();
+
+				// expect no errors.
+			}
+		}
+
+		test('awaited save', async () => {
+			await run(
+				async ({ DataStore, Post }) =>
+					await DataStore.save(new Post({ title: 'some title' }))
+			);
+		});
+
+		test('un-awaited saves', async () => {
+			await run(async ({ DataStore, Post }) => {
+				DataStore.save(new Post({ title: 'some title' }));
+			});
+		});
+
+		test('data stays in its lane', async () => {
+			await run(async ({ DataStore, Post, cycle }) => {
+				await DataStore.save(new Post({ title: `title from ${cycle}` }));
+				const post = await DataStore.query(Post);
+				expect(post.length).toEqual(1);
+				expect(post[0].title).toEqual(`title from ${cycle}`);
+			});
+		});
+
+		test('polite observables are cleaned up', async () => {
+			await run(async ({ DataStore, Post, cycle }) => {
+				return new Promise(resolve => {
+					const sub = DataStore.observe(Post).subscribe(
+						({ element, opType, model }) => {
+							expect(opType).toEqual('INSERT');
+							expect(element.title).toEqual(
+								`a title from polite cycle ${cycle}`
+							);
+							sub.unsubscribe();
+							resolve();
+						}
+					);
+					DataStore.save(
+						new Post({ title: `a title from polite cycle ${cycle}` })
+					);
+				});
+			});
+		});
+
+		test('impolite observables are cleaned up', async () => {
+			await run(async ({ DataStore, Post, cycle }) => {
+				return new Promise(resolve => {
+					const sub = DataStore.observe(Post).subscribe(
+						({ element, opType, model }) => {
+							expect(opType).toEqual('INSERT');
+							expect(element.title).toEqual(
+								`a title from impolite cycle ${cycle}`
+							);
+							// omitted:
+							// sub.unsubscribe();
+							// (that's what makes it impolite)
+							resolve();
+						}
+					);
+					DataStore.save(
+						new Post({ title: `a title from impolite cycle ${cycle}` })
+					);
+				});
+			});
+		});
+	});
+});
 
 describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	let Comment: PersistentModelConstructor<Comment>;
