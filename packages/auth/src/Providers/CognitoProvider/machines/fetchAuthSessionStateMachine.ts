@@ -49,19 +49,19 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 						console.log('AUTHENTICATED?');
 						console.log(_context.authenticated);
 
-						console.log('CONTEXT: ');
-						console.log(_context);
-						const identityID = await _context.service?.fetchIdentityId(
-							_context.userPoolTokens.idToken
-						);
-
 						// fetch unauth identity id if user isn't authenticated
 						if (!_context.authenticated) {
 							const identityID =
 								await _context.service?.fetchUnAuthIdentityID();
-							console.log(identityID);
+							// console.log(identityID);
 							return identityID;
 						}
+
+						// console.log('CONTEXT: ');
+						// console.log(_context);
+						const identityID = await _context.service?.fetchIdentityId(
+							_context.userPoolTokens.idToken
+						);
 
 						// const IDs = {
 						// 	identityID: identityID,
@@ -92,6 +92,15 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 					src: async (_context, _event) => {
 						// console.log('FETCH AWS CREDENTIALS TEST');
 						// console.log(_context.identityID);
+
+						if (!_context.authenticated) {
+							const AWSCreds =
+								await _context.service?.fetchUnAuthAWSCredentials(
+									_context.identityID
+								);
+							return AWSCreds;
+						}
+
 						const AWSCreds = await _context.service?.fetchAWSCredentials(
 							_context.identityID,
 							_context.userPoolTokens.idToken

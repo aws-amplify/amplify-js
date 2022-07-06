@@ -349,8 +349,34 @@ export class CognitoProvider implements AuthProvider {
 
 		// makes sure the user is logged in from the authN machine
 		if (!this._authService.state.matches('signedIn')) {
-			// this._authzService.send(authzMachineEvents.fetchUnAuthSession());
-			throw new Error('User is not signed in.');
+			// console.log('SIGNED OUT FLOW');
+			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
+			const sessionEstablishedState = await waitFor(this._authzService, state =>
+				state.matches('sessionEstablished')
+			);
+			return {
+				// sessionId: '',
+				user: {
+					// sub
+					userid: '',
+					username: '',
+					// identifiers: [],
+				},
+				credentials: {
+					default: {
+						jwt: {
+							idToken: '',
+							accessToken: '',
+							refreshToken: '',
+						},
+						// aws: sessionEstablishedState.context.getSession[1],
+						aws: this.shearAWSCredentials(
+							sessionEstablishedState.context.getSession[1]
+						),
+					},
+				},
+			};
+			// throw new Error('User is not signed in.');
 		}
 
 		// runs fetch session
@@ -453,7 +479,6 @@ export class CognitoProvider implements AuthProvider {
 				// sub
 				userid: sub as string,
 				username: getUserRes.Username,
-				// maybe username
 				// identifiers: [],
 			},
 			credentials: {
