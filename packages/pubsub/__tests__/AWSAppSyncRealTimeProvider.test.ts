@@ -96,6 +96,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						value: 100,
 					});
 
+					// Set the network to "online" for these tests
 					const spyon = jest
 						.spyOn(Reachability.prototype, 'networkMonitor')
 						.mockImplementationOnce(

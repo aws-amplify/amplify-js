@@ -36,7 +36,8 @@ export class FakeWebSocketInterface {
 		this.teardownHubListener = Hub.listen('api', (data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_HEALTH_CHANGE) {
-				const healthState = payload.message as ConnectionHealthState;
+				const healthState = payload.data
+					.connectionState as ConnectionHealthState;
 				this.observedConnectionHealthStates.push(healthState);
 				this.connectionHealthObservers.forEach(observer => {
 					observer?.next?.(healthState);
