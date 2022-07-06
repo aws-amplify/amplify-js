@@ -9,16 +9,17 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import { Auth } from '@aws-amplify/auth';
-import { Credentials, Logger, Signer } from '@aws-amplify/core';
-import { GraphQLError, isCompositeType } from 'graphql';
 import Observable from 'zen-observable-ts';
-import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { Reachability, Credentials, Logger, Signer } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
+
 import { MESSAGE_TYPES } from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
-import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
-import { Reachability } from '@aws-amplify/core';
+
+import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
+
+import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 
 describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {

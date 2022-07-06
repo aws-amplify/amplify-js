@@ -663,7 +663,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					};
 					newSocket.onclose = () => {
 						this.connectionStateMonitor.connectionFailed();
-						//throw new Error('Connection handshake error');
 						rej(new Error('Connection handshake error'));
 					};
 					newSocket.onopen = () => {
