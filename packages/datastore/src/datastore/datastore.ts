@@ -1329,7 +1329,7 @@ class DataStore {
 			const modelDefinition = getModelDefinition(model);
 			const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 			console.log('check key fields', keyFields);
-			debugger;
+			// debugger;
 
 			if (isQueryOne(criteria)) {
 				predicate = ModelPredicateCreator.createForSingleField<T>(
