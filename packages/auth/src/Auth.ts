@@ -267,7 +267,7 @@ export class AuthClass {
 			typeof this._storage['getItem'] === 'function'
 		) {
 			const pollingInitiated = this._storage.getItem('pollingStarted') || false;
-			if (pollingInitiated) {
+			if (pollingInitiated === 'true') {
 				dispatchAuthEvent(
 					'AutoSignInFail',
 					null,
@@ -446,7 +446,7 @@ export class AuthClass {
 	private async onConfirmSignUp(
 		authDetails: AuthenticationDetails,
 		listenEvent?: HubCallback,
-		autoSignInPolling?: NodeJS.Timer
+		autoSignInPolling?: ReturnType<typeof setInterval>
 	) {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		try {
@@ -525,8 +525,8 @@ export class AuthClass {
 							data,
 							`${username} has been confirmed successfully`
 						);
-						const autoSignIn = this._storage.getItem('autoSignIn');
-						if (autoSignIn && !this.autoSignInInitiated) {
+						const autoSignIn = this._storage.getItem('autoSignIn') || false;
+						if (autoSignIn === 'true' && !this.autoSignInInitiated) {
 							dispatchAuthEvent(
 								'AutoSignInFail',
 								null,
