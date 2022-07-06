@@ -25,6 +25,7 @@ export interface SignUpParams {
 	attributes?: object;
 	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
+	autoSignIn?: boolean;
 }
 
 export interface AuthCache {
@@ -50,6 +51,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
+	verificationMethod?: string;
 }
 
 export enum CognitoHostedUIIdentityProvider {
