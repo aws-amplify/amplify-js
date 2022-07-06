@@ -110,6 +110,7 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
+	private autoSignInInitiated: boolean = false;
 
 	Credentials = Credentials;
 
@@ -255,6 +256,15 @@ export class AuthClass {
 			});
 		}
 
+		const pollingInitiated = this._storage.getItem('pollingStarted') || false;
+		if (!this.autoSignInInitiated && pollingInitiated) {
+			dispatchAuthEvent(
+				'AutoSignInFail',
+				null,
+				'Error trying to auto sign in user'
+			);
+		}
+
 		dispatchAuthEvent(
 			'configured',
 			null,
@@ -350,6 +360,9 @@ export class AuthClass {
 				});
 			}
 			autoSignIn = params['autoSignIn'] || false;
+			if (autoSignIn) {
+				this._storage.setItem('autoSignIn', true);
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -385,6 +398,7 @@ export class AuthClass {
 							`${username} has signed up successfully`
 						);
 						if (autoSignIn) {
+							this.autoSignInInitiated = true;
 							const authDetails = new AuthenticationDetails({
 								Username: username,
 								Password: password,
@@ -394,14 +408,15 @@ export class AuthClass {
 							if (data.userConfirmed) {
 								this.onConfirmSignUp(authDetails);
 							} else if (this._config.verificationMethod === 'link') {
+								this._storage.setItem('pollingStarted', true);
 								const start = Date.now();
 								const autoSignInPolling = setInterval(() => {
 									if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_TIME) {
 										clearInterval(autoSignInPolling);
 										dispatchAuthEvent(
-											'SignIn',
+											'AutoSignInFail',
 											null,
-											'Sorry, you have timed out...'
+											'Failed to Auto Sign In. Please confirm account and try to sign in again.'
 										);
 									}
 									this.onConfirmSignUp(authDetails, null, autoSignInPolling);
@@ -436,7 +451,7 @@ export class AuthClass {
 					user,
 					value => {
 						dispatchAuthEvent(
-							'SignIn',
+							'AutoSignIn',
 							value,
 							`${authDetails.getUsername()} has signed in successfully`
 						);
@@ -445,6 +460,7 @@ export class AuthClass {
 						}
 						if (autoSignInPolling) {
 							clearInterval(autoSignInPolling);
+							this._storage.setItem('pollingStarted', false);
 						}
 					},
 					error => {
@@ -504,6 +520,14 @@ export class AuthClass {
 							data,
 							`${username} has been confirmed successfully`
 						);
+						const autoSignIn = this._storage.getItem('autoSignIn');
+						if (autoSignIn && !this.autoSignInInitiated) {
+							dispatchAuthEvent(
+								'AutoSignInFail',
+								null,
+								'Error trying to auto sign in user'
+							);
+						}
 						resolve(data);
 					}
 				},
