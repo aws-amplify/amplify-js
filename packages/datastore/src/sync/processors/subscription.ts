@@ -29,6 +29,8 @@ import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
 
+const USER_AGENT_SUFFIX = '/DataStore';
+
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
 }
@@ -383,11 +385,13 @@ class SubscriptionProcessor {
 									}`
 								);
 
+								const userAgentSuffix = USER_AGENT_SUFFIX;
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][

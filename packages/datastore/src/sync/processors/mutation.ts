@@ -39,6 +39,8 @@ import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
 
+const USER_AGENT_SUFFIX = '/DataStore';
+
 const logger = new Logger('DataStore');
 
 type MutationProcessorEvent = {
@@ -268,7 +270,15 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				const tryWith = { query, variables, authMode, authToken };
+				const userAgentSuffix = USER_AGENT_SUFFIX;
+
+				const tryWith = {
+					query,
+					variables,
+					authMode,
+					authToken,
+					userAgentSuffix,
+				};
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -341,6 +351,8 @@ class MutationProcessor {
 										this.amplifyConfig
 									);
 
+									const userAgentSuffix = USER_AGENT_SUFFIX;
+
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
 									>await API.graphql({
@@ -348,6 +360,7 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
+										userAgentSuffix,
 									});
 
 									return [serverData, opName, modelDefinition];

@@ -224,7 +224,7 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken, userAgentSuffix }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -251,7 +251,7 @@ export class GraphQLAPIClass {
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode },
+					{ query, variables, authMode, userAgentSuffix },
 					headers,
 					initParams
 				);
@@ -268,7 +268,7 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode, userAgentSuffix }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
@@ -294,7 +294,8 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: Constants.userAgent,
+				[USER_AGENT_HEADER]:
+					Constants.userAgent + userAgentSuffix ? ` ${userAgentSuffix}` : '',
 			}),
 		};
 
