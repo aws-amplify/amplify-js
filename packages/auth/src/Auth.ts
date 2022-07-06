@@ -256,20 +256,25 @@ export class AuthClass {
 			});
 		}
 
-		const pollingInitiated = this._storage.getItem('pollingStarted') || false;
-		if (!this.autoSignInInitiated && pollingInitiated) {
-			dispatchAuthEvent(
-				'AutoSignInFail',
-				null,
-				'Error trying to auto sign in user'
-			);
-		}
-
 		dispatchAuthEvent(
 			'configured',
 			null,
 			`The Auth category has been configured successfully`
 		);
+
+		if (
+			!this.autoSignInInitiated &&
+			typeof this._storage['getItem'] === 'function'
+		) {
+			const pollingInitiated = this._storage.getItem('pollingStarted') || false;
+			if (pollingInitiated) {
+				dispatchAuthEvent(
+					'AutoSignInFail',
+					null,
+					'Error trying to auto sign in user'
+				);
+			}
+		}
 		return this._config;
 	}
 
