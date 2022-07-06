@@ -1011,7 +1011,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
-					callback.mfaRequired('challengeName', 'challengeParam');
+					callback.mfaRequired('SELECT_MFA_TYPE', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -1019,7 +1019,7 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			const userAfterSignedIn = Object.assign({}, user, {
-				challengeName: 'challengeName',
+				challengeName: 'SELECT_MFA_TYPE',
 				challengeParam: 'challengeParam',
 			});
 
@@ -1035,7 +1035,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
-					callback.mfaSetup('challengeName', 'challengeParam');
+					callback.mfaSetup('MFA_SETUP', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -1043,7 +1043,7 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			const userAfterSignedIn = Object.assign({}, user, {
-				challengeName: 'challengeName',
+				challengeName: 'MFA_SETUP',
 				challengeParam: 'challengeParam',
 			});
 
@@ -1059,7 +1059,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
-					callback.totpRequired('challengeName', 'challengeParam');
+					callback.totpRequired('SOFTWARE_TOKEN_MFA', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -1067,7 +1067,7 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			const userAfterSignedIn = Object.assign({}, user, {
-				challengeName: 'challengeName',
+				challengeName: 'SOFTWARE_TOKEN_MFA',
 				challengeParam: 'challengeParam',
 			});
 
@@ -1083,7 +1083,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'authenticateUser')
 				.mockImplementationOnce((authenticationDetails, callback) => {
-					callback.selectMFAType('challengeName', 'challengeParam');
+					callback.selectMFAType('SELECT_MFA_TYPE', 'challengeParam');
 				});
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -1091,7 +1091,7 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			const userAfterSignedIn = Object.assign({}, user, {
-				challengeName: 'challengeName',
+				challengeName: 'SELECT_MFA_TYPE',
 				challengeParam: 'challengeParam',
 			});
 
@@ -1403,7 +1403,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
-					callback.mfaRequired('challengeName', 'challengeParam');
+					callback.mfaRequired('SMS_MFA', 'challengeParam');
 				});
 
 			const auth = new Auth(authOptions);
@@ -1422,7 +1422,7 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'completeNewPasswordChallenge')
 				.mockImplementationOnce((password, requiredAttributes, callback) => {
-					callback.mfaSetup('challengeName', 'challengeParam');
+					callback.mfaSetup('MFA_SETUP', 'challengeParam');
 				});
 
 			const auth = new Auth(authOptions);
