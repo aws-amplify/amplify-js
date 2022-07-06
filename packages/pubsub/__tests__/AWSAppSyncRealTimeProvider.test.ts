@@ -689,7 +689,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								),
 							})
 						);
-						console.log('END TEST');
 					});
 				});
 
