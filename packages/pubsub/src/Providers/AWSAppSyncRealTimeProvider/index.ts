@@ -92,7 +92,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
-	private keepAliveAlertTimeout = KEEP_ALIVE_ALERT_TIMEOUT;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
@@ -162,6 +161,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							},
 						],
 					});
+					this.connectionStateMonitor.disconnected();
 					observer.complete();
 				});
 
@@ -402,6 +402,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
+			this.connectionStateMonitor.disconnected();
 		}
 	}
 
@@ -455,6 +456,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					subscriptionFailedCallback,
 				});
 			}
+			this.connectionStateMonitor.connectionEstablished();
 
 			// TODO: emit event on hub but it requires to store the id first
 			return;
@@ -465,13 +467,12 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			if (this.keepAliveAlertTimeoutId)
 				clearTimeout(this.keepAliveAlertTimeoutId);
 			this.keepAliveTimeoutId = setTimeout(
-				this._errorDisconnect.bind(this, CONTROL_MSG.TIMEOUT_DISCONNECT),
+				() => this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT),
 				this.keepAliveTimeout
 			);
-			this.keepAliveAlertTimeoutId = setTimeout(
-				this.connectionStateMonitor.keepAliveMissed,
-				this.keepAliveAlertTimeout
-			);
+			this.keepAliveAlertTimeoutId = setTimeout(() => {
+				this.connectionStateMonitor.keepAliveMissed();
+			}, KEEP_ALIVE_ALERT_TIMEOUT);
 			this.connectionStateMonitor.keepAlive();
 			return;
 		}
@@ -661,6 +662,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						logger.debug(`WebSocket connection error`);
 					};
 					newSocket.onclose = () => {
+						this.connectionStateMonitor.connectionFailed();
+						//throw new Error('Connection handshake error');
 						rej(new Error('Connection handshake error'));
 					};
 					newSocket.onopen = () => {
@@ -709,7 +712,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 										this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 									};
 								}
-								this.connectionStateMonitor.connectionEstablished();
 								res('Cool, connected to AWS AppSyncRealTime');
 								return;
 							}
@@ -735,6 +737,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					function checkAckOk(ackOk: boolean) {
 						if (!ackOk) {
+							this.connectionStateMonitor.connectionFailed();
 							rej(
 								new Error(
 									`Connection timeout: ack from AWSRealTime was not received on ${CONNECTION_INIT_TIMEOUT} ms`

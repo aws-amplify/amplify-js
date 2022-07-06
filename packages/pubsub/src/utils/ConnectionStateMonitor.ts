@@ -109,6 +109,16 @@ export class ConnectionStateMonitor {
 	}
 
 	/**
+	 * Tell the monitor that the connection has failed
+	 */
+	connectionFailed() {
+		this.updateConnectionState({
+			intendedConnectionState: 'disconnected',
+			connectionState: 'disconnected',
+		});
+	}
+
+	/**
 	 * Tell the monitor that the connection has been established
 	 */
 	connectionEstablished() {

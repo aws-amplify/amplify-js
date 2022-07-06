@@ -1,3 +1,6 @@
+import { Hub } from '@aws-amplify/core';
+import Observable from 'zen-observable-ts';
+import { ConnectionHealthState, CONNECTION_HEALTH_CHANGE } from '../src';
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
 export function delay(timeout) {
@@ -10,10 +13,15 @@ export function delay(timeout) {
 
 export class FakeWebSocketInterface {
 	readonly webSocket: FakeWebSocket;
-	readyForUse: Promise<undefined>;
+	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
+	teardownHubListener: () => void;
+	observedConnectionHealthStates: ConnectionHealthState[] = [];
+	currentConnectionHealthState: ConnectionHealthState;
 
 	private readyResolve: (value: PromiseLike<any>) => void;
+	private connectionHealthObservers: ZenObservable.Observer<ConnectionHealthState>[] =
+		[];
 
 	constructor() {
 		this.readyForUse = new Promise((res, rej) => {
@@ -23,7 +31,41 @@ export class FakeWebSocketInterface {
 		this.hasClosed = new Promise((res, rej) => {
 			closeResolver = res;
 		});
-		this.webSocket = new FakeWebSocket(closeResolver);
+		this.webSocket = new FakeWebSocket(() => closeResolver);
+
+		this.teardownHubListener = Hub.listen('api', (data: any) => {
+			const { payload } = data;
+			if (payload.event === CONNECTION_HEALTH_CHANGE) {
+				const healthState = payload.message as ConnectionHealthState;
+				this.observedConnectionHealthStates.push(healthState);
+				this.connectionHealthObservers.forEach(observer => {
+					observer?.next?.(healthState);
+				});
+				this.currentConnectionHealthState = healthState;
+			}
+		});
+	}
+
+	allConnectionHealthStateObserver() {
+		return new Observable(observer => {
+			this.observedConnectionHealthStates.forEach(state => {
+				observer.next(state);
+			});
+			this.connectionHealthObservers.push(observer);
+		});
+	}
+
+	connectionHealthStateObserver() {
+		return new Observable(observer => {
+			this.connectionHealthObservers.push(observer);
+		});
+	}
+
+	teardown() {
+		this.teardownHubListener();
+		this.connectionHealthObservers.forEach(observer => {
+			observer?.complete?.();
+		});
 	}
 
 	async standardConnectionHandshake() {
@@ -44,21 +86,25 @@ export class FakeWebSocketInterface {
 		// After a close is triggered, the provider has logic that must execute
 		//   which changes the function resolvers assigned to the websocket
 		await this.runAndResolve(() => {
-			if (this.webSocket.onclose)
-				this.webSocket.onclose(new CloseEvent('', {}));
+			if (this.webSocket.onclose) {
+				try {
+					this.webSocket.onclose(new CloseEvent('', {}));
+				} catch {}
+			}
 		});
 	}
 
 	async closeInterface() {
 		await this.triggerClose();
 		// Wait for either hasClosed or a half second has passed
-		await new Promise(res => {
+		await new Promise(async res => {
 			// The interface is closed when the socket "hasClosed"
 			this.hasClosed.then(() => res(undefined));
-
-			// The provider can get pretty wrapped around itself,
-			// but its safe to continue after half a second, even if it hasn't closed the socket
-			delay(500).then(() => res(undefined));
+			await this.waitUntilConnectionStateIn([
+				'Disconnected',
+				'ConnectionDisrupted',
+			]);
+			res(undefined);
 		});
 	}
 
@@ -71,7 +117,7 @@ export class FakeWebSocketInterface {
 	}
 
 	newWebSocket() {
-		setTimeout(() => this.readyResolve(undefined), 10);
+		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
 		return this.webSocket;
 	}
 
@@ -80,7 +126,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent('connection_ack', {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
-					payload: { keepAliveTimeout: 100_000 },
+					payload: { connectionTimeoutMs: 100_000 },
 				}),
 			})
 		);
@@ -108,11 +154,40 @@ export class FakeWebSocketInterface {
 		fn();
 		await Promise.resolve();
 	}
+
+	async observesConnectionState(connectionState: ConnectionHealthState) {
+		return new Promise<void>((res, rej) => {
+			this.allConnectionHealthStateObserver().subscribe(value => {
+				if (value === connectionState) {
+					res(undefined);
+				}
+			});
+		});
+	}
+
+	async waitForConnectionState(connectionStates: ConnectionHealthState[]) {
+		return new Promise<void>((res, rej) => {
+			this.connectionHealthStateObserver().subscribe(value => {
+				if (connectionStates.includes(String(value) as ConnectionHealthState)) {
+					res(undefined);
+				}
+			});
+		});
+	}
+
+	async waitUntilConnectionStateIn(connectionStates: ConnectionHealthState[]) {
+		return new Promise<void>((res, rej) => {
+			if (connectionStates.includes(this.currentConnectionHealthState)) {
+				res(undefined);
+			}
+			res(this.waitForConnectionState(connectionStates));
+		});
+	}
 }
 
 class FakeWebSocket implements WebSocket {
 	subscriptionId: string | undefined;
-	closeResolver?: (value: PromiseLike<any>) => void;
+	closeResolverFcn: () => (value: PromiseLike<any>) => void;
 
 	binaryType: BinaryType;
 	bufferedAmount: number;
@@ -125,7 +200,8 @@ class FakeWebSocket implements WebSocket {
 	readyState: number;
 	url: string;
 	close(code?: number, reason?: string): void {
-		if (this.closeResolver) this.closeResolver(undefined);
+		const closeResolver = this.closeResolverFcn();
+		if (closeResolver) closeResolver(Promise.resolve(undefined));
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
@@ -170,8 +246,8 @@ class FakeWebSocket implements WebSocket {
 		throw new Error('Method not implemented dispatchEvent.');
 	}
 
-	constructor(closeResolver?: (value: PromiseLike<any>) => void) {
-		this.closeResolver = closeResolver;
+	constructor(closeResolver: () => (value: PromiseLike<any>) => void) {
+		this.closeResolverFcn = closeResolver;
 	}
 }
 
