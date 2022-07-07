@@ -224,7 +224,13 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables = {}, authMode, authToken, userAgentSuffix }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+			userAgentSuffix,
+		}: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -284,6 +290,11 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
+		let userAgentHeader = Constants.userAgent;
+		if (userAgentSuffix) {
+			userAgentHeader += ` ${userAgentSuffix}`;
+		}
+
 		const headers = {
 			...(!customGraphqlEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -294,8 +305,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]:
-					Constants.userAgent + userAgentSuffix ? ` ${userAgentSuffix}` : '',
+				[USER_AGENT_HEADER]: userAgentHeader,
 			}),
 		};
 
