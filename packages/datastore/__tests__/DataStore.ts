@@ -25,6 +25,7 @@ import {
 	testSchema,
 	User,
 } from './helpers';
+import { createYield } from 'typescript';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -37,7 +38,7 @@ const nameOf = <T>(name: keyof T) => name;
 const expectType: <T>(param: T) => void = () => {};
 
 describe.only('DataStore sanity testing checks', () => {
-	describe('cleans up after itself', () => {
+	describe.only('cleans up after itself', () => {
 		// basically, if we spin up our test contexts repeatedly, put some
 		// data in there and do some things, stopping DataStore should
 		// sufficiently stop backgrounds jobs, clear data, etc. so that
@@ -49,8 +50,19 @@ describe.only('DataStore sanity testing checks', () => {
 		// this test loop (e.g., skipping some awaits) to ensure DataStore
 		// *really* cleans up after itself.
 
+		//
+		// PAY ATTENTION!
+		// If these tests start failing, run them individually with `.only()`,
+		// or you may find it's impossible to determine what's leaking where.
+		//
+
 		let Post: PersistentModelConstructor<Post>;
 
+		/**
+		 * Re-requries DataStore and initializes the test schema.
+		 *
+		 * @returns The DataStore instance and Post model.
+		 */
 		function getDataStore() {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
 			const classes = initSchema(testSchema());
@@ -64,16 +76,37 @@ describe.only('DataStore sanity testing checks', () => {
 			};
 		}
 
-		async function run(
+		/**
+		 * Executes a given test script against a fresh DataStore instance
+		 * `cycle` times, *waiting* between cycles.
+		 *
+		 * Intended use is for tests that intentionally try to leak background
+		 * work between test contexts. Add a delay if the leaked job is
+		 * expected to pollute subsequent tests *N* ms down the line. The delay
+		 * is executed between DataStore instantiation and script execution.
+		 *
+		 * Do *not* leak background jobs that are not under DataStore.clear()'s
+		 * responsibility to clean.
+		 *
+		 * @param script A test script to execute.
+		 * @param cycles The number of cyclcles to run.
+		 * @param delay The delay between cycles.
+		 */
+		async function expectIsolation(
 			script: (ctx: {
 				DataStore: typeof DataStore;
 				Post: typeof Post;
 				cycle: number;
-			}) => Promise<any>
+			}) => Promise<any>,
+			cycles = 5,
+			delay = 0
 		) {
-			for (const cycle of [1, 2, 3, 4, 5]) {
+			for (let cycle = 1; cycle <= cycles; cycle++) {
 				// basic initialization
 				const { DataStore, Post } = getDataStore();
+
+				// pause if needed
+				if (delay) await new Promise(unPause => setTimeout(unPause, delay));
 
 				// act
 				await script({ DataStore, Post, cycle });
@@ -85,21 +118,101 @@ describe.only('DataStore sanity testing checks', () => {
 			}
 		}
 
+		/**
+		 *
+		 * @param DataStore The DataStore instance to operate against.
+		 * @param isReady Whether to pretend DataStore mutatinos processor is
+		 * ready, where readiness tells DataStore to attempt to push mutations
+		 * at the AppSync endpoint.
+		 */
+		async function configureSync(DataStore, isReady = () => false) {
+			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
+				'https://0.0.0.0/does/not/exist/graphql';
+
+			await DataStore.start();
+
+			const syncEngine = (DataStore as any).sync;
+
+			// my jest spy-fu wasn't up to snuff here. but, this succesfully
+			// prevents the mutation process from clearing the mutation queue, which
+			// allows us to observe the state of mutations.
+			(syncEngine as any).mutationsProcessor.isReady = isReady;
+		}
+
+		async function pretendModelsAreSynced(DataStore: any) {
+			await configureSync(DataStore);
+
+			// Fully faking or mocking the sync engine would be pretty significant.
+			// Instead, we're going to be mocking a few sync engine methods we happen know
+			// `observeQuery()` depends on.
+			DataStore.sync.getModelSyncedStatus = (model: any) => true;
+
+			// is this overmocking? ... i think we want this to be called, don't we?
+			// DataStore.sync.unsubscribeConnectivity = () => {};
+
+			// DataStore.syncPageSize = 1000;
+		}
+
+		test('sanity check for expectedIsolation helper', async () => {
+			// make sure expectIsolation is properly awaiting between executions.
+			// Logging is used to provide visual confirmation that the utility is
+			// working as expected. We create the same test *N* times.
+
+			// Ths test was originally red-green tested by removing the `await`
+			// before the `script(...)` call in `expectIsolation`.
+
+			const numberOfCycles = 5;
+
+			let lastCycle = 0;
+			await expectIsolation(async ({ cycle }) => {
+				await new Promise(unsleep =>
+					setTimeout(() => {
+						lastCycle = cycle;
+						unsleep();
+					}, 20 * cycle)
+				);
+			}, numberOfCycles);
+
+			expect(lastCycle).toBe(numberOfCycles);
+		});
+
 		test('awaited save', async () => {
-			await run(
+			await expectIsolation(
 				async ({ DataStore, Post }) =>
 					await DataStore.save(new Post({ title: 'some title' }))
 			);
 		});
 
 		test('un-awaited saves', async () => {
-			await run(async ({ DataStore, Post }) => {
+			await expectIsolation(async ({ DataStore, Post }) => {
 				DataStore.save(new Post({ title: 'some title' }));
 			});
 		});
 
-		test('data stays in its lane', async () => {
-			await run(async ({ DataStore, Post, cycle }) => {
+		test('queries against locked DataStore are rejected', async () => {
+			// TODO
+		});
+
+		test('saves against locked DataStore are rejected', async () => {
+			// TODO
+		});
+
+		test('deletes against locked DataStore are rejected', async () => {
+			// TODO
+		});
+
+		test('observes against locked DataStore are rejected', async () => {
+			// TODO
+		});
+
+		test('observeQueries against locked DataStore are rejected', async () => {
+			// TODO
+		});
+
+		test('data stays in its lane for save then query with good awaits', async () => {
+			// in other words, a well-formed (awaited) save from one instance
+			// does not infect another.
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
 				await DataStore.save(new Post({ title: `title from ${cycle}` }));
 				const post = await DataStore.query(Post);
 				expect(post.length).toEqual(1);
@@ -107,8 +220,37 @@ describe.only('DataStore sanity testing checks', () => {
 			});
 		});
 
-		test('polite observables are cleaned up', async () => {
-			await run(async ({ DataStore, Post, cycle }) => {
+		test('data stays in its lane for save, query, delete all, then query with good awaits', async () => {
+			// in other words, a well-formed (awaited) save from one instance
+			// does not infect another.
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				await DataStore.save(new Post({ title: `title from ${cycle}` }));
+				const posts = await DataStore.query(Post);
+				expect(posts.length).toEqual(1);
+				expect(posts[0].title).toEqual(`title from ${cycle}`);
+
+				await DataStore.delete(Post, Predicates.ALL);
+				const afterDelete = await DataStore.query(Post);
+				expect(afterDelete.length).toEqual(0);
+			});
+		});
+
+		test('data stays in its lane for basic queries with late un-awaited saves', async () => {
+			// in other words, a save from one instance does not infect another.
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				await DataStore.save(new Post({ title: `title from ${cycle}` }));
+				const post = await DataStore.query(Post);
+
+				expect(post.length).toEqual(1);
+				expect(post[0].title).toEqual(`title from ${cycle}`);
+
+				// try to pollute the next test
+				DataStore.save(new Post({ title: `title from ${cycle}` }));
+			});
+		});
+
+		test('polite observe() is cleaned up', async () => {
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
 				return new Promise(resolve => {
 					const sub = DataStore.observe(Post).subscribe(
 						({ element, opType, model }) => {
@@ -127,8 +269,8 @@ describe.only('DataStore sanity testing checks', () => {
 			});
 		});
 
-		test('impolite observables are cleaned up', async () => {
-			await run(async ({ DataStore, Post, cycle }) => {
+		test.skip('impolite observe() is cleaned up', async () => {
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
 				return new Promise(resolve => {
 					const sub = DataStore.observe(Post).subscribe(
 						({ element, opType, model }) => {
@@ -148,6 +290,119 @@ describe.only('DataStore sanity testing checks', () => {
 				});
 			});
 		});
+
+		test('polite observeQuery() is cleaned up', async () => {
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				await pretendModelsAreSynced(DataStore);
+				await DataStore.save(
+					new Post({ title: `a title from polite cycle ${cycle} post 1` })
+				);
+
+				const sanityCheck = await DataStore.query(Post);
+				expect(sanityCheck.length).toEqual(1);
+				expect(sanityCheck[0].title).toEqual(
+					`a title from polite cycle ${cycle} post 1`
+				);
+
+				return new Promise(async resolve => {
+					let first = true;
+					const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+						if (first) {
+							first = false;
+							expect(items.length).toEqual(1);
+							expect(items[0].title).toEqual(
+								`a title from polite cycle ${cycle} post 1`
+							);
+							DataStore.save(
+								new Post({ title: `a title from polite cycle ${cycle} post 2` })
+							);
+						} else {
+							expect(items.length).toEqual(2);
+							expect(items.map(p => p.title)).toEqual([
+								`a title from polite cycle ${cycle} post 1`,
+								`a title from polite cycle ${cycle} post 2`,
+							]);
+							sub.unsubscribe();
+							resolve();
+						}
+					});
+				});
+			});
+		});
+
+		test.skip('impolite observeQuery() is cleaned up', async () => {
+			// Establish the subscription and *just move on*.
+			// If DataStore is maintaining strong boundaries between clears,
+			// this is not a problem. If DataStore is *not* maintaining strong
+			// boundaries, these subscriptions will leak all over the place.
+
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				await pretendModelsAreSynced(DataStore);
+
+				await DataStore.save(
+					new Post({ title: `a title from impolite cycle ${cycle} post 1` })
+				);
+				const sanityCheck = await DataStore.query(Post);
+				expect(sanityCheck.length).toEqual(1);
+				expect(sanityCheck[0].title).toEqual(
+					`a title from impolite cycle ${cycle} post 1`
+				);
+
+				let first = true;
+				const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+					if (first) {
+						first = false;
+						// console.debug(
+						// 	`impolite cycle ${cycle} received items in first snapshot`,
+						// 	items
+						// );
+						expect(items.length).toEqual(1);
+						expect(items[0].title).toEqual(
+							`a title from impolite cycle ${cycle} post 1`
+						);
+					} else {
+						// console.debug(
+						// 	`impolite cycle ${cycle} received items in subsequent snapshot`,
+						// 	items
+						// );
+						expect(items.length).toEqual(2);
+						expect(items.map(p => p.title)).toEqual([
+							`a title from impolite cycle ${cycle} post 1`,
+							`a title from impolite cycle ${cycle} post 2`,
+						]);
+					}
+				});
+
+				DataStore.save(
+					new Post({
+						title: `a title from impolite cycle ${cycle} post 2`,
+					})
+				);
+			});
+		});
+
+		test.skip('sync is cleaned up', async () => {
+			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				await configureSync(DataStore);
+				await DataStore.save(
+					new Post({ title: `post from sync is cleaned up cycle ${cycle}` })
+				);
+			});
+		});
+
+		// future scope.
+		test.skip('multiple DataStore imports << X >> (ideally: X = "work together perfectly well")', async () => {
+			const { DataStore: DataStoreA, Post: PostA } = getDataStore();
+			const { DataStore: DataStoreB, Post: PostB } = getDataStore();
+
+			// do things on each. they should not conflict.
+		});
+
+		//
+		// TODO: once we have a clean way to fake a not-node environment, we
+		// need an isolation test to prove DataStore shuts **subscription**
+		// connections/ops down against mocked AppSync backend.
+		//
 	});
 });
 
