@@ -103,6 +103,8 @@ export class CognitoProvider implements AuthProvider {
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
+	private storedAuth: { [key: string]: any } = {};
+	private storedUnAuth: { [key: string]: any } = {};
 
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
@@ -347,13 +349,59 @@ export class CognitoProvider implements AuthProvider {
 		// 	});
 		// });
 
-		// makes sure the user is logged in from the authN machine
+		if (Object.keys(this.storedAuth).length > 0) {
+			// console.log(this.storedAuth.expiration);
+			const now = new Date();
+			// console.log('TIME NOW: ' + now);
+			// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
+			if (now < this.storedAuth.credentials.default.aws.expiration) {
+				console.log('token is good, fetched from storage');
+				return this.storedAuth;
+			} else {
+				console.log('token is expired, calling fetchSession API.');
+			}
+		}
+
+		// returns guest credentials if user is not signed in
 		if (!this._authService.state.matches('signedIn')) {
+			if (Object.keys(this.storedUnAuth).length > 0) {
+				// console.log(this.storedAuth.expiration);
+				const now = new Date();
+				// console.log('TIME NOW: ' + now);
+				// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
+				if (now < this.storedUnAuth.credentials.default.aws.expiration) {
+					console.log('token is good, fetched from storage');
+					return this.storedUnAuth;
+				} else {
+					console.log('token is expired, calling fetchSession API.');
+				}
+			}
+
 			// console.log('SIGNED OUT FLOW');
 			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
 			const sessionEstablishedState = await waitFor(this._authzService, state =>
 				state.matches('sessionEstablished')
 			);
+
+			this.storedUnAuth = {
+				user: {
+					userid: '',
+					username: '',
+				},
+				credentials: {
+					default: {
+						jwt: {
+							idToken: '',
+							accessToken: '',
+							refreshToken: '',
+						},
+						aws: this.shearAWSCredentials(
+							sessionEstablishedState.context.getSession[1]
+						),
+					},
+				},
+			};
+
 			return {
 				// sessionId: '',
 				user: {
@@ -472,6 +520,32 @@ export class CognitoProvider implements AuthProvider {
 		// console.log('AUTHZ SERVICE TEST: ');
 
 		// console.log(sessionEstablishedState.context.getSession);
+
+		// console.log('STORED AUTH: ');
+		// console.log(this.storedAuth);
+
+		// this.storedAuth = this.shearAWSCredentials(
+		// 	sessionEstablishedState.context.getSession[1]
+		// );
+
+		this.storedAuth = {
+			user: {
+				userid: sub as string,
+				username: getUserRes.Username,
+			},
+			credentials: {
+				default: {
+					jwt: {
+						idToken,
+						accessToken,
+						refreshToken,
+					},
+					aws: this.shearAWSCredentials(
+						sessionEstablishedState.context.getSession[1]
+					),
+				},
+			},
+		};
 
 		return {
 			// sessionId: '',
