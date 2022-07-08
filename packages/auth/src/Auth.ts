@@ -403,37 +403,13 @@ export class AuthClass {
 							`${username} has signed up successfully`
 						);
 						if (autoSignIn) {
-							this.autoSignInInitiated = true;
-							const authDetails = new AuthenticationDetails({
-								Username: username,
-								Password: password,
-								ValidationData: validationData,
-								ClientMetadata: clientMetadata,
-							});
-							if (data.userConfirmed) {
-								this.onConfirmSignUp(authDetails);
-							} else if (this._config.verificationMethod === 'link') {
-								this._storage.setItem('pollingStarted', true);
-								const start = Date.now();
-								const autoSignInPolling = setInterval(() => {
-									if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_TIME) {
-										clearInterval(autoSignInPolling);
-										dispatchAuthEvent(
-											'AutoSignInFail',
-											null,
-											'Failed to Auto Sign In. Please confirm account and try to sign in again.'
-										);
-									}
-									this.onConfirmSignUp(authDetails, null, autoSignInPolling);
-								}, 5000);
-							} else {
-								const listenEvent = ({ payload }) => {
-									if (payload.event === 'confirmSignUp') {
-										this.onConfirmSignUp(authDetails, listenEvent);
-									}
-								};
-								Hub.listen('auth', listenEvent);
-							}
+							this.handleAutoSignIn(
+								username,
+								password,
+								validationData,
+								clientMetadata,
+								data
+							);
 						}
 						resolve(data);
 					}
@@ -441,6 +417,54 @@ export class AuthClass {
 				clientMetadata
 			);
 		});
+	}
+
+	private handleAutoSignIn(
+		username: string,
+		password: string,
+		validationData: CognitoUserAttribute[],
+		clientMetadata: any,
+		data: any
+	) {
+		this.autoSignInInitiated = true;
+		const authDetails = new AuthenticationDetails({
+			Username: username,
+			Password: password,
+			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
+		});
+		if (data.userConfirmed) {
+			this.onConfirmSignUp(authDetails);
+		} else if (this._config.verificationMethod === 'link') {
+			this.handleLinkAutoSignIn(authDetails);
+		} else {
+			this.handleCodeAutoSignIn(authDetails);
+		}
+	}
+
+	private handleCodeAutoSignIn(authDetails: AuthenticationDetails) {
+		const listenEvent = ({ payload }) => {
+			if (payload.event === 'confirmSignUp') {
+				this.onConfirmSignUp(authDetails, listenEvent);
+			}
+		};
+		Hub.listen('auth', listenEvent);
+	}
+
+	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
+		this._storage.setItem('pollingStarted', true);
+		const start = Date.now();
+		const autoSignInPolling = setInterval(() => {
+			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_TIME) {
+				clearInterval(autoSignInPolling);
+				dispatchAuthEvent(
+					'AutoSignInFail',
+					null,
+					'Failed to Auto Sign In. Please confirm account and try to sign in again.'
+				);
+			}
+			this.onConfirmSignUp(authDetails, null, autoSignInPolling);
+		}, 5000);
 	}
 
 	private async onConfirmSignUp(
