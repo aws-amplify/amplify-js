@@ -290,11 +290,6 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
-		let userAgentHeader = Constants.userAgent;
-		if (userAgentSuffix) {
-			userAgentHeader += ` ${userAgentSuffix}`;
-		}
-
 		const headers = {
 			...(!customGraphqlEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -305,7 +300,9 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: userAgentHeader,
+				[USER_AGENT_HEADER]: `${Constants.userAgent}${
+					userAgentSuffix ? userAgentSuffix : ''
+				}`,
 			}),
 		};
 
