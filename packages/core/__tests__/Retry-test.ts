@@ -1,4 +1,8 @@
-import { retry, NonRetryableError } from '../src/Util/Retry';
+import {
+	retry,
+	jitteredExponentialRetry,
+	NonRetryableError,
+} from '../src/Util/Retry';
 import { JobContext } from '../src/Util/JobContext';
 
 describe('retry', () => {
@@ -121,27 +125,25 @@ describe('retry', () => {
 		expect(count).toEqual(3);
 	});
 
-	test('retry is cancelable', async () => {
+	test('is cancelable', async () => {
 		const context = new JobContext();
 
 		let error;
 		let count = 0;
 
 		function suchAFailure() {
-			console.log('suchAFailure');
 			count++;
 			throw new Error('I will never succeed.');
 		}
 
 		context
-			.add(async onTermiante => retry(suchAFailure, [], () => 1, onTermiante))
+			.add(async onTerminate => retry(suchAFailure, [], () => 1, onTerminate))
 			.catch(e => (error = e));
 
 		await new Promise(resolve => setTimeout(resolve, 30));
 		const countSnapshot = count;
 
 		await context.exit();
-		console.log('error', error);
 
 		await new Promise(resolve => setTimeout(resolve, 30));
 
@@ -149,4 +151,88 @@ describe('retry', () => {
 		expect(countSnapshot).toBeGreaterThan(0);
 		expect(count).toEqual(countSnapshot);
 	});
+});
+
+describe('jitteredExponentailRetry', () => {
+	test('will retry a function until it succeeds', async () => {
+		let count = 0;
+
+		function succeedAfterThirdTry() {
+			count++;
+			if (count === 3) {
+				return 'abc';
+			} else {
+				throw new Error("Oh no! It didn't work!");
+			}
+		}
+
+		const returnValue = await jitteredExponentialRetry(
+			succeedAfterThirdTry,
+			[]
+		);
+
+		expect(returnValue).toEqual('abc');
+		expect(count).toEqual(3);
+	});
+
+	test('will not retry if a non-retryable error is returned', async () => {
+		function throwsNonRetryableError() {
+			throw new NonRetryableError('bwahahahahaha');
+		}
+
+		// TODO: how the devil do you get expect().rejects.toThrow to work here?
+		try {
+			await jitteredExponentialRetry(throwsNonRetryableError, []);
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toEqual('bwahahahahaha');
+		}
+	});
+
+	test('passes args to retried function', async () => {
+		let receivedArgs;
+
+		function toRetry(...args) {
+			receivedArgs = args;
+		}
+		await jitteredExponentialRetry(toRetry, ['a', 'b', 'c']);
+
+		expect(receivedArgs).toEqual(['a', 'b', 'c']);
+	});
+
+	test('is cancelable', async () => {
+		const context = new JobContext();
+
+		let error;
+		let count = 0;
+
+		function suchAFailure() {
+			count++;
+			throw new Error('I will never succeed.');
+		}
+
+		// retries should be at ~200ms, ~400ms ... we'll try to interrupt
+		// between 200 and 400.
+
+		context
+			.add(async onTerminate =>
+				jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate)
+			)
+			.catch(e => (error = e));
+
+		await new Promise(resolve => setTimeout(resolve, 300));
+		const countSnapshot = count;
+
+		await context.exit();
+
+		// try to wait until after the ~400ms retry would have occurred.
+		await new Promise(resolve => setTimeout(resolve, 300));
+
+		expect(error).toBeTruthy();
+		expect(countSnapshot).toBeGreaterThan(0);
+		expect(count).toEqual(countSnapshot);
+	});
+
+	// TODO: test expontential backoff ...
+	// (without blowing test execution time up)
 });

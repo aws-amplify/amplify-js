@@ -1,5 +1,6 @@
 import { DelayFunction } from '../types';
 import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
+import { on } from 'cluster';
 const logger = new Logger('Util');
 
 export class NonRetryableError extends Error {
@@ -22,7 +23,7 @@ export async function retry<T>(
 	functionToRetry: (...args: any[]) => T,
 	args: any[],
 	delayFn: DelayFunction,
-	onTerminate: Promise<void> = new Promise<void>(() => {})
+	onTerminate?: Promise<void>
 ): Promise<T> {
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
@@ -37,14 +38,15 @@ export async function retry<T>(
 		// used after the loop if terminated while waiting for a timer.
 		let lastError: Error;
 
-		onTerminate.then(() => {
-			// signal not to try anymore.
-			terminated = true;
+		onTerminate &&
+			onTerminate.then(() => {
+				// signal not to try anymore.
+				terminated = true;
 
-			// stop sleeping if we're sleeping.
-			clearTimeout(timeout);
-			wakeUp();
-		});
+				// stop sleeping if we're sleeping.
+				clearTimeout(timeout);
+				wakeUp();
+			});
 
 		while (!terminated) {
 			attempt++;
@@ -110,5 +112,7 @@ export function jitteredBackoff(
 export const jitteredExponentialRetry = <T>(
 	functionToRetry: (...args: any[]) => T,
 	args: any[],
-	maxDelayMs: number = MAX_DELAY_MS
-): Promise<T> => retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
+	maxDelayMs: number = MAX_DELAY_MS,
+	onTerminate?: Promise<void>
+): Promise<T> =>
+	retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);
