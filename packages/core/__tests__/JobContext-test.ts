@@ -1,6 +1,7 @@
 import Observable from 'zen-observable-ts';
 import { JobContext } from '../src/Util/JobContext';
 import { SubscriptionProcessor } from '@aws-amplify/datastore/src/sync/processors/subscription';
+import { rejections, exitOnError } from 'winston';
 
 describe('JobContext', () => {
 	test('can wait for a promise to finish', async () => {
@@ -37,6 +38,36 @@ describe('JobContext', () => {
 		expect(value).toEqual('VALUE');
 	});
 
+	test('passes thrown promise errors through', async () => {
+		const context = new JobContext();
+
+		try {
+			await context.add(async () => {
+				throw new Error('not today, friend!');
+			});
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toEqual('not today, friend!');
+		}
+	});
+
+	test('errors thrown in jobs do not block exit', async () => {
+		const context = new JobContext();
+
+		try {
+			await context.add(async () => {
+				throw new Error('Enough shenanigans!');
+			});
+			expect(true).toBe(false);
+		} catch (error) {
+			// no need to handle here.
+		}
+
+		await context.exit();
+
+		expect(true).toBe(true);
+	});
+
 	test('promises remove themselves from the context when complete, but not before', async () => {
 		const context = new JobContext();
 
@@ -50,6 +81,40 @@ describe('JobContext', () => {
 
 		expect(context.length).toBe(1);
 		await resultPromise;
+		expect(context.length).toBe(0);
+
+		// just demonstrating good behavior: Always exit your contexts.
+		await context.exit();
+	});
+
+	test('promises remove themselves from the context when failed, but not before', async () => {
+		const context = new JobContext();
+
+		const resultPromise = context.add(async () => {
+			return new Promise((resolve, raise) => {
+				setTimeout(() => {
+					raise(new Error('a fuss'));
+				}, 50);
+			});
+		});
+
+		expect(context.length).toBe(1);
+		try {
+			await resultPromise;
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toEqual('a fuss');
+		}
+
+		// the internal JobContext `catch()` handler for the promise is still
+		// in the promise callback queue. we need to put this "thread" onto
+		// the end of the queue to allow that catch handler to execute ahead
+		// of us. we can do that by simply creating another promise and
+		// awaiting it:
+		await Promise.resolve();
+
+		// and now JobContext's catch handler for the rejected promise will
+		// have been invoked.
 		expect(context.length).toBe(0);
 
 		// just demonstrating good behavior: Always exit your contexts.
