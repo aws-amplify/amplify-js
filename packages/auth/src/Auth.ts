@@ -266,8 +266,10 @@ export class AuthClass {
 			!this.autoSignInInitiated &&
 			typeof this._storage['getItem'] === 'function'
 		) {
-			const pollingInitiated = this._storage.getItem('pollingStarted') || false;
-			if (pollingInitiated === 'true') {
+			const pollingInitiated = this.isTrueStorageValue(
+				this._storage.getItem('pollingStarted')
+			);
+			if (pollingInitiated) {
 				dispatchAuthEvent(
 					'AutoSignInFail',
 					null,
@@ -489,7 +491,7 @@ export class AuthClass {
 						}
 						if (autoSignInPolling) {
 							clearInterval(autoSignInPolling);
-							this._storage.setItem('pollingStarted', false);
+							this._storage.removeItem('pollingStarted');
 						}
 					},
 					error => {
@@ -549,8 +551,10 @@ export class AuthClass {
 							data,
 							`${username} has been confirmed successfully`
 						);
-						const autoSignIn = this._storage.getItem('autoSignIn') || false;
-						if (autoSignIn === 'true' && !this.autoSignInInitiated) {
+						const autoSignIn = this.isTrueStorageValue(
+							this._storage.getItem('autoSignIn')
+						);
+						if (autoSignIn && !this.autoSignInInitiated) {
 							dispatchAuthEvent(
 								'AutoSignInFail',
 								null,
@@ -563,6 +567,10 @@ export class AuthClass {
 				clientMetadata
 			);
 		});
+	}
+
+	private isTrueStorageValue(value: any) {
+		return value ? value === 'true' : false;
 	}
 
 	/**
