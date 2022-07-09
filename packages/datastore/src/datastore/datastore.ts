@@ -870,92 +870,95 @@ class DataStore {
 	 *
 	 */
 	start = async (): Promise<void> => {
-		if (this.initialized === undefined) {
-			logger.debug('Starting DataStore');
-			this.initialized = new Promise((res, rej) => {
-				this.initResolve = res;
-				this.initReject = rej;
-			});
-		} else {
-			await this.initialized;
+		return this.context.add(async () => {
+			if (this.initialized === undefined) {
+				logger.debug('Starting DataStore');
+				this.initialized = new Promise((res, rej) => {
+					this.initResolve = res;
+					this.initReject = rej;
+				});
+			} else {
+				await this.initialized;
 
-			return;
-		}
+				return;
+			}
 
-		this.storage = new Storage(
-			schema,
-			namespaceResolver,
-			getModelConstructorByModelName,
-			modelInstanceCreator,
-			this.storageAdapter,
-			this.sessionId
-		);
-
-		await this.storage.init();
-
-		checkSchemaInitialized();
-		await checkSchemaVersion(this.storage, schema.version);
-
-		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
-
-		if (aws_appsync_graphqlEndpoint) {
-			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
-
-			this.syncPredicates = await this.processSyncExpressions();
-
-			this.sync = new SyncEngine(
+			this.storage = new Storage(
 				schema,
 				namespaceResolver,
-				syncClasses,
-				userClasses,
-				this.storage,
+				getModelConstructorByModelName,
 				modelInstanceCreator,
-				this.conflictHandler,
-				this.errorHandler,
-				this.syncPredicates,
-				this.amplifyConfig,
-				this.authModeStrategy,
-				this.amplifyContext
+				this.storageAdapter,
+				this.sessionId
 			);
 
-			// tslint:disable-next-line:max-line-length
-			const fullSyncIntervalInMilliseconds = this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
-			syncSubscription = this.sync
-				.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
-				.subscribe({
-					next: ({ type, data }) => {
-						// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
-						// In the Browser, we can begin returning data once subscriptions are in place.
-						const readyType = isNode
-							? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-							: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+			await this.storage.init();
 
-						if (type === readyType) {
-							this.initResolve();
-						}
+			checkSchemaInitialized();
+			await checkSchemaVersion(this.storage, schema.version);
 
-						Hub.dispatch('datastore', {
-							event: type,
-							data,
-						});
-					},
-					error: err => {
-						logger.warn('Sync error', err);
-						this.initReject();
-					},
-				});
-		} else {
-			logger.warn(
-				"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
-				{
-					config: this.amplifyConfig,
-				}
-			);
+			const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
-			this.initResolve();
-		}
+			if (aws_appsync_graphqlEndpoint) {
+				logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
 
-		await this.initialized;
+				this.syncPredicates = await this.processSyncExpressions();
+
+				this.sync = new SyncEngine(
+					schema,
+					namespaceResolver,
+					syncClasses,
+					userClasses,
+					this.storage,
+					modelInstanceCreator,
+					this.conflictHandler,
+					this.errorHandler,
+					this.syncPredicates,
+					this.amplifyConfig,
+					this.authModeStrategy,
+					this.amplifyContext
+				);
+
+				// tslint:disable-next-line:max-line-length
+				const fullSyncIntervalInMilliseconds =
+					this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
+				syncSubscription = this.sync
+					.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
+					.subscribe({
+						next: ({ type, data }) => {
+							// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
+							// In the Browser, we can begin returning data once subscriptions are in place.
+							const readyType = isNode
+								? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+								: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+
+							if (type === readyType) {
+								this.initResolve();
+							}
+
+							Hub.dispatch('datastore', {
+								event: type,
+								data,
+							});
+						},
+						error: err => {
+							logger.warn('Sync error', err);
+							this.initReject();
+						},
+					});
+			} else {
+				logger.warn(
+					"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
+					{
+						config: this.amplifyConfig,
+					}
+				);
+
+				this.initResolve();
+			}
+
+			await this.initialized;
+		}, 'datastore start');
 	};
 
 	query: {
@@ -1058,7 +1061,7 @@ class DataStore {
 					isIdentifierObject(identifierOrCriteria, modelDefinition));
 
 			return returnOne ? result[0] : result;
-		});
+		}, 'datastore query');
 	};
 
 	save = async <T extends PersistentModel>(
@@ -1100,7 +1103,7 @@ class DataStore {
 			});
 
 			return savedModel;
-		});
+		}, 'datastore save');
 	};
 
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
@@ -1264,7 +1267,7 @@ class DataStore {
 
 				return deleted;
 			}
-		});
+		}, 'datastore delete');
 	};
 
 	observe: {
@@ -1398,7 +1401,7 @@ class DataStore {
 						error: err => observer.error(err),
 						complete: () => observer.complete(),
 					});
-			});
+			}, 'datastore observe item');
 
 			// better than no cleaner, but if the subscriber is handling the
 			// complete() message async and not registering with the context,
@@ -1407,7 +1410,7 @@ class DataStore {
 				if (handle) {
 					handle.unsubscribe();
 				}
-			});
+			}, 'datastore observe cleaner');
 		});
 	};
 
@@ -1556,7 +1559,7 @@ class DataStore {
 				} catch (err) {
 					observer.error(err);
 				}
-			});
+			}, 'datastore observequery startup');
 
 			/**
 			 * Combines the `items`, `itemsChanged`, and `deletedItemIds` collections into
@@ -1660,7 +1663,7 @@ class DataStore {
 				if (handle) {
 					handle.unsubscribe();
 				}
-			});
+			}, 'datastore observequery cleaner');
 		});
 	};
 
@@ -1779,11 +1782,12 @@ class DataStore {
 			syncSubscription.unsubscribe();
 		}
 
-		await this.storage.clear();
-
 		if (this.sync) {
-			this.sync.unsubscribeConnectivity();
+			// this.sync.unsubscribeConnectivity();
+			await this.sync.stop();
 		}
+
+		await this.storage.clear();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
@@ -1807,8 +1811,6 @@ class DataStore {
 		await this.context.exit();
 		this.context = new JobContext();
 
-		// TODO: stop running queries here.
-
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
@@ -1816,6 +1818,8 @@ class DataStore {
 		if (this.sync) {
 			this.sync.unsubscribeConnectivity();
 		}
+
+		await this.sync.stop();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;

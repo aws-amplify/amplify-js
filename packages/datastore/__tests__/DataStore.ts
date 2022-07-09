@@ -26,6 +26,7 @@ import {
 	User,
 } from './helpers';
 import { createYield } from 'typescript';
+import { clearInterval } from 'timers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -381,13 +382,28 @@ describe.only('DataStore sanity testing checks', () => {
 			});
 		});
 
-		test.skip('sync is cleaned up', async () => {
+		test('sync is cleaned up', async () => {
 			await expectIsolation(async ({ DataStore, Post, cycle }) => {
+				console.log('before configure sync');
 				await configureSync(DataStore);
+				console.log('before save unit test block');
+
+				// save an item to kickstart outbox processing.
 				await DataStore.save(
 					new Post({ title: `post from sync is cleaned up cycle ${cycle}` })
 				);
-			});
+
+				console.log('after save unit test block');
+
+				const debug = setInterval(() => {
+					console.log('jobs', (DataStore as any).sync.context.pending);
+				}, 1000);
+
+				setTimeout(() => clearInterval(debug), 4000);
+			}, 5);
+			console.log('after expectIsolation');
+
+			expect(true).toBe(true);
 		});
 
 		// future scope.
