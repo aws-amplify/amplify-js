@@ -1,7 +1,5 @@
 import Observable from 'zen-observable-ts';
 import { JobContext } from '../src/Util/JobContext';
-import { SubscriptionProcessor } from '@aws-amplify/datastore/src/sync/processors/subscription';
-import { rejections, exitOnError } from 'winston';
 
 describe('JobContext', () => {
 	test('can wait for a promise to finish', async () => {
@@ -462,5 +460,76 @@ describe('JobContext', () => {
 		await outer.exit();
 
 		expect(proof).toBe(true);
+	});
+
+	test('jobs can be named when adding an async function', async () => {
+		const context = new JobContext();
+
+		context.add(
+			async () => new Promise(unsleep => setTimeout(unsleep, 1)),
+			'async function'
+		);
+
+		expect(context.pending.length).toBe(1);
+		expect(context.pending[0]).toEqual('async function');
+
+		// always exit your contexts :)
+		await context.exit();
+	});
+
+	test('jobs can be named when adding a cancelable async function', async () => {
+		const context = new JobContext();
+
+		context.add(
+			async onTerminate =>
+				new Promise(finishJob => {
+					onTerminate.then(finishJob);
+				}),
+			'cancelable async function'
+		);
+
+		expect(context.pending.length).toBe(1);
+		expect(context.pending[0]).toEqual('cancelable async function');
+
+		// always exit your contexts :)
+		await context.exit();
+	});
+
+	test('jobs can be named when getting job hooks', async () => {
+		const context = new JobContext();
+
+		const { resolve } = context.add('job hooks');
+
+		expect(context.pending.length).toBe(1);
+		expect(context.pending[0]).toEqual('job hooks');
+
+		// always exit your contexts :)
+		resolve();
+		await context.exit();
+	});
+
+	test('sub-contexts can be named', async () => {
+		const inner = new JobContext();
+		const outer = new JobContext();
+
+		outer.add(inner, 'inner context');
+
+		expect(outer.pending.length).toBe(1);
+		expect(outer.pending[0]).toEqual('inner context');
+
+		await outer.exit();
+	});
+
+	test('cleaners can be named', async () => {
+		const context = new JobContext();
+
+		context.addCleaner(async () => {
+			// no op
+		}, 'cleaner name');
+
+		expect(context.pending.length).toBe(1);
+		expect(context.pending[0]).toEqual('cleaner name');
+
+		await context.exit();
 	});
 });

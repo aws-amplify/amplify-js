@@ -1,5 +1,3 @@
-import Observable from 'zen-observable-ts';
-
 /**
  * @private For internal Amplify use.
  *
@@ -34,9 +32,10 @@ export class JobContext {
 	 * context *exits*, it will `await` the job.
 	 *
 	 * @param job The function to execute.
+	 * @param description Optional description to help identify pending jobs.
 	 * @returns The return value from the given function.
 	 */
-	add<T>(job: () => Promise<T>): Promise<T>;
+	add<T>(job: () => Promise<T>, description?: string): Promise<T>;
 
 	/**
 	 * Executes an async `job` function, passing the return value through to
@@ -47,9 +46,13 @@ export class JobContext {
 	 * to a termination request.
 	 *
 	 * @param job The function to execute.
+	 * @param description Optional description to help identify pending jobs.
 	 * @returns The return value from the given function.
 	 */
-	add<T>(job: (onTerminate: Promise<void>) => Promise<T>): Promise<T>;
+	add<T>(
+		job: (onTerminate: Promise<void>) => Promise<T>,
+		description?: string
+	): Promise<T>;
 
 	/**
 	 * Create a no-op job, registers it with the context, and returns hooks
@@ -59,10 +62,10 @@ export class JobContext {
 	 * When the context exits, the no-op job will be `await`-ed, so its
 	 * important to always `resolve()` or `reject()` when done responding to an
 	 * `onTerminate` signal.
-	 *
+	 * @param description Optional description to help identify pending jobs.
 	 * @returns Job promise hooks + onTerminate signaling promise
 	 */
-	add(): {
+	add(description?: string): {
 		resolve: (value?: unknown) => void;
 		reject: (reason?: any) => void;
 		onTerminate: Promise<void>;
@@ -74,22 +77,34 @@ export class JobContext {
 	 * called for.
 	 *
 	 * @param job The inner job context to await.
+	 * @param description Optional description to help identify pending jobs.
 	 */
-	add(job: JobContext);
+	add(job: JobContext, description?: string);
 
-	add(job?) {
+	add(jobOrDescription?, optionalDescription?) {
 		if (this.locked) {
 			throw new Error(
 				'The context is locked, which occurs after exit() has been called.'
 			);
 		}
 
+		let job;
+		let description: string;
+
+		if (typeof jobOrDescription === 'string') {
+			job = undefined;
+			description = jobOrDescription;
+		} else {
+			job = jobOrDescription;
+			description = optionalDescription;
+		}
+
 		if (job === undefined) {
-			return this.addHooks();
+			return this.addHooks(description);
 		} else if (typeof job === 'function') {
-			return this.addFunction(job);
+			return this.addFunction(job, description);
 		} else if (job instanceof JobContext) {
-			return this.addContext(job);
+			return this.addContext(job, description);
 		} else {
 			throw new Error(
 				'If `job` is provided, it must be an Observable, Function, or JobContext.'
@@ -104,10 +119,14 @@ export class JobContext {
 	 * function is called.
 	 *
 	 * @param clean The cleanup function.
+	 * @param description Optional description to help identify pending jobs.
 	 * @returns A terminate function.
 	 */
-	addCleaner<T>(clean: () => Promise<T>): () => Promise<void> {
-		const { resolve, reject, onTerminate } = this.addHooks();
+	addCleaner<T>(
+		clean: () => Promise<T>,
+		description?: string
+	): () => Promise<void> {
+		const { resolve, reject, onTerminate } = this.addHooks(description);
 
 		const proxy = async () => {
 			await clean();
@@ -119,11 +138,15 @@ export class JobContext {
 		return proxy;
 	}
 
-	private addFunction<T>(job: () => Promise<T>): Promise<T>;
 	private addFunction<T>(
-		job: (onTerminate: Promise<void>) => Promise<T>
+		job: () => Promise<T>,
+		description?: string
 	): Promise<T>;
-	private addFunction(job) {
+	private addFunction<T>(
+		job: (onTerminate: Promise<void>) => Promise<T>,
+		description?: string
+	): Promise<T>;
+	private addFunction(job, description) {
 		// the function we call when we want to try to terminate this job.
 		let terminate;
 
@@ -138,7 +161,7 @@ export class JobContext {
 		// depending on what the job gives back, register the result
 		// so we can monitor for completion.
 		if (jobResult instanceof Promise) {
-			this.registerPromise(jobResult, terminate);
+			this.registerPromise(jobResult, terminate, description);
 		}
 
 		// At the end of the day, or you know, method call, it doesn't matter
@@ -147,8 +170,8 @@ export class JobContext {
 		return jobResult;
 	}
 
-	private addContext(context: JobContext) {
-		this.addCleaner(async () => await context.exit());
+	private addContext(context: JobContext, description?: string) {
+		this.addCleaner(async () => await context.exit(), description);
 	}
 
 	/**
@@ -158,9 +181,10 @@ export class JobContext {
 	 * The returned `onTerminate` is a promise that will resolve when the
 	 * context is requesting the termination of the job.
 	 *
+	 * @param description Optional description to help identify pending jobs.
 	 * @returns `{ resolve, reject, onTerminate }`
 	 */
-	private addHooks() {
+	private addHooks(description?: string) {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
 		let resolve: (value?: unknown) => void;
@@ -181,7 +205,7 @@ export class JobContext {
 			terminate = resolveTerminate;
 		});
 
-		this.registerPromise(promise, terminate);
+		this.registerPromise(promise, terminate, description);
 
 		return {
 			resolve,
@@ -197,17 +221,21 @@ export class JobContext {
 	 *
 	 * @param promise A promise that is on its way to being returned to a
 	 * caller, which needs to be tracked as a background job.
+	 * @param terminate The termination function to register, which can be
+	 * invoked to request the job stop.
+	 * @param description Optional description to help identify pending jobs.
 	 */
 	private registerPromise<T extends Promise<any>>(
 		promise: T,
-		terminate: () => void
+		terminate: () => void,
+		description?: string
 	) {
-		this.jobs.push({ promise, terminate });
+		this.jobs.push({ promise, terminate, description });
 
 		// in all of my testing, it is safe to multi-subscribe to a promise.
 		// so, rather than create another layer of promising, we're just going
-		// to hook into the promise we already have, and when it's done (
-		// successfully or not), we no longer need to wait for it upon exit.
+		// to hook into the promise we already have, and when it's done
+		// (successfully or not), we no longer need to wait for it upon exit.
 
 		promise
 			.then(() => {
@@ -228,6 +256,15 @@ export class JobContext {
 	 */
 	get length() {
 		return this.jobs.length;
+	}
+
+	/**
+	 * The registered `description` of all still-pending jobs.
+	 *
+	 * @returns descriptions as an array.
+	 */
+	get pending() {
+		return this.jobs.map(job => job.description);
 	}
 
 	/**
@@ -274,4 +311,15 @@ type JobEntry = {
 	 * Request the termination of the job.
 	 */
 	terminate: () => void;
+
+	/**
+	 * An object provided by the caller that can be used to identify the description
+	 * of the job, which can otherwise be unclear from the `promise` and
+	 * `terminate` function. The `description` can be a string. (May be extended
+	 * later to also support object refs.)
+	 *
+	 * Useful for troubleshooting why a `JobContext` is waiting for long
+	 * periods of time on `exit()`.
+	 */
+	description?: string;
 };
