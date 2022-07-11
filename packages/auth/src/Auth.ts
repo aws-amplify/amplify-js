@@ -96,7 +96,7 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
 
-const MAX_AUTOSIGNIN_POLLING_TIME = 180000;
+const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
 /**
  * Provide authentication steps
@@ -266,9 +266,7 @@ export class AuthClass {
 			!this.autoSignInInitiated &&
 			typeof this._storage['getItem'] === 'function'
 		) {
-			const pollingInitiated = this.isTrueStorageValue(
-				this._storage.getItem('pollingStarted')
-			);
+			const pollingInitiated = this.isTrueStorageValue('pollingStarted');
 			if (pollingInitiated) {
 				dispatchAuthEvent(
 					'AutoSignInFail',
@@ -366,7 +364,7 @@ export class AuthClass {
 					);
 				});
 			}
-			autoSignIn = params['autoSignIn'] || false;
+			autoSignIn = params.autoSignIn ?? false;
 			if (autoSignIn) {
 				this._storage.setItem('autoSignIn', true);
 			}
@@ -456,23 +454,23 @@ export class AuthClass {
 	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
 		this._storage.setItem('pollingStarted', true);
 		const start = Date.now();
-		const autoSignInPolling = setInterval(() => {
-			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_TIME) {
-				clearInterval(autoSignInPolling);
+		const autoSignInPollingIntervalId = setInterval(() => {
+			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
+				clearInterval(autoSignInPollingIntervalId);
 				dispatchAuthEvent(
 					'AutoSignInFail',
 					null,
 					'Failed to Auto Sign In. Please confirm account and try to sign in again.'
 				);
 			}
-			this.onConfirmSignUp(authDetails, null, autoSignInPolling);
+			this.onConfirmSignUp(authDetails, null, autoSignInPollingIntervalId);
 		}, 5000);
 	}
 
 	private async onConfirmSignUp(
 		authDetails: AuthenticationDetails,
 		listenEvent?: HubCallback,
-		autoSignInPolling?: ReturnType<typeof setInterval>
+		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
 	) {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		try {
@@ -489,8 +487,8 @@ export class AuthClass {
 						if (listenEvent) {
 							Hub.remove('auth', listenEvent);
 						}
-						if (autoSignInPolling) {
-							clearInterval(autoSignInPolling);
+						if (autoSignInPollingIntervalId) {
+							clearInterval(autoSignInPollingIntervalId);
 							this._storage.removeItem('pollingStarted');
 						}
 					},
@@ -551,9 +549,7 @@ export class AuthClass {
 							data,
 							`${username} has been confirmed successfully`
 						);
-						const autoSignIn = this.isTrueStorageValue(
-							this._storage.getItem('autoSignIn')
-						);
+						const autoSignIn = this.isTrueStorageValue('autoSignIn');
 						if (autoSignIn && !this.autoSignInInitiated) {
 							dispatchAuthEvent(
 								'AutoSignInFail',
@@ -569,8 +565,9 @@ export class AuthClass {
 		});
 	}
 
-	private isTrueStorageValue(value: any) {
-		return value ? value === 'true' : false;
+	private isTrueStorageValue(value: string) {
+		const item = this._storage.getItem(value);
+		return item ? item === 'true' : false;
 	}
 
 	/**
