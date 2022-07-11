@@ -133,6 +133,20 @@ describe('JobContext', () => {
 		}
 	});
 
+	test('blocked jobs are async catchable', async () => {
+		const context = new JobContext();
+		await context.exit();
+
+		await context
+			.add(async () => Promise.resolve('This should never be returned.'))
+			.then(() => {
+				expect(true).toBe(false);
+			})
+			.catch(error => {
+				expect(error.message).toContain('locked');
+			});
+	});
+
 	test('waits for multiple promises', async () => {
 		const context = new JobContext();
 

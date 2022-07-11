@@ -83,8 +83,10 @@ export class JobContext {
 
 	add(jobOrDescription?, optionalDescription?) {
 		if (this.locked) {
-			throw new Error(
-				'The context is locked, which occurs after exit() has been called.'
+			return Promise.reject(
+				new Error(
+					'The context is locked, which occurs after exit() has been called.'
+				)
 			);
 		}
 
