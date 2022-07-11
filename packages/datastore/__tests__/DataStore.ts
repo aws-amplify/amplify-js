@@ -25,8 +25,6 @@ import {
 	testSchema,
 	User,
 } from './helpers';
-import { createYield } from 'typescript';
-import { clearInterval } from 'timers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -38,8 +36,8 @@ const nameOf = <T>(name: keyof T) => name;
  */
 const expectType: <T>(param: T) => void = () => {};
 
-describe.only('DataStore sanity testing checks', () => {
-	describe.only('cleans up after itself', () => {
+describe('DataStore sanity testing checks', () => {
+	describe('cleans up after itself', () => {
 		// basically, if we spin up our test contexts repeatedly, put some
 		// data in there and do some things, stopping DataStore should
 		// sufficiently stop backgrounds jobs, clear data, etc. so that
@@ -191,23 +189,152 @@ describe.only('DataStore sanity testing checks', () => {
 		});
 
 		test('queries against locked DataStore are rejected', async () => {
-			// TODO
+			const { DataStore, Post } = getDataStore();
+
+			// shedule a promise that will NOT be done for "awhile"
+			let unblock;
+			(DataStore as any).context.add(
+				async () => new Promise(_unblock => (unblock = _unblock)),
+				'artificial query blocker'
+			);
+
+			// begin clearing, which should lock DataStore
+			const clearing = DataStore.clear();
+
+			// pass control back to handlers briefly, so that `clear()`
+			// activities can start occurring.
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+
+			// and now attempt an ill-fated operation
+			try {
+				await DataStore.query(Post);
+				expect(true).toBe(false);
+			} catch (error) {
+				expect(error.message).toContain('locked');
+			} finally {
+				unblock();
+				await clearing;
+			}
 		});
 
 		test('saves against locked DataStore are rejected', async () => {
-			// TODO
+			const { DataStore, Post } = getDataStore();
+
+			// shedule a promise that will NOT be done for "awhile"
+			let unblock;
+			(DataStore as any).context.add(
+				async () => new Promise(_unblock => (unblock = _unblock)),
+				'artificial save blocker'
+			);
+
+			// begin clearing, which should lock DataStore
+			const clearing = DataStore.clear();
+
+			// pass control back to handlers briefly, so that `clear()`
+			// activities can start occurring.
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+
+			// and now attempt an ill-fated operation
+			try {
+				await DataStore.save(new Post({ title: 'title that should fail' }));
+				expect(true).toBe(false);
+			} catch (error) {
+				expect(error.message).toContain('locked');
+			} finally {
+				unblock();
+				await clearing;
+			}
 		});
 
 		test('deletes against locked DataStore are rejected', async () => {
-			// TODO
+			const { DataStore, Post } = getDataStore();
+
+			// shedule a promise that will NOT be done for "awhile"
+			let unblock;
+			(DataStore as any).context.add(
+				async () => new Promise(_unblock => (unblock = _unblock)),
+				'artificial delete blocker'
+			);
+
+			// begin clearing, which should lock DataStore
+			const clearing = DataStore.clear();
+
+			// pass control back to handlers briefly, so that `clear()`
+			// activities can start occurring.
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+
+			// and now attempt an ill-fated operation
+			try {
+				await DataStore.delete(Post, Predicates.ALL);
+				expect(true).toBe(false);
+			} catch (error) {
+				expect(error.message).toContain('locked');
+			} finally {
+				unblock();
+				await clearing;
+			}
 		});
 
 		test('observes against locked DataStore are rejected', async () => {
-			// TODO
+			const { DataStore, Post } = getDataStore();
+
+			// shedule a promise that will NOT be done for "awhile"
+			let unblock;
+			(DataStore as any).context.add(
+				async () => new Promise(_unblock => (unblock = _unblock)),
+				'artificial observe blocker'
+			);
+
+			// begin clearing, which should lock DataStore
+			const clearing = DataStore.clear();
+
+			// pass control back to handlers briefly, so that `clear()`
+			// activities can start occurring.
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+
+			// and now attempt an ill-fated operation
+			DataStore.observe(Post).subscribe({
+				next() {
+					expect(true).toBe(false);
+				},
+				error(error) {
+					expect(error.message).toContain('locked');
+					unblock();
+				},
+			});
+
+			await clearing;
 		});
 
 		test('observeQueries against locked DataStore are rejected', async () => {
-			// TODO
+			const { DataStore, Post } = getDataStore();
+
+			// shedule a promise that will NOT be done for "awhile"
+			let unblock;
+			(DataStore as any).context.add(
+				async () => new Promise(_unblock => (unblock = _unblock)),
+				'artificial observeQuery blocker'
+			);
+
+			// begin clearing, which should lock DataStore
+			const clearing = DataStore.clear();
+
+			// pass control back to handlers briefly, so that `clear()`
+			// activities can start occurring.
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+
+			// and now attempt an ill-fated operation
+			DataStore.observeQuery(Post).subscribe({
+				next() {
+					expect(true).toBe(false);
+				},
+				error(error) {
+					expect(error.message).toContain('locked');
+					unblock();
+				},
+			});
+
+			await clearing;
 		});
 
 		test('data stays in its lane for save then query with good awaits', async () => {
@@ -331,7 +458,7 @@ describe.only('DataStore sanity testing checks', () => {
 			});
 		});
 
-		test.skip('impolite observeQuery() is cleaned up', async () => {
+		test('less polite observeQuery() is cleaned up', async () => {
 			// Establish the subscription and *just move on*.
 			// If DataStore is maintaining strong boundaries between clears,
 			// this is not a problem. If DataStore is *not* maintaining strong
@@ -349,64 +476,62 @@ describe.only('DataStore sanity testing checks', () => {
 					`a title from impolite cycle ${cycle} post 1`
 				);
 
-				let first = true;
-				const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
-					if (first) {
-						first = false;
-						// console.debug(
-						// 	`impolite cycle ${cycle} received items in first snapshot`,
-						// 	items
-						// );
-						expect(items.length).toEqual(1);
-						expect(items[0].title).toEqual(
-							`a title from impolite cycle ${cycle} post 1`
-						);
-					} else {
-						// console.debug(
-						// 	`impolite cycle ${cycle} received items in subsequent snapshot`,
-						// 	items
-						// );
-						expect(items.length).toEqual(2);
-						expect(items.map(p => p.title)).toEqual([
-							`a title from impolite cycle ${cycle} post 1`,
-							`a title from impolite cycle ${cycle} post 2`,
-						]);
-					}
+				await new Promise(done => {
+					let first = true;
+					const sub = DataStore.observeQuery(Post).subscribe(({ items }) => {
+						if (first) {
+							first = false;
+							// console.debug(
+							// 	`impolite cycle ${cycle} received items in first snapshot`,
+							// 	items
+							// );
+							expect(items.length).toEqual(1);
+							expect(items[0].title).toEqual(
+								`a title from impolite cycle ${cycle} post 1`
+							);
+							DataStore.save(
+								new Post({
+									title: `a title from impolite cycle ${cycle} post 2`,
+								})
+							);
+						} else {
+							// console.debug(
+							// 	`impolite cycle ${cycle} received items in subsequent snapshot`,
+							// 	items
+							// );
+							expect(items.length).toEqual(2);
+							expect(items.map(p => p.title)).toEqual([
+								`a title from impolite cycle ${cycle} post 1`,
+								`a title from impolite cycle ${cycle} post 2`,
+							]);
+							done();
+						}
+					});
 				});
-
-				DataStore.save(
-					new Post({
-						title: `a title from impolite cycle ${cycle} post 2`,
-					})
-				);
 			});
+		});
+
+		test.skip('impolite observeQuery() is cleaned up', async () => {
+			// TODO: observeQuery example that prematurely returns and leaves
+			// lingering saves in the pipeline ... not 100% sure if that
+			// cleanup is even in-scope for DataStore to clean up.
 		});
 
 		test('sync is cleaned up', async () => {
 			await expectIsolation(async ({ DataStore, Post, cycle }) => {
-				console.log('before configure sync');
 				await configureSync(DataStore);
-				console.log('before save unit test block');
 
 				// save an item to kickstart outbox processing.
 				await DataStore.save(
 					new Post({ title: `post from sync is cleaned up cycle ${cycle}` })
 				);
-
-				console.log('after save unit test block');
-
-				const debug = setInterval(() => {
-					console.log('jobs', (DataStore as any).sync.context.pending);
-				}, 1000);
-
-				setTimeout(() => clearInterval(debug), 4000);
-			}, 5);
-			console.log('after expectIsolation');
-
-			expect(true).toBe(true);
+			});
 		});
 
-		// future scope.
+		//
+		// TODO: define what happens if DataStore is instantiated N times
+		// simultaneously.
+		//
 		test.skip('multiple DataStore imports << X >> (ideally: X = "work together perfectly well")', async () => {
 			const { DataStore: DataStoreA, Post: PostA } = getDataStore();
 			const { DataStore: DataStoreB, Post: PostB } = getDataStore();

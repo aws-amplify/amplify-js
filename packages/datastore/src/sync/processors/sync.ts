@@ -435,9 +435,9 @@ class SyncProcessor {
 	}
 
 	async stop() {
-		console.debug('stopping sync processor');
+		logger.debug('stopping sync processor');
 		this.context && (await this.context.exit());
-		console.debug('sync processor stopped');
+		logger.debug('sync processor stopped');
 	}
 }
 

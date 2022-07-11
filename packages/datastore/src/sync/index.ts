@@ -763,7 +763,7 @@ export class SyncEngine {
 			}, 'syncQueriesObservable main');
 
 			return this.context.addCleaner(async () => {
-				console.debug('cleaning syncQueriesObservable');
+				logger.debug('cleaning syncQueriesObservable');
 
 				if (syncQueriesSubscription) {
 					syncQueriesSubscription.unsubscribe();
@@ -793,7 +793,7 @@ export class SyncEngine {
 	 * that they're disconnected, done retrying, etc..
 	 */
 	public async stop() {
-		console.debug('stopping sync engine');
+		logger.debug('stopping sync engine');
 
 		// gracefully disconnect subscribers first.
 		this.unsubscribeConnectivity();
@@ -805,7 +805,7 @@ export class SyncEngine {
 
 		await this.syncQueriesProcessor.stop();
 		await this.datastoreConnectivity.stop();
-		// await this.subscriptionsProcessor.stop();
+		await this.subscriptionsProcessor.stop();
 		await this.mutationsProcessor.stop();
 
 		// do we need to "stop" storage?
@@ -818,7 +818,7 @@ export class SyncEngine {
 		await this.context.exit();
 
 		this.context = new JobContext();
-		console.debug('sync engine stopped and ready to restart');
+		logger.debug('sync engine stopped and ready to restart');
 	}
 
 	private async setupModels(params: StartParams) {

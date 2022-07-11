@@ -131,10 +131,10 @@ class MutationProcessor {
 	}
 
 	public async stop() {
-		console.debug('stopping mutation processor');
+		logger.debug('stopping mutation processor');
 		await this.context.exit();
 		this.context = new JobContext();
-		console.debug('mutation processor stopped and ready for restart');
+		logger.debug('mutation processor stopped and ready for restart');
 	}
 
 	public async resume(): Promise<void> {
