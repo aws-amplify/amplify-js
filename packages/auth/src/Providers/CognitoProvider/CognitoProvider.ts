@@ -42,6 +42,7 @@ import {
 	authzMachineEvents,
 } from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
+import { access } from 'fs';
 
 const logger = new Logger('CognitoProvider');
 
@@ -102,6 +103,8 @@ export class CognitoProvider implements AuthProvider {
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
+	private storedAuth: { [key: string]: any } = {};
+	private storedUnAuth: { [key: string]: any } = {};
 
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
@@ -221,6 +224,7 @@ export class CognitoProvider implements AuthProvider {
 				signInFlow: this._authFlow,
 			})
 		);
+		this._authzService.send(authzMachineEvents.signInRequested());
 		// this._authService.send({
 		// 	type: 'signInRequested',
 		// 	signInEventParams: {
@@ -345,8 +349,87 @@ export class CognitoProvider implements AuthProvider {
 		// 	});
 		// });
 
+		if (Object.keys(this.storedAuth).length > 0) {
+			// console.log(this.storedAuth.expiration);
+			const now = new Date();
+			// console.log('TIME NOW: ' + now);
+			// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
+			if (now < this.storedAuth.credentials.default.aws.expiration) {
+				console.log('token is good, fetched from storage');
+				return this.storedAuth;
+			} else {
+				console.log('token is expired, calling fetchSession API.');
+			}
+		}
+
+		// returns guest credentials if user is not signed in
+		if (!this._authService.state.matches('signedIn')) {
+			if (Object.keys(this.storedUnAuth).length > 0) {
+				// console.log(this.storedAuth.expiration);
+				const now = new Date();
+				// console.log('TIME NOW: ' + now);
+				// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
+				if (now < this.storedUnAuth.credentials.default.aws.expiration) {
+					console.log('token is good, fetched from storage');
+					return this.storedUnAuth;
+				} else {
+					console.log('token is expired, calling fetchSession API.');
+				}
+			}
+
+			// console.log('SIGNED OUT FLOW');
+			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
+			const sessionEstablishedState = await waitFor(this._authzService, state =>
+				state.matches('sessionEstablished')
+			);
+
+			this.storedUnAuth = {
+				user: {
+					userid: '',
+					username: '',
+				},
+				credentials: {
+					default: {
+						jwt: {
+							idToken: '',
+							accessToken: '',
+							refreshToken: '',
+						},
+						aws: this.shearAWSCredentials(
+							sessionEstablishedState.context.getSession[1]
+						),
+					},
+				},
+			};
+
+			return {
+				// sessionId: '',
+				user: {
+					// sub
+					userid: '',
+					username: '',
+					// identifiers: [],
+				},
+				credentials: {
+					default: {
+						jwt: {
+							idToken: '',
+							accessToken: '',
+							refreshToken: '',
+						},
+						// aws: sessionEstablishedState.context.getSession[1],
+						aws: this.shearAWSCredentials(
+							sessionEstablishedState.context.getSession[1]
+						),
+					},
+				},
+			};
+			// throw new Error('User is not signed in.');
+		}
+
 		// runs fetch session
-		this._authzService.send(authzMachineEvents.fetchAuthSession());
+		this._authzService.send(authzMachineEvents.signInRequested());
+		// this._authzService.send({type: 'signInRequested', authenticated: false});
 
 		// makes sure the config has both the region and an identity pool
 		const { region, identityPoolId } = this._config;
@@ -358,49 +441,53 @@ export class CognitoProvider implements AuthProvider {
 			logger.debug('No Cognito Federated Identity pool provided');
 			throw new Error('No Cognito Federated Identity pool provided');
 		}
-		const cognitoIdentityClient = this.createNewCognitoIdentityClient({
-			region: this._config.region,
-		});
-		// gets tokens
+		// const cognitoIdentityClient = this.createNewCognitoIdentityClient({
+		// 	region: this._config.region,
+		// });
+		// gets tokens from userpool
 		const session = this.getSessionData();
 
 		// makes sure session is valid
 		if (session === null) {
-			this._authzService.send(authzMachineEvents.noSession());
+			// this._authzService.send(authzMachineEvents.noSession());
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);
 		}
+
 		const { idToken, accessToken, refreshToken } = session;
-		const expiration = getExpirationTimeFromJWT(idToken);
-		console.log({ expiration });
-		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
-		const getIdRes = await cognitoIdentityClient.send(
-			new GetIdCommand({
-				IdentityPoolId: identityPoolId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
+		this._authzService.send(
+			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
 		);
-		if (!getIdRes.IdentityId) {
-			throw new Error('Could not get Identity ID');
-		}
-		// console.log('IDENTITY ID: ');
-		// console.log(getIdRes.IdentityId);
-		const getCredentialsRes = await cognitoIdentityClient.send(
-			new GetCredentialsForIdentityCommand({
-				IdentityId: getIdRes.IdentityId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
-		);
-		if (!getCredentialsRes.Credentials) {
-			throw new Error(
-				'No credentials from the response of GetCredentialsForIdentity call.'
-			);
-		}
+		// const expiration = getExpirationTimeFromJWT(idToken);
+		// console.log({ expiration });
+		// const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
+		// const getIdRes = await cognitoIdentityClient.send(
+		// 	new GetIdCommand({
+		// 		IdentityPoolId: identityPoolId,
+		// 		Logins: {
+		// 			[cognitoIDPLoginKey]: idToken,
+		// 		},
+		// 	})
+		// );
+		// if (!getIdRes.IdentityId) {
+		// 	throw new Error('Could not get Identity ID');
+		// }
+		// // console.log('IDENTITY ID: ' + getIdRes.IdentityId);
+		// // console.log(getIdRes.IdentityId);
+		// const getCredentialsRes = await cognitoIdentityClient.send(
+		// 	new GetCredentialsForIdentityCommand({
+		// 		IdentityId: getIdRes.IdentityId,
+		// 		Logins: {
+		// 			[cognitoIDPLoginKey]: idToken,
+		// 		},
+		// 	})
+		// );
+		// if (!getCredentialsRes.Credentials) {
+		// 	throw new Error(
+		// 		'No credentials from the response of GetCredentialsForIdentity call.'
+		// 	);
+		// }
 		// console.log('CREDENTIALS: ');
 		// console.log(getCredentialsRes.Credentials);
 		const cognitoClient = this.createNewCognitoClient({
@@ -411,7 +498,9 @@ export class CognitoProvider implements AuthProvider {
 				AccessToken: accessToken,
 			})
 		);
-		console.log({ getUserRes });
+		// console.log('USER RES');
+		// console.log(getUserRes);
+		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -420,15 +509,29 @@ export class CognitoProvider implements AuthProvider {
 		}
 
 		// runs after fetchSession has successfully occurred
-		this._authzService.send(authzMachineEvents.fetchedAuthSession());
+		// this._authzService.send(authzMachineEvents.fetched());
 
-		return {
-			sessionId: '',
+		// wait for sign in th complete
+		const authzService = this._authzService;
+		const sessionEstablishedState = await waitFor(authzService, state =>
+			state.matches('sessionEstablished')
+		);
+
+		// console.log('AUTHZ SERVICE TEST: ');
+
+		// console.log(sessionEstablishedState.context.getSession);
+
+		// console.log('STORED AUTH: ');
+		// console.log(this.storedAuth);
+
+		// this.storedAuth = this.shearAWSCredentials(
+		// 	sessionEstablishedState.context.getSession[1]
+		// );
+
+		this.storedAuth = {
 			user: {
-				// sub
 				userid: sub as string,
-				// maybe username
-				identifiers: [],
+				username: getUserRes.Username,
 			},
 			credentials: {
 				default: {
@@ -437,21 +540,43 @@ export class CognitoProvider implements AuthProvider {
 						accessToken,
 						refreshToken,
 					},
-					aws: this.shearAWSCredentials(getCredentialsRes),
+					aws: this.shearAWSCredentials(
+						sessionEstablishedState.context.getSession[1]
+					),
+				},
+			},
+		};
+
+		return {
+			// sessionId: '',
+			user: {
+				// sub
+				userid: sub as string,
+				username: getUserRes.Username,
+				// identifiers: [],
+			},
+			credentials: {
+				default: {
+					jwt: {
+						idToken,
+						accessToken,
+						refreshToken,
+					},
+					// aws: sessionEstablishedState.context.getSession[1],
+					aws: this.shearAWSCredentials(
+						sessionEstablishedState.context.getSession[1]
+					),
 				},
 			},
 		};
 	}
-	private shearAWSCredentials(
-		res: GetCredentialsForIdentityCommandOutput
-	): AWSCredentials {
-		if (!res.Credentials) {
+	private shearAWSCredentials(res: any): AWSCredentials {
+		if (!res) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
-			res.Credentials;
+		const { AccessKeyId, SecretKey, SessionToken, Expiration } = res;
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,
@@ -471,6 +596,7 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
+		this._authzService.send(authzMachineEvents.signInRequested());
 		this.clearCachedTokens();
 		dispatchAuthEvent(
 			'signOut',
