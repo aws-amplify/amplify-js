@@ -15,16 +15,16 @@ import { Reachability } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 // Internal types for tracking different connection states
-type ConnectivityState = 'connected' | 'disconnected';
-type HealthState = 'healthy' | 'unhealthy';
-type ConnectionState = {
-	networkState: ConnectivityState;
-	connectionState: ConnectivityState | 'connecting';
-	intendedConnectionState: ConnectivityState;
-	keepAliveState: HealthState;
+type LinkedConnectionState = 'connected' | 'disconnected';
+type LinkedConnectionHealthState = 'healthy' | 'unhealthy';
+type LinkedConnectionStates = {
+	networkState: LinkedConnectionState;
+	connectionState: LinkedConnectionState | 'connecting';
+	intendedConnectionState: LinkedConnectionState;
+	keepAliveState: LinkedConnectionHealthState;
 };
 
-export type ConnectionHealthState =
+export type ConnectionState =
 	| 'Connected'
 	| 'ConnectedPendingNetwork'
 	| 'ConnectionDisrupted'
@@ -38,9 +38,9 @@ export class ConnectionStateMonitor {
 	/**
 	 * @private
 	 */
-	private _connectionState: ConnectionState;
-	private _connectionStateObservable: Observable<ConnectionState>;
-	private _connectionStateObserver: ZenObservable.SubscriptionObserver<ConnectionState>;
+	private _connectionState: LinkedConnectionStates;
+	private _connectionStateObservable: Observable<LinkedConnectionStates>;
+	private _connectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 
 	constructor() {
 		this._connectionState = {
@@ -50,7 +50,7 @@ export class ConnectionStateMonitor {
 			keepAliveState: 'healthy',
 		};
 
-		this._connectionStateObservable = new Observable<ConnectionState>(
+		this._connectionStateObservable = new Observable<LinkedConnectionStates>(
 			connectionStateObserver => {
 				connectionStateObserver.next(this._connectionState);
 				this._connectionStateObserver = connectionStateObserver;
@@ -68,11 +68,11 @@ export class ConnectionStateMonitor {
 	/**
 	 * Get the observable that allows us to monitor the connection health
 	 *
-	 * @returns {Observable<ConnectionHealthState>} - The observable that emits ConnectionHealthState updates
+	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionHealthState updates
 	 */
-	public get connectionHealthStateObservable(): Observable<ConnectionHealthState> {
+	public get connectionHealthStateObservable(): Observable<ConnectionState> {
 		// Translate from connection states to ConnectionHealthStates, then remove any duplicates
-		let previous: ConnectionHealthState;
+		let previous: ConnectionState;
 		return this._connectionStateObservable
 			.map(value => {
 				return this.connectionStateToConnectionHealth(value);
@@ -87,7 +87,7 @@ export class ConnectionStateMonitor {
 	/**
 	 * Tell the monitor that the connection has been disconnected
 	 */
-	disconnected() {
+	closed() {
 		this.updateConnectionState({ connectionState: 'disconnected' });
 	}
 
@@ -104,7 +104,7 @@ export class ConnectionStateMonitor {
 	/**
 	 * Tell the monitor that the connection is disconnecting
 	 */
-	disconnecting() {
+	closing() {
 		this.updateConnectionState({ intendedConnectionState: 'disconnected' });
 	}
 
@@ -143,7 +143,9 @@ export class ConnectionStateMonitor {
 	 * @private
 	 */
 
-	private updateConnectionState(statusUpdates: Partial<ConnectionState>) {
+	private updateConnectionState(
+		statusUpdates: Partial<LinkedConnectionStates>
+	) {
 		// Maintain the socket state
 		const newSocketStatus = { ...this._connectionState, ...statusUpdates };
 
@@ -160,7 +162,7 @@ export class ConnectionStateMonitor {
 		networkState,
 		intendedConnectionState,
 		keepAliveState,
-	}: ConnectionState): ConnectionHealthState {
+	}: LinkedConnectionStates): ConnectionState {
 		if (connectionState === 'connected' && networkState === 'disconnected')
 			return 'ConnectedPendingNetwork';
 

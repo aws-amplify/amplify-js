@@ -25,13 +25,13 @@ jest.mock('@aws-amplify/core', () => ({
 import Observable from 'zen-observable-ts';
 import { Reachability } from '@aws-amplify/core';
 import {
-	ConnectionHealthState,
+	ConnectionState,
 	ConnectionStateMonitor,
 } from '../src/utils/ConnectionStateMonitor';
 
 describe('ConnectionStateMonitor', () => {
 	let monitor: ConnectionStateMonitor;
-	let observedStates: ConnectionHealthState[];
+	let observedStates: ConnectionState[];
 	let subscription: ZenObservable.Subscription;
 	let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
 
@@ -90,7 +90,7 @@ describe('ConnectionStateMonitor', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			reachabilityObserver?.next?.({ online: false });
-			monitor.disconnected();
+			monitor.closed();
 			expect(observedStates).toEqual([
 				'Disconnected',
 				'Connecting',
@@ -104,7 +104,7 @@ describe('ConnectionStateMonitor', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			reachabilityObserver?.next?.({ online: false });
-			monitor.disconnected();
+			monitor.closed();
 			reachabilityObserver?.next?.({ online: true });
 			expect(observedStates).toEqual([
 				'Disconnected',
@@ -119,7 +119,7 @@ describe('ConnectionStateMonitor', () => {
 		test('connection health states when a connection is no longer needed', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
-			monitor.disconnecting();
+			monitor.closing();
 
 			expect(observedStates).toEqual([
 				'Disconnected',
@@ -132,8 +132,8 @@ describe('ConnectionStateMonitor', () => {
 		test('connection health states when a connection is no longer needed closed', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
-			monitor.disconnecting();
-			monitor.disconnected();
+			monitor.closing();
+			monitor.closed();
 
 			expect(observedStates).toEqual([
 				'Disconnected',

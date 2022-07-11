@@ -1,6 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
-import { ConnectionHealthState, CONNECTION_HEALTH_CHANGE } from '../src';
+import { ConnectionHealthState, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
 export function delay(timeout) {
@@ -35,7 +35,7 @@ export class FakeWebSocketInterface {
 
 		this.teardownHubListener = Hub.listen('api', (data: any) => {
 			const { payload } = data;
-			if (payload.event === CONNECTION_HEALTH_CHANGE) {
+			if (payload.event === CONNECTION_STATE_CHANGE) {
 				const healthState = payload.data
 					.connectionState as ConnectionHealthState;
 				this.observedConnectionHealthStates.push(healthState);

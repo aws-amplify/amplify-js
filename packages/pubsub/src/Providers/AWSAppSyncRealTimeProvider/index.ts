@@ -30,13 +30,13 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONNECTION_HEALTH_CHANGE, CONTROL_MSG } from '../../index';
+import { CONNECTION_STATE_CHANGE, CONTROL_MSG } from '../../index';
 import {
 	AMPLIFY_SYMBOL,
 	AWS_APPSYNC_REALTIME_HEADERS,
 	CONNECTION_INIT_TIMEOUT,
 	DEFAULT_KEEP_ALIVE_TIMEOUT,
-	KEEP_ALIVE_ALERT_TIMEOUT,
+	DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT,
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
@@ -102,7 +102,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		this.connectionStateMonitor.connectionHealthStateObservable.subscribe(
 			connectionHealthState => {
 				dispatchApiEvent(
-					CONNECTION_HEALTH_CHANGE,
+					CONNECTION_STATE_CHANGE,
 					{
 						provider: this,
 						connectionState: connectionHealthState,
@@ -168,7 +168,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							},
 						],
 					});
-					this.connectionStateMonitor.disconnected();
+					this.connectionStateMonitor.closed();
 					observer.complete();
 				});
 
@@ -285,7 +285,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		} catch (err) {
 			logger.debug({ err });
 			const message = err['message'] ?? '';
-			this.connectionStateMonitor.disconnected();
+			this.connectionStateMonitor.closed();
 			observer.error({
 				errors: [
 					{
@@ -390,12 +390,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			this.socketStatus = SOCKET_STATUS.CLOSED;
 			return;
 		}
+
+		this.connectionStateMonitor.closing();
+
 		if (this.awsRealTimeSocket.bufferedAmount > 0) {
 			// Still data on the WebSocket
 			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
 			logger.debug('closing WebSocket...');
-			this.connectionStateMonitor.disconnecting();
 			if (this.keepAliveTimeoutId) {
 				clearTimeout(this.keepAliveTimeoutId);
 			}
@@ -409,7 +411,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
-			this.connectionStateMonitor.disconnected();
+			this.connectionStateMonitor.closed();
 		}
 	}
 
@@ -465,7 +467,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}
 			this.connectionStateMonitor.connectionEstablished();
 
-			// TODO: emit event on hub but it requires to store the id first
 			return;
 		}
 
@@ -479,7 +480,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			);
 			this.keepAliveAlertTimeoutId = setTimeout(() => {
 				this.connectionStateMonitor.keepAliveMissed();
-			}, KEEP_ALIVE_ALERT_TIMEOUT);
+			}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
 			this.connectionStateMonitor.keepAlive();
 			return;
 		}
@@ -527,7 +528,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		});
 		this.subscriptionObserverMap.clear();
 		if (this.awsRealTimeSocket) {
-			this.connectionStateMonitor.disconnected();
+			this.connectionStateMonitor.closed();
 			this.awsRealTimeSocket.close();
 		}
 

@@ -97,4 +97,4 @@ export const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
 /**
  * Default Time in milleseconds to alert for missed GQL_CONNECTION_KEEP_ALIVE message
  */
-export const KEEP_ALIVE_ALERT_TIMEOUT = 65 * 1000;
+export const DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT = 65 * 1000;
