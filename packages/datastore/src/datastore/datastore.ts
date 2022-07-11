@@ -1772,9 +1772,10 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
+		checkSchemaInitialized();
+
 		await this.context.exit();
 
-		checkSchemaInitialized();
 		if (this.storage === undefined) {
 			// connect to storage so that it can be cleared without fully starting DataStore
 			this.storage = new Storage(
@@ -1793,7 +1794,6 @@ class DataStore {
 		}
 
 		if (this.sync) {
-			// this.sync.unsubscribeConnectivity();
 			await this.sync.stop();
 		}
 
@@ -1814,25 +1814,20 @@ class DataStore {
 	 * running queries and terminates subscriptions."
 	 */
 	async stop(this: InstanceType<typeof DataStore>) {
-		if (this.initialized !== undefined) {
-			await this.start();
-		}
-
 		await this.context.exit();
-		this.context = new JobContext();
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
 
 		if (this.sync) {
-			this.sync.unsubscribeConnectivity();
+			await this.sync.stop();
 		}
-
-		await this.sync.stop();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
+
+		this.context = new JobContext();
 	}
 
 	/**

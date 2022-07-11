@@ -533,7 +533,7 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	async clear() {
-		await this.storage.clear();
+		await this.runExclusive(storage => storage.clear());
 	}
 
 	batchSave<T extends PersistentModel>(
