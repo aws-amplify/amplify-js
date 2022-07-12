@@ -22,7 +22,6 @@ import Observable from 'zen-observable-ts';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Constants,
 	Credentials,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
