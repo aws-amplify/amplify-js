@@ -16,8 +16,8 @@
 /packages/aws-amplify-vue @aws-amplify/amplify-js
 /packages/cache @aws-amplify/amplify-js
 /packages/core @elorzafe @manueliglesias @iartemiev
-/packages/datastore @svidgen @david-mcafee @manueliglesias
-/packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias
+/packages/datastore @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias @dpilch
 /packages/geo @thaddmt
 /packages/interactions @katiegoines
 /packages/predictions @elorzafe @stocaaro
