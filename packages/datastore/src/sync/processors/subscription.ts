@@ -24,12 +24,10 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate } from '../../util';
+import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
-
-const USER_AGENT_SUFFIX = '/DataStore';
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
@@ -385,13 +383,11 @@ class SubscriptionProcessor {
 									}`
 								);
 
-								const userAgentSuffix = USER_AGENT_SUFFIX;
-
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE }));
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][

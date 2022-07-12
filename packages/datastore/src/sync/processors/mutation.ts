@@ -26,7 +26,7 @@ import {
 	TypeConstructorMap,
 	ProcessName,
 } from '../../types';
-import { exhaustiveCheck, USER } from '../../util';
+import { exhaustiveCheck, USER, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -38,8 +38,6 @@ import {
 import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
-
-const USER_AGENT_SUFFIX = '/DataStore';
 
 const logger = new Logger('DataStore');
 
@@ -270,14 +268,12 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				const userAgentSuffix = USER_AGENT_SUFFIX;
-
 				const tryWith = {
 					query,
 					variables,
 					authMode,
 					authToken,
-					userAgentSuffix,
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 				};
 				let attempt = 0;
 
@@ -351,8 +347,6 @@ class MutationProcessor {
 										this.amplifyConfig
 									);
 
-									const userAgentSuffix = USER_AGENT_SUFFIX;
-
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
 									>await API.graphql({
@@ -360,7 +354,7 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
-										userAgentSuffix,
+										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 									});
 
 									return [serverData, opName, modelDefinition];
