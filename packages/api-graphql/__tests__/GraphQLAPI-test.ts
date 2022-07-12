@@ -971,11 +971,13 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			(api.graphql({
-				query,
-				variables,
-				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-			}) as any).subscribe();
+			(
+				api.graphql({
+					query,
+					variables,
+					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+				}) as any
+			).subscribe();
 
 			expect(spyon_pubsub).toBeCalledWith(
 				'',
@@ -1022,9 +1024,9 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			const observable = (api.graphql(
-				graphqlOperation(query, variables)
-			) as Observable<object>).subscribe({
+			const observable = (
+				api.graphql(graphqlOperation(query, variables)) as Observable<object>
+			).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
@@ -1079,10 +1081,12 @@ describe('API test', () => {
 				'x-custom-header': 'value',
 			};
 
-			const observable = (api.graphql(
-				graphqlOperation(query, variables),
-				additionalHeaders
-			) as Observable<object>).subscribe({
+			const observable = (
+				api.graphql(
+					graphqlOperation(query, variables),
+					additionalHeaders
+				) as Observable<object>
+			).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
@@ -1237,7 +1241,63 @@ describe('API test', () => {
 				},
 			});
 		});
-	});
+
+		test('happy-case-query with userAgentSuffix', async () => {
+			const spyonAuth = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
+				userAgentSuffix = '/DataStore';
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': `${Constants.userAgent}/DataStore`,
+			};
+
+			const body = {
+				query: getEventQuery,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+			let authToken: undefined;
+
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken, userAgentSuffix));
+
+			expect(spyon).toBeCalledWith(url, init);
+		});
 
 	describe('configure test', () => {
 		test('without aws_project_region', () => {

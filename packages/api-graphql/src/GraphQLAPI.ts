@@ -43,11 +43,13 @@ const logger = new Logger('GraphQLAPI');
 export const graphqlOperation = (
 	query,
 	variables = {},
-	authToken?: string
+	authToken?: string,
+	userAgentSuffix?: string
 ) => ({
 	query,
 	variables,
 	authToken,
+	userAgentSuffix,
 });
 
 /**
