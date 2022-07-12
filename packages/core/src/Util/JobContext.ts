@@ -82,14 +82,6 @@ export class JobContext {
 	add(job: JobContext, description?: string);
 
 	add(jobOrDescription?, optionalDescription?) {
-		if (this.locked) {
-			return Promise.reject(
-				new Error(
-					'The context is locked, which occurs after exit() has been called.'
-				)
-			);
-		}
-
 		let job;
 		let description: string;
 
@@ -100,6 +92,9 @@ export class JobContext {
 			job = jobOrDescription;
 			description = optionalDescription;
 		}
+
+		const error = this.lockedFailure(job, description);
+		if (error) return error;
 
 		if (job === undefined) {
 			return this.addHooks(description);
@@ -267,6 +262,22 @@ export class JobContext {
 	 */
 	get pending() {
 		return this.jobs.map(job => job.description);
+	}
+
+	private lockedFailure(job, description: string) {
+		if (this.locked) {
+			return Promise.reject(
+				new Error(
+					[
+						'The context is locked, which occurs after exit() has been called.',
+						`This error occurred trying to add "${description}" while the`,
+						`following items were still pending: [\n${this.pending
+							.map(t => '  ' + t)
+							.join(',\n')}\n]`,
+					].join('\n')
+				)
+			);
+		}
 	}
 
 	/**

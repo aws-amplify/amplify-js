@@ -546,4 +546,38 @@ describe('JobContext', () => {
 
 		await context.exit();
 	});
+
+	test('context locked error for named additions shows name in error', async () => {
+		const context = new JobContext();
+		await context.exit();
+
+		try {
+			await context.add(async () => {}, 'some job');
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toContain('some job');
+		}
+	});
+
+	test('context locked error shows names of pending items in error', async () => {
+		const context = new JobContext();
+
+		let unblock;
+		context.add(
+			() => new Promise(_unblock => (unblock = _unblock)),
+			'blocking job'
+		);
+
+		const exit = context.exit();
+
+		try {
+			await context.add(async () => {}, 'some job');
+			expect(true).toBe(false);
+		} catch (error) {
+			expect(error.message).toContain('blocking job');
+		}
+
+		unblock();
+		await exit;
+	});
 });
