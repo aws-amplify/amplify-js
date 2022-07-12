@@ -35,8 +35,8 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	}
 }
 
-export const getAmplifyUserAgent = () => {
-	return Platform.userAgent;
+export const getAmplifyUserAgent = (content?: string | null) => {
+	return `${Platform.userAgent}${content ? content : ''}`;
 };
 
 /**
