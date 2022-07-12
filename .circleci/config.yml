@@ -1185,6 +1185,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - ds-schema-drift
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
