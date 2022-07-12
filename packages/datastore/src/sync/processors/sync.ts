@@ -19,6 +19,7 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
@@ -35,7 +36,6 @@ const opResultDefaults = {
 };
 
 const logger = new Logger('DataStore');
-const USER_AGENT_SUFFIX = '/DataStore';
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
@@ -209,14 +209,12 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					const userAgentSuffix = USER_AGENT_SUFFIX;
-
 					return await API.graphql({
 						query,
 						variables,
 						authMode,
 						authToken,
-						userAgentSuffix,
+						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 					});
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
