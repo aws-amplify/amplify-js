@@ -70,7 +70,7 @@ export class ConnectionStateMonitor {
 	 *
 	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionState updates
 	 */
-	public get ConnectionStateObservable(): Observable<ConnectionState> {
+	public get connectionStateObservable(): Observable<ConnectionState> {
 		// Translate from connection states to ConnectionStates, then remove any duplicates
 		let previous: ConnectionState;
 		return this._connectionStateObservable

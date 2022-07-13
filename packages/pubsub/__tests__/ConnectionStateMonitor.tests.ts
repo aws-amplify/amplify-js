@@ -53,16 +53,16 @@ describe('ConnectionStateMonitor', () => {
 			observedStates = [];
 			subscription?.unsubscribe();
 			monitor = new ConnectionStateMonitor();
-			subscription = monitor.ConnectionStateObservable.subscribe(value => {
+			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
 		});
 
-		test('connection health states starts out disconnected', () => {
+		test('connection states starts out disconnected', () => {
 			expect(observedStates).toEqual(['Disconnected']);
 		});
 
-		test('standard health states connection pattern', () => {
+		test('standard states connection pattern', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			expect(observedStates).toEqual([
@@ -72,7 +72,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when the network is lost while connected', () => {
+		test('connection states when the network is lost while connected', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			reachabilityObserver?.next?.({ online: false });
@@ -84,7 +84,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when the network is lost and the connection times out', () => {
+		test('connection states when the network is lost and the connection times out', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			reachabilityObserver?.next?.({ online: false });
@@ -98,7 +98,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when the network is lost, the connection times out and then the network recovers', () => {
+		test('connection states when the network is lost, the connection times out and then the network recovers', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			reachabilityObserver?.next?.({ online: false });
@@ -114,7 +114,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when a connection is no longer needed', () => {
+		test('connection states when a connection is no longer needed', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			monitor.closing();
@@ -127,7 +127,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when a connection is no longer needed closed', () => {
+		test('connection states when a connection is no longer needed closed', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			monitor.closing();
@@ -142,7 +142,7 @@ describe('ConnectionStateMonitor', () => {
 			]);
 		});
 
-		test('connection health states when a connection misses a keepalive, and then recovers', () => {
+		test('connection states when a connection misses a keepalive, and then recovers', () => {
 			monitor.openingConnection();
 			monitor.connectionEstablished();
 			monitor.keepAliveMissed();
@@ -213,7 +213,7 @@ describe('ConnectionStateMonitor', () => {
 			observedStates = [];
 			subscription?.unsubscribe();
 			monitor = new ConnectionStateMonitor();
-			subscription = monitor.ConnectionStateObservable.subscribe(value => {
+			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
 		});

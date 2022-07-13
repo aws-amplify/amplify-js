@@ -98,8 +98,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	constructor(options: ProviderOptions = {}) {
 		super(options);
-		// Monitor the connection health state and pass changes along to Hub
-		this.connectionStateMonitor.ConnectionStateObservable.subscribe(
+		// Monitor the connection state and pass changes along to Hub
+		this.connectionStateMonitor.connectionStateObservable.subscribe(
 			ConnectionState => {
 				dispatchApiEvent(
 					CONNECTION_STATE_CHANGE,

@@ -55,7 +55,7 @@ export class FakeWebSocketInterface {
 		});
 	}
 
-	ConnectionStateObserver() {
+	connectionStateObserver() {
 		return new Observable(observer => {
 			this.connectionStateObservers.push(observer);
 		});
@@ -167,7 +167,7 @@ export class FakeWebSocketInterface {
 
 	async waitForConnectionState(connectionStates: ConnectionState[]) {
 		return new Promise<void>((res, rej) => {
-			this.ConnectionStateObserver().subscribe(value => {
+			this.connectionStateObserver().subscribe(value => {
 				if (connectionStates.includes(String(value) as ConnectionState)) {
 					res(undefined);
 				}
