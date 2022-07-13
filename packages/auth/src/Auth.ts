@@ -41,7 +41,7 @@ import {
 	StorageHelper,
 	ICredentials,
 	Parser,
-	JS,
+	browserOrNode,
 	UniversalStorage,
 	urlSafeDecode,
 } from '@aws-amplify/core';
@@ -107,8 +107,7 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
-	private inflightSessionPromise: Promise<void> = null;
-	private inflightSession = false;
+	private inflightSessionPromise: Promise<CognitoUserSession> = null;
 	Credentials = Credentials;
 
 	/**
@@ -1645,39 +1644,14 @@ export class AuthClass {
 		});
 	}
 
-	private _userSession({
-		user,
-		bypassCache = false,
-	}): Promise<CognitoUserSession> {
+	private _promisifiedGetUserSession(user, bypassCache = false) {
 		if (!user) {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-		return new Promise(async (resolve, rej) => {
-			// debugger;
-			logger.debug('Getting the session from this user:', user);
-
-			let debounceResolver;
-
-			if (this.inflightSession) {
-				logger.debug('Waiting for another userSession call:');
-				await this.inflightSessionPromise;
-				logger.debug('Debouncer resolved');
-			} else {
-				logger.debug('Debouncer head');
-				this.inflightSession = true;
-				this.inflightSessionPromise = new Promise(res => {
-					debounceResolver = () => {
-						logger.debug('Debouncer resolving');
-						this.inflightSessionPromise = null;
-						this.inflightSession = false;
-						res();
-					};
-				});
-			}
-
+		return new Promise((res, rej) => {
 			user.getSession(
 				async (err, session) => {
 					if (err) {
@@ -1691,29 +1665,139 @@ export class AuthClass {
 										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
 									)
 								);
-								if (debounceResolver) {
-									debounceResolver();
-								}
 								return;
 							}
 						}
 						rej(err);
-						if (debounceResolver) {
-							debounceResolver();
-						}
 						return;
 					} else {
 						logger.debug('Succeed to get the user session', session);
-						resolve(session);
-						if (debounceResolver) {
-							debounceResolver();
-						}
+						res(session);
 						return;
 					}
 				},
 				{ clientMetadata, bypassCache }
 			);
 		});
+	}
+
+	private async _userSession({
+		user,
+		bypassCache = false,
+	}): Promise<CognitoUserSession> {
+		if (!user) {
+			logger.debug('the user is null');
+			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
+		}
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+		if (this.inflightSessionPromise instanceof Promise) {
+			return await this.inflightSessionPromise;
+		} else {
+			return (this.inflightSessionPromise = new Promise<CognitoUserSession>(
+				(resolve, rej) => {
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the session from user', user);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
+								}
+								rej(err);
+								return;
+							} else {
+								logger.debug('Succeed to get the user session', session);
+								resolve(session);
+								return;
+							}
+						},
+						{ clientMetadata, bypassCache }
+					);
+				}
+			)
+				.then(session => {
+					this.inflightSessionPromise = null;
+					return session;
+				})
+				.catch(err => {
+					this.inflightSessionPromise = null;
+					throw err;
+				}));
+		}
+
+		// return new Promise(async (resolve, rej) => {
+		// 	// debugger;
+		// 	logger.debug('Getting the session from this user:', user);
+		//
+		// 	let debounceResolver;
+		//
+		// 	if (this.inflightSession) {
+		// 		logger.debug('Waiting for another userSession call:');
+		// 		logger.debug('Debouncer resolving..');
+		// 		return await this.inflightSessionPromise;
+		// 	} else {
+		// 		logger.debug('Debouncer head');
+		// 		this.inflightSession = true;
+		// 		this.inflightSessionPromise = new Promise<CognitoUserSession>(res => {
+		// 			debounceResolver = (errOrSession: Error | CognitoUserSession) => {
+		// 				logger.debug('Debouncer resolving');
+		// 				this.inflightSessionPromise = null;
+		// 				this.inflightSession = false;
+		// 				if (errOrSession instanceof Error) {
+		// 					rej(errOrSession);
+		// 				}
+		// 				else {
+		// 					res(errOrSession);
+		// 				}
+		// 			};
+		// 		});
+		// 	}
+		//
+		// 	user.getSession(
+		// 		async (err, session) => {
+		// 			if (err) {
+		// 				logger.debug('Failed to get the session from user', user);
+		// 				if (this.isSessionInvalid(err)) {
+		// 					try {
+		// 						await this.cleanUpInvalidSession(user);
+		// 					} catch (cleanUpError) {
+		// 						rej(
+		// 							new Error(
+		// 								`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+		// 							)
+		// 						);
+		// 						if (debounceResolver) {
+		// 							debounceResolver();
+		// 						}
+		// 						return;
+		// 					}
+		// 				}
+		// 				rej(err);
+		// 				if (debounceResolver) {
+		// 					debounceResolver();
+		// 				}
+		// 				return;
+		// 			} else {
+		// 				logger.debug('Succeed to get the user session', session);
+		// 				resolve(session);
+		// 				if (debounceResolver) {
+		// 					debounceResolver();
+		// 				}
+		// 				return;
+		// 			}
+		// 		},
+		// 		{ clientMetadata, bypassCache }
+		// 	);
+		// });
 	}
 
 	/**
@@ -1924,7 +2008,7 @@ export class AuthClass {
 		resolve: () => void,
 		reject: (reason?: any) => void
 	) {
-		const { isBrowser } = JS.browserOrNode();
+		const { isBrowser } = browserOrNode();
 
 		if (isBrowser) {
 			this.oAuthSignOutRedirectOrReject(reject);
@@ -2292,7 +2376,7 @@ export class AuthClass {
 			);
 
 			const currentUrl =
-				URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
+				URL || (browserOrNode().isBrowser ? window.location.href : '');
 
 			const hasCodeOrError = !!(parse(currentUrl).query || '')
 				.split('&')
