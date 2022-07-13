@@ -904,6 +904,7 @@ class DataStore {
 
 				this.syncPredicates = await this.processSyncExpressions();
 
+				console.debug('Attaching a new sync engine');
 				this.sync = new SyncEngine(
 					schema,
 					namespaceResolver,
@@ -1370,35 +1371,41 @@ class DataStore {
 						.filter(({ model }) => namespaceResolver(model) === USER)
 						.subscribe({
 							next: item =>
-								this.context.add(async () => {
-									// the `element` doesn't necessarily contain all item details or
-									// have related records attached consistently with that of a query()
-									// result item. for consistency, we attach them here.
+								this.context
+									.add(async () => {
+										// the `element` doesn't necessarily contain all item details or
+										// have related records attached consistently with that of a query()
+										// result item. for consistency, we attach them here.
 
-									let message = item;
+										let message = item;
 
-									// as long as we're not dealing with a DELETE, we need to fetch a fresh
-									// item from storage to ensure it's fully populated.
-									if (item.opType !== 'DELETE') {
-										const modelDefinition = getModelDefinition(item.model);
-										const keyFields =
-											extractPrimaryKeyFieldNames(modelDefinition);
-										const primaryKeysAndValues = extractPrimaryKeysAndValues(
-											item.element,
-											keyFields
-										);
-										const freshElement = await this.query(
-											item.model,
-											primaryKeysAndValues
-										);
-										message = {
-											...message,
-											element: freshElement as T,
-										};
-									}
+										// as long as we're not dealing with a DELETE, we need to fetch a fresh
+										// item from storage to ensure it's fully populated.
+										if (item.opType !== 'DELETE') {
+											const modelDefinition = getModelDefinition(item.model);
+											const keyFields =
+												extractPrimaryKeyFieldNames(modelDefinition);
+											const primaryKeysAndValues = extractPrimaryKeysAndValues(
+												item.element,
+												keyFields
+											);
+											const freshElement = await this.query(
+												item.model,
+												primaryKeysAndValues
+											);
+											message = {
+												...message,
+												element: freshElement as T,
+											};
+										}
 
-									observer.next(message as SubscriptionMessage<T>);
-								}),
+										observer.next(message as SubscriptionMessage<T>);
+									}, 'is it this one?')
+									.catch(error => {
+										if (!error.message.match(/The context is locked/)) {
+											throw error;
+										}
+									}),
 							error: err => observer.error(err),
 							complete: () => observer.complete(),
 						});
@@ -1772,7 +1779,7 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
-		checkSchemaInitialized();
+		// checkSchemaInitialized();
 
 		await this.context.exit();
 

@@ -43,6 +43,7 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
+import { on } from 'cluster';
 
 const MAX_ATTEMPTS = 10;
 
@@ -117,10 +118,20 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
+		console.debug('start-ish mutation processor');
+		this.context = new JobContext();
+
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
 
-			this.resume();
+			console.debug('starting/subscribing mutation processor');
+
+			try {
+				this.resume();
+			} catch (error) {
+				console.error('mutations start', error);
+				throw error;
+			}
 
 			return this.context.addCleaner(async () => {
 				this.pause();
@@ -131,129 +142,162 @@ class MutationProcessor {
 	}
 
 	public async stop() {
-		logger.debug('stopping mutation processor');
+		console.debug('stopping mutation processor');
 		await this.context.exit();
-		this.context = new JobContext();
-		logger.debug('mutation processor stopped and ready for restart');
+		// this.context = new JobContext();
+		console.debug('mutation processor stopped and ready for restart');
 	}
 
 	public async resume(): Promise<void> {
-		return this.context.add(async onTerminate => {
-			if (this.processing || !this.isReady()) {
-				return;
-			}
+		let terminated = false;
 
-			this.processing = true;
-			let head: MutationEvent;
-			const namespaceName = USER;
+		return this.context
+			.add(async onTerminate => {
+				onTerminate.then(() => {
+					terminated = true;
+				});
 
-			// start to drain outbox
-			while (
-				this.processing &&
-				(head = await this.outbox.peek(this.storage)) !== undefined
-			) {
-				const { model, operation, data, condition } = head;
-				const modelConstructor = this.userClasses[
-					model
-				] as PersistentModelConstructor<MutationEvent>;
-				let result: GraphQLResult<Record<string, PersistentModel>>;
-				let opName: string;
-				let modelDefinition: SchemaModel;
+				if (this.processing || !this.isReady() || terminated) {
+					return;
+				}
 
-				try {
-					const modelAuthModes = await getModelAuthModes({
-						authModeStrategy: this.authModeStrategy,
-						defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
-						modelName: model,
-						schema: this.schema,
-					});
+				this.processing = true;
+				let head: MutationEvent;
+				const namespaceName = USER;
 
-					const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+				// start to drain outbox
+				while (
+					this.processing &&
+					!terminated &&
+					(head = await this.outbox.peek(this.storage)) !== undefined
+				) {
+					console.log('starting mutation loop with head', head);
 
-					let authModeAttempts = 0;
-					const authModeRetry = async () => {
-						try {
-							logger.debug(
-								`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
-							);
-							const response = await this.jitteredRetry(
-								namespaceName,
-								model,
-								operation,
-								data,
-								condition,
-								modelConstructor,
-								this.MutationEvent,
-								head,
-								operationAuthModes[authModeAttempts],
-								onTerminate
-							);
+					const { model, operation, data, condition } = head;
+					const modelConstructor = this.userClasses[
+						model
+					] as PersistentModelConstructor<MutationEvent>;
+					let result: GraphQLResult<Record<string, PersistentModel>>;
+					let opName: string;
+					let modelDefinition: SchemaModel;
 
-							logger.debug(
-								`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
-							);
+					try {
+						const modelAuthModes = await getModelAuthModes({
+							authModeStrategy: this.authModeStrategy,
+							defaultAuthMode:
+								this.amplifyConfig.aws_appsync_authenticationType,
+							modelName: model,
+							schema: this.schema,
+						});
 
-							return response;
-						} catch (error) {
-							authModeAttempts++;
-							if (authModeAttempts >= operationAuthModes.length) {
+						const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+
+						let authModeAttempts = 0;
+						const authModeRetry = async () => {
+							try {
+								logger.debug(
+									`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
+								);
+								const response = await this.jitteredRetry(
+									namespaceName,
+									model,
+									operation,
+									data,
+									condition,
+									modelConstructor,
+									this.MutationEvent,
+									head,
+									operationAuthModes[authModeAttempts],
+									onTerminate
+								);
+
+								logger.debug(
+									`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
+								);
+
+								return response;
+							} catch (error) {
+								authModeAttempts++;
+								if (authModeAttempts >= operationAuthModes.length) {
+									logger.debug(
+										`Mutation failed with authMode: ${
+											operationAuthModes[authModeAttempts - 1]
+										}`
+									);
+									throw error;
+								}
 								logger.debug(
 									`Mutation failed with authMode: ${
 										operationAuthModes[authModeAttempts - 1]
+									}. Retrying with authMode: ${
+										operationAuthModes[authModeAttempts]
 									}`
 								);
+								return await authModeRetry();
+							}
+						};
+
+						[result, opName, modelDefinition] = await authModeRetry();
+					} catch (error) {
+						if (
+							error.message === 'Offline' ||
+							error.message === 'RetryMutation'
+						) {
+							continue;
+						}
+					}
+
+					if (result === undefined) {
+						logger.debug('done retrying');
+						await this.storage.runExclusive(async storage => {
+							/**
+							 *
+							 *   OK LOOK!!
+							 *
+							 * This dequeue() is's causing issues. It's trying to dequeue
+							 * from the outbox when the outbox is empty.
+							 *
+							 * But, the problem is likely more related to the fact that we're just
+							 * not canceling this whole loop correctly. Need to trace through this
+							 * and sort out WTF should really be happening here.
+							 *
+							 */
+							try {
+								await this.outbox.dequeue(storage);
+							} catch (error) {
+								console.error('CAUGHT DEQUEUE ERROR', head, error);
 								throw error;
 							}
-							logger.debug(
-								`Mutation failed with authMode: ${
-									operationAuthModes[authModeAttempts - 1]
-								}. Retrying with authMode: ${
-									operationAuthModes[authModeAttempts]
-								}`
-							);
-							return await authModeRetry();
-						}
-					};
-
-					[result, opName, modelDefinition] = await authModeRetry();
-				} catch (error) {
-					if (
-						error.message === 'Offline' ||
-						error.message === 'RetryMutation'
-					) {
+						});
 						continue;
 					}
-				}
 
-				if (result === undefined) {
-					logger.debug('done retrying');
+					const record = result.data[opName];
+					let hasMore = false;
+
 					await this.storage.runExclusive(async storage => {
-						await this.outbox.dequeue(storage);
+						// using runExclusive to prevent possible race condition
+						// when another record gets enqueued between dequeue and peek
+						await this.outbox.dequeue(storage, record, operation);
+						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
-					continue;
+
+					this.observer.next({
+						operation,
+						modelDefinition,
+						model: record,
+						hasMore,
+					});
 				}
 
-				const record = result.data[opName];
-				let hasMore = false;
-
-				await this.storage.runExclusive(async storage => {
-					// using runExclusive to prevent possible race condition
-					// when another record gets enqueued between dequeue and peek
-					await this.outbox.dequeue(storage, record, operation);
-					hasMore = (await this.outbox.peek(storage)) !== undefined;
-				});
-
-				this.observer.next({
-					operation,
-					modelDefinition,
-					model: record,
-					hasMore,
-				});
-			}
-
-			// pauses itself
-			this.pause();
-		});
+				// pauses itself
+				this.pause();
+			}, 'mutation resume loop')
+			.catch(error => {
+				if (!error.message.match(/The context is locked/)) {
+					throw error;
+				}
+			});
 	}
 
 	private async jitteredRetry(
@@ -310,6 +354,11 @@ class MutationProcessor {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
 							await this.amplifyContext.API.graphql(tryWith)
 						);
+
+						// onTerminate.then(() => {
+						// 	// API.cancel()
+						// });
+
 						// `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params???
 						return [result, opName, modelDefinition] as any;
@@ -384,6 +433,8 @@ class MutationProcessor {
 										authToken,
 										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 									});
+
+									// onTerminate cancel graphql()
 
 									return [serverData, opName, modelDefinition];
 								}

@@ -444,7 +444,12 @@ export class SyncEngine {
 								await startPromise;
 
 								if (this.online) {
-									this.mutationsProcessor.resume();
+									try {
+										this.mutationsProcessor.resume();
+									} catch (error) {
+										console.error('mutationProcessor.resume error', error);
+										throw error;
+									}
 								}
 							}, 'storage event'),
 					});
@@ -803,10 +808,10 @@ export class SyncEngine {
 		// unsubscribing doesn't allow us to wait for settling.
 		// (Whereas `stop()` does.)
 
-		await this.syncQueriesProcessor.stop();
-		await this.datastoreConnectivity.stop();
-		await this.subscriptionsProcessor.stop();
 		await this.mutationsProcessor.stop();
+		await this.subscriptionsProcessor.stop();
+		await this.datastoreConnectivity.stop();
+		await this.syncQueriesProcessor.stop();
 
 		// do we need to "stop" storage?
 		// await this.storage.stop();
