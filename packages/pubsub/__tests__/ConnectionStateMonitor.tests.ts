@@ -53,11 +53,9 @@ describe('ConnectionStateMonitor', () => {
 			observedStates = [];
 			subscription?.unsubscribe();
 			monitor = new ConnectionStateMonitor();
-			subscription = monitor.connectionHealthStateObservable.subscribe(
-				value => {
-					observedStates.push(value);
-				}
-			);
+			subscription = monitor.ConnectionStateObservable.subscribe(value => {
+				observedStates.push(value);
+			});
 		});
 
 		test('connection health states starts out disconnected', () => {
@@ -215,11 +213,9 @@ describe('ConnectionStateMonitor', () => {
 			observedStates = [];
 			subscription?.unsubscribe();
 			monitor = new ConnectionStateMonitor();
-			subscription = monitor.connectionHealthStateObservable.subscribe(
-				value => {
-					observedStates.push(value);
-				}
-			);
+			subscription = monitor.ConnectionStateObservable.subscribe(value => {
+				observedStates.push(value);
+			});
 		});
 
 		test('starts out disconnected', () => {

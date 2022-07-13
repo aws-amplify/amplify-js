@@ -16,12 +16,12 @@ import Observable, { ZenObservable } from 'zen-observable-ts';
 
 // Internal types for tracking different connection states
 type LinkedConnectionState = 'connected' | 'disconnected';
-type LinkedConnectionHealthState = 'healthy' | 'unhealthy';
+type LinkedHealthState = 'healthy' | 'unhealthy';
 type LinkedConnectionStates = {
 	networkState: LinkedConnectionState;
 	connectionState: LinkedConnectionState | 'connecting';
 	intendedConnectionState: LinkedConnectionState;
-	keepAliveState: LinkedConnectionHealthState;
+	keepAliveState: LinkedHealthState;
 };
 
 export type ConnectionState =
@@ -66,16 +66,16 @@ export class ConnectionStateMonitor {
 	}
 
 	/**
-	 * Get the observable that allows us to monitor the connection health
+	 * Get the observable that allows us to monitor the connection state
 	 *
-	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionHealthState updates
+	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionState updates
 	 */
-	public get connectionHealthStateObservable(): Observable<ConnectionState> {
-		// Translate from connection states to ConnectionHealthStates, then remove any duplicates
+	public get ConnectionStateObservable(): Observable<ConnectionState> {
+		// Translate from connection states to ConnectionStates, then remove any duplicates
 		let previous: ConnectionState;
 		return this._connectionStateObservable
 			.map(value => {
-				return this.connectionStateToConnectionHealth(value);
+				return this.linkedConnectionStatesToConnectionState(value);
 			})
 			.filter(current => {
 				const toInclude = current !== previous;
@@ -155,9 +155,9 @@ export class ConnectionStateMonitor {
 	}
 
 	/*
-	 * Translate the ConnectionState structure into a specific ConnectionHealthState string literal union
+	 * Translate the ConnectionState structure into a specific ConnectionState string literal union
 	 */
-	private connectionStateToConnectionHealth({
+	private linkedConnectionStatesToConnectionState({
 		connectionState,
 		networkState,
 		intendedConnectionState,

@@ -1,6 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
-import { ConnectionHealthState, CONNECTION_STATE_CHANGE } from '../src';
+import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
 export function delay(timeout) {
@@ -16,11 +16,11 @@ export class FakeWebSocketInterface {
 	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
 	teardownHubListener: () => void;
-	observedConnectionHealthStates: ConnectionHealthState[] = [];
-	currentConnectionHealthState: ConnectionHealthState;
+	observedConnectionStates: ConnectionState[] = [];
+	currentConnectionState: ConnectionState;
 
 	private readyResolve: (value: PromiseLike<any>) => void;
-	private connectionHealthObservers: ZenObservable.Observer<ConnectionHealthState>[] =
+	private connectionStateObservers: ZenObservable.Observer<ConnectionState>[] =
 		[];
 
 	constructor() {
@@ -36,35 +36,34 @@ export class FakeWebSocketInterface {
 		this.teardownHubListener = Hub.listen('api', (data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_STATE_CHANGE) {
-				const healthState = payload.data
-					.connectionState as ConnectionHealthState;
-				this.observedConnectionHealthStates.push(healthState);
-				this.connectionHealthObservers.forEach(observer => {
-					observer?.next?.(healthState);
+				const connectionState = payload.data.connectionState as ConnectionState;
+				this.observedConnectionStates.push(connectionState);
+				this.connectionStateObservers.forEach(observer => {
+					observer?.next?.(connectionState);
 				});
-				this.currentConnectionHealthState = healthState;
+				this.currentConnectionState = connectionState;
 			}
 		});
 	}
 
-	allConnectionHealthStateObserver() {
+	allConnectionStateObserver() {
 		return new Observable(observer => {
-			this.observedConnectionHealthStates.forEach(state => {
+			this.observedConnectionStates.forEach(state => {
 				observer.next(state);
 			});
-			this.connectionHealthObservers.push(observer);
+			this.connectionStateObservers.push(observer);
 		});
 	}
 
-	connectionHealthStateObserver() {
+	ConnectionStateObserver() {
 		return new Observable(observer => {
-			this.connectionHealthObservers.push(observer);
+			this.connectionStateObservers.push(observer);
 		});
 	}
 
 	teardown() {
 		this.teardownHubListener();
-		this.connectionHealthObservers.forEach(observer => {
+		this.connectionStateObservers.forEach(observer => {
 			observer?.complete?.();
 		});
 	}
@@ -156,9 +155,9 @@ export class FakeWebSocketInterface {
 		await Promise.resolve();
 	}
 
-	async observesConnectionState(connectionState: ConnectionHealthState) {
+	async observesConnectionState(connectionState: ConnectionState) {
 		return new Promise<void>((res, rej) => {
-			this.allConnectionHealthStateObserver().subscribe(value => {
+			this.allConnectionStateObserver().subscribe(value => {
 				if (value === connectionState) {
 					res(undefined);
 				}
@@ -166,19 +165,19 @@ export class FakeWebSocketInterface {
 		});
 	}
 
-	async waitForConnectionState(connectionStates: ConnectionHealthState[]) {
+	async waitForConnectionState(connectionStates: ConnectionState[]) {
 		return new Promise<void>((res, rej) => {
-			this.connectionHealthStateObserver().subscribe(value => {
-				if (connectionStates.includes(String(value) as ConnectionHealthState)) {
+			this.ConnectionStateObserver().subscribe(value => {
+				if (connectionStates.includes(String(value) as ConnectionState)) {
 					res(undefined);
 				}
 			});
 		});
 	}
 
-	async waitUntilConnectionStateIn(connectionStates: ConnectionHealthState[]) {
+	async waitUntilConnectionStateIn(connectionStates: ConnectionState[]) {
 		return new Promise<void>((res, rej) => {
-			if (connectionStates.includes(this.currentConnectionHealthState)) {
+			if (connectionStates.includes(this.currentConnectionState)) {
 				res(undefined);
 			}
 			res(this.waitForConnectionState(connectionStates));

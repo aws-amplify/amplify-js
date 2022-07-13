@@ -138,9 +138,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
 						'Connected',
 					]);
-					expect(
-						fakeWebSocketInterface?.observedConnectionHealthStates
-					).toEqual(['Disconnected', 'Connecting', 'Connected']);
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
+						'Disconnected',
+						'Connecting',
+						'Connected',
+					]);
 
 					subscription.unsubscribe();
 
@@ -148,9 +150,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						'ConnectedPendingDisconnect',
 					]);
 
-					expect(
-						fakeWebSocketInterface?.observedConnectionHealthStates
-					).toEqual([
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
 						'Disconnected',
 						'Connecting',
 						'Connected',
@@ -606,9 +606,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						'ConnectionDisrupted',
 					]);
 
-					expect(
-						fakeWebSocketInterface?.observedConnectionHealthStates
-					).toContain('ConnectedPendingKeepAlive');
+					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
+						'ConnectedPendingKeepAlive'
+					);
 
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
