@@ -297,6 +297,7 @@ class IndexedDBAdapter implements Adapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
+		// debugger;
 
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
@@ -315,6 +316,8 @@ class IndexedDBAdapter implements Adapter {
 		const store = tx.objectStore(storeName);
 
 		const keyValues = this.getIndexKeyValues(model);
+		// Was getting by id here.
+		// debugger;
 		const fromDB = await this._get(store, keyValues);
 
 		if (condition && fromDB) {
@@ -336,8 +339,16 @@ class IndexedDBAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance, keys } = resItem;
 			const store = tx.objectStore(storeName);
-			const itemKeyValues = keys.map(key => item[key]);
+			const itemKeyValues = keys.map(key => {
+				const value = item[key]
+				console.log(keyValues);
+				// FIRST ISSUE: ITEM IS NOT A MODEL, BUT AN ARRAY, CAUSING CONSOLE ERROR
+				// debugger;
+				return value
+			});
 
+
+			// debugger;
 			const fromDB = <T>await this._get(store, itemKeyValues);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
@@ -348,6 +359,7 @@ class IndexedDBAdapter implements Adapter {
 			// Even if the parent is an INSERT, the child might not be, so we need to get its key
 			if (keysEqual || opType === OpType.INSERT) {
 				const key = await store.index('byPk').getKey(itemKeyValues);
+				// debugger;
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -383,6 +395,7 @@ class IndexedDBAdapter implements Adapter {
 		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
 
 		for await (const relation of relations) {
+			// target name, metadata, set by init
 			const { fieldName, modelName, targetName } = relation;
 			const storeName = this.getStorename(namespaceName, modelName);
 			const store = tx.objectStore(storeName);
@@ -390,26 +403,37 @@ class IndexedDBAdapter implements Adapter {
 				namespaceName,
 				modelName
 			);
-
+			
 			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
+
+						// extract the keys on the related model.
 						if (!recordItem[getByfield]) break;
+						
+						// THIRD ISSUE (find): 
+						// if model, will grab id, and set the target name on the child.
+						// see `save` switch
 
 						const key = [recordItem[getByfield]];
+						// SECOND ISSUE: CONNECTION RECORD IS NEVER POPULATED
+						// This MAY be just an issue with SK, attempting with PK now
+						// If so, the issue is that we are assuming there is ONE connection field.
 						const connectionRecord = await this._get(store, key);
-
+						console.log('is this ever retrieved?')
+						debugger;
 						recordItem[fieldName] =
 							connectionRecord &&
 							this.modelInstanceCreator(modelConstructor, connectionRecord);
 					}
-
 					break;
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
+						// debugger;
 						if (recordItem[targetName]) {
 							const key = [recordItem[targetName]];
+							// debugger;
 							const connectionRecord = await this._get(store, key);
 
 							recordItem[fieldName] =
@@ -418,7 +442,6 @@ class IndexedDBAdapter implements Adapter {
 							delete recordItem[targetName];
 						}
 					}
-
 					break;
 				case 'HAS_MANY':
 					// TODO: Lazy loading
@@ -482,6 +505,7 @@ class IndexedDBAdapter implements Adapter {
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
+		// debugger;
 		const record = <T>await this._get(storeName, keyValue);
 		return record;
 	}
@@ -684,6 +708,7 @@ class IndexedDBAdapter implements Adapter {
 				const store = tx.objectStore(storeName);
 				const keyValues = this.getIndexKeyValues(model);
 
+				// debugger;
 				const fromDB = await this._get(store, keyValues);
 
 				if (fromDB === undefined) {
@@ -918,6 +943,7 @@ class IndexedDBAdapter implements Adapter {
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
+			// debugger;
 
 			const keyValues = this.getIndexKeyValues(model);
 			const { _deleted } = item;
