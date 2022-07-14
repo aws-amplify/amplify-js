@@ -1691,10 +1691,10 @@ export class AuthClass {
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-		if (this.inflightSessionPromise instanceof Promise) {
+		if (this.inflightSessionPromise) {
 			return await this.inflightSessionPromise;
 		} else {
-			return (this.inflightSessionPromise = new Promise<CognitoUserSession>(
+			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(resolve, rej) => {
 					user.getSession(
 						async (err, session) => {
@@ -1731,7 +1731,8 @@ export class AuthClass {
 				.catch(err => {
 					this.inflightSessionPromise = null;
 					throw err;
-				}));
+				});
+			return this.inflightSessionPromise;
 		}
 
 		// return new Promise(async (resolve, rej) => {
