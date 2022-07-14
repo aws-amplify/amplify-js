@@ -24,10 +24,21 @@ import {
 	User,
 	pause,
 	testSchema,
+	getDataStore,
+	logDate,
+	expectIsolation,
+	configureSync,
+	pretendModelsAreSynced,
+	warpTime,
+	unwarpTime,
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
-let DataStore: typeof DataStoreType;
+// let DataStore: typeof DataStoreType;
+
+let { DataStore } = getDataStore() as {
+	DataStore: typeof DataStoreType;
+};
 
 const nameOf = <T>(name: keyof T) => name;
 
@@ -36,205 +47,12 @@ const nameOf = <T>(name: keyof T) => name;
  */
 const expectType: <T>(param: T) => void = () => {};
 
-function padLeft(str, width: number = 2, filler = '0') {
-	const pad = [...new Array(width)].map(entry => filler).join('');
-	const buffer = pad + String(str);
-	return buffer.substring(buffer.length - width, buffer.length);
-}
-
-function padRight(str, width: number, filler = '0') {
-	const pad = [...new Array(width)].map(entry => filler).join('');
-	const buffer = String(str) + pad;
-	return buffer.substring(0, width);
-}
-
-/**
- * Time format to use in debug logging for consistency.
- */
-function logDate() {
-	const d = new Date();
-	return [
-		padLeft(d.getHours()),
-		':',
-		padLeft(d.getMinutes()),
-		':',
-		padLeft(d.getSeconds()),
-		'.',
-		padRight(d.getMilliseconds(), 3),
-	].join('');
-}
-
-let warpTimeTick;
-function warpTime(multiplier = 20) {
-	// jest 24 doesn't appear to have support for automatic timer advancement.
-	// ... that's ok ... we'll just run timers at ~ time * multipler.
-
-	warpTimeTick = setInterval(() => {
-		jest.advanceTimersByTime(25 * multiplier);
-	}, 25);
-
-	jest.useFakeTimers();
-}
-
-function unwarpTime() {
-	jest.useRealTimers();
-	clearInterval(warpTimeTick);
-}
-
 /**
  * Renders more complete out of band traces.
  */
 process.on('unhandledRejection', reason => {
 	console.log(reason); // log the reason including the stack trace
 });
-
-/**
- *
- * @param DataStore The DataStore instance to operate against.
- * @param isReady Whether to pretend DataStore mutatinos processor is
- * ready, where readiness tells DataStore to attempt to push mutations
- * at the AppSync endpoint.
- */
-async function configureSync(DataStore, isReady = () => false) {
-	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
-		'https://0.0.0.0/does/not/exist/graphql';
-
-	// WARNING: When DataStore starts, it immediately start the sync
-	// engine, which won't have our isReady mock in place yet. This
-	// should trigger a *single*
-	await DataStore.start();
-
-	const syncEngine = (DataStore as any).sync;
-
-	// my jest spy-fu wasn't up to snuff here. but, this succesfully
-	// prevents the mutation process from clearing the mutation queue, which
-	// allows us to observe the state of mutations.
-	(syncEngine as any).mutationsProcessor.isReady = isReady;
-	DataStore.sync.getModelSyncedStatus = (model: any) => false;
-}
-
-async function pretendModelsAreSynced(DataStore: any) {
-	await configureSync(DataStore);
-
-	// Fully faking or mocking the sync engine would be pretty significant.
-	// Instead, we're going to be mocking a few sync engine methods we happen know
-	// `observeQuery()` depends on.
-	DataStore.sync.getModelSyncedStatus = (model: any) => true;
-
-	// is this overmocking? ... i think we want this to be called, don't we?
-	// DataStore.sync.unsubscribeConnectivity = () => {};
-
-	// DataStore.syncPageSize = 1000;
-}
-
-/**
- * Executes a given test script against a fresh DataStore instance
- * `cycle` times, *waiting* between cycles.
- *
- * Intended use is for tests that intentionally try to leak background
- * work between test contexts. Add a delay if the leaked job is
- * expected to pollute subsequent tests *N* ms down the line. The delay
- * is executed between DataStore instantiation and script execution.
- *
- * Do *not* leak background jobs that are not under DataStore.clear()'s
- * responsibility to clean.
- *
- * @param script A test script to execute.
- * @param cycles The number of cyclcles to run.
- * @param delay The delay between cycles.
- */
-async function expectIsolation(
-	script: (ctx: {
-		DataStore: typeof DataStore;
-		Post: PersistentModelConstructor<PostModel>;
-		cycle: number;
-	}) => Promise<any>,
-	cycles = 5,
-	delay = 0
-) {
-	let tick;
-
-	try {
-		warpTime();
-
-		(console as any)._warn = console.warn;
-		console.warn = (...args) => {
-			if (!args[0].match(/ensure credentials|User is unauthorized/)) {
-				(console as any)._warn(logDate(), ...args);
-			}
-		};
-
-		(console as any)._error = console.error;
-		console.error = (...args) => {
-			if (!args[0].match(/AuthError/)) {
-				(console as any)._error(logDate(), ...args);
-			}
-		};
-
-		(console as any)._debug = console.debug;
-		console.debug = (...args) => {
-			(console as any)._debug(logDate(), ...args);
-		};
-
-		console.debug(`STARTING:      "${expect.getState().currentTestName}"`);
-
-		for (let cycle = 1; cycle <= cycles; cycle++) {
-			// basic initialization
-			const { DataStore, Post } = getDataStore();
-
-			// pause if needed
-			if (delay) await pause(delay);
-
-			// act
-			try {
-				console.debug(
-					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
-				await script({ DataStore, Post, cycle });
-				console.debug(
-					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
-			} finally {
-				// clean up
-				console.debug(
-					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
-				await DataStore.clear();
-				console.debug(
-					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`
-				);
-			}
-
-			// expect no errors
-			// TODO: upgrade jest and assert no pending timers!
-		}
-		console.debug(`ENDING:        "${expect.getState().currentTestName}"`);
-	} finally {
-		console.warn = (console as any)._warn;
-		console.error = (console as any)._error;
-		console.debug = (console as any)._debug;
-		unwarpTime();
-	}
-}
-
-/**
- * Re-requries DataStore and initializes the test schema.
- *
- * @returns The DataStore instance and Post model.
- */
-function getDataStore() {
-	({ initSchema, DataStore } = require('../src/datastore/datastore'));
-
-	const classes = initSchema(testSchema());
-	const { Post } = classes as {
-		Post: PersistentModelConstructor<PostModel>;
-	};
-
-	return {
-		DataStore,
-		Post,
-	};
-}
 
 describe('DataStore sanity testing checks', () => {
 	// TODO: This is present day behavior.
@@ -245,7 +63,7 @@ describe('DataStore sanity testing checks', () => {
 		expect(DataStoreA).toBe(DataStoreB);
 		expect(PostA).toBe(PostB);
 
-		await DataStore.clear();
+		await DataStoreA.clear();
 	});
 
 	afterEach(async () => {
@@ -255,22 +73,50 @@ describe('DataStore sanity testing checks', () => {
 	});
 
 	describe('cleans up after itself', () => {
-		// basically, if we spin up our test contexts repeatedly, put some
-		// data in there and do some things, stopping DataStore should
-		// sufficiently stop backgrounds jobs, clear data, etc. so that
-		// subsequent instantiations are not affected and no rogue, async
-		// errors show up out of nowhere (running queries against connections
-		// or other resources that no longer exist or are not ready.)
+		/**
+		 * basically, if we spin up our test contexts repeatedly, put some
+		 * data in there and do some things, stopping DataStore should
+		 * sufficiently stop backgrounds jobs, clear data, etc. so that
+		 * subsequent instantiations are not affected and no rogue, async
+		 * errors show up out of nowhere (running queries against connections
+		 * or other resources that no longer exist or are not ready.)
+		 *
+		 * aside from `await stop()`, we're going to be pretty careless with
+		 * this test loop (e.g., skipping some awaits) to ensure DataStore
+		 * *really* cleans up after itself.
+		 */
 
-		// aside from `await stop()`, we're going to be pretty careless with
-		// this test loop (e.g., skipping some awaits) to ensure DataStore
-		// *really* cleans up after itself.
-
-		//
-		// PAY ATTENTION!
-		// If these tests start failing, run them individually with `.only()`,
-		// or you may find it's impossible to determine what's leaking where.
-		//
+		/**
+		 *                           PAY ATTENTION!
+		 *
+		 * 1. These tests run at 20x speed using `timeWarp()` to keep running
+		 * times reasonable. If this becomes suspect, add a flag to allow
+		 * conditional time warping.
+		 *
+		 * 2. If these tests start failing, run them individually, and then
+		 * pick pairs, triads, etc. of tests to run together to find the
+		 * smallest possible set of tests that fail together.
+		 *
+		 * Then, enable "focused logging."
+		 *
+		 * ```
+		 * await expectIsolation(
+		 * 	async () => {...},
+		 * 	undefined,
+		 * 	undefined,
+		 * 	true                          // <-- this enables "focused logging"
+		 * );
+		 * ```
+		 *
+		 * This will start logging messages with timestamps around tests and
+		 * each *cycle* generated by `expectIsolation`. And, It will filter out
+		 * some less helpful messages generated by the auth package.
+		 *
+		 * While this is enabled, you can add console.(warn|error|debug) calls
+		 * to your tests, and they'll be printed with timestamp prefixes to
+		 * help sort out what's happening *when*.
+		 *
+		 */
 
 		test('sanity check for expectedIsolation helper', async () => {
 			// make sure expectIsolation is properly awaiting between executions.
