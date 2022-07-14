@@ -225,6 +225,19 @@ export function unwarpTime() {
  * 1. telling the mutations processor that it's "ready"
  * 1. setting model sync'd status to `false` across the board.
  *
+ * Remember to `unconfigureSync()` after the tests are done.
+ *
+ * ```
+ * beforeEach(async () => {
+ *  ({ DataStore } = getDataStore());
+ * 	await configureSync(DataStore);
+ * });
+ *
+ * afterEach(async () => {
+ * 	await unconfigureSync(DataStore);
+ * });
+ * ```
+ *
  * @param DataStore The DataStore instance to operate against.
  * @param isReady Whether to pretend DataStore mutatinos processor is
  * ready, where readiness tells DataStore to attempt to push mutations
@@ -246,6 +259,16 @@ export async function configureSync(DataStore, isReady = () => false) {
 	// allows us to observe the state of mutations.
 	(syncEngine as any).mutationsProcessor.isReady = isReady;
 	DataStore.sync.getModelSyncedStatus = (model: any) => false;
+}
+
+/**
+ * Removes the appsync endpoint, so that if the instance is restarted, it will
+ * not try to talk to AppSync or spin up the sync engine.
+ *
+ * @param DataStore The DataStore instance to operate against.
+ */
+export async function unconfigureSync(DataStore) {
+	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = undefined;
 }
 
 /**

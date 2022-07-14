@@ -2,7 +2,6 @@ import {
 	browserOrNode,
 	ConsoleLogger as Logger,
 	JobContext,
-	ConsoleLogger,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -447,7 +446,7 @@ export class SyncEngine {
 									try {
 										this.mutationsProcessor.resume();
 									} catch (error) {
-										console.error('mutationProcessor.resume error', error);
+										logger.error('mutationProcessor.resume error', error);
 										throw error;
 									}
 								}
@@ -800,29 +799,39 @@ export class SyncEngine {
 	public async stop() {
 		logger.debug('stopping sync engine');
 
-		// gracefully disconnect subscribers first.
+		/**
+		 * Gracefully disconnecting subscribers first just prevents *more* work
+		 * from entering the pipelines.
+		 */
 		this.unsubscribeConnectivity();
 
-		// aggressively shut down any lingering background processes.
-		// some of this might be semi-redundant with unsubscribing. however,
-		// unsubscribing doesn't allow us to wait for settling.
-		// (Whereas `stop()` does.)
+		/**
+		 * aggressively shut down any lingering background processes.
+		 * some of this might be semi-redundant with unsubscribing. however,
+		 * unsubscribing doesn't allow us to wait for settling.
+		 * (Whereas `stop()` does.)
+		 */
 
 		await this.mutationsProcessor.stop();
 		await this.subscriptionsProcessor.stop();
 		await this.datastoreConnectivity.stop();
 		await this.syncQueriesProcessor.stop();
 
-		// do we need to "stop" storage?
-		// await this.storage.stop();
-
-		// TODO: consider refactoring shutdowns ^ into this context as child
-		// job contexts or passing this context through. before we consider
-		// that refactor, we need to stabilize behavior. (unless we find we
-		// CAN'T stabilize without centralizing into a single job context.)
+		/**
+		 * TODO: *consider* refactoring shutdowns ^ into this context as child
+		 * job contexts, as cleaner methods (added with `addCleaner()`), or by
+		 * passing this context through to child processes.
+		 */
 		await this.context.exit();
 
+		/**
+		 * Not 100% sure this is necessary. In most cases, we would expect the
+		 * sync engine to be replaced with a new instance after stopping.
+		 *
+		 * TODO: Remove this and see if everything still works.
+		 */
 		this.context = new JobContext();
+
 		logger.debug('sync engine stopped and ready to restart');
 	}
 

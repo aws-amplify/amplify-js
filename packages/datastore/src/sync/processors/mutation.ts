@@ -118,18 +118,15 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
-		console.debug('start-ish mutation processor');
 		this.context = new JobContext();
 
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
 
-			console.debug('starting/subscribing mutation processor');
-
 			try {
 				this.resume();
 			} catch (error) {
-				console.error('mutations start', error);
+				logger.error('mutations processor start error', error);
 				throw error;
 			}
 
@@ -142,10 +139,7 @@ class MutationProcessor {
 	}
 
 	public async stop() {
-		console.debug('stopping mutation processor');
 		await this.context.exit();
-		// this.context = new JobContext();
-		console.debug('mutation processor stopped and ready for restart');
 	}
 
 	public async resume(): Promise<void> {
@@ -171,8 +165,6 @@ class MutationProcessor {
 					!terminated &&
 					(head = await this.outbox.peek(this.storage)) !== undefined
 				) {
-					console.log('starting mutation loop with head', head);
-
 					const { model, operation, data, condition } = head;
 					const modelConstructor = this.userClasses[
 						model
@@ -250,24 +242,7 @@ class MutationProcessor {
 					if (result === undefined) {
 						logger.debug('done retrying');
 						await this.storage.runExclusive(async storage => {
-							/**
-							 *
-							 *   OK LOOK!!
-							 *
-							 * This dequeue() is's causing issues. It's trying to dequeue
-							 * from the outbox when the outbox is empty.
-							 *
-							 * But, the problem is likely more related to the fact that we're just
-							 * not canceling this whole loop correctly. Need to trace through this
-							 * and sort out WTF should really be happening here.
-							 *
-							 */
-							try {
-								await this.outbox.dequeue(storage);
-							} catch (error) {
-								console.error('CAUGHT DEQUEUE ERROR', head, error);
-								throw error;
-							}
+							await this.outbox.dequeue(storage);
 						});
 						continue;
 					}

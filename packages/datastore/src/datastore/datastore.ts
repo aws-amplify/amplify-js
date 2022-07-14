@@ -904,7 +904,6 @@ class DataStore {
 
 				this.syncPredicates = await this.processSyncExpressions();
 
-				console.debug('Attaching a new sync engine');
 				this.sync = new SyncEngine(
 					schema,
 					namespaceResolver,

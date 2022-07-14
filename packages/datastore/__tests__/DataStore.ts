@@ -28,6 +28,7 @@ import {
 	logDate,
 	expectIsolation,
 	configureSync,
+	unconfigureSync,
 	pretendModelsAreSynced,
 	warpTime,
 	unwarpTime,
@@ -67,9 +68,8 @@ describe('DataStore sanity testing checks', () => {
 	});
 
 	afterEach(async () => {
-		console.debug(logDate(), 'before sanity clear');
 		await DataStore.clear();
-		console.debug(logDate(), 'after sanity clear');
+		await unconfigureSync(DataStore);
 	});
 
 	describe('cleans up after itself', () => {
@@ -102,7 +102,6 @@ describe('DataStore sanity testing checks', () => {
 		 * ```
 		 * await expectIsolation(
 		 * 	async () => {...},
-		 * 	undefined,
 		 * 	undefined,
 		 * 	true                          // <-- this enables "focused logging"
 		 * );
@@ -556,10 +555,9 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	});
 
 	afterEach(async () => {
-		console.log('ok ... awaiting clear');
 		await DataStore.clear();
+		await unconfigureSync(DataStore);
 		unwarpTime();
-		console.log('ok ... DONE clearing');
 	});
 
 	test('clear without starting', async () => {
@@ -720,7 +718,6 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 
 	test('subscribe with criteria on deletes', async done => {
 		try {
-			console.log('before first save');
 			const original = await DataStore.save(
 				new Model({
 					field1: 'somevalue',
@@ -732,20 +729,15 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			const sub = DataStore.observe(Model, m =>
 				m.field1('eq', 'somevalue')
 			).subscribe(({ element, opType, model }) => {
-				console.log('message received');
 				expectType<PersistentModelConstructor<Model>>(model);
 				expectType<Model>(element);
 				expect(opType).toEqual('DELETE');
 				expect(element.id).toEqual(original.id);
 				expect(element.field1).toEqual('somevalue');
 				expect(element.optionalField1).toEqual('additional value');
-				console.log('unsubscribing');
 				sub.unsubscribe();
 				done();
-				console.log('unsubscribed');
 			});
-
-			console.log('before decoy save');
 
 			// decoy
 			await DataStore.save(
@@ -755,13 +747,8 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 				})
 			);
 
-			console.log('before delete');
-
 			await DataStore.delete(original);
-
-			console.log('after delete');
 		} catch (error) {
-			console.log('are we getting an error here???', error);
 			done(error);
 		}
 	});
@@ -816,6 +803,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 	afterEach(async () => {
 		await DataStore.clear();
+		await unconfigureSync(DataStore);
 		unwarpTime();
 	});
 
@@ -848,7 +836,6 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 			const sub = DataStore.observeQuery(Post).subscribe(
 				({ items, isSynced }) => {
-					console.log('isSynced', isSynced);
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
