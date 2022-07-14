@@ -333,6 +333,8 @@ class IndexedDBAdapter implements Adapter {
 			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
+						console.log('is relation present when adding with id?')
+						debugger;
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
 						if (!recordItem[getByfield]) break;
 
