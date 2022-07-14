@@ -383,11 +383,13 @@ class SubscriptionProcessor {
 									}`
 								);
 
+								const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE }));
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][
