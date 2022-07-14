@@ -258,20 +258,19 @@ export async function pretendModelsAreSynced(DataStore: any) {
 }
 
 /**
- * Executes a given test script against a fresh DataStore instance
- * `cycle` times, *waiting* between cycles.
+ * Executes a given test script at warp speed against a fresh DataStore
+ * instance `cycle` times, clearing between cycles.
  *
- * Intended use is for tests that intentionally try to leak background
- * work between test contexts. Add a delay if the leaked job is
- * expected to pollute subsequent tests *N* ms down the line. The delay
- * is executed between DataStore instantiation and script execution.
+ * The intended use is for tests that intentionally try to leak background
+ * work between test contexts, as was possible prior the introduction of
+ * `JobContext`'s and clean `stop()` methods on DataStore and its processors.
  *
- * Do *not* leak background jobs that are not under DataStore.clear()'s
- * responsibility to clean.
+ * @see warpTime
  *
  * @param script A test script to execute.
  * @param cycles The number of cyclcles to run.
- * @param delay The delay between cycles.
+ * @param focusedLogging Whether to timestamp and filter all error, warn, and
+ * debug logging and include additional logging around each test cycle.
  */
 export async function expectIsolation(
 	script: (ctx: {
@@ -280,7 +279,6 @@ export async function expectIsolation(
 		cycle: number;
 	}) => Promise<any>,
 	cycles = 5,
-	// delay = 0,
 	focusedLogging = false
 ) {
 	try {
@@ -318,9 +316,6 @@ export async function expectIsolation(
 		for (let cycle = 1; cycle <= cycles; cycle++) {
 			// basic initialization
 			const { DataStore, Post } = getDataStore();
-
-			// pause if needed
-			// if (delay) await pause(delay);
 
 			// act
 			try {
