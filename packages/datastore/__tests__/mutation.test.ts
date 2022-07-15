@@ -155,40 +155,6 @@ describe('MutationProcessor', () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
-			const actualResponse = {
-				body: {
-					query: 'somequery',
-					variables: {
-						input: {
-							_version: undefined,
-							createdAt: undefined,
-							dateCreated: '2022-07-14T18:15:42.541Z',
-							emails: undefined,
-							field1: 'Some value',
-							id: 'd20d2def-8ef6-4c47-9f28-59d3727f5ccc',
-							ips: undefined,
-							metadata: undefined,
-							optionalField1: undefined,
-							updatedAt: undefined,
-						},
-					},
-				},
-				cancellableToken: undefined,
-				headers: {
-					Authorization: null,
-					'X-Api-Key': 'da2-xxxxxxxxxxxxxxxxxxxxxx',
-					'x-amz-user-agent': 'aws-amplify/4.5.9 js/DataStore',
-				},
-				signerServiceInfo: { region: 'us-west-2', service: 'appsync' },
-			};
-			const expectedChild = {
-				headers: {
-					Authorization: null,
-					'X-Api-Key': 'da2-xxxxxxxxxxxxxxxxxxxxxx',
-					'x-amz-user-agent': 'aws-amplify/4.5.9 js/DataStore',
-				},
-			};
-
 			expect(mockRestPost).toBeCalledWith(
 				expect.anything(),
 				expect.objectContaining({
