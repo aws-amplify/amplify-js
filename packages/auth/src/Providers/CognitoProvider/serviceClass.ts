@@ -220,9 +220,6 @@ export class CognitoService {
 	}
 
 	async fetchIdentityId(idToken: string) {
-		// const cognitoIdentityClient = this.createCognitoIdentityClient();
-		// this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		// console.log('FETCH IDENTITY ID COGNITO SERVICE CLASS');
 		const getIdRes = await this.cognitoIdentityClient.send(
 			new GetIdCommand({
 				IdentityPoolId: this.config.identityPoolId,
@@ -231,13 +228,9 @@ export class CognitoService {
 				},
 			})
 		);
-		// return '';
-		// console.log('YOLO');
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		// console.log('IDENTITY ID: ');
-		// console.log(getIdRes.IdentityId);
 		return getIdRes.IdentityId;
 	}
 
@@ -264,8 +257,6 @@ export class CognitoService {
 				},
 			})
 		);
-		// console.log(getCredentialsRes.Credentials);
-		// console.log('COGNITO SERVICE CREDENTIALS FETCHED');
 		if (!getCredentialsRes.Credentials) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
@@ -280,8 +271,6 @@ export class CognitoService {
 				IdentityId: identityID,
 			})
 		);
-		// console.log(getCredentialsRes.Credentials);
-		// console.log('COGNITO SERVICE CREDENTIALS FETCHED');
 		if (!getCredentialsRes.Credentials) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'

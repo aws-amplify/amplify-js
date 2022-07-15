@@ -30,13 +30,19 @@ describe('Authorization Machine Test', () => {
 		expect(_authzService.state.matches('notConfigured'));
 	});
 
-	// test('config and service test', done => {
-	// 	_authzService.onTransition(state => {
-	// 		if (state.matches('configured')) {
-	// 			expect(state.context.service).toBeInstanceOf(CognitoService);
-	// 			expect(state.context.config).toStrictEqual(testCognitoProviderConfig);
-	// 			done();
-	// 		}
-	// 	});
-	// });
+	test('config and service test', done => {
+		_authzService.send(
+			authzMachineEvents.configure({ ...testCognitoProviderConfig })
+		);
+
+		_authzService.onTransition(state => {
+			if (state.matches('configured')) {
+				expect(state.context.service).toBeInstanceOf(CognitoService);
+				expect(state.context.config).toStrictEqual(testCognitoProviderConfig);
+				done();
+			} else {
+				console.log('skip test');
+			}
+		});
+	});
 });

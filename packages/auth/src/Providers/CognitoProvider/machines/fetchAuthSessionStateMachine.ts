@@ -1,5 +1,3 @@
-import { serviceMap } from '@xstate/inspect/lib/browser';
-import { ContextReplacementPlugin } from 'webpack';
 import { assign, createMachine, MachineConfig } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 
@@ -90,9 +88,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				invoke: {
 					id: 'fetchAWSCredentials',
 					src: async (_context, _event) => {
-						// console.log('FETCH AWS CREDENTIALS TEST');
-						// console.log(_context.identityID);
-
 						if (!_context.authenticated) {
 							const AWSCreds =
 								await _context.service?.fetchUnAuthAWSCredentials(
@@ -105,8 +100,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 							_context.identityID,
 							_context.userPoolTokens.idToken
 						);
-						// console.log('AWS CREDENTIALS: ');
-						// console.log(AWSCreds);
 						return AWSCreds;
 					},
 					onDone: {

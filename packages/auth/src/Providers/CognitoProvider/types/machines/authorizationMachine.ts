@@ -65,3 +65,21 @@ export type AuthorizationTypestate =
 			value: 'error';
 			context: AuthorizationMachineContext;
 	  };
+
+export type UserPoolTokens = {
+	idToken: string;
+	accessToken: string;
+	refreshToken: string;
+};
+
+export type fetchAuthSessionEvent = {
+	data: {
+		identityID: string;
+		AWSCredentials: {
+			accessKeyId: string;
+			expiration: Date;
+			secretAccessKey: string;
+			sessionToken: string;
+		};
+	};
+};

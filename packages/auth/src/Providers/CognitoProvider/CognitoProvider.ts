@@ -42,7 +42,6 @@ import {
 	authzMachineEvents,
 } from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
-import { access } from 'fs';
 
 const logger = new Logger('CognitoProvider');
 
@@ -135,7 +134,7 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		this._authService.send(authMachineEvents.configure(this._config));
-		this._authzService.send(authMachineEvents.configure(this._config));
+		this._authzService.send(authzMachineEvents.configure(this._config));
 		console.log('successfully configured cognito provider');
 		if (this._handlingOAuthCodeResponse()) {
 			// wait for state machine to finish transitioning to signed out state
@@ -334,7 +333,7 @@ export class CognitoProvider implements AuthProvider {
 	async fetchSession(): Promise<AmplifyUser> {
 		// checks to see if the identity pool and region are already configured
 		if (!this.isConfigured()) {
-			throw new Error();
+			throw new Error('Identity Pool has not been configured yet.');
 		}
 
 		// if (this._authService.state.matches('signedIn')) {
@@ -350,10 +349,7 @@ export class CognitoProvider implements AuthProvider {
 		// });
 
 		if (Object.keys(this.storedAuth).length > 0) {
-			// console.log(this.storedAuth.expiration);
 			const now = new Date();
-			// console.log('TIME NOW: ' + now);
-			// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
 			if (now < this.storedAuth.credentials.default.aws.expiration) {
 				console.log('token is good, fetched from storage');
 				return this.storedAuth;
@@ -365,10 +361,7 @@ export class CognitoProvider implements AuthProvider {
 		// returns guest credentials if user is not signed in
 		if (!this._authService.state.matches('signedIn')) {
 			if (Object.keys(this.storedUnAuth).length > 0) {
-				// console.log(this.storedAuth.expiration);
 				const now = new Date();
-				// console.log('TIME NOW: ' + now);
-				// console.log('EXPIRATION TIME: ' + this.storedAuth.expiration);
 				if (now < this.storedUnAuth.credentials.default.aws.expiration) {
 					console.log('token is good, fetched from storage');
 					return this.storedUnAuth;
@@ -377,7 +370,6 @@ export class CognitoProvider implements AuthProvider {
 				}
 			}
 
-			// console.log('SIGNED OUT FLOW');
 			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
 			const sessionEstablishedState = await waitFor(this._authzService, state =>
 				state.matches('sessionEstablished')
@@ -396,7 +388,7 @@ export class CognitoProvider implements AuthProvider {
 							refreshToken: '',
 						},
 						aws: this.shearAWSCredentials(
-							sessionEstablishedState.context.getSession[1]
+							sessionEstablishedState.context.getSession.AWSCredentials
 						),
 					},
 				},
@@ -419,7 +411,7 @@ export class CognitoProvider implements AuthProvider {
 						},
 						// aws: sessionEstablishedState.context.getSession[1],
 						aws: this.shearAWSCredentials(
-							sessionEstablishedState.context.getSession[1]
+							sessionEstablishedState.context.getSession.AWSCredentials
 						),
 					},
 				},
@@ -488,8 +480,6 @@ export class CognitoProvider implements AuthProvider {
 		// 		'No credentials from the response of GetCredentialsForIdentity call.'
 		// 	);
 		// }
-		// console.log('CREDENTIALS: ');
-		// console.log(getCredentialsRes.Credentials);
 		const cognitoClient = this.createNewCognitoClient({
 			region: this._config.region,
 		});
@@ -498,9 +488,6 @@ export class CognitoProvider implements AuthProvider {
 				AccessToken: accessToken,
 			})
 		);
-		// console.log('USER RES');
-		// console.log(getUserRes);
-		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -517,17 +504,6 @@ export class CognitoProvider implements AuthProvider {
 			state.matches('sessionEstablished')
 		);
 
-		// console.log('AUTHZ SERVICE TEST: ');
-
-		// console.log(sessionEstablishedState.context.getSession);
-
-		// console.log('STORED AUTH: ');
-		// console.log(this.storedAuth);
-
-		// this.storedAuth = this.shearAWSCredentials(
-		// 	sessionEstablishedState.context.getSession[1]
-		// );
-
 		this.storedAuth = {
 			user: {
 				userid: sub as string,
@@ -541,7 +517,7 @@ export class CognitoProvider implements AuthProvider {
 						refreshToken,
 					},
 					aws: this.shearAWSCredentials(
-						sessionEstablishedState.context.getSession[1]
+						sessionEstablishedState.context.getSession.AWSCredentials
 					),
 				},
 			},
@@ -562,9 +538,8 @@ export class CognitoProvider implements AuthProvider {
 						accessToken,
 						refreshToken,
 					},
-					// aws: sessionEstablishedState.context.getSession[1],
 					aws: this.shearAWSCredentials(
-						sessionEstablishedState.context.getSession[1]
+						sessionEstablishedState.context.getSession.AWSCredentials
 					),
 				},
 			},

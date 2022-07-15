@@ -97,9 +97,13 @@ export class CognitoService {
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
 		return {
+			// @ts-ignore
 			accessKeyId: AccessKeyId,
+			// @ts-ignore
 			secretAccessKey: SecretKey,
+			// @ts-ignore
 			sessionToken: SessionToken,
+			// @ts-ignore
 			expiration: Expiration,
 		};
 	}
@@ -282,6 +286,7 @@ export class CognitoService {
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.USERNAME = username;
+		// @ts-ignore
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 		] = confirmationCode;
@@ -358,9 +363,13 @@ function shearAWSCredentials(
 	}
 	const { AccessKeyId, SecretKey, SessionToken, Expiration } = res.Credentials;
 	return {
+		// @ts-ignore
 		accessKeyId: AccessKeyId,
+		// @ts-ignore
 		secretAccessKey: SecretKey,
+		// @ts-ignore
 		sessionToken: SessionToken,
+		// @ts-ignore
 		expiration: Expiration,
 	};
 }
@@ -538,6 +547,7 @@ export async function cognitoConfirmSignIn(
 	const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 		{};
 	challengeResponses.USERNAME = username;
+	// @ts-ignore
 	challengeResponses[
 		mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 	] = confirmationCode;
