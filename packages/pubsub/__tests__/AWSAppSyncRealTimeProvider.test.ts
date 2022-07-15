@@ -262,7 +262,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test.only('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async () => {
+				test('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async () => {
 					expect.assertions(1);
 
 					const mockNext = jest.fn(() => console.log('fn called'));
@@ -279,6 +279,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					console.log('here a');
 					await fakeWebSocketInterface?.standardConnectionHandshake();
+
+					// await delay(100);
 
 					console.log('here b');
 					await fakeWebSocketInterface?.sendDataMessage({

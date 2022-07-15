@@ -76,13 +76,16 @@ export class FakeWebSocketInterface {
 	}
 
 	async handShakeMessage() {
-		await this.sendMessage(
-			new MessageEvent('connection_ack', {
-				data: JSON.stringify({
-					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
-					payload: { keepAliveTimeout: 100_000 },
-				}),
-			})
+		console.log('handShakeMessage');
+		await this.runAndResolve(async () =>
+			this.sendMessage(
+				new MessageEvent('connection_ack', {
+					data: JSON.stringify({
+						type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
+						payload: { keepAliveTimeout: 100_000 },
+					}),
+				})
+			)
 		);
 	}
 
@@ -106,7 +109,7 @@ export class FakeWebSocketInterface {
 	}
 
 	async runAndResolve(fn) {
-		fn();
+		await fn();
 		await Promise.resolve();
 	}
 }

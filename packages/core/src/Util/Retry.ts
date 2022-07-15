@@ -74,6 +74,8 @@ export async function retry<T>(
 				const retryIn = delayFn(attempt, args, err);
 				logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
 
+				// we check `terminated` again here because it could have flipped
+				// in the time it took `functionToRetry` to return.
 				if (retryIn === false || terminated) {
 					return reject(err);
 				} else {

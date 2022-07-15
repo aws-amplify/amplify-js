@@ -26,7 +26,6 @@ import {
 	jitteredExponentialRetry,
 	NonRetryableError,
 	ICredentials,
-	ConsoleLogger,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -204,6 +203,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		observer: ZenObservable.SubscriptionObserver<any>;
 		subscriptionId: string;
 	}) {
+		console.log('_startSubscriptionWithAWSAppSyncRealTime', subscriptionId);
 		const {
 			appSyncGraphqlEndpoint,
 			authenticationType,
@@ -311,7 +311,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}, START_ACK_TIMEOUT),
 		});
 		if (this.awsRealTimeSocket) {
+			console.log(
+				'awsRealTimeSocket truthy, sending subscription id',
+				stringToAWSRealTime
+			);
 			this.awsRealTimeSocket.send(stringToAWSRealTime);
+		} else {
+			console.log(
+				'not sending id because no awsRealTimeSocket',
+				subscriptionId
+			);
 		}
 	}
 
@@ -602,6 +611,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					await this._initializeRetryableHandshake(awsRealTimeUrl);
 
 					this.promiseArray.forEach(({ res }) => {
+						console.debug('Notifying connection successful');
 						logger.debug('Notifying connection successful');
 						res();
 					});
@@ -649,11 +659,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						rej(new Error('Connection handshake error'));
 					};
 					newSocket.onopen = () => {
+						console.log('onopen');
 						this.awsRealTimeSocket = newSocket;
 						return res();
 					};
 				});
 			})();
+
+			console.log('between awaits');
 
 			// Step 2: wait for ack from AWS AppSyncReaTime after sending init
 			await (() => {
