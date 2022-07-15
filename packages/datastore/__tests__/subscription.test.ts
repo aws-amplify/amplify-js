@@ -1,6 +1,6 @@
 import Observable from 'zen-observable-ts';
 let mockObservable = new Observable(() => {});
-let mockGraphQL = jest.fn(() => mockObservable);
+const mockGraphQL = jest.fn(() => mockObservable);
 
 import Amplify from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
