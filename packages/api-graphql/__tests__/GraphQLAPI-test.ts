@@ -1022,9 +1022,9 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			const observable = (
-				api.graphql(graphqlOperation(query, variables)) as Observable<object>
-			).subscribe({
+			const observable = (api.graphql(
+				graphqlOperation(query, variables)
+			) as Observable<object>).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
