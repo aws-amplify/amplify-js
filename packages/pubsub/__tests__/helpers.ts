@@ -87,6 +87,7 @@ export class FakeWebSocketInterface {
 	}
 
 	async sendDataMessage(data: {}) {
+		console.log('sendDataMessage', this.webSocket.subscriptionId);
 		await this.sendMessage(
 			new MessageEvent('data', {
 				data: JSON.stringify({
@@ -129,6 +130,8 @@ class FakeWebSocket implements WebSocket {
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
+
+		console.error(new Error('ok what'), data);
 
 		this.subscriptionId = parsedInput.id;
 	}
