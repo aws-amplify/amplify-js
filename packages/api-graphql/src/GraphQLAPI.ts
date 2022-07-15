@@ -241,7 +241,7 @@ export class GraphQLAPIClass {
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
+			(def) => def.kind === 'OperationDefinition'
 		);
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
@@ -429,14 +429,14 @@ export class GraphQLAPIClass {
 	 */
 	_ensureCredentials() {
 		return this.Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});
