@@ -25,6 +25,7 @@ import {
 	SchemaModel,
 	TypeConstructorMap,
 	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import { exhaustiveCheck, USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
@@ -66,8 +67,10 @@ class MutationProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly conflictHandler?: ConflictHandler
+		private readonly conflictHandler: ConflictHandler,
+		private readonly amplifyContext: AmplifyContext
 	) {
+		this.amplifyContext.API = this.amplifyContext.API || API;
 		this.generateQueries();
 	}
 
@@ -276,7 +279,7 @@ class MutationProcessor {
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await API.graphql(tryWith)
+							await this.amplifyContext.API.graphql(tryWith)
 						);
 						return [result, opName, modelDefinition];
 					} catch (err) {
@@ -343,7 +346,7 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await API.graphql({
+									>await this.amplifyContext.API.graphql({
 										query,
 										variables: { id: variables.input.id },
 										authMode,

@@ -1,4 +1,3 @@
-import { RestClient } from '@aws-amplify/api-rest';
 import {
 	MutationProcessor,
 	safeJitteredBackoff,
@@ -350,7 +349,9 @@ async function instantiateMutationProcessor({
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		},
 		() => null,
-		errorHandler
+		errorHandler,
+		() => null as any,
+		{} as any
 	);
 
 	(mutationProcessor as any).observer = true;
