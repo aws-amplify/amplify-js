@@ -90,22 +90,10 @@ type ConfirmSignUpParams = {
 	username: string;
 };
 
-type SignUpResult = {
-	$metadata?: object;
-	CodeDeliveryDetails?: {
-		AttributeName?: string;
-		DeliveryMedium?: string;
-		Destination?: string;
-	};
-	UserConfirmed: boolean;
-	UserSub: string;
-	user?: AmplifyUser;
-};
-
-type ConfirmSignUpResult = {};
+type SignUpResult = {};
 
 type ConfirmSignInParams = {
-	confirmationCode: string;
+	confirmationCode?: string;
 	newPassword?: string;
 	challengeName:
 		| ChallengeNameType.SMS_MFA
@@ -123,10 +111,11 @@ type UserIdentifiers = {
 };
 
 type AmplifyUser = {
-	sessionId: string;
+	sessionId?: string;
 	user?: {
 		userid: string;
 		identifiers?: UserIdentifiers[];
+		username?: string;
 	};
 	credentials?: {
 		// scope
@@ -162,8 +151,8 @@ export type AuthZOptions = {
 export type AWSCredentials = {
 	accessKeyId: string;
 	secretAccessKey: string;
+	sessionToken: string;
 	expiration: Date;
-	sessionToken?: string;
 };
 
 export type AuthorizationToken = {
@@ -208,7 +197,6 @@ export {
 	SignInParams,
 	ConfirmSignUpParams,
 	SignUpResult,
-	ConfirmSignUpResult,
 	ConfirmSignInParams,
 	AmplifyUser,
 	PluginConfig,

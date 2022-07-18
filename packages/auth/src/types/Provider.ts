@@ -6,7 +6,6 @@ import {
 	SignInParams,
 	SignInResult,
 	SignUpResult,
-	ConfirmSignUpResult,
 	SignUpParams,
 	AddAuthenticatorResponse,
 	RequestScopeResponse,
@@ -40,7 +39,7 @@ export interface AuthProvider {
 
 	signUp(params: SignUpParams): Promise<SignUpResult>;
 
-	confirmSignUp(params: ConfirmSignUpParams): Promise<ConfirmSignUpResult>;
+	confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult>;
 
 	signIn(params: SignInParams): Promise<SignInResult>;
 
