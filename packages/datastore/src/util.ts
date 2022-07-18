@@ -29,6 +29,21 @@ import {
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
+export enum NAMESPACES {
+	DATASTORE = 'datastore',
+	USER = 'user',
+	SYNC = 'sync',
+	STORAGE = 'storage',
+}
+
+const DATASTORE = NAMESPACES.DATASTORE;
+const USER = NAMESPACES.USER;
+const SYNC = NAMESPACES.SYNC;
+const STORAGE = NAMESPACES.STORAGE;
+
+export { USER, SYNC, STORAGE, DATASTORE };
+export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
+
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
@@ -448,20 +463,6 @@ export const getIndexFromAssociation = (
 	const index = indexes.find(idx => idx === src);
 	return index;
 };
-
-export enum NAMESPACES {
-	DATASTORE = 'datastore',
-	USER = 'user',
-	SYNC = 'sync',
-	STORAGE = 'storage',
-}
-
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
-
-export { USER, SYNC, STORAGE, DATASTORE };
 
 let privateModeCheckResult;
 
