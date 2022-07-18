@@ -12,11 +12,11 @@
  */
 
 import { Analytics } from './Analytics';
-import { AnalyticsProvider } from './types';
+import { AnalyticsProvider, PersonalizeAnalyticsEventTypes } from './types';
 
 /**
  * @deprecated use named import
  */
 export default Analytics;
-export { AnalyticsProvider, Analytics };
+export { AnalyticsProvider, Analytics, PersonalizeAnalyticsEventTypes };
 export * from './Providers';

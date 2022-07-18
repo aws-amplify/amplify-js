@@ -93,8 +93,13 @@ export interface AnalyticsEvent {
 	immediate?: boolean;
 }
 
+export enum PersonalizeAnalyticsEventTypes {
+	IDENTIFY = 'Identify',
+	MEDIA_AUTOTRACK = 'MediaAutoTrack',
+}
+
 export interface PersonalizeAnalyticsEvent {
-	eventType?: 'Identify' | 'MediaAutoTrack';
+	eventType?: 'Identify' | 'MediaAutoTrack' | PersonalizeAnalyticsEventTypes;
 	userId?: string;
 	properties?: {
 		[key: string]: string;
