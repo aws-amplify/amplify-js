@@ -1,8 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-let mockGraphQl;
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
 import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+let mockGraphQl;
 
 const sessionStorageMock = (() => {
 	let store = {};
