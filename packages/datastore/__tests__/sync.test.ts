@@ -283,7 +283,7 @@ describe('Sync', () => {
 			});
 		});
 
-		it('should send user agent suffix', async () => {
+		it('should send user agent suffix with graphql request', async () => {
 			window.sessionStorage.setItem('datastorePartialData', 'true');
 			const resolveResponse = {
 				data: {

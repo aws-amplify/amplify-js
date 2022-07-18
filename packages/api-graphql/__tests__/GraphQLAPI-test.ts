@@ -1238,7 +1238,7 @@ describe('API test', () => {
 			});
 		});
 
-		test('happy-case-query with userAgentSuffix', async () => {
+		test('sends userAgent with suffix in request', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1271,7 +1271,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent}/DataStore`,
+				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
 			};
 
 			const body = {

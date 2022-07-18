@@ -151,7 +151,7 @@ describe('MutationProcessor', () => {
 		});
 	});
 	describe('Call to rest api', () => {
-		it('Should send a Datastore User Agent to the rest api', async () => {
+		it('Should send a user agent with the datastore suffix the rest api request', async () => {
 			jest.spyOn(mutationProcessor, 'resume');
 			await mutationProcessor.resume();
 
