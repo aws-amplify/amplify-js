@@ -1,3 +1,4 @@
+const mockRestPost = jest.fn();
 import { RestClient } from '@aws-amplify/api-rest';
 import {
 	MutationProcessor,
@@ -17,6 +18,8 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
+import { Constants } from '@aws-amplify/core';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -25,7 +28,11 @@ let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 let axiosError;
 
-describe('Jittered retry', () => {
+beforeEach(() => {
+	axiosError = timeoutError;
+});
+
+describe('Jittered backoff', () => {
 	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
@@ -145,6 +152,21 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 	});
+	describe('Call to rest api', () => {
+		it('Should send a user agent with the datastore suffix the rest api request', async () => {
+			jest.spyOn(mutationProcessor, 'resume');
+			await mutationProcessor.resume();
+
+			expect(mockRestPost).toBeCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+					}),
+				})
+			);
+		});
+	});
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -227,7 +249,6 @@ describe('error handler', () => {
 		);
 	});
 });
-
 // Mocking restClient.post to throw the error we expect
 // when experiencing poor network conditions
 jest.mock('@aws-amplify/api-rest', () => {
@@ -235,7 +256,7 @@ jest.mock('@aws-amplify/api-rest', () => {
 		...jest.requireActual('@aws-amplify/api-rest'),
 		RestClient() {
 			return {
-				post: jest.fn().mockImplementation(() => {
+				post: mockRestPost.mockImplementation(() => {
 					return Promise.reject(axiosError);
 				}),
 				getCancellableToken: () => {},
@@ -431,7 +452,3 @@ const timeoutError = {
 	},
 	code: 'ECONNABORTED',
 };
-
-beforeEach(() => {
-	axiosError = timeoutError;
-});
