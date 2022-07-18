@@ -93,10 +93,4 @@ export interface AnalyticsEvent {
 	immediate?: boolean;
 }
 
-export interface PersonalizeAnalyticsEvent {
-	eventType?: 'Identify' | 'MediaAutoTrack';
-	userId?: string;
-	properties?: {
-		[key: string]: string;
-	};
-}
+export { PersonalizeAnalyticsEvent } from './Providers/AmazonPersonalizeProvider';
