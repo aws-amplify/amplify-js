@@ -2,6 +2,7 @@
 let mockGraphQl;
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 const sessionStorageMock = (() => {
 	let store = {};
@@ -313,7 +314,9 @@ describe('Sync', () => {
 			});
 
 			expect(mockGraphQl).toHaveBeenCalledWith(
-				expect.objectContaining({ userAgentSuffix: '/DataStore' })
+				expect.objectContaining({
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+				})
 			);
 		});
 	});
