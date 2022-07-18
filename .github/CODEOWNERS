@@ -5,7 +5,7 @@
 /packages/amplify-ui-storybook @calebpollman
 /packages/amplify-ui-vue @calebpollman
 /packages/analytics @elorzafe
-/packages/api @jamesaucode @david-mcafee
+/packages/api @svidgen @david-mcafee @manueliglesias @dpilch
 /packages/api-graphql @svidgen @david-mcafee @manueliglesias @dpilch
 /packages/api-rest @svidgen @david-mcafee @manueliglesias @dpilch
 /packages/auth @elorzafe @ashika01 @jamesaucode
