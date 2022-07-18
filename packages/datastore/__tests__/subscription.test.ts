@@ -19,7 +19,7 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../lib-esm/util';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {

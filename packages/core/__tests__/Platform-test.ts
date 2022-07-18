@@ -1,4 +1,4 @@
-import { getAmplifyUserAgent } from '../lib-esm';
+import { getAmplifyUserAgent } from '../src/Platform';
 import Platform from '../src/Platform';
 
 describe('Platform test', () => {
