@@ -13,6 +13,7 @@
 
 import { Reachability } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { ConnectionState } from '../index';
 
 // Internal types for tracking different connection states
 type LinkedConnectionState = 'connected' | 'disconnected';
@@ -24,15 +25,34 @@ type LinkedConnectionStates = {
 	keepAliveState: LinkedHealthState;
 };
 
-export type ConnectionState =
-	| 'Connected'
-	| 'ConnectedPendingNetwork'
-	| 'ConnectionDisrupted'
-	| 'ConnectionDisruptedPendingNetwork'
-	| 'Connecting'
-	| 'ConnectedPendingDisconnect'
-	| 'Disconnected'
-	| 'ConnectedPendingKeepAlive';
+export const CONNECTION_CHANGE: {
+	[key in
+		| 'KEEP_ALIVE_MISSED'
+		| 'KEEP_ALIVE'
+		| 'CONNECTION_ESTABLISHED'
+		| 'CONNECTION_FAILED'
+		| 'CLOSING'
+		| 'OPENING_CONNECTION'
+		| 'CLOSED'
+		| 'ONLINE'
+		| 'OFFLINE']: Partial<LinkedConnectionStates>;
+} = {
+	KEEP_ALIVE_MISSED: { keepAliveState: 'unhealthy' },
+	KEEP_ALIVE: { keepAliveState: 'healthy' },
+	CONNECTION_ESTABLISHED: { connectionState: 'connected' },
+	CONNECTION_FAILED: {
+		intendedConnectionState: 'disconnected',
+		connectionState: 'disconnected',
+	},
+	CLOSING: { intendedConnectionState: 'disconnected' },
+	OPENING_CONNECTION: {
+		intendedConnectionState: 'connected',
+		connectionState: 'connecting',
+	},
+	CLOSED: { connectionState: 'disconnected' },
+	ONLINE: { networkState: 'connected' },
+	OFFLINE: { networkState: 'disconnected' },
+};
 
 export class ConnectionStateMonitor {
 	/**
@@ -59,9 +79,9 @@ export class ConnectionStateMonitor {
 
 		// Maintain the network state based on the reachability monitor
 		new Reachability().networkMonitor().subscribe(({ online }) => {
-			this.updateConnectionState({
-				networkState: online ? 'connected' : 'disconnected',
-			});
+			this.record(
+				online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+			);
 		});
 	}
 
@@ -84,74 +104,16 @@ export class ConnectionStateMonitor {
 			});
 	}
 
-	/**
-	 * Tell the monitor that the connection has been disconnected
+	/*
+	 * Updates local connection state and emits the full state to the observer.
 	 */
-	closed() {
-		this.updateConnectionState({ connectionState: 'disconnected' });
-	}
-
-	/**
-	 * Tell the monitor that the connection is opening
-	 */
-	openingConnection() {
-		this.updateConnectionState({
-			intendedConnectionState: 'connected',
-			connectionState: 'connecting',
-		});
-	}
-
-	/**
-	 * Tell the monitor that the connection is disconnecting
-	 */
-	closing() {
-		this.updateConnectionState({ intendedConnectionState: 'disconnected' });
-	}
-
-	/**
-	 * Tell the monitor that the connection has failed
-	 */
-	connectionFailed() {
-		this.updateConnectionState({
-			intendedConnectionState: 'disconnected',
-			connectionState: 'disconnected',
-		});
-	}
-
-	/**
-	 * Tell the monitor that the connection has been established
-	 */
-	connectionEstablished() {
-		this.updateConnectionState({ connectionState: 'connected' });
-	}
-
-	/**
-	 * Tell the monitor that a keep alive has occurred
-	 */
-	keepAlive() {
-		this.updateConnectionState({ keepAliveState: 'healthy' });
-	}
-
-	/**
-	 * Tell the monitor that a keep alive has been missed
-	 */
-	keepAliveMissed() {
-		this.updateConnectionState({ keepAliveState: 'unhealthy' });
-	}
-
-	/**
-	 * @private
-	 */
-
-	private updateConnectionState(
-		statusUpdates: Partial<LinkedConnectionStates>
-	) {
+	record(statusUpdates: Partial<LinkedConnectionStates>) {
 		// Maintain the socket state
 		const newSocketStatus = { ...this._connectionState, ...statusUpdates };
 
 		this._connectionState = { ...newSocketStatus };
 
-		this._connectionStateObserver.next({ ...this._connectionState });
+		this._connectionStateObserver.next(this._connectionState);
 	}
 
 	/*
@@ -164,33 +126,33 @@ export class ConnectionStateMonitor {
 		keepAliveState,
 	}: LinkedConnectionStates): ConnectionState {
 		if (connectionState === 'connected' && networkState === 'disconnected')
-			return 'ConnectedPendingNetwork';
+			return ConnectionState.ConnectedPendingNetwork;
 
 		if (
 			connectionState === 'connected' &&
 			intendedConnectionState === 'disconnected'
 		)
-			return 'ConnectedPendingDisconnect';
+			return ConnectionState.ConnectedPendingDisconnect;
 
 		if (
 			connectionState === 'disconnected' &&
 			intendedConnectionState === 'connected' &&
 			networkState === 'disconnected'
 		)
-			return 'ConnectionDisruptedPendingNetwork';
+			return ConnectionState.ConnectionDisruptedPendingNetwork;
 
 		if (
 			connectionState === 'disconnected' &&
 			intendedConnectionState === 'connected'
 		)
-			return 'ConnectionDisrupted';
+			return ConnectionState.ConnectionDisrupted;
 
 		if (connectionState === 'connected' && keepAliveState === 'unhealthy')
-			return 'ConnectedPendingKeepAlive';
+			return ConnectionState.ConnectedPendingKeepAlive;
 
 		// All remaining states directly correspond to the connection state
-		if (connectionState === 'connecting') return 'Connecting';
-		if (connectionState === 'disconnected') return 'Disconnected';
-		return 'Connected';
+		if (connectionState === 'connecting') return ConnectionState.Connecting;
+		if (connectionState === 'disconnected') return ConnectionState.Disconnected;
+		return ConnectionState.Connected;
 	}
 }

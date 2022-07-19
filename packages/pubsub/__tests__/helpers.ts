@@ -1,6 +1,6 @@
 import { Hub } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
-import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
+import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
 export function delay(timeout) {
@@ -16,12 +16,11 @@ export class FakeWebSocketInterface {
 	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
 	teardownHubListener: () => void;
-	observedConnectionStates: ConnectionState[] = [];
-	currentConnectionState: ConnectionState;
+	observedConnectionStates: CS[] = [];
+	currentConnectionState: CS;
 
 	private readyResolve: (value: PromiseLike<any>) => void;
-	private connectionStateObservers: ZenObservable.Observer<ConnectionState>[] =
-		[];
+	private connectionStateObservers: ZenObservable.Observer<CS>[] = [];
 
 	constructor() {
 		this.readyForUse = new Promise((res, rej) => {
@@ -36,7 +35,7 @@ export class FakeWebSocketInterface {
 		this.teardownHubListener = Hub.listen('api', (data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_STATE_CHANGE) {
-				const connectionState = payload.data.connectionState as ConnectionState;
+				const connectionState = payload.data.connectionState as CS;
 				this.observedConnectionStates.push(connectionState);
 				this.connectionStateObservers.forEach(observer => {
 					observer?.next?.(connectionState);
@@ -46,6 +45,9 @@ export class FakeWebSocketInterface {
 		});
 	}
 
+	/**
+	 * @returns {Observable<ConnectionState>} - The observable that emits all ConnectionState updates (past and future)
+	 */
 	allConnectionStateObserver() {
 		return new Observable(observer => {
 			this.observedConnectionStates.forEach(state => {
@@ -55,12 +57,17 @@ export class FakeWebSocketInterface {
 		});
 	}
 
+	/**
+	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionState updates (past and future)
+	 */
 	connectionStateObserver() {
 		return new Observable(observer => {
 			this.connectionStateObservers.push(observer);
 		});
 	}
-
+	/**
+	 * Tear down the Fake Socket state
+	 */
 	teardown() {
 		this.teardownHubListener();
 		this.connectionStateObservers.forEach(observer => {
@@ -68,23 +75,30 @@ export class FakeWebSocketInterface {
 		});
 	}
 
+	/**
+	 * Once ready for use, send onOpen and the connection_ack
+	 */
 	async standardConnectionHandshake() {
 		await this.readyForUse;
 		await this.triggerOpen();
 		await this.handShakeMessage();
 	}
 
+	/**
+	 * After an open is triggered, the provider has logic that must execute
+	 * which changes the function resolvers assigned to the websocket
+	 */
 	async triggerOpen() {
-		// After an open is triggered, the provider has logic that must execute
-		//   which changes the function resolvers assigned to the websocket
 		await this.runAndResolve(() => {
 			this.webSocket.onopen(new Event('', {}));
 		});
 	}
 
+	/**
+	 * After a close is triggered, the provider has logic that must execute
+	 * which changes the function resolvers assigned to the websocket
+	 */
 	async triggerClose() {
-		// After a close is triggered, the provider has logic that must execute
-		//   which changes the function resolvers assigned to the websocket
 		await this.runAndResolve(() => {
 			if (this.webSocket.onclose) {
 				try {
@@ -94,6 +108,9 @@ export class FakeWebSocketInterface {
 		});
 	}
 
+	/**
+	 * Close the interface and wait until the connection is either disconnected or disrupted
+	 */
 	async closeInterface() {
 		await this.triggerClose();
 		// Wait for either hasClosed or a half second has passed
@@ -101,26 +118,35 @@ export class FakeWebSocketInterface {
 			// The interface is closed when the socket "hasClosed"
 			this.hasClosed.then(() => res(undefined));
 			await this.waitUntilConnectionStateIn([
-				'Disconnected',
-				'ConnectionDisrupted',
+				CS.Disconnected,
+				CS.ConnectionDisrupted,
 			]);
 			res(undefined);
 		});
 	}
 
+	/**
+	 * After an error is triggered, the provider has logic that must execute
+	 * which changes the function resolvers assigned to the websocket
+	 */
 	async triggerError() {
-		// After an error is triggered, the provider has logic that must execute
-		//   which changes the function resolvers assigned to the websocket
 		await this.runAndResolve(() => {
 			this.webSocket.onerror(new Event('TestError', {}));
 		});
 	}
 
+	/**
+	 * Produce a websocket with a short delay to mimic reality
+	 * @returns A websocket
+	 */
 	newWebSocket() {
 		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
 		return this.webSocket;
 	}
 
+	/**
+	 * Send a connection_ack
+	 */
 	async handShakeMessage() {
 		await this.sendMessage(
 			new MessageEvent('connection_ack', {
@@ -132,6 +158,9 @@ export class FakeWebSocketInterface {
 		);
 	}
 
+	/**
+	 * Send a data message
+	 */
 	async sendDataMessage(data: {}) {
 		await this.sendMessage(
 			new MessageEvent('data', {
@@ -143,6 +172,9 @@ export class FakeWebSocketInterface {
 		);
 	}
 
+	/**
+	 * Emit a message on the socket
+	 */
 	async sendMessage(message: MessageEvent) {
 		// After a message is sent, it takes a few ms for it to enact provider behavior
 		await this.runAndResolve(() => {
@@ -150,12 +182,18 @@ export class FakeWebSocketInterface {
 		});
 	}
 
+	/**
+	 * Run a gicommand and resolve to allow internal behavior to execute
+	 */
 	async runAndResolve(fn) {
 		fn();
 		await Promise.resolve();
 	}
 
-	async observesConnectionState(connectionState: ConnectionState) {
+	/**
+	 * DELETE THIS?
+	 */
+	async observesConnectionState(connectionState: CS) {
 		return new Promise<void>((res, rej) => {
 			this.allConnectionStateObserver().subscribe(value => {
 				if (value === connectionState) {
@@ -165,17 +203,23 @@ export class FakeWebSocketInterface {
 		});
 	}
 
-	async waitForConnectionState(connectionStates: ConnectionState[]) {
+	/**
+	 * @returns a Promise that will wait for one of the provided states to be observed
+	 */
+	async waitForConnectionState(connectionStates: CS[]) {
 		return new Promise<void>((res, rej) => {
 			this.connectionStateObserver().subscribe(value => {
-				if (connectionStates.includes(String(value) as ConnectionState)) {
+				if (connectionStates.includes(String(value) as CS)) {
 					res(undefined);
 				}
 			});
 		});
 	}
 
-	async waitUntilConnectionStateIn(connectionStates: ConnectionState[]) {
+	/**
+	 * @returns a Promise that will wait until the current state is one of the provided states
+	 */
+	async waitUntilConnectionStateIn(connectionStates: CS[]) {
 		return new Promise<void>((res, rej) => {
 			if (connectionStates.includes(this.currentConnectionState)) {
 				res(undefined);

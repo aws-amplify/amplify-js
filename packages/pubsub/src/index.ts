@@ -23,8 +23,7 @@ enum CONTROL_MSG {
 }
 
 export const CONNECTION_STATE_CHANGE = 'ConnectionStateChange';
-
-export { ConnectionState } from './utils/ConnectionStateMonitor';
+export { ConnectionState } from './types';
 
 export { PubSub, CONTROL_MSG };
 

@@ -25,13 +25,14 @@ jest.mock('@aws-amplify/core', () => ({
 import Observable from 'zen-observable-ts';
 import { Reachability } from '@aws-amplify/core';
 import {
-	ConnectionState,
 	ConnectionStateMonitor,
+	CONNECTION_CHANGE,
 } from '../src/utils/ConnectionStateMonitor';
+import { ConnectionState as CS } from '../src';
 
 describe('ConnectionStateMonitor', () => {
 	let monitor: ConnectionStateMonitor;
-	let observedStates: ConnectionState[];
+	let observedStates: CS[];
 	let subscription: ZenObservable.Subscription;
 	let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
 
@@ -63,90 +64,90 @@ describe('ConnectionStateMonitor', () => {
 		});
 
 		test('standard states connection pattern', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
 			]);
 		});
 
 		test('connection states when the network is lost while connected', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			reachabilityObserver?.next?.({ online: false });
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
-				'ConnectedPendingNetwork',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
+				CS.ConnectedPendingNetwork,
 			]);
 		});
 
 		test('connection states when the network is lost and the connection times out', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			reachabilityObserver?.next?.({ online: false });
-			monitor.closed();
+			monitor.record(CONNECTION_CHANGE.CLOSED);
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
-				'ConnectedPendingNetwork',
-				'ConnectionDisruptedPendingNetwork',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
+				CS.ConnectedPendingNetwork,
+				CS.ConnectionDisruptedPendingNetwork,
 			]);
 		});
 
 		test('connection states when the network is lost, the connection times out and then the network recovers', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			reachabilityObserver?.next?.({ online: false });
-			monitor.closed();
+			monitor.record(CONNECTION_CHANGE.CLOSED);
 			reachabilityObserver?.next?.({ online: true });
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
-				'ConnectedPendingNetwork',
-				'ConnectionDisruptedPendingNetwork',
-				'ConnectionDisrupted',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
+				CS.ConnectedPendingNetwork,
+				CS.ConnectionDisruptedPendingNetwork,
+				CS.ConnectionDisrupted,
 			]);
 		});
 
 		test('connection states when a connection is no longer needed', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
-			monitor.closing();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
+			monitor.record(CONNECTION_CHANGE.CLOSING);
 
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
-				'ConnectedPendingDisconnect',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
+				CS.ConnectedPendingDisconnect,
 			]);
 		});
 
 		test('connection states when a connection is no longer needed closed', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
-			monitor.closing();
-			monitor.closed();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
+			monitor.record(CONNECTION_CHANGE.CLOSING);
+			monitor.record(CONNECTION_CHANGE.CLOSED);
 
 			expect(observedStates).toEqual([
-				'Disconnected',
-				'Connecting',
-				'Connected',
-				'ConnectedPendingDisconnect',
-				'Disconnected',
+				CS.Disconnected,
+				CS.Connecting,
+				CS.Connected,
+				CS.ConnectedPendingDisconnect,
+				CS.Disconnected,
 			]);
 		});
 
 		test('connection states when a connection misses a keepalive, and then recovers', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
-			monitor.keepAliveMissed();
-			monitor.keepAlive();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
 
 			expect(observedStates).toEqual([
 				'Disconnected',
@@ -158,12 +159,13 @@ describe('ConnectionStateMonitor', () => {
 		});
 
 		test('lots of keep alive messages dont add more connection state events', () => {
-			monitor.openingConnection();
-			monitor.keepAlive();
-			monitor.connectionEstablished();
-			monitor.keepAlive();
-			monitor.keepAlive();
-			monitor.keepAlive();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+
 			expect(observedStates).toEqual([
 				'Disconnected',
 				'Connecting',
@@ -172,11 +174,11 @@ describe('ConnectionStateMonitor', () => {
 		});
 
 		test('missed keep alives during a network outage dont add an additional state change', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			reachabilityObserver?.next?.({ online: false });
-			monitor.keepAliveMissed();
-			monitor.keepAliveMissed();
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
 
 			expect(observedStates).toEqual([
 				'Disconnected',
@@ -187,13 +189,13 @@ describe('ConnectionStateMonitor', () => {
 		});
 
 		test('when the network recovers, keep alives become the concern until one is seen', () => {
-			monitor.openingConnection();
-			monitor.connectionEstablished();
+			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
+			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
 			reachabilityObserver?.next?.({ online: false });
-			monitor.keepAliveMissed();
-			monitor.keepAliveMissed();
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
 			reachabilityObserver?.next?.({ online: true });
-			monitor.keepAlive();
+			monitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
 
 			expect(observedStates).toEqual([
 				'Disconnected',

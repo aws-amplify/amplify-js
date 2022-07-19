@@ -18,6 +18,7 @@ import { MESSAGE_TYPES } from '../src/Providers/AWSAppSyncRealTimeProvider/const
 import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
 
 import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
+import { ConnectionState as CS } from '../src';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 
@@ -136,26 +137,26 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						'Connected',
+						CS.Connected,
 					]);
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
-						'Disconnected',
-						'Connecting',
-						'Connected',
+						CS.Disconnected,
+						CS.Connecting,
+						CS.Connected,
 					]);
 
 					subscription.unsubscribe();
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						'ConnectedPendingDisconnect',
+						CS.ConnectedPendingDisconnect,
 					]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
-						'Disconnected',
-						'Connecting',
-						'Connected',
-						'ConnectedPendingDisconnect',
-						'Disconnected',
+						CS.Disconnected,
+						CS.Connecting,
+						CS.Connected,
+						CS.ConnectedPendingDisconnect,
+						CS.Disconnected,
 					]);
 				});
 
@@ -288,7 +289,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.triggerClose();
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						'Disconnected',
+						CS.Disconnected,
 					]);
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -598,16 +599,16 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						'Connected',
+						CS.Connected,
 					]);
 
 					// Wait until the socket is automatically disconnected
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						'ConnectionDisrupted',
+						CS.ConnectionDisrupted,
 					]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
-						'ConnectedPendingKeepAlive'
+						CS.ConnectedPendingKeepAlive
 					);
 
 					expect(loggerSpy).toBeCalledWith(
@@ -650,7 +651,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						// Wait until the socket is automatically disconnected
 						await fakeWebSocketInterface?.waitForConnectionState([
-							'Disconnected',
+							CS.Disconnected,
 						]);
 
 						expect(loggerSpy).toBeCalledWith(
@@ -680,7 +681,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						// Wait until the socket is automatically disconnected
 						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-							'Disconnected',
+							CS.Disconnected,
 						]);
 
 						// Watching for raised exception to be caught and logged
@@ -815,7 +816,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						// Wait until the socket is automatically disconnected
 						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-							'Disconnected',
+							CS.Disconnected,
 						]);
 
 						expect(loggerSpy).toHaveBeenCalledWith(
