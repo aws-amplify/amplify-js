@@ -1,5 +1,5 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
@@ -14,6 +14,7 @@ import {
 	AuthModeStrategy,
 	ErrorHandler,
 	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -60,7 +61,8 @@ class SubscriptionProcessor {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly errorHandler: ErrorHandler
+		private readonly errorHandler: ErrorHandler,
+		private readonly amplifyContext: AmplifyContext = { Auth, API, Cache }
 	) {}
 
 	private buildSubscription(
@@ -253,8 +255,8 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const credentials = await Auth.currentCredentials();
+					const credentials =
+						await this.amplifyContext.Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -264,8 +266,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const session = await Auth.currentSession();
+					const session = await this.amplifyContext.Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
@@ -282,11 +283,14 @@ class SubscriptionProcessor {
 
 					let token;
 					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
+					const federatedInfo = await this.amplifyContext.Cache.getItem(
+						'federatedInfo'
+					);
 					if (federatedInfo) {
 						token = federatedInfo.token;
 					} else {
-						const currentUser = await Auth.currentAuthenticatedUser();
+						const currentUser =
+							await this.amplifyContext.Auth.currentAuthenticatedUser();
 						if (currentUser) {
 							token = currentUser.token;
 						}
@@ -389,7 +393,9 @@ class SubscriptionProcessor {
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
+
+								>(<unknown>this.amplifyContext.API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
+
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][

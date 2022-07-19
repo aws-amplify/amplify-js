@@ -483,7 +483,8 @@ function jitteredRetrySyncProcessorSetup({
 		null, // syncPredicates
 		{ aws_appsync_authenticationType: 'userPools' },
 		defaultAuthStrategy,
-		errorHandler
+		errorHandler,
+		{}
 	);
 
 	return SyncProcessor;
