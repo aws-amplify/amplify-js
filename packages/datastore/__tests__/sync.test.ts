@@ -1,7 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+let mockGraphQl;
 
 const sessionStorageMock = (() => {
 	let store = {};
@@ -281,6 +282,43 @@ describe('Sync', () => {
 				}
 			});
 		});
+
+		it('should send user agent suffix with graphql request', async () => {
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								id: '1',
+								title: 'Item 1',
+							},
+							{
+								id: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(mockGraphQl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+				})
+			);
+		});
 	});
 
 	describe('error handler', () => {
@@ -409,16 +447,19 @@ function jitteredRetrySyncProcessorSetup({
 	coreMocks?: object;
 	errorHandler?: () => null;
 }) {
-	jest.mock('@aws-amplify/api', () => ({
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: () =>
+	mockGraphQl = jest.fn(
+		() =>
 			new Promise((res, rej) => {
 				if (resolveResponse) {
 					res(resolveResponse);
 				} else if (rejectResponse) {
 					rej(rejectResponse);
 				}
-			}),
+			})
+	);
+	jest.mock('@aws-amplify/api', () => ({
+		...jest.requireActual('@aws-amplify/api'),
+		graphql: mockGraphQl,
 	}));
 
 	jest.mock('@aws-amplify/core', () => ({
@@ -442,7 +483,8 @@ function jitteredRetrySyncProcessorSetup({
 		null, // syncPredicates
 		{ aws_appsync_authenticationType: 'userPools' },
 		defaultAuthStrategy,
-		errorHandler
+		errorHandler,
+		{}
 	);
 
 	return SyncProcessor;
