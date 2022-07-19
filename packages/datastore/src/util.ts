@@ -85,6 +85,21 @@ export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
 	return false;
 }
 
+// TODO: need to instead extract key fields from related model definition
+// export function extractPrimaryKeyFieldNamesFromTargetNames(
+// 	targetNames: string[],
+// ): string[] {
+// 	console.log(targetNames);
+// 	// debugger;
+// 	const keys: string[] = targetNames.map(targetName => targetName.split(/(?=[A-Z])/).slice(2).join(''));
+// 	// debugger;
+// 	const tempHack: string[] = keys.map(key => key[0].toLowerCase() + key.substring(1))
+
+// 	console.log(tempHack);
+// 	// debugger;
+// 	return tempHack;
+// }
+
 export enum NAMESPACES {
 	DATASTORE = 'datastore',
 	USER = 'user',
@@ -322,19 +337,39 @@ export const establishRelationAndKeys = (
 				typeof fieldAttribute.type === 'object' &&
 				'model' in fieldAttribute.type
 			) {
+				// debugger;
 				const connectionType = fieldAttribute.association.connectionType;
 				relationship[mKey].relationTypes.push({
 					fieldName: fieldAttribute.name,
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
 					targetName: fieldAttribute.association['targetName'],
+					targetNames: fieldAttribute.association['targetNames'],
 					associatedWith: fieldAttribute.association['associatedWith'],
 				});
 
+				// debugger;
 				if (connectionType === 'BELONGS_TO') {
-					relationship[mKey].indexes.push(
-						fieldAttribute.association['targetName']
-					);
+					// if targetNames length is greater than 0, set fieldAttribution associate to targetNames
+
+					if (fieldAttribute.association.targetName) {
+						relationship[mKey].indexes.push(
+							fieldAttribute.association['targetName']
+						);
+					} else {
+						// TODO: iterate over targetnames
+						// debugger;
+
+						// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
+						fieldAttribute.association.targetNames.forEach(
+							(targetName: string) => {
+								relationship[mKey].indexes.push(targetName);
+							}
+						);
+
+						// console.log('make sure it worked')
+						// debugger;
+					}
 				}
 			}
 		});
@@ -378,6 +413,7 @@ export const traverseModel = <T extends PersistentModel>(
 		modelName: string
 	) => PersistentModelConstructor<any>
 ) => {
+	// debugger;
 	const relationships = namespace.relationships;
 
 	const modelConstructor = getModelConstructorByModelName(
@@ -386,11 +422,13 @@ export const traverseModel = <T extends PersistentModel>(
 	);
 
 	const relation = relationships[srcModelName];
+	// debugger;
 	const result: {
 		modelName: string;
 		item: T;
 		instance: T;
 	}[] = [];
+	// debugger;
 
 	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
 		relation.relationTypes.forEach((rItem: RelationType) => {
@@ -401,9 +439,11 @@ export const traverseModel = <T extends PersistentModel>(
 
 			switch (rItem.relationType) {
 				case 'HAS_ONE':
+					// debugger;
 					if (instance[rItem.fieldName]) {
 						let modelInstance: T;
 						try {
+							// debugger;
 							modelInstance = modelInstanceCreator(
 								modelConstructor,
 								instance[rItem.fieldName]
@@ -413,22 +453,51 @@ export const traverseModel = <T extends PersistentModel>(
 							console.log(error);
 						}
 
+						// debugger;
 						result.push({
 							modelName: rItem.modelName,
 							item: instance[rItem.fieldName],
 							instance: modelInstance,
 						});
 
+						// Target names present?
+						console.log(rItem);
+						// debugger;
+						debugger;
 						// targetName will be defined for Has One if feature flag
 						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
 						// is true (default as of 5/7/21)
 						// Making this conditional for backward-compatibility
 						if (rItem.targetName) {
+							// debugger;
+							// Get the value of the id from the instance that was passed in
+							// save that value under the targetName field. Then delete the instance
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
 							delete (<any>draftInstance)[rItem.fieldName];
+						} else if (rItem.targetNames) {
+							debugger;
+							rItem.targetNames.forEach((targetName, idx) => {
+								// Get the connected record
+								// TODO: WHY IS THIS AN ARRAY? MAY NEED TO FIX SOMEWHERE
+								const relatedRecordInProxy = <PersistentModel>(
+									draftInstance[rItem.fieldName][0]
+								);
+
+								// Get the key
+								const key = rItem.associatedWith[idx];
+
+								// Get the value
+								const relatedRecordInProxyPkValue = relatedRecordInProxy[key];
+
+								// Set the targetName value
+								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+							});
+							// Delete the instance from the proxy
+							delete (<any>draftInstance)[rItem.fieldName];
 						} else {
+							debugger;
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
@@ -437,6 +506,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 					break;
 				case 'BELONGS_TO':
+					// TODO: SAME UPDATE AS ABOVE
 					if (instance[rItem.fieldName]) {
 						let modelInstance: T;
 						try {
@@ -462,6 +532,7 @@ export const traverseModel = <T extends PersistentModel>(
 					}
 
 					if (draftInstance[rItem.fieldName]) {
+						// debugger;
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
@@ -503,7 +574,51 @@ export const traverseModel = <T extends PersistentModel>(
 	return result;
 };
 
-export const getIndex = (rel: RelationType[], src: string): string => {
+// export const getIndex = (
+// 	rel: RelationType[],
+// 	src: string | string[] | undefined
+// ): string | string[] | undefined => {
+// 	let index: any = '';
+// 	debugger;
+
+// 	rel.some((relItem: RelationType) => {
+// 		if (relItem.modelName === src) {
+// 			if (relItem.targetNames && relItem.targetNames.length > 0) {
+// 				// index = relItem.targetNames;
+// 				// What to do here?
+// 				index = 'byPk';
+// 			} else {
+// 				index = relItem.targetName;
+// 			}
+// 		}
+// 	});
+// 	debugger;
+// 	return index;
+// };
+
+// // TODO: getIndicesFromAssociation
+// export const getIndexFromAssociation = (
+// 	indexes: string[],
+// 	src: any
+// ): string | string[] | undefined => {
+// 	// previously a string, now an array
+// 	// if src is an array, find all the items in indexes that match the items in src
+
+// 	debugger;
+// 	if (Array.isArray(src)) {
+// 		const result = indexes.filter(index => {
+// 			return src.includes(index);
+// 		});
+// 		// return result;
+// 		return 'byPk';
+// 	} else {
+// 		const index = indexes.find(idx => idx === src);
+// 		// debugger;
+// 		return index;
+// 	}
+// };
+
+export const getIndex = (rel: RelationType[], src: any): string => {
 	let index = '';
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
@@ -513,10 +628,7 @@ export const getIndex = (rel: RelationType[], src: string): string => {
 	return index;
 };
 
-export const getIndexFromAssociation = (
-	indexes: string[],
-	src: string
-): string => {
+export const getIndexFromAssociation = (indexes: string[], src: any): any => {
 	const index = indexes.find(idx => idx === src);
 	return index;
 };

@@ -61,22 +61,33 @@ type SchemaEnum = {
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
-	associatedWith: string;
+	associatedWith: string | string[];
 	targetName?: string;
+	targetNames?: string[];
 };
+
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
 }
 
 type TargetNameAssociation = {
 	connectionType: 'BELONGS_TO';
-	targetName: string;
+	targetName?: string;
+	targetNames?: string[];
 };
+
 export function isTargetNameAssociation(
 	obj: any
 ): obj is TargetNameAssociation {
-	return obj && obj.targetName;
+	// debugger;
+	return obj && obj.targetName || obj && obj.targetNames;
 }
+
+// export function isTargetNamesAssociation(
+// 	obj: any
+// ): obj is TargetNameAssociation {
+// 	return obj && obj.targetNames;
+// }
 
 export type ModelAttributes = ModelAttribute[];
 export type ModelAttribute = { type: string; properties?: Record<string, any> };
@@ -789,7 +800,8 @@ export type RelationType = {
 	modelName: string;
 	relationType: 'HAS_ONE' | 'HAS_MANY' | 'BELONGS_TO';
 	targetName?: string;
-	associatedWith?: string;
+	targetNames?: string[];
+	associatedWith?: string | string[];
 };
 
 export type RelationshipType = {

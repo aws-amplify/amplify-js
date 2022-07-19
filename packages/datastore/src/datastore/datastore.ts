@@ -190,6 +190,10 @@ const initSchema = (userSchema: Schema) => {
 			schema.namespaces[namespace]
 		);
 
+		// console.log('did this work?');
+		// console.log(relations);
+		// console.log(keys);
+		// debugger;
 		schema.namespaces[namespace].relationships = relations;
 		schema.namespaces[namespace].keys = keys;
 
@@ -455,6 +459,8 @@ const createModelClass = <T extends PersistentModel>(
 						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
 					// composite where pk = id??? should take it from init
+					// what's this???
+					// debugger;
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
 
@@ -1328,7 +1334,7 @@ class DataStore {
 
 			const modelDefinition = getModelDefinition(model);
 			const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-			console.log('check key fields', keyFields);
+			// console.log('check key fields', keyFields);
 
 			if (isQueryOne(criteria)) {
 				predicate = ModelPredicateCreator.createForSingleField<T>(

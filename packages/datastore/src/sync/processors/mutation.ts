@@ -18,6 +18,7 @@ import {
 	InternalSchema,
 	isModelFieldType,
 	isTargetNameAssociation,
+	// isTargetNamesAssociation,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
@@ -466,6 +467,7 @@ class MutationProcessor {
 							// connections
 							if (isModelFieldType(type)) {
 								// BELONGS_TO
+								// debugger;
 								if (
 									isTargetNameAssociation(association) &&
 									association.connectionType === 'BELONGS_TO'
@@ -489,10 +491,12 @@ class MutationProcessor {
 							let fieldName = name;
 							let val = parsedData[name];
 
+							// debugger;
 							if (
 								isModelFieldType(type) &&
 								isTargetNameAssociation(association)
 							) {
+								// debugger;
 								fieldName = association.targetName;
 								val = parsedData[fieldName];
 							}

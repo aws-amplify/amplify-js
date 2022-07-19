@@ -179,6 +179,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		}
 
 		for await (const relation of relations) {
+			// debugger;
 			const {
 				fieldName,
 				modelName: tableName,

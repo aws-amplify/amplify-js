@@ -19,6 +19,7 @@ import {
 	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
+	// isTargetNamesAssociation,
 } from '../types';
 import {
 	isModelConstructor,
@@ -353,11 +354,18 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
+			// debugger;
 			const targetName: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
 
+			
+			// const targetNames: any = isTargetNamesAssociation(
+			// 	fields[field]?.association
+			// );
+
 			// if field refers to a belongsTo relation, use the target field instead
+			// debugger;
 			const key = targetName || field;
 
 			// check field values by value. Ignore unchanged fields
