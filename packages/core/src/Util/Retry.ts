@@ -1,6 +1,5 @@
 import { DelayFunction } from '../types';
 import { ConsoleLogger as Logger } from '../Logger/ConsoleLogger';
-import { on } from 'cluster';
 const logger = new Logger('Util');
 
 export class NonRetryableError extends Error {

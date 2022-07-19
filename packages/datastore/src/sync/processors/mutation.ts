@@ -43,7 +43,6 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
-import { on } from 'cluster';
 
 const MAX_ATTEMPTS = 10;
 

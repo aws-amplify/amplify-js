@@ -265,7 +265,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async () => {
 					expect.assertions(1);
 
-					const mockNext = jest.fn(() => console.log('fn called'));
+					const mockNext = jest.fn();
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
@@ -277,17 +277,12 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						error: () => {},
 					});
 
-					console.log('here a');
 					await fakeWebSocketInterface?.standardConnectionHandshake();
 
-					// await delay(100);
-
-					console.log('here b');
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: { test: expect.getState().currentTestName } },
 					});
-					console.log('here c');
 
 					expect(mockNext).toBeCalled();
 				});

@@ -119,12 +119,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	): Observable<any> {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
-		console.log('subscribe');
-
 		return new Observable(observer => {
-			console.log('subscribe.subscribe');
 			if (!options || !appSyncGraphqlEndpoint) {
-				console.log('subscribe.subscribe error');
 				observer.error({
 					errors: [
 						{
@@ -137,28 +133,22 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				observer.complete();
 			} else {
 				const subscriptionId = uuid();
-				console.log('subscribe.subscribe seems ok', subscriptionId);
 				this._startSubscriptionWithAWSAppSyncRealTime({
 					options,
 					observer,
 					subscriptionId,
-				})
-					.then(() => {
-						console.log('subscribe.subscribe ok really ok');
-					})
-					.catch<any>(err => {
-						console.log('subscribe.subscribe just kidding!');
-						observer.error({
-							errors: [
-								{
-									...new GraphQLError(
-										`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
-									),
-								},
-							],
-						});
-						observer.complete();
+				}).catch<any>(err => {
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(
+									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
+								),
+							},
+						],
 					});
+					observer.complete();
+				});
 
 				return async () => {
 					// Cleanup after unsubscribing or observer.complete was called after _startSubscriptionWithAWSAppSyncRealTime
@@ -203,7 +193,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		observer: ZenObservable.SubscriptionObserver<any>;
 		subscriptionId: string;
 	}) {
-		console.log('_startSubscriptionWithAWSAppSyncRealTime', subscriptionId);
 		const {
 			appSyncGraphqlEndpoint,
 			authenticationType,
@@ -311,16 +300,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}, START_ACK_TIMEOUT),
 		});
 		if (this.awsRealTimeSocket) {
-			console.log(
-				'awsRealTimeSocket truthy, sending subscription id',
-				stringToAWSRealTime
-			);
 			this.awsRealTimeSocket.send(stringToAWSRealTime);
-		} else {
-			console.log(
-				'not sending id because no awsRealTimeSocket',
-				subscriptionId
-			);
 		}
 	}
 
@@ -403,7 +383,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
-		console.log('message', message.data);
 		logger.debug(
 			`subscription message from AWS AppSync RealTime: ${message.data}`
 		);
@@ -423,8 +402,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			if (observer) {
 				observer.next(payload);
 			} else {
-				console.log(`observer not found for id: ${id}`);
-				console.log('known observers', this.subscriptionObserverMap.entries());
 				logger.debug(`observer not found for id: ${id}`);
 			}
 			return;
@@ -611,7 +588,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					await this._initializeRetryableHandshake(awsRealTimeUrl);
 
 					this.promiseArray.forEach(({ res }) => {
-						console.debug('Notifying connection successful');
 						logger.debug('Notifying connection successful');
 						res();
 					});
@@ -635,13 +611,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
 		logger.debug(`Initializaling retryable Handshake`);
-		console.log('_initializeRetryableHandshake START', awsRealTimeUrl);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
 			[awsRealTimeUrl],
 			MAX_DELAY_MS
 		);
-		console.log('_initializeRetryableHandshake END', awsRealTimeUrl);
 	}
 
 	private async _initializeHandshake(awsRealTimeUrl: string) {
@@ -659,14 +633,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						rej(new Error('Connection handshake error'));
 					};
 					newSocket.onopen = () => {
-						console.log('onopen');
 						this.awsRealTimeSocket = newSocket;
 						return res();
 					};
 				});
 			})();
-
-			console.log('between awaits');
 
 			// Step 2: wait for ack from AWS AppSyncReaTime after sending init
 			await (() => {

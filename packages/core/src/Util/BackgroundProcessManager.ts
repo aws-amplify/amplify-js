@@ -123,7 +123,7 @@ export class BackgroundProcessManager {
 		clean: () => Promise<T>,
 		description?: string
 	): () => Promise<void> {
-		const { resolve, reject, onTerminate } = this.addHooks(description);
+		const { resolve, onTerminate } = this.addHooks(description);
 
 		const proxy = async () => {
 			await clean();

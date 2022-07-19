@@ -76,7 +76,6 @@ export class FakeWebSocketInterface {
 	}
 
 	async handShakeMessage() {
-		console.log('handShakeMessage');
 		await this.runAndResolve(async () =>
 			this.sendMessage(
 				new MessageEvent('connection_ack', {
@@ -90,7 +89,6 @@ export class FakeWebSocketInterface {
 	}
 
 	async sendDataMessage(data: {}) {
-		console.log('sendDataMessage', this.webSocket.subscriptionId);
 		await this.sendMessage(
 			new MessageEvent('data', {
 				data: JSON.stringify({
@@ -133,9 +131,6 @@ class FakeWebSocket implements WebSocket {
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
-
-		console.error(new Error('ok what'), data);
-
 		this.subscriptionId = parsedInput.id;
 	}
 	CLOSED: number;
