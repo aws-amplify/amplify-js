@@ -3,7 +3,7 @@ import {
 	jitteredExponentialRetry,
 	NonRetryableError,
 } from '../src/Util/Retry';
-import { JobContext } from '../src/Util/JobContext';
+import { BackgroundProcessManager } from '../src/Util/BackgroundProcessManager';
 
 describe('retry', () => {
 	test('will retry a function until it succeeds', async () => {
@@ -102,8 +102,8 @@ describe('retry', () => {
 		expect(count).toEqual(3);
 	});
 
-	test('works with JobContext', async () => {
-		const context = new JobContext();
+	test('works with BackgroundProcessManager', async () => {
+		const manager = new BackgroundProcessManager();
 
 		let result;
 		let count = 0;
@@ -115,18 +115,18 @@ describe('retry', () => {
 			throw new Error('Yeah, keep trying, Tom.');
 		}
 
-		context
+		manager
 			.add(() => retry(inventLightBulb, [], () => 1))
 			.then(r => (result = r));
 
-		await context.exit();
+		await manager.close();
 
 		expect(result).toEqual('Oh hey, we got it!');
 		expect(count).toEqual(3);
 	});
 
 	test('is cancelable', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		let error;
 		let count = 0;
@@ -136,14 +136,14 @@ describe('retry', () => {
 			throw new Error('I will never succeed.');
 		}
 
-		context
+		manager
 			.add(async onTerminate => retry(suchAFailure, [], () => 1, onTerminate))
 			.catch(e => (error = e));
 
 		await new Promise(resolve => setTimeout(resolve, 30));
 		const countSnapshot = count;
 
-		await context.exit();
+		await manager.close();
 
 		await new Promise(resolve => setTimeout(resolve, 30));
 
@@ -201,7 +201,7 @@ describe('jitteredExponentailRetry', () => {
 	});
 
 	test('is cancelable', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		let error;
 		let count = 0;
@@ -214,7 +214,7 @@ describe('jitteredExponentailRetry', () => {
 		// retries should be at ~200ms, ~400ms ... we'll try to interrupt
 		// between 200 and 400.
 
-		context
+		manager
 			.add(async onTerminate =>
 				jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate)
 			)
@@ -223,7 +223,7 @@ describe('jitteredExponentailRetry', () => {
 		await new Promise(resolve => setTimeout(resolve, 300));
 		const countSnapshot = count;
 
-		await context.exit();
+		await manager.close();
 
 		// try to wait until after the ~400ms retry would have occurred.
 		await new Promise(resolve => setTimeout(resolve, 300));

@@ -1,35 +1,35 @@
 /**
  * @private For internal Amplify use.
  *
- * Creates a new "context" for promises, observables, and other types
- * of "jobs" that may be running in the background. This context provides
+ * Creates a new scope for promises, observables, and other types of work or
+ * processes that may be running in the background. This manager provides
  * an singular entrypoint to request termination and await completion.
  *
- * As jobs complete on their own prior to exit, the context removes them
+ * As work completes on its own prior to close, the manager removes them
  * from the registry to avoid holding references to completed jobs.
  */
-export class JobContext {
+export class BackgroundProcessManager {
 	/**
-	 * Whether more jobs are being accepted.
+	 * `true` if no more jobs are being accepted.
 	 */
-	private locked = false;
+	private _state = BackgroundProcessManagerState.Open;
 
 	/**
-	 * The list of outstanding jobs we'll need to wait for upon `exit()`
+	 * The list of outstanding jobs we'll need to wait for upon `close()`
 	 */
 	private jobs: JobEntry[] = [];
 
 	/**
-	 * Creates a new "context" for promises, observables, and other types
-	 * of "jobs" that may be running in the background. This context provides
+	 * Creates a new manager for promises, observables, and other types
+	 * of work that may be running in the background. This manager provides
 	 * a centralized mechanism to request termination and await completion.
 	 */
 	constructor() {}
 
 	/**
 	 * Executes an async `job` function, passing the return value through to
-	 * the caller, registering it as a running job in the context. When the
-	 * context *exits*, it will `await` the job.
+	 * the caller, registering it as a running job in the manager. When the
+	 * manager *closes*, it will `await` the job.
 	 *
 	 * @param job The function to execute.
 	 * @param description Optional description to help identify pending jobs.
@@ -39,8 +39,8 @@ export class JobContext {
 
 	/**
 	 * Executes an async `job` function, passing the return value through to
-	 * the caller, registering it as a running job in the context. When the
-	 * context *exits*, it will request termination by resolving the
+	 * the caller, registering it as a running job in the manager. When the
+	 * manager *closes*, it will request termination by resolving the
 	 * provided `onTerminate` promise. It will then `await` the job, so it is
 	 * important that the job still `resolve()` or `reject()` when responding
 	 * to a termination request.
@@ -55,11 +55,11 @@ export class JobContext {
 	): Promise<T>;
 
 	/**
-	 * Create a no-op job, registers it with the context, and returns hooks
+	 * Create a no-op job, registers it with the manager, and returns hooks
 	 * to the caller to signal the job's completion and respond to termination
 	 * requests.
 	 *
-	 * When the context exits, the no-op job will be `await`-ed, so its
+	 * When the manager closes, the no-op job will be `await`-ed, so its
 	 * important to always `resolve()` or `reject()` when done responding to an
 	 * `onTerminate` signal.
 	 * @param description Optional description to help identify pending jobs.
@@ -72,14 +72,14 @@ export class JobContext {
 	};
 
 	/**
-	 * Adds another job context to await on at the time of exiting. the inner
-	 * context's termination is signaled when this context's `exit()` is
+	 * Adds another job manager to await on at the time of closing. the inner
+	 * manager's termination is signaled when this manager's `close()` is
 	 * called for.
 	 *
-	 * @param job The inner job context to await.
+	 * @param job The inner job manager to await.
 	 * @param description Optional description to help identify pending jobs.
 	 */
-	add(job: JobContext, description?: string);
+	add(job: BackgroundProcessManager, description?: string);
 
 	add(jobOrDescription?, optionalDescription?) {
 		let job;
@@ -93,18 +93,18 @@ export class JobContext {
 			description = optionalDescription;
 		}
 
-		const error = this.lockedFailure(job, description);
+		const error = this.closedFailure(job, description);
 		if (error) return error;
 
 		if (job === undefined) {
 			return this.addHooks(description);
 		} else if (typeof job === 'function') {
 			return this.addFunction(job, description);
-		} else if (job instanceof JobContext) {
-			return this.addContext(job, description);
+		} else if (job instanceof BackgroundProcessManager) {
+			return this.addManager(job, description);
 		} else {
 			throw new Error(
-				'If `job` is provided, it must be an Observable, Function, or JobContext.'
+				'If `job` is provided, it must be an Observable, Function, or BackgroundProcessManager.'
 			);
 		}
 	}
@@ -112,7 +112,7 @@ export class JobContext {
 	/**
 	 * Adds a **cleaner** function that doesn't immediately get executed.
 	 * Instead, the caller gets a **terminate** function back. The *cleaner* is
-	 * invoked only once the context *exits* or the returned **terminate**
+	 * invoked only once the mananger *closes* or the returned **terminate**
 	 * function is called.
 	 *
 	 * @param clean The cleanup function.
@@ -167,8 +167,8 @@ export class JobContext {
 		return jobResult;
 	}
 
-	private addContext(context: JobContext, description?: string) {
-		this.addCleaner(async () => await context.exit(), description);
+	private addManager(manager: BackgroundProcessManager, description?: string) {
+		this.addCleaner(async () => await manager.close(), description);
 	}
 
 	/**
@@ -176,7 +176,7 @@ export class JobContext {
 	 * with callbacks/hooks. The returned `resolve` and `reject`
 	 * functions can be used to signal the job is done successfully or not.
 	 * The returned `onTerminate` is a promise that will resolve when the
-	 * context is requesting the termination of the job.
+	 * manager is requesting the termination of the job.
 	 *
 	 * @param description Optional description to help identify pending jobs.
 	 * @returns `{ resolve, reject, onTerminate }`
@@ -232,7 +232,7 @@ export class JobContext {
 		// in all of my testing, it is safe to multi-subscribe to a promise.
 		// so, rather than create another layer of promising, we're just going
 		// to hook into the promise we already have, and when it's done
-		// (successfully or not), we no longer need to wait for it upon exit.
+		// (successfully or not), we no longer need to wait for it upon close.
 
 		promise
 			.then(() => {
@@ -256,6 +256,17 @@ export class JobContext {
 	}
 
 	/**
+	 * The execution state of the manager. One of:
+	 *
+	 * 1. "Open" -> Accepting new jobs
+	 * 1. "Closing" -> Not accepting new work. Waiting for jobs to complete.
+	 * 1. "Closed" -> Not accepting new work. All submitted jobs are complete.
+	 */
+	get state() {
+		return this._state;
+	}
+
+	/**
 	 * The registered `description` of all still-pending jobs.
 	 *
 	 * @returns descriptions as an array.
@@ -264,15 +275,38 @@ export class JobContext {
 		return this.jobs.map(job => job.description);
 	}
 
-	private lockedFailure(job, description: string) {
-		if (this.locked) {
+	/**
+	 * Whether the manager is accepting new jobs.
+	 */
+	get isOpen() {
+		return this._state === BackgroundProcessManagerState.Open;
+	}
+
+	/**
+	 * Whether the manager is rejecting new work, but still waiting for
+	 * submitted work to complete.
+	 */
+	get isClosing() {
+		return this._state === BackgroundProcessManagerState.Closing;
+	}
+
+	/**
+	 * Whether the manager is rejecting work and done waiting for submitted
+	 * work to complete.
+	 */
+	get isClosed() {
+		return this._state === BackgroundProcessManagerState.Closed;
+	}
+
+	private closedFailure(job, description: string) {
+		if (!this.isOpen) {
 			return Promise.reject(
 				new Error(
 					[
-						'The context is locked, which occurs after exit() has been called.',
-						`This error occurred trying to add "${description}" while the`,
-						`following items were still pending: [\n${this.pending
-							.map(t => '  ' + t)
+						'The manager is closing or closed, which occurs after `close()` has been called.',
+						`This error occurred trying to add "${description}".`,
+						`Pending jobs: [\n${this.pending
+							.map(t => '    ' + t)
 							.join(',\n')}\n]`,
 					].join('\n')
 				)
@@ -284,11 +318,15 @@ export class JobContext {
 	 * Signals jobs to stop (for those that accept interruptions) and waits
 	 * for confirmation that jobs have stopped.
 	 *
+	 * This immediately puts the manager into a closing state and just begins
+	 * to reject new work. After all work in the manager is complete, the
+	 * manager goes into a `Completed` state and `close()` returns.
+	 *
 	 * @returns The settled results of each job's promise.
 	 */
-	async exit() {
+	async close() {
 		// prevents more jobs from being added
-		this.locked = true;
+		this._state = BackgroundProcessManagerState.Closing;
 
 		for (const job of [...this.jobs]) {
 			try {
@@ -306,13 +344,41 @@ export class JobContext {
 
 		// Use `allSettled()` because we want to wait for all to finish. We do
 		// not want to stop waiting if there is a failure.
-		return Promise.allSettled(this.jobs.map(j => j.promise));
+		const results = await Promise.allSettled(this.jobs.map(j => j.promise));
+
+		// At this point, we're already *not* accepting new work, and all
+		// pending work is done. It's safe to set state to `Closed`. Any
+		// process that's checking this property will be able to safely operate
+		// on this value at this point.
+		this._state = BackgroundProcessManagerState.Closed;
+
+		return results;
 	}
 }
 
 /**
- * Completely internal to `JobContext`, and describes the structure of an entry
- * in the jobs registry.
+ * All possible states a `BackgroundProcessManager` instance can be in.
+ */
+export enum BackgroundProcessManagerState {
+	/**
+	 * Accepting new jobs.
+	 */
+	Open = 'Open',
+
+	/**
+	 * Not accepting new jobs. Waiting for submitted jobs to complete.
+	 */
+	Closing = 'Closing',
+
+	/**
+	 * Not accepting new jobs. All submitted jobs are complete.
+	 */
+	Closed = 'Closed',
+}
+
+/**
+ * Completely internal to `BackgroundProcessManager`, and describes the structure of
+ * an entry in the jobs registry.
  */
 type JobEntry = {
 	/**
@@ -331,8 +397,8 @@ type JobEntry = {
 	 * `terminate` function. The `description` can be a string. (May be extended
 	 * later to also support object refs.)
 	 *
-	 * Useful for troubleshooting why a `JobContext` is waiting for long
-	 * periods of time on `exit()`.
+	 * Useful for troubleshooting why a manager is waiting for long periods of time
+	 * on `close()`.
 	 */
 	description?: string;
 };

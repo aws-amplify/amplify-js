@@ -25,8 +25,6 @@ export async function retry<T>(
 	delayFn: DelayFunction,
 	onTerminate?: Promise<void>
 ): Promise<T> {
-	console.log('retry', functionToRetry);
-
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
@@ -60,7 +58,6 @@ export async function retry<T>(
 			);
 
 			try {
-				console.log('returning');
 				return resolve(await functionToRetry(...args));
 			} catch (err) {
 				lastError = err;

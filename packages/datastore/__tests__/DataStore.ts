@@ -158,7 +158,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
-			(DataStore as any).context.add(
+			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial query blocker'
 			);
@@ -175,7 +175,7 @@ describe('DataStore sanity testing checks', () => {
 				await DataStore.query(Post);
 				expect(true).toBe(false);
 			} catch (error) {
-				expect(error.message).toContain('locked');
+				expect(error.message).toContain('closed');
 			} finally {
 				unblock();
 				await clearing;
@@ -187,7 +187,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
-			(DataStore as any).context.add(
+			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial save blocker'
 			);
@@ -204,7 +204,7 @@ describe('DataStore sanity testing checks', () => {
 				await DataStore.save(new Post({ title: 'title that should fail' }));
 				expect(true).toBe(false);
 			} catch (error) {
-				expect(error.message).toContain('locked');
+				expect(error.message).toContain('closed');
 			} finally {
 				unblock();
 				await clearing;
@@ -216,7 +216,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
-			(DataStore as any).context.add(
+			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial delete blocker'
 			);
@@ -233,7 +233,7 @@ describe('DataStore sanity testing checks', () => {
 				await DataStore.delete(Post, Predicates.ALL);
 				expect(true).toBe(false);
 			} catch (error) {
-				expect(error.message).toContain('locked');
+				expect(error.message).toContain('closed');
 			} finally {
 				unblock();
 				await clearing;
@@ -245,7 +245,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
-			(DataStore as any).context.add(
+			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial observe blocker'
 			);
@@ -263,7 +263,7 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('locked');
+					expect(error.message).toContain('closed');
 					unblock();
 				},
 			});
@@ -276,7 +276,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
-			(DataStore as any).context.add(
+			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial observeQuery blocker'
 			);
@@ -294,7 +294,7 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('locked');
+					expect(error.message).toContain('closed');
 					unblock();
 				},
 			});

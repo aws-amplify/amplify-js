@@ -1,7 +1,7 @@
 import {
 	browserOrNode,
 	ConsoleLogger as Logger,
-	JobContext,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -115,7 +115,7 @@ export class SyncEngine {
 		boolean
 	> = new WeakMap();
 
-	private context: JobContext;
+	private runningProcesses: BackgroundProcessManager;
 
 	public getModelSyncedStatus(
 		modelConstructor: PersistentModelConstructor<any>
@@ -137,7 +137,7 @@ export class SyncEngine {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -193,7 +193,7 @@ export class SyncEngine {
 
 			let subscriptions: ZenObservable.Subscription[] = [];
 
-			this.context.add(async () => {
+			this.runningProcesses.add(async () => {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
@@ -205,7 +205,7 @@ export class SyncEngine {
 				// this explicitly with the context. it's already contained.
 				const startPromise = new Promise(doneStarting => {
 					this.datastoreConnectivity.status().subscribe(async ({ online }) =>
-						this.context.add(async () => {
+						this.runningProcesses.add(async () => {
 							// From offline to online
 							if (online && !this.online) {
 								this.online = online;
@@ -309,7 +309,7 @@ export class SyncEngine {
 									this.mutationsProcessor
 										.start()
 										.subscribe(({ modelDefinition, model: item, hasMore }) =>
-											this.context.add(async () => {
+											this.runningProcesses.add(async () => {
 												const modelConstructor = this.userModelClasses[
 													modelDefinition.name
 												] as PersistentModelConstructor<any>;
@@ -352,7 +352,7 @@ export class SyncEngine {
 									subscriptions.push(
 										dataSubsObservable.subscribe(
 											([_transformerMutationType, modelDefinition, item]) =>
-												this.context.add(async () => {
+												this.runningProcesses.add(async () => {
 													const modelConstructor = this.userModelClasses[
 														modelDefinition.name
 													] as PersistentModelConstructor<any>;
@@ -401,7 +401,7 @@ export class SyncEngine {
 					})
 					.subscribe({
 						next: ({ opType, model, element, condition }) =>
-							this.context.add(async () => {
+							this.runningProcesses.add(async () => {
 								const namespace =
 									this.schema.namespaces[this.namespaceResolver(model)];
 								const MutationEventConstructor = this.modelClasses[
@@ -473,7 +473,7 @@ export class SyncEngine {
 				});
 			}, 'sync start');
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				subscriptions.forEach(sub => sub.unsubscribe());
 			}, 'sync start cleaner');
 		});
@@ -484,7 +484,7 @@ export class SyncEngine {
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(
-				await this.context.add(
+				await this.runningProcesses.add(
 					() => this.getModelsMetadata(),
 					'sync/index getModelsMetadataWithNextFullSync'
 				)
@@ -525,7 +525,7 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 
-			this.context.add(async () => {
+			this.runningProcesses.add(async () => {
 				let terminated = false;
 
 				while (!observer.closed && !terminated) {
@@ -561,7 +561,7 @@ export class SyncEngine {
 									startedAt,
 									isFullSync,
 								}) =>
-									this.context.add(async () => {
+									this.runningProcesses.add(async () => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
@@ -734,7 +734,7 @@ export class SyncEngine {
 						)})`
 					);
 
-					// TODO: create `JobContext.sleep()` ... but, need to put
+					// TODO: create `BackgroundProcessManager.sleep()` ... but, need to put
 					// a lot of thought into what that contract looks like to
 					//  support possible use-cases:
 					//
@@ -747,7 +747,7 @@ export class SyncEngine {
 					// TLDR; this is a lot of complexity here for a sleep(),
 					// but, it's not clear to me yet how to support an
 					// extensible, centralized cancelable `sleep()` elegantly.
-					await this.context.add(async onTerminate => {
+					await this.runningProcesses.add(async onTerminate => {
 						let sleepTimer;
 						let unsleep;
 
@@ -766,7 +766,7 @@ export class SyncEngine {
 				}
 			}, 'syncQueriesObservable main');
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				logger.debug('cleaning syncQueriesObservable');
 
 				if (syncQueriesSubscription) {
@@ -822,7 +822,7 @@ export class SyncEngine {
 		 * job contexts, as cleaner methods (added with `addCleaner()`), or by
 		 * passing this context through to child processes.
 		 */
-		await this.context.exit();
+		await this.runningProcesses.close();
 
 		/**
 		 * Not 100% sure this is necessary. In most cases, we would expect the
@@ -830,7 +830,7 @@ export class SyncEngine {
 		 *
 		 * TODO: Remove this and see if everything still works.
 		 */
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 
 		logger.debug('sync engine stopped and ready to restart');
 	}

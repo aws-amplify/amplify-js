@@ -5,7 +5,7 @@ import {
 	ConsoleLogger as Logger,
 	Hub,
 	HubCapsule,
-	JobContext,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -61,7 +61,7 @@ class SubscriptionProcessor {
 		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
-	private context: JobContext;
+	private runningProcesses: BackgroundProcessManager;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -244,7 +244,7 @@ class SubscriptionProcessor {
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
-		if (this.context) {
+		if (this.runningProcesses) {
 			throw new Error(
 				[
 					'Subscription processor is already started!',
@@ -255,7 +255,7 @@ class SubscriptionProcessor {
 			);
 		}
 
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
@@ -272,7 +272,7 @@ class SubscriptionProcessor {
 			let cognitoTokenPayload: { [field: string]: any },
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
-			this.context.add(async () => {
+			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
 					const credentials =
@@ -331,7 +331,7 @@ class SubscriptionProcessor {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
 						.forEach(modelDefinition =>
-							this.context.add(async () => {
+							this.runningProcesses.add(async () => {
 								const modelAuthModes = await getModelAuthModes({
 									authModeStrategy: this.authModeStrategy,
 									defaultAuthMode:
@@ -588,12 +588,12 @@ class SubscriptionProcessor {
 						);
 				});
 
-				this.context.add(() =>
+				this.runningProcesses.add(() =>
 					Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED))
 				);
 			}, 'subscription processor new subscriber');
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
 						subscription => subscription.unsubscribe()
@@ -614,7 +614,7 @@ class SubscriptionProcessor {
 			this.dataObserver = observer;
 			this.drainBuffer();
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				this.dataObserver = null;
 			});
 		});
@@ -623,7 +623,7 @@ class SubscriptionProcessor {
 	}
 
 	public async stop() {
-		this.context && (await this.context.exit());
+		this.runningProcesses && (await this.runningProcesses.close());
 	}
 
 	private passesPredicateValidation(

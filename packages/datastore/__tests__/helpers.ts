@@ -286,7 +286,8 @@ export async function pretendModelsAreSynced(DataStore: any) {
  *
  * The intended use is for tests that intentionally try to leak background
  * work between test contexts, as was possible prior the introduction of
- * `JobContext`'s and clean `stop()` methods on DataStore and its processors.
+ * `BackgroundProcessManager`'s and clean `stop()` methods on DataStore
+ * and its processors.
  *
  * @see warpTime
  *

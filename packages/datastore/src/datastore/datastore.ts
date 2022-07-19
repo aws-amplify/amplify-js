@@ -7,7 +7,7 @@ import {
 	Hub,
 	JS,
 	HubCallback,
-	JobContext,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import {
 	Draft,
@@ -840,8 +840,8 @@ class DataStore {
 	 * 1. *etc.*
 	 *
 	 * Methods that create pending promises, subscriptions, callbacks, or any
-	 * type of side effect **MUST** be registered with the context. And, a new
-	 * context must be created after each `exit()`.
+	 * type of side effect **MUST** be registered with the manager. And, a new
+	 * manager must be created after each `exit()`.
 	 *
 	 * Failure to comply will put DataStore into a highly unpredictable state
 	 * when it needs to stop or clear -- which occurs when restarting with new
@@ -854,7 +854,7 @@ class DataStore {
 	 *
 	 * (Reasonable = *seconds*, not minutes.)
 	 */
-	private context: JobContext = new JobContext();
+	private runningProcesses = new BackgroundProcessManager();
 
 	getModuleName() {
 		return 'DataStore';
@@ -870,7 +870,7 @@ class DataStore {
 	 *
 	 */
 	start = async (): Promise<void> => {
-		return this.context.add(async () => {
+		return this.runningProcesses.add(async () => {
 			if (this.initialized === undefined) {
 				logger.debug('Starting DataStore');
 				this.initialized = new Promise((res, rej) => {
@@ -982,7 +982,7 @@ class DataStore {
 			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
-		return this.context.add(async () => {
+		return this.runningProcesses.add(async () => {
 			await this.start();
 
 			//#region Input validation
@@ -1068,7 +1068,7 @@ class DataStore {
 		model: T,
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
-		return this.context.add(async () => {
+		return this.runningProcesses.add(async () => {
 			await this.start();
 
 			// Immer patches for constructing a correct update mutation input
@@ -1161,7 +1161,7 @@ class DataStore {
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
-		return this.context.add(async () => {
+		return this.runningProcesses.add(async () => {
 			await this.start();
 
 			let condition: ModelPredicate<T>;
@@ -1359,7 +1359,7 @@ class DataStore {
 		return new Observable<SubscriptionMessage<T>>(observer => {
 			let handle: ZenObservable.Subscription;
 
-			this.context
+			this.runningProcesses
 				.add(async () => {
 					await this.start();
 
@@ -1370,41 +1370,36 @@ class DataStore {
 						.filter(({ model }) => namespaceResolver(model) === USER)
 						.subscribe({
 							next: item =>
-								this.context
-									.add(async () => {
-										// the `element` doesn't necessarily contain all item details or
-										// have related records attached consistently with that of a query()
-										// result item. for consistency, we attach them here.
+								this.runningProcesses.isOpen &&
+								this.runningProcesses.add(async () => {
+									// the `element` doesn't necessarily contain all item details or
+									// have related records attached consistently with that of a query()
+									// result item. for consistency, we attach them here.
 
-										let message = item;
+									let message = item;
 
-										// as long as we're not dealing with a DELETE, we need to fetch a fresh
-										// item from storage to ensure it's fully populated.
-										if (item.opType !== 'DELETE') {
-											const modelDefinition = getModelDefinition(item.model);
-											const keyFields =
-												extractPrimaryKeyFieldNames(modelDefinition);
-											const primaryKeysAndValues = extractPrimaryKeysAndValues(
-												item.element,
-												keyFields
-											);
-											const freshElement = await this.query(
-												item.model,
-												primaryKeysAndValues
-											);
-											message = {
-												...message,
-												element: freshElement as T,
-											};
-										}
+									// as long as we're not dealing with a DELETE, we need to fetch a fresh
+									// item from storage to ensure it's fully populated.
+									if (item.opType !== 'DELETE') {
+										const modelDefinition = getModelDefinition(item.model);
+										const keyFields =
+											extractPrimaryKeyFieldNames(modelDefinition);
+										const primaryKeysAndValues = extractPrimaryKeysAndValues(
+											item.element,
+											keyFields
+										);
+										const freshElement = await this.query(
+											item.model,
+											primaryKeysAndValues
+										);
+										message = {
+											...message,
+											element: freshElement as T,
+										};
+									}
 
-										observer.next(message as SubscriptionMessage<T>);
-									}, 'is it this one?')
-									.catch(error => {
-										if (!error.message.match(/The context is locked/)) {
-											throw error;
-										}
-									}),
+									observer.next(message as SubscriptionMessage<T>);
+								}, 'is it this one?'),
 							error: err => observer.error(err),
 							complete: () => observer.complete(),
 						});
@@ -1416,7 +1411,7 @@ class DataStore {
 			// better than no cleaner, but if the subscriber is handling the
 			// complete() message async and not registering with the context,
 			// this will still be problematic.
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
 					handle.unsubscribe();
 				}
@@ -1493,7 +1488,7 @@ class DataStore {
 				ModelPredicateCreator.getPredicates(predicate, false) || {};
 			const hasPredicate = !!predicates;
 
-			this.context
+			this.runningProcesses
 				.add(async () => {
 					try {
 						// first, query and return any locally-available records
@@ -1675,7 +1670,7 @@ class DataStore {
 			};
 			Hub.listen('datastore', hubCallback);
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
 					handle.unsubscribe();
 				}
@@ -1778,9 +1773,7 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
-		// checkSchemaInitialized();
-
-		await this.context.exit();
+		await this.runningProcesses.close();
 
 		if (this.storage === undefined) {
 			// connect to storage so that it can be cleared without fully starting DataStore
@@ -1810,7 +1803,7 @@ class DataStore {
 		this.sync = undefined;
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 	}
 
 	/**
@@ -1820,7 +1813,7 @@ class DataStore {
 	 * running queries and terminates subscriptions."
 	 */
 	async stop(this: InstanceType<typeof DataStore>) {
-		await this.context.exit();
+		await this.runningProcesses.close();
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
@@ -1833,7 +1826,7 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 	}
 
 	/**

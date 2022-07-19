@@ -1,18 +1,21 @@
 import Observable from 'zen-observable-ts';
-import { JobContext } from '../src/Util/JobContext';
+import {
+	BackgroundProcessManager,
+	BackgroundProcessManagerState,
+} from '../src/Util/BackgroundProcessManager';
 
-describe('JobContext', () => {
+describe('BackgroundProcessManager', () => {
 	test('can wait for a promise to finish', async () => {
-		// when we get passed `exit()`, we need proof that the promise we're
+		// when we get passed `close()`, we need proof that the promise we're
 		// waiting on actually ran. <in a booming voice>: THIS IS THAT PROOF.
 		let proof = false;
 
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		// add a job that finishes later, but don't wait for it.
-		// we want to ensure that exit() is called before the promise
+		// we want to ensure that close() is called before the promise
 		// completes.
-		context.add(async () => {
+		manager.add(async () => {
 			return new Promise(resolve => {
 				setTimeout(() => {
 					proof = true;
@@ -22,25 +25,25 @@ describe('JobContext', () => {
 		});
 
 		// the job should not have completed at the time we call this.
-		await context.exit();
+		await manager.close();
 
 		expect(proof).toBe(true);
 	});
 
 	test('returns the value of the promise when adding it', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		const value = await context.add(async () => Promise.resolve('VALUE'));
+		const value = await manager.add(async () => Promise.resolve('VALUE'));
 
-		await context.exit();
+		await manager.close();
 		expect(value).toEqual('VALUE');
 	});
 
 	test('passes thrown promise errors through', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		try {
-			await context.add(async () => {
+			await manager.add(async () => {
 				throw new Error('not today, friend!');
 			});
 			expect(true).toBe(false);
@@ -49,11 +52,11 @@ describe('JobContext', () => {
 		}
 	});
 
-	test('errors thrown in jobs do not block exit', async () => {
-		const context = new JobContext();
+	test('errors thrown in jobs do not block close', async () => {
+		const manager = new BackgroundProcessManager();
 
 		try {
-			await context.add(async () => {
+			await manager.add(async () => {
 				throw new Error('Enough shenanigans!');
 			});
 			expect(true).toBe(false);
@@ -61,15 +64,15 @@ describe('JobContext', () => {
 			// no need to handle here.
 		}
 
-		await context.exit();
+		await manager.close();
 
 		expect(true).toBe(true);
 	});
 
-	test('promises remove themselves from the context when complete, but not before', async () => {
-		const context = new JobContext();
+	test('promises remove themselves from the manager when complete, but not before', async () => {
+		const manager = new BackgroundProcessManager();
 
-		const resultPromise = context.add(async () => {
+		const resultPromise = manager.add(async () => {
 			return new Promise(resolve => {
 				setTimeout(() => {
 					resolve();
@@ -77,18 +80,18 @@ describe('JobContext', () => {
 			});
 		});
 
-		expect(context.length).toBe(1);
+		expect(manager.length).toBe(1);
 		await resultPromise;
-		expect(context.length).toBe(0);
+		expect(manager.length).toBe(0);
 
-		// just demonstrating good behavior: Always exit your contexts.
-		await context.exit();
+		// just demonstrating good behavior: Always close your managers.
+		await manager.close();
 	});
 
-	test('promises remove themselves from the context when failed, but not before', async () => {
-		const context = new JobContext();
+	test('promises remove themselves from the manager when failed, but not before', async () => {
+		const manager = new BackgroundProcessManager();
 
-		const resultPromise = context.add(async () => {
+		const resultPromise = manager.add(async () => {
 			return new Promise((resolve, raise) => {
 				setTimeout(() => {
 					raise(new Error('a fuss'));
@@ -96,7 +99,7 @@ describe('JobContext', () => {
 			});
 		});
 
-		expect(context.length).toBe(1);
+		expect(manager.length).toBe(1);
 		try {
 			await resultPromise;
 			expect(true).toBe(false);
@@ -104,58 +107,101 @@ describe('JobContext', () => {
 			expect(error.message).toEqual('a fuss');
 		}
 
-		// the internal JobContext `catch()` handler for the promise is still
+		// the internal Jobmanager `catch()` handler for the promise is still
 		// in the promise callback queue. we need to put this "thread" onto
 		// the end of the queue to allow that catch handler to execute ahead
 		// of us. we can do that by simply creating another promise and
 		// awaiting it:
 		await Promise.resolve();
 
-		// and now JobContext's catch handler for the rejected promise will
+		// and now Jobmanager's catch handler for the rejected promise will
 		// have been invoked.
-		expect(context.length).toBe(0);
+		expect(manager.length).toBe(0);
 
-		// just demonstrating good behavior: Always exit your contexts.
-		await context.exit();
+		// just demonstrating good behavior: Always close your managers.
+		await manager.close();
 	});
 
-	test('blocks new jobs once exited', async () => {
-		const context = new JobContext();
-		await context.exit();
+	test('blocks new jobs once closeed', async () => {
+		const manager = new BackgroundProcessManager();
+		await manager.close();
 
 		try {
-			await context.add(async () =>
+			await manager.add(async () =>
 				Promise.resolve('This should never be returned.')
 			);
 			expect(true).toBe(false);
 		} catch (error) {
-			expect(error.message).toContain('locked');
+			expect(error.message).toContain('closed');
 		}
 	});
 
-	test('blocked jobs are async catchable', async () => {
-		const context = new JobContext();
-		await context.exit();
+	test('tracks state throughout lifecycle', async () => {
+		const manager = new BackgroundProcessManager();
 
-		await context
+		expect(manager.state).toEqual(BackgroundProcessManagerState.Open);
+		expect(manager.isOpen).toBe(true);
+		expect(manager.isClosing).toBe(false);
+		expect(manager.isClosed).toBe(false);
+
+		let unblock;
+		manager.add(async () => new Promise(_unblock => (unblock = _unblock)));
+
+		expect(manager.state).toEqual(BackgroundProcessManagerState.Open);
+		expect(manager.isOpen).toBe(true);
+		expect(manager.isClosing).toBe(false);
+		expect(manager.isClosed).toBe(false);
+
+		manager.close();
+
+		expect(manager.state).toEqual(BackgroundProcessManagerState.Closing);
+		expect(manager.isOpen).toBe(false);
+		expect(manager.isClosing).toBe(true);
+		expect(manager.isClosed).toBe(false);
+
+		// "unblock" returns immediately ...
+		unblock();
+
+		// ... so, we need to give control back to a few layers of promise
+		// handling before the manager registers the completion.
+
+		await new Promise(resume => setImmediate(resume));
+
+		expect(manager.state).toEqual(BackgroundProcessManagerState.Closed);
+		expect(manager.isOpen).toBe(false);
+		expect(manager.isClosing).toBe(false);
+		expect(manager.isClosed).toBe(true);
+	});
+
+	test('JobmanagerStates states are human readable strings', () => {
+		expect(BackgroundProcessManagerState.Open).toEqual('Open');
+		expect(BackgroundProcessManagerState.Closing).toEqual('Closing');
+		expect(BackgroundProcessManagerState.Closed).toEqual('Closed');
+	});
+
+	test('blocked jobs are async catchable', async () => {
+		const manager = new BackgroundProcessManager();
+		await manager.close();
+
+		await manager
 			.add(async () => Promise.resolve('This should never be returned.'))
 			.then(() => {
 				expect(true).toBe(false);
 			})
 			.catch(error => {
-				expect(error.message).toContain('locked');
+				expect(error.message).toContain('closed');
 			});
 	});
 
 	test('waits for multiple promises', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		const results = [];
 
 		for (let i = 0; i < 10; i++) {
 			const _i = i;
 			results.push(false);
-			context.add(async () => {
+			manager.add(async () => {
 				return new Promise(resolve => {
 					setTimeout(() => {
 						results[_i] = true;
@@ -165,7 +211,7 @@ describe('JobContext', () => {
 			});
 		}
 
-		await context.exit();
+		await manager.close();
 
 		expect(results.length).toEqual(10); // sanity check
 		expect(results.every(v => v === true)).toBe(true);
@@ -173,9 +219,9 @@ describe('JobContext', () => {
 
 	test('can send termination signals to jobs that support termination, with resolve', async () => {
 		let completed = false;
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		const resultPromise = context.add(async onTerminate => {
+		const resultPromise = manager.add(async onTerminate => {
 			return new Promise((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
@@ -195,14 +241,14 @@ describe('JobContext', () => {
 		});
 
 		// the job is pending
-		expect(context.length).toBe(1);
-		await context.exit();
+		expect(manager.length).toBe(1);
+		await manager.close();
 
-		// after exit(), the job should be cleared
-		expect(context.length).toBe(0);
+		// after close(), the job should be cleared
+		expect(manager.length).toBe(0);
 
 		// giving a wait, to make sure the job doesn't actually fire
-		// after being cleared with exit()
+		// after being cleared with close()
 		await new Promise(resolve => setTimeout(resolve, 100));
 
 		// then making sure the job really really didn't fire.
@@ -212,9 +258,9 @@ describe('JobContext', () => {
 	test('can send termination signals to jobs that support termination, with reject', async () => {
 		let completed = false;
 		let thrown = undefined;
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		const resultPromise = context.add(async onTerminate => {
+		const resultPromise = manager.add(async onTerminate => {
 			return new Promise((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
@@ -238,16 +284,16 @@ describe('JobContext', () => {
 		});
 
 		// the job is pending
-		expect(context.length).toBe(1);
+		expect(manager.length).toBe(1);
 
-		const results = await context.exit();
+		const results = await manager.close();
 		expect(results[0].status).toEqual('rejected');
 
-		// after exit(), the job should be cleared
-		expect(context.length).toBe(0);
+		// after close(), the job should be cleared
+		expect(manager.length).toBe(0);
 
 		// giving a wait, to make sure the job doesn't actually fire
-		// after being cleared with exit()
+		// after being cleared with close()
 		await new Promise(resolve => setTimeout(resolve, 100));
 
 		// then making sure the job really really didn't fire.
@@ -256,7 +302,7 @@ describe('JobContext', () => {
 	});
 
 	test('attempts to terminate all, but patiently waits for persistent jobs', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		let terminationAttemptCount = 0;
 		const results = [];
@@ -264,7 +310,7 @@ describe('JobContext', () => {
 		for (let i = 0; i < 10; i++) {
 			const _i = i;
 			results.push(false);
-			context.add(async onTerminate => {
+			manager.add(async onTerminate => {
 				return new Promise((resolve, reject) => {
 					const timer = setTimeout(() => {
 						results[_i] = true;
@@ -279,7 +325,7 @@ describe('JobContext', () => {
 							clearTimeout(timer);
 
 							// remember, if a job *does* terminate, it still
-							// needs resolve/reject to unblock `exit()`.
+							// needs resolve/reject to unblock `close()`.
 							_i > 5 ? resolve() : reject();
 						}
 					});
@@ -289,7 +335,7 @@ describe('JobContext', () => {
 
 		// capture resolutions so we can ensure we actually tested this with a
 		// mix of resolves and rejects.
-		const resolutions = await context.exit();
+		const resolutions = await manager.close();
 
 		expect(results.length).toEqual(10); // sanity check
 		expect(results.filter(v => v === true).length).toBe(5);
@@ -298,15 +344,15 @@ describe('JobContext', () => {
 	});
 
 	test('can be used to terminate other types of bg jobs, like zen subscriptions', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 		let count = 0;
 
-		// we could also put the context.job() outside the observable and call
+		// we could also put the manager.job() outside the observable and call
 		// unsubscribe() on the subscription. all depends where the control
 		// needs to occur. this example explicitly intends to demonstrate
 		// that the observable constructor can manage it like a hook.
 		new Observable(observer => {
-			const { resolve, onTerminate } = context.add();
+			const { resolve, onTerminate } = manager.add();
 			const interval = setInterval(() => observer.next({}), 10);
 
 			const unsubscribe = () => {
@@ -323,7 +369,7 @@ describe('JobContext', () => {
 
 		// this should signal to termination and end, and the observable should
 		// respond by calling its internal terminate().
-		await context.exit();
+		await manager.close();
 		const countSnapshot = count;
 
 		expect(count).toBeGreaterThan(0);
@@ -335,14 +381,14 @@ describe('JobContext', () => {
 	});
 
 	test('can provide cleanup functions for use in zen observables', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 		let count = 0;
 
 		const subscription = new Observable(observer => {
 			const interval = setInterval(() => observer.next({}), 10);
 
 			// LOOK: here's the magic. (tada!)
-			return context.addCleaner(async () => {
+			return manager.addCleaner(async () => {
 				clearInterval(interval);
 			});
 		}).subscribe(() => count++);
@@ -351,7 +397,7 @@ describe('JobContext', () => {
 
 		// this should signal to termination and end, and the observable should
 		// respond by calling its internal terminate().
-		await context.exit();
+		await manager.close();
 		const countSnapshot = count;
 
 		expect(count).toBeGreaterThan(0);
@@ -363,14 +409,14 @@ describe('JobContext', () => {
 	});
 
 	test('cleaner is resolved when used as zen cleaner and subscription is unsubscribed', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 		let count = 0;
 
 		const subscription = new Observable(observer => {
 			const interval = setInterval(() => observer.next({}), 10);
 
 			// LOOK: here's the magic. (tada!)
-			return context.addCleaner(async () => {
+			return manager.addCleaner(async () => {
 				clearInterval(interval);
 			});
 		}).subscribe(() => count++);
@@ -387,23 +433,23 @@ describe('JobContext', () => {
 		expect(count).toEqual(countSnapshot);
 
 		// we should also see zero waiting jobs
-		expect(context.length).toEqual(0);
+		expect(manager.length).toEqual(0);
 
-		// it's good practice always to exit() your job contexts.
-		await context.exit();
+		// it's good practice always to close() your job managers.
+		await manager.close();
 	});
 
-	test('exit() is idempotent, firing onTerminate signals only once', async () => {
+	test('close() is idempotent, firing onTerminate signals only once', async () => {
 		// As long as `onTerminate` is implemented as a `Promise`, this is kind
 		// if a silly test, because promises are idempontent. But, it's still
 		// an important test to guard against regressions if we stop using a
 		// `Promise` for `onTerminate` later.
 
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
 		let terminateSignalCount = 0;
 
-		context.add(
+		manager.add(
 			async onTerminate =>
 				new Promise(resolve => {
 					// don't actually resolve right away to ensure there is
@@ -416,12 +462,12 @@ describe('JobContext', () => {
 				})
 		);
 
-		// accumulate a bunch of exit promises, only the first of which should
-		// send the exit signal, but all of which should await resolution.
-		const exits = [0, 1, 2, 3, 4, 5].map(i => context.exit());
+		// accumulate a bunch of close promises, only the first of which should
+		// send the close signal, but all of which should await resolution.
+		const closes = [0, 1, 2, 3, 4, 5].map(i => manager.close());
 
 		// ensure everything has settled
-		const resolved = await Promise.allSettled(exits);
+		const resolved = await Promise.allSettled(closes);
 
 		expect(terminateSignalCount).toEqual(1);
 		expect(resolved.map(r => r.status).every(v => v === 'fulfilled')).toBe(
@@ -429,9 +475,9 @@ describe('JobContext', () => {
 		);
 	});
 
-	test('can contain a nested context', async () => {
-		const outer = new JobContext();
-		const inner = new JobContext();
+	test('can contain a nested manager', async () => {
+		const outer = new BackgroundProcessManager();
+		const inner = new BackgroundProcessManager();
 
 		let proof = false;
 
@@ -446,14 +492,14 @@ describe('JobContext', () => {
 				)
 		);
 
-		await outer.exit();
+		await outer.close();
 
 		expect(proof).toBe(true);
 	});
 
-	test('calls inner context exit upon outer context exit', async () => {
-		const outer = new JobContext();
-		const inner = new JobContext();
+	test('calls inner manager close upon outer manager close', async () => {
+		const outer = new BackgroundProcessManager();
+		const inner = new BackgroundProcessManager();
 
 		let proof = false;
 
@@ -471,30 +517,30 @@ describe('JobContext', () => {
 		await new Promise(resolve => setTimeout(resolve, 1));
 		expect(proof).toBe(false);
 
-		await outer.exit();
+		await outer.close();
 
 		expect(proof).toBe(true);
 	});
 
 	test('jobs can be named when adding an async function', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		context.add(
+		manager.add(
 			async () => new Promise(unsleep => setTimeout(unsleep, 1)),
 			'async function'
 		);
 
-		expect(context.pending.length).toBe(1);
-		expect(context.pending[0]).toEqual('async function');
+		expect(manager.pending.length).toBe(1);
+		expect(manager.pending[0]).toEqual('async function');
 
-		// always exit your contexts :)
-		await context.exit();
+		// always close your managers :)
+		await manager.close();
 	});
 
 	test('jobs can be named when adding a cancelable async function', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		context.add(
+		manager.add(
 			async onTerminate =>
 				new Promise(finishJob => {
 					onTerminate.then(finishJob);
@@ -502,82 +548,82 @@ describe('JobContext', () => {
 			'cancelable async function'
 		);
 
-		expect(context.pending.length).toBe(1);
-		expect(context.pending[0]).toEqual('cancelable async function');
+		expect(manager.pending.length).toBe(1);
+		expect(manager.pending[0]).toEqual('cancelable async function');
 
-		// always exit your contexts :)
-		await context.exit();
+		// always close your managers :)
+		await manager.close();
 	});
 
 	test('jobs can be named when getting job hooks', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		const { resolve } = context.add('job hooks');
+		const { resolve } = manager.add('job hooks');
 
-		expect(context.pending.length).toBe(1);
-		expect(context.pending[0]).toEqual('job hooks');
+		expect(manager.pending.length).toBe(1);
+		expect(manager.pending[0]).toEqual('job hooks');
 
-		// always exit your contexts :)
+		// always close your managers :)
 		resolve();
-		await context.exit();
+		await manager.close();
 	});
 
-	test('sub-contexts can be named', async () => {
-		const inner = new JobContext();
-		const outer = new JobContext();
+	test('sub-managers can be named', async () => {
+		const inner = new BackgroundProcessManager();
+		const outer = new BackgroundProcessManager();
 
-		outer.add(inner, 'inner context');
+		outer.add(inner, 'inner manager');
 
 		expect(outer.pending.length).toBe(1);
-		expect(outer.pending[0]).toEqual('inner context');
+		expect(outer.pending[0]).toEqual('inner manager');
 
-		await outer.exit();
+		await outer.close();
 	});
 
 	test('cleaners can be named', async () => {
-		const context = new JobContext();
+		const manager = new BackgroundProcessManager();
 
-		context.addCleaner(async () => {
+		manager.addCleaner(async () => {
 			// no op
 		}, 'cleaner name');
 
-		expect(context.pending.length).toBe(1);
-		expect(context.pending[0]).toEqual('cleaner name');
+		expect(manager.pending.length).toBe(1);
+		expect(manager.pending[0]).toEqual('cleaner name');
 
-		await context.exit();
+		await manager.close();
 	});
 
-	test('context locked error for named additions shows name in error', async () => {
-		const context = new JobContext();
-		await context.exit();
+	test('manager closed error for named additions shows name in error', async () => {
+		const manager = new BackgroundProcessManager();
+		await manager.close();
 
 		try {
-			await context.add(async () => {}, 'some job');
+			await manager.add(async () => {}, 'some job');
 			expect(true).toBe(false);
 		} catch (error) {
 			expect(error.message).toContain('some job');
 		}
 	});
 
-	test('context locked error shows names of pending items in error', async () => {
-		const context = new JobContext();
+	test('manager closed error shows names of pending items in error', async () => {
+		const manager = new BackgroundProcessManager();
 
 		let unblock;
-		context.add(
+		manager.add(
 			() => new Promise(_unblock => (unblock = _unblock)),
 			'blocking job'
 		);
 
-		const exit = context.exit();
+		const close = manager.close();
 
 		try {
-			await context.add(async () => {}, 'some job');
+			await manager.add(async () => {}, 'some job');
 			expect(true).toBe(false);
 		} catch (error) {
 			expect(error.message).toContain('blocking job');
 		}
 
 		unblock();
-		await exit;
+		await close;
 	});
 });

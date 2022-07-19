@@ -4,7 +4,7 @@ import {
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
-	JobContext,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -64,7 +64,7 @@ class MutationProcessor {
 	>();
 	private processing: boolean = false;
 
-	private context = new JobContext();
+	private runningProcesses = new BackgroundProcessManager();
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -118,7 +118,7 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
@@ -130,7 +130,7 @@ class MutationProcessor {
 				throw error;
 			}
 
-			return this.context.addCleaner(async () => {
+			return this.runningProcesses.addCleaner(async () => {
 				this.pause();
 			});
 		});
@@ -139,19 +139,18 @@ class MutationProcessor {
 	}
 
 	public async stop() {
-		await this.context.exit();
+		await this.runningProcesses.close();
 	}
 
 	public async resume(): Promise<void> {
-		let terminated = false;
-
-		return this.context
-			.add(async onTerminate => {
-				onTerminate.then(() => {
-					terminated = true;
-				});
-
-				if (this.processing || !this.isReady() || terminated) {
+		return (
+			this.runningProcesses.isOpen &&
+			this.runningProcesses.add(async onTerminate => {
+				if (
+					this.processing ||
+					!this.isReady() ||
+					!this.runningProcesses.isOpen
+				) {
 					return;
 				}
 
@@ -162,7 +161,7 @@ class MutationProcessor {
 				// start to drain outbox
 				while (
 					this.processing &&
-					!terminated &&
+					this.runningProcesses.isOpen &&
 					(head = await this.outbox.peek(this.storage)) !== undefined
 				) {
 					const { model, operation, data, condition } = head;
@@ -268,11 +267,7 @@ class MutationProcessor {
 				// pauses itself
 				this.pause();
 			}, 'mutation resume loop')
-			.catch(error => {
-				if (!error.message.match(/The context is locked/)) {
-					throw error;
-				}
-			});
+		);
 	}
 
 	private async jitteredRetry(

@@ -26,7 +26,7 @@ import {
 	ConsoleLogger as Logger,
 	Hub,
 	NonRetryableError,
-	JobContext,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -41,7 +41,7 @@ const logger = new Logger('DataStore');
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
-	private context;
+	private runningProcesses: BackgroundProcessManager;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -115,14 +115,9 @@ class SyncProcessor {
 		// sync only needs the READ auth mode(s)
 		const readAuthModes = modelAuthModes.READ;
 
-		let terminated = false;
-		onTerminate.then(() => {
-			terminated = true;
-		});
-
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
-			if (terminated) {
+			if (!this.runningProcesses.isOpen) {
 				throw new Error(
 					'sync.retreievePage termination was requested. Exiting.'
 				);
@@ -330,7 +325,7 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		if (this.context) {
+		if (this.runningProcesses) {
 			throw new Error(
 				[
 					'The sync processor is already started!',
@@ -341,7 +336,7 @@ class SyncProcessor {
 			);
 		}
 
-		this.context = new JobContext();
+		this.runningProcesses = new BackgroundProcessManager();
 
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
@@ -362,7 +357,7 @@ class SyncProcessor {
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
 				.map(([modelDefinition, [namespace, lastSync]]) =>
-					this.context.add(async onTerminate => {
+					this.runningProcesses.add(async onTerminate => {
 						let done = false;
 						let nextToken: string = null;
 						let startedAt: number = null;
@@ -382,7 +377,7 @@ class SyncProcessor {
 							await Promise.all(promises);
 
 							do {
-								if (!this.context) {
+								if (!this.runningProcesses) {
 									return;
 								}
 
@@ -428,8 +423,8 @@ class SyncProcessor {
 				observer.complete();
 			});
 
-			return this.context.addCleaner(async () => {
-				this.context = undefined;
+			return this.runningProcesses.addCleaner(async () => {
+				this.runningProcesses = undefined;
 			});
 		});
 
@@ -438,7 +433,7 @@ class SyncProcessor {
 
 	async stop() {
 		logger.debug('stopping sync processor');
-		this.context && (await this.context.exit());
+		this.runningProcesses && (await this.runningProcesses.close());
 		logger.debug('sync processor stopped');
 	}
 }
