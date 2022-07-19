@@ -2267,7 +2267,7 @@ export class AuthClass {
 
 			dispatchAuthEvent(
 				'parsingCallbackUrl',
-				{ url: url },
+				{ url },
 				`The callback url is being parsed`
 			);
 

@@ -58,6 +58,7 @@
             "es5",
             "es2015",
             "dom",
+						"dom.iterable",
             "esnext.asynciterable",
             "es2017.object"
           ],
