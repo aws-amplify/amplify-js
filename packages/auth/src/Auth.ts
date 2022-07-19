@@ -2286,17 +2286,6 @@ export class AuthClass {
 				.map(entry => entry.split('='))
 				.find(k => k.includes('access_token') || k.includes('error'));
 
-			// const hasCodeOrError = !!(parse(currentUrl).query || '')
-			// 	.split('&')
-			// 	.map(entry => entry.split('='))
-			// 	.find(([k]) => k === 'code' || k === 'error');
-
-			// const hasTokenOrError = !!(parse(currentUrl).hash || '#')
-			// 	.substr(1)
-			// 	.split('&')
-			// 	.map(entry => entry.split('='))
-			// 	.find(([k]) => k === 'access_token' || k === 'error');
-
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
