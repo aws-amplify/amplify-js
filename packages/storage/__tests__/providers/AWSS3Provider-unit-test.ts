@@ -15,7 +15,7 @@ import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import {
 	S3Client,
-	ListObjectsCommand,
+	ListObjectsV2Command,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 } from '@aws-sdk/client-s3';
@@ -40,14 +40,14 @@ const mockEventEmitter = {
 	removeAllListeners: mockRemoveAllListeners,
 };
 
-jest.mock('events', function() {
+jest.mock('events', function () {
 	return {
 		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter),
 	};
 });
 
 S3Client.prototype.send = jest.fn(async command => {
-	if (command instanceof ListObjectsCommand) {
+	if (command instanceof ListObjectsV2Command) {
 		if (command.input.Prefix === 'public/emptyListResultsPath') {
 			return {};
 		}
@@ -137,7 +137,8 @@ describe('StorageProvider test', () => {
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
 				aws_user_files_s3_bucket_region: 'region',
-				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing: true,
+				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing:
+					true,
 			};
 
 			const config = storage.configure(aws_options);
@@ -311,7 +312,8 @@ describe('StorageProvider test', () => {
 				});
 			await storage.get('key', {
 				download: true,
-				progressCallback: ('this is not a function' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback:
+					'this is not a function' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith(
 				'WARN',
@@ -729,7 +731,8 @@ describe('StorageProvider test', () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
-				progressCallback: ('hello' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback:
+					'hello' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith(
 				'WARN',
@@ -969,6 +972,8 @@ describe('StorageProvider test', () => {
 			]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				ContinuationToken: undefined,
+				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
 			spyon.mockClear();
@@ -991,6 +996,8 @@ describe('StorageProvider test', () => {
 			).toEqual([]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				ContinuationToken: undefined,
+				MaxKeys: 1000,
 				Prefix: 'public/emptyListResultsPath',
 			});
 			spyon.mockClear();
@@ -1021,6 +1028,8 @@ describe('StorageProvider test', () => {
 			]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				ContinuationToken: undefined,
+				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
 			expect(spyon2).toBeCalledWith(
@@ -1063,7 +1072,42 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/path',
+				ContinuationToken: undefined,
 				MaxKeys: 1,
+			});
+
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
+		});
+
+		test('list object with maxKeys with ALL', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			expect.assertions(2);
+			expect(
+				await storage.list('path', { level: 'public', maxKeys: 'ALL' })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/path',
+				ContinuationToken: undefined,
+				MaxKeys: 1000,
 			});
 
 			spyon.mockClear();
@@ -1158,13 +1202,10 @@ describe('StorageProvider test', () => {
 
 			// wrong key type
 			await expect(
-				storage.copy(
-					({ level: 'public', key: 123 } as unknown) as S3CopySource,
-					{
-						key: 'dest',
-						level: 'public',
-					}
-				)
+				storage.copy({ level: 'public', key: 123 } as unknown as S3CopySource, {
+					key: 'dest',
+					level: 'public',
+				})
 			).rejects.toThrowError(
 				'source param should be an object with the property "key" with value of type string'
 			);
@@ -1188,10 +1229,10 @@ describe('StorageProvider test', () => {
 
 			// wrong key type
 			await expect(
-				storage.copy({ key: 'src', level: 'public' }, ({
+				storage.copy({ key: 'src', level: 'public' }, {
 					key: 123,
 					level: 'public',
-				} as unknown) as S3CopyDestination)
+				} as unknown as S3CopyDestination)
 			).rejects.toThrowError(
 				'destination param should be an object with the property "key" with value of type string'
 			);

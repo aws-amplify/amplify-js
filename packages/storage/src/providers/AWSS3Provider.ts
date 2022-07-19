@@ -22,7 +22,7 @@ import {
 	S3Client,
 	GetObjectCommand,
 	DeleteObjectCommand,
-	ListObjectsCommand,
+	ListObjectsV2Command,
 	GetObjectCommandOutput,
 	DeleteObjectCommandInput,
 	CopyObjectCommandInput,
@@ -67,6 +67,7 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
+import { S3ProviderListOutputItem } from '.././types/AWSS3Provider';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -88,6 +89,10 @@ interface AddTaskInput {
 	params?: PutObjectCommandInput;
 }
 
+type S3ProviderListOutputWithToken = {
+	contents: S3ProviderListOutputItem[];
+	nextToken: string;
+};
 /**
  * Provide storage methods to use AWS S3
  */
@@ -678,6 +683,31 @@ export class AWSS3Provider implements StorageProvider {
 			throw error;
 		}
 	}
+	private async _list(
+		params: any,
+		opt: any,
+		prefix: any
+	): Promise<S3ProviderListOutputWithToken> {
+		const result: S3ProviderListOutputWithToken = {
+			contents: [],
+			nextToken: '',
+		};
+		const s3 = this._createNewS3Client(opt);
+		const listObjectsV2Command = new ListObjectsV2Command(params);
+		const response = await s3.send(listObjectsV2Command);
+		if (response && response.Contents) {
+			result.contents = response.Contents.map(item => {
+				return {
+					key: item.Key.substr(prefix.length),
+					eTag: item.ETag,
+					lastModified: item.LastModified,
+					size: item.Size,
+				};
+			});
+			result.nextToken = response.NextContinuationToken;
+		}
+		return result;
+	}
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
@@ -699,28 +729,37 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
-		const s3 = this._createNewS3Client(opt);
 		logger.debug('list ' + path + ' from ' + final_path);
-
-		const params = {
-			Bucket: bucket,
-			Prefix: final_path,
-			MaxKeys: maxKeys,
-		};
-
-		const listObjectsCommand = new ListObjectsCommand(params);
-
 		try {
-			const response = await s3.send(listObjectsCommand);
-			let list: S3ProviderListOutput = [];
-			if (response && response.Contents) {
-				list = response.Contents.map(item => {
-					return {
-						key: item.Key.substr(prefix.length),
-						eTag: item.ETag,
-						lastModified: item.LastModified,
-						size: item.Size,
-					};
+			const list: S3ProviderListOutput = [];
+			let token;
+			let listResult: S3ProviderListOutputWithToken = {
+				contents: [],
+				nextToken: '',
+			};
+			const params = {
+				Bucket: bucket,
+				Prefix: final_path,
+				MaxKeys: maxKeys,
+				ContinuationToken: token,
+			};
+			if (maxKeys === 'ALL') {
+				do {
+					params.ContinuationToken = token;
+					params.MaxKeys = 1000;
+					listResult = await this._list(params, opt, prefix);
+					listResult.contents.map(ele => {
+						list.push(ele);
+					});
+					if (listResult.nextToken) token = listResult.nextToken;
+				} while (listResult.nextToken);
+			} else {
+				maxKeys < 1000 || typeof maxKeys === 'string'
+					? (params.MaxKeys = maxKeys)
+					: (params.MaxKeys = 1000);
+				listResult = await this._list(params, opt, prefix);
+				listResult.contents.map(ele => {
+					list.push(ele);
 				});
 			}
 			dispatchStorageEvent(

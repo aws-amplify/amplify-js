@@ -98,7 +98,7 @@ export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
-	maxKeys?: number;
+	maxKeys?: number | 'ALL';
 	provider?: 'AWSS3';
 	identityId?: string;
 };
