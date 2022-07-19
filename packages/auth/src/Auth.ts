@@ -64,7 +64,6 @@ import {
 	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
-import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
@@ -2250,11 +2249,11 @@ export class AuthClass {
 
 	/**
 	 * Used to complete the OAuth flow with or without the Cognito Hosted UI
-	 * @param {String} URL - optional parameter for customers to pass in the response URL
+	 * @param {String} url - optional parameter for customers to pass in the response URL
 	 */
-	private async _handleAuthResponse(URL?: string) {
+	private async _handleAuthResponse(url?: string) {
 		if (this.oAuthFlowInProgress) {
-			logger.debug(`Skipping URL ${URL} current flow in progress`);
+			logger.debug(`Skipping URL ${url} current flow in progress`);
 			return;
 		}
 
@@ -2268,23 +2267,35 @@ export class AuthClass {
 
 			dispatchAuthEvent(
 				'parsingCallbackUrl',
-				{ url: URL },
+				{ url: url },
 				`The callback url is being parsed`
 			);
 
 			const currentUrl =
-				URL || (browserOrNode().isBrowser ? window.location.href : '');
+				url || (browserOrNode().isBrowser ? window.location.href : '');
 
-			const hasCodeOrError = !!(parse(currentUrl).query || '')
-				.split('&')
-				.map(entry => entry.split('='))
-				.find(([k]) => k === 'code' || k === 'error');
+			const curUrl = new URL(url);
 
-			const hasTokenOrError = !!(parse(currentUrl).hash || '#')
+			const hasCodeOrError = Array.from(curUrl.searchParams.keys()).find(
+				k => k.includes('code') || k.includes('error')
+			);
+
+			const hasTokenOrError = (curUrl.hash || '#')
 				.substr(1)
 				.split('&')
 				.map(entry => entry.split('='))
-				.find(([k]) => k === 'access_token' || k === 'error');
+				.find(k => k.includes('access_token') || k.includes('error'));
+
+			// const hasCodeOrError = !!(parse(currentUrl).query || '')
+			// 	.split('&')
+			// 	.map(entry => entry.split('='))
+			// 	.find(([k]) => k === 'code' || k === 'error');
+
+			// const hasTokenOrError = !!(parse(currentUrl).hash || '#')
+			// 	.substr(1)
+			// 	.split('&')
+			// 	.map(entry => entry.split('='))
+			// 	.find(([k]) => k === 'access_token' || k === 'error');
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');

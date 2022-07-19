@@ -159,6 +159,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		noImplicitAny: false,
 		lib: [
 			'dom',
+			'dom.iterable',
 			'es2017',
 			'esnext.asynciterable',
 			'es2018.asyncgenerator',
@@ -216,6 +217,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		noImplicitAny: false,
 		lib: [
 			'dom',
+			'dom.iterable',
 			'es2017',
 			'esnext.asynciterable',
 			'es2018.asyncgenerator',
