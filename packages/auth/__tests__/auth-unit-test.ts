@@ -1603,13 +1603,12 @@ describe('auth unit test', () => {
 				identityPoolId: 'awsCognitoIdentityPoolId',
 				mandatorySignIn: false,
 			});
-			const errorMessage = new NoUserPoolError(
-				AuthErrorTypes.MissingAuthConfig
-			);
+
+			const noUserPoolError = Error('No User Pool in the configuration.');
 
 			expect.assertions(2);
-			expect(auth.currentSession().then()).rejects.toThrow(NoUserPoolError);
-			expect(auth.currentSession().then()).rejects.toEqual(errorMessage);
+			expect(auth.currentSession().then()).rejects.toThrow(Error);
+			expect(auth.currentSession().then()).rejects.toEqual(noUserPoolError);
 		});
 	});
 
