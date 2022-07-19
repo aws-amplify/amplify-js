@@ -20,6 +20,7 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
@@ -214,6 +215,7 @@ class SyncProcessor {
 						variables,
 						authMode,
 						authToken,
+						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 					});
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry

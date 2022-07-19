@@ -27,7 +27,7 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import { exhaustiveCheck, USER } from '../../util';
+import { exhaustiveCheck, USER, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -271,7 +271,13 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				const tryWith = { query, variables, authMode, authToken };
+				const tryWith = {
+					query,
+					variables,
+					authMode,
+					authToken,
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+				};
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -351,6 +357,7 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
+										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 									});
 
 									return [serverData, opName, modelDefinition];

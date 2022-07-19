@@ -25,7 +25,7 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate } from '../../util';
+import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
@@ -387,11 +387,15 @@ class SubscriptionProcessor {
 									}`
 								);
 
+								const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>this.amplifyContext.API.graphql({ query, variables, ...{ authMode }, authToken }));
+
+								>(<unknown>this.amplifyContext.API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
+
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][
