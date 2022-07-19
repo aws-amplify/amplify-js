@@ -239,6 +239,8 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 
 		for await (const relation of relations) {
+			// TODO:
+			debugger;
 			const { fieldName, modelName, targetName, relationType } = relation;
 			const storeName = this.getStorename(namespaceName, modelName);
 			const modelConstructor = this.getModelConstructorByModelName(
@@ -249,6 +251,7 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
+						debugger;
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
 						if (!recordItem[getByfield]) break;
 
@@ -574,10 +577,10 @@ export class AsyncStorageAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, modelName, targetName, associatedWith } = rel;
+			const { relationType, modelName, targetName, targetNames, associatedWith } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
-			const index: string =
+			const index: any =
 				getIndex(
 					this.schema.namespaces[nameSpace].relationships[modelName]
 						.relationTypes,
@@ -591,10 +594,18 @@ export class AsyncStorageAdapter implements Adapter {
 					rel.associatedWith
 				);
 
+			console.log(targetNames)
+			console.log('was index / indices retrieved?', index)
+			debugger;
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
+						console.log('associated with is now an array')
+						debugger;
 						const hasOneIndex = index || associatedWith;
+						console.log(targetNames)
+						console.log('associated with is now an array')
+						debugger;
 						const hasOneCustomField = targetName in model;
 						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 						const value = hasOneCustomField ? model[targetName] : keyValuesPath;
@@ -625,6 +636,9 @@ export class AsyncStorageAdapter implements Adapter {
 						const childrenArray = allRecords.filter(
 							childItem => childItem[index] === keyValuesPath
 						) as T[];
+
+						console.log(targetNames);
+						debugger;
 
 						await this.deleteTraverse<T>(
 							this.schema.namespaces[nameSpace].relationships[modelName]

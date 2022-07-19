@@ -133,6 +133,8 @@ class AsyncStorageDatabase {
 			const keyValues = keys.map(field => item[field]);
 
 			const { _deleted } = item;
+			// is this working after recent update?
+			// debugger;
 
 			// If id is in the store, retrieve, otherwise generate new ULID
 			const ulid =
