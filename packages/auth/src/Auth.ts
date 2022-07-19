@@ -2276,9 +2276,11 @@ export class AuthClass {
 
 			const currentUrlObj = new URL(currentUrl);
 
-			const hasCodeOrError = Array.from(currentUrlObj.searchParams.keys()).find(
-				([k]) => k === 'code' || k === 'error'
-			);
+			const hasCodeOrError = currentUrlObj.search
+				.substr(1)
+				.split('&')
+				.map(entry => entry.split('='))
+				.find(([k]) => k === 'code' || k === 'error');
 
 			const hasTokenOrError = (currentUrlObj.hash || '#')
 				.substr(1)
