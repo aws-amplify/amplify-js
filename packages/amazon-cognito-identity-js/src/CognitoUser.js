@@ -691,19 +691,33 @@ export default class CognitoUser {
 
 						const dateNow = dateHelper.getNowString();
 
+<<<<<<< HEAD
 						const concatBuffer = Buffer.concat([
 							Buffer.from(this.deviceGroupKey, 'utf8'),
 							Buffer.from(this.deviceKey, 'utf8'),
 							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
 							Buffer.from(dateNow, 'utf8'),
 						]);
+=======
+						const concatBuffer =
+							Buffer.concat([
+								Buffer.from(this.deviceGroupKey, 'utf8'),
+								Buffer.from(this.deviceKey, 'utf8'),
+								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+								Buffer.from(dateNow, 'utf8'),
+							]);
+>>>>>>> 983348ac7 (removing crypto-js dependency)
 
 						const awsCryptoHash = new jsSha256(hkdf);
 
 						awsCryptoHash.update(concatBuffer);
 						const resultFromAWSCrypto = awsCryptoHash.digestSync();
+<<<<<<< HEAD
 						const signatureString =
 							Buffer.from(resultFromAWSCrypto).toString('base64');
+=======
+						const signatureString = Buffer.from(resultFromAWSCrypto).toString('base64');
+>>>>>>> 983348ac7 (removing crypto-js dependency)
 
 						const challengeResponses = {};
 
@@ -1390,9 +1404,8 @@ export default class CognitoUser {
 			return callback(null, this.signInUserSession);
 		}
 
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1554,9 +1567,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	cacheDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1571,9 +1583,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	getCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1590,9 +1601,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	clearCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1985,7 +1995,7 @@ export default class CognitoUser {
 		});
 	}
 
-	revokeTokens(revokeTokenCallback = () => {}) {
+	revokeTokens(revokeTokenCallback = () => { }) {
 		if (typeof revokeTokenCallback !== 'function') {
 			throw new Error('Invalid revokeTokenCallback. It should be a function.');
 		}
