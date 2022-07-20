@@ -1554,6 +1554,7 @@ class DataStore {
 									this.syncPageSize;
 
 								if (limit || isSynced) {
+									// console.log('emitting here on element received', element);
 									limitTimerRace.resolve();
 								}
 

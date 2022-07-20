@@ -787,7 +787,31 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	let User: PersistentModelConstructor<User>;
 	let Profile: PersistentModelConstructor<Profile>;
 
+	/**
+	 * Saves and item and waits until the item surfaces through `observe()`
+	 * before returning the saved item. Creates a new subscription specific
+	 * to the item being saved, which helps ensure all other observers receive
+	 * the item before this function returns.
+	 *
+	 * @param item The model instance to save
+	 * @returns The saved instance, returned from `DataStore.save()`
+	 */
+	const fullSave = async function (item) {
+		return new Promise(async returnSaved => {
+			const monitor = DataStore.observe().subscribe(
+				({ element, opType, model }) => {
+					if (JSON.stringify(element) === JSON.stringify(savedItem)) {
+						monitor.unsubscribe();
+						returnSaved(savedItem);
+					}
+				}
+			);
+			const savedItem = await DataStore.save(item);
+		});
+	};
+
 	beforeEach(async () => {
+		jest.clearAllMocks();
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
 		({ Comment, Post, User, Profile } = classes as {
@@ -797,14 +821,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			Profile: PersistentModelConstructor<Profile>;
 		});
 
+		jest.useFakeTimers();
 		await configureSync(DataStore);
-		warpTime();
 	});
 
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
-		unwarpTime();
+		jest.useRealTimers();
 	});
 
 	test('publishes preexisting local data immediately', async done => {
@@ -832,10 +856,11 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 	test('publishes data saved after first snapshot', async done => {
 		try {
-			const expecteds = [0, 10];
+			const expecteds = [0, 5];
 
 			const sub = DataStore.observeQuery(Post).subscribe(
 				({ items, isSynced }) => {
+					// console.log('received', items);
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
@@ -850,14 +875,15 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			// await pause(1);
-			for (let i = 0; i < 10; i++) {
-				await DataStore.save(
+			for (let i = 0; i < 5; i++) {
+				await fullSave(
 					new Post({
 						title: `the post ${i}`,
 					})
 				);
 			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -883,15 +909,15 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			});
 
-			setTimeout(async () => {
-				for (let i = 0; i < 10; i++) {
-					await DataStore.save(
-						new Post({
-							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
-						})
-					);
-				}
-			}, 100);
+			for (let i = 0; i < 10; i++) {
+				await fullSave(
+					new Post({
+						title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -934,11 +960,13 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					const itemToEdit = (
 						await DataStore.query(Post, p => p.title('contains', 'include'))
 					).pop();
-					await DataStore.save(
+					await fullSave(
 						Post.copyOf(itemToEdit, draft => {
 							draft.title = 'second edited post - omit';
 						})
 					);
+
+					jest.advanceTimersByTime(2000);
 				} else if (expecteds.length === 0) {
 					sub.unsubscribe();
 					done();
@@ -955,9 +983,8 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			// etc.
 			//
 			// ... so that we can expect to see each other one filtered out.
-			await pause(100);
 			for (let i = 0; i < 10; i++) {
-				await DataStore.save(
+				await fullSave(
 					new Post({
 						title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
 					})
@@ -971,18 +998,19 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			//
 			// to add an UPDATE to the first snapshot that we should expect to
 			// see filtered out.
-			await pause(100);
 			((DataStore as any).sync as any).getModelSyncedStatus = (model: any) =>
 				true;
 
 			const itemToEdit = (
 				await DataStore.query(Post, p => p.title('contains', 'include'))
 			).pop();
-			await DataStore.save(
+			await fullSave(
 				Post.copyOf(itemToEdit, draft => {
 					draft.title = 'first edited post - omit';
 				})
 			);
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -1016,15 +1044,15 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			setTimeout(async () => {
-				for (let i = 5; i < 15; i++) {
-					await DataStore.save(
-						new Post({
-							title: `the post ${i}`,
-						})
-					);
-				}
-			}, 100);
+			for (let i = 5; i < 15; i++) {
+				await fullSave(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -1057,6 +1085,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					} else {
 						const itemToDelete = (await DataStore.query(Post)).pop();
 						await DataStore.delete(itemToDelete);
+						jest.advanceTimersByTime(2000);
 					}
 				}
 			);
@@ -1094,10 +1123,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					}
 				});
 
-				setTimeout(async () => {
-					const itemToDelete = (await DataStore.query(Post)).pop();
-					await DataStore.delete(itemToDelete);
-				}, 100);
+				const itemToDelete = (await DataStore.query(Post)).pop();
+				await DataStore.delete(itemToDelete);
+				jest.advanceTimersByTime(2000);
 			} catch (error) {
 				done(error);
 			}
@@ -1138,20 +1166,20 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			setTimeout(async () => {
-				for (let i = 5; i < 15; i++) {
-					await DataStore.save(
-						new Comment({
-							content: `comment content ${i}`,
-							post: await DataStore.save(
-								new Post({
-									title: `new post ${i}`,
-								})
-							),
-						})
-					);
-				}
-			}, 100);
+			for (let i = 5; i < 15; i++) {
+				await fullSave(
+					new Comment({
+						content: `comment content ${i}`,
+						post: await DataStore.save(
+							new Post({
+								title: `new post ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -1193,21 +1221,21 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			setTimeout(async () => {
-				for (let i = 5; i < 15; i++) {
-					await DataStore.save(
-						new User({
-							name: `user ${i}`,
-							profile: await DataStore.save(
-								new Profile({
-									firstName: `firstName ${i}`,
-									lastName: `lastName ${i}`,
-								})
-							),
-						})
-					);
-				}
-			}, 100);
+			for (let i = 5; i < 15; i++) {
+				await fullSave(
+					new User({
+						name: `user ${i}`,
+						profile: await DataStore.save(
+							new Profile({
+								firstName: `firstName ${i}`,
+								lastName: `lastName ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -1250,24 +1278,24 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			setTimeout(async () => {
-				let postIndex = 0;
-				const comments = await DataStore.query(Comment);
-				for (const comment of comments) {
-					const newPost = await DataStore.save(
-						new Post({
-							title: `new post ${postIndex++}`,
-						})
-					);
+			let postIndex = 0;
+			const comments = await DataStore.query(Comment);
+			for (const comment of comments) {
+				const newPost = await DataStore.save(
+					new Post({
+						title: `new post ${postIndex++}`,
+					})
+				);
 
-					await DataStore.save(
-						Comment.copyOf(comment, draft => {
-							draft.content = `updated: ${comment.content}`;
-							draft.post = newPost;
-						})
-					);
-				}
-			}, 100);
+				await fullSave(
+					Comment.copyOf(comment, draft => {
+						draft.content = `updated: ${comment.content}`;
+						draft.post = newPost;
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -1323,25 +1351,25 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 			);
 
-			setTimeout(async () => {
-				let userIndex = 0;
-				const users = await DataStore.query(User);
-				for (const user of users) {
-					const newProfile = await DataStore.save(
-						new Profile({
-							firstName: `new first name ${userIndex++}`,
-							lastName: `new last name ${userIndex}`,
-						})
-					);
+			let userIndex = 0;
+			const users = await DataStore.query(User);
+			for (const user of users) {
+				const newProfile = await DataStore.save(
+					new Profile({
+						firstName: `new first name ${userIndex++}`,
+						lastName: `new last name ${userIndex}`,
+					})
+				);
 
-					await DataStore.save(
-						User.copyOf(user, draft => {
-							draft.name = `updated: ${user.name}`;
-							draft.profile = newProfile;
-						})
-					);
-				}
-			}, 100);
+				await fullSave(
+					User.copyOf(user, draft => {
+						draft.name = `updated: ${user.name}`;
+						draft.profile = newProfile;
+					})
+				);
+			}
+
+			jest.advanceTimersByTime(2000);
 		} catch (error) {
 			done(error);
 		}
@@ -2702,6 +2730,7 @@ describe('DataStore tests', () => {
 			});
 		});
 	});
+
 	describe('DataStore Custom PK tests', () => {
 		describe('initSchema tests', () => {
 			test('PostCustomPK class is created', () => {
@@ -2945,6 +2974,7 @@ describe('DataStore tests', () => {
 						runExclusive: jest.fn(() => []),
 						query: jest.fn(() => []),
 						observe: jest.fn(() => Observable.from([])),
+						clear: jest.fn(),
 					}));
 
 					(<any>mock).getNamespace = () => ({ models: {} });
@@ -2973,6 +3003,7 @@ describe('DataStore tests', () => {
 							save,
 							query,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 
 						return _mock;
@@ -3019,6 +3050,7 @@ describe('DataStore tests', () => {
 							save,
 							query,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 
 						return _mock;
@@ -3075,6 +3107,7 @@ describe('DataStore tests', () => {
 							save,
 							query,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 
 						return _mock;
@@ -3122,6 +3155,8 @@ describe('DataStore tests', () => {
 					save.mock.calls
 				);
 
+				console.log('saves', JSON.stringify(save.mock.calls, null, 2));
+
 				const [_model, _condition, _mutator, [patches]] = modelUpdate;
 				const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
 
@@ -3163,6 +3198,7 @@ describe('DataStore tests', () => {
 							save,
 							query,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 
 						return _mock;
@@ -3351,6 +3387,7 @@ describe('DataStore tests', () => {
 							query,
 							delete: _delete,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 
 						return _mock;
@@ -3404,6 +3441,7 @@ describe('DataStore tests', () => {
 							query,
 							delete: _delete,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 						return _mock;
 					});
@@ -3453,6 +3491,7 @@ describe('DataStore tests', () => {
 							query,
 							delete: _delete,
 							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+							clear: jest.fn(),
 						};
 						return _mock;
 					});
@@ -3540,6 +3579,7 @@ describe('DataStore tests', () => {
 							runExclusive: jest.fn(() => [model]),
 							query: jest.fn(() => [model]),
 							observe: jest.fn(() => Observable.from([])),
+							clear: jest.fn(),
 						}));
 
 						(<any>mock).getNamespace = () => ({ models: {} });
