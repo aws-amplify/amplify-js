@@ -796,7 +796,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	 * @param item The model instance to save
 	 * @returns The saved instance, returned from `DataStore.save()`
 	 */
-	const fullSave = async function (item) {
+	const fullSave = async item => {
 		return new Promise(async returnSaved => {
 			const monitor = DataStore.observe().subscribe(
 				({ element, opType, model }) => {
