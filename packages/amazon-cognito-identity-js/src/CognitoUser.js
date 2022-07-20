@@ -4,10 +4,7 @@
  */
 
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
-import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
-import Base64 from 'crypto-js/enc-base64';
-import HmacSHA256 from 'crypto-js/hmac-sha256';
+import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -293,16 +290,19 @@ export default class CognitoUser {
 
 						const dateNow = dateHelper.getNowString();
 
-						const message = CryptoJS.lib.WordArray.create(
-							Buffer.concat([
-								Buffer.from(this.pool.getUserPoolName(), 'utf8'),
-								Buffer.from(this.username, 'utf8'),
-								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-								Buffer.from(dateNow, 'utf8'),
-							])
-						);
-						const key = CryptoJS.lib.WordArray.create(hkdf);
-						const signatureString = Base64.stringify(HmacSHA256(message, key));
+						const concatBuffer = Buffer.concat([
+							Buffer.from(this.pool.getUserPoolName(), 'utf8'),
+							Buffer.from(this.username, 'utf8'),
+							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+							Buffer.from(dateNow, 'utf8'),
+						]);
+
+						const awsCryptoHash = new jsSha256(hkdf);
+
+						awsCryptoHash.update(concatBuffer);
+						const resultFromAWSCrypto = awsCryptoHash.digestSync();
+						const signatureString =
+							Buffer.from(resultFromAWSCrypto).toString('base64');
 
 						const challengeResponses = {};
 
@@ -691,16 +691,19 @@ export default class CognitoUser {
 
 						const dateNow = dateHelper.getNowString();
 
-						const message = CryptoJS.lib.WordArray.create(
-							Buffer.concat([
-								Buffer.from(this.deviceGroupKey, 'utf8'),
-								Buffer.from(this.deviceKey, 'utf8'),
-								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-								Buffer.from(dateNow, 'utf8'),
-							])
-						);
-						const key = CryptoJS.lib.WordArray.create(hkdf);
-						const signatureString = Base64.stringify(HmacSHA256(message, key));
+						const concatBuffer = Buffer.concat([
+							Buffer.from(this.deviceGroupKey, 'utf8'),
+							Buffer.from(this.deviceKey, 'utf8'),
+							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+							Buffer.from(dateNow, 'utf8'),
+						]);
+
+						const awsCryptoHash = new jsSha256(hkdf);
+
+						awsCryptoHash.update(concatBuffer);
+						const resultFromAWSCrypto = awsCryptoHash.digestSync();
+						const signatureString =
+							Buffer.from(resultFromAWSCrypto).toString('base64');
 
 						const challengeResponses = {};
 
