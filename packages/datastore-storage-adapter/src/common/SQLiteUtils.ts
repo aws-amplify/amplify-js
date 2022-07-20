@@ -148,7 +148,7 @@ export function modelCreateTableStatement(
 	let fields = Object.values(model.fields).reduce((acc, field: ModelField) => {
 		if (isGraphQLScalarType(field.type)) {
 			if (field.name === 'id') {
-				return acc + '"id" PRIMARY KEY NOT NULL';
+				return [...acc, '"id" PRIMARY KEY NOT NULL'];
 			}
 
 			let columnParam = `"${field.name}" ${getSQLiteType(field.type)}`;
@@ -157,7 +157,7 @@ export function modelCreateTableStatement(
 				columnParam += ' NOT NULL';
 			}
 
-			return acc + `, ${columnParam}`;
+			return [...acc, `${columnParam}`];
 		}
 
 		if (isModelFieldType(field.type)) {
@@ -179,7 +179,7 @@ export function modelCreateTableStatement(
 
 			// ignore isRequired param for model fields, since they will not contain
 			// the related data locally
-			return acc + `, ${columnParam}`;
+			return [...acc, `${columnParam}`];
 		}
 
 		// default to TEXT
@@ -189,19 +189,25 @@ export function modelCreateTableStatement(
 			columnParam += ' NOT NULL';
 		}
 
-		return acc + `, ${columnParam}`;
-	}, '');
+		return [...acc, `${columnParam}`];
+	}, [] as string[]);
 
 	implicitAuthFields.forEach((authField: string) => {
-		fields += `, ${authField} TEXT`;
+		fields.push(`${authField} TEXT`);
 	});
 
 	if (userModel) {
-		fields +=
-			', "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER';
+		fields = [
+			...fields,
+			`"_version" INTEGER`,
+			`"_lastChangedAt" INTEGER`,
+			`"_deleted" INTEGER`,
+		];
 	}
 
-	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${model.name}" (${fields});`;
+	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${
+		model.name
+	}" (${fields.join(', ')});`;
 	return createTableStatement;
 }
 

@@ -94,8 +94,12 @@ class InnerSQLiteDatabase {
 			});
 		} else {
 			return await this.innerDB.run(statement, params, err => {
-				err && console.error('calback', err);
-				typeof callback === 'function' && callback(err);
+				if (typeof callback === 'function') {
+					callback(err);
+				} else if (err) {
+					console.error('calback', err);
+					throw err;
+				}
 			});
 		}
 	}
