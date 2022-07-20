@@ -733,10 +733,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const list: S3ProviderListOutput = [];
 			let token;
-			let listResult: S3ProviderListOutputWithToken = {
-				contents: [],
-				nextToken: '',
-			};
+			let listResult: S3ProviderListOutputWithToken;
 			const params = {
 				Bucket: bucket,
 				Prefix: final_path,
