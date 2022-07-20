@@ -92,3 +92,5 @@ export interface AnalyticsEvent {
 	metrics?: EventMetrics;
 	immediate?: boolean;
 }
+
+export { PersonalizeAnalyticsEvent } from './Providers/AmazonPersonalizeProvider';
