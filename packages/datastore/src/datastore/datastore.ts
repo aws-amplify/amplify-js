@@ -1,4 +1,7 @@
+import API from '@aws-amplify/api';
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
 import {
 	Draft,
 	immerable,
@@ -43,7 +46,6 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
-	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	DataStoreSnapshot,
 	SyncConflict,
@@ -55,6 +57,7 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
+	AmplifyContext,
 } from '../types';
 import {
 	DATASTORE,
@@ -71,6 +74,7 @@ import {
 	sortCompareFunction,
 	DeferredCallbackResolver,
 	validatePredicate,
+	mergePatches,
 } from '../util';
 
 setAutoFreeze(true);
@@ -484,9 +488,21 @@ const createModelClass = <T extends PersistentModel>(
 				p => (patches = p)
 			);
 
-			if (patches.length) {
-				modelPatchesMap.set(model, [patches, source]);
-				checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
+			const hasExistingPatches = modelPatchesMap.has(source);
+			if (patches.length || hasExistingPatches) {
+				if (hasExistingPatches) {
+					const [existingPatches, existingSource] = modelPatchesMap.get(source);
+					const mergedPatches = mergePatches(
+						existingSource,
+						existingPatches,
+						patches
+					);
+					modelPatchesMap.set(model, [mergedPatches, existingSource]);
+					checkReadOnlyPropertyOnUpdate(mergedPatches, modelDefinition);
+				} else {
+					modelPatchesMap.set(model, [patches, source]);
+					checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
+				}
 			}
 
 			return model;
@@ -698,6 +714,11 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	// reference to configured category instances. Used for preserving SSR context
+	Auth = Auth;
+	API = API;
+	Cache = Cache;
+
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
@@ -715,6 +736,12 @@ class DataStore {
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
 	private storageAdapter: Adapter;
+	// object that gets passed to descendent classes. Allows us to pass these down by reference
+	private amplifyContext: AmplifyContext = {
+		Auth: this.Auth,
+		API: this.API,
+		Cache: this.Cache,
+	};
 
 	getModuleName() {
 		return 'DataStore';
@@ -765,7 +792,8 @@ class DataStore {
 				this.errorHandler,
 				this.syncPredicates,
 				this.amplifyConfig,
-				this.authModeStrategy
+				this.authModeStrategy,
+				this.amplifyContext
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1145,24 +1173,32 @@ class DataStore {
 				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.map(
-						(event: InternalSubscriptionMessage<T>): SubscriptionMessage<T> => {
-							// The `element` returned by storage only contains updated fields.
-							// Intercept the event to send the `savedElement` so that the first
-							// snapshot returned to the consumer contains all fields.
-							// In the event of a delete we return `element`, as `savedElement`
-							// here is undefined.
-							const { opType, model, condition, element, savedElement } = event;
+					.subscribe({
+						next: async item => {
+							// the `element` doesn't necessarily contain all item details or
+							// have related records attached consistently with that of a query()
+							// result item. for consistency, we attach them here.
 
-							return {
-								opType,
-								element: savedElement || element,
-								model,
-								condition,
-							};
-						}
-					)
-					.subscribe(observer);
+							let message = item;
+
+							// as lnog as we're not dealing with a DELETE, we need to fetch a fresh
+							// item from storage to ensure it's fully populated.
+							if (item.opType !== 'DELETE') {
+								const freshElement = await this.query(
+									item.model,
+									item.element.id
+								);
+								message = {
+									...message,
+									element: freshElement as T,
+								};
+							}
+
+							observer.next(message as SubscriptionMessage<T>);
+						},
+						error: err => observer.error(err),
+						complete: () => observer.complete(),
+					});
 			})();
 
 			return () => {
@@ -1397,6 +1433,10 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
+		this.amplifyContext.Auth = this.Auth;
+		this.amplifyContext.API = this.API;
+		this.amplifyContext.Cache = this.Cache;
+
 		const {
 			DataStore: configDataStore,
 			authModeStrategyType: configAuthModeStrategyType,
@@ -1426,7 +1466,7 @@ class DataStore {
 
 		switch (authModeStrategyType) {
 			case AuthModeStrategyType.MULTI_AUTH:
-				this.authModeStrategy = multiAuthStrategy;
+				this.authModeStrategy = multiAuthStrategy(this.amplifyContext);
 				break;
 			case AuthModeStrategyType.DEFAULT:
 				this.authModeStrategy = defaultAuthStrategy;

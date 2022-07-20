@@ -449,8 +449,10 @@ async function testMultiAuthStrategy({
 }) {
 	mockCurrentUser({ hasAuthenticatedUser });
 
-	const multiAuthStrategy =
+	const multiAuthStrategyWrapper =
 		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
+
+	const multiAuthStrategy = multiAuthStrategyWrapper({});
 
 	const schema = getAuthSchema(authRules);
 

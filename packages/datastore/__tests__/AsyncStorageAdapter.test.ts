@@ -2,6 +2,7 @@ import AsyncStorageAdapter from '../src/storage/adapter/AsyncStorageAdapter';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
+	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
 import { pause, Model, User, Profile, testSchema } from './helpers';
@@ -23,12 +24,18 @@ describe('AsyncStorageAdapter tests', () => {
 		return await adapter.getAll('sync_MutationEvent');
 	}
 
+	async function clearOutbox(adapter) {
+		await pause(250);
+		return await adapter.delete(syncClasses['MutationEvent']);
+	}
+
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 	addCommonQueryTests({
 		initSchema,
 		DataStore,
 		storageAdapter: AsyncStorageAdapter,
 		getMutations,
+		clearOutbox,
 	});
 
 	describe('Query', () => {
