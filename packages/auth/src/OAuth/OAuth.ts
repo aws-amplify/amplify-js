@@ -14,6 +14,7 @@
 import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
+import { Buffer } from 'buffer';
 
 import {
 	OAuthOpts,
@@ -23,13 +24,12 @@ import {
 
 import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 
-import sha256 from 'crypto-js/sha256';
-import Base64 from 'crypto-js/enc-base64';
-
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -169,18 +169,15 @@ export default class OAuth {
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 			.join('&');
 
-		const {
-			access_token,
-			refresh_token,
-			id_token,
-			error,
-		} = await ((await fetch(oAuthTokenEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body,
-		})) as any).json();
+		const { access_token, refresh_token, id_token, error } = await (
+			(await fetch(oAuthTokenEndpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body,
+			})) as any
+		).json();
 
 		if (error) {
 			throw new Error(error);
@@ -305,15 +302,18 @@ export default class OAuth {
 	}
 
 	private _generateChallenge(code: string) {
-		return this._base64URL(sha256(code));
+		const awsCryptoHash = new jsSha256();
+		awsCryptoHash.update(code);
+		const resultFromAWSCrypto = awsCryptoHash.digestSync();
+		const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
+
+		const base64URLFromAWSCrypto = this._base64URL(b64);
+
+		return base64URLFromAWSCrypto;
 	}
 
 	private _base64URL(string) {
-		return string
-			.toString(Base64)
-			.replace(/=/g, '')
-			.replace(/\+/g, '-')
-			.replace(/\//g, '_');
+		return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 	}
 
 	private _generateRandom(size: number) {
