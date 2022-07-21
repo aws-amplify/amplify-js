@@ -13,6 +13,9 @@ import {
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { Auth } from '@aws-amplify/auth';
+import { API } from '@aws-amplify/api';
+import Cache from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
 //#region Schema types
@@ -790,6 +793,7 @@ export type SyncError<T extends PersistentModel> = {
 
 export type ErrorType =
 	| 'ConfigError'
+	| 'BadModel'
 	| 'BadRecord'
 	| 'Unauthorized'
 	| 'Transient'
@@ -822,3 +826,9 @@ export enum LimitTimerRaceResolvedValues {
 	TIMER = 'TIMER',
 }
 //#endregion
+
+export type AmplifyContext = {
+	Auth: typeof Auth;
+	API: typeof API;
+	Cache: typeof Cache;
+};

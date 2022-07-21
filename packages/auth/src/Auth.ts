@@ -41,7 +41,7 @@ import {
 	StorageHelper,
 	ICredentials,
 	Parser,
-	JS,
+	browserOrNode,
 	UniversalStorage,
 	urlSafeDecode,
 } from '@aws-amplify/core';
@@ -1905,7 +1905,7 @@ export class AuthClass {
 		resolve: () => void,
 		reject: (reason?: any) => void
 	) {
-		const { isBrowser } = JS.browserOrNode();
+		const { isBrowser } = browserOrNode();
 
 		if (isBrowser) {
 			this.oAuthSignOutRedirectOrReject(reject);
@@ -2273,7 +2273,7 @@ export class AuthClass {
 			);
 
 			const currentUrl =
-				URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
+				URL || (browserOrNode().isBrowser ? window.location.href : '');
 
 			const hasCodeOrError = !!(parse(currentUrl).query || '')
 				.split('&')
