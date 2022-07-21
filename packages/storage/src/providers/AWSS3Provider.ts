@@ -743,7 +743,7 @@ export class AWSS3Provider implements StorageProvider {
 					params.ContinuationToken = token;
 					params.MaxKeys = 1000;
 					listResult = await this._list(params, opt, prefix);
-					list = [...listResult.contents];
+					list.push(...listResult.contents);
 					if (listResult.nextToken) token = listResult.nextToken;
 				} while (listResult.nextToken);
 			} else {
@@ -751,7 +751,11 @@ export class AWSS3Provider implements StorageProvider {
 					? (params.MaxKeys = maxKeys)
 					: (params.MaxKeys = 1000);
 				listResult = await this._list(params, opt, prefix);
-				list = [...listResult.contents];
+				list.push(...listResult.contents);
+				if (maxKeys > 1000)
+					logger.warn(
+						"makeys can be from 0 - 1000 or 'ALL'. To list all files set maxKeys to 'ALL'."
+					);
 			}
 			dispatchStorageEvent(
 				track,
