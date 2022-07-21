@@ -729,7 +729,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
 		try {
-			let list: S3ProviderListOutput = [];
+			const list: S3ProviderListOutput = [];
 			let token: string;
 			let listResult: S3ProviderListOutputWithToken;
 			const params: ListObjectsV2Request = {
