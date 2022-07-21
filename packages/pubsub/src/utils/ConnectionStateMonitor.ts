@@ -59,8 +59,8 @@ export class ConnectionStateMonitor {
 	 * @private
 	 */
 	private _connectionState: LinkedConnectionStates;
-	private _connectionStateObservable: Observable<LinkedConnectionStates>;
-	private _connectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
+	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
+	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 
 	constructor() {
 		this._connectionState = {
@@ -70,12 +70,11 @@ export class ConnectionStateMonitor {
 			keepAliveState: 'healthy',
 		};
 
-		this._connectionStateObservable = new Observable<LinkedConnectionStates>(
-			connectionStateObserver => {
+		this._linkedConnectionStateObservable =
+			new Observable<LinkedConnectionStates>(connectionStateObserver => {
 				connectionStateObserver.next(this._connectionState);
-				this._connectionStateObserver = connectionStateObserver;
-			}
-		);
+				this._linkedConnectionStateObserver = connectionStateObserver;
+			});
 
 		// Maintain the network state based on the reachability monitor
 		new Reachability().networkMonitor().subscribe(({ online }) => {
@@ -91,9 +90,13 @@ export class ConnectionStateMonitor {
 	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionState updates
 	 */
 	public get connectionStateObservable(): Observable<ConnectionState> {
-		// Translate from connection states to ConnectionStates, then remove any duplicates
 		let previous: ConnectionState;
-		return this._connectionStateObservable
+
+		// The linked state aggregates state changes to any of the network, connection, intendedConnection and keepAliveHealth.
+		// Some states will change these independent states without changing the overall connection state.
+
+		// After translating from linked states to ConnectionState, then remove any duplicates
+		return this._linkedConnectionStateObservable
 			.map(value => {
 				return this.linkedConnectionStatesToConnectionState(value);
 			})
@@ -113,7 +116,7 @@ export class ConnectionStateMonitor {
 
 		this._connectionState = { ...newSocketStatus };
 
-		this._connectionStateObserver.next(this._connectionState);
+		this._linkedConnectionStateObserver.next(this._connectionState);
 	}
 
 	/*
