@@ -58,12 +58,12 @@ export class ConnectionStateMonitor {
 	/**
 	 * @private
 	 */
-	private _connectionState: LinkedConnectionStates;
+	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
 	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 
 	constructor() {
-		this._connectionState = {
+		this._linkedConnectionState = {
 			networkState: 'connected',
 			connectionState: 'disconnected',
 			intendedConnectionState: 'disconnected',
@@ -72,7 +72,7 @@ export class ConnectionStateMonitor {
 
 		this._linkedConnectionStateObservable =
 			new Observable<LinkedConnectionStates>(connectionStateObserver => {
-				connectionStateObserver.next(this._connectionState);
+				connectionStateObserver.next(this._linkedConnectionState);
 				this._linkedConnectionStateObserver = connectionStateObserver;
 			});
 
@@ -92,8 +92,9 @@ export class ConnectionStateMonitor {
 	public get connectionStateObservable(): Observable<ConnectionState> {
 		let previous: ConnectionState;
 
-		// The linked state aggregates state changes to any of the network, connection, intendedConnection and keepAliveHealth.
-		// Some states will change these independent states without changing the overall connection state.
+		// The linked state aggregates state changes to any of the network, connection,
+		// intendedConnection and keepAliveHealth. Some states will change these independent
+		// states without changing the overall connection state.
 
 		// After translating from linked states to ConnectionState, then remove any duplicates
 		return this._linkedConnectionStateObservable
@@ -112,11 +113,14 @@ export class ConnectionStateMonitor {
 	 */
 	record(statusUpdates: Partial<LinkedConnectionStates>) {
 		// Maintain the socket state
-		const newSocketStatus = { ...this._connectionState, ...statusUpdates };
+		const newSocketStatus = {
+			...this._linkedConnectionState,
+			...statusUpdates,
+		};
 
-		this._connectionState = { ...newSocketStatus };
+		this._linkedConnectionState = { ...newSocketStatus };
 
-		this._linkedConnectionStateObserver.next(this._connectionState);
+		this._linkedConnectionStateObserver.next(this._linkedConnectionState);
 	}
 
 	/*
