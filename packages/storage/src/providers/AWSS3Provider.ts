@@ -754,7 +754,7 @@ export class AWSS3Provider implements StorageProvider {
 				list.push(...listResult.contents);
 				if (maxKeys > 1000)
 					logger.warn(
-						"makeys can be from 0 - 1000 or 'ALL'. To list all files set maxKeys to 'ALL'."
+						"makeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
 					);
 			}
 			dispatchStorageEvent(
