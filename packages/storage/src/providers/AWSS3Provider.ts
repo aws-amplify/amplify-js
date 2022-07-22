@@ -736,7 +736,6 @@ export class AWSS3Provider implements StorageProvider {
 				Bucket: bucket,
 				Prefix: final_path,
 				MaxKeys: 1000,
-				ContinuationToken: token,
 			};
 			if (maxKeys === 'ALL') {
 				do {
@@ -754,7 +753,7 @@ export class AWSS3Provider implements StorageProvider {
 				list.push(...listResult.contents);
 				if (maxKeys > 1000)
 					logger.warn(
-						"makeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
+						"maxkeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
 					);
 			}
 			dispatchStorageEvent(

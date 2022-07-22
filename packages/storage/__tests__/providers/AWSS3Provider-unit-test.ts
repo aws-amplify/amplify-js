@@ -972,7 +972,6 @@ describe('StorageProvider test', () => {
 			]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
-				ContinuationToken: undefined,
 				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
@@ -1028,7 +1027,6 @@ describe('StorageProvider test', () => {
 			]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
-				ContinuationToken: undefined,
 				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
@@ -1072,7 +1070,6 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/path',
-				ContinuationToken: undefined,
 				MaxKeys: 1,
 			});
 
@@ -1106,7 +1103,6 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/path',
-				ContinuationToken: undefined,
 				MaxKeys: 1000,
 			});
 
