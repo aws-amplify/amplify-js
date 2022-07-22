@@ -83,3 +83,10 @@ export type fetchAuthSessionEvent = {
 		};
 	};
 };
+
+export type AWSCredsRes = {
+	AccessKeyId: string;
+	Expiration: Date;
+	SecretKey: string;
+	SessionToken: string;
+};

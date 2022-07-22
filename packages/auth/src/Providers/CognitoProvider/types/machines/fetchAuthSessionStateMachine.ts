@@ -10,6 +10,7 @@ export interface FetchAuthSessionStateMachineContext {
 		accessToken: string;
 		refreshToken: string;
 	};
+	authenticated: boolean;
 }
 
 export type FetchAuthSessionTypestate =

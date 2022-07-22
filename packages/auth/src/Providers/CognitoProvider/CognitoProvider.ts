@@ -42,6 +42,7 @@ import {
 	authzMachineEvents,
 } from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
+import { AWSCredsRes } from './types/machines/authorizationMachine';
 
 const logger = new Logger('CognitoProvider');
 
@@ -351,10 +352,11 @@ export class CognitoProvider implements AuthProvider {
 		if (Object.keys(this.storedAuth).length > 0) {
 			const now = new Date();
 			if (now < this.storedAuth.credentials.default.aws.expiration) {
-				console.log('token is good, fetched from storage');
+				logger.debug('token is good, fetched from storage');
+				// this._authzService.send(authzMachineEvents.refreshSession());
 				return this.storedAuth;
 			} else {
-				console.log('token is expired, calling fetchSession API.');
+				logger.debug('token is expired, calling fetchSession API.');
 			}
 		}
 
@@ -363,10 +365,10 @@ export class CognitoProvider implements AuthProvider {
 			if (Object.keys(this.storedUnAuth).length > 0) {
 				const now = new Date();
 				if (now < this.storedUnAuth.credentials.default.aws.expiration) {
-					console.log('token is good, fetched from storage');
+					logger.debug('token is good, fetched from storage');
 					return this.storedUnAuth;
 				} else {
-					console.log('token is expired, calling fetchSession API.');
+					logger.debug('token is expired, calling fetchSession API.');
 				}
 			}
 
@@ -421,7 +423,6 @@ export class CognitoProvider implements AuthProvider {
 
 		// runs fetch session
 		this._authzService.send(authzMachineEvents.signInRequested());
-		// this._authzService.send({type: 'signInRequested', authenticated: false});
 
 		// makes sure the config has both the region and an identity pool
 		const { region, identityPoolId } = this._config;
@@ -545,7 +546,7 @@ export class CognitoProvider implements AuthProvider {
 			},
 		};
 	}
-	private shearAWSCredentials(res: any): AWSCredentials {
+	private shearAWSCredentials(res: AWSCredsRes): AWSCredentials {
 		if (!res) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
@@ -558,6 +559,14 @@ export class CognitoProvider implements AuthProvider {
 			sessionToken: SessionToken,
 			expiration: Expiration,
 		};
+	}
+	async refreshSession(): Promise<any> {
+		// check to make sure authorization state machine is in the session established state or throw an error
+		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
+		// call refreshSession state machine and pass refresh token as the argument/context for the state machine to use as an argument to the service class
+		// return new userpool tokens and update the ones in storage if necessary
+		console.log('refresh Session from cognito provider');
+		return false;
 	}
 	addAuthenticator(): Promise<AddAuthenticatorResponse> {
 		throw new Error('Method not implemented.');

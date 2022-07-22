@@ -181,9 +181,16 @@ const authorizationStateMachine: MachineConfig<
 			},
 		},
 		refreshingSession: {
-			// invoke: {
-			// 	id: 'refreshSessionStateMachine',
-			// },
+			invoke: {
+				id: 'refreshSessionStateMachine',
+				src: refreshSessionStateMachine,
+			},
+			data: {
+				clientConfig: (context: any, event: any) => context.config?.region,
+				service: (context: any, event: any) => context.service,
+				userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+				authenticated: false,
+			},
 			on: {
 				refreshed: 'sessionEstablished',
 				// from refreshed to configure (token expired)

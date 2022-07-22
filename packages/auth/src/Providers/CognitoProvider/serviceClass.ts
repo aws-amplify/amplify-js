@@ -34,7 +34,6 @@ import {
 } from '../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from './Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
-import { CognitoIdToken } from 'amazon-cognito-identity-js';
 
 const logger = new Logger('CognitoStatelessService');
 
@@ -217,6 +216,25 @@ export class CognitoService {
 				refreshToken,
 			},
 		};
+	}
+
+	async refreshUserPoolTokens(refreshToken: string) {
+		// assuming we are not lazily refreshing
+		// TODO: maybe we should???
+
+		const refreshTokenRes = await this.cognitoClient.send(
+			new InitiateAuthCommand({
+				AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
+				AuthParameters: {
+					REFRESH_TOKEN: refreshToken,
+				},
+				ClientId: this.config.clientId,
+			})
+		);
+
+		// refreshTokenRes.AuthenticationResult <- the JWT tokens
+		console.log(refreshTokenRes.AuthenticationResult);
+		return refreshTokenRes.AuthenticationResult;
 	}
 
 	async fetchIdentityId(idToken: string) {

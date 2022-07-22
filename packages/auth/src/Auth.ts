@@ -485,8 +485,6 @@ export class AuthClass {
 		let password = null;
 		let validationData = {};
 
-		console.log('TEST PLUGGABLE REPO');
-
 		// for backward compatibility
 		if (typeof usernameOrSignInOpts === 'string') {
 			username = usernameOrSignInOpts;

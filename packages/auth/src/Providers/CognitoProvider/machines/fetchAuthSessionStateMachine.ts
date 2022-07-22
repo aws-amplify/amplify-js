@@ -1,5 +1,6 @@
 import { assign, createMachine, MachineConfig } from 'xstate';
 import { createModel } from 'xstate/lib/model';
+import { FetchAuthSessionStateMachineContext } from '../types/machines/fetchAuthSessionStateMachine';
 
 // info/context needed to fetch session
 // First, fetch user pool tokens (JWT) from the user pool
@@ -44,29 +45,17 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				invoke: {
 					id: 'fetchAuthSession',
 					src: async (_context, _event) => {
-						console.log('AUTHENTICATED?');
-						console.log(_context.authenticated);
-
 						// fetch unauth identity id if user isn't authenticated
 						if (!_context.authenticated) {
 							const identityID =
 								await _context.service?.fetchUnAuthIdentityID();
-							// console.log(identityID);
 							return identityID;
 						}
 
-						// console.log('CONTEXT: ');
-						// console.log(_context);
 						const identityID = await _context.service?.fetchIdentityId(
 							_context.userPoolTokens.idToken
 						);
 
-						// const IDs = {
-						// 	identityID: identityID,
-						// 	username: username,
-						// };
-						// console.log('IdentityID: ');
-						// console.log(identityID);
 						return identityID;
 					},
 					onDone: {
