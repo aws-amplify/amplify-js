@@ -485,22 +485,16 @@ export const traverseModel = <T extends PersistentModel>(
 									draftInstance[rItem.fieldName][0]
 								);
 
-								debugger;
-
+								// Get the key
 								const key = rItem.associatedWith[idx];
 
-								debugger;
-
+								// Get the value
 								const relatedRecordInProxyPkValue = relatedRecordInProxy[key];
 
-								debugger;
-
+								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-
-								debugger;
-
-								// Delete the instance from the proxy
 							});
+							// Delete the instance from the proxy
 							delete (<any>draftInstance)[rItem.fieldName];
 						} else {
 							debugger;
@@ -512,6 +506,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 					break;
 				case 'BELONGS_TO':
+					// TODO: SAME UPDATE AS ABOVE
 					if (instance[rItem.fieldName]) {
 						let modelInstance: T;
 						try {
