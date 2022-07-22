@@ -163,7 +163,7 @@ export class CognitoService {
 		}
 		return {
 			sessionId: '',
-			user: {
+			userInfo: {
 				// sub
 				userid: sub as string,
 				// maybe username
@@ -427,7 +427,7 @@ export async function cognitoFetchSession(
 	}
 	return {
 		sessionId: '',
-		user: {
+		userInfo: {
 			// sub
 			userid: sub as string,
 			// maybe username

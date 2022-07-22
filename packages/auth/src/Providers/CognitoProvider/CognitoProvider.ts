@@ -457,7 +457,7 @@ export class CognitoProvider implements AuthProvider {
 		return {
 			// sessionId: '',
 			isSignedIn: true,
-			user: {
+			userInfo: {
 				// sub
 				userid: sub as string,
 				username: getUserRes.Username,

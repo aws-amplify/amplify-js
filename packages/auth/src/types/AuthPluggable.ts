@@ -113,7 +113,7 @@ type UserIdentifiers = {
 type AmplifyUser = {
 	isSignedIn?: boolean;
 	sessionId?: string;
-	user?: {
+	userInfo?: {
 		userid: string;
 		identifiers?: UserIdentifiers[];
 		username?: string;
