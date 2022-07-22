@@ -139,7 +139,7 @@ To develop locally alongside a React-Native app, make sure to,
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 ```
 
-> Note: This script runs a continious job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
+> Note: This script runs a continuous job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
 
 The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
 Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
