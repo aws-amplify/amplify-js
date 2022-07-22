@@ -111,6 +111,7 @@ type UserIdentifiers = {
 };
 
 type AmplifyUser = {
+	isSignedIn?: boolean;
 	sessionId?: string;
 	user?: {
 		userid: string;

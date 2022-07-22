@@ -42,7 +42,11 @@ import {
 	authzMachineEvents,
 } from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
-import { AWSCredsRes } from './types/machines/authorizationMachine';
+import {
+	AWSCredsRes,
+	UserPoolTokens,
+} from './types/machines/authorizationMachine';
+import { Session } from 'inspector';
 
 const logger = new Logger('CognitoProvider');
 
@@ -103,8 +107,6 @@ export class CognitoProvider implements AuthProvider {
 	private _storageSync: Promise<void> = Promise.resolve();
 	// For the purpose of prototyping / testing it we are using plain username password flow for now
 	private _authFlow = AuthFlowType.USER_PASSWORD_AUTH;
-	private storedAuth: { [key: string]: any } = {};
-	private storedUnAuth: { [key: string]: any } = {};
 
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
@@ -349,76 +351,23 @@ export class CognitoProvider implements AuthProvider {
 		// 	});
 		// });
 
-		if (Object.keys(this.storedAuth).length > 0) {
-			const now = new Date();
-			if (now < this.storedAuth.credentials.default.aws.expiration) {
-				logger.debug('token is good, fetched from storage');
-				// this._authzService.send(authzMachineEvents.refreshSession());
-				return this.storedAuth;
-			} else {
-				logger.debug('token is expired, calling fetchSession API.');
-			}
-		}
-
 		// returns guest credentials if user is not signed in
 		if (!this._authService.state.matches('signedIn')) {
-			if (Object.keys(this.storedUnAuth).length > 0) {
-				const now = new Date();
-				if (now < this.storedUnAuth.credentials.default.aws.expiration) {
-					logger.debug('token is good, fetched from storage');
-					return this.storedUnAuth;
-				} else {
-					logger.debug('token is expired, calling fetchSession API.');
-				}
-			}
-
 			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
 			const sessionEstablishedState = await waitFor(this._authzService, state =>
 				state.matches('sessionEstablished')
 			);
 
-			this.storedUnAuth = {
-				user: {
-					userid: '',
-					username: '',
-				},
-				credentials: {
-					default: {
-						jwt: {
-							idToken: '',
-							accessToken: '',
-							refreshToken: '',
-						},
-						aws: this.shearAWSCredentials(
-							sessionEstablishedState.context.getSession.AWSCredentials
-						),
-					},
-				},
-			};
-
 			return {
-				// sessionId: '',
-				user: {
-					// sub
-					userid: '',
-					username: '',
-					// identifiers: [],
-				},
+				isSignedIn: false,
 				credentials: {
 					default: {
-						jwt: {
-							idToken: '',
-							accessToken: '',
-							refreshToken: '',
-						},
-						// aws: sessionEstablishedState.context.getSession[1],
 						aws: this.shearAWSCredentials(
-							sessionEstablishedState.context.getSession.AWSCredentials
+							this._authzService.state.context.getSession.AWSCredentials
 						),
 					},
 				},
 			};
-			// throw new Error('User is not signed in.');
 		}
 
 		// runs fetch session
@@ -505,27 +454,9 @@ export class CognitoProvider implements AuthProvider {
 			state.matches('sessionEstablished')
 		);
 
-		this.storedAuth = {
-			user: {
-				userid: sub as string,
-				username: getUserRes.Username,
-			},
-			credentials: {
-				default: {
-					jwt: {
-						idToken,
-						accessToken,
-						refreshToken,
-					},
-					aws: this.shearAWSCredentials(
-						sessionEstablishedState.context.getSession.AWSCredentials
-					),
-				},
-			},
-		};
-
 		return {
 			// sessionId: '',
+			isSignedIn: true,
 			user: {
 				// sub
 				userid: sub as string,
@@ -540,7 +471,7 @@ export class CognitoProvider implements AuthProvider {
 						refreshToken,
 					},
 					aws: this.shearAWSCredentials(
-						sessionEstablishedState.context.getSession.AWSCredentials
+						this._authzService.state.context.getSession.AWSCredentials
 					),
 				},
 			},
