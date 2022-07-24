@@ -266,8 +266,6 @@ class IndexedDBAdapter implements Adapter {
 		storeOrStoreName: idb.IDBPObjectStore | string,
 		keyArr: any[]
 	): Promise<T> {
-		// debugger;
-		// console.log(keyArr);
 		let index: idb.IDBPIndex;
 
 		if (typeof storeOrStoreName === 'string') {
@@ -279,8 +277,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 
 		const result = await index.get(keyArr);
-		// debugger;
-		// debugger;
+
 		return result;
 	}
 
@@ -301,7 +298,6 @@ class IndexedDBAdapter implements Adapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
-		// debugger;
 
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
@@ -320,13 +316,7 @@ class IndexedDBAdapter implements Adapter {
 		const store = tx.objectStore(storeName);
 
 		const keyValues = this.getIndexKeyValues(model);
-		// Was getting by id here.
-		// NESTED ARRAY?
-		if (keyValues[0] == null) {
-			debugger;
-		}
 
-		// console.log(keyValues);
 		const fromDB = await this._get(store, keyValues);
 
 		if (condition && fromDB) {
@@ -350,18 +340,9 @@ class IndexedDBAdapter implements Adapter {
 			const store = tx.objectStore(storeName);
 			const itemKeyValues = keys.map(key => {
 				const value = item[key];
-				// console.log(keyValues);
-				// FIRST ISSUE: ITEM IS NOT A MODEL, BUT AN ARRAY, CAUSING CONSOLE ERROR
-				// debugger;
-				// debugger;
 				return value;
 			});
 
-			// debugger;
-			// NESTED ARRAY?
-			if (keyValues[0] == null) {
-				debugger;
-			}
 			const fromDB = <T>await this._get(store, itemKeyValues);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
@@ -372,7 +353,6 @@ class IndexedDBAdapter implements Adapter {
 			// Even if the parent is an INSERT, the child might not be, so we need to get its key
 			if (keysEqual || opType === OpType.INSERT) {
 				const key = await store.index('byPk').getKey(itemKeyValues);
-				// debugger;
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -410,9 +390,6 @@ class IndexedDBAdapter implements Adapter {
 		for await (const relation of relations) {
 			// target name, metadata, set by init
 			const { fieldName, modelName, targetName, targetNames } = relation;
-			// console.log(targetName);
-			// console.log(targetNames);
-			// debugger;
 			const storeName = this.getStorename(namespaceName, modelName);
 			const store = tx.objectStore(storeName);
 			const modelConstructor = this.getModelConstructorByModelName(
@@ -423,10 +400,6 @@ class IndexedDBAdapter implements Adapter {
 			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						// console.log(targetName);
-						// console.log(targetNames);
-						// debugger;
-
 						// POST CPK codegen changes:
 						if (targetNames.length > 0) {
 							let getByFields = [];
@@ -435,15 +408,11 @@ class IndexedDBAdapter implements Adapter {
 							allPresent = targetNames.every(targetName => {
 								return recordItem[targetName] != null;
 							});
-							// debugger;
+
 							if (!allPresent) {
 								break;
 							}
-							// const key = [recordItem[getByfield]];
 
-							// TODO: would we ever use fieldName, here, like we do below?
-							// console.log(fieldName);
-							// debugger;
 							getByFields = targetNames as any;
 
 							// keys are the key values
@@ -451,48 +420,25 @@ class IndexedDBAdapter implements Adapter {
 								getByField => recordItem[getByField]
 							);
 
-							// NESTED ARRAY?
-							if (keys[0] == null) {
-								debugger;
-							}
-
 							const connectionRecord = await this._get(store, keys);
-							// debugger;
-							// console.log('is this ever retrieved?');
-							// console.log(connectionRecord);
-							// debugger;
+
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
 						} else {
 							// If single target name, using old codegen
-							// debugger;
 							const getByfield = recordItem[targetName]
 								? targetName
 								: fieldName;
-							// We break here, because the recordItem does not have 'team', the `getByField`
-							// TODO: also check for fields
-							// debugger;
-							// extract the keys on the related model.
 
-							// debugger;
+							// We break here, because the recordItem does not have 'team', the `getByField`
+							// extract the keys on the related model.
 							if (!recordItem[getByfield]) break;
-							// THIRD ISSUE (find):
-							// if model, will grab id, and set the target name on the child.
-							// see `save` switch
 
 							const key = [recordItem[getByfield]];
-							// SECOND ISSUE: CONNECTION RECORD IS NEVER POPULATED
-							// This MAY be just an issue with SK, attempting with PK now
-							// If so, the issue is that we are assuming there is ONE connection field.
-							// debugger;
-							// NESTED ARRAY?
-							if (key[0] == null) {
-								debugger;
-							}
+
 							const connectionRecord = await this._get(store, key);
-							// console.log('is this ever retrieved?');
-							// debugger;
+
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
@@ -500,12 +446,7 @@ class IndexedDBAdapter implements Adapter {
 					}
 					break;
 				case 'BELONGS_TO':
-					// debugger;
 					for await (const recordItem of records) {
-						// console.log(targetName);
-						// console.log(targetNames);
-						// debugger;
-
 						// POST CPK codegen changes:
 						if (targetNames.length > 0) {
 							let allPresent;
@@ -522,29 +463,17 @@ class IndexedDBAdapter implements Adapter {
 							const keys = targetNames.map(
 								targetName => recordItem[targetName]
 							);
-							// NESTED ARRAY?
-							if (keys[0] == null) {
-								debugger;
-							}
 
 							// Retrieve the connected record
 							const connectionRecord = await this._get(store, keys);
 
-							// console.log('how do we delete this??');
-							// console.log('how do we delete this??');
-							// debugger;
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
 							delete recordItem[targetName];
 						} else if (recordItem[targetName]) {
-							// debugger;
 							const key = [recordItem[targetName]];
-							// NESTED ARRAY?
-							// debugger;
-							if (key[0] == null) {
-								debugger;
-							}
+
 							const connectionRecord = await this._get(store, key);
 
 							recordItem[fieldName] =
@@ -616,17 +545,12 @@ class IndexedDBAdapter implements Adapter {
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
-		// NESTED ARRAY?
-		// debugger;
-		if (keyValue[0] == null) {
-			debugger;
-		}
 		const record = <T>await this._get(storeName, keyValue);
 		return record;
 	}
 
 	private async getAll<T extends PersistentModel>(
-		storeName: string
+		storeName: any
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
@@ -823,11 +747,6 @@ class IndexedDBAdapter implements Adapter {
 				const store = tx.objectStore(storeName);
 				const keyValues = this.getIndexKeyValues(model);
 
-				// NESTED ARRAY?
-				// debugger;
-				if (keyValues[0] == null) {
-					debugger;
-				}
 				const fromDB = await this._get(store, keyValues);
 
 				if (fromDB === undefined) {
@@ -923,7 +842,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
-	private async deleteTraverse1<T extends PersistentModel>(
+	private async deleteTraverse<T extends PersistentModel>(
 		relations: RelationType[],
 		models: T[],
 		srcModel: string,
@@ -933,183 +852,11 @@ class IndexedDBAdapter implements Adapter {
 		for await (const rel of relations) {
 			const { relationType, fieldName, modelName, targetName, targetNames } =
 				rel;
-			// console.log(targetName);
-			// console.log(targetNames);
-			// debugger;
+
 			const storeName = this.getStorename(nameSpace, modelName);
 
+			// Explain:
 			const index: string | string[] | undefined =
-				getIndex(
-					this.schema.namespaces[nameSpace].relationships[modelName]
-						.relationTypes,
-					srcModel
-				) ||
-				// if we were unable to find an index via relationTypes
-				// i.e. for keyName connections, attempt to find one by the
-				// associatedWith property
-				getIndexFromAssociation(
-					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
-					rel.associatedWith
-				);
-
-			// console.log('was index / indices retrieved?', index);
-			debugger;
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const model of models) {
-						// const hasOneIndex = index || 'byPk';
-						// TEMP:
-						const hasOneIndex = 'byPk';
-
-						// Should be byPk?
-						debugger;
-						// if (targetNames && targetNames.length > 0) {
-						// 	// iterate over targetNames array and see if each item is present in model object
-						// 	let hasOneCustomFields = targetNames.every(targetName =>
-						// 		model.hasOwnProperty(targetName)
-						// 	);
-
-						// 	debugger;
-						// 	const keyValues = this.getIndexKeyValues(model);
-
-						// 	let values = [];
-						// 	if (hasOneCustomFields) {
-						// 		values = targetNames.map(
-						// 			targetName => model[targetName]
-						// 		) as any;
-						// 	} else {
-						// 		values = keyValues as any;
-						// 	}
-
-						// 	debugger;
-						// 	if (hasOneIndex === 'byPk') {
-						// 		// byPk requires an array keyValue
-						// 		// should already be an array!
-						// 		debugger;
-						// 	}
-
-						// 	if (values.length === 0) break;
-
-						// 	const recordToDelete = <T>await this.db
-						// 		.transaction(storeName, 'readwrite')
-						// 		.objectStore(storeName)
-						// 		.index(hasOneIndex as any)
-						// 		.get(values);
-
-						// 	console.log('do we get it?????');
-						// 	console.log(recordToDelete);
-						// 	debugger;
-
-						// 	await this.deleteTraverse(
-						// 		this.schema.namespaces[nameSpace].relationships[modelName]
-						// 			.relationTypes,
-						// 		recordToDelete ? [recordToDelete] : [],
-						// 		modelName,
-						// 		nameSpace,
-						// 		deleteQueue
-						// 	);
-						// 	debugger;
-						// 	break;
-						// }
-						const hasOneCustomField = targetName in model;
-						// debugger;
-						const keyValues = this.getIndexKeyValues(model);
-						// TargetNames will always be present, when do we decide between that, and keyValues?
-						debugger;
-						// let value = hasOneCustomField ? model[targetName] : keyValues[0];
-						let values = hasOneCustomField ? model[targetName] : keyValues;
-						// targetNames? or keyValues?
-						debugger;
-
-						// Shouldn't be needed:
-						// if (hasOneIndex === 'byPk') {
-						// 	// byPk requires an array keyValue
-						// 	value = [value];
-						// }
-
-						// if (!value) break;
-						if (values.length === 0) break;
-
-						// debugger;
-						const recordToDelete = <T>await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(hasOneIndex as any)
-							.get(values);
-
-						// console.log('do we get it?????');
-						// console.log('do we get it?????');
-						// console.log('could also be multiple records?');
-						debugger;
-
-						await this.deleteTraverse(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							recordToDelete ? [recordToDelete] : [],
-							modelName,
-							nameSpace,
-							deleteQueue
-						);
-					}
-					break;
-				case 'HAS_MANY':
-					for await (const model of models) {
-						const keyValues = this.getIndexKeyValues(model);
-						// console.log(targetNames);
-						// console.log('first key value?');
-						// console.log('check index, could be array');
-						// debugger;
-						const childrenArray = await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(index as any)
-							.getAll(keyValues[0]);
-
-						// console.log('correct???');
-						// debugger;
-
-						await this.deleteTraverse(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							childrenArray,
-							modelName,
-							nameSpace,
-							deleteQueue
-						);
-					}
-					break;
-				case 'BELONGS_TO':
-					// Intentionally blank
-					break;
-				default:
-					exhaustiveCheck(relationType);
-					break;
-			}
-		}
-
-		deleteQueue.push({
-			storeName: this.getStorename(nameSpace, srcModel),
-			items: models.map(record =>
-				this.modelInstanceCreator(
-					this.getModelConstructorByModelName(nameSpace, srcModel),
-					record
-				)
-			),
-		});
-	}
-
-	private async deleteTraverse<T extends PersistentModel>(
-		relations: RelationType[],
-		models: T[],
-		srcModel: string,
-		nameSpace: string,
-		deleteQueue: { storeName: string; items: T[] }[]
-	): Promise<void> {
-		for await (const rel of relations) {
-			const { relationType, fieldName, modelName, targetName } = rel;
-			const storeName = this.getStorename(nameSpace, modelName);
-
-			const index: any =
 				getIndex(
 					this.schema.namespaces[nameSpace].relationships[modelName]
 						.relationTypes,
@@ -1128,54 +875,93 @@ class IndexedDBAdapter implements Adapter {
 					for await (const model of models) {
 						const hasOneIndex = index || 'byPk';
 
-						// Should always be `byPk`
-						debugger;
-						// ignore
-						const hasOneCustomField = targetName in model;
-						//
-						const keyValues = this.getIndexKeyValues(model);
-						let values = hasOneCustomField ? model[targetName] : keyValues;
+						// CPK
+						if (targetNames && targetNames.length > 0) {
+							// iterate over targetNames array and see if each item is present in model object
+							// targetNames here being the keys for the CHILD model
+							// TODO: I feel like we could rename this?
+							let hasConnectedModelFields = targetNames.every(targetName =>
+								model.hasOwnProperty(targetName)
+							);
 
-						// Should no longer be needed
-						// if (hasOneIndex === 'byPk') {
-						// 	// byPk requires an array keyValue
-						// 	value = [value];
-						// }
+							// PK / Composite key for the PARENT model
+							const keyValues = this.getIndexKeyValues(model);
 
-						if (values.length === 0) break;
+							let values = [];
 
-						const recordToDelete = <T>(
-							await this.db
+							if (hasConnectedModelFields) {
+								// Values will be that of the child model
+								values = targetNames.map(
+									targetName => model[targetName]
+								) as any;
+							} else {
+								// values will be that of the parent model
+								values = keyValues as any;
+							}
+
+							if (values.length === 0) break;
+
+							const recordToDelete = <T>await this.db
 								.transaction(storeName, 'readwrite')
 								.objectStore(storeName)
-								.index(hasOneIndex)
-								.get(values)
-						);
+								.index(hasOneIndex as any)
+								.get(values);
 
-						console.log('record to delete', recordToDelete);
+							await this.deleteTraverse(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete ? [recordToDelete] : [],
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
+							break;
+						} else {
+							// Backwards compatibility (TODO: combine with above)
+							const hasOneIndex = index || 'byPk';
 
-						debugger;
-						await this.deleteTraverse(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							recordToDelete ? [recordToDelete] : [],
-							modelName,
-							nameSpace,
-							deleteQueue
-						);
+							const hasOneCustomField = targetName in model;
+							const keyValues = this.getIndexKeyValues(model);
+							let value = hasOneCustomField ? model[targetName] : keyValues[0];
 
-						debugger;
+							if (hasOneIndex === 'byPk') {
+								// byPk requires an array keyValue
+								value = [value];
+							}
+
+							if (!value) break;
+
+							const recordToDelete = <T>await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex as any)
+								.get(value);
+
+							await this.deleteTraverse(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete ? [recordToDelete] : [],
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
+						}
 					}
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
 						const keyValues = this.getIndexKeyValues(model);
 
+						// TODO: Double check this:
+						const hasManyIndex = index || 'byPk';
+
+						// TODO: get by ALL key values
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(index)
+							.index(hasManyIndex as any)
 							.getAll(keyValues[0]);
+						// .getAll(keyValues); // TODO
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -1196,7 +982,6 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
-		debugger;
 		deleteQueue.push({
 			storeName: this.getStorename(nameSpace, srcModel),
 			items: models.map(record =>
@@ -1248,12 +1033,9 @@ class IndexedDBAdapter implements Adapter {
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
-			// debugger;
 
 			const keyValues = this.getIndexKeyValues(model);
 			const { _deleted } = item;
-			// is this working?
-			// debugger;
 
 			const index = store.index('byPk');
 			const key = await index.getKey(keyValues);

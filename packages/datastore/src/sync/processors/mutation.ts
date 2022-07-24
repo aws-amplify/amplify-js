@@ -466,8 +466,6 @@ class MutationProcessor {
 						.filter(({ name, type, association }) => {
 							// connections
 							if (isModelFieldType(type)) {
-								// BELONGS_TO
-								// debugger;
 								if (
 									isTargetNameAssociation(association) &&
 									association.connectionType === 'BELONGS_TO'
@@ -491,19 +489,27 @@ class MutationProcessor {
 							let fieldName = name;
 							let val = parsedData[name];
 
-							// debugger;
 							if (
 								isModelFieldType(type) &&
 								isTargetNameAssociation(association)
 							) {
-								// debugger;
-								fieldName = association.targetName;
-								val = parsedData[fieldName];
+								// THIRD QUESTION: What exactly is happening here?
+								if (
+									association.targetNames &&
+									association.targetNames.length > 0
+								) {
+									fieldName = association.targetName;
+									val = parsedData[fieldName];
+								} else {
+									fieldName = association.targetNames[0];
+									val = parsedData[fieldName];
+								}
 							}
 
 							return [fieldName, val];
 						})
 						.reduce((acc, [k, v]) => {
+							// Set values on the record?
 							acc[k] = v;
 							return acc;
 						}, <typeof parsedData>{});

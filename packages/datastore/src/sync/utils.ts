@@ -28,7 +28,11 @@ import {
 	InternalSchema,
 	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck, extractPrimaryKeyFieldNames, establishRelationAndKeys } from '../util';
+import {
+	exhaustiveCheck,
+	extractPrimaryKeyFieldNames,
+	establishRelationAndKeys,
+} from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -76,8 +80,6 @@ export function generateSelectionSet(
 		.map(({ name }) => name)
 		.concat(implicitOwnerField)
 		.concat(nonModelFields);
-	
-	// debugger;
 
 	if (isSchemaModel(modelDefinition)) {
 		scalarAndMetadataFields = scalarAndMetadataFields
@@ -142,9 +144,11 @@ function getScalarFields(
 }
 
 // Used for generating the selection set for queries and mutations
-function getConnectionFields(modelDefinition: SchemaModel, namespace: SchemaNamespace): string[] {
+function getConnectionFields(
+	modelDefinition: SchemaModel,
+	namespace: SchemaNamespace
+): string[] {
 	const result = [];
-	// debugger;
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
@@ -162,12 +166,13 @@ function getConnectionFields(modelDefinition: SchemaModel, namespace: SchemaName
 						if (association.targetNames && association.targetNames.length > 0) {
 							// Need to retrieve relations in order to get connected model keys
 							const [relations] = establishRelationAndKeys(namespace);
-							
-							const connectedModelName = modelDefinition.fields[name].type['model'];
-							
+
+							const connectedModelName =
+								modelDefinition.fields[name].type['model'];
+
 							// keyFields are fields of the connected model
 							const keyFields = relations[connectedModelName].indexes;
-							
+
 							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
 							result.push(`${name} { ${keyFields} _deleted }`);
 						} else {

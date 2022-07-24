@@ -163,11 +163,9 @@ export function modelCreateTableStatement(
 		if (isModelFieldType(field.type)) {
 			let columnParam = `"${field.name}" TEXT`;
 
-			// debugger;
 			// add targetName as well as field name for BELONGS_TO relations
 			if (isTargetNameAssociation(field.association)) {
 				// check if this field has been explicitly defined in the model
-				// debugger;
 				const fkDefinedInModel = Object.values(model.fields).find(
 					(f: ModelField) => f.name === field?.association?.targetName
 				);

@@ -79,8 +79,7 @@ type TargetNameAssociation = {
 export function isTargetNameAssociation(
 	obj: any
 ): obj is TargetNameAssociation {
-	// debugger;
-	return obj && obj.targetName || obj && obj.targetNames;
+	return (obj && obj.targetName) || (obj && obj.targetNames);
 }
 
 // export function isTargetNamesAssociation(

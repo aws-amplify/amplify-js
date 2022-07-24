@@ -354,18 +354,16 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			// debugger;
 			const targetName: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
 
-			
+			// TODO, check:
 			// const targetNames: any = isTargetNamesAssociation(
 			// 	fields[field]?.association
 			// );
 
 			// if field refers to a belongsTo relation, use the target field instead
-			// debugger;
 			const key = targetName || field;
 
 			// check field values by value. Ignore unchanged fields
