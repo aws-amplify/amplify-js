@@ -25,7 +25,7 @@ export interface SignUpParams {
 	attributes?: object;
 	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
-	autoSignIn?: boolean;
+	autoSignIn?: AutoSignInOptions;
 }
 
 export interface AuthCache {
@@ -228,6 +228,12 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 export interface IAuthDevice {
 	id: string;
 	name: string;
+}
+
+export interface AutoSignInOptions {
+	enabled: boolean;
+	clientMetaData?: ClientMetaData;
+	validationData?: { [key: string]: any };
 }
 
 export enum GRAPHQL_AUTH_MODE {

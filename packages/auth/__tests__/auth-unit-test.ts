@@ -600,7 +600,7 @@ describe('auth unit test', () => {
 					phone_number: 'phone_number',
 					otherAttrs: 'otherAttrs',
 				},
-				autoSignIn: true,
+				autoSignIn: { enabled: true },
 			};
 			expect(await auth.signUp(attrs)).toBe(signUpResult);
 			expect(signInSpyon).toHaveBeenCalledTimes(1);
@@ -624,7 +624,7 @@ describe('auth unit test', () => {
 					phone_number: 'phone_number',
 					otherAttrs: 'otherAttrs',
 				},
-				autoSignIn: true,
+				autoSignIn: { enabled: true },
 			};
 			expect(await auth.signUp(attrs)).toBe('signUpResult');
 			expect(await auth.confirmSignUp('username', 'code')).toBe('Success');
@@ -647,7 +647,7 @@ describe('auth unit test', () => {
 					phone_number: 'phone_number',
 					otherAttrs: 'otherAttrs',
 				},
-				autoSignIn: true,
+				autoSignIn: { enabled: true },
 			};
 			expect(await auth.signUp(attrs)).toBe('signUpResult');
 			jest.advanceTimersByTime(11000);
@@ -675,7 +675,7 @@ describe('auth unit test', () => {
 					phone_number: 'phone_number',
 					otherAttrs: 'otherAttrs',
 				},
-				autoSignIn: true,
+				autoSignIn: { enabled: true },
 			};
 			expect(await auth.signUp(attrs)).toBe('signUpResult');
 			try {

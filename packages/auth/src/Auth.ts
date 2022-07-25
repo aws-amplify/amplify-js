@@ -71,6 +71,7 @@ import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
 import {
 	AuthErrorTypes,
+	AutoSignInOptions,
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
 } from './types/Auth';
@@ -269,9 +270,9 @@ export class AuthClass {
 			const pollingInitiated = this.isTrueStorageValue('pollingStarted');
 			if (pollingInitiated) {
 				dispatchAuthEvent(
-					'AutoSignInFail',
+					'autoSignIn_failure',
 					null,
-					'Error trying to auto sign in user'
+					'Please use your credentials to sign in.'
 				);
 			}
 		}
@@ -313,7 +314,9 @@ export class AuthClass {
 		const attributes: CognitoUserAttribute[] = [];
 		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
-		let autoSignIn = false;
+		let autoSignIn: AutoSignInOptions = { enabled: false };
+		const autoSignInValidationData: CognitoUserAttribute[] = null;
+		let autoSignInClientMetaData: ClientMetaData = {};
 
 		if (params && typeof params === 'string') {
 			username = params;
@@ -364,9 +367,21 @@ export class AuthClass {
 					);
 				});
 			}
-			autoSignIn = params.autoSignIn ?? false;
-			if (autoSignIn) {
+
+			autoSignIn = params.autoSignIn ?? { enabled: false };
+			if (autoSignIn.enabled) {
 				this._storage.setItem('autoSignIn', true);
+				if (autoSignIn.validationData) {
+					Object.keys(autoSignIn.validationData).map(key => {
+						autoSignInValidationData.push(
+							new CognitoUserAttribute({
+								Name: key,
+								Value: autoSignIn.validationData[key],
+							})
+						);
+					});
+				}
+				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
@@ -402,12 +417,12 @@ export class AuthClass {
 							data,
 							`${username} has signed up successfully`
 						);
-						if (autoSignIn) {
+						if (autoSignIn.enabled) {
 							this.handleAutoSignIn(
 								username,
 								password,
-								validationData,
-								clientMetadata,
+								autoSignInValidationData,
+								autoSignInClientMetaData,
 								data
 							);
 						}
@@ -458,9 +473,9 @@ export class AuthClass {
 			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
 				clearInterval(autoSignInPollingIntervalId);
 				dispatchAuthEvent(
-					'AutoSignInFail',
+					'autoSignIn_failure',
 					null,
-					'Failed to Auto Sign In. Please confirm account and try to sign in again.'
+					'Please confirm your account and use your credentials to sign in.'
 				);
 			}
 			this.onConfirmSignUp(authDetails, null, autoSignInPollingIntervalId);
@@ -480,7 +495,7 @@ export class AuthClass {
 					user,
 					value => {
 						dispatchAuthEvent(
-							'AutoSignIn',
+							'autoSignIn',
 							value,
 							`${authDetails.getUsername()} has signed in successfully`
 						);
@@ -552,9 +567,9 @@ export class AuthClass {
 						const autoSignIn = this.isTrueStorageValue('autoSignIn');
 						if (autoSignIn && !this.autoSignInInitiated) {
 							dispatchAuthEvent(
-								'AutoSignInFail',
+								'autoSignIn_failure',
 								null,
-								'Error trying to auto sign in user'
+								'Please use your credentials to sign in.'
 							);
 						}
 						resolve(data);
