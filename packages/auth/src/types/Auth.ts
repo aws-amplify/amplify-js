@@ -51,7 +51,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
-	verificationMethod?: 'code' | 'link';
+	signUpVerificationMethod?: 'code' | 'link';
 }
 
 export enum CognitoHostedUIIdentityProvider {

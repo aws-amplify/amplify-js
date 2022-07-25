@@ -326,7 +326,7 @@ const authOptionConfirmationLink: AuthOptions = {
 	region: 'region',
 	identityPoolId: 'awsCognitoIdentityPoolId',
 	mandatorySignIn: false,
-	verificationMethod: 'link',
+	signUpVerificationMethod: 'link',
 };
 
 const authOptionsWithClientMetadata: AuthOptions = {

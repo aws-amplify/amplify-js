@@ -450,7 +450,7 @@ export class AuthClass {
 		});
 		if (data.userConfirmed) {
 			this.onConfirmSignUp(authDetails);
-		} else if (this._config.verificationMethod === 'link') {
+		} else if (this._config.signUpVerificationMethod === 'link') {
 			this.handleLinkAutoSignIn(authDetails);
 		} else {
 			this.handleCodeAutoSignIn(authDetails);
