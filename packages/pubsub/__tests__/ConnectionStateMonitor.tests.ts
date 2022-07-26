@@ -57,6 +57,11 @@ describe('ConnectionStateMonitor', () => {
 			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
+			monitor.enableNetworkMonitoring();
+		});
+
+		afterEach(() => {
+			monitor.disableNetworkMonitoring();
 		});
 
 		test('connection states starts out disconnected', () => {
@@ -118,7 +123,7 @@ describe('ConnectionStateMonitor', () => {
 		test('connection states when a connection is no longer needed', () => {
 			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
-			monitor.record(CONNECTION_CHANGE.CLOSING);
+			monitor.record(CONNECTION_CHANGE.CLOSING_CONNECTION);
 
 			expect(observedStates).toEqual([
 				CS.Disconnected,
@@ -131,7 +136,7 @@ describe('ConnectionStateMonitor', () => {
 		test('connection states when a connection is no longer needed closed', () => {
 			monitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 			monitor.record(CONNECTION_CHANGE.CONNECTION_ESTABLISHED);
-			monitor.record(CONNECTION_CHANGE.CLOSING);
+			monitor.record(CONNECTION_CHANGE.CLOSING_CONNECTION);
 			monitor.record(CONNECTION_CHANGE.CLOSED);
 
 			expect(observedStates).toEqual([
@@ -218,6 +223,11 @@ describe('ConnectionStateMonitor', () => {
 			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
+			monitor.enableNetworkMonitoring();
+		});
+
+		afterEach(() => {
+			monitor.disableNetworkMonitoring();
 		});
 
 		test('starts out disconnected', () => {

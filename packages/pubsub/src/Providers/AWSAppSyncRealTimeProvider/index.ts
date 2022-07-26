@@ -144,6 +144,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	): Observable<any> {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
+		this.connectionStateMonitor.enableNetworkMonitoring();
+
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
 				observer.error({
@@ -173,6 +175,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						],
 					});
 					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+					this.connectionStateMonitor.disableNetworkMonitoring();
 					observer.complete();
 				});
 
@@ -290,6 +293,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			logger.debug({ err });
 			const message = err['message'] ?? '';
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this.connectionStateMonitor.disableNetworkMonitoring();
 			observer.error({
 				errors: [
 					{
@@ -395,7 +399,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			return;
 		}
 
-		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSING);
+		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSING_CONNECTION);
 
 		if (this.awsRealTimeSocket.bufferedAmount > 0) {
 			// Still data on the WebSocket
@@ -416,6 +420,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			this.awsRealTimeSocket = undefined;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this.connectionStateMonitor.disableNetworkMonitoring();
 		}
 	}
 
@@ -535,6 +540,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		this.subscriptionObserverMap.clear();
 		if (this.awsRealTimeSocket) {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+			this.connectionStateMonitor.disableNetworkMonitoring();
 			this.awsRealTimeSocket.close();
 		}
 

@@ -31,7 +31,7 @@ export const CONNECTION_CHANGE: {
 		| 'KEEP_ALIVE'
 		| 'CONNECTION_ESTABLISHED'
 		| 'CONNECTION_FAILED'
-		| 'CLOSING'
+		| 'CLOSING_CONNECTION'
 		| 'OPENING_CONNECTION'
 		| 'CLOSED'
 		| 'ONLINE'
@@ -44,7 +44,7 @@ export const CONNECTION_CHANGE: {
 		intendedConnectionState: 'disconnected',
 		connectionState: 'disconnected',
 	},
-	CLOSING: { intendedConnectionState: 'disconnected' },
+	CLOSING_CONNECTION: { intendedConnectionState: 'disconnected' },
 	OPENING_CONNECTION: {
 		intendedConnectionState: 'connected',
 		connectionState: 'connecting',
@@ -61,8 +61,10 @@ export class ConnectionStateMonitor {
 	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
 	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
+	private _networkMonitoringSubscription?: ZenObservable.Subscription;
 
 	constructor() {
+		this._networkMonitoringSubscription = undefined;
 		this._linkedConnectionState = {
 			networkState: 'connected',
 			connectionState: 'disconnected',
@@ -75,13 +77,30 @@ export class ConnectionStateMonitor {
 				connectionStateObserver.next(this._linkedConnectionState);
 				this._linkedConnectionStateObserver = connectionStateObserver;
 			});
+	}
 
+	/**
+	 * Turn network state monitoring on
+	 */
+	public enableNetworkMonitoring() {
 		// Maintain the network state based on the reachability monitor
-		new Reachability().networkMonitor().subscribe(({ online }) => {
-			this.record(
-				online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
-			);
-		});
+		if (this._networkMonitoringSubscription === undefined) {
+			this._networkMonitoringSubscription = new Reachability()
+				.networkMonitor()
+				.subscribe(({ online }) => {
+					this.record(
+						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+					);
+				});
+		}
+	}
+
+	/**
+	 * Turn network state monitoring off
+	 */
+	public disableNetworkMonitoring() {
+		this._networkMonitoringSubscription?.unsubscribe();
+		this._networkMonitoringSubscription = undefined;
 	}
 
 	/**
