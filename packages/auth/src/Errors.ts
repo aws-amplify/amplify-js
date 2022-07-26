@@ -28,7 +28,7 @@ export class AuthError extends Error {
 		this.constructor = AuthError;
 		Object.setPrototypeOf(this, AuthError.prototype);
 
-		this.name = 'AuthError';
+		this.name = type;
 		this.log = log || message;
 
 		logger.error(this.log);
