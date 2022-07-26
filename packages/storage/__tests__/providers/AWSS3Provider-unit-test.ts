@@ -1078,16 +1078,17 @@ describe('StorageProvider test', () => {
 				LastModified: 'lastmodified',
 				Size: 'size',
 			};
-			let methodCalls = 1;
-			let continuationToken = 'token';
+			let methodCalls = 0;
+			let continuationToken = 'TEST_TOKEN';
 			let listResult = [];
 			const listAllFunction = async command => {
 				if (command instanceof ListObjectsV2Command) {
 					let token = undefined;
+					methodCalls++;
 					if (command.input.ContinuationToken === undefined || methodCalls < 3)
 						token = continuationToken;
+
 					if (command.input.Prefix === 'public/listALLResultsPath') {
-						methodCalls++;
 						return {
 							Contents: [listResultObj],
 							NextContinuationToken: token,

@@ -57,7 +57,7 @@ import {
 	S3ProviderPutOutput,
 	ResumableUploadConfig,
 	UploadTask,
-	NewS3ClientOptions,
+	S3ClientOptions,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -683,7 +683,7 @@ export class AWSS3Provider implements StorageProvider {
 	}
 	private async _list(
 		params: ListObjectsV2Request,
-		opt: NewS3ClientOptions,
+		opt: S3ClientOptions,
 		prefix: string
 	): Promise<S3ProviderListOutputWithToken> {
 		const result: S3ProviderListOutputWithToken = {
@@ -722,7 +722,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
-		const opt: NewS3ClientOptions = Object.assign({}, this._config, config);
+		const opt: S3ClientOptions = Object.assign({}, this._config, config);
 		const { bucket, track, maxKeys } = opt;
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
