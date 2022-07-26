@@ -691,7 +691,7 @@ export class AWSS3Provider implements StorageProvider {
 			nextToken: '',
 		};
 		const s3 = this._createNewS3Client(opt);
-		const listObjectsV2Command = new ListObjectsV2Command(params);
+		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
 			result.contents = response.Contents.map(item => {
@@ -724,7 +724,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		const opt: NewS3ClientOptions = Object.assign({}, this._config, config);
 		const { bucket, track, maxKeys } = opt;
-
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
