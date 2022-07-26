@@ -12,6 +12,7 @@ import {
 	AuthorizationMachineContext,
 	UserPoolTokens,
 	fetchAuthSessionEvent,
+	beginningSessionEvent,
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
@@ -92,8 +93,8 @@ const authorizationStateMachineActions: Record<
 		'signInCompleted'
 	),
 	// gets the identityID and AWS Credentials from the fetchAuthSessionStateMachine
-	getSession: authorizationMachineModel.assign({
-		getSession: (_context: any, event: fetchAuthSessionEvent) => {
+	sessionInfo: authorizationMachineModel.assign({
+		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
 			return {
 				identityID: event.data.identityID,
 				AWSCredentials: event.data.AWSCredentials,
@@ -143,14 +144,17 @@ const authorizationStateMachine: MachineConfig<
 				id: 'spawnFetchAuthSessionActor',
 				src: fetchAuthSessionStateMachine,
 				data: {
-					clientConfig: (context: any, event: any) => context.config?.region,
-					service: (context: any, event: any) => context.service,
-					userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
+						context.config?.region,
+					service: (context: AuthorizationMachineContext, _event: any) =>
+						context.service,
+					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
+						event.userPoolTokens,
 					authenticated: true,
 				},
 				onDone: {
 					target: 'sessionEstablished',
-					actions: [authorizationStateMachineActions.getSession],
+					actions: [authorizationStateMachineActions.sessionInfo],
 				},
 				onError: {
 					target: 'error',
@@ -166,14 +170,17 @@ const authorizationStateMachine: MachineConfig<
 				id: 'spawnFetchAuthSessionActor',
 				src: fetchAuthSessionStateMachine,
 				data: {
-					clientConfig: (context: any, event: any) => context.config?.region,
-					service: (context: any, event: any) => context.service,
-					userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
+						context.config?.region,
+					service: (context: AuthorizationMachineContext, _event: any) =>
+						context.service,
+					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
+						event.userPoolTokens,
 					authenticated: false,
 				},
 				onDone: {
 					target: 'sessionEstablished',
-					actions: [authorizationStateMachineActions.getSession],
+					actions: [authorizationStateMachineActions.sessionInfo],
 				},
 				onError: {
 					target: 'error',
@@ -186,9 +193,12 @@ const authorizationStateMachine: MachineConfig<
 				src: refreshSessionStateMachine,
 			},
 			data: {
-				clientConfig: (context: any, event: any) => context.config?.region,
-				service: (context: any, event: any) => context.service,
-				userPoolTokens: (context: any, event: any) => event.userPoolTokens,
+				clientConfig: (context: AuthorizationMachineContext, _event: any) =>
+					context.config?.region,
+				service: (context: AuthorizationMachineContext, _event: any) =>
+					context.service,
+				userPoolTokens: (_context: any, event: beginningSessionEvent) =>
+					event.userPoolTokens,
 				authenticated: false,
 			},
 			on: {

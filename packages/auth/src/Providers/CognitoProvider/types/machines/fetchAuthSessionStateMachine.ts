@@ -46,3 +46,13 @@ export type FetchAuthSessionTypestate =
 			value: 'error';
 			context: FetchAuthSessionStateMachineContext;
 	  };
+
+export type fetchAuthSessionReturnContext = {
+	identityID: string;
+	AWSCreds: {
+		accessKeyId: string;
+		expiration: Date;
+		secretAccessKey: string;
+		sessionToken: string;
+	};
+};

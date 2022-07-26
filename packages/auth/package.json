@@ -48,7 +48,6 @@
     "@xstate/inspect": "^0.7.0",
     "amazon-cognito-identity-js": "5.2.9",
     "crypto-js": "^4.1.1",
-    "sjcl": "^1.0.8",
     "typescript": "~3.8.3",
     "xstate": "^4.32.1"
   },

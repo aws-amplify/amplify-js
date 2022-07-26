@@ -66,6 +66,16 @@ interface CognitoServiceConfig {
 	clientId: string;
 }
 
+/**
+ * This class serves as a layer between the CognitoProvider & the AWS SDK to make API calls to Cognito Userpool &
+ * Identity Pool a little bit easier.
+ * Client Configurations are done during the creation of the instance, so it doesn't need to be repeated on every
+ * single API call.
+ *
+ * Note: We can potentially split this into AuthN and AuthZ for users who only wants to use either Cognito Userpool &
+ * Cognito Identity Pool.
+ */
+
 export class CognitoService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
@@ -129,7 +139,6 @@ export class CognitoService {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
-		const cognitoIdentityClient = this.createCognitoIdentityClient();
 		// TODO: add param for cognito client config
 		const cognitoClient = this.createCognitoClient();
 		const session = this.getSessionData();
@@ -142,7 +151,7 @@ export class CognitoService {
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		const getIdRes = await cognitoIdentityClient.send(
+		const getIdRes = await this.cognitoIdentityClient.send(
 			new GetIdCommand({
 				IdentityPoolId: this.config.identityPoolId,
 				Logins: {
@@ -153,7 +162,7 @@ export class CognitoService {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		const getCredentialsRes = await cognitoIdentityClient.send(
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: getIdRes.IdentityId,
 				Logins: {

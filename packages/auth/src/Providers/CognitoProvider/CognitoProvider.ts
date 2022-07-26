@@ -91,10 +91,7 @@ function listenToAuthHub(send: any) {
 	});
 }
 
-// For visualization of state diagram
-inspect({
-	iframe: false,
-});
+inspect({ iframe: false });
 
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
@@ -336,7 +333,9 @@ export class CognitoProvider implements AuthProvider {
 	async fetchSession(): Promise<AmplifyUser> {
 		// checks to see if the identity pool and region are already configured
 		if (!this.isConfigured()) {
-			throw new Error('Identity Pool has not been configured yet.');
+			throw new Error(
+				'Identity Pool and Userpool have not been configured yet.'
+			);
 		}
 
 		// if (this._authService.state.matches('signedIn')) {
@@ -363,7 +362,7 @@ export class CognitoProvider implements AuthProvider {
 				credentials: {
 					default: {
 						aws: this.shearAWSCredentials(
-							this._authzService.state.context.getSession.AWSCredentials
+							this._authzService.state.context.sessionInfo.AWSCredentials
 						),
 					},
 				},
@@ -383,24 +382,58 @@ export class CognitoProvider implements AuthProvider {
 			logger.debug('No Cognito Federated Identity pool provided');
 			throw new Error('No Cognito Federated Identity pool provided');
 		}
-		// const cognitoIdentityClient = this.createNewCognitoIdentityClient({
-		// 	region: this._config.region,
-		// });
 		// gets tokens from userpool
 		const session = this.getSessionData();
 
 		// makes sure session is valid
 		if (session === null) {
-			// this._authzService.send(authzMachineEvents.noSession());
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);
 		}
 
 		const { idToken, accessToken, refreshToken } = session;
+
+		const cognitoClient = this.createNewCognitoClient({
+			region: this._config.region,
+		});
+		const getUserRes = await cognitoClient.send(
+			new GetUserCommand({
+				AccessToken: accessToken,
+			})
+		);
+		const { sub } = decodeJWT(idToken);
+		if (typeof sub !== 'string') {
+			logger.error(
+				'sub does not exist inside the JWT token or is not a string'
+			);
+		}
+
+		if (!this._config?.identityPoolId) {
+			return {
+				isSignedIn: true,
+				userInfo: {
+					// sub
+					userid: sub as string,
+					username: getUserRes.Username,
+					// identifiers: [],
+				},
+				credentials: {
+					default: {
+						jwt: {
+							idToken,
+							accessToken,
+							refreshToken,
+						},
+					},
+				},
+			};
+		}
+
 		this._authzService.send(
 			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
 		);
+
 		// const expiration = getExpirationTimeFromJWT(idToken);
 		// console.log({ expiration });
 		// const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
@@ -430,23 +463,6 @@ export class CognitoProvider implements AuthProvider {
 		// 		'No credentials from the response of GetCredentialsForIdentity call.'
 		// 	);
 		// }
-		const cognitoClient = this.createNewCognitoClient({
-			region: this._config.region,
-		});
-		const getUserRes = await cognitoClient.send(
-			new GetUserCommand({
-				AccessToken: accessToken,
-			})
-		);
-		const { sub } = decodeJWT(idToken);
-		if (typeof sub !== 'string') {
-			logger.error(
-				'sub does not exist inside the JWT token or is not a string'
-			);
-		}
-
-		// runs after fetchSession has successfully occurred
-		// this._authzService.send(authzMachineEvents.fetched());
 
 		// wait for sign in th complete
 		const authzService = this._authzService;
@@ -471,7 +487,7 @@ export class CognitoProvider implements AuthProvider {
 						refreshToken,
 					},
 					aws: this.shearAWSCredentials(
-						this._authzService.state.context.getSession.AWSCredentials
+						this._authzService.state.context.sessionInfo.AWSCredentials
 					),
 				},
 			},
@@ -522,7 +538,11 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private isConfigured(): boolean {
-		return Boolean(this._config?.userPoolId) && Boolean(this._config?.region);
+		return (
+			Boolean(this._config?.userPoolId) &&
+			Boolean(this._config?.region) &&
+			Boolean(this._config?.identityPoolId)
+		);
 	}
 
 	// TODO: remove this, should live inside the AuthZ machine

@@ -29,7 +29,7 @@ export interface AuthorizationMachineContext {
 	};
 	identityID: null;
 	AWSCredentials: null;
-	getSession: any;
+	sessionInfo: any;
 }
 
 export type AuthorizationTypestate =
@@ -82,6 +82,10 @@ export type fetchAuthSessionEvent = {
 			sessionToken: string;
 		};
 	};
+};
+
+export type beginningSessionEvent = {
+	userPoolTokens: UserPoolTokens;
 };
 
 export type AWSCredsRes = {

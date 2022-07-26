@@ -1,6 +1,6 @@
 import { assign, createMachine, MachineConfig } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { FetchAuthSessionStateMachineContext } from '../types/machines/fetchAuthSessionStateMachine';
+import { fetchAuthSessionReturnContext } from '../types/machines/fetchAuthSessionStateMachine';
 
 // info/context needed to fetch session
 // First, fetch user pool tokens (JWT) from the user pool
@@ -44,16 +44,15 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 			fetchingIdentityID: {
 				invoke: {
 					id: 'fetchAuthSession',
-					src: async (_context, _event) => {
+					src: async (context, _event) => {
 						// fetch unauth identity id if user isn't authenticated
-						if (!_context.authenticated) {
-							const identityID =
-								await _context.service?.fetchUnAuthIdentityID();
+						if (!context.authenticated) {
+							const identityID = await context.service?.fetchUnAuthIdentityID();
 							return identityID;
 						}
 
-						const identityID = await _context.service?.fetchIdentityId(
-							_context.userPoolTokens.idToken
+						const identityID = await context.service?.fetchIdentityId(
+							context.userPoolTokens.idToken
 						);
 
 						return identityID;
@@ -61,7 +60,7 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 					onDone: {
 						target: 'fetchingAWSCredentials',
 						actions: assign({
-							identityID: (context, event) => event.data,
+							identityID: (_context, event) => event.data,
 						}),
 					},
 					onError: {
@@ -76,25 +75,24 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 			fetchingAWSCredentials: {
 				invoke: {
 					id: 'fetchAWSCredentials',
-					src: async (_context, _event) => {
-						if (!_context.authenticated) {
-							const AWSCreds =
-								await _context.service?.fetchUnAuthAWSCredentials(
-									_context.identityID
-								);
+					src: async (context, _event) => {
+						if (!context.authenticated) {
+							const AWSCreds = await context.service?.fetchUnAuthAWSCredentials(
+								context.identityID
+							);
 							return AWSCreds;
 						}
 
-						const AWSCreds = await _context.service?.fetchAWSCredentials(
-							_context.identityID,
-							_context.userPoolTokens.idToken
+						const AWSCreds = await context.service?.fetchAWSCredentials(
+							context.identityID,
+							context.userPoolTokens.idToken
 						);
 						return AWSCreds;
 					},
 					onDone: {
 						target: 'fetched',
 						actions: assign({
-							AWSCreds: (context, event) => event.data,
+							AWSCreds: (_context, event) => event.data,
 						}),
 					},
 					onError: {
@@ -110,8 +108,12 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				// 	},
 				// ],
 				data: {
-					identityID: (context: any, event: any) => context.identityID,
-					AWSCredentials: (context: any, event: any) => context.AWSCreds,
+					identityID: (context: fetchAuthSessionReturnContext, _event: any) =>
+						context.identityID,
+					AWSCredentials: (
+						context: fetchAuthSessionReturnContext,
+						_event: any
+					) => context.AWSCreds,
 				},
 			},
 			error: {

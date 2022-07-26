@@ -1,4 +1,5 @@
 import { createMachine, MachineConfig } from 'xstate';
+import { CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
 
 // TODO: what should we store here?
 interface SignUpMachineContext {}
