@@ -267,7 +267,9 @@ export class AuthClass {
 			!this.autoSignInInitiated &&
 			typeof this._storage['getItem'] === 'function'
 		) {
-			const pollingInitiated = this.isTrueStorageValue('pollingStarted');
+			const pollingInitiated = this.isTrueStorageValue(
+				'amplify-polling-started'
+			);
 			if (pollingInitiated) {
 				dispatchAuthEvent(
 					'autoSignIn_failure',
@@ -275,7 +277,7 @@ export class AuthClass {
 					AuthErrorTypes.AutoSignInError
 				);
 			}
-			this._storage.removeItem('pollingStarted');
+			this._storage.removeItem('amplify-polling-started');
 		}
 		return this._config;
 	}
@@ -371,7 +373,7 @@ export class AuthClass {
 
 			autoSignIn = params.autoSignIn ?? { enabled: false };
 			if (autoSignIn.enabled) {
-				this._storage.setItem('autoSignIn', true);
+				this._storage.setItem('amplify-auto-sign-in', true);
 				autoSignInValidationData = autoSignIn.validationData ?? {};
 				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 			}
@@ -441,7 +443,7 @@ export class AuthClass {
 			ClientMetadata: clientMetadata,
 		});
 		if (data.userConfirmed) {
-			this.onConfirmSignUp(authDetails);
+			this.signInAfterUserConfirmed(authDetails);
 		} else if (this._config.signUpVerificationMethod === 'link') {
 			this.handleLinkAutoSignIn(authDetails);
 		} else {
@@ -452,14 +454,14 @@ export class AuthClass {
 	private handleCodeAutoSignIn(authDetails: AuthenticationDetails) {
 		const listenEvent = ({ payload }) => {
 			if (payload.event === 'confirmSignUp') {
-				this.onConfirmSignUp(authDetails, listenEvent);
+				this.signInAfterUserConfirmed(authDetails, listenEvent);
 			}
 		};
 		Hub.listen('auth', listenEvent);
 	}
 
 	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
-		this._storage.setItem('pollingStarted', true);
+		this._storage.setItem('amplify-polling-started', true);
 		const start = Date.now();
 		const autoSignInPollingIntervalId = setInterval(() => {
 			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
@@ -469,12 +471,17 @@ export class AuthClass {
 					null,
 					'Please confirm your account and use your credentials to sign in.'
 				);
+			} else {
+				this.signInAfterUserConfirmed(
+					authDetails,
+					null,
+					autoSignInPollingIntervalId
+				);
 			}
-			this.onConfirmSignUp(authDetails, null, autoSignInPollingIntervalId);
 		}, 5000);
 	}
 
-	private async onConfirmSignUp(
+	private async signInAfterUserConfirmed(
 		authDetails: AuthenticationDetails,
 		listenEvent?: HubCallback,
 		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
@@ -496,9 +503,9 @@ export class AuthClass {
 						}
 						if (autoSignInPollingIntervalId) {
 							clearInterval(autoSignInPollingIntervalId);
-							this._storage.removeItem('pollingStarted');
+							this._storage.removeItem('amplify-polling-started');
 						}
-						this._storage.removeItem('autoSignIn');
+						this._storage.removeItem('amplify-auto-sign-in');
 					},
 					error => {
 						logger.error(error);
@@ -557,7 +564,7 @@ export class AuthClass {
 							data,
 							`${username} has been confirmed successfully`
 						);
-						const autoSignIn = this.isTrueStorageValue('autoSignIn');
+						const autoSignIn = this.isTrueStorageValue('amplify-auto-sign-in');
 						if (autoSignIn && !this.autoSignInInitiated) {
 							dispatchAuthEvent(
 								'autoSignIn_failure',
