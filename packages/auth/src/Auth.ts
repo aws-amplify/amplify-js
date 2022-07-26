@@ -272,7 +272,7 @@ export class AuthClass {
 				dispatchAuthEvent(
 					'autoSignIn_failure',
 					null,
-					'Please use your credentials to sign in.'
+					AuthErrorTypes.AutoSignInError
 				);
 			}
 		}
@@ -315,7 +315,7 @@ export class AuthClass {
 		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
 		let autoSignIn: AutoSignInOptions = { enabled: false };
-		const autoSignInValidationData: CognitoUserAttribute[] = null;
+		let autoSignInValidationData = {};
 		let autoSignInClientMetaData: ClientMetaData = {};
 
 		if (params && typeof params === 'string') {
@@ -371,16 +371,7 @@ export class AuthClass {
 			autoSignIn = params.autoSignIn ?? { enabled: false };
 			if (autoSignIn.enabled) {
 				this._storage.setItem('autoSignIn', true);
-				if (autoSignIn.validationData) {
-					Object.keys(autoSignIn.validationData).map(key => {
-						autoSignInValidationData.push(
-							new CognitoUserAttribute({
-								Name: key,
-								Value: autoSignIn.validationData[key],
-							})
-						);
-					});
-				}
+				autoSignInValidationData = autoSignIn.validationData ?? {};
 				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 			}
 		} else {
@@ -437,7 +428,7 @@ export class AuthClass {
 	private handleAutoSignIn(
 		username: string,
 		password: string,
-		validationData: CognitoUserAttribute[],
+		validationData: {},
 		clientMetadata: any,
 		data: any
 	) {
@@ -506,6 +497,7 @@ export class AuthClass {
 							clearInterval(autoSignInPollingIntervalId);
 							this._storage.removeItem('pollingStarted');
 						}
+						this._storage.removeItem('autoSignIn');
 					},
 					error => {
 						logger.error(error);
@@ -569,7 +561,7 @@ export class AuthClass {
 							dispatchAuthEvent(
 								'autoSignIn_failure',
 								null,
-								'Please use your credentials to sign in.'
+								AuthErrorTypes.AutoSignInError
 							);
 						}
 						resolve(data);
