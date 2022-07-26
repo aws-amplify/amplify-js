@@ -275,6 +275,7 @@ export class AuthClass {
 					AuthErrorTypes.AutoSignInError
 				);
 			}
+			this._storage.removeItem('pollingStarted');
 		}
 		return this._config;
 	}
