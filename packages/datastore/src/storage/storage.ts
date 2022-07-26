@@ -358,10 +358,7 @@ class StorageClass implements StorageFacade {
 				fields[field]?.association
 			);
 
-			// TODO, check:
-			// const targetNames: any = isTargetNamesAssociation(
-			// 	fields[field]?.association
-			// );
+			// TODO: check - what about `targetNames`?
 
 			// if field refers to a belongsTo relation, use the target field instead
 			const key = targetName || field;

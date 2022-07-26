@@ -479,14 +479,19 @@ export const traverseModel = <T extends PersistentModel>(
 									draftInstance[rItem.fieldName][0]
 								);
 
-								// Previously, we used the hardcoded 'id', as they key,
+								// Previously, we used the hardcoded 'id' as they key,
 								// now we need the value of the key to get the PK (and SK)
 								// values from the related record
-								// FIRST QUESTION: should I be using associatedWith here?
-								const key = rItem.associatedWith[idx];
+
+								const { fields } = namespace.models[modelConstructor.name];
+
+								// see getUpdateMutationInput for what may need done here
+								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
-								const relatedRecordInProxyPkValue = relatedRecordInProxy[key];
+								// TODO, don't like using idx, thoughts here?
+								const relatedRecordInProxyPkValue =
+									relatedRecordInProxy[primaryKey[idx]];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
@@ -543,13 +548,12 @@ export const traverseModel = <T extends PersistentModel>(
 								// Previously, we used the hardcoded 'id', as they key,
 								// now we need the value of the key to get the PK (and SK)
 								// values from the related record
-								// SECOND QUESTION: Where makes sense to grab this?
-								const keyHack =
-									extractPrimaryKeyFieldNamesFromTargetName(targetName);
+								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
+								// TODO, don't like using idx, thoughts here?
 								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyHack];
+									relatedRecordInProxy[primaryKey[idx]];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
