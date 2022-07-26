@@ -109,7 +109,7 @@ export type S3ProviderListConfig = CommonStorageOptions & {
 	identityId?: string;
 };
 
-export type NewS3ClientOptions = StorageOptions & {
+export type S3ClientOptions = StorageOptions & {
 	credentials: ICredentials;
 } & S3ProviderListConfig;
 
