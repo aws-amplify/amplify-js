@@ -450,7 +450,7 @@ class MutationProcessor {
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
-		if (primaryKey && primaryKey.length) {
+		if (primaryKey?.length) {
 			for (const pkField of primaryKey) {
 				deleteInput[pkField] = parsedData[pkField];
 			}
@@ -459,64 +459,54 @@ class MutationProcessor {
 			deleteInput['id'] = (<any>parsedData).id;
 		}
 
-		const filteredData =
-			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>deleteInput // For DELETE mutations, only PK is sent
-				: Object.values(modelDefinition.fields)
-						.filter(({ name, type, association }) => {
-							// connections
-							if (isModelFieldType(type)) {
-								if (
-									isTargetNameAssociation(association) &&
-									association.connectionType === 'BELONGS_TO'
-								) {
-									return true;
-								}
+		let mutationInput;
 
-								// All other connections
-								return false;
+		if (operation === TransformerMutationType.DELETE) {
+			// For DELETE mutations, only the key(s) are included in the input
+			mutationInput = <ModelInstanceMetadata>deleteInput;
+		} else {
+			// Otherwise, we construct the mutation input with the following logic
+			mutationInput = {};
+			const modelFields = Object.values(modelDefinition.fields);
+
+			for (const { name, type, association } of modelFields) {
+				// model fields should be stripped out from the input
+				if (isModelFieldType(type)) {
+					// except for belongs to relations - we need to replace them with the correct foreign key(s)
+					if (
+						isTargetNameAssociation(association) &&
+						association.connectionType === 'BELONGS_TO'
+					) {
+						if (association?.targetNames?.length) {
+							// instead of including the connected model itself, we add its key(s) to the mutation input
+							for (const targetName of association.targetNames) {
+								mutationInput[targetName] = parsedData[targetName];
 							}
+						} else if (association.targetName) {
+							// this is for backwards-compatability with pre-CPK codegen
+							mutationInput[association.targetName] =
+								parsedData[association.targetName];
+						}
+					}
+					continue;
+				}
+				// scalar fields / non-model types
 
-							if (operation === TransformerMutationType.UPDATE) {
-								// this limits the update mutation input to changed fields only
-								return parsedData.hasOwnProperty(name);
-							}
+				if (operation === TransformerMutationType.UPDATE) {
+					if (!parsedData.hasOwnProperty(name)) {
+						// for update mutations - strip out a field if it's unchanged
+						continue;
+					}
+				}
 
-							// scalars and non-model types
-							return true;
-						})
-						.map(({ name, type, association }) => {
-							let fieldName = name;
-							let val = parsedData[name];
-
-							if (
-								isModelFieldType(type) &&
-								isTargetNameAssociation(association)
-							) {
-								// THIRD QUESTION: What exactly is happening here?
-								if (
-									association.targetNames &&
-									association.targetNames.length > 0
-								) {
-									fieldName = association.targetName;
-									val = parsedData[fieldName];
-								} else {
-									fieldName = association.targetNames[0];
-									val = parsedData[fieldName];
-								}
-							}
-
-							return [fieldName, val];
-						})
-						.reduce((acc, [k, v]) => {
-							// Set values on the record?
-							acc[k] = v;
-							return acc;
-						}, <typeof parsedData>{});
+				// all other fields are added to the input object
+				mutationInput[name] = parsedData[name];
+			}
+		}
 
 		// Build mutation variables input object
 		const input: ModelInstanceMetadata = {
-			...filteredData,
+			...mutationInput,
 			_version,
 		};
 
