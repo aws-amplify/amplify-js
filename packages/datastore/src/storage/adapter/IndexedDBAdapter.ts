@@ -449,7 +449,7 @@ class IndexedDBAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						// POST CPK codegen changes:
-						if (targetNames.length > 0) {
+						if (targetNames?.length) {
 							let allPresent;
 							// iterate through all targetnames to make sure they are all present in the recordItem
 							allPresent = targetNames.every(targetName => {
