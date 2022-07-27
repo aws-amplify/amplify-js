@@ -454,8 +454,8 @@ const createModelClass = <T extends PersistentModel>(
 					const { id: _id } =
 						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
+					// CPK TODO: This comment was from Manuel, unsure why:
 					// composite where pk = id??? should take it from init
-					// what's this???
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
 
@@ -505,6 +505,7 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
+					// CPK TODO: Previous comment from Ivan:
 					// @ts-ignore TODO: fix type
 					keyNames.forEach(key => (draft[key] = source[key]));
 
@@ -1338,7 +1339,8 @@ class DataStore {
 					criteria
 				);
 			} else {
-				// TODO: check when object is being queried using object literal syntax, see snippet below
+				// CPK TODO: verify this is working as expected, was due to merge conflict from `main`:
+				// check when object is being queried using object literal syntax, see snippet below
 				if (isPredicatesAll(criteria)) {
 					// Predicates.ALL means "all records", so no predicate (undefined)
 					predicate = undefined;

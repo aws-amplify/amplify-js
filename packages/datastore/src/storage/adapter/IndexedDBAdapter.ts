@@ -336,8 +336,14 @@ class IndexedDBAdapter implements Adapter {
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance, keys } = resItem;
+			let { storeName, item, instance, keys } = resItem;
 			const store = tx.objectStore(storeName);
+
+			// CPK TODO: Why is item an array here?
+			if (Array.isArray(item)) {
+				item = item[0];
+			}
+
 			const itemKeyValues = keys.map(key => {
 				const value = item[key];
 				return value;
@@ -879,7 +885,6 @@ class IndexedDBAdapter implements Adapter {
 						if (targetNames && targetNames.length > 0) {
 							// iterate over targetNames array and see if each item is present in model object
 							// targetNames here being the keys for the CHILD model
-							// TODO: I feel like we could rename this?
 							let hasConnectedModelFields = targetNames.every(targetName =>
 								model.hasOwnProperty(targetName)
 							);
@@ -952,10 +957,10 @@ class IndexedDBAdapter implements Adapter {
 					for await (const model of models) {
 						const keyValues = this.getIndexKeyValues(model);
 
-						// TODO: Double check this:
+						// CPK TODO: Double check this, unsure that we encounter `byPk` here, ever.
 						const hasManyIndex = index || 'byPk';
 
-						// TODO: get by ALL key values
+						// CPK TODO: get by all key values
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)

@@ -85,34 +85,6 @@ export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
 	return false;
 }
 
-// TODO: need to instead extract key fields from related model definition
-export function extractPrimaryKeyFieldNamesFromTargetNames(
-	targetNames: string[]
-): string[] {
-	const keys: string[] = targetNames.map(targetName =>
-		targetName
-			.split(/(?=[A-Z])/)
-			.slice(2)
-			.join('')
-	);
-	const tempHack: string[] = keys.map(
-		key => key[0].toLowerCase() + key.substring(1)
-	);
-
-	return tempHack;
-}
-
-export function extractPrimaryKeyFieldNamesFromTargetName(
-	targetName: string
-): string {
-	const one = targetName.split(/(?=[A-Z])/);
-	const two = one.slice(1, one.length);
-	const three = two.join('');
-	const tempHack = three[0].toLowerCase() + three.substring(1);
-
-	return tempHack;
-}
-
 export enum NAMESPACES {
 	DATASTORE = 'datastore',
 	USER = 'user',
@@ -474,7 +446,8 @@ export const traverseModel = <T extends PersistentModel>(
 						} else if (rItem.targetNames) {
 							rItem.targetNames.forEach((targetName, idx) => {
 								// Get the connected record
-								// TODO: WHY IS THIS AN ARRAY? MAY NEED TO FIX SOMEWHERE
+								// CPK TODO:
+								// Why is this an array?
 								const relatedRecordInProxy = <PersistentModel>(
 									draftInstance[rItem.fieldName][0]
 								);
@@ -484,12 +457,13 @@ export const traverseModel = <T extends PersistentModel>(
 								// values from the related record
 
 								const { fields } = namespace.models[modelConstructor.name];
+								console.log(fields);
 
 								// see getUpdateMutationInput for what may need done here
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
-								// TODO, don't like using idx, thoughts here?
+								// CPK TODO, don't like using idx, thoughts here?
 								const relatedRecordInProxyPkValue =
 									relatedRecordInProxy[primaryKey[idx]];
 
@@ -536,7 +510,7 @@ export const traverseModel = <T extends PersistentModel>(
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
-						} else if (rItem.targetNames) {
+						} else if (rItem.targetNames && rItem.targetNames.length > 0) {
 							rItem.targetNames.forEach((targetName, idx) => {
 								// Get the connected record
 								const relatedRecordInProxy = <PersistentModel>(
@@ -551,7 +525,7 @@ export const traverseModel = <T extends PersistentModel>(
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
-								// TODO, don't like using idx, thoughts here?
+								// CPK TODO, don't like using idx, thoughts here?
 								const relatedRecordInProxyPkValue =
 									relatedRecordInProxy[primaryKey[idx]];
 
