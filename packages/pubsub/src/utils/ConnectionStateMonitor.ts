@@ -118,7 +118,7 @@ export class ConnectionStateMonitor {
 		// After translating from linked states to ConnectionState, then remove any duplicates
 		return this._linkedConnectionStateObservable
 			.map(value => {
-				return this.linkedConnectionStatesToConnectionState(value);
+				return this.connectionStatesTranslator(value);
 			})
 			.filter(current => {
 				const toInclude = current !== previous;
@@ -145,7 +145,7 @@ export class ConnectionStateMonitor {
 	/*
 	 * Translate the ConnectionState structure into a specific ConnectionState string literal union
 	 */
-	private linkedConnectionStatesToConnectionState({
+	private connectionStatesTranslator({
 		connectionState,
 		networkState,
 		intendedConnectionState,
