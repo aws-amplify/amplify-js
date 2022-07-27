@@ -951,7 +951,9 @@ class DataStore {
 
 		const isSingleFieldIdentifier = keyFields.length === 1;
 		const returnOne =
-			isSingleFieldIdentifier && isQueryOne(identifierOrCriteria);
+			isSingleFieldIdentifier &&
+			(isQueryOne(identifierOrCriteria) ||
+				isIdentifierObject(identifierOrCriteria, modelDefinition));
 
 		return returnOne ? result[0] : result;
 	};

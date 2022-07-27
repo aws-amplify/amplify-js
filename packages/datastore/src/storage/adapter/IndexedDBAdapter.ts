@@ -339,11 +339,6 @@ class IndexedDBAdapter implements Adapter {
 			let { storeName, item, instance, keys } = resItem;
 			const store = tx.objectStore(storeName);
 
-			// CPK TODO: Why is item an array here?
-			if (Array.isArray(item)) {
-				item = item[0];
-			}
-
 			const itemKeyValues = keys.map(key => {
 				const value = item[key];
 				return value;

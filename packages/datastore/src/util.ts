@@ -71,15 +71,16 @@ export function isIdManaged(modelDefinition: SchemaModel): boolean {
 }
 
 // IdentifierFields<OptionallyManagedIdentifier>
-// non-composite @primaryKey with `id` in the PK
+// @primaryKey with explicit `id` in the PK. Single key or composite
 export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		const idInKey = !!keyAttribute.properties.fields.find(
-			field => field === ID
-		);
-		return idInKey && keyAttribute.properties.fields.length === 1;
+		// const idInKey = !!keyAttribute.properties.fields.find(
+		// 	field => field === ID
+		// );
+		// return idInKey && keyAttribute.properties.fields.length === 1;
+		return keyAttribute.properties.fields[0] === ID;
 	}
 
 	return false;
@@ -446,10 +447,8 @@ export const traverseModel = <T extends PersistentModel>(
 						} else if (rItem.targetNames) {
 							rItem.targetNames.forEach((targetName, idx) => {
 								// Get the connected record
-								// CPK TODO:
-								// Why is this an array?
 								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName][0]
+									draftInstance[rItem.fieldName]
 								);
 
 								// Previously, we used the hardcoded 'id' as they key,
