@@ -42,7 +42,7 @@ export const authorizationMachineModel = createModel(
 			refreshed: () => ({}),
 			signInRequested: () => ({}),
 			// save the userpool tokens in the event for later use
-			signInCompleted: (userPoolTokens: UserPoolTokens) => {
+			signInCompleted: (userPoolTokens: any) => {
 				return { userPoolTokens };
 			},
 			signOut: () => ({}),
@@ -92,6 +92,24 @@ const authorizationStateMachineActions: Record<
 		},
 		'signInCompleted'
 	),
+	assignAuthedSession: authorizationMachineModel.assign({
+		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
+			return {
+				identityID: event.data.identityID,
+				AWSCredentials: event.data.AWSCredentials,
+				authenticated: true,
+			};
+		},
+	}),
+	assignUnAuthedSession: authorizationMachineModel.assign({
+		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
+			return {
+				identityID: event.data.identityID,
+				AWSCredentials: event.data.AWSCredentials,
+				authenticated: false,
+			};
+		},
+	}),
 	// gets the identityID and AWS Credentials from the fetchAuthSessionStateMachine
 	sessionInfo: authorizationMachineModel.assign({
 		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
@@ -154,7 +172,7 @@ const authorizationStateMachine: MachineConfig<
 				},
 				onDone: {
 					target: 'sessionEstablished',
-					actions: [authorizationStateMachineActions.sessionInfo],
+					actions: [authorizationStateMachineActions.assignAuthedSession],
 				},
 				onError: {
 					target: 'error',
@@ -180,7 +198,7 @@ const authorizationStateMachine: MachineConfig<
 				},
 				onDone: {
 					target: 'sessionEstablished',
-					actions: [authorizationStateMachineActions.sessionInfo],
+					actions: [authorizationStateMachineActions.assignUnAuthedSession],
 				},
 				onError: {
 					target: 'error',

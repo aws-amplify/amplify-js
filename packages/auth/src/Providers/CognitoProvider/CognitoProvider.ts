@@ -231,7 +231,17 @@ export class CognitoProvider implements AuthProvider {
 		// 		signInFlow: this._authFlow,
 		// 	},
 		// })
-		return await this.waitForSignInComplete();
+		const signInResult = await this.waitForSignInComplete();
+		// const sessionData = this.getSessionData();
+		// if (!sessionData) {
+		// 	throw new Error('no!');
+		// }
+		// this._authzService.send(
+		// 	authzMachineEvents.signInCompleted({
+		// 		...sessionData,
+		// 	})
+		// );
+		return signInResult;
 	}
 
 	private async waitForSignInComplete(): Promise<SignInResult> {
@@ -330,168 +340,129 @@ export class CognitoProvider implements AuthProvider {
 		}
 		return null;
 	}
+
+	private isSessionExpired(bufferTime?: number) {
+		if (!this._authzService.state.matches('sessionEstablished')) {
+			return false;
+		}
+		const sessionInfo = this._authzService.state.context.sessionInfo;
+		const awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
+		const now = new Date();
+		const isSignedIn = this._authService.state.matches('signedIn');
+		if (isSignedIn) {
+			const sessionData = this.getSessionData();
+			if (!sessionData) {
+				throw new Error('cannot find cached JWT tokens');
+			}
+			return Date.now() > sessionData.expiration;
+		} else {
+			return now > awsCredentials.expiration;
+		}
+	}
+
 	async fetchSession(): Promise<AmplifyUser> {
 		// checks to see if the identity pool and region are already configured
+		// 1. if AuthZ machine is not configured -> throw error
 		if (!this.isConfigured()) {
 			throw new Error(
 				'Identity Pool and Userpool have not been configured yet.'
 			);
+			// 2. else if AuthZ machine is in 'configured' state
+			//   -> that means session has not been established
+			//   -> that means we need to fetch either auth or unauth
+			//     -> check authN machine
+			//     -> if authN already at signedIn state, send a signInRequested ---> signInCompleted event to AuthZ machine
+			//     -> wait for 'sessionEstablished' state
+			//     -> grab sessionInfo from the AuthZ state machine
+		} else if (this._authzService.state.matches('configured')) {
+			if (this._authService.state.matches('signedIn')) {
+				// getting jwt from localStorage
+				const sessionData = this.getSessionData();
+				if (!sessionData) {
+					throw new Error('Session data is not cached in the localStorage.');
+				}
+				this._authzService.send(
+					authzMachineEvents.signInCompleted({ ...sessionData })
+				);
+			} else {
+				this._authzService.send(authzMachineEvents.fetchUnAuthSession());
+			}
+			// 3. else if AuthZ machine is in 'sessionEstablished' state
+			//   -> session has already been established
+			//   -> check if creds is unauth or auth
+			//   -> check the token / AWS creds expiration
+			//   -> if any of them expired, invoke the refreshSessionMachine
+			//   -> wait for 'sessionEstablished' state
+			//   -> grab session Info from the authZ state machine
+		} else if (this._authzService.state.matches('sessionEstablished')) {
+			console.log('we have cached session here');
+			// check expiration here
+			if (this.isSessionExpired()) {
+				this._authzService.send(authzMachineEvents.refreshSession());
+			}
+			// 4a. else if AuthZ machine is in 'signingIn' state
+			//   -> that means user called signIn, but hasn't called fetchSession after that
+			//   ** we assume the user wait for the signIn call to complete, before they do a fetchSession
+			//   -> check AuthN machine if it's in the 'signedIn' state
+			//     -> Yes
+			//     -> send 'signInCompleted' event
+			//     -> wait for 'sessionEstablished' state
+			//     -> grab session Info from authZ state machine
+		} else if (this._authzService.state.matches('signingIn')) {
+			if (this._authService.state.matches('signedIn')) {
+				const sessionData = this.getSessionData();
+				if (!sessionData) {
+					throw new Error('Session data is not cached in the localStorage.');
+				}
+				this._authzService.send(
+					authzMachineEvents.signInCompleted({ ...sessionData })
+				);
+			}
+		}
+		//  OR
+		//  4b. We change the .signIn call
+		//    -> signIn
+		//      -> send 'signInRequested' to both AuthN and AuthZ
+		//      -> wait for AuthN to go into the 'signedIn' state
+		//      -> send 'signInCompleted' to AuthZ
+		//    -> resolve .signIn promise
+		//  so, now AuthZ machine will either be in the 'fetchAuthSessionWithUserPool' or already at 'sessionEstablished' state (which is handled in 1.)
+		// -> return the user session info
+		else {
+			throw new Error('Invalid state');
 		}
 
-		// if (this._authService.state.matches('signedIn')) {
-		// 	return this._authService.state.context.session!;
-		// }
-		// return new Promise<AmplifyUser>((res, rej) => {
-		// 	this._authService.onTransition(state => {
-		// 		if (state.matches('signedIn')) {
-		// 			console.log('creds? ', state.context.session);
-		// 			res(state.context.session);
-		// 		}
-		// 	});
-		// });
-
-		// returns guest credentials if user is not signed in
-		if (!this._authService.state.matches('signedIn')) {
-			this._authzService.send(authzMachineEvents.fetchUnAuthSession());
-			const sessionEstablishedState = await waitFor(this._authzService, state =>
-				state.matches('sessionEstablished')
-			);
-
-			return {
-				isSignedIn: false,
-				credentials: {
-					default: {
-						aws: this.shearAWSCredentials(
-							this._authzService.state.context.sessionInfo.AWSCredentials
-						),
-					},
-				},
-			};
-		}
-
-		// runs fetch session
-		this._authzService.send(authzMachineEvents.signInRequested());
-
-		// makes sure the config has both the region and an identity pool
-		const { region, identityPoolId } = this._config;
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			throw new Error('region is not configured for getting the credentials');
-		}
-		if (!identityPoolId) {
-			logger.debug('No Cognito Federated Identity pool provided');
-			throw new Error('No Cognito Federated Identity pool provided');
-		}
-		// gets tokens from userpool
-		const session = this.getSessionData();
-
-		// makes sure session is valid
-		if (session === null) {
-			throw new Error(
-				'Does not have active user session, have you called .signIn?'
-			);
-		}
-
-		const { idToken, accessToken, refreshToken } = session;
-
-		const cognitoClient = this.createNewCognitoClient({
-			region: this._config.region,
-		});
-		const getUserRes = await cognitoClient.send(
-			new GetUserCommand({
-				AccessToken: accessToken,
-			})
-		);
-		const { sub } = decodeJWT(idToken);
-		if (typeof sub !== 'string') {
-			logger.error(
-				'sub does not exist inside the JWT token or is not a string'
-			);
-		}
-
-		if (!this._config?.identityPoolId) {
-			return {
-				isSignedIn: true,
-				userInfo: {
-					// sub
-					userid: sub as string,
-					username: getUserRes.Username,
-					// identifiers: [],
-				},
-				credentials: {
-					default: {
-						jwt: {
-							idToken,
-							accessToken,
-							refreshToken,
-						},
-					},
-				},
-			};
-		}
-
-		this._authzService.send(
-			authzMachineEvents.signInCompleted({ idToken, accessToken, refreshToken })
-		);
-
-		// const expiration = getExpirationTimeFromJWT(idToken);
-		// console.log({ expiration });
-		// const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
-		// const getIdRes = await cognitoIdentityClient.send(
-		// 	new GetIdCommand({
-		// 		IdentityPoolId: identityPoolId,
-		// 		Logins: {
-		// 			[cognitoIDPLoginKey]: idToken,
-		// 		},
-		// 	})
-		// );
-		// if (!getIdRes.IdentityId) {
-		// 	throw new Error('Could not get Identity ID');
-		// }
-		// // console.log('IDENTITY ID: ' + getIdRes.IdentityId);
-		// // console.log(getIdRes.IdentityId);
-		// const getCredentialsRes = await cognitoIdentityClient.send(
-		// 	new GetCredentialsForIdentityCommand({
-		// 		IdentityId: getIdRes.IdentityId,
-		// 		Logins: {
-		// 			[cognitoIDPLoginKey]: idToken,
-		// 		},
-		// 	})
-		// );
-		// if (!getCredentialsRes.Credentials) {
-		// 	throw new Error(
-		// 		'No credentials from the response of GetCredentialsForIdentity call.'
-		// 	);
-		// }
-
-		// wait for sign in th complete
-		const authzService = this._authzService;
-		const sessionEstablishedState = await waitFor(authzService, state =>
+		const sessionEstablishedState = await waitFor(this._authzService, state =>
 			state.matches('sessionEstablished')
 		);
+		const isSignedIn = this._authService.state.matches('signedIn');
+		const sessionInfo = sessionEstablishedState.context.sessionInfo;
+		const awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
 
-		return {
-			// sessionId: '',
-			isSignedIn: true,
-			userInfo: {
-				// sub
-				userid: sub as string,
-				username: getUserRes.Username,
-				// identifiers: [],
-			},
+		const sessionData = this.getSessionData();
+
+		const amplifyUser: AmplifyUser = {
+			isSignedIn,
 			credentials: {
 				default: {
-					jwt: {
-						idToken,
-						accessToken,
-						refreshToken,
-					},
-					aws: this.shearAWSCredentials(
-						this._authzService.state.context.sessionInfo.AWSCredentials
-					),
+					aws: awsCredentials,
 				},
 			},
 		};
+		if (isSignedIn) {
+			if (!sessionData) {
+				throw new Error('cached jwt tokens not available');
+			}
+			amplifyUser.credentials!.default.jwt = {
+				accessToken: sessionData.accessToken,
+				idToken: sessionData.idToken,
+				refreshToken: sessionData.refreshToken,
+			};
+			const { sub } = decodeJWT(sessionData.idToken);
+			amplifyUser.userInfo = { userid: sub as string };
+		}
+		console.log('AMPLIFY USER');
+		return amplifyUser;
 	}
 	private shearAWSCredentials(res: AWSCredsRes): AWSCredentials {
 		if (!res) {

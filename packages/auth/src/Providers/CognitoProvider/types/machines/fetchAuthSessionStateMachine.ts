@@ -47,7 +47,7 @@ export type FetchAuthSessionTypestate =
 			context: FetchAuthSessionStateMachineContext;
 	  };
 
-export type fetchAuthSessionReturnContext = {
+export type FetchAuthSessionReturnContext = {
 	identityID: string;
 	AWSCreds: {
 		accessKeyId: string;

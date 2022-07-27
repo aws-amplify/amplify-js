@@ -1,6 +1,6 @@
 import { assign, createMachine, MachineConfig } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { fetchAuthSessionReturnContext } from '../types/machines/fetchAuthSessionStateMachine';
+import { FetchAuthSessionReturnContext } from '../types/machines/fetchAuthSessionStateMachine';
 
 // info/context needed to fetch session
 // First, fetch user pool tokens (JWT) from the user pool
@@ -108,10 +108,10 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				// 	},
 				// ],
 				data: {
-					identityID: (context: fetchAuthSessionReturnContext, _event: any) =>
+					identityID: (context: FetchAuthSessionReturnContext, _event: any) =>
 						context.identityID,
 					AWSCredentials: (
-						context: fetchAuthSessionReturnContext,
+						context: FetchAuthSessionReturnContext,
 						_event: any
 					) => context.AWSCreds,
 				},
