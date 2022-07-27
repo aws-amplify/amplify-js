@@ -453,6 +453,13 @@ jobs:
           sample_name: with-authenticator
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Sign In after Sign Up'
+          framework: react
+          category: auth
+          sample_name: auto-signin-after-signup
+          spec: auto-signin-after-signup
+          browser: << parameters.browser >>
   integ_angular_auth:
     parameters:
       browser:
@@ -1168,6 +1175,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - auto-sign-in-main-branch
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
