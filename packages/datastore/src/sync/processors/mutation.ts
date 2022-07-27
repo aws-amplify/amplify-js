@@ -18,7 +18,6 @@ import {
 	InternalSchema,
 	isModelFieldType,
 	isTargetNameAssociation,
-	// isTargetNamesAssociation,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
@@ -484,7 +483,7 @@ class MutationProcessor {
 								mutationInput[targetName] = parsedData[targetName];
 							}
 						} else if (association.targetName) {
-							// this is for backwards-compatability with pre-CPK codegen
+							// backwards-compatability for schema generated prior to custom primary key support
 							mutationInput[association.targetName] =
 								parsedData[association.targetName];
 						}

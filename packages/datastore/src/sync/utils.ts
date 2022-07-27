@@ -12,7 +12,6 @@ import {
 	isPredicateObj,
 	isSchemaModel,
 	isTargetNameAssociation,
-	// isTargetNamesAssociation,
 	isNonModelFieldType,
 	ModelFields,
 	ModelInstanceMetadata,
@@ -176,7 +175,7 @@ function getConnectionFields(
 							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
 							result.push(`${name} { ${keyFields} _deleted }`);
 						} else {
-							// Backwards compatibility before CPK
+							// backwards-compatability for schema generated prior to custom primary key support
 							result.push(`${name} { id _deleted }`);
 						}
 					}

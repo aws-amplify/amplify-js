@@ -337,6 +337,7 @@ export const establishRelationAndKeys = (
 					// if targetNames length is greater than 0, set fieldAttribution associate to targetNames
 
 					if (fieldAttribute.association.targetName) {
+						// backwards-compatability for schema generated prior to custom primary key support
 						relationship[mKey].indexes.push(
 							fieldAttribute.association['targetName']
 						);
@@ -438,6 +439,7 @@ export const traverseModel = <T extends PersistentModel>(
 						// is true (default as of 5/7/21)
 						// Making this conditional for backward-compatibility
 						if (rItem.targetName) {
+							// backwards-compatability for schema generated prior to custom primary key support
 							// Get the value of the id from the instance that was passed in
 							// save that value under the targetName field. Then delete the instance
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
@@ -462,7 +464,6 @@ export const traverseModel = <T extends PersistentModel>(
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
-								// CPK TODO, don't like using idx, thoughts here?
 								const relatedRecordInProxyPkValue =
 									relatedRecordInProxy[primaryKey[idx]];
 
@@ -506,6 +507,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 					if (draftInstance[rItem.fieldName]) {
 						if (rItem.targetName) {
+							// backwards-compatability for schema generated prior to custom primary key support
 							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
@@ -515,16 +517,12 @@ export const traverseModel = <T extends PersistentModel>(
 								const relatedRecordInProxy = <PersistentModel>(
 									draftInstance[rItem.fieldName]
 								);
-								// Get the key
-								// NOTE: associatedWith undefined here
-								// const key = rItem.associatedWith[idx];
-								// Previously, we used the hardcoded 'id', as they key,
-								// now we need the value of the key to get the PK (and SK)
+								// Previously, we used the hardcoded `id` for the key.
+								// Now, we need the value of the key to get the PK (and SK)
 								// values from the related record
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
-								// CPK TODO, don't like using idx, thoughts here?
 								const relatedRecordInProxyPkValue =
 									relatedRecordInProxy[primaryKey[idx]];
 

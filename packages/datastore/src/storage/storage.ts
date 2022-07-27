@@ -19,7 +19,6 @@ import {
 	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
-	// isTargetNamesAssociation,
 } from '../types';
 import {
 	isModelConstructor,
@@ -354,7 +353,6 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			// CPK TODO: rename:
 			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
@@ -384,7 +382,7 @@ class StorageClass implements StorageFacade {
 					}
 				}
 			} else {
-				// Backwards compatibility pre-CPK
+				// backwards-compatability for schema generated prior to custom primary key support
 
 				// if field refers to a belongsTo relation, use the target field instead
 				const key = targetNames || field;

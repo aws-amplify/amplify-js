@@ -955,7 +955,6 @@ class IndexedDBAdapter implements Adapter {
 					for await (const model of models) {
 						const keyValues = this.getIndexKeyValues(model);
 
-						// CPK TODO: Double check this, unsure that we encounter `byPk` here, ever.
 						const hasManyIndex = index || 'byPk';
 
 						// CPK TODO: get by all key values
