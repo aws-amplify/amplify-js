@@ -2616,9 +2616,14 @@ describe('DataStore tests', () => {
 
 				const expectedPatches2 = [
 					{
-						op: 'add',
-						path: ['emails', 3],
-						value: 'joe@doe.com',
+						op: 'replace',
+						path: ['emails'],
+						value: [
+							'john@doe.com',
+							'jane@doe.com',
+							'joe@doe.com',
+							'joe@doe.com',
+						],
 					},
 				];
 

@@ -359,7 +359,7 @@ class StorageClass implements StorageFacade {
 				fields[field]?.association
 			);
 
-			if (targetNames && targetNames.length) {
+			if (Array.isArray(targetNames)) {
 				// if field refers to a belongsTo relation, use the target field instead
 
 				for (const targetName of targetNames) {

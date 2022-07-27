@@ -454,8 +454,6 @@ const createModelClass = <T extends PersistentModel>(
 					const { id: _id } =
 						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
-					// CPK TODO: This comment was from Manuel, unsure why:
-					// composite where pk = id??? should take it from init
 					if (isIdManaged(modelDefinition)) {
 						const isInternalModel = _id !== null && _id !== undefined;
 
@@ -468,8 +466,7 @@ const createModelClass = <T extends PersistentModel>(
 						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
-						const id = _id || uuid4();
-						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = draft.id || uuid4();
 					}
 
 					if (!isInternallyInitialized) {

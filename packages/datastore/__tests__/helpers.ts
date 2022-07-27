@@ -67,6 +67,8 @@ export function errorsFrom(data, matchers) {
 			!(
 				(typeof matcher === 'function' && matcher(value)) ||
 				(matcher instanceof RegExp && matcher.test(value)) ||
+				(typeof matcher === 'object' &&
+					JSON.stringify(value) === JSON.stringify(matcher)) ||
 				value === matcher
 			)
 		) {
