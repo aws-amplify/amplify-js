@@ -336,7 +336,7 @@ class IndexedDBAdapter implements Adapter {
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
-			let { storeName, item, instance, keys } = resItem;
+			const { storeName, item, instance, keys } = resItem;
 			const store = tx.objectStore(storeName);
 
 			const itemKeyValues = keys.map(key => {
@@ -883,7 +883,7 @@ class IndexedDBAdapter implements Adapter {
 						if (targetNames && targetNames.length > 0) {
 							// iterate over targetNames array and see if each item is present in model object
 							// targetNames here being the keys for the CHILD model
-							let hasConnectedModelFields = targetNames.every(targetName =>
+							const hasConnectedModelFields = targetNames.every(targetName =>
 								model.hasOwnProperty(targetName)
 							);
 
