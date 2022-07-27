@@ -402,7 +402,7 @@ class IndexedDBAdapter implements Adapter {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
 						// POST CPK codegen changes:
-						if (targetNames.length > 0) {
+						if (targetNames?.length) {
 							let getByFields = [];
 							let allPresent;
 							// iterate through all targetnames to make sure they are all present in the recordItem
