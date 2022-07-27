@@ -471,7 +471,10 @@ class IndexedDBAdapter implements Adapter {
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
+
+							targetNames?.map(targetName => {
+								delete recordItem[targetName];
+							});
 						} else if (recordItem[targetName]) {
 							const key = [recordItem[targetName]];
 
