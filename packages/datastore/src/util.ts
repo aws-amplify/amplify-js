@@ -7,6 +7,7 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
+	ModelAssociation,
 	ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
@@ -334,21 +335,27 @@ export const establishRelationAndKeys = (
 				});
 
 				if (connectionType === 'BELONGS_TO') {
-					// if targetNames length is greater than 0, set fieldAttribution associate to targetNames
+					const targetNames: string[] = extractTargetNamesFromSrc(
+						fieldAttribute.association
+					);
+					debugger;
 
-					if (fieldAttribute.association.targetName) {
-						// backwards-compatability for schema generated prior to custom primary key support
-						relationship[mKey].indexes.push(
-							fieldAttribute.association['targetName']
-						);
-					} else {
-						// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
-						fieldAttribute.association.targetNames.forEach(
-							(targetName: string) => {
-								relationship[mKey].indexes.push(targetName);
-							}
-						);
-					}
+					targetNames.forEach((targetName: string) => {
+						relationship[mKey].indexes.push(targetName);
+					});
+					// if (fieldAttribute.association.targetName) {
+					// 	// backwards-compatability for schema generated prior to custom primary key support
+					// 	relationship[mKey].indexes.push(
+					// 		fieldAttribute.association['targetName']
+					// 	);
+					// } else {
+					// 	// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
+					// 	fieldAttribute.association.targetNames.forEach(
+					// 		(targetName: string) => {
+					// 			relationship[mKey].indexes.push(targetName);
+					// 		}
+					// 	);
+					// }
 				}
 			}
 		});
@@ -434,20 +441,15 @@ export const traverseModel = <T extends PersistentModel>(
 							instance: modelInstance,
 						});
 
-						// targetName will be defined for Has One if feature flag
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(rItem);
+
+						// `targetName` will be defined for Has One if feature flag
 						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
 						// is true (default as of 5/7/21)
 						// Making this conditional for backward-compatibility
-						if (rItem.targetName) {
-							// backwards-compatability for schema generated prior to custom primary key support
-							// Get the value of the id from the instance that was passed in
-							// save that value under the targetName field. Then delete the instance
-							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
-								draftInstance[rItem.fieldName]
-							)).id;
-							delete (<any>draftInstance)[rItem.fieldName];
-						} else if (rItem.targetNames) {
-							rItem.targetNames.forEach((targetName, idx) => {
+						if (targetNames) {
+							targetNames.forEach((targetName, idx) => {
 								// Get the connected record
 								const relatedRecordInProxy = <PersistentModel>(
 									draftInstance[rItem.fieldName]
@@ -457,10 +459,6 @@ export const traverseModel = <T extends PersistentModel>(
 								// now we need the value of the key to get the PK (and SK)
 								// values from the related record
 
-								const { fields } = namespace.models[modelConstructor.name];
-								console.log(fields);
-
-								// see getUpdateMutationInput for what may need done here
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
 								// Get the value
@@ -477,6 +475,45 @@ export const traverseModel = <T extends PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
 						}
+						// if (rItem.targetName) {
+						// 	// backwards-compatability for schema generated prior to custom primary key support
+						// 	// Get the value of the id from the instance that was passed in
+						// 	// save that value under the targetName field. Then delete the instance
+						// 	(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+						// 		draftInstance[rItem.fieldName]
+						// 	)).id;
+						// 	delete (<any>draftInstance)[rItem.fieldName];
+						// } else if (rItem.targetNames) {
+						// 	rItem.targetNames.forEach((targetName, idx) => {
+						// 		// Get the connected record
+						// 		const relatedRecordInProxy = <PersistentModel>(
+						// 			draftInstance[rItem.fieldName]
+						// 		);
+
+						// 		// Previously, we used the hardcoded 'id' as they key,
+						// 		// now we need the value of the key to get the PK (and SK)
+						// 		// values from the related record
+
+						// 		const { fields } = namespace.models[modelConstructor.name];
+						// 		console.log(fields);
+
+						// 		// see getUpdateMutationInput for what may need done here
+						// 		const { primaryKey } = namespace.keys[modelConstructor.name];
+
+						// 		// Get the value
+						// 		const relatedRecordInProxyPkValue =
+						// 			relatedRecordInProxy[primaryKey[idx]];
+
+						// 		// Set the targetName value
+						// 		(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+						// 	});
+						// 	// Delete the instance from the proxy
+						// 	delete (<any>draftInstance)[rItem.fieldName];
+						// } else {
+						// 	(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
+						// 		draftInstance[rItem.fieldName]
+						// 	)).id;
+						// }
 					}
 
 					break;
@@ -506,13 +543,11 @@ export const traverseModel = <T extends PersistentModel>(
 					}
 
 					if (draftInstance[rItem.fieldName]) {
-						if (rItem.targetName) {
-							// backwards-compatability for schema generated prior to custom primary key support
-							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
-								draftInstance[rItem.fieldName]
-							)).id;
-						} else if (rItem.targetNames && rItem.targetNames.length > 0) {
-							rItem.targetNames.forEach((targetName, idx) => {
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(rItem);
+
+						if (targetNames) {
+							targetNames.forEach((targetName, idx) => {
 								// Get the connected record
 								const relatedRecordInProxy = <PersistentModel>(
 									draftInstance[rItem.fieldName]
@@ -930,4 +965,20 @@ export function mergePatches<T>(
 		}
 	);
 	return patches;
+}
+
+/* Backwards-compatability for schema generated prior to custom primary key support:
+the single field `targetName` has been replaced with an array of `targetNames`
+*/
+export function extractTargetNamesFromSrc(src: any): string[] | undefined {
+	const targetName = src?.targetName;
+	const targetNames = src?.targetNames;
+
+	if (Array.isArray(targetNames) && targetNames?.length) {
+		return targetNames;
+	} else if (targetName != null) {
+		return [targetName];
+	} else {
+		return undefined;
+	}
 }

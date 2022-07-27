@@ -26,7 +26,12 @@ import {
 	TypeConstructorMap,
 	ProcessName,
 } from '../../types';
-import { exhaustiveCheck, USER, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
+import {
+	exhaustiveCheck,
+	extractTargetNamesFromSrc,
+	USER,
+	USER_AGENT_SUFFIX_DATASTORE,
+} from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -477,15 +482,24 @@ class MutationProcessor {
 						isTargetNameAssociation(association) &&
 						association.connectionType === 'BELONGS_TO'
 					) {
-						if (association?.targetNames?.length) {
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(association);
+
+						if (targetNames) {
 							// instead of including the connected model itself, we add its key(s) to the mutation input
-							for (const targetName of association.targetNames) {
+							for (const targetName of targetNames) {
 								mutationInput[targetName] = parsedData[targetName];
 							}
-						} else if (association.targetName) {
-							// backwards-compatability for schema generated prior to custom primary key support
-							mutationInput[association.targetName] =
-								parsedData[association.targetName];
+							// if (association?.targetNames?.length) {
+							// 	// instead of including the connected model itself, we add its key(s) to the mutation input
+							// 	for (const targetName of association.targetNames) {
+							// 		mutationInput[targetName] = parsedData[targetName];
+							// 	}
+							// } else if (association.targetName) {
+							// 	// backwards-compatability for schema generated prior to custom primary key support
+							// 	mutationInput[association.targetName] =
+							// 		parsedData[association.targetName];
+							// }
 						}
 					}
 					continue;
