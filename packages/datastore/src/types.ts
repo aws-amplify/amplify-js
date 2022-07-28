@@ -82,12 +82,6 @@ export function isTargetNameAssociation(
 	return obj?.targetName || obj?.targetNames;
 }
 
-// export function isTargetNamesAssociation(
-// 	obj: any
-// ): obj is TargetNameAssociation {
-// 	return obj && obj.targetNames;
-// }
-
 export type ModelAttributes = ModelAttribute[];
 export type ModelAttribute = { type: string; properties?: Record<string, any> };
 

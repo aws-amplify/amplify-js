@@ -475,45 +475,6 @@ export const traverseModel = <T extends PersistentModel>(
 								draftInstance[rItem.fieldName]
 							)).id;
 						}
-						// if (rItem.targetName) {
-						// 	// backwards-compatability for schema generated prior to custom primary key support
-						// 	// Get the value of the id from the instance that was passed in
-						// 	// save that value under the targetName field. Then delete the instance
-						// 	(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
-						// 		draftInstance[rItem.fieldName]
-						// 	)).id;
-						// 	delete (<any>draftInstance)[rItem.fieldName];
-						// } else if (rItem.targetNames) {
-						// 	rItem.targetNames.forEach((targetName, idx) => {
-						// 		// Get the connected record
-						// 		const relatedRecordInProxy = <PersistentModel>(
-						// 			draftInstance[rItem.fieldName]
-						// 		);
-
-						// 		// Previously, we used the hardcoded 'id' as they key,
-						// 		// now we need the value of the key to get the PK (and SK)
-						// 		// values from the related record
-
-						// 		const { fields } = namespace.models[modelConstructor.name];
-						// 		console.log(fields);
-
-						// 		// see getUpdateMutationInput for what may need done here
-						// 		const { primaryKey } = namespace.keys[modelConstructor.name];
-
-						// 		// Get the value
-						// 		const relatedRecordInProxyPkValue =
-						// 			relatedRecordInProxy[primaryKey[idx]];
-
-						// 		// Set the targetName value
-						// 		(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-						// 	});
-						// 	// Delete the instance from the proxy
-						// 	delete (<any>draftInstance)[rItem.fieldName];
-						// } else {
-						// 	(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-						// 		draftInstance[rItem.fieldName]
-						// 	)).id;
-						// }
 					}
 
 					break;

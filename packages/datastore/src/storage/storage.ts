@@ -357,10 +357,12 @@ class StorageClass implements StorageFacade {
 				fields[field]?.association
 			);
 
-			const keys = targetNames || [field];
 			// if field refers to a belongsTo relation, use the target field instead
-			debugger;
-
+			const keys = targetNames || [field];
+			if (!targetNames) {
+				console.log('wtf');
+				debugger;
+			}
 
 			for (const targetName of targetNames) {
 				// check field values by value. Ignore unchanged fields
@@ -383,54 +385,6 @@ class StorageClass implements StorageFacade {
 					}
 				}
 			}
-			// if (Array.isArray(targetNames)) {
-			// 	// if field refers to a belongsTo relation, use the target field instead
-
-			// 	for (const targetName of targetNames) {
-			// 		// check field values by value. Ignore unchanged fields
-			// 		if (!valuesEqual(source[targetName], originalElement[targetName])) {
-			// 			// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
-
-			// 			updatedElement[targetName] =
-			// 				originalElement[targetName] === undefined
-			// 					? null
-			// 					: originalElement[targetName];
-
-			// 			for (const fieldSet of compositeKeys) {
-			// 				// include all of the fields that comprise the composite key
-			// 				if (fieldSet.has(targetName)) {
-			// 					for (const compositeField of fieldSet) {
-			// 						updatedElement[compositeField] =
-			// 							originalElement[compositeField];
-			// 					}
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// } else {
-			// 	// backwards-compatability for schema generated prior to custom primary key support
-
-			// 	// if field refers to a belongsTo relation, use the target field instead
-			// 	const key = targetNames || field;
-
-			// 	// check field values by value. Ignore unchanged fields
-			// 	if (!valuesEqual(source[key], originalElement[key])) {
-			// 		// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
-
-			// 		updatedElement[key] =
-			// 			originalElement[key] === undefined ? null : originalElement[key];
-
-			// 		for (const fieldSet of compositeKeys) {
-			// 			// include all of the fields that comprise the composite key
-			// 			if (fieldSet.has(key)) {
-			// 				for (const compositeField of fieldSet) {
-			// 					updatedElement[compositeField] =
-			// 						originalElement[compositeField];
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// }
 		});
 
 		// include field(s) from custom PK if one is specified for the model
