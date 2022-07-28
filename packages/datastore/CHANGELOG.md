@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.2...@aws-amplify/datastore@3.12.3) (2022-07-21)
+
+
+### Bug Fixes
+
+* preserve ssr context when using DataStore ([#10088](https://github.com/aws-amplify/amplify-js/issues/10088)) ([a10d920](https://github.com/aws-amplify/amplify-js/commit/a10d920f7fb6199539fb8d9cec2cb4426dbfd47b))
+
+
+
+
+
+## [3.12.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.1...@aws-amplify/datastore@3.12.2) (2022-07-07)
+
+
+### Bug Fixes
+
+* decrease error handler verbosity on self recovering errors ([#10030](https://github.com/aws-amplify/amplify-js/issues/10030)) ([fb1f02c](https://github.com/aws-amplify/amplify-js/commit/fb1f02cfa914b81fe0411e8f4d654c69aed22385))
+
+
+
+
+
 ## [3.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.0...@aws-amplify/datastore@3.12.1) (2022-06-18)
 
 

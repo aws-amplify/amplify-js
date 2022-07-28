@@ -839,6 +839,23 @@ jobs:
           spec: observe-query
           browser: << parameters.browser >>
 
+  integ_react_datastore_schema_drift:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/schema-drift
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Schema Drift'
+          framework: react
+          category: datastore
+          sample_name: schema-drift
+          spec: schema-drift
+          browser: << parameters.browser >>
+
   integ_react_storage:
     parameters:
       browser:
@@ -1129,6 +1146,24 @@ jobs:
           spec: search-outside-map
           # Temp fix:
           browser: chrome
+
+  integ_next_datastore_owner_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/owner-based-default
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'next owner auth'
+          framework: next
+          category: datastore
+          sample_name: owner-based-default
+          spec: next-owner-based-default
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1418,6 +1453,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_schema_drift:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
@@ -1565,6 +1609,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_next_datastore_owner_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1586,6 +1639,7 @@ workflows:
             - integ_react_datastore_consecutive_saves_v2
             - integ_react_datastore_observe_query
             - integ_react_datastore_observe_query_v2
+            - integ_react_datastore_schema_drift
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
@@ -1611,6 +1665,7 @@ workflows:
             - integ_auth_test_cypress_no_ui
             - integ_react_graphql_api
             - integ_react_geo
+            - integ_next_datastore_owner_auth
       - post_release:
           filters:
             branches:

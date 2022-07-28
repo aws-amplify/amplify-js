@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.5.9...@aws-amplify/auth@4.5.10) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.5.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.5.8...@aws-amplify/auth@4.5.9) (2022-07-07)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** Missing cognito user challenge name … ([#10047](https://github.com/aws-amplify/amplify-js/issues/10047)) ([de0441b](https://github.com/aws-amplify/amplify-js/commit/de0441b4fa67409ccbc630c42890e2c58ee779fb)), closes [#6974](https://github.com/aws-amplify/amplify-js/issues/6974)
+* Update Auth to import JS using named export  ([#10033](https://github.com/aws-amplify/amplify-js/issues/10033)) ([11b537c](https://github.com/aws-amplify/amplify-js/commit/11b537c62fee74c04e4e3b72ba43a353ba5152c9))
+
+
+
+
+
 ## [4.5.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.5.7...@aws-amplify/auth@4.5.8) (2022-06-18)
 
 **Note:** Version bump only for package @aws-amplify/auth

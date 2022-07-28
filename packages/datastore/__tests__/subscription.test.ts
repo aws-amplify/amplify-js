@@ -1,7 +1,10 @@
+import Observable from 'zen-observable-ts';
+let mockObservable = new Observable(() => {});
+const mockGraphQL = jest.fn(() => mockObservable);
+
 import Amplify from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
-import Observable from 'zen-observable-ts';
 import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
@@ -16,14 +19,13 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-
-let mockObservable = new Observable(() => {});
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
 	return {
 		...jest.requireActual('@aws-amplify/api'),
-		graphql: jest.fn(() => mockObservable),
+		graphql: mockGraphQL,
 	};
 });
 
@@ -649,6 +651,12 @@ describe('error handler', () => {
 								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
 							)
 						)
+					);
+
+					expect(mockGraphQL).toHaveBeenCalledWith(
+						expect.objectContaining({
+							userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+						})
 					);
 				});
 
