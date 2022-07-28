@@ -1,5 +1,4 @@
 const mockRestPost = jest.fn();
-import { RestClient } from '@aws-amplify/api-rest';
 import {
 	MutationProcessor,
 	safeJitteredBackoff,
@@ -150,6 +149,21 @@ describe('MutationProcessor', () => {
 
 			expect(input.id).toEqual('abcdef');
 			expect(input.postId).toEqual('100');
+		});
+	});
+	describe('Call to rest api', () => {
+		it('Should send a user agent with the datastore suffix the rest api request', async () => {
+			jest.spyOn(mutationProcessor, 'resume');
+			await mutationProcessor.resume();
+
+			expect(mockRestPost).toBeCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+					}),
+				})
+			);
 		});
 	});
 	describe('Call to rest api', () => {
@@ -373,7 +387,9 @@ async function instantiateMutationProcessor({
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		},
 		() => null,
-		errorHandler
+		errorHandler,
+		() => null as any,
+		{} as any
 	);
 
 	(mutationProcessor as any).observer = true;

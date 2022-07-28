@@ -358,9 +358,9 @@ class StorageClass implements StorageFacade {
 			);
 
 			// if field refers to a belongsTo relation, use the target field instead
-			const keys = targetNames || [field];
 			if (!targetNames) {
-				console.log('wtf');
+				const keys = targetNames || [field];
+				// TODO: see if this is needed
 				debugger;
 			}
 

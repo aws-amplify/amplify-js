@@ -1,10 +1,7 @@
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	JS,
-	HubCallback,
-} from '@aws-amplify/core';
+import API from '@aws-amplify/api';
+import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
 import {
 	Draft,
 	immerable,
@@ -65,6 +62,7 @@ import {
 	IdentifierFieldOrIdentifierObject,
 	__modelMeta__,
 	isIdentifierObject,
+	AmplifyContext,
 } from '../types';
 import {
 	DATASTORE,
@@ -744,6 +742,11 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	// reference to configured category instances. Used for preserving SSR context
+	Auth = Auth;
+	API = API;
+	Cache = Cache;
+
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
@@ -761,6 +764,12 @@ class DataStore {
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
 	private storageAdapter: Adapter;
+	// object that gets passed to descendent classes. Allows us to pass these down by reference
+	private amplifyContext: AmplifyContext = {
+		Auth: this.Auth,
+		API: this.API,
+		Cache: this.Cache,
+	};
 
 	getModuleName() {
 		return 'DataStore';
@@ -811,7 +820,8 @@ class DataStore {
 				this.errorHandler,
 				this.syncPredicates,
 				this.amplifyConfig,
-				this.authModeStrategy
+				this.authModeStrategy,
+				this.amplifyContext
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1511,6 +1521,10 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
+		this.amplifyContext.Auth = this.Auth;
+		this.amplifyContext.API = this.API;
+		this.amplifyContext.Cache = this.Cache;
+
 		const {
 			DataStore: configDataStore,
 			authModeStrategyType: configAuthModeStrategyType,
@@ -1540,7 +1554,7 @@ class DataStore {
 
 		switch (authModeStrategyType) {
 			case AuthModeStrategyType.MULTI_AUTH:
-				this.authModeStrategy = multiAuthStrategy;
+				this.authModeStrategy = multiAuthStrategy(this.amplifyContext);
 				break;
 			case AuthModeStrategyType.DEFAULT:
 				this.authModeStrategy = defaultAuthStrategy;

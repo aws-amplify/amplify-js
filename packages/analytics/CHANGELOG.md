@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.12...@aws-amplify/analytics@5.2.13) (2022-07-21)
+
+
+### Bug Fixes
+
+* Update AmazonPersonalizeProvider Analytics typings ([#10076](https://github.com/aws-amplify/amplify-js/issues/10076)) ([b7ad126](https://github.com/aws-amplify/amplify-js/commit/b7ad1260eb1bc6611cd902e7b8b3e58066ef22b4))
+
+
+
+
+
 ## [5.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.11...@aws-amplify/analytics@5.2.12) (2022-07-07)
 
 

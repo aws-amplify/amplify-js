@@ -10,6 +10,7 @@ import {
 	AuthModeStrategy,
 	ErrorHandler,
 	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -27,7 +28,6 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
-import { ModelInstanceCreator } from '../../datastore/datastore';
 import { getSyncErrorType } from './errorMaps';
 const opResultDefaults = {
 	items: [],
@@ -46,8 +46,9 @@ class SyncProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly modelInstanceCreator?: ModelInstanceCreator
+		private readonly amplifyContext: AmplifyContext
 	) {
+		amplifyContext.API = amplifyContext.API || API;
 		this.generateQueries();
 	}
 
@@ -207,7 +208,7 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await API.graphql({
+					return await this.amplifyContext.API.graphql({
 						query,
 						variables,
 						authMode,

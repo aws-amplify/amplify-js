@@ -24,6 +24,7 @@ import {
 	ManagedIdentifier,
 	OptionallyManagedIdentifier,
 	__modelMeta__,
+	AmplifyContext,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -127,7 +128,8 @@ export class SyncEngine {
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly amplifyContext: AmplifyContext
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -147,15 +149,19 @@ export class SyncEngine {
 			this.syncPredicates,
 			this.amplifyConfig,
 			this.authModeStrategy,
-			errorHandler
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
 			this.authModeStrategy,
-			errorHandler
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,
@@ -166,8 +172,10 @@ export class SyncEngine {
 			this.amplifyConfig,
 			this.authModeStrategy,
 			errorHandler,
-			conflictHandler
+			conflictHandler,
+			this.amplifyContext
 		);
+
 		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
