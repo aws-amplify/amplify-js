@@ -1,3 +1,4 @@
+import { UserPoolTokens } from './authorizationMachine';
 import { CognitoProviderConfig } from '../../CognitoProvider';
 import { CognitoService } from '../../serviceClass';
 
@@ -54,5 +55,6 @@ export type RefreshSessionContext = {
 		secretAccessKey: string;
 		sessionToken: string;
 	} | null;
-	userPoolTokens?: {};
+	service: CognitoService;
+	userPoolTokens?: UserPoolTokens;
 };

@@ -342,16 +342,16 @@ export function createCognitoIdentityClient(
 	return new CognitoIdentityClient(config);
 }
 
-function getSessionData(userStorage = new StorageHelper().getStorage()): {
-	accessToken: string;
-	idToken: string;
-	refreshToken: string;
-	expiration: number;
-} | null {
+export function getSessionData(userStorage = new StorageHelper().getStorage()):
+	| {
+			accessToken: string;
+			idToken: string;
+			refreshToken: string;
+	  }
+	| undefined {
 	if (typeof userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 		return JSON.parse(userStorage.getItem(COGNITO_CACHE_KEY) as string);
 	}
-	return null;
 }
 function shearAWSCredentials(
 	res: GetCredentialsForIdentityCommandOutput
@@ -494,6 +494,28 @@ export function cacheInitiateAuthResult(
 			accessToken: AccessToken,
 			idToken: IdToken,
 			refreshToken: RefreshToken,
+		})
+	);
+}
+
+export function cacheRefreshTokenResult(
+	output: InitiateAuthCommandOutput,
+	userStorage = new StorageHelper().getStorage()
+) {
+	const { AuthenticationResult } = output;
+	if (!AuthenticationResult) {
+		throw new Error(
+			'Cannot cache session data - Initiate Auth did not return tokens'
+		);
+	}
+	const { AccessToken, IdToken } = AuthenticationResult;
+	const oldRefreshToken = getSessionData()?.refreshToken;
+	userStorage.setItem(
+		COGNITO_CACHE_KEY,
+		JSON.stringify({
+			accessToken: AccessToken,
+			idToken: IdToken,
+			refreshToken: oldRefreshToken,
 		})
 	);
 }

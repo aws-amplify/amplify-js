@@ -38,16 +38,19 @@ export const authorizationMachineModel = createModel(
 			fetchUnAuthSession: () => ({}),
 			noSession: () => ({}),
 			receivedCachedCredentials: () => ({}),
-			refreshSession: () => ({}),
+			refreshSession: (userPoolTokens?: UserPoolTokens) => ({
+				userPoolTokens,
+			}),
 			refreshed: () => ({}),
 			signInRequested: () => ({}),
 			// save the userpool tokens in the event for later use
-			signInCompleted: (userPoolTokens: any) => {
+			signInCompleted: (userPoolTokens: UserPoolTokens) => {
 				return { userPoolTokens };
 			},
 			signOut: () => ({}),
 			throwError: (error: any) => ({ error }),
 			refreshUnAuthAWSCredentials: () => ({}),
+			refreshCognitoUserPool: () => ({}),
 		},
 	}
 );
@@ -213,19 +216,27 @@ const authorizationStateMachine: MachineConfig<
 					target: 'sessionEstablished',
 					actions: [authorizationStateMachineActions.assignUnAuthedSession],
 				},
+				data: {
+					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
+						context.config?.region,
+					service: (context: AuthorizationMachineContext, _event: any) =>
+						context.service,
+					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
+						event.userPoolTokens,
+					identityId: (context: AuthorizationMachineContext, _event: any) =>
+						context.sessionInfo.identityID,
+					awsCredentials: (context: AuthorizationMachineContext, _event: any) =>
+						context.sessionInfo.AWSCredentials,
+					// authenticated: false,
+				},
 			},
-			data: {
-				clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-					context.config?.region,
-				service: (context: AuthorizationMachineContext, _event: any) =>
-					context.service,
-				userPoolTokens: (_context: any, event: beginningSessionEvent) =>
-					event.userPoolTokens,
-				// authenticated: false,
-			},
+
 			on: {
 				refreshed: 'sessionEstablished',
 				refreshUnAuthAWSCredentials: {
+					actions: forwardTo('refreshSessionStateMachine'),
+				},
+				refreshCognitoUserPool: {
 					actions: forwardTo('refreshSessionStateMachine'),
 				},
 				// from refreshed to configure (token expired)

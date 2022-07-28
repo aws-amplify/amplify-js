@@ -243,7 +243,7 @@ export class CognitoService {
 
 		// refreshTokenRes.AuthenticationResult <- the JWT tokens
 		console.log(refreshTokenRes.AuthenticationResult);
-		return refreshTokenRes.AuthenticationResult;
+		return refreshTokenRes;
 	}
 
 	async fetchIdentityId(idToken: string) {

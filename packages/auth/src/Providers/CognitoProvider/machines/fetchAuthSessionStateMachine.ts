@@ -47,6 +47,7 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 					src: async (context, _event) => {
 						// fetch unauth identity id if user isn't authenticated
 						if (!context.authenticated) {
+							console.log('fetching unauth identity ID');
 							const identityID = await context.service?.fetchUnAuthIdentityID();
 							return identityID;
 						}

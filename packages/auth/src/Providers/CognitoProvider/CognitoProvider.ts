@@ -329,15 +329,30 @@ export class CognitoProvider implements AuthProvider {
 		return await this.waitForSignInComplete();
 	}
 
-	private getSessionData(): {
-		accessToken: string;
-		idToken: string;
-		refreshToken: string;
-	} | null {
+	private getSessionData():
+		| {
+				accessToken: string;
+				idToken: string;
+				refreshToken: string;
+		  }
+		| undefined {
 		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
 		}
-		return null;
+		// return null;
+	}
+
+	private isUserPoolTokensExpired(bufferTime?: number) {
+		const sessionData = this.getSessionData();
+		if (!sessionData) {
+			throw new Error('cannot find cached JWT tokens');
+		}
+		const { exp: idTokenExpiration } = decodeJWT(sessionData.idToken);
+		const { exp: accessTokenExpiration } = decodeJWT(sessionData.accessToken);
+		return (
+			Date.now() / 1000 > idTokenExpiration ||
+			Date.now() / 1000 > accessTokenExpiration
+		);
 	}
 
 	private isSessionExpired(bufferTime?: number) {
@@ -349,23 +364,14 @@ export class CognitoProvider implements AuthProvider {
 		const now = new Date();
 		const isSignedIn = this._authService.state.matches('signedIn');
 		if (isSignedIn) {
-			const sessionData = this.getSessionData();
-			if (!sessionData) {
-				throw new Error('cannot find cached JWT tokens');
-			}
-			const { exp: idTokenExpiration } = decodeJWT(sessionData.idToken);
-			const { exp: accessTokenExpiration } = decodeJWT(sessionData.accessToken);
-			return (
-				Date.now() / 1000 > idTokenExpiration ||
-				Date.now() / 1000 > accessTokenExpiration ||
-				now > awsCredentials.expiration
-			);
+			return this.isUserPoolTokensExpired() || now > awsCredentials.expiration;
 		} else {
 			return now > awsCredentials.expiration;
 		}
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
+		console.log('lul');
 		// checks to see if the identity pool and region are already configured
 		// 1. if AuthZ machine is not configured -> throw error
 		if (!this.isConfigured()) {
@@ -402,11 +408,9 @@ export class CognitoProvider implements AuthProvider {
 		} else if (this._authzService.state.matches('sessionEstablished')) {
 			console.log('we have cached session here');
 			// check expiration here
-			// if (this.isSessionExpired()) {
-			if (true) {
-				this._authzService.send(authzMachineEvents.refreshSession());
+			if (this.isSessionExpired()) {
 				this._authzService.send(
-					authzMachineEvents.refreshUnAuthAWSCredentials()
+					authzMachineEvents.refreshSession(this.getSessionData())
 				);
 			}
 			// 4a. else if AuthZ machine is in 'signingIn' state
