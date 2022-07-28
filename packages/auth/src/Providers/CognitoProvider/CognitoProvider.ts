@@ -333,7 +333,6 @@ export class CognitoProvider implements AuthProvider {
 		accessToken: string;
 		idToken: string;
 		refreshToken: string;
-		expiration: number;
 	} | null {
 		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
@@ -354,7 +353,13 @@ export class CognitoProvider implements AuthProvider {
 			if (!sessionData) {
 				throw new Error('cannot find cached JWT tokens');
 			}
-			return Date.now() > sessionData.expiration;
+			const { exp: idTokenExpiration } = decodeJWT(sessionData.idToken);
+			const { exp: accessTokenExpiration } = decodeJWT(sessionData.accessToken);
+			return (
+				Date.now() / 1000 > idTokenExpiration ||
+				Date.now() / 1000 > accessTokenExpiration ||
+				now > awsCredentials.expiration
+			);
 		} else {
 			return now > awsCredentials.expiration;
 		}
@@ -397,8 +402,12 @@ export class CognitoProvider implements AuthProvider {
 		} else if (this._authzService.state.matches('sessionEstablished')) {
 			console.log('we have cached session here');
 			// check expiration here
-			if (this.isSessionExpired()) {
+			// if (this.isSessionExpired()) {
+			if (true) {
 				this._authzService.send(authzMachineEvents.refreshSession());
+				this._authzService.send(
+					authzMachineEvents.refreshUnAuthAWSCredentials()
+				);
 			}
 			// 4a. else if AuthZ machine is in 'signingIn' state
 			//   -> that means user called signIn, but hasn't called fetchSession after that
@@ -461,9 +470,9 @@ export class CognitoProvider implements AuthProvider {
 			const { sub } = decodeJWT(sessionData.idToken);
 			amplifyUser.userInfo = { userid: sub as string };
 		}
-		console.log('AMPLIFY USER');
 		return amplifyUser;
 	}
+
 	private shearAWSCredentials(res: AWSCredsRes): AWSCredentials {
 		if (!res) {
 			throw new Error(

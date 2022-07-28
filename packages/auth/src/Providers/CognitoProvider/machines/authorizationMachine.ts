@@ -6,7 +6,7 @@ import {
 	EventFrom,
 	AssignAction,
 } from 'xstate';
-import { stop } from 'xstate/lib/actions';
+import { stop, forwardTo } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	AuthorizationMachineContext,
@@ -47,6 +47,7 @@ export const authorizationMachineModel = createModel(
 			},
 			signOut: () => ({}),
 			throwError: (error: any) => ({ error }),
+			refreshUnAuthAWSCredentials: () => ({}),
 		},
 	}
 );
@@ -103,6 +104,7 @@ const authorizationStateMachineActions: Record<
 	}),
 	assignUnAuthedSession: authorizationMachineModel.assign({
 		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
+			console.log({ event });
 			return {
 				identityID: event.data.identityID,
 				AWSCredentials: event.data.AWSCredentials,
@@ -192,8 +194,6 @@ const authorizationStateMachine: MachineConfig<
 						context.config?.region,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
-					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
-						event.userPoolTokens,
 					authenticated: false,
 				},
 				onDone: {
@@ -209,6 +209,10 @@ const authorizationStateMachine: MachineConfig<
 			invoke: {
 				id: 'refreshSessionStateMachine',
 				src: refreshSessionStateMachine,
+				onDone: {
+					target: 'sessionEstablished',
+					actions: [authorizationStateMachineActions.assignUnAuthedSession],
+				},
 			},
 			data: {
 				clientConfig: (context: AuthorizationMachineContext, _event: any) =>
@@ -217,10 +221,13 @@ const authorizationStateMachine: MachineConfig<
 					context.service,
 				userPoolTokens: (_context: any, event: beginningSessionEvent) =>
 					event.userPoolTokens,
-				authenticated: false,
+				// authenticated: false,
 			},
 			on: {
 				refreshed: 'sessionEstablished',
+				refreshUnAuthAWSCredentials: {
+					actions: forwardTo('refreshSessionStateMachine'),
+				},
 				// from refreshed to configure (token expired)
 			},
 		},

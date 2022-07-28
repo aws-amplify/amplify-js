@@ -45,3 +45,14 @@ export type FetchAuthSessionTypestate =
 			value: 'error';
 			context: RefreshSessionStateMachineContext;
 	  };
+
+export type RefreshSessionContext = {
+	identityId: string | null;
+	awsCredentials: {
+		accessKeyId: string;
+		expiration: Date;
+		secretAccessKey: string;
+		sessionToken: string;
+	} | null;
+	userPoolTokens?: {};
+};

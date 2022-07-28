@@ -1,24 +1,32 @@
-import { createMachine, MachineConfig } from 'xstate';
+import { createMachine, MachineConfig, assign } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import {
 	RefreshSessionStateMachineContext,
 	AuthMachineContext,
+	AuthorizationMachineContext,
+	RefreshSessionContext,
 } from '../types/machines';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 
-export const refreshSessionMachineModel = createModel({
-	events: {
-		refreshCognitoUserPool: () => ({}),
-		refreshCognitoUserPoolWithIdentityId: () => ({}),
-		refreshAWSCredentialsWithUserPool: () => ({}),
-		refreshUnAuthAWSCredentials: () => ({}),
-		refreshedCognitoUserPool: () => ({}),
-		refreshedIdentityInfo: () => ({}),
-		throwError: () => ({}),
-		fetchedAWSCredentials: () => ({}),
-		fetched: () => ({}),
-	},
-});
+export const refreshSessionMachineModel = createModel(
+	{
+		awsCredentials: null,
+		identityId: null,
+	} as RefreshSessionContext,
+	{
+		events: {
+			refreshCognitoUserPool: () => ({}),
+			refreshCognitoUserPoolWithIdentityId: () => ({}),
+			refreshAWSCredentialsWithUserPool: () => ({}),
+			refreshUnAuthAWSCredentials: () => ({}),
+			refreshedCognitoUserPool: () => ({}),
+			refreshedIdentityInfo: () => ({}),
+			throwError: () => ({}),
+			fetchedAWSCredentials: () => ({}),
+			fetched: () => ({}),
+		},
+	}
+);
 
 // Refresh Auth Session state machine
 const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
@@ -61,6 +69,33 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				fetchedAWSCredentials: 'refreshed',
 				throwError: 'error',
 			},
+			invoke: {
+				id: 'spawnFetchAuthSessionActor',
+				src: fetchAuthSessionStateMachine,
+				data: {
+					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
+						context.config?.region,
+					service: (context: AuthorizationMachineContext, _event: any) =>
+						context.service,
+					authenticated: false,
+				},
+				onDone: {
+					target: 'refreshed',
+					actions: [
+						assign({
+							identityId: (context, event) => {
+								console.log('EVENT: ');
+								console.log({ eventFromFetchAuthSessionMachine: event });
+								return event.data.identityID;
+							},
+							awsCredentials: (context, event) => event.data.AWSCredentials,
+						}),
+					],
+				},
+				onError: {
+					target: 'error',
+				},
+			},
 		},
 		fetchingAuthSessionWithUserPool: {
 			// invoke the fetchAuthSessionStateMachine
@@ -83,6 +118,11 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 		},
 		refreshed: {
 			type: 'final',
+			data: {
+				identityId: (context: RefreshSessionContext) => context.identityId,
+				AWSCredentials: (context: RefreshSessionContext) =>
+					context.awsCredentials,
+			},
 		},
 		error: {
 			type: 'final',
