@@ -276,6 +276,7 @@ export class AuthClass {
 					null,
 					AuthErrorTypes.AutoSignInError
 				);
+				this._storage.removeItem('amplify-auto-sign-in');
 			}
 			this._storage.removeItem('amplify-polling-started');
 		}
@@ -471,6 +472,7 @@ export class AuthClass {
 					null,
 					'Please confirm your account and use your credentials to sign in.'
 				);
+				this._storage.removeItem('amplify-auto-sign-in');
 			} else {
 				this.signInAfterUserConfirmed(
 					authDetails,
@@ -509,6 +511,7 @@ export class AuthClass {
 					},
 					error => {
 						logger.error(error);
+						this._storage.removeItem('amplify-auto-sign-in');
 					}
 				)
 			);
@@ -571,6 +574,7 @@ export class AuthClass {
 								null,
 								AuthErrorTypes.AutoSignInError
 							);
+							this._storage.removeItem('amplify-auto-sign-in');
 						}
 						resolve(data);
 					}
