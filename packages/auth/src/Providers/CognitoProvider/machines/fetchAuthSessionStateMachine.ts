@@ -51,7 +51,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				invoke: {
 					id: 'fetchAuthSession',
 					src: async (context, _event) => {
-						console.log({ clientConfig: context.clientConfig });
 						if (!context.clientConfig.identityPoolId) {
 							return null;
 						}

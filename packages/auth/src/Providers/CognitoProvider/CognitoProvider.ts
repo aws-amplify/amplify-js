@@ -91,6 +91,7 @@ function listenToAuthHub(send: any) {
 	});
 }
 
+// FOR DEBUGGING ONLY
 inspect({ iframe: false });
 
 export class CognitoProvider implements AuthProvider {
@@ -431,7 +432,9 @@ export class CognitoProvider implements AuthProvider {
 		//      -> wait for AuthN to go into the 'signedIn' state
 		//      -> send 'signInCompleted' to AuthZ
 		//    -> resolve .signIn promise
-		//  so, now AuthZ machine will either be in the 'fetchAuthSessionWithUserPool' or already at 'sessionEstablished' state (which is handled in 1.)
+		//  so, now AuthZ machine will either be in the 'fetchAuthSessionWithUserPool'
+		//    or
+		//      already at 'sessionEstablished' state (which is handled in 1.)
 		// -> return the user session info
 		else {
 			throw new Error('Invalid state');
@@ -493,7 +496,8 @@ export class CognitoProvider implements AuthProvider {
 	async refreshSession(): Promise<AmplifyUser> {
 		// check to make sure authorization state machine is in the session established state or throw an error
 		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
-		// call refreshSession state machine and pass refresh token as the argument/context for the state machine to use as an argument to the service class
+		// call refreshSession state machine and pass refresh token as the argument/context
+		//   for the state machine to use as an argument to the service class
 		// return new userpool tokens and update the ones in storage if necessary
 		if (
 			!this._authzService.state.matches('sessionEstablished') &&

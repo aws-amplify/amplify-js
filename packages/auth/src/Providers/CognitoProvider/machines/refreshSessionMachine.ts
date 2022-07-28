@@ -3,11 +3,11 @@ import { createModel } from 'xstate/lib/model';
 import {
 	AuthorizationMachineContext,
 	RefreshSessionContext,
+	UserPoolTokens,
 } from '../types/machines';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { cacheRefreshTokenResult } from '../service';
 import { AWSCredentials } from '../../../types';
-import { UserPoolTokens } from '../types/machines';
 import { decodeJWT } from '../Util';
 
 export const refreshSessionMachineModel = createModel(
@@ -37,8 +37,6 @@ const refreshAuthSessionStateMachineActions: Record<
 > = {
 	assignUnAuthedSession: refreshSessionMachineModel.assign({
 		identityId: (context, event) => {
-			console.log('EVENT: ');
-			console.log({ eventFromFetchAuthSessionMachine: event });
 			return (event as any).data.identityID;
 		},
 		awsCredentials: (context, event) => (event as any).data.AWSCredentials,
@@ -77,7 +75,6 @@ async function invokeRefreshToken(
 	) {
 		throw new Error('no access token or id token');
 	}
-	console.log({ refreshTokensRes });
 	cacheRefreshTokenResult(refreshTokensRes);
 	return {
 		accessToken: refreshTokensRes.AuthenticationResult.AccessToken,

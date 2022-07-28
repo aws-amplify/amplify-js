@@ -18,6 +18,7 @@ import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
+import { Logger } from '@aws-amplify/core';
 
 // state machine events
 export const authorizationMachineModel = createModel(
@@ -112,7 +113,6 @@ const authorizationStateMachineActions: Record<
 	}),
 	assignUnAuthedSession: authorizationMachineModel.assign({
 		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
-			console.log({ event });
 			return {
 				identityID: event.data.identityID,
 				AWSCredentials: event.data.AWSCredentials,
