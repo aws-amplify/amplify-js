@@ -55,8 +55,7 @@
 					],
 					"allowJs": true,
 					"esModuleInterop": true,
-					"downlevelIteration": true,
-					"exclude": ["node_modules", "../datastore"]
+					"downlevelIteration": true
 				}
 			}
 		},
@@ -67,7 +66,8 @@
 		"testPathIgnorePatterns": [
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
-			"__tests__/helpers.ts"
+			"__tests__/helpers.ts",
+			"__tests__/SQLiteAdapter.test.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",

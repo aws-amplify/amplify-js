@@ -28,6 +28,7 @@
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
 		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access",
+		"publish:ds-custom-pk": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=custom-pk --preid=custom-pk --exact --no-verify-access",
 		"temp-ds-safe-push": "yarn build --scope @aws-amplify/datastore && yarn test --scope @aws-amplify/datastore && git push origin"
 	},
 	"husky": {
