@@ -258,7 +258,7 @@ export function addCommonQueryTests({
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
 		});
 
-		it.only('should allow linking model via model field', async () => {
+		it('should allow linking model via model field', async () => {
 			const profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
 			);
@@ -319,10 +319,6 @@ export function addCommonQueryTests({
 			expectMutation(mutations[1], {
 				content: 'updated content',
 				postId: mutations[0].modelId,
-				post: {
-					title: post.title,
-					id: post.id,
-				},
 			});
 		});
 
@@ -344,7 +340,6 @@ export function addCommonQueryTests({
 			expectMutation(mutations[1], {
 				content: 'newly created comment',
 				postId: mutations[0].modelId,
-				post: { title: 'newly created post', id: mutations[0].modelId },
 			});
 		});
 

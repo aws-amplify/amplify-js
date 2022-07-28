@@ -380,6 +380,10 @@ export const establishRelationAndKeys = (
 					}
 				}
 			}
+
+			if (!keys[mKey].primaryKey) {
+				keys[mKey].primaryKey = [ID];
+			}
 		}
 	});
 
@@ -459,10 +463,11 @@ export const traverseModel = <T extends PersistentModel>(
 								// values from the related record
 
 								const { primaryKey } = namespace.keys[modelConstructor.name];
+								const keyField = primaryKey && primaryKey[idx];
 
 								// Get the value
 								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[primaryKey[idx]];
+									relatedRecordInProxy[keyField];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
@@ -517,9 +522,12 @@ export const traverseModel = <T extends PersistentModel>(
 								// values from the related record
 								const { primaryKey } = namespace.keys[modelConstructor.name];
 
+								// fall back to ID if
+								const keyField = primaryKey && primaryKey[idx];
+
 								// Get the value
 								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[primaryKey[idx]];
+									relatedRecordInProxy[keyField];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;

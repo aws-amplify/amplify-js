@@ -1,3 +1,6 @@
+declare var indexedDB: any;
+declare var performance: any;
+
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 

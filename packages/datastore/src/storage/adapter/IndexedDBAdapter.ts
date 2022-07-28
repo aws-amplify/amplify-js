@@ -875,59 +875,89 @@ class IndexedDBAdapter implements Adapter {
 					rel.associatedWith
 				);
 
+			// TODO: refactor
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
 						const hasOneIndex = index || 'byPk';
 
-						const targetNamesKeys = extractTargetNamesFromSrc({
-							targetName,
-							targetNames,
-						});
+						// CPK
+						if (targetNames && targetNames.length > 0) {
+							// iterate over targetNames array and see if each item is present in model object
+							// targetNames here being the keys for the CHILD model
+							const hasConnectedModelFields = targetNames.every(targetName =>
+								model.hasOwnProperty(targetName)
+							);
 
-						// See if each item is present in the model, where
-						// targetNames are the keys for the connected model
-						const hasConnectedModelFields = targetNamesKeys?.every(targetName =>
-							model.hasOwnProperty(targetName)
-						);
+							// PK / Composite key for the PARENT model
+							const keyValues = this.getIndexKeyValues(model);
 
-						// Primary keys for the parent model
-						const keyValues = this.getIndexKeyValues(model);
+							let values = [];
 
-						let values;
+							if (hasConnectedModelFields) {
+								// Values will be that of the child model
+								values = targetNames.map(
+									targetName => model[targetName]
+								) as any;
+							} else {
+								// values will be that of the parent model
+								values = keyValues as any;
+							}
 
-						if (hasConnectedModelFields) {
-							// Values will be that of the child model
-							values = targetNamesKeys?.map(targetName => model[targetName]);
+							if (values.length === 0) break;
+
+							const recordToDelete = <T>await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex as any)
+								.get(values);
+
+							await this.deleteTraverse(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete ? [recordToDelete] : [],
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
+							break;
 						} else {
-							// values will be that of the parent model
-							values = keyValues as any;
+							// Backwards compatibility (TODO: combine with above)
+							const hasOneIndex = index || 'byPk';
+
+							const hasOneCustomField = targetName in model;
+							const keyValues = this.getIndexKeyValues(model);
+							let value = hasOneCustomField ? model[targetName] : keyValues[0];
+
+							if (hasOneIndex === 'byPk') {
+								// byPk requires an array keyValue
+								value = [value];
+							}
+
+							if (!value) break;
+
+							const recordToDelete = <T>await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex as any)
+								.get(value);
+
+							await this.deleteTraverse(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete ? [recordToDelete] : [],
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
 						}
-
-						// If neither are present, break
-						if (values?.length === 0) break;
-
-						const recordToDelete = <T>await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(hasOneIndex as any)
-							.get(values);
-
-						await this.deleteTraverse(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							recordToDelete ? [recordToDelete] : [],
-							modelName,
-							nameSpace,
-							deleteQueue
-						);
-						break;
 					}
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
 						const keyValues = this.getIndexKeyValues(model);
 
+						// CPK TODO: Double check this, unsure that we encounter `byPk` here, ever.
 						const hasManyIndex = index || 'byPk';
 
 						// CPK TODO: get by all key values

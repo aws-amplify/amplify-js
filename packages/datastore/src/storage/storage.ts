@@ -19,6 +19,7 @@ import {
 	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
+	// isTargetNamesAssociation,
 } from '../types';
 import {
 	isModelConstructor,
@@ -353,30 +354,51 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
+			// CPK TODO: rename:
 			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
 
-			// if field refers to a belongsTo relation, use the target field instead
-			if (!targetNames) {
-				const keys = targetNames || [field];
-				// TODO: see if this is needed
-				debugger;
-			}
+			if (Array.isArray(targetNames)) {
+				// if field refers to a belongsTo relation, use the target field instead
 
-			for (const targetName of targetNames) {
+				for (const targetName of targetNames) {
+					// check field values by value. Ignore unchanged fields
+					if (!valuesEqual(source[targetName], originalElement[targetName])) {
+						// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+
+						updatedElement[targetName] =
+							originalElement[targetName] === undefined
+								? null
+								: originalElement[targetName];
+
+						for (const fieldSet of compositeKeys) {
+							// include all of the fields that comprise the composite key
+							if (fieldSet.has(targetName)) {
+								for (const compositeField of fieldSet) {
+									updatedElement[compositeField] =
+										originalElement[compositeField];
+								}
+							}
+						}
+					}
+				}
+			} else {
+				// Backwards compatibility pre-CPK
+
+				// if field refers to a belongsTo relation, use the target field instead
+				const key = targetNames || field;
+
 				// check field values by value. Ignore unchanged fields
-				if (!valuesEqual(source[targetName], originalElement[targetName])) {
+				if (!valuesEqual(source[key], originalElement[key])) {
 					// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
 
-					updatedElement[targetName] =
-						originalElement[targetName] === undefined
-							? null
-							: originalElement[targetName];
+					updatedElement[key] =
+						originalElement[key] === undefined ? null : originalElement[key];
 
 					for (const fieldSet of compositeKeys) {
 						// include all of the fields that comprise the composite key
-						if (fieldSet.has(targetName)) {
+						if (fieldSet.has(key)) {
 							for (const compositeField of fieldSet) {
 								updatedElement[compositeField] =
 									originalElement[compositeField];
