@@ -27,6 +27,7 @@ import {
 	AutoTrackSessionOpts,
 	AutoTrackPageViewOpts,
 	AutoTrackEventOpts,
+	PersonalizeAnalyticsEvent,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
@@ -234,7 +235,10 @@ export class AnalyticsClass {
 	 * @param event - An object with the name of the event, attributes of the event and event metrics.
 	 * @param [provider] - name of the provider.
 	 */
-	public async record(event: AnalyticsEvent, provider?: string);
+	public async record(
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent,
+		provider?: string
+	);
 	/**
 	 * Record one analytic event and send it to Pinpoint
 	 * @deprecated Use the new syntax and pass in the event as an object instead.
@@ -249,7 +253,7 @@ export class AnalyticsClass {
 		metrics?: EventMetrics
 	);
 	public async record(
-		event: string | AnalyticsEvent,
+		event: string | AnalyticsEvent | PersonalizeAnalyticsEvent,
 		providerOrAttributes?: string | EventAttributes,
 		metrics?: EventMetrics
 	) {

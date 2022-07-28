@@ -1,7 +1,7 @@
 {
   "name": "aws-amplify-vue",
   "private": "true",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "license": "Apache-2.0",
   "author": "Amazon Web Services",
   "scripts": {
@@ -15,7 +15,7 @@
   "dependencies": {
     "lodash.orderby": "^4.6.0",
     "qrcode.vue": "^1.6.0",
-    "vue": "^2.5.17",
+    "vue": "2.6.11",
     "vue2-filters": "^0.7.2"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@vue/test-utils": "1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
     "postcss-loader": "^2.1.6",
-    "vue-template-compiler": "^2.5.17"
+    "vue-template-compiler": "2.6.11"
   },
   "postcss": {
     "plugins": {
