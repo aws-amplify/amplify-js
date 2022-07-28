@@ -102,21 +102,6 @@ const STORAGE = NAMESPACES.STORAGE;
 export { USER, SYNC, STORAGE, DATASTORE };
 export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
-export enum NAMESPACES {
-	DATASTORE = 'datastore',
-	USER = 'user',
-	SYNC = 'sync',
-	STORAGE = 'storage',
-}
-
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
-
-export { USER, SYNC, STORAGE, DATASTORE };
-export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
-
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
@@ -350,27 +335,26 @@ export const establishRelationAndKeys = (
 				});
 
 				if (connectionType === 'BELONGS_TO') {
-					const targetNames: string[] = extractTargetNamesFromSrc(
-						fieldAttribute.association
-					);
-					debugger;
+					// const targetNames: string[] = extractTargetNamesFromSrc(
+					// 	fieldAttribute.association
+					// );
 
-					targetNames.forEach((targetName: string) => {
-						relationship[mKey].indexes.push(targetName);
-					});
-					// if (fieldAttribute.association.targetName) {
-					// 	// backwards-compatability for schema generated prior to custom primary key support
-					// 	relationship[mKey].indexes.push(
-					// 		fieldAttribute.association['targetName']
-					// 	);
-					// } else {
-					// 	// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
-					// 	fieldAttribute.association.targetNames.forEach(
-					// 		(targetName: string) => {
-					// 			relationship[mKey].indexes.push(targetName);
-					// 		}
-					// 	);
-					// }
+					// targetNames.forEach((targetName: string) => {
+					// 	relationship[mKey].indexes.push(targetName);
+					// });
+					if (fieldAttribute.association.targetName) {
+						// backwards-compatability for schema generated prior to custom primary key support
+						relationship[mKey].indexes.push(
+							fieldAttribute.association['targetName']
+						);
+					} else {
+						// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
+						fieldAttribute.association.targetNames.forEach(
+							(targetName: string) => {
+								relationship[mKey].indexes.push(targetName);
+							}
+						);
+					}
 				}
 			}
 		});
@@ -952,7 +936,7 @@ export function extractTargetNamesFromSrc(src: any): string[] | undefined {
 
 	if (Array.isArray(targetNames) && targetNames?.length) {
 		return targetNames;
-	} else if (targetName != null) {
+	} else if (typeof targetName === 'string') {
 		return [targetName];
 	} else {
 		return undefined;

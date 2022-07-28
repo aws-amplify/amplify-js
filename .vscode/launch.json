@@ -15,7 +15,7 @@
 				"--inspect-brk",
 				"${workspaceRoot}/node_modules/.bin/jest",
 				// Optionally specify a single test file to run/debug:
-				"indexeddb.test.ts",
+				"IndexedDBAdapter.test.ts",
 				"--runInBand",
 				"--testTimeout",
 				"600000", // 10 min timeout so jest doesn't error while we're stepping through code

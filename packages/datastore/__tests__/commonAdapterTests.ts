@@ -258,7 +258,7 @@ export function addCommonQueryTests({
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
 		});
 
-		it('should allow linking model via model field', async () => {
+		it.only('should allow linking model via model field', async () => {
 			const profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
 			);
