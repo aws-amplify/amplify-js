@@ -202,8 +202,8 @@ export class CognitoProvider implements AuthProvider {
 	async signIn(
 		params: SignInParams & { password?: string }
 	): Promise<SignInResult> {
-		if (!this.isConfigured()) {
-			throw new Error('Plugin not configured');
+		if (this._authService.state.matches('notConfigured')) {
+			throw new Error('AuthN is not configured');
 		}
 		// TODO: implement the other sign in method
 		if (params.signInType === 'Link' || params.signInType === 'WebAuthn') {
@@ -224,23 +224,7 @@ export class CognitoProvider implements AuthProvider {
 			})
 		);
 		this._authzService.send(authzMachineEvents.signInRequested());
-		// this._authService.send({
-		// 	type: 'signInRequested',
-		// 	signInEventParams: {
-		// 		...params,
-		// 		signInFlow: this._authFlow,
-		// 	},
-		// })
 		const signInResult = await this.waitForSignInComplete();
-		// const sessionData = this.getSessionData();
-		// if (!sessionData) {
-		// 	throw new Error('no!');
-		// }
-		// this._authzService.send(
-		// 	authzMachineEvents.signInCompleted({
-		// 		...sessionData,
-		// 	})
-		// );
 		return signInResult;
 	}
 
@@ -329,7 +313,7 @@ export class CognitoProvider implements AuthProvider {
 		return await this.waitForSignInComplete();
 	}
 
-	private getSessionData():
+	private getCachedUserpoolTokens():
 		| {
 				accessToken: string;
 				idToken: string;
@@ -339,16 +323,17 @@ export class CognitoProvider implements AuthProvider {
 		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
 		}
-		// return null;
 	}
 
 	private isUserPoolTokensExpired(bufferTime?: number) {
-		const sessionData = this.getSessionData();
-		if (!sessionData) {
+		const userpoolTokens = this.getCachedUserpoolTokens();
+		if (!userpoolTokens) {
 			throw new Error('cannot find cached JWT tokens');
 		}
-		const { exp: idTokenExpiration } = decodeJWT(sessionData.idToken);
-		const { exp: accessTokenExpiration } = decodeJWT(sessionData.accessToken);
+		const { exp: idTokenExpiration } = decodeJWT(userpoolTokens.idToken);
+		const { exp: accessTokenExpiration } = decodeJWT(
+			userpoolTokens.accessToken
+		);
 		return (
 			Date.now() / 1000 > idTokenExpiration ||
 			Date.now() / 1000 > accessTokenExpiration
@@ -371,10 +356,9 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
-		console.log('lul');
 		// checks to see if the identity pool and region are already configured
 		// 1. if AuthZ machine is not configured -> throw error
-		if (!this.isConfigured()) {
+		if (this._authzService.state.matches('notConfigured')) {
 			throw new Error(
 				'Identity Pool and Userpool have not been configured yet.'
 			);
@@ -388,12 +372,12 @@ export class CognitoProvider implements AuthProvider {
 		} else if (this._authzService.state.matches('configured')) {
 			if (this._authService.state.matches('signedIn')) {
 				// getting jwt from localStorage
-				const sessionData = this.getSessionData();
-				if (!sessionData) {
+				const userpoolTokens = this.getCachedUserpoolTokens();
+				if (!userpoolTokens) {
 					throw new Error('Session data is not cached in the localStorage.');
 				}
 				this._authzService.send(
-					authzMachineEvents.signInCompleted({ ...sessionData })
+					authzMachineEvents.signInCompleted({ ...userpoolTokens })
 				);
 			} else {
 				this._authzService.send(authzMachineEvents.fetchUnAuthSession());
@@ -406,11 +390,11 @@ export class CognitoProvider implements AuthProvider {
 			//   -> wait for 'sessionEstablished' state
 			//   -> grab session Info from the authZ state machine
 		} else if (this._authzService.state.matches('sessionEstablished')) {
-			console.log('we have cached session here');
+			logger.debug('we have cached session here');
 			// check expiration here
 			if (this.isSessionExpired()) {
 				this._authzService.send(
-					authzMachineEvents.refreshSession(this.getSessionData())
+					authzMachineEvents.refreshSession(this.getCachedUserpoolTokens())
 				);
 			}
 			// 4a. else if AuthZ machine is in 'signingIn' state
@@ -423,14 +407,22 @@ export class CognitoProvider implements AuthProvider {
 			//     -> grab session Info from authZ state machine
 		} else if (this._authzService.state.matches('signingIn')) {
 			if (this._authService.state.matches('signedIn')) {
-				const sessionData = this.getSessionData();
-				if (!sessionData) {
+				const userpoolTokens = this.getCachedUserpoolTokens();
+				if (!userpoolTokens) {
 					throw new Error('Session data is not cached in the localStorage.');
 				}
 				this._authzService.send(
-					authzMachineEvents.signInCompleted({ ...sessionData })
+					authzMachineEvents.signInCompleted({ ...userpoolTokens })
 				);
 			}
+		} else if (
+			[
+				'refreshingSession',
+				'fetchingUnAuthSession',
+				'fetchAuthSessionWithUserPool',
+			].some(this._authzService.state.matches)
+		) {
+			// do nothing.. wait for the sessionEstablished state
 		}
 		//  OR
 		//  4b. We change the .signIn call
@@ -444,34 +436,41 @@ export class CognitoProvider implements AuthProvider {
 		else {
 			throw new Error('Invalid state');
 		}
+		return this.waitForSessionEstablished();
+	}
 
+	private async waitForSessionEstablished(): Promise<AmplifyUser> {
 		const sessionEstablishedState = await waitFor(this._authzService, state =>
 			state.matches('sessionEstablished')
 		);
 		const isSignedIn = this._authService.state.matches('signedIn');
 		const sessionInfo = sessionEstablishedState.context.sessionInfo;
-		const awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
+		let awsCredentials: AWSCredentials | null;
+		try {
+			awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
+		} catch (err) {
+			awsCredentials = null;
+		}
 
-		const sessionData = this.getSessionData();
-
+		const userpoolTokens = this.getCachedUserpoolTokens();
 		const amplifyUser: AmplifyUser = {
 			isSignedIn,
 			credentials: {
 				default: {
-					aws: awsCredentials,
+					...(awsCredentials && { aws: awsCredentials }),
 				},
 			},
 		};
 		if (isSignedIn) {
-			if (!sessionData) {
+			if (!userpoolTokens) {
 				throw new Error('cached jwt tokens not available');
 			}
 			amplifyUser.credentials!.default.jwt = {
-				accessToken: sessionData.accessToken,
-				idToken: sessionData.idToken,
-				refreshToken: sessionData.refreshToken,
+				accessToken: userpoolTokens.accessToken,
+				idToken: userpoolTokens.idToken,
+				refreshToken: userpoolTokens.refreshToken,
 			};
-			const { sub } = decodeJWT(sessionData.idToken);
+			const { sub } = decodeJWT(userpoolTokens.idToken);
 			amplifyUser.userInfo = { userid: sub as string };
 		}
 		return amplifyUser;
@@ -491,13 +490,24 @@ export class CognitoProvider implements AuthProvider {
 			expiration: Expiration,
 		};
 	}
-	async refreshSession(): Promise<any> {
+	async refreshSession(): Promise<AmplifyUser> {
 		// check to make sure authorization state machine is in the session established state or throw an error
 		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
 		// call refreshSession state machine and pass refresh token as the argument/context for the state machine to use as an argument to the service class
 		// return new userpool tokens and update the ones in storage if necessary
-		console.log('refresh Session from cognito provider');
-		return false;
+		if (
+			!this._authzService.state.matches('sessionEstablished') &&
+			!this._authzService.state.matches('refreshingSession')
+		) {
+			throw new Error(
+				'Session should be established before calling .refreshSession, please call .fetchSession first'
+			);
+		}
+		const userpoolTokens = this.getCachedUserpoolTokens();
+		this._authzService.send(
+			authzMachineEvents.refreshSession(userpoolTokens, true)
+		);
+		return this.waitForSessionEstablished();
 	}
 	addAuthenticator(): Promise<AddAuthenticatorResponse> {
 		throw new Error('Method not implemented.');
@@ -511,8 +521,10 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
-		this._authzService.send(authzMachineEvents.signInRequested());
+		// this._authzService.send(authzMachineEvents.signInRequested());
 		this.clearCachedTokens();
+		this._authService.send(authMachineEvents.signOutRequested());
+		this._authzService.send(authzMachineEvents.signOutRequested());
 		dispatchAuthEvent(
 			'signOut',
 			{ placeholder: 'placeholder' },

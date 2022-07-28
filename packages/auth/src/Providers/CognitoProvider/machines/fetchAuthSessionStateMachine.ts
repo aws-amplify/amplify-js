@@ -36,15 +36,26 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 						console.log('Fetch Auth Session Machine has been spawned.');
 					},
 				],
-				always: {
-					// fetchUnAuthIdentityID: 'fetchingIdentityID',
-					target: 'fetchingIdentityID',
-				},
+				always: [
+					{
+						// fetchUnAuthIdentityID: 'fetchingIdentityID',
+						target: 'fetchingIdentityID',
+						cond: (context, _event) => !context.identityID,
+					},
+					{
+						target: 'fetchingAWSCredentials',
+					},
+				],
 			},
 			fetchingIdentityID: {
 				invoke: {
 					id: 'fetchAuthSession',
 					src: async (context, _event) => {
+						console.log({ clientConfig: context.clientConfig });
+						if (!context.clientConfig.identityPoolId) {
+							return null;
+						}
+
 						// fetch unauth identity id if user isn't authenticated
 						if (!context.authenticated) {
 							console.log('fetching unauth identity ID');
@@ -77,6 +88,10 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				invoke: {
 					id: 'fetchAWSCredentials',
 					src: async (context, _event) => {
+						if (!context.clientConfig.identityPoolId) {
+							return null;
+						}
+
 						if (!context.authenticated) {
 							const AWSCreds = await context.service?.fetchUnAuthAWSCredentials(
 								context.identityID

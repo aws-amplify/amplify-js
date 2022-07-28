@@ -56,5 +56,6 @@ export type RefreshSessionContext = {
 		sessionToken: string;
 	} | null;
 	service: CognitoService;
+	forceRefresh: boolean;
 	userPoolTokens?: UserPoolTokens;
 };

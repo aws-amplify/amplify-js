@@ -38,8 +38,12 @@ export const authorizationMachineModel = createModel(
 			fetchUnAuthSession: () => ({}),
 			noSession: () => ({}),
 			receivedCachedCredentials: () => ({}),
-			refreshSession: (userPoolTokens?: UserPoolTokens) => ({
+			refreshSession: (
+				userPoolTokens?: UserPoolTokens,
+				forceRefresh: boolean = false
+			) => ({
 				userPoolTokens,
+				forceRefresh,
 			}),
 			refreshed: () => ({}),
 			signInRequested: () => ({}),
@@ -47,10 +51,8 @@ export const authorizationMachineModel = createModel(
 			signInCompleted: (userPoolTokens: UserPoolTokens) => {
 				return { userPoolTokens };
 			},
-			signOut: () => ({}),
+			signOutRequested: () => ({}),
 			throwError: (error: any) => ({ error }),
-			refreshUnAuthAWSCredentials: () => ({}),
-			refreshCognitoUserPool: () => ({}),
 		},
 	}
 );
@@ -84,7 +86,10 @@ const authorizationStateMachineActions: Record<
 		{
 			actorRef: (context, event) => {
 				const machine = fetchAuthSessionStateMachine.withContext({
-					clientConfig: { region: context.config?.region },
+					clientConfig: {
+						region: context.config?.region,
+						identityPoolId: context.config?.identityPoolId,
+					},
 					service: context.service,
 					userPoolTokens: event.userPoolTokens,
 				});
@@ -168,7 +173,7 @@ const authorizationStateMachine: MachineConfig<
 				src: fetchAuthSessionStateMachine,
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						context.config?.region,
+						context.config,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
 					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
@@ -194,9 +199,11 @@ const authorizationStateMachine: MachineConfig<
 				src: fetchAuthSessionStateMachine,
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						context.config?.region,
+						context.config,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
+					identityID: (context: AuthorizationMachineContext, _event: any) =>
+						context.sessionInfo ? context.sessionInfo.identityID : undefined,
 					authenticated: false,
 				},
 				onDone: {
@@ -218,7 +225,7 @@ const authorizationStateMachine: MachineConfig<
 				},
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						context.config?.region,
+						context.config,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
 					userPoolTokens: (_context: any, event: beginningSessionEvent) =>
@@ -227,18 +234,14 @@ const authorizationStateMachine: MachineConfig<
 						context.sessionInfo.identityID,
 					awsCredentials: (context: AuthorizationMachineContext, _event: any) =>
 						context.sessionInfo.AWSCredentials,
+					forceRefresh: (context: AuthorizationMachineContext, event: any) =>
+						event.forceRefresh,
 					// authenticated: false,
 				},
 			},
 
 			on: {
 				refreshed: 'sessionEstablished',
-				refreshUnAuthAWSCredentials: {
-					actions: forwardTo('refreshSessionStateMachine'),
-				},
-				refreshCognitoUserPool: {
-					actions: forwardTo('refreshSessionStateMachine'),
-				},
 				// from refreshed to configure (token expired)
 			},
 		},
@@ -255,6 +258,12 @@ const authorizationStateMachine: MachineConfig<
 			on: {
 				signInRequested: 'signingIn',
 				refreshSession: 'refreshingSession',
+				signOutRequested: {
+					target: 'configured',
+					actions: authorizationMachineModel.assign({
+						sessionInfo: null,
+					}),
+				},
 			},
 		},
 		error: {

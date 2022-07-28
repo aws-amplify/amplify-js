@@ -1,14 +1,11 @@
-import { createMachine, MachineConfig, assign, AssignAction } from 'xstate';
+import { createMachine, MachineConfig, AssignAction } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import {
-	RefreshSessionStateMachineContext,
-	AuthMachineContext,
 	AuthorizationMachineContext,
 	RefreshSessionContext,
-	beginningSessionEvent,
 } from '../types/machines';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
-import { cacheRefreshTokenResult, getSessionData } from '../service';
+import { cacheRefreshTokenResult } from '../service';
 import { AWSCredentials } from '../../../types';
 import { UserPoolTokens } from '../types/machines';
 import { decodeJWT } from '../Util';
@@ -17,6 +14,7 @@ export const refreshSessionMachineModel = createModel(
 	{
 		awsCredentials: null,
 		identityId: null,
+		forceRefresh: false,
 	} as RefreshSessionContext,
 	{
 		events: {
@@ -60,10 +58,6 @@ function isUserPoolTokensExpired(
 		Date.now() / 1000 > idTokenExpiration ||
 		Date.now() / 1000 > accessTokenExpiration
 	);
-}
-
-function isAWSCredentialsExpired(awsCredentials: AWSCredentials) {
-	return new Date() > awsCredentials.expiration;
 }
 
 async function invokeRefreshToken(
@@ -111,7 +105,8 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 					target: 'refreshingUserPoolToken',
 					cond: (context: RefreshSessionContext) =>
 						context.userPoolTokens
-							? isUserPoolTokensExpired(context.userPoolTokens)
+							? isUserPoolTokensExpired(context.userPoolTokens) ||
+							  context.forceRefresh
 							: false,
 				},
 				{
@@ -121,14 +116,15 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 							? Boolean(
 									isUserPoolTokensExpired(context.userPoolTokens) &&
 										context.identityId
-							  )
+							  ) || context.forceRefresh
 							: false,
 				},
 				{
 					target: 'refreshingAWSCredentialsWithUserPoolTokens',
 					cond: (context: RefreshSessionContext) =>
 						context.userPoolTokens
-							? !isUserPoolTokensExpired(context.userPoolTokens)
+							? !isUserPoolTokensExpired(context.userPoolTokens) ||
+							  context.forceRefresh
 							: false,
 				},
 				{
@@ -154,7 +150,9 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 							event
 						) => {
 							const now = new Date();
-							return now > context.awsCredentials.expiration;
+							return (
+								now > context.awsCredentials.expiration || context.forceRefresh
+							);
 						},
 					},
 					{
@@ -220,10 +218,13 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				src: fetchAuthSessionStateMachine,
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						context.config?.region,
+						// @ts-ignore
+						context.clientConfig,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
 					authenticated: false,
+					identityID: (context: RefreshSessionContext, _event: any) =>
+						context.identityId,
 				},
 				onDone: {
 					target: 'refreshed',
@@ -246,11 +247,13 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				},
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						context.config?.region,
-					service: (context: AuthorizationMachineContext, _event: any) =>
+						// @ts-ignore
+						context.clientConfig,
+					service: (context: RefreshSessionContext, _event: any) =>
 						context.service,
-					userPoolTokens: (context: AuthorizationMachineContext, _event: any) =>
+					userPoolTokens: (context: RefreshSessionContext, _event: any) =>
 						context.userPoolTokens,
+					identityID: (context: RefreshSessionContext) => context.identityId,
 					authenticated: true,
 				},
 				onDone: {
