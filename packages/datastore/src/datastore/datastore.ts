@@ -500,7 +500,6 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					// CPK TODO: Previous comment from Ivan:
 					// @ts-ignore TODO: fix type
 					keyNames.forEach(key => (draft[key] = source[key]));
 

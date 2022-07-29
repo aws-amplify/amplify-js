@@ -7,7 +7,6 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
-	ModelAssociation,
 	ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
@@ -29,6 +28,7 @@ import {
 	LimitTimerRaceResolvedValues,
 	SchemaModel,
 	ModelAttribute,
+	IndexesType,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 const ID = 'id';
@@ -335,25 +335,13 @@ export const establishRelationAndKeys = (
 				});
 
 				if (connectionType === 'BELONGS_TO') {
-					// const targetNames: string[] = extractTargetNamesFromSrc(
-					// 	fieldAttribute.association
-					// );
+					const targetNames = extractTargetNamesFromSrc(
+						fieldAttribute.association
+					);
 
-					// targetNames.forEach((targetName: string) => {
-					// 	relationship[mKey].indexes.push(targetName);
-					// });
-					if (fieldAttribute.association.targetName) {
-						// backwards-compatability for schema generated prior to custom primary key support
-						relationship[mKey].indexes.push(
-							fieldAttribute.association['targetName']
-						);
-					} else {
-						// iterate through fieldAttribute.association.targetNames, and push to relationship[mKey].indexes
-						fieldAttribute.association.targetNames.forEach(
-							(targetName: string) => {
-								relationship[mKey].indexes.push(targetName);
-							}
-						);
+					if (targetNames) {
+						const idxName = indexNameFromKeys(targetNames);
+						relationship[mKey].indexes.push([idxName, targetNames]);
 					}
 				}
 			}
@@ -367,24 +355,36 @@ export const establishRelationAndKeys = (
 					continue;
 				}
 
-				if (isModelAttributePrimaryKey(attribute)) {
-					keys[mKey].primaryKey = attribute.properties.fields;
-				}
-
 				const { fields } = attribute.properties;
-				for (const field of fields) {
-					// only add index if it hasn't already been added
-					const exists = relationship[mKey].indexes.includes(field);
-					if (!exists) {
-						relationship[mKey].indexes.push(field);
-					}
-				}
-			}
 
-			if (!keys[mKey].primaryKey) {
-				keys[mKey].primaryKey = [ID];
+				if (isModelAttributePrimaryKey(attribute)) {
+					keys[mKey].primaryKey = fields;
+					continue;
+				}
+
+				// create indexes for all other keys
+				const idxName = indexNameFromKeys(fields);
+				const idxExists = relationship[mKey].indexes.find(
+					([index]) => index === idxName
+				);
+
+				if (!idxExists) {
+					relationship[mKey].indexes.push([idxName, fields]);
+				}
 			}
 		}
+
+		// set 'id' as the PK for models without a custom PK explicitly defined
+		if (!keys[mKey].primaryKey) {
+			keys[mKey].primaryKey = [ID];
+		}
+
+		// create primary index
+		relationship[mKey].indexes.push([
+			'byPk',
+			keys[mKey].primaryKey as string[],
+			{ unique: true },
+		]);
 	});
 
 	return [relationship, keys];
@@ -572,7 +572,7 @@ export const traverseModel = <T extends PersistentModel>(
 	return result;
 };
 
-export const getIndex = (rel: RelationType[], src: any): string => {
+export const getIndex = (rel: RelationType[], src: any): string | undefined => {
 	let index = '';
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
@@ -582,9 +582,20 @@ export const getIndex = (rel: RelationType[], src: any): string => {
 	return index;
 };
 
-export const getIndexFromAssociation = (indexes: string[], src: any): any => {
-	const index = indexes.find(idx => idx === src);
-	return index;
+export const getIndexFromAssociation = (
+	indexes: IndexesType,
+	src: string | string[]
+): string | undefined => {
+	let indexName: string;
+
+	if (Array.isArray(src)) {
+		indexName = indexNameFromKeys(src);
+	} else {
+		indexName = src;
+	}
+
+	const associationIndex = indexes.find(([idxName]) => idxName === indexName);
+	return associationIndex && associationIndex[0];
 };
 
 let privateModeCheckResult;
@@ -949,4 +960,15 @@ export function extractTargetNamesFromSrc(src: any): string[] | undefined {
 	} else {
 		return undefined;
 	}
+}
+
+// Generates snake-cased index name from an aray of key field names
+// E.g. for keys `[id, title]` => 'id-title'
+export function indexNameFromKeys(keys: string[]): string {
+	return keys.reduce((prev: string, cur: string, idx: number) => {
+		if (idx === 0) {
+			return cur;
+		}
+		return `${prev}-${cur}`;
+	}, '');
 }

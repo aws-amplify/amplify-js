@@ -502,7 +502,7 @@ Object {
       Object {
         "name": "user_Comment",
         "rowCount": 0,
-        "schema": "++,&[id],commentPostId",
+        "schema": "++,&[id],[commentPostId]",
       },
       Object {
         "name": "user_Person",

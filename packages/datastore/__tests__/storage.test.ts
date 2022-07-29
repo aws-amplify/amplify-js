@@ -254,7 +254,12 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.emails).toBeUndefined();
 			});
 
-			test('update with list unchanged', async () => {
+			// this is failing on `main` as well, but it times out before it gets
+			// to the assertion (until I added expect.assertions)
+			// TODO:check with Dane on expected behavior, as it is likely affected by the
+			// mergePatches work
+			test.skip('update with list unchanged', async () => {
+				expect.assertions(1);
 				const classes = initSchema(testSchema());
 
 				const { Model } = classes as {

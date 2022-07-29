@@ -800,8 +800,17 @@ export type RelationType = {
 	associatedWith?: string | string[];
 };
 
+type IndexOptions = {
+	unique?: boolean;
+};
+
+export type IndexesType = Array<[string, string[], IndexOptions?]>;
+
 export type RelationshipType = {
-	[modelName: string]: { indexes: string[]; relationTypes: RelationType[] };
+	[modelName: string]: {
+		indexes: IndexesType;
+		relationTypes: RelationType[];
+	};
 };
 
 //#endregion

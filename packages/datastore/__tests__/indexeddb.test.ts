@@ -182,12 +182,12 @@ describe('Indexed db storage test', () => {
 			.transaction(`${USER}_Comment`, 'readonly')
 			.objectStore(`${USER}_Comment`)
 			.index('commentPostId')
-			.get(p.id);
+			.get([p.id]);
 
 		expect(checkIndex['commentPostId']).toEqual(p.id);
 	});
 
-	test('save function M:M insert', async () => {
+	test('save function M:N insert', async () => {
 		const post = new Post({
 			title: 'Avatar',
 			blog,
@@ -233,7 +233,7 @@ describe('Indexed db storage test', () => {
 			.transaction(`${USER}_PostAuthorJoin`)
 			.objectStore(`${USER}_PostAuthorJoin`)
 			.index('postId')
-			.getAll(post.id);
+			.getAll([post.id]);
 
 		expect(getAuthors).toHaveLength(2);
 	});
@@ -279,7 +279,7 @@ describe('Indexed db storage test', () => {
 		});
 	});
 
-	test('query M:1 eager load', async () => {
+	test('query 1:M eager load', async () => {
 		expect.assertions(1);
 
 		const p = new Post({
@@ -411,7 +411,7 @@ describe('Indexed db storage test', () => {
 		expect(await DataStore.query(Blog, blog3.id)).toBeUndefined();
 	});
 
-	test('delete M:1 function', async () => {
+	test('delete 1:M function', async () => {
 		expect.assertions(2);
 
 		const post = new Post({
@@ -429,7 +429,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.delete(Comment, c1.id);
 
 		expect(await DataStore.query(Comment, c1.id)).toBeUndefined();
-		expect((await DataStore.query(Comment, c2.id)).id).toEqual(c2.id);
+		expect((await DataStore.query(Comment, c2.id))?.id).toEqual(c2.id);
 	});
 
 	test('delete 1:M function', async () => {
@@ -456,13 +456,14 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(c3);
 
 		await DataStore.delete(Post, post.id);
+
 		expect(await DataStore.query(Comment, c1.id)).toBeUndefined();
 		expect(await DataStore.query(Comment, c2.id)).toBeUndefined();
-		expect((await DataStore.query(Comment, c3.id)).id).toEqual(c3.id);
+		expect((await DataStore.query(Comment, c3.id))?.id).toEqual(c3.id);
 		expect(await DataStore.query(Post, post.id)).toBeUndefined();
 	});
 
-	test('delete M:M function', async () => {
+	test('delete M:N function', async () => {
 		expect.assertions(1);
 
 		const a1 = new Author({ name: 'author1' });
@@ -493,7 +494,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete cascade', async () => {
-		// expect.assertions(9);
+		expect.assertions(9);
 
 		const a1 = await DataStore.save(new Author({ name: 'author1' }));
 		const a2 = await DataStore.save(new Author({ name: 'author2' }));
@@ -527,7 +528,7 @@ describe('Indexed db storage test', () => {
 			.transaction(`${USER}_PostAuthorJoin`, 'readonly')
 			.objectStore(`${USER}_PostAuthorJoin`)
 			.index('postId')
-			.getAll(p1.id);
+			.getAll([p1.id]);
 		expect(refResult).toHaveLength(0);
 	});
 

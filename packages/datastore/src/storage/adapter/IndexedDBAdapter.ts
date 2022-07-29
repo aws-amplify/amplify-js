@@ -88,8 +88,9 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
-		const keyPath =
-			this.schema.namespaces[namespaceName]?.keys[modelName]?.primaryKey;
+		const namespace = this.schema.namespaces[namespaceName];
+
+		const keyPath = namespace?.keys[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;
@@ -102,6 +103,7 @@ class IndexedDBAdapter implements Adapter {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const namespaceName = this.namespaceResolver(modelConstructor);
+
 		const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
 
 		const keyValues = keys.map(field => model[field]);
@@ -860,7 +862,6 @@ class IndexedDBAdapter implements Adapter {
 
 			const storeName = this.getStorename(nameSpace, modelName);
 
-			// Explain:
 			const index: string | string[] | undefined =
 				getIndex(
 					this.schema.namespaces[nameSpace].relationships[modelName]
@@ -909,7 +910,7 @@ class IndexedDBAdapter implements Adapter {
 							const recordToDelete = <T>await this.db
 								.transaction(storeName, 'readwrite')
 								.objectStore(storeName)
-								.index(hasOneIndex as any)
+								.index(hasOneIndex as string)
 								.get(values);
 
 							await this.deleteTraverse(
@@ -927,19 +928,14 @@ class IndexedDBAdapter implements Adapter {
 
 							const hasOneCustomField = targetName in model;
 							const keyValues = this.getIndexKeyValues(model);
-							let value = hasOneCustomField ? model[targetName] : keyValues[0];
-
-							if (hasOneIndex === 'byPk') {
-								// byPk requires an array keyValue
-								value = [value];
-							}
+							const value = hasOneCustomField ? [model[targetName]] : keyValues;
 
 							if (!value) break;
 
 							const recordToDelete = <T>await this.db
 								.transaction(storeName, 'readwrite')
 								.objectStore(storeName)
-								.index(hasOneIndex as any)
+								.index(hasOneIndex as string)
 								.get(value);
 
 							await this.deleteTraverse(
@@ -957,16 +953,11 @@ class IndexedDBAdapter implements Adapter {
 					for await (const model of models) {
 						const keyValues = this.getIndexKeyValues(model);
 
-						// CPK TODO: Double check this, unsure that we encounter `byPk` here, ever.
-						const hasManyIndex = index || 'byPk';
-
-						// CPK TODO: get by all key values
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(hasManyIndex as any)
-							.getAll(keyValues[0]);
-						// .getAll(keyValues); // TODO
+							.index(index as string)
+							.getAll(keyValues);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -1080,13 +1071,12 @@ class IndexedDBAdapter implements Adapter {
 			autoIncrement: true,
 		});
 
-		const indexes =
-			this.schema.namespaces[namespaceName].relationships[modelName].indexes;
-		indexes.forEach(index => store.createIndex(index, index));
+		const { indexes } =
+			this.schema.namespaces[namespaceName].relationships[modelName];
 
-		const keyPath = this.getIndexKeyPath(namespaceName, modelName);
-
-		store.createIndex('byPk', keyPath, { unique: true });
+		indexes.forEach(([idxName, keyPath, options]) => {
+			store.createIndex(idxName, keyPath, options);
+		});
 	}
 }
 

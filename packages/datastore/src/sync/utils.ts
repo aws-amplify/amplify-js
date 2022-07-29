@@ -147,7 +147,7 @@ function getConnectionFields(
 	modelDefinition: SchemaModel,
 	namespace: SchemaNamespace
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
@@ -169,11 +169,14 @@ function getConnectionFields(
 							const connectedModelName =
 								modelDefinition.fields[name].type['model'];
 
-							// keyFields are fields of the connected model
-							const keyFields = relations[connectedModelName].indexes;
+							const byPkIndex = relations[connectedModelName].indexes.find(
+								([name]) => name === 'byPk'
+							);
+							const keyFields = byPkIndex && byPkIndex[1];
+							const keyFieldSelectionSet = keyFields?.join(' ');
 
 							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
-							result.push(`${name} { ${keyFields} _deleted }`);
+							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
 						} else {
 							// backwards-compatability for schema generated prior to custom primary key support
 							result.push(`${name} { id _deleted }`);
