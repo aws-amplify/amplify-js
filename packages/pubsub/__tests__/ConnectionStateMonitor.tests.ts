@@ -39,12 +39,11 @@ describe('ConnectionStateMonitor', () => {
 	beforeEach(() => {
 		const spyon = jest
 			.spyOn(Reachability.prototype, 'networkMonitor')
-			.mockImplementationOnce(
-				() =>
-					new Observable(observer => {
-						reachabilityObserver = observer;
-					})
-			);
+			.mockImplementationOnce(() => {
+				return new Observable(observer => {
+					reachabilityObserver = observer;
+				});
+			});
 	});
 
 	describe('when the network is connected', () => {
@@ -57,11 +56,6 @@ describe('ConnectionStateMonitor', () => {
 			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
-			monitor.enableNetworkMonitoring();
-		});
-
-		afterEach(() => {
-			monitor.disableNetworkMonitoring();
 		});
 
 		test('connection states starts out disconnected', () => {
@@ -223,11 +217,6 @@ describe('ConnectionStateMonitor', () => {
 			subscription = monitor.connectionStateObservable.subscribe(value => {
 				observedStates.push(value);
 			});
-			monitor.enableNetworkMonitoring();
-		});
-
-		afterEach(() => {
-			monitor.disableNetworkMonitoring();
 		});
 
 		test('starts out disconnected', () => {

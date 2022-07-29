@@ -80,9 +80,9 @@ export class ConnectionStateMonitor {
 	}
 
 	/**
-	 * Turn network state monitoring on
+	 * Turn network state monitoring on if it isn't on already
 	 */
-	public enableNetworkMonitoring() {
+	private enableNetworkMonitoring() {
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
 			this._networkMonitoringSubscription = new Reachability()
@@ -96,9 +96,9 @@ export class ConnectionStateMonitor {
 	}
 
 	/**
-	 * Turn network state monitoring off
+	 * Turn network state monitoring off if it isn't off already
 	 */
-	public disableNetworkMonitoring() {
+	private disableNetworkMonitoring() {
 		this._networkMonitoringSubscription?.unsubscribe();
 		this._networkMonitoringSubscription = undefined;
 	}
@@ -131,6 +131,13 @@ export class ConnectionStateMonitor {
 	 * Updates local connection state and emits the full state to the observer.
 	 */
 	record(statusUpdates: Partial<LinkedConnectionStates>) {
+		// Maintain the network monitor
+		if (statusUpdates.intendedConnectionState === 'connected') {
+			this.enableNetworkMonitoring();
+		} else if (statusUpdates.intendedConnectionState === 'disconnected') {
+			this.disableNetworkMonitoring();
+		}
+
 		// Maintain the socket state
 		const newSocketStatus = {
 			...this._linkedConnectionState,
