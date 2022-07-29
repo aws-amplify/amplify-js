@@ -120,7 +120,7 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
-These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
+Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
 
 **Using the setup-dev:react-native script to work with React-Native apps**
 
