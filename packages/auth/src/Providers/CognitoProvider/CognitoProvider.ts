@@ -92,7 +92,8 @@ function listenToAuthHub(send: any) {
 }
 
 // FOR DEBUGGING ONLY
-inspect({ iframe: false });
+// inspect({ iframe: false });
+// inspect();
 
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
@@ -226,6 +227,7 @@ export class CognitoProvider implements AuthProvider {
 		);
 		this._authzService.send(authzMachineEvents.signInRequested());
 		const signInResult = await this.waitForSignInComplete();
+		inspect();
 		return signInResult;
 	}
 
@@ -357,6 +359,8 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
+		// inspect();
+
 		// checks to see if the identity pool and region are already configured
 		// 1. if AuthZ machine is not configured -> throw error
 		if (this._authzService.state.matches('notConfigured')) {
