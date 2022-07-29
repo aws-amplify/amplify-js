@@ -1788,7 +1788,7 @@ export class AuthClass {
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
-			return this.rejectNoUserPool();
+			return Promise.reject(new Error('No User Pool in the configuration.'));
 		}
 
 		return new Promise((res, rej) => {
