@@ -46,6 +46,7 @@ describe('Parser', () => {
 				region: '',
 				userPoolId: 'b',
 				userPoolWebClientId: '',
+				signUpVerificationMethod: 'code',
 			},
 			Geo: {
 				AmazonLocationService: {
