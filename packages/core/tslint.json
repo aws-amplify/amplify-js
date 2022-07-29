@@ -17,7 +17,7 @@
 		"object-literal-shorthand": true,
 		"no-eval": true,
 		"space-before-function-paren": [
-			false,
+			true,
 			{
 				"anonymous": "never",
 				"named": "never"
