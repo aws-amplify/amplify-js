@@ -1347,7 +1347,13 @@ class DataStore {
 					criteria
 				);
 			} else {
-				if (isPredicatesAll(criteria)) {
+				// observeQuery does not accept OL, okay to remove, Manuel?
+				if (isIdentifierObject(criteria, modelDefinition)) {
+					predicate = ModelPredicateCreator.createForPk<T>(
+						modelDefinition,
+						criteria as any
+					);
+				} else if (isPredicatesAll(criteria)) {
 					// Predicates.ALL means "all records", so no predicate (undefined)
 					predicate = undefined;
 				} else {
@@ -1443,7 +1449,16 @@ class DataStore {
 				}
 
 				items.clear();
-				itemsArray.forEach(item => items.set(item.id, item));
+				itemsArray.forEach(item => {
+					// CPK TODO: temp fix to see if this is what's broken
+					let record = item;
+
+					if (Array.isArray(item)) {
+						record = item[0];
+					}
+
+					items.set(record.id, record);
+				});
 
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(id => items.delete(id));
