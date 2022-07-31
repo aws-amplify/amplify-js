@@ -31,7 +31,12 @@ import {
 	IndexesType,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+
 const ID = 'id';
+
+export const errorMessages = {
+	idEmptyString: 'Field of type `ID` cannot be an empty string',
+};
 
 export function extractKeyIfExists(
 	modelDefinition: SchemaModel

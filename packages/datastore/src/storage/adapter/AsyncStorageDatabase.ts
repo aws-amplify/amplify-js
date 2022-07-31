@@ -101,12 +101,9 @@ class AsyncStorageDatabase {
 		const ulid =
 			this.getCollectionIndex(storeName).get(idxName) ||
 			this.getMonotonicFactory(storeName)();
-		debugger;
 
 		// Retrieve db key for item
 		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
-
-		debugger;
 
 		// Set key in collection index
 		this.getCollectionIndex(storeName).set(keyValuesPath, ulid);

@@ -66,6 +66,7 @@ import {
 } from '../types';
 import {
 	DATASTORE,
+	errorMessages,
 	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
@@ -79,6 +80,7 @@ import {
 	sortCompareFunction,
 	DeferredCallbackResolver,
 	extractPrimaryKeyFieldNames,
+	extractPrimaryKeyValues,
 	isIdManaged,
 	isIdOptionallyManaged,
 	validatePredicate,
@@ -987,6 +989,14 @@ class DataStore {
 
 		const modelDefinition = getModelDefinition(modelConstructor);
 
+		for (const key of extractPrimaryKeyFieldNames(modelDefinition)) {
+			const keyValue = model[key];
+			if (isIdOptionallyManaged(modelDefinition) && keyValue === '') {
+				logger.error(errorMessages.idEmptyString, { key, value: keyValue });
+				throw new Error(errorMessages.idEmptyString);
+			}
+		}
+
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
 			condition!
@@ -1348,12 +1358,13 @@ class DataStore {
 				);
 			} else {
 				// observeQuery does not accept OL, okay to remove, Manuel?
-				if (isIdentifierObject(criteria, modelDefinition)) {
-					predicate = ModelPredicateCreator.createForPk<T>(
-						modelDefinition,
-						criteria as any
-					);
-				} else if (isPredicatesAll(criteria)) {
+				// if (isIdentifierObject(criteria, modelDefinition)) {
+				// 	predicate = ModelPredicateCreator.createForPk<T>(
+				// 		modelDefinition,
+				// 		criteria as any
+				// 	);
+				// } else if (isPredicatesAll(criteria)) {
+				if (isPredicatesAll(criteria)) {
 					// Predicates.ALL means "all records", so no predicate (undefined)
 					predicate = undefined;
 				} else {
@@ -1450,7 +1461,7 @@ class DataStore {
 
 				items.clear();
 				itemsArray.forEach(item => {
-					// CPK TODO: temp fix to see if this is what's broken
+					// CPK TODO: identify where items are being placed in arrays
 					let record = item;
 
 					if (Array.isArray(item)) {
