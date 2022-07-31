@@ -280,18 +280,14 @@ export class AsyncStorageAdapter implements Adapter {
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
 						} else {
-							// If single target name, using old codegen
-							const getByfield = recordItem[targetName as any]
+							const getByfield = recordItem[targetName]
 								? targetName
 								: fieldName;
+							if (!recordItem[getByfield]) break;
 
-							// We break here, because the recordItem does not have 'team', the `getByField`
-							// extract the keys on the related model.
-							if (!recordItem[getByfield as any]) break;
+							const key = recordItem[getByfield];
 
-							const key = [recordItem[getByfield as any]];
-
-							const connectionRecord = await this.db.get(key as any, storeName);
+							const connectionRecord = await this.db.get(key, storeName);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -333,14 +329,14 @@ export class AsyncStorageAdapter implements Adapter {
 								delete recordItem[targetName];
 							});
 						} else if (recordItem[targetName as any]) {
-							const key = [recordItem[targetName as any]];
+							const key = recordItem[targetName];
 
-							const connectionRecord = await this.db.get(key as any, storeName);
+							const connectionRecord = await this.db.get(key, storeName);
 
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName as any];
+							delete recordItem[targetName];
 						}
 					}
 
@@ -723,13 +719,9 @@ export class AsyncStorageAdapter implements Adapter {
 								deleteQueue
 							);
 						} else {
-							// Backwards compatibility (ASYNC CPK TODO: combine with above)
 							const hasOneIndex = index || associatedWith;
 							const hasOneCustomField = targetName in model;
-
-							// PK / Composite key for the PARENT model
 							const keyValuesPath: string = this.getIndexKeyValuesPath(model);
-
 							const value = hasOneCustomField
 								? model[targetName]
 								: keyValuesPath;
