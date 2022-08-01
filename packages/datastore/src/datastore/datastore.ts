@@ -80,12 +80,13 @@ import {
 	sortCompareFunction,
 	DeferredCallbackResolver,
 	extractPrimaryKeyFieldNames,
-	extractPrimaryKeyValues,
+	extractPrimaryKeysAndValues,
 	isIdManaged,
 	isIdOptionallyManaged,
 	validatePredicate,
 	mergePatches,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1275,12 +1276,18 @@ class DataStore {
 
 							let message = item;
 
-							// as lnog as we're not dealing with a DELETE, we need to fetch a fresh
+							// as long as we're not dealing with a DELETE, we need to fetch a fresh
 							// item from storage to ensure it's fully populated.
 							if (item.opType !== 'DELETE') {
+								const modelDefinition = getModelDefinition(item.model);
+								const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+								const primaryKeysAndValues = extractPrimaryKeysAndValues(
+									item.element,
+									keyFields
+								);
 								const freshElement = await this.query(
 									item.model,
-									item.element.id
+									primaryKeysAndValues
 								);
 								message = {
 									...message,
@@ -1357,13 +1364,6 @@ class DataStore {
 					criteria
 				);
 			} else {
-				// observeQuery does not accept OL, okay to remove, Manuel?
-				// if (isIdentifierObject(criteria, modelDefinition)) {
-				// 	predicate = ModelPredicateCreator.createForPk<T>(
-				// 		modelDefinition,
-				// 		criteria as any
-				// 	);
-				// } else if (isPredicatesAll(criteria)) {
 				if (isPredicatesAll(criteria)) {
 					// Predicates.ALL means "all records", so no predicate (undefined)
 					predicate = undefined;
@@ -1382,9 +1382,16 @@ class DataStore {
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, sortOptions)).forEach(item =>
-						items.set(item.id, item)
-					);
+					(await this.query(model, criteria, sortOptions)).forEach(item => {
+						let record = item;
+						// TODO: fix query
+						if (Array.isArray(item)) {
+							record = item[0];
+						}
+						const itemModelDefinition = getModelDefinition(model);
+						const idOrPk = getIdentifierValue(itemModelDefinition, record);
+						items.set(idOrPk, record);
+					});
 
 					// Observe the model and send a stream of updates (debounced).
 					// We need to post-filter results instead of passing criteria through
@@ -1392,19 +1399,27 @@ class DataStore {
 					// We need to explicitly remove those items from the existing snapshot.
 					handle = this.observe(model).subscribe(
 						({ element, model, opType }) => {
+							let record = element;
+
+							// TODO: fix query
+							if (Array.isArray(element)) {
+								record = element[0];
+							}
+							const itemModelDefinition = getModelDefinition(model);
+							const idOrPk = getIdentifierValue(itemModelDefinition, record);
 							if (
 								hasPredicate &&
-								!validatePredicate(element, predicateGroupType, predicates)
+								!validatePredicate(record, predicateGroupType, predicates)
 							) {
 								if (
 									opType === 'UPDATE' &&
-									(items.has(element.id) || itemsChanged.has(element.id))
+									(items.has(idOrPk) || itemsChanged.has(idOrPk))
 								) {
 									// tracking as a "deleted item" will include the item in
 									// page limit calculations and ensure it is removed from the
 									// final items collection, regardless of which collection(s)
 									// it is currently in. (I mean, it could be in both, right!?)
-									deletedItemIds.push(element.id);
+									deletedItemIds.push(idOrPk);
 								} else {
 									// ignore updates for irrelevant/filtered items.
 									return;
@@ -1416,9 +1431,9 @@ class DataStore {
 							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
 							// depends on the LATEST record (for a given id).
 							if (opType === 'DELETE') {
-								deletedItemIds.push(element.id);
+								deletedItemIds.push(idOrPk);
 							} else {
-								itemsChanged.set(element.id, element);
+								itemsChanged.set(idOrPk, record);
 							}
 
 							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
@@ -1461,19 +1476,22 @@ class DataStore {
 
 				items.clear();
 				itemsArray.forEach(item => {
-					// CPK TODO: identify where items are being placed in arrays
+					// CPK TODO: fix query
 					let record = item;
 
 					if (Array.isArray(item)) {
 						record = item[0];
 					}
 
-					items.set(record.id, record);
+					const itemModelDefinition = getModelDefinition(model);
+					const idOrPk = getIdentifierValue(itemModelDefinition, record);
+					items.set(idOrPk, record);
 				});
 
 				// remove deleted items from the final result set
-				deletedItemIds.forEach(id => items.delete(id));
+				deletedItemIds.forEach(idOrPk => items.delete(idOrPk));
 
+				console.log(items);
 				return {
 					items: Array.from(items.values()),
 					isSynced,
