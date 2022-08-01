@@ -184,26 +184,26 @@ class IndexedDBAdapter implements Adapter {
 										autoIncrement: true,
 									});
 
-									const origIndexNames = Object.values(origStore.indexNames);
-									for (const idxName of origIndexNames) {
-										if (idxName === 'byId') {
-											// don't migrate this index. It'll be replaced with byPk
-											continue;
-										}
-										const idx = origStore.index(idxName);
-										const { keyPath, unique } = idx;
+									// const origIndexNames = Object.values(origStore.indexNames);
+									// for (const idxName of origIndexNames) {
+									// 	if (idxName === 'byId') {
+									// 		// don't migrate this index. It'll be replaced with byPk
+									// 		continue;
+									// 	}
+									// 	const idx = origStore.index(idxName);
+									// 	const { keyPath, unique } = idx;
 
-										newStore.createIndex(idxName, keyPath, { unique });
-									}
+									// 	newStore.createIndex(idxName, keyPath, { unique });
+									// }
 
-									const { namespaceName, modelName } =
-										this.getNamespaceAndModelFromStorename(storeName);
+									// const { namespaceName, modelName } =
+									// 	this.getNamespaceAndModelFromStorename(storeName);
 
-									const keyPath = this.getIndexKeyPath(
-										namespaceName,
-										modelName
-									);
-									newStore.createIndex('byPk', keyPath, { unique: true });
+									// const keyPath = this.getIndexKeyPath(
+									// 	namespaceName,
+									// 	modelName
+									// );
+									// newStore.createIndex('byPk', keyPath, { unique: true });
 
 									let cursor = await origStore.openCursor();
 									let count = 0;
