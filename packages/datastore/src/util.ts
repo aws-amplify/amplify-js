@@ -5,6 +5,7 @@ import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
+	ProducerModelPredicate,
 	isPredicateGroup,
 	isPredicateObj,
 	ModelInstanceMetadata,
@@ -35,7 +36,7 @@ import { WordArray } from 'amazon-cognito-identity-js';
 const ID = 'id';
 
 export const errorMessages = {
-	idEmptyString: 'Field of type `ID` cannot be an empty string',
+	idEmptyString: 'An index field cannot contain an empty string value',
 };
 
 export function extractKeyIfExists(
@@ -62,6 +63,15 @@ export function extractPrimaryKeyValues<T extends PersistentModel>(
 	keyFields: string[]
 ): string[] {
 	return keyFields.map(key => model[key]);
+}
+
+export function extractPrimaryKeysAndValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): any {
+	const primaryKeysAndValues = {};
+	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
+	return primaryKeysAndValues;
 }
 
 // IdentifierFields<ManagedIdentifier>

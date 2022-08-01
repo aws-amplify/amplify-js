@@ -251,7 +251,7 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						// ASYNC CPK TODO:
+						// ASYNC CPK TODO: make this cleaner
 						if (targetNames?.length) {
 							let getByFields = [];
 							let allPresent;
@@ -298,7 +298,7 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
-						// ASYNC CPK TODO:
+						// ASYNC CPK TODO: make this cleaner
 						if (targetNames?.length) {
 							let allPresent;
 							// iterate through all targetnames to make sure they are all present in the recordItem
