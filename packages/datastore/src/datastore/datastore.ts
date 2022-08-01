@@ -63,6 +63,7 @@ import {
 	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
+	isModelAttributePrimaryKey,
 } from '../types';
 import {
 	DATASTORE,
@@ -293,6 +294,10 @@ function modelInstanceCreator<T extends PersistentModel>(
 	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
+function isSchemaModel(m: SchemaModel | SchemaNonModel): m is SchemaModel {
+	return (m as SchemaModel).attributes !== undefined;
+}
+
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
@@ -306,6 +311,14 @@ const validateModelFields =
 				(v === null || v === undefined)
 			) {
 				throw new Error(`Field ${name} is required`);
+			}
+
+			if (isSchemaModel(modelDefinition) && !isIdManaged(modelDefinition)) {
+				const keys = extractPrimaryKeyFieldNames(modelDefinition);
+				if (keys.includes(k) && v === '') {
+					logger.error(errorMessages.idEmptyString, { k, value: v });
+					throw new Error(errorMessages.idEmptyString);
+				}
 			}
 
 			if (isGraphQLScalarType(type)) {
@@ -990,14 +1003,6 @@ class DataStore {
 
 		const modelDefinition = getModelDefinition(modelConstructor);
 
-		for (const key of extractPrimaryKeyFieldNames(modelDefinition)) {
-			const keyValue = model[key];
-			if (isIdOptionallyManaged(modelDefinition) && keyValue === '') {
-				logger.error(errorMessages.idEmptyString, { key, value: keyValue });
-				throw new Error(errorMessages.idEmptyString);
-			}
-		}
-
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
 			condition!
@@ -1491,7 +1496,6 @@ class DataStore {
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(idOrPk => items.delete(idOrPk));
 
-				console.log(items);
 				return {
 					items: Array.from(items.values()),
 					isSynced,
