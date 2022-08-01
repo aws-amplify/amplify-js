@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.10...@aws-amplify/core@4.6.0) (2022-07-28)
+
+
+### Features
+
+* **@aws-amplify/auth:** Auto sign in after sign up ([#10126](https://github.com/aws-amplify/amplify-js/issues/10126)) ([e54617f](https://github.com/aws-amplify/amplify-js/commit/e54617f2878244f0e391d2d49f5cd2e8a8c069f9)), closes [#6320](https://github.com/aws-amplify/amplify-js/issues/6320) [#3882](https://github.com/aws-amplify/amplify-js/issues/3882) [#3631](https://github.com/aws-amplify/amplify-js/issues/3631) [#6018](https://github.com/aws-amplify/amplify-js/issues/6018)
+
+
+
+
+
+## [4.5.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.9...@aws-amplify/core@4.5.10) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [4.5.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.8...@aws-amplify/core@4.5.9) (2022-07-07)
 
 **Note:** Version bump only for package @aws-amplify/core

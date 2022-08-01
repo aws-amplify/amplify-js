@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "4.0.45",
+	"version": "4.0.47",
 	"description": "Api category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -51,8 +51,8 @@
 		"@types/zen-observable": "^0.8.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api-graphql": "2.3.9",
-		"@aws-amplify/api-rest": "2.0.45"
+		"@aws-amplify/api-graphql": "2.3.11",
+		"@aws-amplify/api-rest": "2.0.47"
 	},
 	"jest": {
 		"globals": {
