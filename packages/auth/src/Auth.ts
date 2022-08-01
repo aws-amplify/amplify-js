@@ -44,6 +44,7 @@ import {
 	browserOrNode,
 	UniversalStorage,
 	urlSafeDecode,
+	HubCallback,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -70,6 +71,7 @@ import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
 import {
 	AuthErrorTypes,
+	AutoSignInOptions,
 	CognitoHostedUIIdentityProvider,
 	IAuthDevice,
 } from './types/Auth';
@@ -95,6 +97,8 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
 const MAX_DEVICES = 60;
 
+const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
+
 /**
  * Provide authentication steps
  */
@@ -107,6 +111,7 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
+	private autoSignInInitiated: boolean = false;
 
 	Credentials = Credentials;
 
@@ -257,6 +262,24 @@ export class AuthClass {
 			null,
 			`The Auth category has been configured successfully`
 		);
+
+		if (
+			!this.autoSignInInitiated &&
+			typeof this._storage['getItem'] === 'function'
+		) {
+			const pollingInitiated = this.isTrueStorageValue(
+				'amplify-polling-started'
+			);
+			if (pollingInitiated) {
+				dispatchAuthEvent(
+					'autoSignIn_failure',
+					null,
+					AuthErrorTypes.AutoSignInError
+				);
+				this._storage.removeItem('amplify-auto-sign-in');
+			}
+			this._storage.removeItem('amplify-polling-started');
+		}
 		return this._config;
 	}
 
@@ -295,6 +318,9 @@ export class AuthClass {
 		const attributes: CognitoUserAttribute[] = [];
 		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
+		let autoSignIn: AutoSignInOptions = { enabled: false };
+		let autoSignInValidationData = {};
+		let autoSignInClientMetaData: ClientMetaData = {};
 
 		if (params && typeof params === 'string') {
 			username = params;
@@ -345,6 +371,13 @@ export class AuthClass {
 					);
 				});
 			}
+
+			autoSignIn = params.autoSignIn ?? { enabled: false };
+			if (autoSignIn.enabled) {
+				this._storage.setItem('amplify-auto-sign-in', true);
+				autoSignInValidationData = autoSignIn.validationData ?? {};
+				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -379,12 +412,112 @@ export class AuthClass {
 							data,
 							`${username} has signed up successfully`
 						);
+						if (autoSignIn.enabled) {
+							this.handleAutoSignIn(
+								username,
+								password,
+								autoSignInValidationData,
+								autoSignInClientMetaData,
+								data
+							);
+						}
 						resolve(data);
 					}
 				},
 				clientMetadata
 			);
 		});
+	}
+
+	private handleAutoSignIn(
+		username: string,
+		password: string,
+		validationData: {},
+		clientMetadata: any,
+		data: any
+	) {
+		this.autoSignInInitiated = true;
+		const authDetails = new AuthenticationDetails({
+			Username: username,
+			Password: password,
+			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
+		});
+		if (data.userConfirmed) {
+			this.signInAfterUserConfirmed(authDetails);
+		} else if (this._config.signUpVerificationMethod === 'link') {
+			this.handleLinkAutoSignIn(authDetails);
+		} else {
+			this.handleCodeAutoSignIn(authDetails);
+		}
+	}
+
+	private handleCodeAutoSignIn(authDetails: AuthenticationDetails) {
+		const listenEvent = ({ payload }) => {
+			if (payload.event === 'confirmSignUp') {
+				this.signInAfterUserConfirmed(authDetails, listenEvent);
+			}
+		};
+		Hub.listen('auth', listenEvent);
+	}
+
+	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
+		this._storage.setItem('amplify-polling-started', true);
+		const start = Date.now();
+		const autoSignInPollingIntervalId = setInterval(() => {
+			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
+				clearInterval(autoSignInPollingIntervalId);
+				dispatchAuthEvent(
+					'autoSignIn_failure',
+					null,
+					'Please confirm your account and use your credentials to sign in.'
+				);
+				this._storage.removeItem('amplify-auto-sign-in');
+			} else {
+				this.signInAfterUserConfirmed(
+					authDetails,
+					null,
+					autoSignInPollingIntervalId
+				);
+			}
+		}, 5000);
+	}
+
+	private async signInAfterUserConfirmed(
+		authDetails: AuthenticationDetails,
+		listenEvent?: HubCallback,
+		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
+	) {
+		const user = this.createCognitoUser(authDetails.getUsername());
+		try {
+			await user.authenticateUser(
+				authDetails,
+				this.authCallbacks(
+					user,
+					value => {
+						dispatchAuthEvent(
+							'autoSignIn',
+							value,
+							`${authDetails.getUsername()} has signed in successfully`
+						);
+						if (listenEvent) {
+							Hub.remove('auth', listenEvent);
+						}
+						if (autoSignInPollingIntervalId) {
+							clearInterval(autoSignInPollingIntervalId);
+							this._storage.removeItem('amplify-polling-started');
+						}
+						this._storage.removeItem('amplify-auto-sign-in');
+					},
+					error => {
+						logger.error(error);
+						this._storage.removeItem('amplify-auto-sign-in');
+					}
+				)
+			);
+		} catch (error) {
+			logger.error(error);
+		}
 	}
 
 	/**
@@ -429,12 +562,31 @@ export class AuthClass {
 					if (err) {
 						reject(err);
 					} else {
+						dispatchAuthEvent(
+							'confirmSignUp',
+							data,
+							`${username} has been confirmed successfully`
+						);
+						const autoSignIn = this.isTrueStorageValue('amplify-auto-sign-in');
+						if (autoSignIn && !this.autoSignInInitiated) {
+							dispatchAuthEvent(
+								'autoSignIn_failure',
+								null,
+								AuthErrorTypes.AutoSignInError
+							);
+							this._storage.removeItem('amplify-auto-sign-in');
+						}
 						resolve(data);
 					}
 				},
 				clientMetadata
 			);
 		});
+	}
+
+	private isTrueStorageValue(value: string) {
+		const item = this._storage.getItem(value);
+		return item ? item === 'true' : false;
 	}
 
 	/**
@@ -1636,7 +1788,7 @@ export class AuthClass {
 		logger.debug('Getting current session');
 		// Purposely not calling the reject method here because we don't need a console error
 		if (!this.userPool) {
-			return this.rejectNoUserPool();
+			return Promise.reject(new Error('No User Pool in the configuration.'));
 		}
 
 		return new Promise((res, rej) => {
