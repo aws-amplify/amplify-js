@@ -374,7 +374,7 @@ export class AuthClass {
 
 			autoSignIn = params.autoSignIn ?? { enabled: false };
 			if (autoSignIn.enabled) {
-				this._storage.setItem('amplify-auto-sign-in', true);
+				this._storage.setItem('amplify-auto-sign-in', 'true');
 				autoSignInValidationData = autoSignIn.validationData ?? {};
 				autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 			}
@@ -462,7 +462,7 @@ export class AuthClass {
 	}
 
 	private handleLinkAutoSignIn(authDetails: AuthenticationDetails) {
-		this._storage.setItem('amplify-polling-started', true);
+		this._storage.setItem('amplify-polling-started', 'true');
 		const start = Date.now();
 		const autoSignInPollingIntervalId = setInterval(() => {
 			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
