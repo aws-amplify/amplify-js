@@ -15,9 +15,7 @@ import { InteractionsResponse } from './Response';
 
 export interface InteractionsProvider {
 	// configure your provider
-	configure(
-		config: AWSLexProviderOptions | AWSLexProviderV2Options | undefined
-	): object;
+	configure(config: InteractionsOptions): InteractionsOptions;
 
 	// return 'Interactions'
 	getCategory(): string;
@@ -31,6 +29,10 @@ export interface InteractionsProvider {
 		botname: string,
 		callback: (err: any, confirmation: InteractionsResponse) => void
 	);
+}
+
+export interface generic {
+	[key: string]: any;
 }
 
 export interface InteractionsProviders {

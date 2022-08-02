@@ -116,19 +116,7 @@ export class InteractionsClass {
 
 	public async send(
 		botname: string,
-		message: string
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: InteractionsMessage
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: object
-	): Promise<InteractionsResponse>;
-	public async send(
-		botname: string,
-		message: string | object
+		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
 		if (
 			!(

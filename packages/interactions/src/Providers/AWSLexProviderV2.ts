@@ -50,7 +50,7 @@ export class AWSLexProviderV2 extends AbstractInteractionsProvider {
 		return 'AWSLexProviderV2';
 	}
 
-	configure(config: AWSLexProviderV2Options = {}): InteractionsOptions {
+	configure(config: AWSLexProviderV2Options = {}): AWSLexProviderV2Options {
 		const propertiesToTest = [
 			'name',
 			'botId',

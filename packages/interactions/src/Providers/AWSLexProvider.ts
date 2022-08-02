@@ -48,7 +48,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return 'AWSLexProvider';
 	}
 
-	configure(config: AWSLexProviderOptions = {}): InteractionsOptions {
+	configure(config: AWSLexProviderOptions = {}): AWSLexProviderOptions {
 		const propertiesToTest = ['name', 'alias', 'region'];
 
 		Object.keys(config).map(botKey => {
