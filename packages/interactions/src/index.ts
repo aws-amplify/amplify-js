@@ -19,5 +19,6 @@ export default Interactions;
 
 export * from './types';
 export * from './Providers/AWSLexProvider';
+export * from './Providers/AWSLexProviderV2';
 
 export { Interactions };

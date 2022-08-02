@@ -15,7 +15,9 @@ import { InteractionsResponse } from './Response';
 
 export interface InteractionsProvider {
 	// configure your provider
-	configure(config: object): object;
+	configure(
+		config: AWSLexProviderOptions | AWSLexProviderV2Options | undefined
+	): object;
 
 	// return 'Interactions'
 	getCategory(): string;
@@ -33,4 +35,34 @@ export interface InteractionsProvider {
 
 export interface InteractionsProviders {
 	[key: string]: InteractionsProvider;
+}
+
+export interface InteractionsProviderOptions {
+	[key: string]: AWSLexProviderOptions | AWSLexProviderV2Options;
+}
+
+export interface AWSLexProviderOption {
+	name: string;
+	alias: string;
+	region: string;
+	providerName?: string;
+	onComplete?(botname: string, callback: (err, confirmation) => void): void;
+}
+
+export interface AWSLexProviderOptions {
+	[key: string]: AWSLexProviderOption;
+}
+
+export interface AWSLexProviderV2Option {
+	name: string;
+	botId: string;
+	aliasId: string;
+	localeId: string;
+	region: string;
+	providerName: string;
+	onComplete?(botname: string, callback: (err, confirmation) => void): void;
+}
+
+export interface AWSLexProviderV2Options {
+	[key: string]: AWSLexProviderV2Option;
 }

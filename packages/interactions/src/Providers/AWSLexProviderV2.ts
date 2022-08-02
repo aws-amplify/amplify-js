@@ -13,30 +13,32 @@
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
-	AWSLexProviderOptions,
+	AWSLexProviderV2Options,
 	InteractionsResponse,
 	InteractionsMessage,
 } from '../types';
 import {
-	LexRuntimeServiceClient,
-	PostTextCommand,
-	PostTextCommandInput,
-	PostTextCommandOutput,
-	PostContentCommand,
-	PostContentCommandInput,
-	PostContentCommandOutput,
-} from '@aws-sdk/client-lex-runtime-service';
+	LexRuntimeV2Client,
+	RecognizeTextCommand,
+	RecognizeTextCommandInput,
+	RecognizeTextCommandOutput,
+	RecognizeUtteranceCommand,
+	RecognizeUtteranceCommandInput,
+	RecognizeUtteranceCommandOutput,
+	SessionState,
+} from '@aws-sdk/client-lex-runtime-v2';
+
 import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexProviderHelper/convert';
+import { convert, unGzipBase64AsJson } from './AWSLexProviderHelper/convert';
 
-const logger = new Logger('AWSLexProvider');
+const logger = new Logger('AWSLexProviderV2');
 
-export class AWSLexProvider extends AbstractInteractionsProvider {
-	private lexRuntimeServiceClient: LexRuntimeServiceClient;
+export class AWSLexProviderV2 extends AbstractInteractionsProvider {
+	private lexRuntimeServiceV2Client: LexRuntimeV2Client;
 	private _botsCompleteCallback: object;
 
 	constructor(options: InteractionsOptions = {}) {
@@ -45,11 +47,18 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	}
 
 	getProviderName(): string {
-		return 'AWSLexProvider';
+		return 'AWSLexProviderV2';
 	}
 
-	configure(config: AWSLexProviderOptions = {}): InteractionsOptions {
-		const propertiesToTest = ['name', 'alias', 'region'];
+	configure(config: AWSLexProviderV2Options = {}): InteractionsOptions {
+		const propertiesToTest = [
+			'name',
+			'botId',
+			'aliasId',
+			'localeId',
+			'providerName',
+			'region',
+		];
 
 		Object.keys(config).map(botKey => {
 			const botConfig = config[botKey];
@@ -66,20 +75,19 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return super.configure(config);
 	}
 
-	reportBotStatus(
-		botname: string,
-		data: PostTextCommandOutput | PostContentCommandOutput
-	) {
+	reportBotStatus(botname: string, sessionState?: SessionState) {
 		// Check if state is fulfilled to resolve onFullfilment promise
-		logger.debug('postContent state', data.dialogState);
+		logger.debug('postContent state', sessionState?.intent?.state);
 		if (
-			data.dialogState === 'ReadyForFulfillment' ||
-			data.dialogState === 'Fulfilled'
+			sessionState?.intent?.state === 'ReadyForFulfillment' ||
+			sessionState?.intent?.state === 'Fulfilled'
 		) {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
 				setTimeout(
 					() =>
-						this._botsCompleteCallback[botname](null, { slots: data.slots }),
+						this._botsCompleteCallback[botname](null, {
+							slots: sessionState?.intent?.slots,
+						}),
 					0
 				);
 			}
@@ -89,13 +97,16 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				typeof this._config[botname].onComplete === 'function'
 			) {
 				setTimeout(
-					() => this._config[botname].onComplete(null, { slots: data.slots }),
+					() =>
+						this._config[botname].onComplete(null, {
+							slots: sessionState?.intent?.slots,
+						}),
 					0
 				);
 			}
 		}
 
-		if (data.dialogState === 'Failed') {
+		if (sessionState?.intent?.state === 'Failed') {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
 				setTimeout(
 					() => this._botsCompleteCallback[botname]('Bot conversation failed'),
@@ -134,7 +145,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			return Promise.reject(`message type isn't supported`);
 		}
 
-		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
@@ -147,28 +157,29 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			return Promise.reject('No credentials');
 		}
 
-		this.lexRuntimeServiceClient = new LexRuntimeServiceClient({
+		this.lexRuntimeServiceV2Client = new LexRuntimeV2Client({
 			region: this._config[botname].region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 		});
-
-		let params: PostTextCommandInput | PostContentCommandInput;
+		let params: RecognizeTextCommandInput | RecognizeUtteranceCommandInput;
 		if (typeof message === 'string') {
 			params = {
-				botAlias: this._config[botname].alias,
-				botName: botname,
-				inputText: message,
-				userId: credentials.identityId,
-			} as PostTextCommandInput;
+				botAliasId: this._config[botname].aliasId,
+				botId: this._config[botname].botId,
+				localeId: this._config[botname].localeId,
+				text: message,
+				sessionId: credentials.identityId,
+			} as RecognizeTextCommandInput;
 
-			logger.debug('postText to lex', message);
+			logger.debug('postText to lex2', message);
+
 			try {
-				const postTextCommand = new PostTextCommand(params);
-				const data: PostTextCommandOutput =
-					await this.lexRuntimeServiceClient.send(postTextCommand);
+				const recognizeTextCommand = new RecognizeTextCommand(params);
+				const data: RecognizeTextCommandOutput =
+					await this.lexRuntimeServiceV2Client.send(recognizeTextCommand);
 
-				this.reportBotStatus(botname, data);
+				this.reportBotStatus(botname, data.sessionState);
 				return data;
 			} catch (err) {
 				return Promise.reject(err);
@@ -180,34 +191,55 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			} = message;
 			if (messageType === 'voice') {
 				params = {
-					botAlias: this._config[botname].alias,
-					botName: botname,
-					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
+					botAliasId: this._config[botname].aliasId,
+					botId: this._config[botname].botId,
+					localeId: this._config[botname].localeId,
+					sessionId: credentials.identityId,
+					requestContentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
 					inputStream: await convert(content as Blob | ReadableStream),
-					userId: credentials.identityId,
-					accept: 'audio/mpeg',
-				} as PostContentCommandInput;
+				} as RecognizeUtteranceCommandInput;
 			} else {
 				params = {
-					botAlias: this._config[botname].alias,
-					botName: botname,
-					contentType: 'text/plain; charset=utf-8',
+					botAliasId: this._config[botname].aliasId,
+					botId: this._config[botname].botId,
+					localeId: this._config[botname].localeId,
+					sessionId: credentials.identityId,
+					requestContentType: 'text/plain; charset=utf-8',
 					inputStream: content as string,
-					userId: credentials.identityId,
-					accept: 'audio/mpeg',
-				} as PostContentCommandInput;
+				} as RecognizeUtteranceCommandInput;
 			}
-			logger.debug('postContent to lex', message);
+			logger.debug('postContent to lex2', message);
 			try {
-				const postContentCommand = new PostContentCommand(params);
-				const data: PostContentCommandOutput =
-					await this.lexRuntimeServiceClient.send(postContentCommand);
+				const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
+				const data: RecognizeUtteranceCommandOutput =
+					await this.lexRuntimeServiceV2Client.send(recognizeUtteranceCommand);
 
 				const audioArray = await convert(
 					data.audioStream as Blob | ReadableStream
 				);
-				this.reportBotStatus(botname, data);
-				return { ...data, ...{ audioStream: audioArray } };
+
+				const sessionState = data.sessionState
+					? unGzipBase64AsJson<SessionState>(data.sessionState)
+					: undefined;
+
+				const messages = data.messages
+					? unGzipBase64AsJson(data.messages)
+					: undefined;
+
+				const interpretations = data.interpretations
+					? unGzipBase64AsJson(data.interpretations)
+					: undefined;
+
+				this.reportBotStatus(botname, sessionState);
+				return {
+					...data,
+					...{
+						audioStream: audioArray,
+						messages,
+						sessionState,
+						interpretations,
+					},
+				};
 			} catch (err) {
 				return Promise.reject(err);
 			}

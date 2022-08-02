@@ -13,7 +13,7 @@
 		"transpile": "ngc",
 		"package": "rollup -c rollup.config.js",
 		"minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
-		"build": "npm run transpile && npm run package && npm run minify && npm run declarations",
+		"build": "npm run transpile && npm run package && npm run declarations",
 		"build:esm:watch": "ngc --watch",
 		"build:cjs:watch": "echo \"CommonJS modules are not exported in angular. Use target build:esm:watch\"",
 		"format": "echo \"Not implemented\"",

@@ -22,7 +22,8 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractInteractionsProvider');
 
 export abstract class AbstractInteractionsProvider
-	implements InteractionsProvider {
+	implements InteractionsProvider
+{
 	protected _config: InteractionsOptions;
 
 	constructor(options: InteractionsOptions = {}) {
