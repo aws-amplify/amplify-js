@@ -63,6 +63,7 @@ import {
 	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
+	isModelAttributePrimaryKey,
 } from '../types';
 import {
 	DATASTORE,

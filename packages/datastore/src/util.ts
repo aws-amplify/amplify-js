@@ -5,6 +5,7 @@ import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
+	ProducerModelPredicate,
 	isPredicateGroup,
 	isPredicateObj,
 	ModelInstanceMetadata,
