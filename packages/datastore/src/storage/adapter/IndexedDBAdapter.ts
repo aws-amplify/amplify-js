@@ -29,7 +29,6 @@ import {
 	traverseModel,
 	validatePredicate,
 	sortCompareFunction,
-	extractTargetNamesFromSrc,
 } from '../../util';
 import { Adapter } from './index';
 

@@ -63,9 +63,11 @@ import {
 	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
+	isModelAttributePrimaryKey,
 } from '../types';
 import {
 	DATASTORE,
+	errorMessages,
 	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
@@ -79,11 +81,13 @@ import {
 	sortCompareFunction,
 	DeferredCallbackResolver,
 	extractPrimaryKeyFieldNames,
+	extractPrimaryKeysAndValues,
 	isIdManaged,
 	isIdOptionallyManaged,
 	validatePredicate,
 	mergePatches,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -290,6 +294,10 @@ function modelInstanceCreator<T extends PersistentModel>(
 	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
+function isSchemaModel(m: SchemaModel | SchemaNonModel): m is SchemaModel {
+	return (m as SchemaModel).attributes !== undefined;
+}
+
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
@@ -303,6 +311,14 @@ const validateModelFields =
 				(v === null || v === undefined)
 			) {
 				throw new Error(`Field ${name} is required`);
+			}
+
+			if (isSchemaModel(modelDefinition) && !isIdManaged(modelDefinition)) {
+				const keys = extractPrimaryKeyFieldNames(modelDefinition);
+				if (keys.includes(k) && v === '') {
+					logger.error(errorMessages.idEmptyString, { k, value: v });
+					throw new Error(errorMessages.idEmptyString);
+				}
 			}
 
 			if (isGraphQLScalarType(type)) {
@@ -1265,12 +1281,18 @@ class DataStore {
 
 							let message = item;
 
-							// as lnog as we're not dealing with a DELETE, we need to fetch a fresh
+							// as long as we're not dealing with a DELETE, we need to fetch a fresh
 							// item from storage to ensure it's fully populated.
 							if (item.opType !== 'DELETE') {
+								const modelDefinition = getModelDefinition(item.model);
+								const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+								const primaryKeysAndValues = extractPrimaryKeysAndValues(
+									item.element,
+									keyFields
+								);
 								const freshElement = await this.query(
 									item.model,
-									item.element.id
+									primaryKeysAndValues
 								);
 								message = {
 									...message,
@@ -1365,9 +1387,16 @@ class DataStore {
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, sortOptions)).forEach(item =>
-						items.set(item.id, item)
-					);
+					(await this.query(model, criteria, sortOptions)).forEach(item => {
+						let record = item;
+						// TODO: fix query
+						if (Array.isArray(item)) {
+							record = item[0];
+						}
+						const itemModelDefinition = getModelDefinition(model);
+						const idOrPk = getIdentifierValue(itemModelDefinition, record);
+						items.set(idOrPk, record);
+					});
 
 					// Observe the model and send a stream of updates (debounced).
 					// We need to post-filter results instead of passing criteria through
@@ -1375,19 +1404,27 @@ class DataStore {
 					// We need to explicitly remove those items from the existing snapshot.
 					handle = this.observe(model).subscribe(
 						({ element, model, opType }) => {
+							let record = element;
+
+							// TODO: fix query
+							if (Array.isArray(element)) {
+								record = element[0];
+							}
+							const itemModelDefinition = getModelDefinition(model);
+							const idOrPk = getIdentifierValue(itemModelDefinition, record);
 							if (
 								hasPredicate &&
-								!validatePredicate(element, predicateGroupType, predicates)
+								!validatePredicate(record, predicateGroupType, predicates)
 							) {
 								if (
 									opType === 'UPDATE' &&
-									(items.has(element.id) || itemsChanged.has(element.id))
+									(items.has(idOrPk) || itemsChanged.has(idOrPk))
 								) {
 									// tracking as a "deleted item" will include the item in
 									// page limit calculations and ensure it is removed from the
 									// final items collection, regardless of which collection(s)
 									// it is currently in. (I mean, it could be in both, right!?)
-									deletedItemIds.push(element.id);
+									deletedItemIds.push(idOrPk);
 								} else {
 									// ignore updates for irrelevant/filtered items.
 									return;
@@ -1399,9 +1436,9 @@ class DataStore {
 							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
 							// depends on the LATEST record (for a given id).
 							if (opType === 'DELETE') {
-								deletedItemIds.push(element.id);
+								deletedItemIds.push(idOrPk);
 							} else {
-								itemsChanged.set(element.id, element);
+								itemsChanged.set(idOrPk, record);
 							}
 
 							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
@@ -1443,10 +1480,21 @@ class DataStore {
 				}
 
 				items.clear();
-				itemsArray.forEach(item => items.set(item.id, item));
+				itemsArray.forEach(item => {
+					// CPK TODO: fix query
+					let record = item;
+
+					if (Array.isArray(item)) {
+						record = item[0];
+					}
+
+					const itemModelDefinition = getModelDefinition(model);
+					const idOrPk = getIdentifierValue(itemModelDefinition, record);
+					items.set(idOrPk, record);
+				});
 
 				// remove deleted items from the final result set
-				deletedItemIds.forEach(id => items.delete(id));
+				deletedItemIds.forEach(idOrPk => items.delete(idOrPk));
 
 				return {
 					items: Array.from(items.values()),

@@ -5,7 +5,15 @@ import {
 	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, Post, Comment, testSchema, pause } from './helpers';
+import {
+	Model,
+	User,
+	Profile,
+	Post,
+	Comment,
+	testSchema,
+	pause,
+} from './helpers';
 import { Predicates } from '../src/predicates';
 import { addCommonQueryTests } from './commonAdapterTests';
 

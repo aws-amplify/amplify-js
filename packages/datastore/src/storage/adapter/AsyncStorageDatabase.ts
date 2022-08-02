@@ -6,7 +6,7 @@ import {
 	PersistentModel,
 	QueryOne,
 } from '../../types';
-import { monotonicUlidFactory } from '../../util';
+import { indexNameFromKeys, monotonicUlidFactory } from '../../util';
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -96,8 +96,10 @@ class AsyncStorageDatabase {
 		keys: string[],
 		keyValuesPath: string
 	) {
+		const idxName = indexNameFromKeys(keys);
+
 		const ulid =
-			this.getCollectionIndex(storeName).get(keys[0]) ||
+			this.getCollectionIndex(storeName).get(idxName) ||
 			this.getMonotonicFactory(storeName)();
 
 		// Retrieve db key for item

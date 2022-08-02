@@ -65,8 +65,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 	// Returns primary keys for a model
 	private getIndexKeys(namespaceName: string, modelName: string): string[] {
-		const keyPath =
-			this.schema.namespaces[namespaceName]?.keys[modelName]?.primaryKey;
+		const namespace = this.schema.namespaces[namespaceName];
+
+		const keyPath = namespace?.keys[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;
@@ -239,7 +240,8 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 
 		for await (const relation of relations) {
-			const { fieldName, modelName, targetName, relationType } = relation;
+			const { fieldName, modelName, targetName, targetNames, relationType } =
+				relation;
 			const storeName = this.getStorename(namespaceName, modelName);
 			const modelConstructor = this.getModelConstructorByModelName(
 				namespaceName,
@@ -249,22 +251,84 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						const getByfield = recordItem[targetName] ? targetName : fieldName;
-						if (!recordItem[getByfield]) break;
+						// ASYNC CPK TODO: make this cleaner
+						if (targetNames?.length) {
+							let getByFields = [];
+							let allPresent;
+							// iterate through all targetnames to make sure they are all present in the recordItem
+							allPresent = targetNames.every(targetName => {
+								return recordItem[targetName] != null;
+							});
 
-						const key = recordItem[getByfield];
+							if (!allPresent) {
+								break;
+							}
 
-						const connectionRecord = await this.db.get(key, storeName);
+							getByFields = targetNames as any;
 
-						recordItem[fieldName] =
-							connectionRecord &&
-							this.modelInstanceCreator(modelConstructor, connectionRecord);
+							// keys are the key values
+							const keys = getByFields
+								.map(getByField => recordItem[getByField])
+								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+
+							const connectionRecord = await this.db.get(
+								keys as any,
+								storeName
+							);
+
+							recordItem[fieldName] =
+								connectionRecord &&
+								this.modelInstanceCreator(modelConstructor, connectionRecord);
+						} else {
+							const getByfield = recordItem[targetName]
+								? targetName
+								: fieldName;
+							if (!recordItem[getByfield]) break;
+
+							const key = recordItem[getByfield];
+
+							const connectionRecord = await this.db.get(key, storeName);
+
+							recordItem[fieldName] =
+								connectionRecord &&
+								this.modelInstanceCreator(modelConstructor, connectionRecord);
+						}
 					}
 
 					break;
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
+						// ASYNC CPK TODO: make this cleaner
+						if (targetNames?.length) {
+							let allPresent;
+							// iterate through all targetnames to make sure they are all present in the recordItem
+							allPresent = targetNames.every(targetName => {
+								return recordItem[targetName] != null;
+							});
+
+							// If not present, there is not yet a connected record
+							if (!allPresent) {
+								break;
+							}
+
+							const keys = targetNames
+								.map(targetName => recordItem[targetName])
+								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+
+							// Retrieve the connected record
+							const connectionRecord = await this.db.get(
+								keys as any,
+								storeName
+							);
+
+							recordItem[fieldName] =
+								connectionRecord &&
+								this.modelInstanceCreator(modelConstructor, connectionRecord);
+
+							targetNames?.map(targetName => {
+								delete recordItem[targetName];
+							});
+						} else if (recordItem[targetName as any]) {
 							const key = recordItem[targetName];
 
 							const connectionRecord = await this.db.get(key, storeName);
@@ -600,36 +664,99 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const hasOneIndex = index || associatedWith;
-						const hasOneCustomField = targetName in model;
-						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
-						const value = hasOneCustomField ? model[targetName] : keyValuesPath;
+						if (targetNames && targetNames?.length) {
+							const hasOneIndex = index || associatedWith;
 
-						if (!value) break;
+							// iterate over targetNames array and see if each item is present in model object
+							// targetNames here being the keys for the CHILD model
+							const hasConnectedModelFields = targetNames.every(targetName =>
+								model.hasOwnProperty(targetName)
+							);
 
-						const allRecords = await this.db.getAll(storeName);
+							// PK / Composite key for the parent model
+							const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 
-						const recordToDelete = allRecords.filter(
-							childItem => childItem[hasOneIndex] === value
-						) as T[];
+							let values;
 
-						await this.deleteTraverse<T>(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							recordToDelete,
-							modelName,
-							nameSpace,
-							deleteQueue
-						);
+							if (hasConnectedModelFields) {
+								// Values will be that of the child model
+								values = targetNames.map(
+									targetName => model[targetName]
+								) as any;
+							} else {
+								// values will be that of the parent model
+								values = keyValuesPath;
+							}
+
+							if (values.length === 0) break;
+
+							const allRecords = await this.db.getAll(storeName);
+
+							let recordToDelete;
+
+							// values === targetNames
+							if (hasConnectedModelFields) {
+								/**
+								 * Retrieve record by finding the record where all
+								 * targetNames are present on the connected model
+								 */
+								recordToDelete = allRecords.filter(childItem =>
+									values.every(value => childItem[value] != null)
+								) as T[];
+							} else {
+								// values === keyValuePath
+								recordToDelete = allRecords.filter(
+									childItem => childItem[hasOneIndex] === values
+								) as T[];
+							}
+
+							await this.deleteTraverse<T>(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete,
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
+						} else {
+							const hasOneIndex = index || associatedWith;
+							const hasOneCustomField = targetName in model;
+							const keyValuesPath: string = this.getIndexKeyValuesPath(model);
+							const value = hasOneCustomField
+								? model[targetName]
+								: keyValuesPath;
+
+							if (!value) break;
+
+							const allRecords = await this.db.getAll(storeName);
+
+							const recordToDelete = allRecords.filter(
+								childItem => childItem[hasOneIndex] === value
+							) as T[];
+
+							await this.deleteTraverse<T>(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								recordToDelete,
+								modelName,
+								nameSpace,
+								deleteQueue
+							);
+						}
 					}
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const keyValuesPath: string = this.getIndexKeyValuesPath(model);
+						// Key values for the parent model:
+						const keyValues: string[] = this.getIndexKeyValues(model);
 
 						const allRecords = await this.db.getAll(storeName);
-						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === keyValuesPath
+
+						// Use constant if we go with this approach
+						const indices = index.split('-');
+
+						const childrenArray = allRecords.filter(childItem =>
+							indices.every(index => keyValues.includes(childItem[index]))
 						) as T[];
 
 						await this.deleteTraverse<T>(
