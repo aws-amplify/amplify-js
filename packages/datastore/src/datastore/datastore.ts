@@ -866,8 +866,6 @@ class DataStore {
 	 * 1. Loads the schema and records metadata.
 	 * 1. If `this.amplifyConfig.aws_appsync_graphqlEndpoint` contains a URL,
 	 * attaches a sync engine, starts it, and subscribes.
-	 *
-	 *
 	 */
 	start = async (): Promise<void> => {
 		return this.runningProcesses.add(async () => {
@@ -919,7 +917,6 @@ class DataStore {
 					this.amplifyContext
 				);
 
-				// tslint:disable-next-line:max-line-length
 				const fullSyncIntervalInMilliseconds =
 					this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
 				syncSubscription = this.sync

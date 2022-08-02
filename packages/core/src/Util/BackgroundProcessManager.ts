@@ -10,14 +10,16 @@
  */
 export class BackgroundProcessManager {
 	/**
-	 * `true` if no more jobs are being accepted.
+	 * A string indicating whether the manager is accepting new work ("Open"),
+	 * waiting for work to complete ("Closing"), or fully done with all
+	 * submitted work and *not* accepting new jobs ("Closed").
 	 */
 	private _state = BackgroundProcessManagerState.Open;
 
 	/**
 	 * The list of outstanding jobs we'll need to wait for upon `close()`
 	 */
-	private jobs: JobEntry[] = [];
+	private jobs = new Set<JobEntry>();
 
 	/**
 	 * Creates a new manager for promises, observables, and other types
@@ -97,7 +99,7 @@ export class BackgroundProcessManager {
 		if (error) return error;
 
 		if (job === undefined) {
-			return this.addHooks(description);
+			return this.addHook(description);
 		} else if (typeof job === 'function') {
 			return this.addFunction(job, description);
 		} else if (job instanceof BackgroundProcessManager) {
@@ -123,7 +125,7 @@ export class BackgroundProcessManager {
 		clean: () => Promise<T>,
 		description?: string
 	): () => Promise<void> {
-		const { resolve, onTerminate } = this.addHooks(description);
+		const { resolve, onTerminate } = this.addHook(description);
 
 		const proxy = async () => {
 			await clean();
@@ -153,7 +155,7 @@ export class BackgroundProcessManager {
 		});
 
 		// finally! start the job.
-		const jobResult = job(onTerminate as any);
+		const jobResult = job(onTerminate);
 
 		// depending on what the job gives back, register the result
 		// so we can monitor for completion.
@@ -181,7 +183,7 @@ export class BackgroundProcessManager {
 	 * @param description Optional description to help identify pending jobs.
 	 * @returns `{ resolve, reject, onTerminate }`
 	 */
-	private addHooks(description?: string) {
+	private addHook(description?: string) {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
 		let resolve: (value?: unknown) => void;
@@ -227,7 +229,8 @@ export class BackgroundProcessManager {
 		terminate: () => void,
 		description?: string
 	) {
-		this.jobs.push({ promise, terminate, description });
+		const jobEntry = { promise, terminate, description };
+		this.jobs.add(jobEntry);
 
 		// in all of my testing, it is safe to multi-subscribe to a promise.
 		// so, rather than create another layer of promising, we're just going
@@ -236,10 +239,10 @@ export class BackgroundProcessManager {
 
 		promise
 			.then(() => {
-				this.jobs = this.jobs.filter(j => j.promise !== promise);
+				this.jobs.delete(jobEntry);
 			})
 			.catch(() => {
-				this.jobs = this.jobs.filter(j => j.promise !== promise);
+				this.jobs.delete(jobEntry);
 			});
 	}
 
@@ -252,7 +255,7 @@ export class BackgroundProcessManager {
 	 * @returns the number of jobs.
 	 */
 	get length() {
-		return this.jobs.length;
+		return this.jobs.size;
 	}
 
 	/**
@@ -272,7 +275,7 @@ export class BackgroundProcessManager {
 	 * @returns descriptions as an array.
 	 */
 	get pending() {
-		return this.jobs.map(job => job.description);
+		return Array.from(this.jobs).map(job => job.description);
 	}
 
 	/**
@@ -328,7 +331,7 @@ export class BackgroundProcessManager {
 		// prevents more jobs from being added
 		this._state = BackgroundProcessManagerState.Closing;
 
-		for (const job of [...this.jobs]) {
+		for (const job of Array.from(this.jobs)) {
 			try {
 				job.terminate();
 			} catch (error) {
@@ -344,7 +347,9 @@ export class BackgroundProcessManager {
 
 		// Use `allSettled()` because we want to wait for all to finish. We do
 		// not want to stop waiting if there is a failure.
-		const results = await Promise.allSettled(this.jobs.map(j => j.promise));
+		const results = await Promise.allSettled(
+			Array.from(this.jobs).map(j => j.promise)
+		);
 
 		// At this point, we're already *not* accepting new work, and all
 		// pending work is done. It's safe to set state to `Closed`. Any

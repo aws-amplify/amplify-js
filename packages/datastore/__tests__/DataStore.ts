@@ -171,15 +171,12 @@ describe('DataStore sanity testing checks', () => {
 			await new Promise(unsleep => setTimeout(unsleep, 1));
 
 			// and now attempt an ill-fated operation
-			try {
-				await DataStore.query(Post);
-				expect(true).toBe(false);
-			} catch (error) {
-				expect(error.message).toContain('closed');
-			} finally {
-				unblock();
-				await clearing;
-			}
+			await expect(DataStore.query(Post))
+				.rejects.toThrow('closed')
+				.finally(async () => {
+					unblock();
+					await clearing;
+				});
 		});
 
 		test('saves against locked DataStore are rejected', async () => {
@@ -200,15 +197,14 @@ describe('DataStore sanity testing checks', () => {
 			await new Promise(unsleep => setTimeout(unsleep, 1));
 
 			// and now attempt an ill-fated operation
-			try {
-				await DataStore.save(new Post({ title: 'title that should fail' }));
-				expect(true).toBe(false);
-			} catch (error) {
-				expect(error.message).toContain('closed');
-			} finally {
-				unblock();
-				await clearing;
-			}
+			await expect(
+				DataStore.save(new Post({ title: 'title that should fail' }))
+			)
+				.rejects.toThrow('closed')
+				.finally(async () => {
+					unblock();
+					await clearing;
+				});
 		});
 
 		test('deletes against locked DataStore are rejected', async () => {
@@ -229,15 +225,12 @@ describe('DataStore sanity testing checks', () => {
 			await new Promise(unsleep => setTimeout(unsleep, 1));
 
 			// and now attempt an ill-fated operation
-			try {
-				await DataStore.delete(Post, Predicates.ALL);
-				expect(true).toBe(false);
-			} catch (error) {
-				expect(error.message).toContain('closed');
-			} finally {
-				unblock();
-				await clearing;
-			}
+			await expect(DataStore.delete(Post, Predicates.ALL))
+				.rejects.toThrow('closed')
+				.finally(async () => {
+					unblock();
+					await clearing;
+				});
 		});
 
 		test('observes against locked DataStore are rejected', async () => {

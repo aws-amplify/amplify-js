@@ -4,6 +4,18 @@ import {
 	BackgroundProcessManagerState,
 } from '../src/Util/BackgroundProcessManager';
 
+/**
+ * NOTE: Jest's promise rejection assertion uses substring matching.
+ *
+ * This:
+ *
+ * ```js
+ * await expect(resultPromise).rejects.toThrow('a fuss')
+ * ```
+ *
+ * ... will pass with `Error('just a fuss')`.
+ */
+
 describe('BackgroundProcessManager', () => {
 	test('can wait for a promise to finish', async () => {
 		// when we get passed `close()`, we need proof that the promise we're
@@ -24,7 +36,8 @@ describe('BackgroundProcessManager', () => {
 			});
 		});
 
-		// the job should not have completed at the time we call this.
+		// the job should not have completed at the time we `close()`
+		expect(proof).toBe(false);
 		await manager.close();
 
 		expect(proof).toBe(true);
@@ -42,31 +55,23 @@ describe('BackgroundProcessManager', () => {
 	test('passes thrown promise errors through', async () => {
 		const manager = new BackgroundProcessManager();
 
-		try {
-			await manager.add(async () => {
+		await expect(
+			manager.add(async () => {
 				throw new Error('not today, friend!');
-			});
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toEqual('not today, friend!');
-		}
+			})
+		).rejects.toThrow('not today, friend!');
 	});
 
 	test('errors thrown in jobs do not block close', async () => {
 		const manager = new BackgroundProcessManager();
 
-		try {
-			await manager.add(async () => {
+		await expect(
+			manager.add(async () => {
 				throw new Error('Enough shenanigans!');
-			});
-			expect(true).toBe(false);
-		} catch (error) {
-			// no need to handle here.
-		}
+			})
+		).rejects.toThrow();
 
-		await manager.close();
-
-		expect(true).toBe(true);
+		await expect(manager.close()).resolves.not.toThrow();
 	});
 
 	test('promises remove themselves from the manager when complete, but not before', async () => {
@@ -100,12 +105,8 @@ describe('BackgroundProcessManager', () => {
 		});
 
 		expect(manager.length).toBe(1);
-		try {
-			await resultPromise;
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toEqual('a fuss');
-		}
+
+		await expect(resultPromise).rejects.toThrow('a fuss');
 
 		// the internal Jobmanager `catch()` handler for the promise is still
 		// in the promise callback queue. we need to put this "thread" onto
@@ -122,18 +123,13 @@ describe('BackgroundProcessManager', () => {
 		await manager.close();
 	});
 
-	test('blocks new jobs once closeed', async () => {
+	test('blocks new jobs once closed', async () => {
 		const manager = new BackgroundProcessManager();
 		await manager.close();
 
-		try {
-			await manager.add(async () =>
-				Promise.resolve('This should never be returned.')
-			);
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toContain('closed');
-		}
+		expect(
+			manager.add(async () => Promise.resolve('This should never be returned.'))
+		).rejects.toThrow('closed');
 	});
 
 	test('tracks state throughout lifecycle', async () => {
@@ -597,12 +593,9 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		await manager.close();
 
-		try {
-			await manager.add(async () => {}, 'some job');
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toContain('some job');
-		}
+		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
+			'some job'
+		);
 	});
 
 	test('manager closed error shows names of pending items in error', async () => {
@@ -616,12 +609,9 @@ describe('BackgroundProcessManager', () => {
 
 		const close = manager.close();
 
-		try {
-			await manager.add(async () => {}, 'some job');
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toContain('blocking job');
-		}
+		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
+			'blocking job'
+		);
 
 		unblock();
 		await close;
