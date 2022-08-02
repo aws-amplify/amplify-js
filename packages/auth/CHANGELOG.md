@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.6.0...@aws-amplify/auth@4.6.1) (2022-08-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix storage bug for auto sign in value ([#10139](https://github.com/aws-amplify/amplify-js/issues/10139)) ([06504e6](https://github.com/aws-amplify/amplify-js/commit/06504e649068f01b85392373fdf80e2ed2a6cada))
+* **auth:** Unauthenticated identity throws AuthError without user … ([#10090](https://github.com/aws-amplify/amplify-js/issues/10090)) ([2ac9035](https://github.com/aws-amplify/amplify-js/commit/2ac903516ec295fbf098f6a6644000177f315184))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.5.10...@aws-amplify/auth@4.6.0) (2022-07-28)
+
+
+### Features
+
+* **@aws-amplify/auth:** Auto sign in after sign up ([#10126](https://github.com/aws-amplify/amplify-js/issues/10126)) ([e54617f](https://github.com/aws-amplify/amplify-js/commit/e54617f2878244f0e391d2d49f5cd2e8a8c069f9)), closes [#6320](https://github.com/aws-amplify/amplify-js/issues/6320) [#3882](https://github.com/aws-amplify/amplify-js/issues/3882) [#3631](https://github.com/aws-amplify/amplify-js/issues/3631) [#6018](https://github.com/aws-amplify/amplify-js/issues/6018)
+
+
+
+
+
 ## [4.5.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.5.9...@aws-amplify/auth@4.5.10) (2022-07-21)
 
 **Note:** Version bump only for package @aws-amplify/auth

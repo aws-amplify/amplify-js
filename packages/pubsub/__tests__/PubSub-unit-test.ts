@@ -1,3 +1,14 @@
+jest.mock('@aws-amplify/core', () => ({
+	__esModule: true,
+	...jest.requireActual('@aws-amplify/core'),
+	browserOrNode() {
+		return {
+			isBrowser: true,
+			isNode: false,
+		};
+	},
+}));
+
 import { PubSubClass as PubSub } from '../src/PubSub';
 import {
 	MqttOverWSProvider,
