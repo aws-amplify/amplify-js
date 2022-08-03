@@ -51,7 +51,8 @@
 						"es5",
 						"es2015",
 						"esnext.asynciterable",
-						"es2019"
+						"es2019",
+						"dom"
 					],
 					"allowJs": true,
 					"esModuleInterop": true,
@@ -66,8 +67,7 @@
 		"testPathIgnorePatterns": [
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
-			"__tests__/helpers.ts",
-			"__tests__/SQLiteAdapter.test.ts"
+			"__tests__/helpers.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",
