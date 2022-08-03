@@ -492,7 +492,7 @@ Object {
       Object {
         "name": "user_Blog",
         "rowCount": 6,
-        "schema": "++,blogOwnerId,&[id]",
+        "schema": "++,[blogOwnerId],&[id]",
       },
       Object {
         "name": "user_BlogOwner",
@@ -512,12 +512,12 @@ Object {
       Object {
         "name": "user_Post",
         "rowCount": 2,
-        "schema": "++,&[id],postBlogId,referencePostId",
+        "schema": "++,&[id],[postBlogId],[referencePostId]",
       },
       Object {
         "name": "user_PostAuthorJoin",
         "rowCount": 0,
-        "schema": "++,authorId,&[id],postId",
+        "schema": "++,[authorId],&[id],[postId]",
       },
     ],
   },
