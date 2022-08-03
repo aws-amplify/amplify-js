@@ -8,7 +8,7 @@ import {
 import { Input, Button } from '../AmplifyTheme';
 
 import { I18n } from '@aws-amplify/core';
-import { Interactions } from '@aws-amplify/interactions';
+import { Interactions, InteractionsMessage } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { chatBot } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('ChatBot');
@@ -30,6 +30,7 @@ const styles: { [pname: string]: React.CSSProperties } = {
 		height: '300px',
 		overflow: 'auto',
 	},
+	// @ts-ignore
 	textInput: Object.assign({}, Input, {
 		display: 'inline-block',
 		width: 'calc(100% - 90px - 15px)',
@@ -104,6 +105,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		}
 		if (!this.props.textEnabled && this.props.voiceEnabled) {
 			STATES.INITIAL.MESSAGE = 'Click the mic button';
+			// @ts-ignore
 			styles.textInput = Object.assign({}, Input, {
 				display: 'inline-block',
 				width: 'calc(100% - 40px - 15px)',
@@ -111,6 +113,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		}
 		if (this.props.textEnabled && !this.props.voiceEnabled) {
 			STATES.INITIAL.MESSAGE = 'Type a message';
+			// @ts-ignore
 			styles.textInput = Object.assign({}, Input, {
 				display: 'inline-block',
 				width: 'calc(100% - 60px - 15px)',
@@ -198,14 +201,14 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 
-		const interactionsMessage = {
+		const interactionsMessage: InteractionsMessage = {
 			content: this.state.audioInput,
 			options: {
 				messageType: 'voice',
 			},
 		};
 		const response = await Interactions.send(
-			this.props.botName,
+			this.props.botName as string,
 			interactionsMessage
 		);
 		this.setState(
@@ -227,7 +230,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				this.doneSpeakingHandler();
 			}
 		);
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	doneSpeakingHandler() {
@@ -344,6 +348,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 						{ message: this.state.inputText, from: 'me' },
 					],
 				},
+				// @ts-ignore
 				resolve
 			)
 		);
@@ -355,7 +360,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		}
 
 		const response = await Interactions.send(
-			this.props.botName,
+			this.props.botName as string,
 			this.state.inputText
 		);
 
@@ -368,7 +373,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			],
 			inputText: '',
 		});
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	async changeInputText(event) {
@@ -388,7 +394,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 					].filter(Boolean),
 				},
 				() => {
-					this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+					this.listItemsRef.current.scrollTop =
+						this.listItemsRef.current.scrollHeight;
 				}
 			);
 		};
