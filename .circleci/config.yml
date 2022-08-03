@@ -1723,7 +1723,7 @@ workflows:
       # Vue
       - getting-started-smoke-test/web:
           name: Vue - latest
-          npx-command: -p @vue/cli vue create --default --force
+          npx-command: -p @vue/cli vue create --default --force --registry "https://registry.npmmirror.com"
           framework: vue
           main-file-path: src/main.js
           dev-start: serve
@@ -1731,7 +1731,7 @@ workflows:
           build-dir: dist
       - getting-started-smoke-test/web:
           name: Vue - next
-          npx-command: -p @vue/cli@next vue create --default --force
+          npx-command: -p @vue/cli@next vue create --default --force --registry "https://registry.npmmirror.com"
           framework: vue
           main-file-path: src/main.js
           dev-start: serve
