@@ -6,7 +6,6 @@ import {
 	ConsoleLogger as Logger,
 	Hub,
 	JS,
-	HubCallback,
 	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import {
