@@ -1,113 +1,97 @@
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
 import { InteractionsClass as Interactions } from '../src/Interactions';
-import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
-import { Credentials } from '@aws-amplify/core';
-import {
-	LexRuntimeServiceClient,
-	PostContentCommand,
-	PostTextCommand,
-} from '@aws-sdk/client-lex-runtime-service';
+import { AbstractInteractionsProvider } from '../src/Providers';
 
 (global as any).Response = () => {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
 	return Promise.resolve(new ArrayBuffer(0));
 };
 
-// mock stream response
-const createBlob = () => {
-	return new Blob();
+// aws-export config
+const awsmobileBot = {
+	name: 'BookTripMOBILEHUB',
+	alias: '$LATEST',
+	region: 'us-east-1',
+	providerName: 'DummyProvider',
+	description: 'Bot to make reservations for a visit to a city.',
+	'bot-template': 'bot-trips',
+	'commands-help': [
+		'Book a car',
+		'Reserve a car',
+		'Make a car reservation',
+		'Book a hotel',
+		'Reserve a room',
+		'I want to make a hotel reservation',
+	],
+};
+const awsmobile = {
+	aws_bots: 'enable',
+	aws_bots_config: [awsmobileBot],
+	aws_project_name: 'bots',
+	aws_project_region: 'us-east-1',
 };
 
-LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
-	if (command instanceof PostTextCommand) {
-		if (command.input.inputText === 'done') {
-			const result = {
-				message: 'echo:' + command.input.inputText,
-				dialogState: 'ReadyForFulfillment',
-				slots: {
-					m1: 'hi',
-					m2: 'done',
-				},
-			};
-			return Promise.resolve(result);
-		} else {
-			const result = {
-				message: 'echo:' + command.input.inputText,
-				dialogState: 'ElicitSlot',
-			};
-			return Promise.resolve(result);
-		}
-	} else if (command instanceof PostContentCommand) {
-		if (command.input.contentType === 'audio/x-l16; sample-rate=16000') {
-			if (command.input.inputStream === 'voice:done') {
-				const result = {
-					message: 'voice:echo:' + command.input.inputStream,
-					dialogState: 'ReadyForFulfillment',
-					slots: {
-						m1: 'voice:hi',
-						m2: 'voice:done',
-					},
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else {
-				const result = {
-					message: 'voice:echo:' + command.input.inputStream,
-					dialogState: 'ElicitSlot',
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			}
-		} else {
-			if (command.input.inputStream === 'done') {
-				const result = {
-					message: 'echo:' + command.input.inputStream,
-					dialogState: 'ReadyForFulfillment',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else {
-				const result = {
-					message: 'echo:' + command.input.inputStream,
-					dialogState: 'ElicitSlot',
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			}
-		}
-	}
-}) as any;
+// manual config
+const manualConfigBots = {
+	BookTrip: {
+		name: 'BookTrip', // default provider 'AWSLexProvider'
+		alias: '$LATEST',
+		region: 'us-west-2',
+		providerName: 'DummyProvider',
+	},
+	OrderFlowers: {
+		name: 'OrderFlowers',
+		alias: '$LATEST',
+		region: 'us-west-2',
+		providerName: 'DummyProvider',
+	},
+};
+const manualConfig = {
+	Interactions: {
+		bots: manualConfigBots,
+	},
+};
 
-class AWSLexProvider2 extends AWSLexProvider {
+class DummyProvider extends AbstractInteractionsProvider {
 	getProviderName() {
-		return 'AWSLexProvider2';
-	}
-}
-
-class AWSLexProviderWrong extends AbstractInteractionsProvider {
-	private onCompleteResolve: Function;
-	private onCompleteReject: Function;
-
-	getProviderName() {
-		return 'AWSLexProviderWrong';
+		return 'DummyProvider';
 	}
 
-	getCategory() {
-		return 'IDontKnow';
-	}
-
-	sendMessage(message: string | Object): Promise<Object> {
-		return new Promise(async (res, rej) => {});
+	async sendMessage(message: string | Object): Promise<Object> {
+		return new Promise(async (res, rej) => res({}));
 	}
 
 	async onComplete() {
-		return new Promise((res, rej) => {
-			this.onCompleteResolve = res;
-			this.onCompleteReject = rej;
-		});
+		return new Promise((res, rej) => res({}));
+	}
+}
+
+class WrongProvider extends AbstractInteractionsProvider {
+	getProviderName() {
+		return 'WrongProvider';
+	}
+
+	getCategory() {
+		return 'WrongCategory';
+	}
+
+	async sendMessage(message: string | Object): Promise<Object> {
+		return new Promise(async (res, rej) => res({}));
+	}
+
+	async onComplete() {
+		return new Promise((res, rej) => res({}));
 	}
 }
 
@@ -115,818 +99,209 @@ afterEach(() => {
 	jest.restoreAllMocks();
 });
 
-describe('Interactions', () => {
+describe.only('Interactions', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
 			const interactions = new Interactions({});
 		});
 	});
 
-	describe('configure test', () => {
-		test('happy case', () => {
-			const interactions = new Interactions({});
+	// Test 'configure' API
+	describe('configure API', () => {
+		let interactions;
 
+		beforeEach(() => {
+			interactions = new Interactions({});
+			interactions.configure({});
+			interactions.addPluggable(new DummyProvider());
+		});
+
+		test('happy case', () => {
 			const options = {
-				key: 'value',
+				keyA: 'valueA',
+				keyB: 'valueB',
 			};
 
 			const config = interactions.configure(options);
-
-			expect(config).toEqual({ bots: {}, key: 'value' });
+			expect(config).toEqual({ ...options, bots: {} });
 		});
 
-		test('aws-exports configuration and send message to existing bot', async () => {
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => Promise.resolve({ identityId: '1234' }));
-
-			const awsmobile = {
-				aws_bots: 'enable',
-				aws_bots_config: [
-					{
-						name: 'BookTripMOBILEHUB',
-						alias: '$LATEST',
-						description: 'Bot to make reservations for a visit to a city.',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						region: 'us-east-1',
-					},
-				],
-				aws_project_name: 'bots',
-				aws_project_region: 'us-east-1',
-			};
-			const interactions = new Interactions({});
-
+		// these in turn covers default provider 'AWSLexProvider' test
+		test('aws-exports configuration', () => {
 			const config = interactions.configure(awsmobile);
 
 			expect(config).toEqual({
-				aws_bots: 'enable',
-				aws_bots_config: [
-					{
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB',
-						region: 'us-east-1',
-					},
-				],
-				aws_project_name: 'bots',
-				aws_project_region: 'us-east-1',
+				...awsmobile,
 				bots: {
-					BookTripMOBILEHUB: {
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB',
-						region: 'us-east-1',
-					},
+					BookTripMOBILEHUB: awsmobileBot,
 				},
-			});
-
-			const response = await interactions.send('BookTripMOBILEHUB', 'hi');
-
-			expect(response).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi',
 			});
 		});
 
-		test('aws-exports configuration with two bots and send message to existing bot', async () => {
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-			const awsmobile = {
-				aws_bots: 'enable',
-				aws_bots_config: [
-					{
-						name: 'BookTripMOBILEHUB',
-						alias: '$LATEST',
-						description: 'Bot to make reservations for a visit to a city.',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						region: 'us-east-1',
-					},
-					{
-						name: 'BookTripMOBILEHUB2',
-						alias: '$LATEST',
-						description: 'Bot to make reservations for a visit to a city.',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						region: 'us-east-1',
-					},
-				],
-				aws_project_name: 'bots',
-				aws_project_region: 'us-east-1',
-			};
-			const interactions = new Interactions({});
-
-			const config = interactions.configure(awsmobile);
+		test('manual configuration', () => {
+			const config = interactions.configure(manualConfig);
 
 			expect(config).toEqual({
-				aws_bots: 'enable',
-				aws_bots_config: [
-					{
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB',
-						region: 'us-east-1',
-					},
-					{
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB2',
-						region: 'us-east-1',
-					},
-				],
-				aws_project_name: 'bots',
-				aws_project_region: 'us-east-1',
-				bots: {
-					BookTripMOBILEHUB: {
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB',
-						region: 'us-east-1',
-					},
-					BookTripMOBILEHUB2: {
-						alias: '$LATEST',
-						'bot-template': 'bot-trips',
-						'commands-help': [
-							'Book a car',
-							'Reserve a car',
-							'Make a car reservation',
-							'Book a hotel',
-							'Reserve a room',
-							'I want to make a hotel reservation',
-						],
-						description: 'Bot to make reservations for a visit to a city.',
-						name: 'BookTripMOBILEHUB2',
-						region: 'us-east-1',
-					},
-				},
-			});
-
-			const response = await interactions.send('BookTripMOBILEHUB', 'hi');
-
-			expect(response).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi',
-			});
-
-			const response2 = await interactions.send('BookTripMOBILEHUB2', 'hi2');
-
-			expect(response2).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi2',
-			});
-
-			const interactionsMessageVoice = {
-				content: 'voice:hi',
-				options: {
-					messageType: 'voice',
-				},
-			};
-
-			const interactionsMessageText = {
-				content: 'hi',
-				options: {
-					messageType: 'text',
-				},
-			};
-
-			const responseVoice = await interactions.send(
-				'BookTripMOBILEHUB',
-				interactionsMessageVoice
-			);
-			expect(responseVoice).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'voice:echo:voice:hi',
-				audioStream: new Uint8Array(),
-			});
-
-			const responseText = await interactions.send(
-				'BookTripMOBILEHUB',
-				interactionsMessageText
-			);
-			expect(responseText).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi',
-				audioStream: new Uint8Array(),
+				bots: manualConfigBots,
 			});
 		});
 
-		test('Interactions configuration with two bots and send message to existing bot and fullfil', async () => {
-			const curCredSpyOn = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-			const configuration = {
+		test('aws-exports and manual configuration', () => {
+			const combinedConfig = {
+				...awsmobile,
+				...manualConfig,
+			};
+
+			const config = interactions.configure(combinedConfig);
+
+			// if manualConfig bots are given, aws-export bots are ignored
+			expect(config).toEqual({
+				bots: manualConfigBots,
+			});
+		});
+
+		test('default provider AWSLexProvider', async () => {
+			const myBot = {
+				MyBot: {
+					name: 'MyBot', // default provider 'AWSLexProvider'
+					alias: '$LATEST',
+					region: 'us-west-2',
+				},
+			};
+			const myConfig = {
+				Interactions: {
+					bots: myBot,
+				},
+			};
+
+			expect(interactions.configure(myConfig)).toEqual({
+				bots: myBot,
+			});
+		});
+
+		test('FailureCase: configure bot to not existing plugin', async () => {
+			const myConfig = {
 				Interactions: {
 					bots: {
-						BookTripMOBILEHUB: {
-							name: 'BookTripMOBILEHUB',
+						MyBot: {
+							name: 'MyBot',
 							alias: '$LATEST',
-							region: 'us-east-1',
-						},
-						BookTripMOBILEHUB2: {
-							name: 'BookTripMOBILEHUB2',
-							alias: '$LATEST',
-							region: 'us-east-1',
+							region: 'us-west-2',
+							providerName: 'randomProvider',
 						},
 					},
 				},
 			};
 
+			expect(() => interactions.configure(myConfig)).toThrow(
+				'providerName randomProvider does not exist, did you try addPluggable first?'
+			);
+		});
+	});
+
+	// Test 'getModuleName' API
+	describe('getModuleName API', () => {
+		test('happy case', () => {
 			const interactions = new Interactions({});
 
-			const config = interactions.configure(configuration);
+			const moduleName = interactions.getModuleName();
+			expect(moduleName).toEqual('Interactions');
+		});
+	});
 
-			expect(config).toEqual(configuration.Interactions);
-			const response = await interactions.send('BookTripMOBILEHUB', 'hi');
+	// Test 'addPluggable' API
+	describe('addPluggable API', () => {
+		let interactions;
 
-			expect(response).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi',
-			});
-
-			const response2 = await interactions.send('BookTripMOBILEHUB2', 'hi2');
-
-			expect(response2).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi2',
-			});
-
-			const interactionsMessageVoice = {
-				content: 'voice:hi',
-				options: {
-					messageType: 'voice',
-				},
-			};
-
-			const interactionsMessageText = {
-				content: 'hi',
-				options: {
-					messageType: 'text',
-				},
-			};
-
-			const responseVoice = await interactions.send(
-				'BookTripMOBILEHUB',
-				interactionsMessageVoice
-			);
-			expect(responseVoice).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'voice:echo:voice:hi',
-				audioStream: new Uint8Array(),
-			});
-
-			const responseText = await interactions.send(
-				'BookTripMOBILEHUB',
-				interactionsMessageText
-			);
-			expect(responseText).toEqual({
-				dialogState: 'ElicitSlot',
-				message: 'echo:hi',
-				audioStream: new Uint8Array(),
-			});
+		beforeEach(() => {
+			interactions = new Interactions({});
+			interactions.configure({});
 		});
 
-		describe('Sending messages to bot', () => {
-			jest.useFakeTimers();
-			test('onComplete callback from `Interactions.onComplete` called with text', async () => {
-				const curCredSpyOn = jest
-					.spyOn(Credentials, 'get')
-					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-				function onCompleteCallback(err, confirmation) {
-					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-				}
-
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-							},
-						},
-					},
-				};
-
-				const interactions = new Interactions({});
-
-				const config = interactions.configure(configuration);
-
-				expect(config).toEqual(configuration.Interactions);
-				interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
-				await interactions.send('BookTripMOBILEHUB', 'hi');
-				const response = await interactions.send('BookTripMOBILEHUB', 'done');
-				expect(response).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'echo:done',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-				});
-
-				const interactionsMessageText = {
-					content: 'done',
-					options: {
-						messageType: 'text',
-					},
-				};
-
-				const textResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageText
-				);
-				expect(textResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'echo:done',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-					audioStream: new Uint8Array(),
-				});
-				jest.runAllTimers();
-			});
-
-			test('onComplete callback from `Interactions.onComplete` called with voice', async () => {
-				const curCredSpyOn = jest
-					.spyOn(Credentials, 'get')
-					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-				function onCompleteCallback(err, confirmation) {
-					expect(confirmation).toEqual({
-						slots: { m1: 'voice:hi', m2: 'voice:done' },
-					});
-				}
-
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-							},
-						},
-					},
-				};
-
-				const interactions = new Interactions({});
-				const config = interactions.configure(configuration);
-				interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
-
-				const interactionsMessageVoice = {
-					content: 'voice:done',
-					options: {
-						messageType: 'voice',
-					},
-				};
-
-				const voiceResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageVoice
-				);
-				expect(voiceResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'voice:echo:voice:done',
-					slots: {
-						m1: 'voice:hi',
-						m2: 'voice:done',
-					},
-					audioStream: new Uint8Array(),
-				});
-				jest.runAllTimers();
-			});
-
-			test('onComplete callback from configure being called with text', async () => {
-				const curCredSpyOn = jest
-					.spyOn(Credentials, 'get')
-					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-				function onCompleteCallback(err, confirmation) {
-					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-				}
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-								onComplete: onCompleteCallback,
-							},
-						},
-					},
-				};
-
-				const interactions = new Interactions({});
-				const config = interactions.configure(configuration);
-
-				expect(config).toEqual(configuration.Interactions);
-
-				await interactions.send('BookTripMOBILEHUB', 'hi');
-				const response = await interactions.send('BookTripMOBILEHUB', 'done');
-				expect(response).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'echo:done',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-				});
-				const interactionsMessageText = {
-					content: 'done',
-					options: {
-						messageType: 'text',
-					},
-				};
-
-				const textResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageText
-				);
-				expect(textResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'echo:done',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-					audioStream: new Uint8Array(),
-				});
-				jest.runAllTimers();
-			});
-
-			test('onComplete callback from configure being called with voice', async () => {
-				const curCredSpyOn = jest
-					.spyOn(Credentials, 'get')
-					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-
-				function onCompleteCallback(err, confirmation) {
-					expect(confirmation).toEqual({
-						slots: { m1: 'voice:hi', m2: 'voice:done' },
-					});
-				}
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-								onComplete: onCompleteCallback,
-							},
-						},
-					},
-				};
-
-				const interactions = new Interactions({});
-				const config = interactions.configure(configuration);
-
-				expect(config).toEqual(configuration.Interactions);
-
-				const interactionsMessageVoice = {
-					content: 'voice:done',
-					options: {
-						messageType: 'voice',
-					},
-				};
-				const voiceResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageVoice
-				);
-				expect(voiceResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'voice:echo:voice:done',
-					slots: {
-						m1: 'voice:hi',
-						m2: 'voice:done',
-					},
-					audioStream: new Uint8Array(),
-				});
-				jest.runAllTimers();
-			});
-
-			test('aws-exports configuration and send message to not existing bot', async () => {
-				const awsmobile = {
-					aws_bots: 'enable',
-					aws_bots_config: [
-						{
-							name: 'BookTripMOBILEHUB',
-							alias: '$LATEST',
-							description: 'Bot to make reservations for a visit to a city.',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							region: 'us-east-1',
-						},
-					],
-					aws_project_name: 'bots',
-					aws_project_region: 'us-east-1',
-				};
-				const interactions = new Interactions({});
-
-				const config = interactions.configure(awsmobile);
-
-				expect(config).toEqual({
-					aws_bots: 'enable',
-					aws_bots_config: [
-						{
-							alias: '$LATEST',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							description: 'Bot to make reservations for a visit to a city.',
-							name: 'BookTripMOBILEHUB',
-							region: 'us-east-1',
-						},
-					],
-					aws_project_name: 'bots',
-					aws_project_region: 'us-east-1',
-					bots: {
-						BookTripMOBILEHUB: {
-							alias: '$LATEST',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							description: 'Bot to make reservations for a visit to a city.',
-							name: 'BookTripMOBILEHUB',
-							region: 'us-east-1',
-						},
-					},
-				});
-
-				try {
-					await interactions.send('BookTrip', 'hi');
-				} catch (err) {
-					expect(err.message).toEqual('Bot BookTrip does not exist');
-				}
-			});
-
-			test('aws-exports configuration and try to add onComplete to not existing bot', async () => {
-				const awsmobile = {
-					aws_bots: 'enable',
-					aws_bots_config: [
-						{
-							name: 'BookTripMOBILEHUB',
-							alias: '$LATEST',
-							description: 'Bot to make reservations for a visit to a city.',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							region: 'us-east-1',
-						},
-					],
-					aws_project_name: 'bots',
-					aws_project_region: 'us-east-1',
-				};
-				const interactions = new Interactions({});
-
-				const config = interactions.configure(awsmobile);
-
-				expect(config).toEqual({
-					aws_bots: 'enable',
-					aws_bots_config: [
-						{
-							alias: '$LATEST',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							description: 'Bot to make reservations for a visit to a city.',
-							name: 'BookTripMOBILEHUB',
-							region: 'us-east-1',
-						},
-					],
-					aws_project_name: 'bots',
-					aws_project_region: 'us-east-1',
-					bots: {
-						BookTripMOBILEHUB: {
-							alias: '$LATEST',
-							'bot-template': 'bot-trips',
-							'commands-help': [
-								'Book a car',
-								'Reserve a car',
-								'Make a car reservation',
-								'Book a hotel',
-								'Reserve a room',
-								'I want to make a hotel reservation',
-							],
-							description: 'Bot to make reservations for a visit to a city.',
-							name: 'BookTripMOBILEHUB',
-							region: 'us-east-1',
-						},
-					},
-				});
-
-				try {
-					await interactions.onComplete('BookTrip', () => {});
-				} catch (err) {
-					expect(err.message).toEqual('Bot BookTrip does not exist');
-				}
-			});
+		test('add custom pluggable happy path', () => {
+			interactions.addPluggable(new DummyProvider());
+			interactions.configure(manualConfig);
 		});
 
-		describe('Adding pluggins', () => {
-			test('Adding AWSLexProvider2 bot not found', async () => {
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-								providerName: 'AWSLexProvider2',
-							},
-						},
-					},
-				};
+		test('FailureCase: add invalid pluggable', () => {
+			expect(() => interactions.addPluggable(new WrongProvider())).toThrow(
+				'Invalid pluggable'
+			);
+		});
 
-				const interactions = new Interactions({});
+		test('FailureCase: add existing pluggable again', () => {
+			interactions.addPluggable(new DummyProvider());
+			expect(() => {
+				interactions.addPluggable(new DummyProvider());
+			}).toThrow('Pluggable DummyProvider already plugged');
+		});
+	});
 
-				const config = interactions.configure(configuration);
+	// Test 'send' API
+	describe('send API', () => {
+		let interactions;
 
-				interactions.addPluggable(new AWSLexProvider2());
+		beforeEach(() => {
+			interactions = new Interactions({});
+			interactions.configure({});
+			interactions.addPluggable(new DummyProvider());
+			interactions.configure(manualConfig);
+		});
 
-				try {
-					await interactions.send('BookTrip', 'hi');
-				} catch (err) {
-					expect(err.message).toEqual('Bot BookTrip does not exist');
-				}
-			});
+		test('send text message', async () => {
+			const response = await interactions.send('BookTrip', 'hi');
+			expect(response).toEqual({});
+		});
 
-			test('Adding custom plugin happy path', async () => {
-				jest
-					.spyOn(Credentials, 'get')
-					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
-				const configuration = {
-					Interactions: {
-						bots: {
-							BookTripMOBILEHUB: {
-								name: 'BookTripMOBILEHUB',
-								alias: '$LATEST',
-								region: 'us-east-1',
-								providerName: 'AWSLexProvider2',
-							},
-						},
-					},
-				};
+		test('FailureCase: send to not existing bot', async () => {
+			await expect(interactions.send('unknownBot', 'hi')).rejects.toEqual(
+				'Bot unknownBot does not exist'
+			);
+		});
 
-				const interactions = new Interactions({});
-				const config = interactions.configure(configuration);
-				expect(config).toEqual({
-					bots: {
-						BookTripMOBILEHUB: {
-							alias: '$LATEST',
-							name: 'BookTripMOBILEHUB',
-							providerName: 'AWSLexProvider2',
-							region: 'us-east-1',
-						},
-					},
-				});
-				const pluggin = new AWSLexProvider2({});
+		test('FailureCase: send with wrong input format', async () => {
+			await expect(interactions.send('BookTrip', 12312)).rejects.toEqual(
+				`message type isn't supported`
+			);
 
-				interactions.addPluggable(pluggin);
+			await expect(interactions.send({}, 'Hi')).rejects.toEqual(
+				`message type isn't supported`
+			);
+		});
+	});
 
-				const response = await interactions.send('BookTripMOBILEHUB', 'hi');
+	// Test 'onComplete' API
+	describe('onComplete API', () => {
+		let interactions;
+		const callback = (err, confirmation) => {};
 
-				expect(response).toEqual({
-					dialogState: 'ElicitSlot',
-					message: 'echo:hi',
-				});
+		beforeEach(() => {
+			interactions = new Interactions({});
+			interactions.configure({});
+			interactions.addPluggable(new DummyProvider());
+			interactions.configure(manualConfig);
+		});
 
-				const interactionsMessageVoice = {
-					content: 'voice:hi',
-					options: {
-						messageType: 'voice',
-					},
-				};
+		test('happy case', () => {
+			interactions.onComplete('BookTrip', callback);
+		});
 
-				const interactionsMessageText = {
-					content: 'hi',
-					options: {
-						messageType: 'text',
-					},
-				};
+		test('FailureCase: send to not existing bot', async () => {
+			expect(() => interactions.onComplete('unknownBot', callback)).toThrow(
+				'Bot unknownBot does not exist'
+			);
+		});
 
-				const responseVoice = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageVoice
-				);
-				expect(responseVoice).toEqual({
-					dialogState: 'ElicitSlot',
-					message: 'voice:echo:voice:hi',
-					audioStream: new Uint8Array(),
-				});
+		test('FailureCase: send with wrong input format', async () => {
+			// wrong callback
+			expect(() => interactions.onComplete('BookTrip', 'hi')).toThrow(
+				`message type isn't supported`
+			);
 
-				const responseText = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageText
-				);
-				expect(responseText).toEqual({
-					dialogState: 'ElicitSlot',
-					message: 'echo:hi',
-					audioStream: new Uint8Array(),
-				});
-			});
+			// wrong botname
+			expect(() => interactions.onComplete({}, 'Hi')).toThrow(
+				`message type isn't supported`
+			);
 		});
 	});
 });
