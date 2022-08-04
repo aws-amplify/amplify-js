@@ -8,7 +8,7 @@ import {
 import { Input, Button } from '../AmplifyTheme';
 
 import { I18n } from '@aws-amplify/core';
-import { Interactions } from '@aws-amplify/interactions';
+import { Interactions, InteractionsMessage } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { chatBot } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('ChatBot');
@@ -198,7 +198,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 
-		const interactionsMessage = {
+		const interactionsMessage: InteractionsMessage = {
 			content: this.state.audioInput,
 			options: {
 				messageType: 'voice',
@@ -227,7 +227,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				this.doneSpeakingHandler();
 			}
 		);
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	doneSpeakingHandler() {
@@ -368,7 +369,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			],
 			inputText: '',
 		});
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	async changeInputText(event) {
@@ -388,7 +390,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 					].filter(Boolean),
 				},
 				() => {
-					this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+					this.listItemsRef.current.scrollTop =
+						this.listItemsRef.current.scrollHeight;
 				}
 			);
 		};

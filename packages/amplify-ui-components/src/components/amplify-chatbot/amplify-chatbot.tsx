@@ -16,7 +16,10 @@ import { AudioRecorder, visualize } from '../../common/audio-control';
 import { ChatResult } from '../../common/types/interactions-types';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { InteractionsResponse } from '@aws-amplify/interactions';
+import {
+	InteractionsResponse,
+	InteractionsMessage,
+} from '@aws-amplify/interactions';
 
 // enum for possible bot states
 enum ChatState {
@@ -237,7 +240,7 @@ export class AmplifyChatbot {
 	}
 
 	private async sendVoiceMessage(audioInput: Blob) {
-		const interactionsMessage = {
+		const interactionsMessage: InteractionsMessage = {
 			content: audioInput,
 			options: {
 				messageType: 'voice',

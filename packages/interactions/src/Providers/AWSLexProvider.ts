@@ -10,17 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
+	AWSLexProviderOptions,
 	InteractionsResponse,
 	InteractionsMessage,
 } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
+	PostTextCommandInput,
+	PostTextCommandOutput,
 	PostContentCommand,
+	PostContentCommandInput,
+	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
@@ -40,11 +44,28 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this._botsCompleteCallback = {};
 	}
 
-	getProviderName() {
+	getProviderName(): string {
 		return 'AWSLexProvider';
 	}
 
-	reportBotStatus(data, botname) {
+	configure(config: AWSLexProviderOptions = {}): AWSLexProviderOptions {
+		const propertiesToTest = ['name', 'alias', 'region'];
+
+		Object.keys(config).map(botKey => {
+			const botConfig = config[botKey];
+
+			// is bot config correct
+			if (!propertiesToTest.every(x => x in botConfig)) {
+				throw new Error('invalid bot configuration');
+			}
+		});
+		return super.configure(config);
+	}
+
+	reportBotStatus(
+		botname: string,
+		data: PostTextCommandOutput | PostContentCommandOutput
+	) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
@@ -94,11 +115,31 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
+		// check message type
+		if (
+			!(
+				typeof message === 'string' || // simple text message
+				// obj text message
+				(message?.options?.messageType === 'text' &&
+					typeof message?.content === 'string') ||
+				// obj voice message
+				(message?.options?.messageType === 'voice' &&
+					message?.content instanceof Blob)
+			)
+		) {
+			return Promise.reject(`message type isn't supported`);
+		}
+
+		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
-		const credentials = await Credentials.get();
-		if (!credentials) {
+
+		// check if credentials are present
+		let credentials;
+		try {
+			credentials = await Credentials.get();
+		} catch (error) {
 			return Promise.reject('No credentials');
 		}
 
@@ -115,14 +156,15 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				botName: botname,
 				inputText: message,
 				userId: credentials.identityId,
-			};
+			} as PostTextCommandInput;
 
 			logger.debug('postText to lex', message);
-
 			try {
 				const postTextCommand = new PostTextCommand(params);
-				const data = await this.lexRuntimeServiceClient.send(postTextCommand);
-				this.reportBotStatus(data, botname);
+				const data: PostTextCommandOutput =
+					await this.lexRuntimeServiceClient.send(postTextCommand);
+
+				this.reportBotStatus(botname, data);
 				return data;
 			} catch (err) {
 				return Promise.reject(err);
@@ -136,29 +178,31 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
-					contentType: 'audio/x-l16; sample-rate=16000',
-					inputStream: content,
+					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
+					inputStream: await convert(content as Blob | ReadableStream),
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
-				};
+				} as PostContentCommandInput;
 			} else {
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'text/plain; charset=utf-8',
-					inputStream: content,
+					inputStream: content as string,
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
-				};
+				} as PostContentCommandInput;
 			}
 			logger.debug('postContent to lex', message);
 			try {
 				const postContentCommand = new PostContentCommand(params);
-				const data = await this.lexRuntimeServiceClient.send(
-					postContentCommand
+				const data: PostContentCommandOutput =
+					await this.lexRuntimeServiceClient.send(postContentCommand);
+
+				const audioArray = await convert(
+					data.audioStream as Blob | ReadableStream
 				);
-				const audioArray = await convert(data.audioStream);
-				this.reportBotStatus(data, botname);
+				this.reportBotStatus(botname, data);
 				return { ...data, ...{ audioStream: audioArray } };
 			} catch (err) {
 				return Promise.reject(err);
@@ -167,8 +211,14 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	}
 
 	onComplete(botname: string, callback) {
+		// check input format
+		if (!(typeof botname === 'string' && typeof callback === 'function')) {
+			throw new Error(`message type isn't supported`);
+		}
+
+		// does bot exist
 		if (!this._config[botname]) {
-			throw new ErrorEvent('Bot ' + botname + ' does not exist');
+			throw new Error('Bot ' + botname + ' does not exist');
 		}
 		this._botsCompleteCallback[botname] = callback;
 	}
