@@ -143,9 +143,13 @@ export const signInMachineConfig: MachineConfig<
 			invoke: {
 				src: federatedSignInMachine,
 				data: {
+					// @ts-ignore
 					authConfig: (context, _event) => context.authConfig,
+					// @ts-ignore
 					oAuthStorage: (_context, _event) => window.sessionStorage,
+					// @ts-ignore
 					scopes: (_context, _event) => [] as string[],
+					// @ts-ignore
 					oAuthProvider: (context, _event) => context.oAuthProvider,
 				},
 				// there shouldn't be on done

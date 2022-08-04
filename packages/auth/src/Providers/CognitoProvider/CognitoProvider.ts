@@ -92,7 +92,7 @@ function listenToAuthHub(send: any) {
 }
 
 // FOR DEBUGGING ONLY
-// inspect({ iframe: false });
+inspect({ iframe: false });
 // inspect();
 
 export class CognitoProvider implements AuthProvider {
@@ -114,7 +114,8 @@ export class CognitoProvider implements AuthProvider {
 		// @ts-ignore ONLY FOR DEBUGGIN AND TESTING!
 		window.Hub = Hub;
 		this._authService.subscribe(state => {
-			console.log(state);
+			// temporarily removed for testing purposes
+			// console.log(state);
 		});
 	}
 
@@ -227,7 +228,10 @@ export class CognitoProvider implements AuthProvider {
 		);
 		this._authzService.send(authzMachineEvents.signInRequested());
 		const signInResult = await this.waitForSignInComplete();
-		inspect();
+
+		// for debugging and demos only
+		// inspect();
+
 		return signInResult;
 	}
 
@@ -344,13 +348,17 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private isSessionExpired(bufferTime?: number) {
+		// check to make sure state machine is in the session established state
 		if (!this._authzService.state.matches('sessionEstablished')) {
 			return false;
 		}
+		// gets the session information from the context of the state machine (should be stored there from previous run)
 		const sessionInfo = this._authzService.state.context.sessionInfo;
 		const awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
 		const now = new Date();
 		const isSignedIn = this._authService.state.matches('signedIn');
+		// check to see if tokens are expired depending on whether or not the user is signed in
+		// if a user is signed in, we also have to check if jwt tokens are expired on top of aws credentials
 		if (isSignedIn) {
 			return this.isUserPoolTokensExpired() || now > awsCredentials.expiration;
 		} else {
@@ -376,15 +384,17 @@ export class CognitoProvider implements AuthProvider {
 			//     -> grab sessionInfo from the AuthZ state machine
 		} else if (this._authzService.state.matches('configured')) {
 			if (this._authService.state.matches('signedIn')) {
-				// getting jwt from localStorage
+				// getting jwt from localStorage after user signed in
 				const userpoolTokens = this.getCachedUserpoolTokens();
 				if (!userpoolTokens) {
 					throw new Error('Session data is not cached in the localStorage.');
 				}
+				// send userpool tokens to the authz machine so it can fetch auth session
 				this._authzService.send(
 					authzMachineEvents.signInCompleted({ ...userpoolTokens })
 				);
 			} else {
+				// fetch un auth session if the authN state machine is not in the signed in state
 				this._authzService.send(authzMachineEvents.fetchUnAuthSession());
 			}
 			// 3. else if AuthZ machine is in 'sessionEstablished' state
@@ -398,6 +408,7 @@ export class CognitoProvider implements AuthProvider {
 			logger.debug('we have cached session here');
 			// check expiration here
 			if (this.isSessionExpired()) {
+				// run the refresh session state machine if the session is expired
 				this._authzService.send(
 					authzMachineEvents.refreshSession(this.getCachedUserpoolTokens())
 				);
@@ -447,10 +458,12 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private async waitForSessionEstablished(): Promise<AmplifyUser> {
+		// make sure session is established before trying to get the tokens out of the context
 		const sessionEstablishedState = await waitFor(this._authzService, state =>
 			state.matches('sessionEstablished')
 		);
 		const isSignedIn = this._authService.state.matches('signedIn');
+		// getting aws credentials from the context of the state machine if available
 		const sessionInfo = sessionEstablishedState.context.sessionInfo;
 		let awsCredentials: AWSCredentials | null;
 		try {
@@ -459,6 +472,7 @@ export class CognitoProvider implements AuthProvider {
 			awsCredentials = null;
 		}
 
+		// assign aws credentials to the session
 		const userpoolTokens = this.getCachedUserpoolTokens();
 		const amplifyUser: AmplifyUser = {
 			isSignedIn,
@@ -468,6 +482,8 @@ export class CognitoProvider implements AuthProvider {
 				},
 			},
 		};
+		// if the user is signed in, assign jwt tokens as well
+		// if not, return the session without jwt tokens
 		if (isSignedIn) {
 			if (!userpoolTokens) {
 				throw new Error('cached jwt tokens not available');
@@ -499,10 +515,6 @@ export class CognitoProvider implements AuthProvider {
 	}
 	async refreshSession(): Promise<AmplifyUser> {
 		// check to make sure authorization state machine is in the session established state or throw an error
-		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
-		// call refreshSession state machine and pass refresh token as the argument/context
-		//   for the state machine to use as an argument to the service class
-		// return new userpool tokens and update the ones in storage if necessary
 		if (
 			!this._authzService.state.matches('sessionEstablished') &&
 			!this._authzService.state.matches('refreshingSession')
@@ -511,10 +523,14 @@ export class CognitoProvider implements AuthProvider {
 				'Session should be established before calling .refreshSession, please call .fetchSession first'
 			);
 		}
+		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
 		const userpoolTokens = this.getCachedUserpoolTokens();
+		// call refreshSession state machine and pass refresh token as the argument/context
+		// for the state machine to use as an argument to the service class
 		this._authzService.send(
 			authzMachineEvents.refreshSession(userpoolTokens, true)
 		);
+		// return new userpool tokens and update the ones in storage if necessary
 		return this.waitForSessionEstablished();
 	}
 	addAuthenticator(): Promise<AddAuthenticatorResponse> {

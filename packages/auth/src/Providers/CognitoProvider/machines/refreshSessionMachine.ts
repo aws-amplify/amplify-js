@@ -39,10 +39,10 @@ const refreshAuthSessionStateMachineActions: Record<
 		identityId: (context, event) => {
 			return (event as any).data.identityID;
 		},
-		awsCredentials: (context, event) => (event as any).data.AWSCredentials,
+		awsCredentials: (_context, event) => (event as any).data.AWSCredentials,
 	}),
 	assignAWSCredentials: refreshSessionMachineModel.assign({
-		awsCredentials: (context, event) => (event as any).data,
+		awsCredentials: (_context, event) => (event as any).data,
 	}),
 };
 

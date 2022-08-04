@@ -121,6 +121,7 @@ export class CognitoService {
 				'Does not have active user session, have you called .signIn?'
 			);
 		}
+		// @ts-ignore
 		const { idToken, accessToken, refreshToken } = session;
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
@@ -387,6 +388,7 @@ export async function cognitoFetchSession(
 			'Does not have active user session, have you called .signIn?'
 		);
 	}
+	// @ts-ignore
 	const { idToken, accessToken, refreshToken } = session;
 	const expiration = getExpirationTimeFromJWT(idToken);
 	console.log({ expiration });

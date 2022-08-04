@@ -38,7 +38,7 @@ export const authorizationMachineModel = createModel(
 			fetched: () => ({}),
 			fetchUnAuthSession: () => ({}),
 			noSession: () => ({}),
-			receivedCachedCredentials: () => ({}),
+			// receivedCachedCredentials: () => ({}),
 			refreshSession: (
 				userPoolTokens?: UserPoolTokens,
 				forceRefresh: boolean = false
@@ -46,7 +46,7 @@ export const authorizationMachineModel = createModel(
 				userPoolTokens,
 				forceRefresh,
 			}),
-			refreshed: () => ({}),
+			// refreshed: () => ({}),
 			signInRequested: () => ({}),
 			// save the userpool tokens in the event for later use
 			signInCompleted: (userPoolTokens: UserPoolTokens) => {
@@ -83,25 +83,6 @@ const authorizationStateMachineActions: Record<
 		},
 		'configure'
 	),
-	spawnFetchAuthSessionActor: authorizationMachineModel.assign(
-		{
-			actorRef: (context, event) => {
-				const machine = fetchAuthSessionStateMachine.withContext({
-					clientConfig: {
-						region: context.config?.region,
-						identityPoolId: context.config?.identityPoolId,
-					},
-					service: context.service,
-					userPoolTokens: event.userPoolTokens,
-				});
-				const fetchAuthSessionActorRef = spawn(machine, {
-					name: 'fetchAuthSessionActor',
-				});
-				return fetchAuthSessionActorRef;
-			},
-		},
-		'signInCompleted'
-	),
 	assignAuthedSession: authorizationMachineModel.assign({
 		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
 			return {
@@ -121,14 +102,14 @@ const authorizationStateMachineActions: Record<
 		},
 	}),
 	// gets the identityID and AWS Credentials from the fetchAuthSessionStateMachine
-	sessionInfo: authorizationMachineModel.assign({
-		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
-			return {
-				identityID: event.data.identityID,
-				AWSCredentials: event.data.AWSCredentials,
-			};
-		},
-	}),
+	// sessionInfo: authorizationMachineModel.assign({
+	// 	sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
+	// 		return {
+	// 			identityID: event.data.identityID,
+	// 			AWSCredentials: event.data.AWSCredentials,
+	// 		};
+	// 	},
+	// }),
 };
 
 // Authorization state machine
@@ -238,11 +219,6 @@ const authorizationStateMachine: MachineConfig<
 						event.forceRefresh,
 					// authenticated: false,
 				},
-			},
-
-			on: {
-				refreshed: 'sessionEstablished',
-				// from refreshed to configure (token expired)
 			},
 		},
 		// waitingToStore: {

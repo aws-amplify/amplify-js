@@ -19,7 +19,7 @@ export const fetchAuthSessionMachineModel = createModel({
 		fetchAuthenticatedIdentityID: () => ({}),
 		fetchedIdentityID: () => ({}),
 		throwError: () => ({}),
-		fetchedAWSCredentials: () => ({}),
+		// fetchedAWSCredentials: () => ({}),
 	},
 });
 
@@ -38,7 +38,7 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 				],
 				always: [
 					{
-						// fetchUnAuthIdentityID: 'fetchingIdentityID',
+						// fetch identity ID if there isn't already an identity ID
 						target: 'fetchingIdentityID',
 						cond: (context, _event) => !context.identityID,
 					},
