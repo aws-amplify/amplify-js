@@ -1204,7 +1204,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - storage/react-native-v-upgrade
+      - storage/react-native-v-upgrde
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
