@@ -971,11 +971,9 @@ class DataStore {
 			pagination
 		);
 
-		const isSingleFieldIdentifier = keyFields.length === 1;
 		const returnOne =
-			isSingleFieldIdentifier &&
-			(isQueryOne(identifierOrCriteria) ||
-				isIdentifierObject(identifierOrCriteria, modelDefinition));
+			isQueryOne(identifierOrCriteria) ||
+			isIdentifierObject(identifierOrCriteria, modelDefinition);
 
 		return returnOne ? result[0] : result;
 	};
