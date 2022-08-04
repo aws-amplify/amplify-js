@@ -37,12 +37,6 @@ executors:
       xcode: 13.2.1
     resource_class: large
 
-  # For RN apps that need to be upgraded before using latest iOS/macOS
-  # macos-executor-legacy:
-  #   macos:
-  #     xcode: 11.5.0
-  #   resource_class: large
-
 test_env_vars: &test_env_vars
   environment:
     NPM_REGISTRY: http://0.0.0.0:4873/
