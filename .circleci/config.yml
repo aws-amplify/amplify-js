@@ -1,5 +1,5 @@
 # Javascript Node CircleCI 2.1 configuration file
-#
+##
 version: 2.1
 
 executors:
@@ -35,12 +35,6 @@ executors:
   macos-executor:
     macos:
       xcode: 13.2.1
-    resource_class: large
-
-  # For RN apps that need to be upgraded before using latest iOS/macOS
-  macos-executor-legacy:
-    macos:
-      xcode: 11.5.0
     resource_class: large
 
 test_env_vars: &test_env_vars
@@ -390,7 +384,7 @@ jobs:
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
+            git clone -b storage/react-native-v-upgrade $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
       - save_cache:
@@ -1008,7 +1002,7 @@ jobs:
           spec: delete-user
           browser: << parameters.browser >>
   integ_rn_ios_storage:
-    executor: macos-executor-legacy
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -1029,14 +1023,14 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor-legacy
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   integ_rn_android_storage_multipart_progress:
-    executor: macos-executor-legacy
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
@@ -1179,7 +1173,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1210,6 +1204,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - storage/react-native-v-upgrde
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
