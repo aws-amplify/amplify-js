@@ -37,6 +37,12 @@ executors:
       xcode: 13.2.1
     resource_class: large
 
+  # For RN apps that need to be upgraded before using latest iOS/macOS
+  macos-executor-legacy:
+    macos:
+      xcode: 11.5.0
+    resource_class: large
+
 test_env_vars: &test_env_vars
   environment:
     NPM_REGISTRY: http://0.0.0.0:4873/
@@ -384,7 +390,7 @@ jobs:
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            git clone -b storage/react-native-v-upgrade $AMPLIFY_JS_SAMPLES_STAGING_URL
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
       - save_cache:
@@ -1002,7 +1008,7 @@ jobs:
           spec: delete-user
           browser: << parameters.browser >>
   integ_rn_ios_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -1023,14 +1029,14 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   integ_rn_android_storage_multipart_progress:
-    executor: macos-executor
+    executor: macos-executor-legacy
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
@@ -1204,7 +1210,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - storage/react-native-v-upgrde
+      - 
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
