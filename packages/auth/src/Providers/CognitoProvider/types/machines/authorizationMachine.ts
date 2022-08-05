@@ -30,6 +30,7 @@ export interface AuthorizationMachineContext {
 	identityID: null;
 	AWSCredentials: null;
 	sessionInfo: any;
+	clientConfig?: CognitoProviderConfig;
 }
 
 export type AuthorizationTypestate =

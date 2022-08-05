@@ -12,12 +12,6 @@ import {
 import { waitFor } from 'xstate/lib/waitFor';
 import { AWSCredentials } from '../../../src/types';
 
-// what is the initial state ?
-// does configure work?
-// does fetchAuthSession actor gets spawned? when?
-// does it transition to error state?
-// (not sure how to test this yet) can we mock the fetchAuthSessionMachine and test the invoke function?
-
 const testCognitoProviderConfig: CognitoProviderConfig = {
 	userPoolId: 'us-west-2_WBH3jAT2F',
 	region: 'us-west-2',
@@ -111,7 +105,7 @@ describe('Authorization Machine Test UnAuth Flow', () => {
 		expect(fetchUnAuthAWSCredsSpy).toHaveBeenCalledTimes(1);
 	});
 
-	let sessionToken3: string = '';
+	const sessionToken3: string = '';
 	let sessionToken4: string = '';
 
 	test('fetch cached session UnAuth test', async () => {
@@ -202,8 +196,8 @@ describe('Authorization State Machine Auth Flow', () => {
 		);
 	});
 
-	let sessionToken1: string = '';
-	let sessionToken2: string = '';
+	const sessionToken1: string = '';
+	const sessionToken2: string = '';
 
 	// to test, login on the sample app and then copy and paste the tokens from the fetched auth session
 	const testAccessToken = '';
@@ -226,7 +220,7 @@ describe('Authorization State Machine Auth Flow', () => {
 			.mockImplementation(() => {
 				return Promise.resolve('identityId');
 			});
-		let _authzService = interpret(authzMachine);
+		const _authzService = interpret(authzMachine);
 		_authzService.start();
 		_authzService.send(
 			authzMachineEvents.configure({ ...testCognitoProviderConfig })

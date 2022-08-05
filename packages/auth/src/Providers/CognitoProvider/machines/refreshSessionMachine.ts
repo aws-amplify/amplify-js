@@ -211,7 +211,6 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				src: fetchAuthSessionStateMachine,
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						// @ts-ignore
 						context.clientConfig,
 					service: (context: AuthorizationMachineContext, _event: any) =>
 						context.service,
@@ -240,7 +239,6 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				},
 				data: {
 					clientConfig: (context: AuthorizationMachineContext, _event: any) =>
-						// @ts-ignore
 						context.clientConfig,
 					service: (context: RefreshSessionContext, _event: any) =>
 						context.service,
