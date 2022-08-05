@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.30](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.29...aws-amplify@4.3.30) (2022-08-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.3.29](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.28...aws-amplify@4.3.29) (2022-07-28)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.3.28](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.27...aws-amplify@4.3.28) (2022-07-21)
+
+
+### Bug Fixes
+
+* preserve ssr context when using DataStore ([#10088](https://github.com/aws-amplify/amplify-js/issues/10088)) ([a10d920](https://github.com/aws-amplify/amplify-js/commit/a10d920f7fb6199539fb8d9cec2cb4426dbfd47b))
+
+
+
+
+
 ## [4.3.27](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.26...aws-amplify@4.3.27) (2022-07-07)
 
 **Note:** Version bump only for package aws-amplify

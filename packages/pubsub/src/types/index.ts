@@ -19,3 +19,39 @@ export interface SubscriptionObserver<T> {
 	error(errorValue: any): void;
 	complete(): void;
 }
+
+/** @enum {string} */
+export enum ConnectionState {
+	/*
+	 * The connection is alive and healthy
+	 */
+	Connected = 'Connected',
+	/*
+	 * The connection is alive, but the connection is offline
+	 */
+	ConnectedPendingNetwork = 'ConnectedPendingNetwork',
+	/*
+	 * The connection has been disconnected while in use
+	 */
+	ConnectionDisrupted = 'ConnectionDisrupted',
+	/*
+	 * The connection has been disconnected and the network is offline
+	 */
+	ConnectionDisruptedPendingNetwork = 'ConnectionDisruptedPendingNetwork',
+	/*
+	 * The connection is in the process of connecting
+	 */
+	Connecting = 'Connecting',
+	/*
+	 * The connection is not in use and is being disconnected
+	 */
+	ConnectedPendingDisconnect = 'ConnectedPendingDisconnect',
+	/*
+	 * The connection is not in use and has been disconnected
+	 */
+	Disconnected = 'Disconnected',
+	/*
+	 * The connection is alive, but a keep alive message has been missed
+	 */
+	ConnectedPendingKeepAlive = 'ConnectedPendingKeepAlive',
+}
