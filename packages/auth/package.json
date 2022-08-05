@@ -44,7 +44,7 @@
     "@aws-amplify/cache": "4.0.59",
     "@aws-amplify/core": "4.7.8",
     "amazon-cognito-identity-js": "5.2.11",
-    "crypto-js": "^4.1.1",
+    "@aws-crypto/sha256-js": "1.2.2",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
