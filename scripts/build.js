@@ -229,6 +229,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
+		importHelpers: true,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
