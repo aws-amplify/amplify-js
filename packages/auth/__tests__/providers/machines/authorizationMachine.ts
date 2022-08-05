@@ -13,9 +13,9 @@ import { waitFor } from 'xstate/lib/waitFor';
 import { AWSCredentials } from '../../../src/types';
 
 const testCognitoProviderConfig: CognitoProviderConfig = {
-	userPoolId: 'us-west-2_WBH3jAT2F',
+	userPoolId: '',
 	region: 'us-west-2',
-	clientId: '7v5k34l31fg46s451sdrd4kv6g',
+	clientId: '',
 	identityPoolId: 'us-west-2:6f687fc7-c8b0-42f3-8868-d36a54342aab',
 };
 
@@ -31,8 +31,6 @@ describe('Cognito Provider Test', () => {
 
 // initialize the provider
 const provider = new CognitoProvider({ ...testCognitoProviderConfig });
-// configure the provider
-provider.configure({ ...testCognitoProviderConfig });
 
 // UNAUTH FLOW
 describe('Authorization Machine Test UnAuth Flow', () => {
