@@ -90,27 +90,25 @@ export class InteractionsClass {
 			throw new Error('Invalid pluggable');
 		}
 
-		if (pluggable && pluggable.getCategory() === 'Interactions') {
-			if (!this._pluggables[pluggable.getProviderName()]) {
-				// configure bots for the new plugin
-				Object.keys(this._options.bots)
-					.filter(
-						botKey =>
-							this._options.bots[botKey].providerName ===
-							pluggable.getProviderName()
-					)
-					.forEach(botKey => {
-						const bot = this._options.bots[botKey];
-						pluggable.configure({ [bot.name]: bot });
-					});
+		if (!this._pluggables[pluggable.getProviderName()]) {
+			// configure bots for the new plugin
+			Object.keys(this._options.bots)
+				.filter(
+					botKey =>
+						this._options.bots[botKey].providerName ===
+						pluggable.getProviderName()
+				)
+				.forEach(botKey => {
+					const bot = this._options.bots[botKey];
+					pluggable.configure({ [bot.name]: bot });
+				});
 
-				this._pluggables[pluggable.getProviderName()] = pluggable;
-				return;
-			} else {
-				throw new Error(
-					'Pluggable ' + pluggable.getProviderName() + ' already plugged'
-				);
-			}
+			this._pluggables[pluggable.getProviderName()] = pluggable;
+			return;
+		} else {
+			throw new Error(
+				'Pluggable ' + pluggable.getProviderName() + ' already plugged'
+			);
 		}
 	}
 
@@ -118,15 +116,6 @@ export class InteractionsClass {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
-		if (
-			!(
-				typeof botname === 'string' &&
-				(typeof message === 'string' || typeof message === 'object')
-			)
-		) {
-			return Promise.reject(`message type isn't supported`);
-		}
-
 		if (!this._options.bots || !this._options.bots[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
@@ -148,10 +137,6 @@ export class InteractionsClass {
 		botname: string,
 		callback: (err, confirmation) => void
 	): void {
-		if (!(typeof botname === 'string' && typeof callback === 'function')) {
-			throw new Error(`message type isn't supported`);
-		}
-
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}

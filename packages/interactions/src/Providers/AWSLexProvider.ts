@@ -51,7 +51,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	configure(config: AWSLexProviderOptions = {}): AWSLexProviderOptions {
 		const propertiesToTest = ['name', 'alias', 'region'];
 
-		Object.keys(config).map(botKey => {
+		Object.keys(config).forEach(botKey => {
 			const botConfig = config[botKey];
 
 			// is bot config correct
@@ -115,21 +115,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
-		// check message type
-		if (
-			!(
-				typeof message === 'string' || // simple text message
-				// obj text message
-				(message?.options?.messageType === 'text' &&
-					typeof message?.content === 'string') ||
-				// obj voice message
-				(message?.options?.messageType === 'voice' &&
-					message?.content instanceof Blob)
-			)
-		) {
-			return Promise.reject(`message type isn't supported`);
-		}
-
 		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
@@ -210,12 +195,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		}
 	}
 
-	onComplete(botname: string, callback) {
-		// check input format
-		if (!(typeof botname === 'string' && typeof callback === 'function')) {
-			throw new Error(`message type isn't supported`);
-		}
-
+	onComplete(botname: string, callback: (err, confirmation) => void) {
 		// does bot exist
 		if (!this._config[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');

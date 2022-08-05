@@ -99,13 +99,7 @@ afterEach(() => {
 	jest.restoreAllMocks();
 });
 
-describe.only('Interactions', () => {
-	describe('constructor test', () => {
-		test('happy case', () => {
-			const interactions = new Interactions({});
-		});
-	});
-
+describe('Interactions', () => {
 	// Test 'configure' API
 	describe('configure API', () => {
 		let interactions;
@@ -116,7 +110,7 @@ describe.only('Interactions', () => {
 			interactions.addPluggable(new DummyProvider());
 		});
 
-		test('happy case', () => {
+		test('Check if bot is successfully configured by validating config response', () => {
 			const options = {
 				keyA: 'valueA',
 				keyB: 'valueB',
@@ -127,7 +121,7 @@ describe.only('Interactions', () => {
 		});
 
 		// these in turn covers default provider 'AWSLexProvider' test
-		test('aws-exports configuration', () => {
+		test('Configure bot using aws-exports configuration', () => {
 			const config = interactions.configure(awsmobile);
 
 			expect(config).toEqual({
@@ -138,7 +132,7 @@ describe.only('Interactions', () => {
 			});
 		});
 
-		test('manual configuration', () => {
+		test('Configure bot using manual configuration', () => {
 			const config = interactions.configure(manualConfig);
 
 			expect(config).toEqual({
@@ -146,7 +140,7 @@ describe.only('Interactions', () => {
 			});
 		});
 
-		test('aws-exports and manual configuration', () => {
+		test('Configure bot using aws-exports and manual configuration', () => {
 			const combinedConfig = {
 				...awsmobile,
 				...manualConfig,
@@ -160,7 +154,7 @@ describe.only('Interactions', () => {
 			});
 		});
 
-		test('default provider AWSLexProvider', async () => {
+		test('Check if default provider is AWSLexProvider', async () => {
 			const myBot = {
 				MyBot: {
 					name: 'MyBot', // default provider 'AWSLexProvider'
@@ -179,7 +173,7 @@ describe.only('Interactions', () => {
 			});
 		});
 
-		test('FailureCase: configure bot to not existing plugin', async () => {
+		test('Configure bot belonging to non-existing plugin', async () => {
 			const myConfig = {
 				Interactions: {
 					bots: {
@@ -200,13 +194,10 @@ describe.only('Interactions', () => {
 	});
 
 	// Test 'getModuleName' API
-	describe('getModuleName API', () => {
-		test('happy case', () => {
-			const interactions = new Interactions({});
-
-			const moduleName = interactions.getModuleName();
-			expect(moduleName).toEqual('Interactions');
-		});
+	test(`Is provider name 'Interactions'`, () => {
+		const interactions = new Interactions({});
+		const moduleName = interactions.getModuleName();
+		expect(moduleName).toEqual('Interactions');
 	});
 
 	// Test 'addPluggable' API
@@ -218,18 +209,18 @@ describe.only('Interactions', () => {
 			interactions.configure({});
 		});
 
-		test('add custom pluggable happy path', () => {
+		test('Add custom pluggable and configure a bot for that plugin successfully', () => {
 			interactions.addPluggable(new DummyProvider());
 			interactions.configure(manualConfig);
 		});
 
-		test('FailureCase: add invalid pluggable', () => {
+		test('Add a invalid pluggable', () => {
 			expect(() => interactions.addPluggable(new WrongProvider())).toThrow(
 				'Invalid pluggable'
 			);
 		});
 
-		test('FailureCase: add existing pluggable again', () => {
+		test('Add existing pluggable again', () => {
 			interactions.addPluggable(new DummyProvider());
 			expect(() => {
 				interactions.addPluggable(new DummyProvider());
@@ -248,24 +239,14 @@ describe.only('Interactions', () => {
 			interactions.configure(manualConfig);
 		});
 
-		test('send text message', async () => {
+		test('send text message to a bot successfully', async () => {
 			const response = await interactions.send('BookTrip', 'hi');
 			expect(response).toEqual({});
 		});
 
-		test('FailureCase: send to not existing bot', async () => {
+		test('Send text message to non-existing bot', async () => {
 			await expect(interactions.send('unknownBot', 'hi')).rejects.toEqual(
 				'Bot unknownBot does not exist'
-			);
-		});
-
-		test('FailureCase: send with wrong input format', async () => {
-			await expect(interactions.send('BookTrip', 12312)).rejects.toEqual(
-				`message type isn't supported`
-			);
-
-			await expect(interactions.send({}, 'Hi')).rejects.toEqual(
-				`message type isn't supported`
 			);
 		});
 	});
@@ -282,25 +263,13 @@ describe.only('Interactions', () => {
 			interactions.configure(manualConfig);
 		});
 
-		test('happy case', () => {
-			interactions.onComplete('BookTrip', callback);
+		test('Configure onComplete callback for a configured bot successfully', async () => {
+			expect(() => interactions.onComplete('BookTrip', callback)).not.toThrow();
 		});
 
-		test('FailureCase: send to not existing bot', async () => {
+		test('Configure onComplete callback for non-existing bot', async () => {
 			expect(() => interactions.onComplete('unknownBot', callback)).toThrow(
 				'Bot unknownBot does not exist'
-			);
-		});
-
-		test('FailureCase: send with wrong input format', async () => {
-			// wrong callback
-			expect(() => interactions.onComplete('BookTrip', 'hi')).toThrow(
-				`message type isn't supported`
-			);
-
-			// wrong botname
-			expect(() => interactions.onComplete({}, 'Hi')).toThrow(
-				`message type isn't supported`
 			);
 		});
 	});

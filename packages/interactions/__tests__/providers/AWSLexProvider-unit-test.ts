@@ -141,37 +141,27 @@ afterEach(() => {
 });
 
 describe('Interactions', () => {
-	describe('constructor test', () => {
-		test('happy case', () => {
-			const provider = new AWSLexProvider();
-		});
-	});
-
 	// Test 'getProviderName' API
-	describe('getProviderName API', () => {
-		test('happy case', () => {
-			const provider = new AWSLexProvider();
-			expect(provider.getProviderName()).toEqual('AWSLexProvider');
-		});
+	test(`Is provider name 'AWSLexProvider'`, () => {
+		const provider = new AWSLexProvider();
+		expect(provider.getProviderName()).toEqual('AWSLexProvider');
 	});
 
 	// Test 'getCategory' API
-	describe('getCategory API', () => {
-		test('happy case', () => {
-			const provider = new AWSLexProvider();
-			expect(provider.getCategory()).toEqual('Interactions');
-		});
+	test(`Is category name 'Interactions'`, () => {
+		const provider = new AWSLexProvider();
+		expect(provider.getCategory()).toEqual('Interactions');
 	});
 
 	// Test 'configure' API
 	describe('configure API', () => {
 		const provider = new AWSLexProvider();
 
-		test('happy case', () => {
+		test('Check if bot is successfully configured by validating config response', () => {
 			expect(provider.configure(botConfig)).toEqual(botConfig);
 		});
 
-		test('configure multiple bots', () => {
+		test('configure multiple bots and re-configure existing bot successfully', () => {
 			// config 1st bot
 			expect(provider.configure(botConfig)).toEqual(botConfig);
 
@@ -203,7 +193,7 @@ describe('Interactions', () => {
 			});
 		});
 
-		test('FailureCase: invalid bot config', () => {
+		test('Configure bot with invalid config', () => {
 			const invalidConfig = {
 				BookHotel: {
 					name: 'BookHotel',
@@ -231,7 +221,7 @@ describe('Interactions', () => {
 			provider.configure(botConfig);
 		});
 
-		test('send simple text message and fulfill', async () => {
+		test('send simple text message to bot and fulfill', async () => {
 			let response = await provider.sendMessage('BookTrip', 'hi');
 			expect(response).toEqual({
 				dialogState: 'ElicitSlot',
@@ -249,7 +239,7 @@ describe('Interactions', () => {
 			});
 		});
 
-		test('send obj text message and fulfill', async () => {
+		test('send obj text message to bot and fulfill', async () => {
 			let response = await provider.sendMessage('BookTrip', {
 				content: 'hi',
 				options: {
@@ -279,7 +269,7 @@ describe('Interactions', () => {
 			});
 		});
 
-		test('send obj voice message and fulfill', async () => {
+		test('send obj voice message to bot and fulfill', async () => {
 			const botconfig = {
 				'BookTrip:hi': {
 					name: 'BookTrip:hi',
@@ -323,7 +313,7 @@ describe('Interactions', () => {
 			});
 		});
 
-		test('FailureCase: No credentials send', async () => {
+		test('send a text message bot But with no credentials', async () => {
 			jest
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => Promise.reject({ identityId: undefined }));
@@ -333,37 +323,10 @@ describe('Interactions', () => {
 			);
 		});
 
-		test('FailureCase: send to not existing bot', async () => {
+		test('send message to non-existing bot', async () => {
 			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual(
 				'Bot unknownBot does not exist'
 			);
-		});
-
-		test('FailureCase: send simple text, obj text and obj voice messages in wrong format', async () => {
-			// simple text in wrong format
-			await expect(provider.sendMessage('BookTrip', 3421)).rejects.toEqual(
-				`message type isn't supported`
-			);
-
-			// obj text in wrong format
-			await expect(
-				provider.sendMessage('BookTrip', {
-					content: createBlob(),
-					options: {
-						messageType: 'text',
-					},
-				})
-			).rejects.toEqual(`message type isn't supported`);
-
-			// obj text in wrong format
-			await expect(
-				provider.sendMessage('BookTrip', {
-					content: 'Hi',
-					options: {
-						messageType: 'voice',
-					},
-				})
-			).rejects.toEqual(`message type isn't supported`);
 		});
 	});
 
@@ -381,25 +344,13 @@ describe('Interactions', () => {
 			provider.configure(botConfig);
 		});
 
-		test('happy case', () => {
-			provider.onComplete('BookTrip', callback);
+		test('Configure onComplete callback for a configured bot successfully', () => {
+			expect(() => provider.onComplete('BookTrip', callback)).not.toThrow();
 		});
 
-		test('FailureCase: onComplete to not existing bot', async () => {
+		test('Configure onComplete callback for non-existing bot', async () => {
 			expect(() => provider.onComplete('unknownBot', callback)).toThrow(
 				'Bot unknownBot does not exist'
-			);
-		});
-
-		test('FailureCase: onComplete with wrong input format', async () => {
-			// wrong callback
-			expect(() => provider.onComplete('BookTrip', 'hi')).toThrow(
-				`message type isn't supported`
-			);
-
-			// wrong botname
-			expect(() => provider.onComplete({}, 'Hi')).toThrow(
-				`message type isn't supported`
 			);
 		});
 	});
@@ -449,7 +400,7 @@ describe('Interactions', () => {
 			)) as PostTextCommandOutput;
 		});
 
-		test('onComplete callback from `Interactions.onComplete`', async () => {
+		test('Configure onComplete callback using `Interactions.onComplete` API', async () => {
 			// 1. In progress, callback shouldn't be called
 			provider.onComplete('BookTrip', inProgressCallback);
 			provider.reportBotStatus('BookTrip', inProgressResp);
@@ -466,7 +417,7 @@ describe('Interactions', () => {
 			jest.runAllTimers();
 		});
 
-		test('onComplete callback from `Configure`', async () => {
+		test('Configure onComplete callback using `configuration`', async () => {
 			const myBot: any = {
 				BookTrip: {
 					name: 'BookTrip',
