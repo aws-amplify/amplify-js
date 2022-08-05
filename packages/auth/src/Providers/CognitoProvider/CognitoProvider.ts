@@ -91,10 +91,6 @@ function listenToAuthHub(send: any) {
 	});
 }
 
-// FOR DEBUGGING ONLY
-inspect({ iframe: false });
-// inspect();
-
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
@@ -113,10 +109,7 @@ export class CognitoProvider implements AuthProvider {
 		listenToAuthHub(this._authService.send);
 		// @ts-ignore ONLY FOR DEBUGGIN AND TESTING!
 		window.Hub = Hub;
-		this._authService.subscribe(state => {
-			// temporarily removed for testing purposes
-			// console.log(state);
-		});
+		this._authService.subscribe(state => {});
 	}
 
 	configure(config: PluginConfig) {
@@ -190,7 +183,6 @@ export class CognitoProvider implements AuthProvider {
 					confirmationCode,
 				}
 			);
-			console.log(res);
 			return res;
 		} catch (err) {
 			logger.error(err);
@@ -228,9 +220,6 @@ export class CognitoProvider implements AuthProvider {
 		);
 		this._authzService.send(authzMachineEvents.signInRequested());
 		const signInResult = await this.waitForSignInComplete();
-
-		// for debugging and demos only
-		// inspect();
 
 		return signInResult;
 	}
@@ -367,8 +356,6 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
-		// inspect();
-
 		// checks to see if the identity pool and region are already configured
 		// 1. if AuthZ machine is not configured -> throw error
 		if (this._authzService.state.matches('notConfigured')) {
@@ -545,7 +532,6 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
-		// this._authzService.send(authzMachineEvents.signInRequested());
 		this.clearCachedTokens();
 		this._authService.send(authMachineEvents.signOutRequested());
 		this._authzService.send(authzMachineEvents.signOutRequested());

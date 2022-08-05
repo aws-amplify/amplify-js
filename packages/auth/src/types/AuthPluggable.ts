@@ -1,4 +1,7 @@
-import { ChallengeNameType } from '@aws-sdk/client-cognito-identity-provider';
+import {
+	ChallengeNameType,
+	ConfirmSignUpCommandOutput,
+} from '@aws-sdk/client-cognito-identity-provider';
 
 export enum USER_PARAM_TYPE {
 	EMAIL = 'email',
@@ -90,17 +93,7 @@ type ConfirmSignUpParams = {
 	username: string;
 };
 
-type SignUpResult = {
-	$metadata?: object;
-	CodeDeliveryDetails?: {
-		AttributeName?: string;
-		DeliveryMedium?: string;
-		Destination?: string;
-	};
-	UserConfirmed: boolean;
-	UserSub: string;
-	user?: AmplifyUser;
-};
+type SignUpResult = ConfirmSignUpCommandOutput;
 
 type ConfirmSignUpResult = {};
 
@@ -164,7 +157,7 @@ export type AuthZOptions = {
 export type AWSCredentials = {
 	accessKeyId: string;
 	secretAccessKey: string;
-	sessionToken: string;
+	sessionToken?: string;
 	expiration: Date;
 };
 

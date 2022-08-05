@@ -3,7 +3,6 @@ import { CognitoProviderConfig } from '../../CognitoProvider';
 import { CognitoService } from '../../serviceClass';
 
 export interface RefreshSessionStateMachineContext {
-	// actorRef?: FetchAuthSessionActorRef;
 	config: null | CognitoProviderConfig;
 	service: null | CognitoService;
 	userPoolTokens: null | {

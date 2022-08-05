@@ -126,14 +126,18 @@ export class CognitoService {
 		}
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
+		if (!AccessKeyId || !SecretKey) {
+			throw new Error(
+				'Access key or secret key is missing from the Credentials'
+			);
+		}
+		if (!Expiration) {
+			throw new Error('Expiration is missing from the Credentials');
+		}
 		return {
-			// @ts-ignore
 			accessKeyId: AccessKeyId,
-			// @ts-ignore
 			secretAccessKey: SecretKey,
-			// @ts-ignore
 			sessionToken: SessionToken,
-			// @ts-ignore
 			expiration: Expiration,
 		};
 	}
@@ -180,7 +184,6 @@ export class CognitoService {
 				AccessToken: accessToken,
 			})
 		);
-		// console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -192,7 +195,6 @@ export class CognitoService {
 			userInfo: {
 				// sub
 				userid: sub as string,
-				// maybe username
 				identifiers: [],
 			},
 			credentials: {
@@ -217,7 +219,6 @@ export class CognitoService {
 		}
 		const { idToken, accessToken, refreshToken } = session;
 		const expiration = getExpirationTimeFromJWT(idToken);
-		console.log({ expiration });
 		return {
 			jwt: {
 				idToken,
@@ -228,9 +229,6 @@ export class CognitoService {
 	}
 
 	async refreshUserPoolTokens(refreshToken: string) {
-		// assuming we are not lazily refreshing
-		// TODO: maybe we should???
-
 		const refreshTokenRes = await this.cognitoClient.send(
 			new InitiateAuthCommand({
 				AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
@@ -270,8 +268,6 @@ export class CognitoService {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		// console.log('IDENTITY ID: ');
-		// console.log(getIdRes.IdentityId);
 		return getIdRes.IdentityId;
 	}
 

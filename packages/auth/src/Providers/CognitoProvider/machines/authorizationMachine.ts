@@ -18,7 +18,6 @@ import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
-import { Logger } from '@aws-amplify/core';
 
 // state machine events
 export const authorizationMachineModel = createModel(
@@ -32,13 +31,12 @@ export const authorizationMachineModel = createModel(
 		events: {
 			cachedCredentialAvailable: () => ({}),
 			cancelSignIn: () => ({}),
-			// configures the cognito provider
 			configure: (config: CognitoProviderConfig) => ({ config }),
 			fetchAuthSession: () => ({}),
 			fetched: () => ({}),
 			fetchUnAuthSession: () => ({}),
 			noSession: () => ({}),
-			// receivedCachedCredentials: () => ({}),
+			// Possible TO DO: adding received cached credentials action for waiting to store state
 			refreshSession: (
 				userPoolTokens?: UserPoolTokens,
 				forceRefresh: boolean = false
@@ -46,7 +44,6 @@ export const authorizationMachineModel = createModel(
 				userPoolTokens,
 				forceRefresh,
 			}),
-			// refreshed: () => ({}),
 			signInRequested: () => ({}),
 			// save the userpool tokens in the event for later use
 			signInCompleted: (userPoolTokens: UserPoolTokens) => {
@@ -101,15 +98,6 @@ const authorizationStateMachineActions: Record<
 			};
 		},
 	}),
-	// gets the identityID and AWS Credentials from the fetchAuthSessionStateMachine
-	// sessionInfo: authorizationMachineModel.assign({
-	// 	sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
-	// 		return {
-	// 			identityID: event.data.identityID,
-	// 			AWSCredentials: event.data.AWSCredentials,
-	// 		};
-	// 	},
-	// }),
 };
 
 // Authorization state machine
@@ -172,9 +160,7 @@ const authorizationStateMachine: MachineConfig<
 		},
 		// for fetching session for users that haven't signed in
 		fetchingUnAuthSession: {
-			on: {
-				// fetched: 'sessionEstablished',
-			},
+			on: {},
 			invoke: {
 				id: 'spawnFetchAuthSessionActor',
 				src: fetchAuthSessionStateMachine,
@@ -217,19 +203,10 @@ const authorizationStateMachine: MachineConfig<
 						context.sessionInfo.AWSCredentials,
 					forceRefresh: (context: AuthorizationMachineContext, event: any) =>
 						event.forceRefresh,
-					// authenticated: false,
 				},
 			},
 		},
-		// waitingToStore: {
-		// 	always: {
-		// 		target: 'sessionEstablished',
-		// 	},
-		// 	on: {
-		// 		error: 'error',
-		// 		receivedCachedCredentials: 'sessionEstablished',
-		// 	},
-		// },
+		// TODO: waiting to store state
 		sessionEstablished: {
 			on: {
 				signInRequested: 'signingIn',

@@ -206,10 +206,6 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 			},
 		},
 		refreshingUnAuthAWSCredentials: {
-			// on: {
-			// 	fetchedAWSCredentials: 'refreshed',
-			// 	throwError: 'error',
-			// },
 			invoke: {
 				id: 'spawnFetchAuthSessionActor',
 				src: fetchAuthSessionStateMachine,
@@ -264,8 +260,6 @@ const refreshAuthSessionStateMachineConfig: MachineConfig<any, any, any> = {
 				fetched: 'refreshed',
 				throwError: 'error',
 			},
-			// set up invoke later
-			// ...fetchAuthSessionStateMachine,
 		},
 		refreshed: {
 			type: 'final',

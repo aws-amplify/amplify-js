@@ -123,7 +123,6 @@ const signUpStateMachine: MachineConfig<
 								clientId: context.authConfig.clientId,
 							}
 						);
-						console.log('signUpMachine 97!!!', { res });
 						// TODO: ask James about this
 						// if (res && typeof res.AuthenticationResult !== 'undefined') {
 						// 	cacheInitiateAuthResult(res, context.userStorage);

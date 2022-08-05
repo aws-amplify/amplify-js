@@ -2,24 +2,12 @@ import { assign, createMachine, MachineConfig } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { FetchAuthSessionReturnContext } from '../types/machines/fetchAuthSessionStateMachine';
 
-// info/context needed to fetch session
-// First, fetch user pool tokens (JWT) from the user pool
-// - session = this.getSessionData();
-
-// Second, fetch the identity ID from the identity pool using the idToken from the first step
-// - need idToken passed in as argument for the call
-
-// Third, fetch the AWS Credentials from the identity pool
-// - need idToken passed in as argument for the call
-// - need identityID passed in as argument for the call as well
-
 export const fetchAuthSessionMachineModel = createModel({
 	events: {
 		fetchUnAuthIdentityID: () => ({}),
 		fetchAuthenticatedIdentityID: () => ({}),
 		fetchedIdentityID: () => ({}),
 		throwError: () => ({}),
-		// fetchedAWSCredentials: () => ({}),
 	},
 });
 
@@ -57,7 +45,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 
 						// fetch unauth identity id if user isn't authenticated
 						if (!context.authenticated) {
-							console.log('fetching unauth identity ID');
 							const identityID = await context.service?.fetchUnAuthIdentityID();
 							return identityID;
 						}
@@ -117,11 +104,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 			},
 			fetched: {
 				type: 'final',
-				// onEntry: [
-				// 	(context, event) => {
-				// 		console.log('DONE');
-				// 	},
-				// ],
 				data: {
 					identityID: (context: FetchAuthSessionReturnContext, _event: any) =>
 						context.identityID,
@@ -133,11 +115,6 @@ export const fetchAuthSessionStateMachineConfig: MachineConfig<any, any, any> =
 			},
 			error: {
 				type: 'final',
-				// onEntry: [
-				// 	(context, event) => {
-				// 		console.log('NOOOOOOO');
-				// 	},
-				// ],
 			},
 		},
 	};
