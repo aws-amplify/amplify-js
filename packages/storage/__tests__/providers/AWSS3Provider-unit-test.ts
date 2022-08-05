@@ -59,6 +59,7 @@ S3Client.prototype.send = jest.fn(async command => {
 		}
 		return {
 			Contents: [resultObj],
+			IsTruncated: false,
 		};
 	}
 	return 'data';
@@ -955,26 +956,63 @@ describe('StorageProvider test', () => {
 			lastModified: 'lastmodified',
 			size: 'size',
 		};
-		test('list object successfully', async () => {
+		let continuationToken = 'TEST_TOKEN';
+		const listResultObj = {
+			Key: 'public/path/itemsKey',
+			ETag: 'etag',
+			LastModified: 'lastmodified',
+			Size: 'size',
+		};
+		const inputResult = {
+			Bucket: 'bucket',
+			Prefix: 'public/listALLResultsPath',
+			MaxKeys: 1000,
+			ContinuationToken: 'TEST_TOKEN',
+		};
+		let listResult = [];
+		let pages = 3;
+		for (let i = 0; i < pages; i++) listResult.push(resultObj);
+		test('list object successfully with pages with three pages', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
 					res({});
 				});
 			});
-
+			let methodCalls = 0;
+			const listAllFunction = async command => {
+				if (command instanceof ListObjectsV2Command) {
+					let token = undefined;
+					methodCalls++;
+					if (
+						command.input.ContinuationToken === undefined ||
+						methodCalls < pages
+					)
+						token = continuationToken;
+					if (command.input.Prefix === 'public/listALLResultsPath') {
+						return {
+							Contents: [listResultObj],
+							NextContinuationToken: token,
+						};
+					}
+				}
+				return 'data';
+			};
 			const storage = new StorageProvider();
 			storage.configure(options);
+			S3Client.prototype.send = jest.fn(listAllFunction);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 
-			expect.assertions(2);
-			expect(await storage.list('path', { level: 'public' })).toEqual([
-				resultObj,
-			]);
-			expect(spyon.mock.calls[0][0].input).toEqual({
-				Bucket: 'bucket',
-				MaxKeys: 1000,
-				Prefix: 'public/path',
+			expect.assertions(6);
+			let response = await storage.list('listALLResultsPath', {
+				level: 'public',
 			});
+			expect(response.results).toEqual(listResult);
+			expect(response.hasNextPage).toEqual(false);
+			expect(spyon).toHaveBeenCalledTimes(pages);
+			for (let i = 0; i < pages; i++) {
+				expect(spyon.mock.calls[i][0].input).toEqual(inputResult);
+				inputResult.ContinuationToken = continuationToken;
+			}
 			spyon.mockClear();
 		});
 
@@ -988,11 +1026,11 @@ describe('StorageProvider test', () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
-
+			let response = await storage.list('emptyListResultsPath', {
+				level: 'public',
+			});
 			expect.assertions(2);
-			expect(
-				await storage.list('emptyListResultsPath', { level: 'public' })
-			).toEqual([]);
+			expect(response.results).toEqual([]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				MaxKeys: 1000,
@@ -1007,36 +1045,70 @@ describe('StorageProvider test', () => {
 					res({});
 				});
 			});
+			let methodCalls = 0;
+			const listAllFunction = async command => {
+				if (command instanceof ListObjectsV2Command) {
+					let token = undefined;
+					methodCalls++;
+					if (
+						command.input.ContinuationToken === undefined ||
+						methodCalls < pages
+					)
+						token = continuationToken;
+					if (command.input.Prefix === 'public/listALLResultsPath') {
+						return {
+							Contents: [listResultObj],
+							NextContinuationToken: token,
+						};
+					}
+				}
+				return 'data';
+			};
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			S3Client.prototype.send = jest.fn(listAllFunction);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+
+			expect.assertions(6);
+			let response = await storage.list('listALLResultsPath', {
+				level: 'public',
+				track: true,
+			});
+			expect(response.results).toEqual(listResult);
+			expect(response.hasNextPage).toEqual(false);
+			expect(spyon).toHaveBeenCalledTimes(pages);
+			for (let i = 0; i < pages; i++) {
+				expect(spyon.mock.calls[i][0].input).toEqual(inputResult);
+				inputResult.ContinuationToken = continuationToken;
+			}
+			spyon.mockClear();
+		});
+
+		test('list objects with zero results', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
 
 			const storage = new StorageProvider();
 			storage.configure(options);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
-			const spyon2 = jest.spyOn(Hub, 'dispatch');
-
-			expect.assertions(3);
-			expect(
-				await storage.list('path', { level: 'public', track: true })
-			).toEqual([resultObj]);
+			let response = await storage.list('emptyListResultsPath', {
+				level: 'public',
+			});
+			expect.assertions(2);
+			expect(response.results).toEqual([]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				MaxKeys: 1000,
-				Prefix: 'public/path',
+				Prefix: 'public/emptyListResultsPath',
 			});
-			expect(spyon2).toBeCalledWith(
-				'storage',
-				{
-					event: 'list',
-					data: {
-						attrs: { method: 'list', result: 'success' },
-					},
-					message: '1 items returned from list operation',
-				},
-				'Storage',
-				Symbol.for('amplify_default')
-			);
+			spyon.mockClear();
 		});
 
-		test('list object with maxKeys', async () => {
+		test('list object with pageToken', async () => {
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1047,17 +1119,43 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
+			const listWithTokenFunction = async command => {
+				if (command instanceof ListObjectsV2Command) {
+					let token = 'TEST_TOKEN';
+					if (command.input.Prefix === 'public/listWithTokenResultsPath') {
+						return {
+							Contents: [listResultObj],
+							NextContinuationToken: token,
+							IsTruncated: true,
+						};
+					}
+				}
+				return 'data';
+			};
+			S3Client.prototype.send = jest.fn(listWithTokenFunction);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
-			expect.assertions(2);
-			expect(
-				await storage.list('path', { level: 'public', maxKeys: 1 })
-			).toEqual([resultObj]);
+			expect.assertions(4);
+			const response = await storage.list('listWithTokenResultsPath', {
+				level: 'public',
+				pageSize: 1,
+				pageToken: 'TEST_TOKEN',
+			});
+			expect(response.results).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(response.nextPageToken).toEqual('TEST_TOKEN');
+			expect(response.hasNextPage).toEqual(true);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
-				Prefix: 'public/path',
+				Prefix: 'public/listWithTokenResultsPath',
+				ContinuationToken: 'TEST_TOKEN',
 				MaxKeys: 1,
 			});
-
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 		});
@@ -1070,6 +1168,7 @@ describe('StorageProvider test', () => {
 						res({});
 					});
 				});
+
 			const storage = new StorageProvider();
 			storage.configure(options);
 			const listResultObj = {
@@ -1079,15 +1178,15 @@ describe('StorageProvider test', () => {
 				Size: 'size',
 			};
 			let methodCalls = 0;
-			let continuationToken = 'TEST_TOKEN';
-			let listResult = [];
 			const listAllFunction = async command => {
 				if (command instanceof ListObjectsV2Command) {
 					let token = undefined;
 					methodCalls++;
-					if (command.input.ContinuationToken === undefined || methodCalls < 3)
+					if (
+						command.input.ContinuationToken === undefined ||
+						methodCalls < pages
+					)
 						token = continuationToken;
-
 					if (command.input.Prefix === 'public/listALLResultsPath') {
 						return {
 							Contents: [listResultObj],
@@ -1099,22 +1198,15 @@ describe('StorageProvider test', () => {
 			};
 			S3Client.prototype.send = jest.fn(listAllFunction);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
-			expect.assertions(5);
-			for (let i = 0; i < 3; i++) listResult.push(resultObj);
-			expect(
-				await storage.list('listALLResultsPath', {
-					level: 'public',
-					maxKeys: 'ALL',
-				})
-			).toEqual(listResult);
-			expect(spyon).toHaveBeenCalledTimes(3);
-			const inputResult = {
-				Bucket: 'bucket',
-				Prefix: 'public/listALLResultsPath',
-				MaxKeys: 1000,
-				ContinuationToken: undefined,
-			};
-			for (let i = 0; i < 3; i++) {
+			expect.assertions(6);
+			const response = await storage.list('listALLResultsPath', {
+				level: 'public',
+				pageSize: 'ALL',
+			});
+			expect(response.results).toEqual(listResult);
+			expect(response.hasNextPage).toEqual(false);
+			expect(spyon).toHaveBeenCalledTimes(pages);
+			for (let i = 0; i < pages; i++) {
 				expect(spyon.mock.calls[i][0].input).toEqual(inputResult);
 				inputResult.ContinuationToken = continuationToken;
 			}
@@ -1128,7 +1220,6 @@ describe('StorageProvider test', () => {
 					res({});
 				});
 			});
-
 			const storage = new StorageProvider();
 			storage.configure(options);
 			jest
