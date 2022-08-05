@@ -38,11 +38,7 @@
 	},
 	"workspaces": {
 		"packages": [
-			"packages/amazon-cognito-identity-js",
-			"packages/core",
-			"packages/cache",
-			"packages/auth"
-			
+			"packages/*"
 		],
 		"nohoist": [
 			"**/@types/react-native",
