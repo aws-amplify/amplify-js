@@ -62,6 +62,7 @@
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
   "dependencies": {
+    "@aws-crypto/sha256-js": "1.2.2",
     "buffer": "4.9.2",
     "fast-base64-decode": "^1.0.0",
     "isomorphic-unfetch": "^3.0.0",
