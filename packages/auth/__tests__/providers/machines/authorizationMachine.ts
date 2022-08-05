@@ -109,8 +109,6 @@ describe('Authorization Machine Test UnAuth Flow', () => {
 		).toBeUndefined();
 		expect(fetchUnAuthIdSpy).toHaveBeenCalledTimes(1);
 		expect(fetchUnAuthAWSCredsSpy).toHaveBeenCalledTimes(1);
-		sessionToken3 =
-			sessionEstablished.context.sessionInfo.AWSCredentials.SessionToken;
 	});
 
 	let sessionToken3: string = '';
@@ -132,10 +130,6 @@ describe('Authorization Machine Test UnAuth Flow', () => {
 					SessionToken: 'sessionToken',
 				})
 			);
-		// fetch unauth
-		// fetch second time
-		// spy on fetchUnAuthId / fetchUnAuthAWSCreds
-		// assert they have been called 1 time only
 		const _authzService = interpret(authzMachine);
 		_authzService.start();
 		_authzService.send(
@@ -152,20 +146,23 @@ describe('Authorization Machine Test UnAuth Flow', () => {
 		const sessionEstablished2 = await waitFor(_authzService, state =>
 			state.matches('sessionEstablished')
 		);
-		// const sessionToken2 =
-		// 	sessionEstablished2.context.sessionInfo.awsCredentials.SessionToken;
-		// expect(sessionToken === sessionToken2).toBeTruthy();
-		expect(fetchUnAuthIdSpy).toHaveBeenCalledTimes(1);
-		expect(fetchUnAuthAWSCredsSpy).toHaveBeenCalledTimes(1);
+		const sessionToken2 =
+			sessionEstablished2.context.sessionInfo.AWSCredentials.SessionToken;
+		expect(fetchUnAuthIdSpy).toHaveBeenCalledTimes(2);
+		expect(fetchUnAuthAWSCredsSpy).toHaveBeenCalledTimes(2);
 	});
 
 	test('refresh UnAuth session test', async () => {
 		const _authzService = interpret(authzMachine);
 		_authzService.start();
-		_authzService.send(authzMachineEvents.refreshSession());
+		_authzService.send(
+			authzMachineEvents.configure({ ...testCognitoProviderConfig })
+		);
+		_authzService.send(authzMachineEvents.fetchUnAuthSession());
 		const sessionEstablished = await waitFor(_authzService, state =>
 			state.matches('sessionEstablished')
 		);
+		_authzService.send(authzMachineEvents.refreshSession());
 		sessionToken4 =
 			sessionEstablished.context.sessionInfo.AWSCredentials.SessionToken;
 		expect(sessionToken3 === sessionToken4).toBeFalsy();
@@ -214,28 +211,45 @@ describe('Authorization State Machine Auth Flow', () => {
 	const testRefreshToken = '';
 
 	test('fetch Auth tokens test', async () => {
+		const fetchAWSCredsSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchAWSCredentials')
+			.mockImplementation(() =>
+				Promise.resolve({
+					AccessKeyId: 'accessKeyId',
+					SecretKey: 'secretKey',
+					Expiration: new Date(),
+					SessionToken: 'sessionToken',
+				})
+			);
+		const fetchIdSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchIdentityId')
+			.mockImplementation(() => {
+				return Promise.resolve('identityId');
+			});
+		let _authzService = interpret(authzMachine);
 		_authzService.start();
-		_authzService.send(authzMachineEvents.signInRequested());
 		_authzService.send(
 			authzMachineEvents.configure({ ...testCognitoProviderConfig })
 		);
+		_authzService.send(authzMachineEvents.signInRequested());
 		_authzService.onTransition(state => {
 			expect(state.context.service).toBeInstanceOf(CognitoService);
 			expect(state.context.config).toStrictEqual(testCognitoProviderConfig);
 		});
-		// make sure state machine is back to the session Established state after doing fetchAuthSession
+
+		const signinIn = await waitFor(_authzService, state =>
+			state.matches('signingIn')
+		);
+
 		expect(_authzService.state.matches('signingIn')).toBeTruthy();
 
 		_authzService.send(
 			authzMachineEvents.signInCompleted({
-				accessToken: testAccessToken,
-				idToken: testIdToken,
-				refreshToken: testRefreshToken,
+				idToken: '',
+				accessToken: '',
+				refreshToken: '',
 			})
 		);
-		expect(
-			_authzService.state.matches('fetchAuthSessionWithUserPool')
-		).toBeTruthy();
 
 		const sessionEstablished = await waitFor(_authzService, state =>
 			state.matches('sessionEstablished')
@@ -243,26 +257,97 @@ describe('Authorization State Machine Auth Flow', () => {
 
 		expect(_authzService.state.matches('sessionEstablished')).toBeTruthy();
 
+		expect(fetchIdSpy).toHaveBeenCalledTimes(1);
+		expect(fetchAWSCredsSpy).toHaveBeenCalledTimes(1);
+
 		expect(sessionEstablished.context.sessionInfo.AWSCredentials).toBeDefined();
 		expect(sessionEstablished.context.sessionInfo.identityID).toBeDefined();
 		expect(sessionEstablished.context.sessionInfo.authenticated).toBeTruthy();
-
-		sessionToken1 =
-			sessionEstablished.context.sessionInfo.AWSCredentials.SessionToken;
 	});
 
 	test('fetch cached auth session test', async () => {
-		_authzService.send(authzMachineEvents.fetchUnAuthSession());
+		const fetchAWSCredsSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchAWSCredentials')
+			.mockImplementation(() =>
+				Promise.resolve({
+					AccessKeyId: 'accessKeyId',
+					SecretKey: 'secretKey',
+					Expiration: new Date(),
+					SessionToken: 'sessionToken',
+				})
+			);
+		const fetchIdSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchIdentityId')
+			.mockImplementation(() => {
+				return Promise.resolve('identityId');
+			});
+		_authzService.start();
+		_authzService.send(
+			authzMachineEvents.configure({ ...testCognitoProviderConfig })
+		);
+		_authzService.send(authzMachineEvents.signInRequested());
+
+		const signinIn = await waitFor(_authzService, state =>
+			state.matches('signingIn')
+		);
+
+		expect(_authzService.state.matches('signingIn')).toBeTruthy();
+
+		_authzService.send(
+			authzMachineEvents.signInCompleted({
+				idToken: '',
+				accessToken: '',
+				refreshToken: '',
+			})
+		);
+
 		const sessionEstablished = await waitFor(_authzService, state =>
 			state.matches('sessionEstablished')
 		);
-		sessionToken2 =
-			sessionEstablished.context.sessionInfo.AWSCredentials.SessionToken;
+
+		expect(fetchIdSpy).toHaveBeenCalledTimes(2);
+		expect(fetchAWSCredsSpy).toHaveBeenCalledTimes(2);
+
+		expect(sessionEstablished.context.sessionInfo.AWSCredentials).toBeDefined();
 		expect(sessionEstablished.context.sessionInfo.identityID).toBeDefined();
-		expect(sessionToken1 === sessionToken2).toBeTruthy();
+		expect(sessionEstablished.context.sessionInfo.authenticated).toBeTruthy();
 	});
 
 	test('refresh auth session test', async () => {
+		const fetchAWSCredsSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchAWSCredentials')
+			.mockImplementation(() =>
+				Promise.resolve({
+					AccessKeyId: 'accessKeyId',
+					SecretKey: 'secretKey',
+					Expiration: new Date(),
+					SessionToken: 'sessionToken',
+				})
+			);
+		const fetchIdSpy = jest
+			.spyOn(CognitoService.prototype, 'fetchIdentityId')
+			.mockImplementation(() => {
+				return Promise.resolve('identityId');
+			});
+		_authzService.start();
+		_authzService.send(
+			authzMachineEvents.configure({ ...testCognitoProviderConfig })
+		);
+		_authzService.send(authzMachineEvents.signInRequested());
+
+		const signinIn = await waitFor(_authzService, state =>
+			state.matches('signingIn')
+		);
+
+		expect(_authzService.state.matches('signingIn')).toBeTruthy();
+
+		_authzService.send(
+			authzMachineEvents.signInCompleted({
+				idToken: '',
+				accessToken: '',
+				refreshToken: '',
+			})
+		);
 		_authzService.send(
 			authzMachineEvents.refreshSession(
 				{
@@ -273,16 +358,19 @@ describe('Authorization State Machine Auth Flow', () => {
 				true
 			)
 		);
-		expect(_authzService.state.matches('refreshingSession')).toBeTruthy();
 
 		const sessionEstablished = await waitFor(_authzService, state =>
 			state.matches('sessionEstablished')
 		);
 
-		sessionToken2 =
-			sessionEstablished.context.sessionInfo.AWSCredentials.SessionToken;
+		expect(_authzService.state.matches('sessionEstablished')).toBeTruthy();
 
-		expect(sessionToken1 === sessionToken2).toBeFalsy();
+		expect(fetchIdSpy).toHaveBeenCalledTimes(3);
+		expect(fetchAWSCredsSpy).toHaveBeenCalledTimes(3);
+
+		expect(sessionEstablished.context.sessionInfo.AWSCredentials).toBeDefined();
+		expect(sessionEstablished.context.sessionInfo.identityID).toBeDefined();
+		expect(sessionEstablished.context.sessionInfo.authenticated).toBeTruthy();
 	});
 });
 

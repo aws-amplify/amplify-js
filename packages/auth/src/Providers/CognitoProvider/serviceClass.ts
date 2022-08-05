@@ -144,7 +144,7 @@ export class CognitoService {
 
 	async fetchSession(): Promise<AmplifyUser> {
 		// TODO: add param for cognito client config
-		const cognitoClient = this.createCognitoClient();
+		const cognitoClient = this.cognitoClient;
 		const session = this.getSessionData();
 		if (session === null) {
 			throw new Error(
@@ -240,7 +240,6 @@ export class CognitoService {
 		);
 
 		// refreshTokenRes.AuthenticationResult <- the JWT tokens
-		console.log(refreshTokenRes.AuthenticationResult);
 		return refreshTokenRes;
 	}
 
