@@ -63,7 +63,7 @@
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"universal-cookie": "^4.0.4",
 		"zen-observable-ts": "0.8.19",
-		"tslib": "^2.4.0"
+		"tslib": "^1.14.1"
 	},
 	"jest": {
 		"globals": {
