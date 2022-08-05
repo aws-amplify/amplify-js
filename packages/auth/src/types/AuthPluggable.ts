@@ -90,10 +90,22 @@ type ConfirmSignUpParams = {
 	username: string;
 };
 
-type SignUpResult = {};
+type SignUpResult = {
+	$metadata?: object;
+	CodeDeliveryDetails?: {
+		AttributeName?: string;
+		DeliveryMedium?: string;
+		Destination?: string;
+	};
+	UserConfirmed: boolean;
+	UserSub: string;
+	user?: AmplifyUser;
+};
+
+type ConfirmSignUpResult = {};
 
 type ConfirmSignInParams = {
-	confirmationCode?: string;
+	confirmationCode: string;
 	newPassword?: string;
 	challengeName:
 		| ChallengeNameType.SMS_MFA
@@ -198,6 +210,7 @@ export {
 	SignInParams,
 	ConfirmSignUpParams,
 	SignUpResult,
+	ConfirmSignUpResult,
 	ConfirmSignInParams,
 	AmplifyUser,
 	PluginConfig,
