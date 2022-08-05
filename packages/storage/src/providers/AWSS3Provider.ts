@@ -45,7 +45,6 @@ import {
 	S3ProviderGetOuput,
 	S3ProviderPutConfig,
 	S3ProviderRemoveConfig,
-	S3ProviderListOutput,
 	S3ProviderListConfig,
 	S3ProviderCopyConfig,
 	S3ProviderCopyOutput,
@@ -58,6 +57,7 @@ import {
 	ResumableUploadConfig,
 	UploadTask,
 	S3ClientOptions,
+	S3ProviderListOutputWithToken,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -69,7 +69,6 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
-import { S3ProviderListOutputWithToken } from '.././types/AWSS3Provider';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -742,6 +741,7 @@ export class AWSS3Provider implements StorageProvider {
 				MaxKeys: 1000,
 				ContinuationToken: pageToken,
 			};
+			console.log('Helloo  from list');
 			if (pageSize === 'ALL' || pageSize === undefined) {
 				do {
 					params.ContinuationToken = continuationToken;
