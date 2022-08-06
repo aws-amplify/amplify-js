@@ -371,7 +371,7 @@ export class CognitoService {
 			},
 			ClientMetadata: clientMetadata,
 		};
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
 		return res;
 	}
@@ -380,7 +380,7 @@ export class CognitoService {
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
 			ClientId: clientId,
@@ -408,7 +408,7 @@ export class CognitoService {
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 		] = confirmationCode;
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const res = await client.send(
 			new RespondToAuthChallengeCommand({
 				ChallengeName: mfaType,
@@ -424,7 +424,7 @@ export class CognitoService {
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const { username, password, clientId, attributes } = params;
 		const input: SignUpCommandInput = {
 			Username: username,
@@ -453,7 +453,7 @@ export class CognitoService {
 		session,
 		requiredAttributes,
 	}: CognitoCompletePasswordOptions) {
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.NEW_PASSWORD = newPassword;
