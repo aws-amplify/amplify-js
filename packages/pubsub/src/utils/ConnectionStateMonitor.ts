@@ -86,7 +86,7 @@ export class ConnectionStateMonitor {
 	private enableNetworkMonitoring() {
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
-			this._networkMonitoringSubscription = ReachabilityMonitor.subscribe(
+			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(
 				({ online }) => {
 					this.record(
 						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
