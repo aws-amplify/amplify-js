@@ -36,6 +36,8 @@ const ID = 'id';
 
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
+	queryByPkWithCompositeKeyPresent:
+		'Cannot query by primary key exclusively when a composite key is present',
 };
 
 export function extractKeyIfExists(
