@@ -37,7 +37,7 @@ const ID = 'id';
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
 	queryByPkWithCompositeKeyPresent:
-		'Cannot query by primary key exclusively when a composite key is present',
+		'Models with composite primary keys cannot by queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
 };
 
 export function extractKeyIfExists(
