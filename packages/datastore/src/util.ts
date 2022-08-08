@@ -586,14 +586,19 @@ export const traverseModel = <T extends PersistentModel>(
 	return result;
 };
 
-export const getIndex = (rel: RelationType[], src: any): string | undefined => {
-	let index = '';
+export const getIndex = (
+	rel: RelationType[],
+	src: string
+): string | undefined => {
+	let indexName;
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
-			index = relItem.targetName;
+			const targetNames = extractTargetNamesFromSrc(relItem);
+			indexName = targetNames && indexNameFromKeys(targetNames);
+			return true;
 		}
 	});
-	return index;
+	return indexName;
 };
 
 export const getIndexFromAssociation = (
