@@ -923,6 +923,13 @@ class DataStore {
 		let predicate: ModelPredicate<T>;
 
 		if (isQueryOne(identifierOrCriteria)) {
+			if (keyFields.length > 1) {
+				const msg = errorMessages.queryByPkWithCompositeKeyPresent;
+				logger.error(msg, { keyFields });
+
+				throw new Error(msg);
+			}
+
 			predicate = ModelPredicateCreator.createForSingleField<T>(
 				modelDefinition,
 				keyFields[0],
