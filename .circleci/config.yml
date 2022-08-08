@@ -1001,19 +1001,19 @@ jobs:
   #         sample_name: delete-user
   #         spec: delete-user
   #         browser: << parameters.browser >>
-  # integ_rn_ios_storage:
-  #   executor: macos-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
-  #   steps:
-  #     - integ_test_rn_ios
+  integ_rn_ios_storage:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_ios
 
-  # integ_rn_ios_storage_multipart_progress:
-  #   executor: macos-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
-  #   steps:
-  #     - integ_test_rn_ios
+  integ_rn_ios_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_ios
 
   # integ_rn_ios_push_notifications:
     # executor: macos-executor
@@ -1531,18 +1531,18 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      # - integ_rn_ios_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_ios_push_notifications:
       #     requires:
       #       - integ_setup
