@@ -247,12 +247,12 @@ commands:
           at: ~/
       - install_verdaccio
       - publish_to_verdaccio
-      # - run:
-      #     # https://reactnative.dev/docs/environment-setup
-      #     command: |
-      #       cd ~/amplify-js
-      #       ./.circleci/android-rn.sh export-env
-      #     name: Configure Environment Variables
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
+          name: Configure Environment Variables
       - restore_cache:
           key: |
             brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
@@ -336,6 +336,12 @@ commands:
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
+      - run:
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
+          name: Wait for AVD to be ready
+          no_output_timeout: 5m
       - run:
           background: true
           command: yarn start
