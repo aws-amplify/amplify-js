@@ -1243,15 +1243,15 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integ_react_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_react_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       # - integ_auth_test_cypress_no_ui:
       #     requires:
       #       - integ_setup
