@@ -396,94 +396,94 @@ jobs:
           paths:
             - amplify-js-samples-staging
 
-  # integ_react_auth:
-  #   parameters:
-  #     browser:
-  #       type: string
-  #   executor: js-test-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples
-  #   steps:
-  #     - prepare_test_env
-  #     - integ_test_js:
-  #         test_name: 'React Authenticator'
-  #         framework: react
-  #         category: auth
-  #         sample_name: with-authenticator-legacy
-  #         spec: authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'React Authenticator'
-  #         framework: react
-  #         category: auth
-  #         sample_name: amplify-authenticator
-  #         spec: ui-amplify-authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'Guest to Authenticated User"'
-  #         framework: react
-  #         category: auth
-  #         sample_name: guest-to-auth-user
-  #         spec: guest-to-auth-user
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'React Typescript Authenticator'
-  #         framework: react
-  #         category: auth
-  #         sample_name: typescript-amplify-authenticator
-  #         spec: ui-amplify-authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'React Custom Authenticator'
-  #         framework: react
-  #         category: auth
-  #         sample_name: amplify-authenticator
-  #         spec: custom-authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'React Custom Authenticator'
-  #         framework: react
-  #         category: auth
-  #         sample_name: with-authenticator
-  #         spec: ui-amplify-authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'Sign In after Sign Up'
-  #         framework: react
-  #         category: auth
-  #         sample_name: auto-signin-after-signup
-  #         spec: auto-signin-after-signup
-  #         browser: << parameters.browser >>
-  # integ_angular_auth:
-  #   parameters:
-  #     browser:
-  #       type: string
-  #   executor: js-test-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples
-  #   steps:
-  #     - prepare_test_env
-  #     - integ_test_js:
-  #         test_name: 'Angular Authenticator'
-  #         framework: angular
-  #         category: auth
-  #         sample_name: amplify-authenticator-legacy
-  #         spec: authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'Angular Authenticator'
-  #         framework: angular
-  #         category: auth
-  #         sample_name: amplify-authenticator
-  #         spec: ui-amplify-authenticator
-  #         browser: << parameters.browser >>
-  #     - integ_test_js:
-  #         test_name: 'Angular Custom Authenticator'
-  #         framework: angular
-  #         category: auth
-  #         sample_name: amplify-authenticator
-  #         spec: custom-authenticator
-  #         browser: << parameters.browser >>
+  integ_react_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator-legacy
+          spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Guest to Authenticated User"'
+          framework: react
+          category: auth
+          sample_name: guest-to-auth-user
+          spec: guest-to-auth-user
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Sign In after Sign Up'
+          framework: react
+          category: auth
+          sample_name: auto-signin-after-signup
+          spec: auto-signin-after-signup
+          browser: << parameters.browser >>
+  integ_angular_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator-legacy
+          spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
   # integ_vue_auth:
     # parameters:
     #   browser:
@@ -1243,15 +1243,15 @@ workflows:
       - unit_test:
           requires:
             - build
-      # - integ_react_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       # - integ_auth_test_cypress_no_ui:
       #     requires:
       #       - integ_setup
