@@ -1,5 +1,5 @@
 # Javascript Node CircleCI 2.1 configuration file
-#
+##
 version: 2.1
 
 executors:
@@ -986,21 +986,21 @@ jobs:
   #         browser: << parameters.browser >>
 
   # integ_react_delete_user:
-  #   parameters:
-  #     browser:
-  #       type: string
-  #   executor: js-test-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
-  #   steps:
-  #     - prepare_test_env
-  #     - integ_test_js:
-  #         test_name: 'delete-user'
-  #         framework: react
-  #         category: auth
-  #         sample_name: delete-user
-  #         spec: delete-user
-  #         browser: << parameters.browser >>
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'delete-user'
+          framework: react
+          category: auth
+          sample_name: delete-user
+          spec: delete-user
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -1531,36 +1531,36 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      - integ_rn_ios_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - integ_rn_ios_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       # - integ_rn_ios_push_notifications:
       #     requires:
       #       - integ_setup
       #       - build
       #     filters:
       #       <<: *releasable_branches
-      # # - integ_rn_android_storage:
-      # #     requires:
-      # #       - integ_setup
-      # #       - build
-      # #     filters:
-      # #       <<: *releasable_branches
-      # # - integ_rn_android_storage_multipart_progress:
-      # #     requires:
-      # #       - integ_setup
-      # #       - build
-      # #     filters:
-      # #       <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_ios_datastore_sqlite_adapter:
       #     requires:
       #       - integ_setup
@@ -1644,14 +1644,14 @@ workflows:
             # - integ_react_amazon_cognito_identity_js_cookie_storage
             # - integ_react_amazon_cognito_identity_js
             # - integ_node_amazon_cognito_identity_js
-            - integ_react_auth
+            # - integ_react_auth
             # - integ_angular_auth
             # - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
-            # # - integ_rn_android_storage_multipart_progress
+            - integ_rn_android_storage_multipart_progress
             # - integ_rn_ios_push_notifications
-            # # - integ_rn_android_storage
+            - integ_rn_android_storage
             # - integ_rn_ios_datastore_sqlite_adapter
             # - integ_datastore_auth
             # - integ_datastore_auth_v2
