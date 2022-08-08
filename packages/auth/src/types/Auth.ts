@@ -219,6 +219,11 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 export interface IAuthDevice {
 	id: string;
 	name: string;
+	status: string;
+	lastIpUsed: string;
+	creationDate: number;
+	lastAuthenticatedDate: number;
+	lastModifiedDate: number;
 }
 
 export interface AutoSignInOptions {

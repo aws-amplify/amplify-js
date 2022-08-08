@@ -2777,10 +2777,23 @@ export class AuthClass {
 							device.DeviceAttributes.find(
 								({ Name }) => Name === 'device_name'
 							) || {};
+						const deviceStatus =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_status'
+							) || {};
+						const lastIpUsed =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'last_ip_used'
+							) || {};
 
 						const deviceInfo: IAuthDevice = {
 							id: device.DeviceKey,
 							name: deviceName.Value,
+							status: deviceStatus.Value,
+							lastIpUsed: lastIpUsed.Value,
+							creationDate: device.DeviceCreateDate,
+							lastAuthenticatedDate: device.DeviceLastAuthenticatedDate,
+							lastModifiedDate: device.DeviceLastModifiedDate,
 						};
 						return deviceInfo;
 					});
