@@ -454,36 +454,36 @@ jobs:
           sample_name: auto-signin-after-signup
           spec: auto-signin-after-signup
           browser: << parameters.browser >>
-  integ_angular_auth:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Angular Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Angular Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Angular Custom Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator
-          spec: custom-authenticator
-          browser: << parameters.browser >>
+  # integ_angular_auth:
+  #   parameters:
+  #     browser:
+  #       type: string
+  #   executor: js-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'Angular Authenticator'
+  #         framework: angular
+  #         category: auth
+  #         sample_name: amplify-authenticator-legacy
+  #         spec: authenticator
+  #         browser: << parameters.browser >>
+  #     - integ_test_js:
+  #         test_name: 'Angular Authenticator'
+  #         framework: angular
+  #         category: auth
+  #         sample_name: amplify-authenticator
+  #         spec: ui-amplify-authenticator
+  #         browser: << parameters.browser >>
+  #     - integ_test_js:
+  #         test_name: 'Angular Custom Authenticator'
+  #         framework: angular
+  #         category: auth
+  #         sample_name: amplify-authenticator
+  #         spec: custom-authenticator
+  #         browser: << parameters.browser >>
   # integ_vue_auth:
     # parameters:
     #   browser:
@@ -986,34 +986,34 @@ jobs:
   #         browser: << parameters.browser >>
 
   # integ_react_delete_user:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'delete-user'
-          framework: react
-          category: auth
-          sample_name: delete-user
-          spec: delete-user
-          browser: << parameters.browser >>
-  integ_rn_ios_storage:
-    executor: macos-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
-    steps:
-      - integ_test_rn_ios
+  #   parameters:
+  #     browser:
+  #       type: string
+  #   executor: js-test-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react/auth/delete_user
+  #   steps:
+  #     - prepare_test_env
+  #     - integ_test_js:
+  #         test_name: 'delete-user'
+  #         framework: react
+  #         category: auth
+  #         sample_name: delete-user
+  #         spec: delete-user
+  #         browser: << parameters.browser >>
+  # integ_rn_ios_storage:
+  #   executor: macos-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+  #   steps:
+  #     - integ_test_rn_ios
 
-  integ_rn_ios_storage_multipart_progress:
-    executor: macos-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
-    steps:
-      - integ_test_rn_ios
+  # integ_rn_ios_storage_multipart_progress:
+  #   executor: macos-executor
+  #   <<: *test_env_vars
+  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+  #   steps:
+  #     - integ_test_rn_ios
 
   # integ_rn_ios_push_notifications:
     # executor: macos-executor
