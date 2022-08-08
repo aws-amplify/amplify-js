@@ -1644,7 +1644,7 @@ workflows:
             # - integ_react_amazon_cognito_identity_js_cookie_storage
             # - integ_react_amazon_cognito_identity_js
             # - integ_node_amazon_cognito_identity_js
-            # - integ_react_auth
+            - integ_react_auth
             # - integ_angular_auth
             # - integ_vue_auth
             - integ_rn_ios_storage
