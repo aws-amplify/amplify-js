@@ -37,10 +37,10 @@ executors:
       xcode: 13.2.1
     resource_class: large
 
-  # android-executor:
-  #     machine:
-  #       image: android:202102-01
-  #     resource_class: large
+  android-executor:
+      machine:
+        image: android:202102-01
+      resource_class: large
 
 test_env_vars: &test_env_vars
   environment:
@@ -280,39 +280,36 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - run:
-          # Install Android Emulator without Android Studio
+          name: Create avd
           command: |
-            cd ~/amplify-js
-            rn sdkmanager
-          name: Install Android Emulator
-          shell: /bin/bash -e
+            SYSTEM_IMAGES="system-images;android-29;default;x86"
+            sdkmanager "$SYSTEM_IMAGES"
+            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
       - run:
-          # Force ssh key generation for emulators
+          name: Launch emulator
           command: |
-            adb start-server
-            adb devices
-            adb kill-server
-            ls -la ~/.android
-          name: ADB Start Stop
-      - run:
-          # Create Android Emulator without Android Studio
-          command: >-
-            avdmanager create avd --force --name TestingAVD
-            --package "system-images;android-28;default;x86_64"
-            --tag default --device pixel
-          name: Create Android Emulator
-      - run:
+            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           background: true
-          command: |
-            cd ~/amplify-js
-            rn start-emulator
-          name: Start Android Emulator (background)
       - run:
+          name: Generate cache key
           command: |
-            cd ~/amplify-js
-            rn wait-for-avd
-          name: Wait for AVD to be ready
-          no_output_timeout: 5m
+            find . -name 'build.gradle' | sort | xargs cat |
+            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
+      - run:
+          name: Call Amplify library in code
+          command: |
+            echo "$IMPORT_STATEMENT" | cat - << parameters.main-file-path >> | tee << parameters.main-file-path >>
+            echo "$LIBRARY_STATEMENT" >> << parameters.main-file-path >>
+      - run:
+          name: Wait for emulator to start
+          command: |
+            circle-android wait-for-boot
+      - run:
+          name: Disable emulator animations
+          command: |
+            adb shell settings put global window_animation_scale 0.0
+            adb shell settings put global transition_animation_scale 0.0
+            adb shell settings put global animator_duration_scale 0.0
       - run:
           background: true
           command: yarn start
@@ -1028,14 +1025,14 @@ jobs:
   #     - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor
+    executor: android-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   integ_rn_android_storage_multipart_progress:
-    executor: macos-executor
+    executor: android-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
@@ -2035,6 +2032,5 @@ orbs:
           - run-with-retry:
               label: Start App
               command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
-  rn: react-native-community/react-native@1.0.0
 
 # End Canary Orb
