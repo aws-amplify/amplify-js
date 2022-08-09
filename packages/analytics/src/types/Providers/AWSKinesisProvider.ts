@@ -1,5 +1,5 @@
 export interface KinesisAnalyticsEvent {
-	data: Blob | string;
+	data: object | string;
 	partitionKey: string;
 	streamName: string;
 }

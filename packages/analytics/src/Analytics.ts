@@ -288,7 +288,10 @@ export class AnalyticsClass {
 		return this.record(event, provider);
 	}
 
-	private _sendEvent(params: { event: AnalyticsEvent; provider?: string }) {
+	private _sendEvent(params: {
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent;
+		provider?: string;
+	}) {
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();
