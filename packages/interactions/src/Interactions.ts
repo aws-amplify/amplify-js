@@ -37,7 +37,7 @@ export class InteractionsClass {
 		this._pluggables = {};
 	}
 
-	public getModuleName(): string {
+	public getModuleName(): 'Interactions' {
 		return 'Interactions';
 	}
 
@@ -72,14 +72,13 @@ export class InteractionsClass {
 				providerName === 'AWSLexProvider'
 			) {
 				this._pluggables.AWSLexProvider = new AWSLexProvider();
-			} else if (!this._pluggables[providerName]) {
-				throw new Error(
-					'providerName ' +
-						providerName +
-						' does not exist, did you try addPluggable first?'
+			} else if (this._pluggables[providerName]) {
+				this._pluggables[providerName].configure({ [bot.name]: bot });
+			} else {
+				logger.debug(
+					`bot ${bot.name} was not configured as ${providerName} provider was not found`
 				);
 			}
-			this._pluggables[providerName].configure({ [bot.name]: bot });
 		});
 
 		return this._options;
@@ -114,7 +113,19 @@ export class InteractionsClass {
 
 	public async send(
 		botname: string,
-		message: string | InteractionsMessage
+		message: string
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: InteractionsMessage
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: object
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: string | object
 	): Promise<InteractionsResponse> {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');

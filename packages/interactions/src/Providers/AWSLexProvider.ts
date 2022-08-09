@@ -44,7 +44,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this._botsCompleteCallback = {};
 	}
 
-	getProviderName(): string {
+	getProviderName(): 'AWSLexProvider' {
 		return 'AWSLexProvider';
 	}
 
@@ -63,8 +63,8 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	}
 
 	reportBotStatus(
-		botname: string,
-		data: PostTextCommandOutput | PostContentCommandOutput
+		data: PostTextCommandOutput | PostContentCommandOutput,
+		botname: string
 	) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
@@ -149,7 +149,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const data: PostTextCommandOutput =
 					await this.lexRuntimeServiceClient.send(postTextCommand);
 
-				this.reportBotStatus(botname, data);
+				this.reportBotStatus(data, botname);
 				return data;
 			} catch (err) {
 				return Promise.reject(err);
@@ -187,7 +187,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const audioArray = await convert(
 					data.audioStream as Blob | ReadableStream
 				);
-				this.reportBotStatus(botname, data);
+				this.reportBotStatus(data, botname);
 				return { ...data, ...{ audioStream: audioArray } };
 			} catch (err) {
 				return Promise.reject(err);
