@@ -94,4 +94,3 @@ export interface AnalyticsEvent {
 }
 
 export { PersonalizeAnalyticsEvent } from './Providers/AmazonPersonalizeProvider';
-export { KinesisAnalyticsEvent } from './Providers/AWSKinesisProvider';
