@@ -1,5 +1,5 @@
 export interface PersonalizeAnalyticsEvent {
-	eventType?: string;
+	eventType?: 'Identify' | 'MediaAutoTrack';
 	userId?: string;
 	properties?: {
 		[key: string]: string;
