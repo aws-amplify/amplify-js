@@ -14,6 +14,7 @@
 import { Reachability } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ConnectionState } from '../index';
+import { ReachabilityMonitor } from './ReachabilityMonitor';
 
 // Internal types for tracking different connection states
 type LinkedConnectionState = 'connected' | 'disconnected';
@@ -85,13 +86,13 @@ export class ConnectionStateMonitor {
 	private enableNetworkMonitoring() {
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
-			this._networkMonitoringSubscription = new Reachability()
-				.networkMonitor()
-				.subscribe(({ online }) => {
+			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(
+				({ online }) => {
 					this.record(
 						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
 					);
-				});
+				}
+			);
 		}
 	}
 
