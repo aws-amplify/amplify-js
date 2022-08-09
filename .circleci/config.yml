@@ -359,7 +359,7 @@ jobs:
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            git clone -b storage/react-native-v-upgrade $AMPLIFY_JS_SAMPLES_STAGING_URL
+            git clone -b react-native-v-upgrade-android $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             git checkout upgrade-android
             yarn
