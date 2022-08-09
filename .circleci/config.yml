@@ -80,7 +80,6 @@ commands:
             git status
             git --no-pager diff
             ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
-
   prepare_test_env:
     steps:
       - attach_workspace:
@@ -153,7 +152,6 @@ commands:
           command: |
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
-
   integ_test_cypress_no_ui:
     parameters:
       test_name:
@@ -193,7 +191,6 @@ commands:
           command: |
             cd ~
             verdaccio
-
   integ_test_rn_ios:
     steps:
       - attach_workspace:
@@ -353,7 +350,6 @@ jobs:
           command: |
             yarn test
             yarn coverage
-
   integ_setup:
     executor: build-executor
     working_directory: ~/
@@ -363,7 +359,7 @@ jobs:
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            git clone -b react-native-v-upgrade-android $AMPLIFY_JS_SAMPLES_STAGING_URL
+            git clone -b storage/react-native-v-upgrade $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             git checkout upgrade-android
             yarn
@@ -509,7 +505,6 @@ jobs:
             git status
             git --no-pager diff
             # yarn publish:$CIRCLE_BRANCH
-
   post_release:
     executor: build-executor
     steps:
@@ -530,7 +525,6 @@ jobs:
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
             git push origin release:main
-
 releasable_branches: &releasable_branches
   branches:
     only:
@@ -540,7 +534,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - for_testing
-      - for_testing
+      - for_testing_testing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -635,7 +629,6 @@ workflows:
       #           - release
       #     requires:
       #       - deploy
-
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
@@ -999,5 +992,4 @@ orbs:
           - run-with-retry:
               label: Start App
               command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
-
 # End Canary Orb
