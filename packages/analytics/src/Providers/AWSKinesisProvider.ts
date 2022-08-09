@@ -94,7 +94,6 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 	 * @param {Object} params - the params of an event
 	 */
 	public async record(params): Promise<boolean> {
-		debugger;
 		const credentials = await this._getCredentials();
 		if (!credentials) return Promise.resolve(false);
 
