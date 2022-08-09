@@ -1233,8 +1233,14 @@ class DataStore {
 		}
 
 		// observe should not accept object literal syntax
-		const modelDefinition = getModelDefinition(modelConstructor);
-		if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+		if (
+			identifierOrCriteria &&
+			modelConstructor &&
+			isIdentifierObject(
+				identifierOrCriteria,
+				getModelDefinition(modelConstructor)
+			)
+		) {
 			const msg = errorMessages.observeWithObjectLiteral;
 			logger.error(msg, { objectLiteral: identifierOrCriteria });
 
