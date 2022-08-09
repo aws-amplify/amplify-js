@@ -37,6 +37,11 @@ executors:
       xcode: 13.2.1
     resource_class: large
 
+  android-executor:
+    machine:
+      image: android:2022.06.1
+    resource_class: large
+
 test_env_vars: &test_env_vars
   environment:
     NPM_REGISTRY: http://0.0.0.0:4873/
@@ -240,88 +245,62 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
-      - install_verdaccio
-      - publish_to_verdaccio
-      - run:
-          # https://reactnative.dev/docs/environment-setup
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh export-env
-          name: Configure Environment Variables
+      # - install_verdaccio
+      # - publish_to_verdaccio
       - restore_cache:
           key: |
             brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
       - run:
-          # https://reactnative.dev/docs/environment-setup
-          environment:
-            HOMEBREW_NO_AUTO_UPDATE: '1'
+          name: Create avd
           command: |
-            brew tap wix/brew >/dev/null
-            brew tap homebrew/cask >/dev/null
-            brew install android-sdk >/dev/null
-            yarn global add detox-cli
-            touch .watchmanconfig
-            node -v
-          name: Configure Detox Environment
-      - save_cache:
-          key: |
-            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
-          paths:
-            - /usr/local/Homebrew
-            - ~/Library/Caches/Homebrew
+            SYSTEM_IMAGES="system-images;android-31;default;x86_64"
+            sdkmanager "$SYSTEM_IMAGES"
+            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
+      - run:
+          name: Launch emulator
+          command: |
+            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          background: true
+      - run:
+          name: Generate cache key
+          command: |
+            find . -name 'build.gradle' | sort | xargs cat |
+            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
       - run:
           name: Yarn Install
-          command: |
-            echo "Current NPM registry: " $(yarn config get registry)
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
-      - run:
-          # Install Android Emulator without Android Studio
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh sdkmanager
-          name: Install Android Emulator
-          shell: /bin/bash -e
-      - run:
-          # Force ssh key generation for emulators
-          command: |
-            adb start-server
-            adb devices
-            adb kill-server
-            ls -la ~/.android
-          name: ADB Start Stop
-      - run:
-          # Create Android Emulator without Android Studio
-          command: >-
-            avdmanager create avd --force --name TestingAVD
-            --package "system-images;android-28;default;x86_64"
-            --tag default --device pixel
-          name: Create Android Emulator
-      - run:
-          background: true
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh start-emulator
-          name: Start Android Emulator (background)
-      - run:
-          command: |
-            cd ~/amplify-js
-            ./.circleci/android-rn.sh wait-for-avd
-          name: Wait for AVD to be ready
-          no_output_timeout: 5m
+          command: yarn install --frozen-lockfile --non-interactive
+          # command: |
+          #   echo "Current NPM registry: " $(yarn config get registry)
+          #   ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - run:
           background: true
           command: yarn start
           name: Start Metro Packager (background)
       - run:
+          name: Configure Detox
+          command: npm i -g detox-cli
+      - run:
           name: Detox Build
           command: detox build -c android.emu.debug
+      - run:
+          name: Wait for emulator to start
+          command: |
+            circle-android wait-for-boot
+            sleep 30
+            adb shell input keyevent 82
+      - run:
+          name: Disable emulator animations
+          command: |
+            adb shell settings put global window_animation_scale 0.0
+            adb shell settings put global transition_animation_scale 0.0
+            adb shell settings put global animator_duration_scale 0.0
       - run:
           environment:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
           command: |
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' -n 3
+            detox test -c android.emu.debug -u
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -386,6 +365,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone -b storage/react-native-v-upgrade $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout upgrade-android
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -484,7 +464,7 @@ jobs:
           sample_name: amplify-authenticator
           spec: custom-authenticator
           browser: << parameters.browser >>
- 
+
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -500,7 +480,7 @@ jobs:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: macos-executor
+    executor: android-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -512,7 +492,6 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
       - integ_test_rn_android
-
 
   deploy:
     executor: macos-executor
@@ -561,6 +540,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - for_testing
+      - for_testing_testing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -592,69 +572,69 @@ workflows:
       not:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
-      - build
+      # - build
       - integ_setup:
           filters:
             <<: *releasable_branches
-      - unit_test:
-          requires:
-            - build
-      - integ_react_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-     
-      - integ_rn_ios_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - unit_test:
+      #     requires:
+      #       - build
+      # - integ_react_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+
+      # - integ_rn_ios_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
 
       - integ_rn_android_storage:
           requires:
             - integ_setup
-            - build
+            # - build
           filters:
             <<: *releasable_branches
-      - integ_rn_android_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      
-      - deploy:
-          filters:
-            <<: *releasable_branches
-          requires:
-            - unit_test
+      # - integ_rn_android_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
 
-            - integ_react_auth
+      # - deploy:
+      #     filters:
+      #       <<: *releasable_branches
+      #     requires:
+      #       - unit_test
 
-            - integ_rn_ios_storage
-            - integ_rn_ios_storage_multipart_progress
-            - integ_rn_android_storage_multipart_progress
-            - integ_rn_android_storage
+      #       - integ_react_auth
 
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+      #       - integ_rn_ios_storage
+      #       - integ_rn_ios_storage_multipart_progress
+      #       - integ_rn_android_storage_multipart_progress
+      #       - integ_rn_android_storage
+
+      # - post_release:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #     requires:
+      #       - deploy
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
