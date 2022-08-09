@@ -1232,6 +1232,15 @@ class DataStore {
 			}
 		}
 
+		// observe should not accept object literal syntax
+		const modelDefinition = getModelDefinition(modelConstructor);
+		if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+			const msg = errorMessages.observeWithObjectLiteral;
+			logger.error(msg, { objectLiteral: identifierOrCriteria });
+
+			throw new Error(msg);
+		}
+
 		if (identifierOrCriteria !== undefined && modelConstructor === undefined) {
 			const msg = 'Cannot provide criteria without a modelConstructor';
 			logger.error(msg, identifierOrCriteria);
