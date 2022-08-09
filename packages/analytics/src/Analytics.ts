@@ -28,6 +28,7 @@ import {
 	AutoTrackPageViewOpts,
 	AutoTrackEventOpts,
 	PersonalizeAnalyticsEvent,
+	KinesisAnalyticsEvent,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
@@ -236,7 +237,7 @@ export class AnalyticsClass {
 	 * @param [provider] - name of the provider.
 	 */
 	public async record(
-		event: AnalyticsEvent | PersonalizeAnalyticsEvent,
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
 		provider?: string
 	);
 	/**
@@ -253,7 +254,11 @@ export class AnalyticsClass {
 		metrics?: EventMetrics
 	);
 	public async record(
-		event: string | AnalyticsEvent | PersonalizeAnalyticsEvent,
+		event:
+			| string
+			| AnalyticsEvent
+			| PersonalizeAnalyticsEvent
+			| KinesisAnalyticsEvent,
 		providerOrAttributes?: string | EventAttributes,
 		metrics?: EventMetrics
 	) {
