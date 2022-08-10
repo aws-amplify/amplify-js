@@ -94,7 +94,7 @@ async function respondToMFAChallenge(
 	respondToAuthChallengeOptions: RespondToMFAChallengeOptions
 ) {
 	assertUserPasswordSignInContext(context);
-	return await context.service?.confirmSignIn({
+	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
 		mfaType: respondToAuthChallengeOptions.challengeName as
 			| ChallengeNameType.SOFTWARE_TOKEN_MFA
 			| ChallengeNameType.SMS_MFA,
@@ -143,9 +143,13 @@ export const signInMachineConfig: MachineConfig<
 			invoke: {
 				src: federatedSignInMachine,
 				data: {
+					// @ts-ignore
 					authConfig: (context, _event) => context.authConfig,
+					// @ts-ignore
 					oAuthStorage: (_context, _event) => window.sessionStorage,
+					// @ts-ignore
 					scopes: (_context, _event) => [] as string[],
+					// @ts-ignore
 					oAuthProvider: (context, _event) => context.oAuthProvider,
 				},
 				// there shouldn't be on done
@@ -163,7 +167,7 @@ export const signInMachineConfig: MachineConfig<
 				src: async (context, _event) => {
 					try {
 						assertUserPasswordSignInContext(context);
-						const res = await context.service?.signIn({
+						const res = await context.service?.signIn(context.clientConfig, {
 							signInType: 'Password',
 							username: context.username,
 							clientId: context.authConfig.clientId,

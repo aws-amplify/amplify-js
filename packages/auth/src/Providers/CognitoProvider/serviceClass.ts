@@ -31,7 +31,6 @@ import {
 	ConfirmSignInParams,
 	AmplifyUser,
 	AWSCredentials,
-	ConfirmSignUpResult,
 } from '../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from './Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
@@ -76,11 +75,13 @@ interface CognitoServiceConfig {
  * Note: We can potentially split this into AuthN and AuthZ for users who only wants to use either Cognito Userpool &
  * Cognito Identity Pool.
  */
+
 export class CognitoService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
-	private readonly cognitoUserpoolClient: CognitoIdentityProviderClient;
-	private readonly cognitoIdentityPoolClient: CognitoIdentityClient;
+	private cognitoIdentityClient: CognitoIdentityClient;
+	private cognitoIDPLoginKey: string;
+	private cognitoClient: CognitoIdentityProviderClient;
 
 	constructor(
 		config: CognitoServiceConfig,
@@ -91,12 +92,9 @@ export class CognitoService {
 			region: this.config.region,
 			...clientConfig,
 		};
-		this.cognitoUserpoolClient = new CognitoIdentityProviderClient(
-			this.clientConfig
-		);
-		this.cognitoIdentityPoolClient = new CognitoIdentityClient(
-			this.clientConfig
-		);
+		this.cognitoIdentityClient = this.createCognitoIdentityClient();
+		this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
+		this.cognitoClient = this.createCognitoClient();
 	}
 	createCognitoClient() {
 		return new CognitoIdentityProviderClient(this.clientConfig);
@@ -106,9 +104,12 @@ export class CognitoService {
 		return new CognitoIdentityClient(this.clientConfig);
 	}
 
-	getSessionData(
-		userStorage = new StorageHelper().getStorage()
-	): CognitoSessionData | null {
+	getSessionData(userStorage = new StorageHelper().getStorage()): {
+		accessToken: string;
+		idToken: string;
+		refreshToken: string;
+		expiration: number;
+	} | null {
 		if (typeof userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(userStorage.getItem(COGNITO_CACHE_KEY) as string);
 		}
@@ -125,6 +126,14 @@ export class CognitoService {
 		}
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
+		if (!AccessKeyId || !SecretKey) {
+			throw new Error(
+				'Access key or secret key is missing from the Credentials'
+			);
+		}
+		if (!Expiration) {
+			throw new Error('Expiration is missing from the Credentials');
+		}
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,
@@ -134,6 +143,8 @@ export class CognitoService {
 	}
 
 	async fetchSession(): Promise<AmplifyUser> {
+		// TODO: add param for cognito client config
+		const cognitoClient = this.cognitoClient;
 		const session = this.getSessionData();
 		if (session === null) {
 			throw new Error(
@@ -144,7 +155,7 @@ export class CognitoService {
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		const getIdRes = await this.cognitoIdentityPoolClient.send(
+		const getIdRes = await this.cognitoIdentityClient.send(
 			new GetIdCommand({
 				IdentityPoolId: this.config.identityPoolId,
 				Logins: {
@@ -155,7 +166,7 @@ export class CognitoService {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		const getCredentialsRes = await this.cognitoIdentityPoolClient.send(
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: getIdRes.IdentityId,
 				Logins: {
@@ -168,12 +179,11 @@ export class CognitoService {
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const getUserRes = await this.cognitoUserpoolClient.send(
+		const getUserRes = await cognitoClient.send(
 			new GetUserCommand({
 				AccessToken: accessToken,
 			})
 		);
-		console.log({ getUserRes });
 		const { sub } = decodeJWT(idToken);
 		if (typeof sub !== 'string') {
 			logger.error(
@@ -182,10 +192,9 @@ export class CognitoService {
 		}
 		return {
 			sessionId: '',
-			user: {
+			userInfo: {
 				// sub
 				userid: sub as string,
-				// maybe username
 				identifiers: [],
 			},
 			credentials: {
@@ -201,7 +210,99 @@ export class CognitoService {
 		};
 	}
 
+	async fetchUserPoolTokens() {
+		const session = this.getSessionData();
+		if (session === null) {
+			throw new Error(
+				'Does not have active user session, have you called .signIn?'
+			);
+		}
+		const { idToken, accessToken, refreshToken } = session;
+		const expiration = getExpirationTimeFromJWT(idToken);
+		return {
+			jwt: {
+				idToken,
+				accessToken,
+				refreshToken,
+			},
+		};
+	}
+
+	async refreshUserPoolTokens(refreshToken: string) {
+		const refreshTokenRes = await this.cognitoClient.send(
+			new InitiateAuthCommand({
+				AuthFlow: AuthFlowType.REFRESH_TOKEN_AUTH,
+				AuthParameters: {
+					REFRESH_TOKEN: refreshToken,
+				},
+				ClientId: this.config.clientId,
+			})
+		);
+
+		// refreshTokenRes.AuthenticationResult <- the JWT tokens
+		return refreshTokenRes;
+	}
+
+	async fetchIdentityId(idToken: string) {
+		const getIdRes = await this.cognitoIdentityClient.send(
+			new GetIdCommand({
+				IdentityPoolId: this.config.identityPoolId,
+				Logins: {
+					[this.cognitoIDPLoginKey]: idToken,
+				},
+			})
+		);
+		if (!getIdRes.IdentityId) {
+			throw new Error('Could not get Identity ID');
+		}
+		return getIdRes.IdentityId;
+	}
+
+	async fetchUnAuthIdentityID() {
+		const getIdRes = await this.cognitoIdentityClient.send(
+			new GetIdCommand({
+				IdentityPoolId: this.config.identityPoolId,
+			})
+		);
+		if (!getIdRes.IdentityId) {
+			throw new Error('Could not get Identity ID');
+		}
+		return getIdRes.IdentityId;
+	}
+
+	async fetchAWSCredentials(identityID: string, idToken: string) {
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
+			new GetCredentialsForIdentityCommand({
+				IdentityId: identityID,
+				Logins: {
+					[this.cognitoIDPLoginKey]: idToken,
+				},
+			})
+		);
+		if (!getCredentialsRes.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
+		return getCredentialsRes.Credentials;
+	}
+
+	async fetchUnAuthAWSCredentials(identityID: string) {
+		const getCredentialsRes = await this.cognitoIdentityClient.send(
+			new GetCredentialsForIdentityCommand({
+				IdentityId: identityID,
+			})
+		);
+		if (!getCredentialsRes.Credentials) {
+			throw new Error(
+				'No credentials from the response of GetCredentialsForIdentity call.'
+			);
+		}
+		return getCredentialsRes.Credentials;
+	}
+
 	async signIn(
+		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignInParams & {
 			password?: string;
 			clientId: string;
@@ -220,7 +321,7 @@ export class CognitoService {
 		}
 		switch (authFlow) {
 			case AuthFlowType.USER_PASSWORD_AUTH:
-				return this.initiateAuthPlainUsernamePassword(params);
+				return this.initiateAuthPlainUsernamePassword(clientConfig, params);
 			default:
 				throw new Error('Cagamos');
 		}
@@ -256,6 +357,7 @@ export class CognitoService {
 	}
 
 	async initiateAuthPlainUsernamePassword(
+		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignInWithPassword & { authFlow: AuthFlowType; clientId: string }
 	): Promise<InitiateAuthCommandOutput> {
 		const { username, password, authFlow, clientId, clientMetadata } = params;
@@ -269,32 +371,32 @@ export class CognitoService {
 			},
 			ClientMetadata: clientMetadata,
 		};
-		const res = await this.cognitoUserpoolClient.send(
-			new InitiateAuthCommand(initiateAuthInput)
-		);
+		const client = this.cognitoClient;
+		const res = await client.send(new InitiateAuthCommand(initiateAuthInput));
 		return res;
 	}
 
-	async confirmSignUp(
+	async cognitoConfirmSignUp(
+		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
-	): Promise<ConfirmSignUpResult> {
+	): Promise<SignUpResult> {
+		const client = this.cognitoClient;
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
 			ClientId: clientId,
 			Username: username,
 			ConfirmationCode: confirmationCode,
 		};
-		const res = await this.cognitoUserpoolClient.send(
-			new ConfirmSignUpCommand(input)
-		);
+		const res = await client.send(new ConfirmSignUpCommand(input));
 		return res;
 	}
 
-	async confirmSignIn(
+	async cognitoConfirmSignIn(
+		clientConfig: CognitoIdentityProviderClientConfig,
 		params: CognitoConfirmSignInOptions
 	): Promise<RespondToAuthChallengeCommandOutput> {
 		const {
-			confirmationCode,
+			confirmationCode = '',
 			mfaType = 'SMS_MFA',
 			username,
 			session,
@@ -306,7 +408,8 @@ export class CognitoService {
 		challengeResponses[
 			mfaType === 'SMS_MFA' ? 'SMS_MFA_CODE' : 'SOFTWARE_TOKEN_MFA'
 		] = confirmationCode;
-		const res = await this.cognitoUserpoolClient.send(
+		const client = this.cognitoClient;
+		const res = await client.send(
 			new RespondToAuthChallengeCommand({
 				ChallengeName: mfaType,
 				ChallengeResponses: challengeResponses,
@@ -317,9 +420,11 @@ export class CognitoService {
 		return res;
 	}
 
-	async signUp(
+	async cognitoSignUp(
+		clientConfig: CognitoIdentityProviderClientConfig,
 		params: SignUpParams & { clientId: string }
 	): Promise<SignUpResult> {
+		const client = this.cognitoClient;
 		const { username, password, clientId, attributes } = params;
 		const input: SignUpCommandInput = {
 			Username: username,
@@ -333,9 +438,7 @@ export class CognitoService {
 			}),
 		};
 		try {
-			const res = await this.cognitoUserpoolClient.send(
-				new SignUpCommand(input)
-			);
+			const res = await client.send(new SignUpCommand(input));
 			console.log(res);
 			return res;
 		} catch (err) {
@@ -350,7 +453,7 @@ export class CognitoService {
 		session,
 		requiredAttributes,
 	}: CognitoCompletePasswordOptions) {
-		const client = this.createCognitoClient();
+		const client = this.cognitoClient;
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.NEW_PASSWORD = newPassword;

@@ -13,6 +13,7 @@ import {
 	RespondToAuthChallengeCommand,
 	RespondToAuthChallengeCommandOutput,
 	GetUserCommand,
+	ConfirmSignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClientConfig,
@@ -24,16 +25,17 @@ import {
 import {
 	SignInParams,
 	SignUpResult,
-	ConfirmSignUpResult,
 	SignUpParams,
 	ConfirmSignUpParams,
 	SignInWithPassword,
 	ConfirmSignInParams,
 	AmplifyUser,
 	AWSCredentials,
+	ConfirmSignUpResult,
 } from '../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from './Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
+import { UserPoolTokens } from './types/machines';
 
 const logger = new Logger('CognitoStatelessService');
 
@@ -97,6 +99,14 @@ export class CognitoService {
 		}
 		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
 			res.Credentials;
+		if (!AccessKeyId || !SecretKey) {
+			throw new Error(
+				'Access key or secret key is missing from the Credentials'
+			);
+		}
+		if (!Expiration) {
+			throw new Error('Expiration is missing from the Credentials');
+		}
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,
@@ -118,6 +128,7 @@ export class CognitoService {
 				'Does not have active user session, have you called .signIn?'
 			);
 		}
+		// @ts-ignore
 		const { idToken, accessToken, refreshToken } = session;
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
@@ -160,7 +171,7 @@ export class CognitoService {
 		}
 		return {
 			sessionId: '',
-			user: {
+			userInfo: {
 				// sub
 				userid: sub as string,
 				// maybe username
@@ -257,7 +268,7 @@ export class CognitoService {
 	async cognitoConfirmSignUp(
 		clientConfig: CognitoIdentityProviderClientConfig,
 		params: ConfirmSignUpParams & { clientId: string }
-	): Promise<ConfirmSignUpResult> {
+	): Promise<ConfirmSignUpCommandOutput> {
 		const client = createCognitoClient(clientConfig);
 		const { clientId, username, confirmationCode } = params;
 		const input: ConfirmSignUpCommandInput = {
@@ -338,16 +349,12 @@ export function createCognitoIdentityClient(
 	return new CognitoIdentityClient(config);
 }
 
-function getSessionData(userStorage = new StorageHelper().getStorage()): {
-	accessToken: string;
-	idToken: string;
-	refreshToken: string;
-	expiration: number;
-} | null {
+export function getSessionData(
+	userStorage = new StorageHelper().getStorage()
+): UserPoolTokens | undefined {
 	if (typeof userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 		return JSON.parse(userStorage.getItem(COGNITO_CACHE_KEY) as string);
 	}
-	return null;
 }
 function shearAWSCredentials(
 	res: GetCredentialsForIdentityCommandOutput
@@ -358,6 +365,12 @@ function shearAWSCredentials(
 		);
 	}
 	const { AccessKeyId, SecretKey, SessionToken, Expiration } = res.Credentials;
+	if (!AccessKeyId || !SecretKey) {
+		throw new Error('Access key or secret key is missing from the Credentials');
+	}
+	if (!Expiration) {
+		throw new Error('Expiration is missing from the Credentials');
+	}
 	return {
 		accessKeyId: AccessKeyId,
 		secretAccessKey: SecretKey,
@@ -379,6 +392,7 @@ export async function cognitoFetchSession(
 			'Does not have active user session, have you called .signIn?'
 		);
 	}
+	// @ts-ignore
 	const { idToken, accessToken, refreshToken } = session;
 	const expiration = getExpirationTimeFromJWT(idToken);
 	console.log({ expiration });
@@ -419,7 +433,7 @@ export async function cognitoFetchSession(
 	}
 	return {
 		sessionId: '',
-		user: {
+		userInfo: {
 			// sub
 			userid: sub as string,
 			// maybe username
@@ -490,6 +504,28 @@ export function cacheInitiateAuthResult(
 	);
 }
 
+export function cacheRefreshTokenResult(
+	output: InitiateAuthCommandOutput,
+	userStorage = new StorageHelper().getStorage()
+) {
+	const { AuthenticationResult } = output;
+	if (!AuthenticationResult) {
+		throw new Error(
+			'Cannot cache session data - Initiate Auth did not return tokens'
+		);
+	}
+	const { AccessToken, IdToken } = AuthenticationResult;
+	const oldRefreshToken = getSessionData()?.refreshToken;
+	userStorage.setItem(
+		COGNITO_CACHE_KEY,
+		JSON.stringify({
+			accessToken: AccessToken,
+			idToken: IdToken,
+			refreshToken: oldRefreshToken,
+		})
+	);
+}
+
 async function initiateAuthPlainUsernamePassword(
 	clientConfig: CognitoIdentityProviderClientConfig,
 	params: SignInWithPassword & { authFlow: AuthFlowType; clientId: string }
@@ -513,7 +549,7 @@ async function initiateAuthPlainUsernamePassword(
 export async function cognitoConfirmSignUp(
 	clientConfig: CognitoIdentityProviderClientConfig,
 	params: ConfirmSignUpParams & { clientId: string }
-): Promise<ConfirmSignUpResult> {
+): Promise<SignUpResult> {
 	const client = createCognitoClient(clientConfig);
 	const { clientId, username, confirmationCode } = params;
 	const input: ConfirmSignUpCommandInput = {

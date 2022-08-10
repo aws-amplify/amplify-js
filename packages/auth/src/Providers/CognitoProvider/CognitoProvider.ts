@@ -13,7 +13,6 @@ import {
 	SignUpParams,
 	SignUpResult,
 	AWSCredentials,
-	ConfirmSignUpResult,
 	SOCIAL_PROVIDER,
 } from '../../types';
 import {
@@ -21,7 +20,6 @@ import {
 	GetUserCommand,
 	AuthFlowType,
 	ChallengeNameType,
-	InitiateAuthCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClient,
@@ -32,14 +30,23 @@ import {
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom } from 'xstate';
+import { inspect } from '@xstate/inspect';
 import { waitFor } from 'xstate/lib/waitFor';
 import { cognitoSignUp, cognitoConfirmSignUp } from './service';
 import {
 	authMachine,
 	authMachineEvents,
 } from './machines/authenticationMachine';
+import {
+	authzMachine,
+	authzMachineEvents,
+} from './machines/authorizationMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
-import { signUpMachine, signUpMachineEvents } from './machines/signUpMachine';
+import {
+	AWSCredsRes,
+	UserPoolTokens,
+} from './types/machines/authorizationMachine';
+import { Session } from 'inspector';
 
 const logger = new Logger('CognitoProvider');
 
@@ -88,6 +95,7 @@ export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
 	private _authService = interpret(authMachine, { devTools: true }).start();
+	private _authzService = interpret(authzMachine, { devTools: true }).start();
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
 	// TODO: we should do _storageSync where it should for React Native
@@ -101,9 +109,7 @@ export class CognitoProvider implements AuthProvider {
 		listenToAuthHub(this._authService.send);
 		// @ts-ignore ONLY FOR DEBUGGIN AND TESTING!
 		window.Hub = Hub;
-		this._authService.subscribe(state => {
-			console.log(state);
-		});
+		this._authService.subscribe(state => {});
 	}
 
 	configure(config: PluginConfig) {
@@ -124,6 +130,7 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		this._authService.send(authMachineEvents.configure(this._config));
+		this._authzService.send(authzMachineEvents.configure(this._config));
 		console.log('successfully configured cognito provider');
 		if (this._handlingOAuthCodeResponse()) {
 			// wait for state machine to finish transitioning to signed out state
@@ -152,36 +159,35 @@ export class CognitoProvider implements AuthProvider {
 		return CognitoProvider.PROVIDER_NAME;
 	}
 	async signUp(params: SignUpParams): Promise<SignUpResult> {
-		if (!this.isConfigured()) {
-			throw new Error('Plugin not configured');
-		}
-		// TODO: add error handling for other edge cases...
-
-		// kick off the sign up request
-		this._authService.send(authMachineEvents.initiateSignUp(params));
-
-		// TODO: move this to the state machine, and `waitFor` the result of the promise
-		// https://xstate.js.org/docs/guides/interpretation.html#waitfor
-
-		return this.waitForSignUpComplete();
+		const signUpRes = cognitoSignUp(
+			{
+				region: this._config.region,
+			},
+			{
+				...params,
+				clientId: this._config.clientId,
+			}
+		);
+		return signUpRes;
 	}
-	async confirmSignUp(
-		params: ConfirmSignUpParams
-	): Promise<ConfirmSignUpResult> {
-		const { actorRef } = this._authService.state.context;
-		if (!actorRef && !this._authService.state.matches('signingUp')) {
-			throw new Error(
-				'Sign up proccess has not been initiated, have you called .signUp?'
+	async confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult> {
+		const { username, confirmationCode } = params;
+		try {
+			const res = await cognitoConfirmSignUp(
+				{
+					region: this._config.region,
+				},
+				{
+					clientId: this._config.clientId,
+					username,
+					confirmationCode,
+				}
 			);
+			return res;
+		} catch (err) {
+			logger.error(err);
+			throw err;
 		}
-		const signUpActorRef = actorRef as ActorRefFrom<typeof signUpMachine>;
-		// DEBUGGING
-		signUpActorRef.subscribe(state => {
-			console.log(state);
-		});
-
-		signUpActorRef.send(signUpMachineEvents.confirmSignUp(params));
-		return this.waitForSignUpComplete();
 	}
 	private isAuthenticated() {
 		// TODO: should also check if token has expired?
@@ -191,8 +197,8 @@ export class CognitoProvider implements AuthProvider {
 	async signIn(
 		params: SignInParams & { password?: string }
 	): Promise<SignInResult> {
-		if (!this.isConfigured()) {
-			throw new Error('Plugin not configured');
+		if (this._authService.state.matches('notConfigured')) {
+			throw new Error('AuthN is not configured');
 		}
 		// TODO: implement the other sign in method
 		if (params.signInType === 'Link' || params.signInType === 'WebAuthn') {
@@ -205,7 +211,6 @@ export class CognitoProvider implements AuthProvider {
 				'User is already authenticated, please sign out the current user before signing in.'
 			);
 		}
-
 		// kick off the sign in request
 		this._authService.send(
 			authMachineEvents.signInRequested({
@@ -213,49 +218,10 @@ export class CognitoProvider implements AuthProvider {
 				signInFlow: this._authFlow,
 			})
 		);
-		return this.waitForSignInComplete();
-	}
+		this._authzService.send(authzMachineEvents.signInRequested());
+		const signInResult = await this.waitForSignInComplete();
 
-	private async waitForSignUpComplete(): Promise<SignUpResult> {
-		console.log('awaiting sign up to complete...');
-		return new Promise<SignUpResult>((res, rej) => {
-			this._authService.onTransition((state, event) => {
-				console.log('signUp: this._authService.onTransition', { state, event });
-				if (state.matches('signedUp')) {
-					console.log(`state.matches('signedUp')`);
-					// @ts-ignore
-					res('result from promise in waitForSignUpComplete');
-				} else if (state.matches('error')) {
-					if (event.type === 'error') {
-						rej(event.error);
-					} else {
-						rej(new Error('Something went wrong during sign up'));
-					}
-				}
-			});
-		});
-	}
-
-	private sendMFACode(
-		confirmationCode: string,
-		mfaType: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA',
-		clientMetaData: { [key: string]: string }
-	) {
-		const challengeResponses = {};
-	}
-
-	private hasChallenge(
-		res: InitiateAuthCommandOutput
-	): res is InitiateAuthCommandOutput & {
-		ChallengeName: string;
-		ChallengeParameters: { [key: string]: string };
-		Session: string;
-	} {
-		return (
-			typeof res.ChallengeName === 'string' &&
-			typeof res.ChallengeParameters === 'object' &&
-			typeof res.Session === 'string'
-		);
+		return signInResult;
 	}
 
 	private async waitForSignInComplete(): Promise<SignInResult> {
@@ -343,129 +309,216 @@ export class CognitoProvider implements AuthProvider {
 		return await this.waitForSignInComplete();
 	}
 
-	private getSessionData(): {
-		accessToken: string;
-		idToken: string;
-		refreshToken: string;
-		expiration: number;
-	} | null {
+	private getCachedUserpoolTokens():
+		| {
+				accessToken: string;
+				idToken: string;
+				refreshToken: string;
+		  }
+		| undefined {
 		if (typeof this._userStorage.getItem(COGNITO_CACHE_KEY) === 'string') {
 			return JSON.parse(this._userStorage.getItem(COGNITO_CACHE_KEY) as string);
 		}
-		return null;
 	}
+
+	private isUserPoolTokensExpired(bufferTime?: number) {
+		const userpoolTokens = this.getCachedUserpoolTokens();
+		if (!userpoolTokens) {
+			throw new Error('cannot find cached JWT tokens');
+		}
+		const { exp: idTokenExpiration } = decodeJWT(userpoolTokens.idToken);
+		const { exp: accessTokenExpiration } = decodeJWT(
+			userpoolTokens.accessToken
+		);
+		return (
+			Date.now() / 1000 > idTokenExpiration ||
+			Date.now() / 1000 > accessTokenExpiration
+		);
+	}
+
+	private isSessionExpired(bufferTime?: number) {
+		// check to make sure state machine is in the session established state
+		if (!this._authzService.state.matches('sessionEstablished')) {
+			return false;
+		}
+		// gets the session information from the context of the state machine (should be stored there from previous run)
+		const sessionInfo = this._authzService.state.context.sessionInfo;
+		const awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
+		const now = new Date();
+		const isSignedIn = this._authService.state.matches('signedIn');
+		// check to see if tokens are expired depending on whether or not the user is signed in
+		// if a user is signed in, we also have to check if jwt tokens are expired on top of aws credentials
+		if (isSignedIn) {
+			return this.isUserPoolTokensExpired() || now > awsCredentials.expiration;
+		} else {
+			return now > awsCredentials.expiration;
+		}
+	}
+
 	async fetchSession(): Promise<AmplifyUser> {
-		if (!this.isConfigured()) {
-			throw new Error();
-		}
-		// if (this._authService.state.matches('signedIn')) {
-		// 	return this._authService.state.context.session!;
-		// }
-		// return new Promise<AmplifyUser>((res, rej) => {
-		// 	this._authService.onTransition(state => {
-		// 		if (state.matches('signedIn')) {
-		// 			console.log('creds? ', state.context.session);
-		// 			res(state.context.session);
-		// 		}
-		// 	});
-		// });
-		const { region, identityPoolId } = this._config;
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			throw new Error('region is not configured for getting the credentials');
-		}
-		if (!identityPoolId) {
-			logger.debug('No Cognito Federated Identity pool provided');
-			throw new Error('No Cognito Federated Identity pool provided');
-		}
-		const cognitoIdentityClient = this.createNewCognitoIdentityClient({
-			region: this._config.region,
-		});
-		const session = this.getSessionData();
-		if (session === null) {
+		// checks to see if the identity pool and region are already configured
+		// 1. if AuthZ machine is not configured -> throw error
+		if (this._authzService.state.matches('notConfigured')) {
 			throw new Error(
-				'Does not have active user session, have you called .signIn?'
+				'Identity Pool and Userpool have not been configured yet.'
 			);
+			// 2. else if AuthZ machine is in 'configured' state
+			//   -> that means session has not been established
+			//   -> that means we need to fetch either auth or unauth
+			//     -> check authN machine
+			//     -> if authN already at signedIn state, send a signInRequested ---> signInCompleted event to AuthZ machine
+			//     -> wait for 'sessionEstablished' state
+			//     -> grab sessionInfo from the AuthZ state machine
+		} else if (this._authzService.state.matches('configured')) {
+			if (this._authService.state.matches('signedIn')) {
+				// getting jwt from localStorage after user signed in
+				const userpoolTokens = this.getCachedUserpoolTokens();
+				if (!userpoolTokens) {
+					throw new Error('Session data is not cached in the localStorage.');
+				}
+				// send userpool tokens to the authz machine so it can fetch auth session
+				this._authzService.send(
+					authzMachineEvents.signInCompleted({ ...userpoolTokens })
+				);
+			} else {
+				// fetch un auth session if the authN state machine is not in the signed in state
+				this._authzService.send(authzMachineEvents.fetchUnAuthSession());
+			}
+			// 3. else if AuthZ machine is in 'sessionEstablished' state
+			//   -> session has already been established
+			//   -> check if creds is unauth or auth
+			//   -> check the token / AWS creds expiration
+			//   -> if any of them expired, invoke the refreshSessionMachine
+			//   -> wait for 'sessionEstablished' state
+			//   -> grab session Info from the authZ state machine
+		} else if (this._authzService.state.matches('sessionEstablished')) {
+			logger.debug('we have cached session here');
+			// check expiration here
+			if (this.isSessionExpired()) {
+				// run the refresh session state machine if the session is expired
+				this._authzService.send(
+					authzMachineEvents.refreshSession(this.getCachedUserpoolTokens())
+				);
+			}
+			// 4a. else if AuthZ machine is in 'signingIn' state
+			//   -> that means user called signIn, but hasn't called fetchSession after that
+			//   ** we assume the user wait for the signIn call to complete, before they do a fetchSession
+			//   -> check AuthN machine if it's in the 'signedIn' state
+			//     -> Yes
+			//     -> send 'signInCompleted' event
+			//     -> wait for 'sessionEstablished' state
+			//     -> grab session Info from authZ state machine
+		} else if (this._authzService.state.matches('signingIn')) {
+			if (this._authService.state.matches('signedIn')) {
+				const userpoolTokens = this.getCachedUserpoolTokens();
+				if (!userpoolTokens) {
+					throw new Error('Session data is not cached in the localStorage.');
+				}
+				this._authzService.send(
+					authzMachineEvents.signInCompleted({ ...userpoolTokens })
+				);
+			}
+		} else if (
+			[
+				'refreshingSession',
+				'fetchingUnAuthSession',
+				'fetchAuthSessionWithUserPool',
+			].some(this._authzService.state.matches)
+		) {
+			// do nothing.. wait for the sessionEstablished state
 		}
-		const { idToken, accessToken, refreshToken } = session;
-		const expiration = getExpirationTimeFromJWT(idToken);
-		console.log({ expiration });
-		const cognitoIDPLoginKey = `cognito-idp.${this._config.region}.amazonaws.com/${this._config.userPoolId}`;
-		const getIdRes = await cognitoIdentityClient.send(
-			new GetIdCommand({
-				IdentityPoolId: identityPoolId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
+		//  OR
+		//  4b. We change the .signIn call
+		//    -> signIn
+		//      -> send 'signInRequested' to both AuthN and AuthZ
+		//      -> wait for AuthN to go into the 'signedIn' state
+		//      -> send 'signInCompleted' to AuthZ
+		//    -> resolve .signIn promise
+		//  so, now AuthZ machine will either be in the 'fetchAuthSessionWithUserPool'
+		//    or
+		//      already at 'sessionEstablished' state (which is handled in 1.)
+		// -> return the user session info
+		else {
+			throw new Error('Invalid state');
+		}
+		return this.waitForSessionEstablished();
+	}
+
+	private async waitForSessionEstablished(): Promise<AmplifyUser> {
+		// make sure session is established before trying to get the tokens out of the context
+		const sessionEstablishedState = await waitFor(this._authzService, state =>
+			state.matches('sessionEstablished')
 		);
-		if (!getIdRes.IdentityId) {
-			throw new Error('Could not get Identity ID');
+		const isSignedIn = this._authService.state.matches('signedIn');
+		// getting aws credentials from the context of the state machine if available
+		const sessionInfo = sessionEstablishedState.context.sessionInfo;
+		let awsCredentials: AWSCredentials | null;
+		try {
+			awsCredentials = this.shearAWSCredentials(sessionInfo.AWSCredentials);
+		} catch (err) {
+			awsCredentials = null;
 		}
-		const getCredentialsRes = await cognitoIdentityClient.send(
-			new GetCredentialsForIdentityCommand({
-				IdentityId: getIdRes.IdentityId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
-		);
-		if (!getCredentialsRes.Credentials) {
-			throw new Error(
-				'No credentials from the response of GetCredentialsForIdentity call.'
-			);
-		}
-		const cognitoClient = this.createNewCognitoClient({
-			region: this._config.region,
-		});
-		const getUserRes = await cognitoClient.send(
-			new GetUserCommand({
-				AccessToken: accessToken,
-			})
-		);
-		console.log({ getUserRes });
-		const { sub } = decodeJWT(idToken);
-		if (typeof sub !== 'string') {
-			logger.error(
-				'sub does not exist inside the JWT token or is not a string'
-			);
-		}
-		return {
-			sessionId: '',
-			user: {
-				// sub
-				userid: sub as string,
-				// maybe username
-				identifiers: [],
-			},
+
+		// assign aws credentials to the session
+		const userpoolTokens = this.getCachedUserpoolTokens();
+		const amplifyUser: AmplifyUser = {
+			isSignedIn,
 			credentials: {
 				default: {
-					jwt: {
-						idToken,
-						accessToken,
-						refreshToken,
-					},
-					aws: this.shearAWSCredentials(getCredentialsRes),
+					...(awsCredentials && { aws: awsCredentials }),
 				},
 			},
 		};
+		// if the user is signed in, assign jwt tokens as well
+		// if not, return the session without jwt tokens
+		if (isSignedIn) {
+			if (!userpoolTokens) {
+				throw new Error('cached jwt tokens not available');
+			}
+			amplifyUser.credentials!.default.jwt = {
+				accessToken: userpoolTokens.accessToken,
+				idToken: userpoolTokens.idToken,
+				refreshToken: userpoolTokens.refreshToken,
+			};
+			const { sub } = decodeJWT(userpoolTokens.idToken);
+			amplifyUser.userInfo = { userid: sub as string };
+		}
+		return amplifyUser;
 	}
-	private shearAWSCredentials(
-		res: GetCredentialsForIdentityCommandOutput
-	): AWSCredentials {
-		if (!res.Credentials) {
+
+	private shearAWSCredentials(res: AWSCredsRes): AWSCredentials {
+		if (!res) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const { AccessKeyId, SecretKey, SessionToken, Expiration } =
-			res.Credentials;
+		const { AccessKeyId, SecretKey, SessionToken, Expiration } = res;
 		return {
 			accessKeyId: AccessKeyId,
 			secretAccessKey: SecretKey,
 			sessionToken: SessionToken,
 			expiration: Expiration,
 		};
+	}
+	async refreshSession(): Promise<AmplifyUser> {
+		// check to make sure authorization state machine is in the session established state or throw an error
+		if (
+			!this._authzService.state.matches('sessionEstablished') &&
+			!this._authzService.state.matches('refreshingSession')
+		) {
+			throw new Error(
+				'Session should be established before calling .refreshSession, please call .fetchSession first'
+			);
+		}
+		// check to make sure there is a refresh token present (must be an auth session not UnAuth session)
+		const userpoolTokens = this.getCachedUserpoolTokens();
+		// call refreshSession state machine and pass refresh token as the argument/context
+		// for the state machine to use as an argument to the service class
+		this._authzService.send(
+			authzMachineEvents.refreshSession(userpoolTokens, true)
+		);
+		// return new userpool tokens and update the ones in storage if necessary
+		return this.waitForSessionEstablished();
 	}
 	addAuthenticator(): Promise<AddAuthenticatorResponse> {
 		throw new Error('Method not implemented.');
@@ -480,6 +533,8 @@ export class CognitoProvider implements AuthProvider {
 	}
 	async signOut(): Promise<void> {
 		this.clearCachedTokens();
+		this._authService.send(authMachineEvents.signOutRequested());
+		this._authzService.send(authzMachineEvents.signOutRequested());
 		dispatchAuthEvent(
 			'signOut',
 			{ placeholder: 'placeholder' },
@@ -489,7 +544,11 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private isConfigured(): boolean {
-		return Boolean(this._config?.userPoolId) && Boolean(this._config?.region);
+		return (
+			Boolean(this._config?.userPoolId) &&
+			Boolean(this._config?.region) &&
+			Boolean(this._config?.identityPoolId)
+		);
 	}
 
 	// TODO: remove this, should live inside the AuthZ machine
