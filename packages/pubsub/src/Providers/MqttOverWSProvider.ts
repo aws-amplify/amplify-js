@@ -194,6 +194,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			errorCode: number;
 		}) => {
 			this.onDisconnect({ clientId, errorCode, ...args });
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		};
 
 		await new Promise((resolve, reject) => {
