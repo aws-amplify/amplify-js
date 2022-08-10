@@ -1105,11 +1105,18 @@ class DataStore {
 			const modelDefinition = getModelDefinition(modelConstructor);
 
 			if (typeof identifierOrCriteria === 'string') {
-				const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
+				const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
+				if (keyFields.length > 1) {
+					const msg = errorMessages.deleteByPkWithCompositeKeyPresent;
+					logger.error(msg, { keyFields });
+
+					throw new Error(msg);
+				}
 
 				condition = ModelPredicateCreator.createForSingleField<T>(
 					getModelDefinition(modelConstructor),
-					keyField,
+					keyFields[0],
 					identifierOrCriteria
 				);
 			} else {
