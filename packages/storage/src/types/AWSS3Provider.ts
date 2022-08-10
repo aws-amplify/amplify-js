@@ -105,7 +105,7 @@ export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
-	pageSize?: number | 'ALL';
+	pageSize?: number;
 	provider?: 'AWSS3';
 	identityId?: string;
 	pageToken?: string;

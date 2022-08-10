@@ -690,7 +690,7 @@ export class AWSS3Provider implements StorageProvider {
 			hasNextPage: false,
 		};
 		const s3 = this._createNewS3Client(opt);
-		const listObjectsV2Command = new ListObjectsV2Command(params);
+		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
 			result.results = response.Contents.map(item => {
@@ -733,7 +733,6 @@ export class AWSS3Provider implements StorageProvider {
 				results: [],
 				hasNextPage: false,
 			};
-			let continuationToken: string = pageToken;
 			let listResult: S3ProviderListOutputWithToken;
 			const params: ListObjectsV2Request = {
 				Bucket: bucket,
@@ -741,20 +740,17 @@ export class AWSS3Provider implements StorageProvider {
 				MaxKeys: 1000,
 				ContinuationToken: pageToken,
 			};
-			console.log('Helloo  from list');
-			if (pageSize === 'ALL' || pageSize === undefined) {
+			params.ContinuationToken = pageToken;
+			if (pageSize === undefined) {
 				do {
-					params.ContinuationToken = continuationToken;
-					params.MaxKeys = 1000;
 					listResult = await this._list(params, opt, prefix);
 					list.results.push(...listResult.results);
 					if (listResult.nextPageToken)
-						continuationToken = listResult.nextPageToken;
+						params.ContinuationToken = listResult.nextPageToken;
 				} while (listResult.nextPageToken);
 			} else {
-				pageSize < 1000 || typeof pageSize === 'string'
-					? (params.MaxKeys = pageSize)
-					: (params.MaxKeys = 1000);
+				if (pageSize < 1000 || typeof pageSize === 'string')
+					params.MaxKeys = pageSize;
 				listResult = await this._list(params, opt, prefix);
 				list.results.push(...listResult.results);
 				list.hasNextPage = listResult.hasNextPage;
@@ -763,7 +759,7 @@ export class AWSS3Provider implements StorageProvider {
 					: (list.nextPageToken = null);
 				if (pageSize > 1000)
 					logger.warn(
-						"makeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
+						'pageSize should be from 0 - 1000. The default pageSize is 1000.'
 					);
 			}
 			dispatchStorageEvent(
