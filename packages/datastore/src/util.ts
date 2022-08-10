@@ -5,7 +5,6 @@ import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
-	ProducerModelPredicate,
 	isPredicateGroup,
 	isPredicateObj,
 	ModelInstanceMetadata,
@@ -37,6 +36,12 @@ const ID = 'id';
 
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
+	queryByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	deleteByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be deleted by a single key value, unless using a predicate. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	observeWithObjectLiteral:
+		'Object literal syntax cannot be used with observe. Use a predicate instead: https://docs.amplify.aws/lib/datastore/data-access/q/platform/js/#predicates',
 };
 
 export function extractKeyIfExists(
@@ -587,14 +592,19 @@ export const traverseModel = <T extends PersistentModel>(
 	return result;
 };
 
-export const getIndex = (rel: RelationType[], src: any): string | undefined => {
-	let index = '';
+export const getIndex = (
+	rel: RelationType[],
+	src: string
+): string | undefined => {
+	let indexName;
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
-			index = relItem.targetName;
+			const targetNames = extractTargetNamesFromSrc(relItem);
+			indexName = targetNames && indexNameFromKeys(targetNames);
+			return true;
 		}
 	});
-	return index;
+	return indexName;
 };
 
 export const getIndexFromAssociation = (

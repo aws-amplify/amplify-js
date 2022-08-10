@@ -177,32 +177,15 @@ class IndexedDBAdapter implements Adapter {
 									const tmpName = `tmp_${storeName}`;
 									origStore.name = tmpName;
 
-									// create new store with original name
-									const newStore = db.createObjectStore(storeName, {
-										keyPath: undefined,
-										autoIncrement: true,
-									});
-
-									const origIndexNames = Object.values(origStore.indexNames);
-									for (const idxName of origIndexNames) {
-										if (idxName === 'byId') {
-											// don't migrate this index. It'll be replaced with byPk
-											continue;
-										}
-										const idx = origStore.index(idxName);
-										const { keyPath, unique } = idx;
-
-										newStore.createIndex(idxName, keyPath, { unique });
-									}
-
 									const { namespaceName, modelName } =
 										this.getNamespaceAndModelFromStorename(storeName);
 
-									const keyPath = this.getIndexKeyPath(
+									const newStore = this.createObjectStoreForModel(
+										db,
 										namespaceName,
+										storeName,
 										modelName
 									);
-									newStore.createIndex('byPk', keyPath, { unique: true });
 
 									let cursor = await origStore.openCursor();
 									let count = 0;
@@ -1066,7 +1049,7 @@ class IndexedDBAdapter implements Adapter {
 		return result;
 	}
 
-	private async createObjectStoreForModel(
+	private createObjectStoreForModel(
 		db: idb.IDBPDatabase,
 		namespaceName: string,
 		storeName: string,
@@ -1082,6 +1065,8 @@ class IndexedDBAdapter implements Adapter {
 		indexes.forEach(([idxName, keyPath, options]) => {
 			store.createIndex(idxName, keyPath, options);
 		});
+
+		return store;
 	}
 }
 

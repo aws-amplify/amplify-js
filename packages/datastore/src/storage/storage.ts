@@ -19,7 +19,6 @@ import {
 	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
-	// isTargetNamesAssociation,
 } from '../types';
 import {
 	isModelConstructor,

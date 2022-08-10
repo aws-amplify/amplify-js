@@ -1002,6 +1002,13 @@ class DataStore {
 			let predicate: ModelPredicate<T>;
 
 			if (isQueryOne(identifierOrCriteria)) {
+				if (keyFields.length > 1) {
+					const msg = errorMessages.queryByPkWithCompositeKeyPresent;
+					logger.error(msg, { keyFields });
+
+					throw new Error(msg);
+				}
+
 				predicate = ModelPredicateCreator.createForSingleField<T>(
 					modelDefinition,
 					keyFields[0],
@@ -1050,11 +1057,9 @@ class DataStore {
 				pagination
 			);
 
-			const isSingleFieldIdentifier = keyFields.length === 1;
 			const returnOne =
-				isSingleFieldIdentifier &&
-				(isQueryOne(identifierOrCriteria) ||
-					isIdentifierObject(identifierOrCriteria, modelDefinition));
+				isQueryOne(identifierOrCriteria) ||
+				isIdentifierObject(identifierOrCriteria, modelDefinition);
 
 			return returnOne ? result[0] : result;
 		}, 'datastore query');
@@ -1183,11 +1188,18 @@ class DataStore {
 				const modelDefinition = getModelDefinition(modelConstructor);
 
 				if (typeof identifierOrCriteria === 'string') {
-					const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
+					const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
+					if (keyFields.length > 1) {
+						const msg = errorMessages.deleteByPkWithCompositeKeyPresent;
+						logger.error(msg, { keyFields });
+
+						throw new Error(msg);
+					}
 
 					condition = ModelPredicateCreator.createForSingleField<T>(
 						getModelDefinition(modelConstructor),
-						keyField,
+						keyFields[0],
 						identifierOrCriteria
 					);
 				} else {
@@ -1315,6 +1327,21 @@ class DataStore {
 
 				throw new Error(msg);
 			}
+		}
+
+		// observe should not accept object literal syntax
+		if (
+			identifierOrCriteria &&
+			modelConstructor &&
+			isIdentifierObject(
+				identifierOrCriteria,
+				getModelDefinition(modelConstructor)
+			)
+		) {
+			const msg = errorMessages.observeWithObjectLiteral;
+			logger.error(msg, { objectLiteral: identifierOrCriteria });
+
+			throw new Error(msg);
 		}
 
 		if (identifierOrCriteria !== undefined && modelConstructor === undefined) {
