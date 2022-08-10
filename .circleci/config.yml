@@ -927,7 +927,7 @@ orbs:
           - run:
               name: Launch emulator
               command: |
-                emulator -avd TestingAVD -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+                emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
               background: true
           - run:
               name: Generate cache key
