@@ -284,6 +284,12 @@ export class Signer {
 	static sign(request, access_info, service_info = null) {
 		request.headers = request.headers || {};
 
+		if (request.body && !request.data) {
+			throw new Error(
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+			);
+		}
+
 		// datetime string and date string
 		const dt = DateUtils.getDateWithClockOffset(),
 			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
