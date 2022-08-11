@@ -77,7 +77,7 @@ class DummyProvider extends AbstractInteractionsProvider {
 		return new Promise(async (res, rej) => res({}));
 	}
 
-	async onComplete() {
+	async onComplete(botname: string, callback: (err, confirmation) => void) {
 		return new Promise((res, rej) => res({}));
 	}
 }
@@ -139,6 +139,9 @@ describe('Interactions', () => {
 			expect(providerConfigure).toBeCalledTimes(
 				awsmobile.aws_bots_config.length
 			);
+			expect(providerConfigure).toHaveBeenCalledWith({
+				BookTripMOBILEHUB: awsmobileBot,
+			});
 		});
 
 		test('Configure bot using manual configuration', () => {
@@ -151,6 +154,14 @@ describe('Interactions', () => {
 			expect(providerConfigure).toBeCalledTimes(
 				Object.keys(manualConfigBots).length
 			);
+
+			// provider's config get's called for each bot
+			expect(providerConfigure).toHaveBeenCalledWith({
+				BookTrip: manualConfigBots.BookTrip,
+			});
+			expect(providerConfigure).toHaveBeenCalledWith({
+				OrderFlowers: manualConfigBots.OrderFlowers,
+			});
 		});
 
 		test('Configure bot using aws-exports and manual configuration', () => {
@@ -170,6 +181,14 @@ describe('Interactions', () => {
 			expect(providerConfigure).toBeCalledTimes(
 				Object.keys(manualConfigBots).length
 			);
+
+			// provider's config get's called for each bot
+			expect(providerConfigure).toHaveBeenCalledWith({
+				BookTrip: manualConfigBots.BookTrip,
+			});
+			expect(providerConfigure).toHaveBeenCalledWith({
+				OrderFlowers: manualConfigBots.OrderFlowers,
+			});
 		});
 
 		test('Check if default provider is AWSLexProvider', async () => {
@@ -221,9 +240,11 @@ describe('Interactions', () => {
 	// Test 'addPluggable' API
 	describe('addPluggable API', () => {
 		let interactions;
+		let providerConfigure;
 
 		beforeEach(() => {
 			interactions = new Interactions({});
+			providerConfigure = jest.spyOn(DummyProvider.prototype, 'configure');
 			interactions.configure({});
 		});
 
@@ -233,7 +254,19 @@ describe('Interactions', () => {
 			expect(() =>
 				interactions.addPluggable(new DummyProvider())
 			).not.toThrow();
-			expect(() => interactions.configure(manualConfig)).not.toThrow();
+
+			const config = interactions.configure(manualConfig);
+			expect(config).toEqual({
+				bots: manualConfigBots,
+			});
+
+			// provider's config get's called for each bot
+			expect(providerConfigure).toHaveBeenCalledWith({
+				BookTrip: manualConfigBots.BookTrip,
+			});
+			expect(providerConfigure).toHaveBeenCalledWith({
+				OrderFlowers: manualConfigBots.OrderFlowers,
+			});
 
 			const response = await interactions.send('BookTrip', 'hi');
 			expect(response).toEqual({});
@@ -243,11 +276,22 @@ describe('Interactions', () => {
 			// first configure bots for a custom plugin
 			// then add the custom plugin
 			// when the plugin is added the bots belonging to plugin are automatically configured
-			expect(() => interactions.configure(manualConfig)).not.toThrow();
+			const config = interactions.configure(manualConfig);
+			expect(config).toEqual({
+				bots: manualConfigBots,
+			});
+
 			expect(() =>
 				interactions.addPluggable(new DummyProvider())
 			).not.toThrow();
 
+			// after adding pluggin provider's config get's called for each bot
+			expect(providerConfigure).toHaveBeenCalledWith({
+				BookTrip: manualConfigBots.BookTrip,
+			});
+			expect(providerConfigure).toHaveBeenCalledWith({
+				OrderFlowers: manualConfigBots.OrderFlowers,
+			});
 			const response = await interactions.send('BookTrip', 'hi');
 			expect(response).toEqual({});
 		});
@@ -285,6 +329,7 @@ describe('Interactions', () => {
 
 			// check if provider's send was called
 			expect(providerSend).toBeCalledTimes(1);
+			expect(providerSend).toHaveBeenCalledWith('BookTrip', 'hi');
 		});
 
 		test('Send text message to non-existing bot', async () => {
@@ -312,6 +357,7 @@ describe('Interactions', () => {
 			expect(() => interactions.onComplete('BookTrip', callback)).not.toThrow();
 			// check if provider's onComplete was called
 			expect(providerOnComplete).toBeCalledTimes(1);
+			expect(providerOnComplete).toHaveBeenCalledWith('BookTrip', callback);
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {

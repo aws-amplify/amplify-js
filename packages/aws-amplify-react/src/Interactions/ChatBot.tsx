@@ -8,7 +8,7 @@ import {
 import { Input, Button } from '../AmplifyTheme';
 
 import { I18n } from '@aws-amplify/core';
-import { Interactions, InteractionsMessage } from '@aws-amplify/interactions';
+import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { chatBot } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('ChatBot');
@@ -198,7 +198,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 
-		const interactionsMessage: InteractionsMessage = {
+		const interactionsMessage = {
 			content: this.state.audioInput,
 			options: {
 				messageType: 'voice',

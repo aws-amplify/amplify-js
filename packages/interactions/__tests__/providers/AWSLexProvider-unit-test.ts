@@ -357,7 +357,6 @@ describe('Interactions', () => {
 
 	// Test 'reportBotStatus' API
 	describe('reportBotStatus API', () => {
-		// jest.useFakeTimers();
 		jest.useFakeTimers();
 		let provider;
 
@@ -365,16 +364,9 @@ describe('Interactions', () => {
 		let completeSuccessResp;
 		let completeFailResp;
 
-		const inProgressCallback = (err, confirmation) =>
-			fail(`callback shouldn't be called`);
-
-		const completeSuccessCallback = (err, confirmation) => {
-			expect(err).toEqual(null);
-			expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-		};
-
-		const completeFailCallback = (err, confirmation) =>
-			expect(err).toEqual('Bot conversation failed');
+		let inProgressCallback;
+		let completeSuccessCallback;
+		let completeFailCallback;
 
 		beforeEach(async () => {
 			jest
@@ -384,6 +376,21 @@ describe('Interactions', () => {
 			provider = new AWSLexProvider();
 			provider.configure(botConfig);
 
+			// mock callbacks
+			inProgressCallback = jest.fn((err, confirmation) =>
+				fail(`callback shouldn't be called`)
+			);
+
+			completeSuccessCallback = jest.fn((err, confirmation) => {
+				expect(err).toEqual(null);
+				expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
+			});
+
+			completeFailCallback = jest.fn((err, confirmation) =>
+				expect(err).toEqual('Bot conversation failed')
+			);
+
+			// mock responses
 			inProgressResp = (await provider.sendMessage(
 				'BookTrip',
 				'hi'
@@ -403,18 +410,21 @@ describe('Interactions', () => {
 		test('Configure onComplete callback using `Interactions.onComplete` API', async () => {
 			// 1. In progress, callback shouldn't be called
 			provider.onComplete('BookTrip', inProgressCallback);
-			provider.reportBotStatus('BookTrip', inProgressResp);
+			provider.reportBotStatus(inProgressResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(inProgressCallback).toBeCalledTimes(0);
 
 			// 2. task complete; success, callback be called with response
 			provider.onComplete('BookTrip', completeSuccessCallback);
-			provider.reportBotStatus('BookTrip', completeSuccessResp);
+			provider.reportBotStatus(completeSuccessResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(completeSuccessCallback).toBeCalledTimes(1);
 
 			// 3. task complete; error, callback be called with error
 			provider.onComplete('BookTrip', completeFailCallback);
-			provider.reportBotStatus('BookTrip', completeFailResp);
+			provider.reportBotStatus(completeFailResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(completeFailCallback).toBeCalledTimes(1);
 		});
 
 		test('Configure onComplete callback using `configuration`', async () => {
@@ -429,20 +439,23 @@ describe('Interactions', () => {
 			// 1. In progress, callback shouldn't be called
 			myBot.BookTrip.onComplete = inProgressCallback;
 			provider.configure(myBot);
-			provider.reportBotStatus('BookTrip', inProgressResp);
+			provider.reportBotStatus(inProgressResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(inProgressCallback).toBeCalledTimes(0);
 
 			// 2. In progress, callback shouldn't be called
 			myBot.BookTrip.onComplete = completeSuccessCallback;
 			provider.configure(myBot);
-			provider.reportBotStatus('BookTrip', completeSuccessResp);
+			provider.reportBotStatus(completeSuccessResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(completeSuccessCallback).toBeCalledTimes(1);
 
 			// 3. In progress, callback shouldn't be called
 			myBot.BookTrip.onComplete = completeFailCallback;
 			provider.configure(myBot);
-			provider.reportBotStatus('BookTrip', completeFailResp);
+			provider.reportBotStatus(completeFailResp, 'BookTrip');
 			jest.runAllTimers();
+			expect(completeFailCallback).toBeCalledTimes(1);
 		});
 	});
 });
