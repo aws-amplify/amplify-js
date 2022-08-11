@@ -145,12 +145,14 @@ describe('Interactions', () => {
 	test(`Is provider name 'AWSLexProvider'`, () => {
 		const provider = new AWSLexProvider();
 		expect(provider.getProviderName()).toEqual('AWSLexProvider');
+		expect.assertions(1);
 	});
 
 	// Test 'getCategory' API
 	test(`Is category name 'Interactions'`, () => {
 		const provider = new AWSLexProvider();
 		expect(provider.getCategory()).toEqual('Interactions');
+		expect.assertions(1);
 	});
 
 	// Test 'configure' API
@@ -159,6 +161,7 @@ describe('Interactions', () => {
 
 		test('Check if bot is successfully configured by validating config response', () => {
 			expect(provider.configure(botConfig)).toEqual(botConfig);
+			expect.assertions(1);
 		});
 
 		test('configure multiple bots and re-configure existing bot successfully', () => {
@@ -191,6 +194,7 @@ describe('Interactions', () => {
 				...botConfig,
 				...anotherBotUpdated,
 			});
+			expect.assertions(3);
 		});
 
 		test('Configure bot with invalid config', () => {
@@ -205,6 +209,7 @@ describe('Interactions', () => {
 			expect(() => provider.configure(invalidConfig)).toThrow(
 				'invalid bot configuration'
 			);
+			expect.assertions(1);
 		});
 	});
 
@@ -237,6 +242,7 @@ describe('Interactions', () => {
 					m2: 'done',
 				},
 			});
+			expect.assertions(2);
 		});
 
 		test('send obj text message to bot and fulfill', async () => {
@@ -267,6 +273,7 @@ describe('Interactions', () => {
 					m2: 'done',
 				},
 			});
+			expect.assertions(2);
 		});
 
 		test('send obj voice message to bot and fulfill', async () => {
@@ -311,6 +318,7 @@ describe('Interactions', () => {
 					m2: 'voice:done',
 				},
 			});
+			expect.assertions(2);
 		});
 
 		test('send a text message bot But with no credentials', async () => {
@@ -321,12 +329,14 @@ describe('Interactions', () => {
 			await expect(provider.sendMessage('BookTrip', 'hi')).rejects.toEqual(
 				'No credentials'
 			);
+			expect.assertions(1);
 		});
 
 		test('send message to non-existing bot', async () => {
 			await expect(provider.sendMessage('unknownBot', 'hi')).rejects.toEqual(
 				'Bot unknownBot does not exist'
 			);
+			expect.assertions(1);
 		});
 	});
 
@@ -346,12 +356,14 @@ describe('Interactions', () => {
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
 			expect(() => provider.onComplete('BookTrip', callback)).not.toThrow();
+			expect.assertions(1);
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {
 			expect(() => provider.onComplete('unknownBot', callback)).toThrow(
 				'Bot unknownBot does not exist'
 			);
+			expect.assertions(1);
 		});
 	});
 
@@ -425,6 +437,7 @@ describe('Interactions', () => {
 			provider.reportBotStatus(completeFailResp, 'BookTrip');
 			jest.runAllTimers();
 			expect(completeFailCallback).toBeCalledTimes(1);
+			expect.assertions(6);
 		});
 
 		test('Configure onComplete callback using `configuration`', async () => {
@@ -456,6 +469,7 @@ describe('Interactions', () => {
 			provider.reportBotStatus(completeFailResp, 'BookTrip');
 			jest.runAllTimers();
 			expect(completeFailCallback).toBeCalledTimes(1);
+			expect.assertions(6);
 		});
 	});
 });

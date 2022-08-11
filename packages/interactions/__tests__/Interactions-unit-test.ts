@@ -64,6 +64,27 @@ const manualConfig = {
 	},
 };
 
+// a sample response from send method
+const sampleSendResponse = {
+	$metadata: {
+		httpStatusCode: 200,
+		requestId: '6eed4ad1-141c-4662-a528-3c857de1e1da',
+		attempts: 1,
+		totalRetryDelay: 0,
+	},
+	alternativeIntents: '[]',
+	audioStream: new Blob(),
+	botVersion: '$LATEST',
+	contentType: 'audio/mpeg',
+	dialogState: 'ElicitSlot',
+	intentName: 'BookCar_dev',
+	message: 'In what city do you need to rent a car?',
+	sessionId: '2022-08-11T18:23:01.013Z-sTqDnpGk',
+	slotToElicit: 'PickUpCity',
+	slots:
+		'{"ReturnDate":null,"PickUpDate":null,"DriverAge":null,"CarType":null,"PickUpCity":null,"Location":null}',
+};
+
 class DummyProvider extends AbstractInteractionsProvider {
 	getProviderName() {
 		return 'DummyProvider';
@@ -74,7 +95,7 @@ class DummyProvider extends AbstractInteractionsProvider {
 	}
 
 	async sendMessage(message: string | Object): Promise<Object> {
-		return new Promise(async (res, rej) => res({}));
+		return new Promise(async (res, rej) => res(sampleSendResponse));
 	}
 
 	async onComplete(botname: string, callback: (err, confirmation) => void) {
@@ -108,13 +129,13 @@ describe('Interactions', () => {
 	// Test 'configure' API
 	describe('configure API', () => {
 		let interactions;
-		let providerConfigure;
+		let providerConfigureSpy;
 
 		beforeEach(() => {
 			interactions = new Interactions({});
 			interactions.configure({});
 			interactions.addPluggable(new DummyProvider());
-			providerConfigure = jest.spyOn(DummyProvider.prototype, 'configure');
+			providerConfigureSpy = jest.spyOn(DummyProvider.prototype, 'configure');
 		});
 
 		test('Check if bot is successfully configured by validating config response', () => {
@@ -125,6 +146,7 @@ describe('Interactions', () => {
 
 			const config = interactions.configure(options);
 			expect(config).toEqual({ ...options, bots: {} });
+			expect.assertions(1);
 		});
 
 		test('Configure bot using aws-exports configuration', () => {
@@ -136,12 +158,13 @@ describe('Interactions', () => {
 				},
 			});
 			// check if provider's configure was called
-			expect(providerConfigure).toBeCalledTimes(
+			expect(providerConfigureSpy).toBeCalledTimes(
 				awsmobile.aws_bots_config.length
 			);
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTripMOBILEHUB: awsmobileBot,
 			});
+			expect.assertions(3);
 		});
 
 		test('Configure bot using manual configuration', () => {
@@ -151,17 +174,18 @@ describe('Interactions', () => {
 			});
 
 			// check if provider's configure was called
-			expect(providerConfigure).toBeCalledTimes(
+			expect(providerConfigureSpy).toBeCalledTimes(
 				Object.keys(manualConfigBots).length
 			);
 
 			// provider's config get's called for each bot
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTrip: manualConfigBots.BookTrip,
 			});
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				OrderFlowers: manualConfigBots.OrderFlowers,
 			});
+			expect.assertions(4);
 		});
 
 		test('Configure bot using aws-exports and manual configuration', () => {
@@ -178,17 +202,18 @@ describe('Interactions', () => {
 			});
 
 			// check if provider's configure was called
-			expect(providerConfigure).toBeCalledTimes(
+			expect(providerConfigureSpy).toBeCalledTimes(
 				Object.keys(manualConfigBots).length
 			);
 
 			// provider's config get's called for each bot
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTrip: manualConfigBots.BookTrip,
 			});
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				OrderFlowers: manualConfigBots.OrderFlowers,
 			});
+			expect.assertions(4);
 		});
 
 		test('Check if default provider is AWSLexProvider', async () => {
@@ -208,6 +233,7 @@ describe('Interactions', () => {
 			expect(interactions.configure(myConfig)).toEqual({
 				bots: myBot,
 			});
+			expect.assertions(1);
 		});
 
 		test('Configure bot belonging to non-existing plugin', async () => {
@@ -227,6 +253,7 @@ describe('Interactions', () => {
 			// configuring a bot to a plugin that isn't added yet is allowed
 			// when the plugin is added the bots belonging to plugin are automatically configured
 			expect(() => interactions.configure(myConfig)).not.toThrow();
+			expect.assertions(1);
 		});
 	});
 
@@ -235,16 +262,17 @@ describe('Interactions', () => {
 		const interactions = new Interactions({});
 		const moduleName = interactions.getModuleName();
 		expect(moduleName).toEqual('Interactions');
+		expect.assertions(1);
 	});
 
 	// Test 'addPluggable' API
 	describe('addPluggable API', () => {
 		let interactions;
-		let providerConfigure;
+		let providerConfigureSpy;
 
 		beforeEach(() => {
 			interactions = new Interactions({});
-			providerConfigure = jest.spyOn(DummyProvider.prototype, 'configure');
+			providerConfigureSpy = jest.spyOn(DummyProvider.prototype, 'configure');
 			interactions.configure({});
 		});
 
@@ -261,15 +289,13 @@ describe('Interactions', () => {
 			});
 
 			// provider's config get's called for each bot
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTrip: manualConfigBots.BookTrip,
 			});
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				OrderFlowers: manualConfigBots.OrderFlowers,
 			});
-
-			const response = await interactions.send('BookTrip', 'hi');
-			expect(response).toEqual({});
+			expect.assertions(4);
 		});
 
 		test('Configure bot belonging to custom plugin first, then add pluggable for that bot', async () => {
@@ -286,20 +312,20 @@ describe('Interactions', () => {
 			).not.toThrow();
 
 			// after adding pluggin provider's config get's called for each bot
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				BookTrip: manualConfigBots.BookTrip,
 			});
-			expect(providerConfigure).toHaveBeenCalledWith({
+			expect(providerConfigureSpy).toHaveBeenCalledWith({
 				OrderFlowers: manualConfigBots.OrderFlowers,
 			});
-			const response = await interactions.send('BookTrip', 'hi');
-			expect(response).toEqual({});
+			expect.assertions(4);
 		});
 
 		test('Add a invalid pluggable', () => {
 			expect(() => interactions.addPluggable(new WrongProvider())).toThrow(
 				'Invalid pluggable'
 			);
+			expect.assertions(1);
 		});
 
 		test('Add existing pluggable again', () => {
@@ -307,6 +333,7 @@ describe('Interactions', () => {
 			expect(() => {
 				interactions.addPluggable(new DummyProvider());
 			}).toThrow('Pluggable DummyProvider already plugged');
+			expect.assertions(1);
 		});
 	});
 
@@ -325,17 +352,19 @@ describe('Interactions', () => {
 
 		test('send text message to a bot successfully', async () => {
 			const response = await interactions.send('BookTrip', 'hi');
-			expect(response).toEqual({});
+			expect(response).toEqual(sampleSendResponse);
 
 			// check if provider's send was called
 			expect(providerSend).toBeCalledTimes(1);
 			expect(providerSend).toHaveBeenCalledWith('BookTrip', 'hi');
+			expect.assertions(3);
 		});
 
 		test('Send text message to non-existing bot', async () => {
 			await expect(interactions.send('unknownBot', 'hi')).rejects.toEqual(
 				'Bot unknownBot does not exist'
 			);
+			expect.assertions(1);
 		});
 	});
 
@@ -358,12 +387,14 @@ describe('Interactions', () => {
 			// check if provider's onComplete was called
 			expect(providerOnComplete).toBeCalledTimes(1);
 			expect(providerOnComplete).toHaveBeenCalledWith('BookTrip', callback);
+			expect.assertions(3);
 		});
 
 		test('Configure onComplete callback for non-existing bot', async () => {
 			expect(() => interactions.onComplete('unknownBot', callback)).toThrow(
 				'Bot unknownBot does not exist'
 			);
+			expect.assertions(1);
 		});
 	});
 });
