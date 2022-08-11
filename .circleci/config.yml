@@ -921,7 +921,7 @@ orbs:
           - run:
               name: Create avd
               command: |
-                SYSTEM_IMAGES="system-images;android-30;default;x86"
+                SYSTEM_IMAGES="system-images;android-29;default;x86"
                 sdkmanager "$SYSTEM_IMAGES"
                 echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
           - run:
