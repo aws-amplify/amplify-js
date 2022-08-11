@@ -112,8 +112,7 @@ export class AuthClass {
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 	private autoSignInInitiated: boolean = false;
-	private inflightSessionPromise: Promise<void> = null;
-	private inflightSession = false;
+	private inflightSessionPromise: Promise<CognitoUserSession> = null;
 	Credentials = Credentials;
 
 	/**
@@ -1797,7 +1796,7 @@ export class AuthClass {
 		});
 	}
 
-	private _userSession({
+	private async _userSession({
 		user,
 		bypassCache = false,
 	}): Promise<CognitoUserSession> {
@@ -1807,65 +1806,49 @@ export class AuthClass {
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
-		return new Promise(async (resolve, rej) => {
-			// debugger;
-			logger.debug('Getting the session from this user:', user);
-
-			let debounceResolver;
-
-			if (this.inflightSession) {
-				logger.debug('Waiting for another userSession call:');
-				await this.inflightSessionPromise;
-				logger.debug('Debouncer resolved');
-			} else {
-				logger.debug('Debouncer head');
-				this.inflightSession = true;
-				this.inflightSessionPromise = new Promise(res => {
-					debounceResolver = () => {
-						logger.debug('Debouncer resolving');
-						this.inflightSessionPromise = null;
-						this.inflightSession = false;
-						res();
-					};
-				});
-			}
-
-			user.getSession(
-				async (err, session) => {
-					if (err) {
-						logger.debug('Failed to get the session from user', user);
-						if (this.isSessionInvalid(err)) {
-							try {
-								await this.cleanUpInvalidSession(user);
-							} catch (cleanUpError) {
-								rej(
-									new Error(
-										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-									)
-								);
-								if (debounceResolver) {
-									debounceResolver();
+		if (this.inflightSessionPromise) {
+			return await this.inflightSessionPromise;
+		} else {
+			this.inflightSessionPromise = new Promise<CognitoUserSession>(
+				(resolve, rej) => {
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the session from user', user);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
 								}
+								rej(err);
+								return;
+							} else {
+								logger.debug('Succeed to get the user session', session);
+								resolve(session);
 								return;
 							}
-						}
-						rej(err);
-						if (debounceResolver) {
-							debounceResolver();
-						}
-						return;
-					} else {
-						logger.debug('Succeed to get the user session', session);
-						resolve(session);
-						if (debounceResolver) {
-							debounceResolver();
-						}
-						return;
-					}
-				},
-				{ clientMetadata, bypassCache }
-			);
-		});
+						},
+						{ clientMetadata, bypassCache }
+					);
+				}
+			)
+				.then(session => {
+					this.inflightSessionPromise = null;
+					return session;
+				})
+				.catch(err => {
+					this.inflightSessionPromise = null;
+					throw err;
+				});
+			return this.inflightSessionPromise;
+		}
 	}
 
 	/**
