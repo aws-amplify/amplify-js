@@ -153,7 +153,7 @@ describe('retry', () => {
 	});
 });
 
-describe('jitteredExponentailRetry', () => {
+describe('jitteredExponentialRetry', () => {
 	test('will retry a function until it succeeds', async () => {
 		let count = 0;
 
