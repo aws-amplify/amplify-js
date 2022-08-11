@@ -1204,7 +1204,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - fix/auth-debouncing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
