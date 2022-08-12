@@ -749,7 +749,7 @@ export class AWSS3Provider implements StorageProvider {
 						params.ContinuationToken = listResult.nextPageToken;
 				} while (listResult.nextPageToken);
 			} else {
-				if (pageSize < MAX_PAGE_SIZE && typeof pageSize === 'number')
+				if (pageSize <= MAX_PAGE_SIZE && typeof pageSize === 'number')
 					params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
