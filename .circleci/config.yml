@@ -2019,6 +2019,9 @@ orbs:
               command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && expo-cli init amplify_getting_started_<< parameters.framework >> --yes
               no_output_timeout: 5m
           - run-with-retry:
+              label: Install Expo Web Deps
+              command: npx expo install react-native-web@~0.18.7 react-dom@18.0.0 @expo/webpack-config@^0.17.0
+          - run-with-retry:
               label: Install Amplify dependencies
               command: yarn add aws-amplify aws-amplify-react-native @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
           - run-with-retry:
