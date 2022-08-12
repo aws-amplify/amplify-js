@@ -685,7 +685,7 @@ export class AWSS3Provider implements StorageProvider {
 		opt: S3ClientOptions,
 		prefix: string
 	): Promise<S3ProviderListOutputWithToken> {
-		const result: S3ProviderListOutputWithToken = {
+		const list: S3ProviderListOutputWithToken = {
 			results: [],
 			hasNextPage: false,
 		};
@@ -693,7 +693,7 @@ export class AWSS3Provider implements StorageProvider {
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
-			result.results = response.Contents.map(item => {
+			list.results = response.Contents.map(item => {
 				return {
 					key: item.Key.substr(prefix.length),
 					eTag: item.ETag,
@@ -701,10 +701,10 @@ export class AWSS3Provider implements StorageProvider {
 					size: item.Size,
 				};
 			});
-			result.nextPageToken = response.NextContinuationToken;
-			result.hasNextPage = response.IsTruncated;
+			list.nextPageToken = response.NextContinuationToken;
+			list.hasNextPage = response.IsTruncated;
 		}
-		return result;
+		return list;
 	}
 
 	/**
@@ -732,11 +732,12 @@ export class AWSS3Provider implements StorageProvider {
 				results: [],
 				hasNextPage: false,
 			};
+			const MAX_PAGE_SIZE = 1000;
 			let listResult: S3ProviderListOutputWithToken;
 			const params: ListObjectsV2Request = {
 				Bucket: bucket,
 				Prefix: final_path,
-				MaxKeys: 1000,
+				MaxKeys: MAX_PAGE_SIZE,
 				ContinuationToken: pageToken,
 			};
 			params.ContinuationToken = pageToken;
@@ -748,18 +749,19 @@ export class AWSS3Provider implements StorageProvider {
 						params.ContinuationToken = listResult.nextPageToken;
 				} while (listResult.nextPageToken);
 			} else {
-				if (pageSize < 1000 || typeof pageSize === 'string')
+				if (pageSize < MAX_PAGE_SIZE && typeof pageSize === 'number')
 					params.MaxKeys = pageSize;
+				else {
+					throw new Error(
+						'Provided pageSize is not an integer or within 1-1000 range.'
+					);
+				}
 				listResult = await this._list(params, opt, prefix);
 				list.results.push(...listResult.results);
 				list.hasNextPage = listResult.hasNextPage;
-				listResult.nextPageToken
-					? (list.nextPageToken = listResult.nextPageToken)
-					: (list.nextPageToken = null);
-				if (pageSize > 1000)
-					logger.warn(
-						'pageSize should be from 0 - 1000. The default pageSize is 1000.'
-					);
+				list.nextPageToken = null ?? listResult.nextPageToken;
+				if (pageSize > MAX_PAGE_SIZE)
+					logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 			}
 			dispatchStorageEvent(
 				track,
@@ -771,7 +773,7 @@ export class AWSS3Provider implements StorageProvider {
 			logger.debug('list', list);
 			return list;
 		} catch (error) {
-			logger.warn('list error', error);
+			logger.error('list InvalidArgument', error);
 			dispatchStorageEvent(
 				track,
 				'list',
