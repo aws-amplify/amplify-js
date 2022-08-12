@@ -150,13 +150,6 @@ export const chatBot = {
 	sendMessageButton: 'chatbot-send-message-button',
 };
 
-export const chatBotLex2 = {
-	title: 'chatbot-lex-2-title',
-	dialog: 'chatbot-lex-2-dialog',
-	messageInput: 'chatbot-lex-2-message-input',
-	sendMessageButton: 'chatbot-lex-2-send-message-button',
-};
-
 export const auth = {
 	signIn,
 	signOut,

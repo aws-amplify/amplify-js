@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import pako from 'pako';
+import { gunzipSync, strFromU8 } from 'fflate';
 
 export const convert = (stream: Blob): Promise<Uint8Array> => {
 	return new Promise(async (res, rej) => {
@@ -38,7 +38,10 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 };
 
 export const unGzipBase64AsJson = <T>(gzipBase64: string): T => {
+	// base64 decode
+	// gzip decompress and convert to string
+	// string to obj
 	return JSON.parse(
-		pako.ungzip(base64ToArrayBuffer(gzipBase64), { to: 'string' })
+		strFromU8(gunzipSync(base64ToArrayBuffer(gzipBase64)))
 	) as T;
 };

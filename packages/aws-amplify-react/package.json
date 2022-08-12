@@ -108,7 +108,6 @@
 		}
 	},
 	"dependencies": {
-		"pako": "^2.0.4",
 		"qrcode.react": "^0.8.0",
 		"regenerator-runtime": "^0.11.1"
 	},
