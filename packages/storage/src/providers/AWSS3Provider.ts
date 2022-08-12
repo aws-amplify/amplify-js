@@ -751,17 +751,11 @@ export class AWSS3Provider implements StorageProvider {
 			} else {
 				if (pageSize < MAX_PAGE_SIZE && typeof pageSize === 'number')
 					params.MaxKeys = pageSize;
-				else {
-					throw new Error(
-						'Provided pageSize is not an integer or within 1-1000 range.'
-					);
-				}
+				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
 				list.results.push(...listResult.results);
 				list.hasNextPage = listResult.hasNextPage;
 				list.nextPageToken = null ?? listResult.nextPageToken;
-				if (pageSize > MAX_PAGE_SIZE)
-					logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 			}
 			dispatchStorageEvent(
 				track,
