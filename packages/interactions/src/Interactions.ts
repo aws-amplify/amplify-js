@@ -37,14 +37,14 @@ export class InteractionsClass {
 		this._pluggables = {};
 	}
 
-	public getModuleName(): 'Interactions' {
+	public getModuleName() {
 		return 'Interactions';
 	}
 
 	/**
 	 *
 	 * @param {InteractionsOptions} options - Configuration object for Interactions
-	 * @return {Object} - The current configuration
+	 * @return {InteractionsOptions} - The current configuration
 	 */
 	public configure(options: InteractionsOptions): InteractionsOptions {
 		const opt = options ? options.Interactions || options : {};

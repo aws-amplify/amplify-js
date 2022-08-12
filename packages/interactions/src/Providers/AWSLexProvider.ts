@@ -44,7 +44,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this._botsCompleteCallback = {};
 	}
 
-	getProviderName(): 'AWSLexProvider' {
+	getProviderName() {
 		return 'AWSLexProvider';
 	}
 
@@ -134,20 +134,19 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
-		let params;
+		let params: PostTextCommandInput | PostContentCommandInput;
 		if (typeof message === 'string') {
 			params = {
 				botAlias: this._config[botname].alias,
 				botName: botname,
 				inputText: message,
 				userId: credentials.identityId,
-			} as PostTextCommandInput;
+			};
 
 			logger.debug('postText to lex', message);
 			try {
 				const postTextCommand = new PostTextCommand(params);
-				const data: PostTextCommandOutput =
-					await this.lexRuntimeServiceClient.send(postTextCommand);
+				const data = await this.lexRuntimeServiceClient.send(postTextCommand);
 
 				this.reportBotStatus(data, botname);
 				return data;
@@ -160,29 +159,36 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				options: { messageType },
 			} = message;
 			if (messageType === 'voice') {
+				if (!(content instanceof Blob || content instanceof ReadableStream))
+					return Promise.reject('invalid content type');
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
-					inputStream: await convert(content as Blob | ReadableStream),
+					inputStream: await convert(content),
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
-				} as PostContentCommandInput;
+				};
 			} else {
+				if (typeof content !== 'string')
+					return Promise.reject('invalid content type');
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'text/plain; charset=utf-8',
-					inputStream: content as string,
+					inputStream: content,
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
-				} as PostContentCommandInput;
+				};
 			}
 			logger.debug('postContent to lex', message);
 			try {
 				const postContentCommand = new PostContentCommand(params);
-				const data: PostContentCommandOutput =
-					await this.lexRuntimeServiceClient.send(postContentCommand);
+				const data = await this.lexRuntimeServiceClient.send(
+					postContentCommand
+				);
 
 				const audioArray = data.audioStream
 					? await convert(data.audioStream)
