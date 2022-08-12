@@ -96,17 +96,19 @@ export type S3ProviderRemoveConfig = CommonStorageOptions & {
 };
 
 export type S3ProviderListOutputWithToken = {
-	contents: S3ProviderListOutputItem[];
-	nextToken: string;
+	results: S3ProviderListOutputItem[];
+	nextPageToken?: string;
+	hasNextPage: boolean;
 };
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
-	maxKeys?: number | 'ALL';
+	pageSize?: number;
 	provider?: 'AWSS3';
 	identityId?: string;
+	pageToken?: string;
 };
 
 export type S3ClientOptions = StorageOptions & {
