@@ -388,8 +388,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 					].filter(Boolean),
 				},
 				() => {
-					this.listItemsRef.current.scrollTop =
-						this.listItemsRef.current.scrollHeight;
+					this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
 				}
 			);
 		};
