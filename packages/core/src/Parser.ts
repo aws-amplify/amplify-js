@@ -25,6 +25,7 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 			identityPoolId: config['aws_cognito_identity_pool_id'],
 			identityPoolRegion: config['aws_cognito_region'],
 			mandatorySignIn: config['aws_mandatory_sign_in'] === 'enable',
+			endpoint: config['aws_cognito_endpoint'],
 			signUpVerificationMethod:
 				config['aws_cognito_sign_up_verification_method'] || 'code',
 		};
