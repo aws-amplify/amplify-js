@@ -747,7 +747,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						};
 						this.awsRealTimeSocket.send(JSON.stringify(gqlInit));
 
-						setTimeout(checkAckOk.bind(this, ackOk), CONNECTION_INIT_TIMEOUT);
+						setTimeout(() => checkAckOk(ackOk), CONNECTION_INIT_TIMEOUT);
 					}
 
 					function checkAckOk(ackOk: boolean) {
