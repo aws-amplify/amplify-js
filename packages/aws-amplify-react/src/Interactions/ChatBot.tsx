@@ -227,8 +227,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				this.doneSpeakingHandler();
 			}
 		);
-		this.listItemsRef.current.scrollTop =
-			this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
 	}
 
 	doneSpeakingHandler() {
@@ -369,8 +368,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			],
 			inputText: '',
 		});
-		this.listItemsRef.current.scrollTop =
-			this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
 	}
 
 	async changeInputText(event) {
