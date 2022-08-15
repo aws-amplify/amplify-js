@@ -1422,11 +1422,11 @@ class DataStore {
 									}
 
 									observer.next(message as SubscriptionMessage<T>);
-								}, 'is it this one?'),
+								}, 'datastore observe message handler'),
 							error: err => observer.error(err),
 							complete: () => observer.complete(),
 						});
-				}, 'datastore observe item')
+				}, 'datastore observe observable initialization')
 				.catch(error => {
 					observer.error(error);
 				});

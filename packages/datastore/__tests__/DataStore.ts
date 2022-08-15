@@ -35,7 +35,6 @@ import {
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
-// let DataStore: typeof DataStoreType;
 
 let { DataStore } = getDataStore() as {
 	DataStore: typeof DataStoreType;
@@ -158,6 +157,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// shedule a promise that will NOT be done for "awhile"
 			let unblock;
+
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
 				'artificial query blocker'

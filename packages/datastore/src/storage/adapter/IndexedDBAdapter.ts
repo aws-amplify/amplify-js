@@ -283,7 +283,6 @@ class IndexedDBAdapter implements Adapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
-		// debugger;
 
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(

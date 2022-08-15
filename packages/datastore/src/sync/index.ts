@@ -517,7 +517,6 @@ export class SyncEngine {
 	private syncQueriesObservable(): Observable<
 		ControlMessageType<ControlMessage>
 	> {
-		// if not online ... wait. what? what is this doing?
 		if (!this.online) {
 			return Observable.of<ControlMessageType<ControlMessage>>();
 		}

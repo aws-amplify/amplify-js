@@ -10,6 +10,14 @@ import {
 	PersistentModelConstructor,
 } from '../src/types';
 
+import {
+	initSchema as _initSchema,
+	DataStore as DataStoreInstance,
+} from '../src/datastore/datastore';
+
+type initSchemaType = typeof _initSchema;
+type DataStoreType = typeof DataStoreInstance;
+
 /**
  * Convenience function to wait for a number of ms.
  *
@@ -381,7 +389,13 @@ export async function expectIsolation(
  * @returns The DataStore instance and models from `testSchema`.
  */
 export function getDataStore() {
-	const { initSchema, DataStore } = require('../src/datastore/datastore');
+	const {
+		initSchema,
+		DataStore,
+	}: {
+		initSchema: initSchemaType;
+		DataStore: DataStoreType;
+	} = require('../src/datastore/datastore');
 
 	const classes = initSchema(testSchema());
 	const {
