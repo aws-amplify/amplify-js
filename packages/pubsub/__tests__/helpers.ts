@@ -117,10 +117,7 @@ export class FakeWebSocketInterface {
 		await new Promise(async res => {
 			// The interface is closed when the socket "hasClosed"
 			this.hasClosed.then(() => res(undefined));
-			await this.waitUntilConnectionStateIn([
-				CS.Disconnected,
-				CS.ConnectionDisrupted,
-			]);
+			await this.waitUntilConnectionStateIn([CS.Disconnected]);
 			res(undefined);
 		});
 	}
