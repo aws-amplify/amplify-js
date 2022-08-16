@@ -727,7 +727,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'error on bound ',
 							expect.objectContaining({
 								message: expect.stringMatching(
-									'Connection timeout: ack from AWSRealTime was not received after'
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
 								),
 							})
 						);
