@@ -10,15 +10,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
 	AWSLexProviderV2Options,
 	InteractionsResponse,
 	InteractionsMessage,
-	RecognizeUtteranceCommandOutputFormatted,
 	AWSLexProviderV2SendResponse,
+	RecognizeUtteranceCommandOutputFormatted,
 } from '../types';
 import {
 	LexRuntimeV2Client,

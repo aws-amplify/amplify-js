@@ -29,8 +29,7 @@ export interface AWSLexProviderV2Options {
 	[key: string]: AWSLexProviderV2Option;
 }
 
-// TODO confirm if this approach is good
-export interface RecognizeUtteranceCommandOutputResp
+export interface RecognizeUtteranceCommandOutputFormatted
 	extends Omit<
 		RecognizeUtteranceCommandOutput,
 		| 'messages'
@@ -48,4 +47,4 @@ export interface RecognizeUtteranceCommandOutputResp
 
 export type AWSLexProviderV2SendResponse =
 	| RecognizeTextCommandOutput
-	| RecognizeUtteranceCommandOutputResp;
+	| RecognizeUtteranceCommandOutputFormatted;
