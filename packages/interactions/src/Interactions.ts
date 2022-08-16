@@ -31,7 +31,7 @@ export class InteractionsClass {
 	 *
 	 * @param {InteractionsOptions} options - Configuration object for Interactions
 	 */
-	constructor(options: InteractionsOptions) {
+	constructor(options: InteractionsOptions = {}) {
 		this._options = options;
 		logger.debug('Interactions Options', this._options);
 		this._pluggables = {};
@@ -44,9 +44,9 @@ export class InteractionsClass {
 	/**
 	 *
 	 * @param {InteractionsOptions} options - Configuration object for Interactions
-	 * @return {Object} - The current configuration
+	 * @return {InteractionsOptions} - The current configuration
 	 */
-	configure(options: InteractionsOptions) {
+	public configure(options: InteractionsOptions): InteractionsOptions {
 		const opt = options ? options.Interactions || options : {};
 		logger.debug('configure Interactions', { opt });
 		this._options = { bots: {}, ...opt, ...opt.Interactions };
@@ -63,35 +63,51 @@ export class InteractionsClass {
 			}
 		}
 
-		// Check if AWSLex provider is already on pluggables
-		if (
-			!this._pluggables.AWSLexProvider &&
-			bots_config &&
-			Object.keys(bots_config)
-				.map(key => bots_config[key])
-				.find(bot => !bot.providerName || bot.providerName === 'AWSLexProvider')
-		) {
-			this._pluggables.AWSLexProvider = new AWSLexProvider();
-		}
-
-		Object.keys(this._pluggables).map(key => {
-			this._pluggables[key].configure(this._options.bots);
+		// configure bots to their specific providers
+		Object.keys(bots_config).forEach(botKey => {
+			const bot = bots_config[botKey];
+			const providerName = bot.providerName || 'AWSLexProvider';
+			if (
+				!this._pluggables.AWSLexProvider &&
+				providerName === 'AWSLexProvider'
+			) {
+				this._pluggables.AWSLexProvider = new AWSLexProvider();
+			} else if (this._pluggables[providerName]) {
+				this._pluggables[providerName].configure({ [bot.name]: bot });
+			} else {
+				logger.debug(
+					`bot ${bot.name} was not configured as ${providerName} provider was not found`
+				);
+			}
 		});
 
 		return this._options;
 	}
 
 	public addPluggable(pluggable: InteractionsProvider) {
-		if (pluggable && pluggable.getCategory() === 'Interactions') {
-			if (!this._pluggables[pluggable.getProviderName()]) {
-				pluggable.configure(this._options.bots);
-				this._pluggables[pluggable.getProviderName()] = pluggable;
-				return;
-			} else {
-				throw new Error(
-					'Bot ' + pluggable.getProviderName() + ' already plugged'
-				);
-			}
+		if (!(pluggable && pluggable.getCategory() === 'Interactions')) {
+			throw new Error('Invalid pluggable');
+		}
+
+		if (!this._pluggables[pluggable.getProviderName()]) {
+			// configure bots for the new plugin
+			Object.keys(this._options.bots)
+				.filter(
+					botKey =>
+						this._options.bots[botKey].providerName ===
+						pluggable.getProviderName()
+				)
+				.forEach(botKey => {
+					const bot = this._options.bots[botKey];
+					pluggable.configure({ [bot.name]: bot });
+				});
+
+			this._pluggables[pluggable.getProviderName()] = pluggable;
+			return;
+		} else {
+			throw new Error(
+				'Pluggable ' + pluggable.getProviderName() + ' already plugged'
+			);
 		}
 	}
 
@@ -112,14 +128,14 @@ export class InteractionsClass {
 		message: string | object
 	): Promise<InteractionsResponse> {
 		if (!this._options.bots || !this._options.bots[botname]) {
-			throw new Error('Bot ' + botname + ' does not exist');
+			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
 
 		const botProvider =
 			this._options.bots[botname].providerName || 'AWSLexProvider';
 
 		if (!this._pluggables[botProvider]) {
-			throw new Error(
+			return Promise.reject(
 				'Bot ' +
 					botProvider +
 					' does not have valid pluggin did you try addPluggable first?'
@@ -128,7 +144,10 @@ export class InteractionsClass {
 		return await this._pluggables[botProvider].sendMessage(botname, message);
 	}
 
-	public onComplete(botname: string, callback: (err, confirmation) => void) {
+	public onComplete(
+		botname: string,
+		callback: (err, confirmation) => void
+	): void {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}
@@ -146,5 +165,5 @@ export class InteractionsClass {
 	}
 }
 
-export const Interactions = new InteractionsClass(null);
+export const Interactions = new InteractionsClass();
 Amplify.register(Interactions);
