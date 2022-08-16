@@ -46,7 +46,7 @@ export interface AuthorizationMachineContext {
 	clientConfig?: CognitoProviderConfig;
 }
 
-export type AuthorizationTypestate =
+export type AuthorizationTypeState =
 	| {
 			value: 'notConfigured';
 			context: AuthorizationMachineContext;

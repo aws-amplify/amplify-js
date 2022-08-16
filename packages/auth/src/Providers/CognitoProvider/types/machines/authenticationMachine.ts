@@ -21,7 +21,7 @@ import { signUpMachine } from '../../machines/signUpMachine';
 export type SignInActorRef = ActorRefFrom<typeof signInMachine>;
 export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 
-export interface AuthMachineContext {
+export interface AuthenticationMachineContext {
 	// TODO: union other valid actor refs here when we add more actors
 	actorRef?: SignInActorRef | SignUpActorRef;
 	config: null | CognitoProviderConfig;
@@ -30,10 +30,10 @@ export interface AuthMachineContext {
 	error?: any;
 }
 
-export type AuthTypestate =
+export type AuthenticationTypeState =
 	| {
 			value: 'notConfigured';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: null;
 				service: null;
 				session: undefined;
@@ -41,40 +41,40 @@ export type AuthTypestate =
 	  }
 	| {
 			value: 'configured';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;
 			};
 	  }
 	| {
 			value: 'signedOut';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;
 			};
 	  }
 	| {
 			value: 'signedIn';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;
 			};
 	  }
 	| {
 			value: 'signingUp';
-			context: AuthMachineContext;
+			context: AuthenticationMachineContext;
 	  }
-	| { value: 'error'; context: AuthMachineContext }
+	| { value: 'error'; context: AuthenticationMachineContext }
 	| {
 			value: 'signedUp';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;
 			};
 	  }
 	| {
 			value: 'signingIn';
-			context: AuthMachineContext & {
+			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;
 			};

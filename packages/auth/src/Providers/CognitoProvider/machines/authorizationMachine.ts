@@ -238,9 +238,9 @@ const authorizationStateMachine: MachineConfig<
 	},
 };
 
-export const authzMachine = createMachine(authorizationStateMachine, {
+export const authorizationMachine = createMachine(authorizationStateMachine, {
 	actions: {
 		stopFetchAuthSessionActor: stop('fetchAuthSessionActor'),
 	},
 });
-export const authzMachineEvents = authorizationMachineModel.events;
+export const authorizationMachineEvents = authorizationMachineModel.events;

@@ -25,14 +25,17 @@ import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
 import { signUpMachine } from './signUpMachine';
 import { SignInParams, SignInWithSocial, SignUpParams } from '../../../types';
-import { AuthMachineContext, AuthTypestate } from '../types/machines';
+import {
+	AuthenticationMachineContext,
+	AuthenticationTypeState,
+} from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
 
-async function checkActiveSession(context: AuthMachineContext) {
+async function checkActiveSession(context: AuthenticationMachineContext) {
 	try {
 		if (
 			!context.config?.identityPoolId ||
@@ -52,10 +55,11 @@ export const authenticationMachineModel = createModel(
 	{
 		config: null,
 		service: null,
-	} as AuthMachineContext,
+	} as AuthenticationMachineContext,
 	{
+		id: 'authenticationStateMachine',
 		events: {
-			configure: (config: CognitoProviderConfig) => ({ config }),
+			configure: () => ({}),
 			initializedSignedIn: () => ({}),
 			initializedSignedOut: () => ({}),
 			cancelSignUp: () => ({}),
@@ -79,15 +83,15 @@ export const authenticationMachineModel = createModel(
 	}
 );
 
-type AuthEvents = EventFrom<typeof authenticationMachineModel>;
+export type AuthenticationEvents = EventFrom<typeof authenticationMachineModel>;
 
 const authenticationStateMachineActions: Record<
 	string,
-	AssignAction<AuthMachineContext, any>
+	AssignAction<AuthenticationMachineContext, any>
 > = {
 	assignConfig: authenticationMachineModel.assign(
 		{
-			config: (_context, event) => event.config,
+			config: (_context, event) => _context.config,
 		},
 		'configure'
 	),
@@ -95,10 +99,10 @@ const authenticationStateMachineActions: Record<
 		{
 			service: (_context, event) =>
 				new CognitoService({
-					region: event.config.region,
-					userPoolId: event.config.userPoolId,
-					identityPoolId: event.config.identityPoolId,
-					clientId: event.config.clientId,
+					region: _context?.config?.region || '',
+					userPoolId: _context?.config?.userPoolId || '',
+					identityPoolId: _context?.config?.identityPoolId || '',
+					clientId: _context?.config?.clientId || '',
 				}),
 		},
 		'configure'
@@ -185,11 +189,11 @@ const authenticationStateMachineActions: Record<
 // TODO: How to make this more easily extensible?
 // AuthenticationState state machine
 const authenticationStateMachine: MachineConfig<
-	AuthMachineContext,
+	AuthenticationMachineContext,
 	any,
-	AuthEvents
+	AuthenticationEvents
 > = {
-	id: 'authenticationMachine',
+	id: 'authenticationStateMachine',
 	initial: 'notConfigured',
 	context: authenticationMachineModel.initialContext,
 	states: {
@@ -250,13 +254,13 @@ const authenticationStateMachine: MachineConfig<
 			onEntry: [authenticationStateMachineActions.spawnSignUpActor],
 			on: {
 				cancelSignUp: {
-					target: '#authenticationMachine.signedOut',
+					target: '#authenticationStateMachine.signedOut',
 				},
 				error: {
-					target: '#authenticationMachine.error',
+					target: '#authenticationStateMachine.error',
 				},
 				signUpSuccessful: {
-					target: '#authenticationMachine.signedUp',
+					target: '#authenticationStateMachine.signedUp',
 				},
 			},
 			onExit: [
@@ -277,10 +281,10 @@ const authenticationStateMachine: MachineConfig<
 			onEntry: [authenticationStateMachineActions.spawnSignInActor],
 			on: {
 				cancelSignIn: {
-					target: '#authenticationMachine.signedOut',
+					target: '#authenticationStateMachine.signedOut',
 				},
 				error: {
-					target: '#authenticationMachine.error',
+					target: '#authenticationStateMachine.error',
 					actions: [
 						assign((_context, event) => ({
 							error: event.error,
@@ -288,7 +292,7 @@ const authenticationStateMachine: MachineConfig<
 					],
 				},
 				signInSuccessful: {
-					target: '#authenticationMachine.signedIn',
+					target: '#authenticationStateMachine.signedIn',
 				},
 			},
 			onExit: ['stopSignInActor'],
@@ -310,10 +314,10 @@ const authenticationStateMachine: MachineConfig<
 		},
 	},
 };
-export const authMachine = createMachine<
-	AuthMachineContext,
-	AuthEvents,
-	AuthTypestate
+export const authenticationMachine = createMachine<
+	AuthenticationMachineContext,
+	AuthenticationEvents,
+	AuthenticationTypeState
 >(authenticationStateMachine, {
 	actions: {
 		stopSignInActor: stop(signInActorName),
@@ -338,4 +342,4 @@ export const authMachine = createMachine<
 	},
 });
 
-export const authMachineEvents = authenticationMachineModel.events;
+export const authenticationMachineEvents = authenticationMachineModel.events;

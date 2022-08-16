@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,6 +12,8 @@
  * and limitations under the License.
  */
 
+
+export * from './authMachine';
 export * from './signInMachine';
 export * from './authenticationMachine';
 export * from './oAuthSignInMachine';
