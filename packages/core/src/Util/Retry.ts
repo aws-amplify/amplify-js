@@ -57,7 +57,13 @@ export async function retry(
 
 const MAX_DELAY_MS = 5 * 60 * 1000;
 
-function jitteredBackoff(maxDelayMs: number): DelayFunction {
+/**
+ * @private
+ * Internal use of Amplify only
+ */
+export function jitteredBackoff(
+	maxDelayMs: number = MAX_DELAY_MS
+): DelayFunction {
 	const BASE_TIME_MS = 100;
 	const JITTER_FACTOR = 100;
 

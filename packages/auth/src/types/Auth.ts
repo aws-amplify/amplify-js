@@ -25,6 +25,7 @@ export interface SignUpParams {
 	attributes?: object;
 	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
+	autoSignIn?: AutoSignInOptions;
 }
 
 export interface AuthCache {
@@ -50,6 +51,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
+	signUpVerificationMethod?: 'code' | 'link';
 }
 
 export enum CognitoHostedUIIdentityProvider {
@@ -201,6 +203,7 @@ export enum AuthErrorTypes {
 	Default = 'default',
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
+	AutoSignInError = 'autoSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
@@ -226,4 +229,18 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 export interface IAuthDevice {
 	id: string;
 	name: string;
+}
+
+export interface AutoSignInOptions {
+	enabled: boolean;
+	clientMetaData?: ClientMetaData;
+	validationData?: { [key: string]: any };
+}
+
+export enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
 }

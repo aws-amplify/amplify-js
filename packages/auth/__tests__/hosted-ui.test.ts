@@ -157,7 +157,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { Hub, Credentials, StorageHelper, JS } from '@aws-amplify/core';
+import * as AmplifyCore from '@aws-amplify/core';
+const { Hub, Credentials, StorageHelper } = AmplifyCore;
 
 const authOptionsWithOAuth: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -263,7 +264,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
@@ -300,11 +301,9 @@ describe('Hosted UI tests', () => {
 
 		expect.assertions(2);
 
-		try {
-			await auth.signOut({ global: true });
-		} catch (err) {
-			expect(err).toEqual('Signout timeout fail');
-		}
+		await expect(auth.signOut({ global: true })).rejects.toThrowError(
+			'Signout timeout fail'
+		);
 
 		expect(spyGlobalSignOut).toBeCalled();
 	});
@@ -319,7 +318,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -373,7 +372,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -419,7 +418,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
+		jest.spyOn(AmplifyCore, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
@@ -450,11 +449,9 @@ describe('Hosted UI tests', () => {
 
 		expect.assertions(1);
 
-		try {
-			await auth.signOut({ global: false });
-		} catch (err) {
-			expect(err).toEqual('Signout timeout fail');
-		}
+		await expect(auth.signOut({ global: false })).rejects.toThrowError(
+			'Signout timeout fail'
+		);
 	});
 
 	test('globalSignOut hosted ui, url opener', done => {
@@ -519,17 +516,15 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const urlOpener = jest.fn(
-			(url: string): Promise<any> => {
-				return new Promise(() => {
-					expect(url).toEqual(
-						'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
-					);
+		const urlOpener = jest.fn((url: string): Promise<any> => {
+			return new Promise(() => {
+				expect(url).toEqual(
+					'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
+				);
 
-					done();
-				});
-			}
-		);
+				done();
+			});
+		});
 		const options = {
 			...authOptionsWithOAuth,
 		};

@@ -21,6 +21,7 @@ import {
 	TypeConstructorMap,
 	ModelPredicate,
 	AuthModeStrategy,
+	AmplifyContext,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -113,13 +114,12 @@ export class SyncEngine {
 		private readonly userModelClasses: TypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly maxRecordsToSync: number,
-		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly amplifyContext: AmplifyContext
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -138,14 +138,20 @@ export class SyncEngine {
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,
@@ -155,9 +161,11 @@ export class SyncEngine {
 			MutationEvent,
 			this.amplifyConfig,
 			this.authModeStrategy,
+			errorHandler,
 			conflictHandler,
-			errorHandler
+			this.amplifyContext
 		);
+
 		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
@@ -189,11 +197,9 @@ export class SyncEngine {
 							});
 
 							let ctlSubsObservable: Observable<CONTROL_MSG>;
-							let dataSubsObservable: Observable<[
-								TransformerMutationType,
-								SchemaModel,
-								PersistentModel
-							]>;
+							let dataSubsObservable: Observable<
+								[TransformerMutationType, SchemaModel, PersistentModel]
+							>;
 
 							if (isNode) {
 								logger.warn(
@@ -244,8 +250,8 @@ export class SyncEngine {
 							//#region Base & Sync queries
 							try {
 								await new Promise((resolve, reject) => {
-									const syncQuerySubscription = this.syncQueriesObservable().subscribe(
-										{
+									const syncQuerySubscription =
+										this.syncQueriesObservable().subscribe({
 											next: message => {
 												const { type } = message;
 
@@ -263,8 +269,7 @@ export class SyncEngine {
 											error: error => {
 												reject(error);
 											},
-										}
-									);
+										});
 
 									if (syncQuerySubscription) {
 										subscriptions.push(syncQuerySubscription);
@@ -295,8 +300,7 @@ export class SyncEngine {
 										);
 
 										observer.next({
-											type:
-												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+											type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
 											data: {
 												model: modelConstructor,
 												element: model,
@@ -363,9 +367,8 @@ export class SyncEngine {
 					})
 					.subscribe({
 						next: async ({ opType, model, element, condition }) => {
-							const namespace = this.schema.namespaces[
-								this.namespaceResolver(model)
-							];
+							const namespace =
+								this.schema.namespaces[this.namespaceResolver(model)];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
@@ -603,16 +606,15 @@ export class SyncEngine {
 														isFullSync ? startedAt : lastFullSync
 												  );
 
-										modelMetadata = (this.modelClasses
-											.ModelMetadata as PersistentModelConstructor<any>).copyOf(
-											modelMetadata,
-											draft => {
-												draft.lastSync = startedAt;
-												draft.lastFullSync = isFullSync
-													? startedAt
-													: modelMetadata.lastFullSync;
-											}
-										);
+										modelMetadata = (
+											this.modelClasses
+												.ModelMetadata as PersistentModelConstructor<any>
+										).copyOf(modelMetadata, draft => {
+											draft.lastSync = startedAt;
+											draft.lastFullSync = isFullSync
+												? startedAt
+												: modelMetadata.lastFullSync;
+										});
 
 										await this.storage.save(
 											modelMetadata,
@@ -757,9 +759,9 @@ export class SyncEngine {
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
-					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
-						any
-					>).copyOf(modelMetadata, draft => {
+					(
+						this.modelClasses.ModelMetadata as PersistentModelConstructor<any>
+					).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
@@ -819,9 +821,8 @@ export class SyncEngine {
 	): SchemaModel {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const modelDefinition = this.schema.namespaces[namespaceName].models[
-			modelConstructor.name
-		];
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
 
 		return modelDefinition;
 	}

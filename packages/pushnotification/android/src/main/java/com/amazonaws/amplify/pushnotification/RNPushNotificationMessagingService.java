@@ -15,26 +15,15 @@ package com.amazonaws.amplify.pushnotification;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.Map;
 import java.util.List;
 import java.security.SecureRandom;
-
-import org.json.JSONObject;
-import org.json.JSONException;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -46,8 +35,6 @@ import com.facebook.react.bridge.ReactContext;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationHelper;
-import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationCommon;
-
 
 public class RNPushNotificationMessagingService extends FirebaseMessagingService {
     private static final String LOG_TAG = "RNPushNotificationMessagingService";

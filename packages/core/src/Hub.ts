@@ -63,6 +63,7 @@ export class HubClass {
 		'interactions',
 		'pubsub',
 		'storage',
+		'ui',
 		'xr',
 	];
 
@@ -208,7 +209,7 @@ export class HubClass {
 }
 
 /*We export a __default__ instance of HubClass to use it as a 
-psuedo Singleton for the main messaging bus, however you can still create
+pseudo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
 export const Hub = new HubClass('__default__');
 /**
