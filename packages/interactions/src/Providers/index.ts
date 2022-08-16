@@ -11,4 +11,5 @@
  * and limitations under the License.
  */
 export * from './AWSLexProvider';
+export * from './AWSLexProviderV2';
 export * from './InteractionsProvider';

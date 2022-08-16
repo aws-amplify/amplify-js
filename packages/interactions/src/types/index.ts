@@ -12,4 +12,5 @@
  */
 export * from './Interactions';
 export * from './Provider';
+export * from './Providers/AWSLexProviderV2';
 export * from './Response';
