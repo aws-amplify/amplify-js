@@ -754,7 +754,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 								);
 								rej(
 									new Error(
-										`Connection timeout: ack from AWSRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`
+										`Connection timeout: ack from AWSAppSyncRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`
 									)
 								);
 							}
