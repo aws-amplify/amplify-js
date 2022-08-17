@@ -44,7 +44,7 @@ import {
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
-} from './constants';
+} from '../constants';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
