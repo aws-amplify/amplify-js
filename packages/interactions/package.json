@@ -41,10 +41,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "4.6.1",
-		"@aws-sdk/client-lex-runtime-service": "3.6.1",
-		"@aws-sdk/client-lex-runtime-v2": "3.31.0",
-		"fflate": "^0.7.3"
+		"@aws-amplify/core": "4.7.0",
+		"@aws-sdk/client-lex-runtime-service": "3.6.1"
 	},
 	"jest": {
 		"globals": {
