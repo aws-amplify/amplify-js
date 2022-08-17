@@ -62,6 +62,11 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return super.configure(config);
 	}
 
+	/**
+	 * This is used internally by 'sendMessage' to call onComplete callback
+	 * for a bot if configured
+	 * @deprecated
+	 */
 	reportBotStatus(
 		data: PostTextCommandOutput | PostContentCommandOutput,
 		botname: string
