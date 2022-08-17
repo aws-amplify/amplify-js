@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.9...@aws-amplify/pubsub@4.4.10) (2022-08-16)
+
+
+### Bug Fixes
+
+* **pubsub:** Add distinct RN Reachibility implementation ([#10175](https://github.com/aws-amplify/amplify-js/issues/10175)) ([5f427f3](https://github.com/aws-amplify/amplify-js/commit/5f427f3ae47d76231a81084c216527b7fabd668a))
+
+
+
+
+
 ## [4.4.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.8...@aws-amplify/pubsub@4.4.9) (2022-08-01)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
