@@ -60,6 +60,7 @@
 	"devDependencies": {
 		"@babel/cli": "7.17.0",
 		"@babel/core": "7.17.2",
+		"@types/lodash": "4.14.182",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
 		"@types/jest": "^24.0.18",
