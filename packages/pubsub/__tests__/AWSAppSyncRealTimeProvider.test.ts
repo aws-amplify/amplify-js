@@ -14,8 +14,8 @@ import { Reachability, Credentials, Logger, Signer } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 
-import { MESSAGE_TYPES } from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
-import * as constants from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
+import { MESSAGE_TYPES } from '../src/Providers/constants';
+import * as constants from '../src/Providers/constants';
 
 import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
 import { ConnectionState as CS } from '../src';
