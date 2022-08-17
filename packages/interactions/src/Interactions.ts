@@ -67,12 +67,17 @@ export class InteractionsClass {
 		Object.keys(bots_config).forEach(botKey => {
 			const bot = bots_config[botKey];
 			const providerName = bot.providerName || 'AWSLexProvider';
+
+			// add default provider if required
 			if (
 				!this._pluggables.AWSLexProvider &&
 				providerName === 'AWSLexProvider'
 			) {
 				this._pluggables.AWSLexProvider = new AWSLexProvider();
-			} else if (this._pluggables[providerName]) {
+			}
+
+			// configure bot with it's respective provider
+			if (this._pluggables[providerName]) {
 				this._pluggables[providerName].configure({ [bot.name]: bot });
 			} else {
 				logger.debug(
