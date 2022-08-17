@@ -469,7 +469,8 @@ export default class CognitoUser {
 			let userAttributes = null;
 			let rawRequiredAttributes = null;
 			const requiredAttributes = [];
-			const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+			const userAttributesPrefix =
+				authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 			if (challengeParameters) {
 				userAttributes = JSON.parse(
@@ -589,7 +590,8 @@ export default class CognitoUser {
 		const authenticationHelper = new AuthenticationHelper(
 			this.pool.getUserPoolId().split('_')[1]
 		);
-		const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+		const userAttributesPrefix =
+			authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 		const finalUserAttributes = {};
 		if (requiredAttributeData) {
@@ -1319,6 +1321,82 @@ export default class CognitoUser {
 			return callback(new Error('User is not authenticated'), null);
 		}
 
+		if (attributeList.includes('phone_number')) {
+			const clientMetaData = null;
+			const params = { bypassCache: true, clientMetaData };
+			let valid = false;
+			let ret = null;
+			try {
+				data = this.getUserData(async (err, data) => {
+					if (err) {
+						return err;
+					} else {
+						valid = true;
+						return data;
+					}
+				}, params);
+			} catch (error) {
+				return callback(new Error('Unable to get user data', error));
+			}
+
+			if (valid) {
+				const preferredMFA = data.PreferredMfaSetting;
+				// if the user has used Auth.setPreferredMFA() to setup the mfa type
+				// then the "PreferredMfaSetting" would exist in the response
+				if (preferredMFA) {
+					ret = preferredMFA;
+				} else {
+					// if mfaList exists but empty, then its noMFA
+					const mfaList = data.UserMFASettingList;
+					if (!mfaList) {
+						// if SMS was enabled by using Auth.enableSMS(),
+						// the response would contain MFAOptions
+						// as for now Cognito only supports for SMS, so we will say it is 'SMS_MFA'
+						// if it does not exist, then it should be NOMFA
+						const MFAOptions = data.MFAOptions;
+						if (MFAOptions) {
+							ret = 'SMS_MFA';
+						} else {
+							ret = 'NOMFA';
+						}
+					} else if (mfaList.length === 0) {
+						ret = 'NOMFA';
+					} else {
+						ret = 'NULL'; //changed
+					}
+				}
+
+				let MFAtype = ret;
+
+				if (MFAtype == 'SMS_MFA' || MFAtype == 'SMS') {
+					let totpMfaSettings = null;
+					let smsMfaSettings = {
+						PreferredMfa: false,
+						Enabled: false,
+					};
+					try {
+						this.setUserMfaPreference(
+							smsMfaSettings,
+							totpMfaSettings,
+							(err, result) => {
+								if (err) {
+									return err;
+								}
+								return;
+							}
+						);
+					} catch (error) {
+						return callback(
+							new Error(
+								'Unable to disable SMS_MFA so phone_number attribute can be disabled',
+								error
+							)
+						);
+					}
+				}
+			}
+		}
+
 		this.client.request(
 			'DeleteUserAttributes',
 			{
@@ -1485,9 +1563,8 @@ export default class CognitoUser {
 				) {
 					authenticationResult.RefreshToken = refreshToken.getToken();
 				}
-				this.signInUserSession = this.getCognitoUserSession(
-					authenticationResult
-				);
+				this.signInUserSession =
+					this.getCognitoUserSession(authenticationResult);
 				this.cacheTokens();
 				return wrappedCallback(null, this.signInUserSession);
 			}
