@@ -1669,20 +1669,20 @@ workflows:
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
-    when:
-      and:
-        - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - equal: [canaries, << pipeline.schedule.name >>]
     jobs:
       ## Web
       # React
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: React - latest
           npx-command: create-react-app
           framework: react
           main-file-path: src/App.js
           build-dir: build
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: React - next
           npx-command: create-react-app@next
           framework: react
@@ -1690,6 +1690,8 @@ workflows:
           build-dir: build
       # Next
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Next.js - latest
           npx-command: create-next-app
           framework: nextjs
@@ -1698,6 +1700,8 @@ workflows:
           build-dir: build
           ssr: true
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Next.js - next
           npx-command: create-next-app@canary
           framework: nextjs
@@ -1707,6 +1711,8 @@ workflows:
           ssr: true
       # Angular
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Angular - latest
           npx-command: -p @angular/cli ng new --defaults true --force
           framework: angular
@@ -1714,6 +1720,8 @@ workflows:
           dev-port: 4200
           build-dir: dist
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Angular - next
           npx-command: -p @angular/cli@next ng new --defaults true --force
           framework: angular
@@ -1722,6 +1730,8 @@ workflows:
           build-dir: dist
       # Vue
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Vue - latest
           npx-command: -p @vue/cli vue create --default --force --registry "https://registry.npmmirror.com"
           framework: vue
@@ -1730,6 +1740,8 @@ workflows:
           dev-port: 8080
           build-dir: dist
       - getting-started-smoke-test/web:
+          context:
+            - cloudwatch-monitoring
           name: Vue - next
           npx-command: -p @vue/cli@next vue create --default --force --registry "https://registry.npmmirror.com"
           framework: vue
@@ -1740,12 +1752,16 @@ workflows:
       ## Mobile
       # RN CLI
       - getting-started-smoke-test/rn-ios:
+          context:
+            - cloudwatch-monitoring
           name: RN iOS - latest
           framework: rn_ios
           main-file-path: ./App.js
           # TODO: delete next line after https://github.com/react-native-picker/picker/issues/425 is resolved
           tag: 0.68.2
       - getting-started-smoke-test/rn-android:
+          context:
+            - cloudwatch-monitoring
           name: RN Android - latest
           framework: rn_android
           main-file-path: ./App.js
@@ -1765,10 +1781,14 @@ workflows:
       #     tag: next
       # Expo
       - getting-started-smoke-test/expo:
+          context:
+            - cloudwatch-monitoring
           name: Expo - latest
           framework: expo_ios
           main-file-path: ./App.js
       - getting-started-smoke-test/expo:
+          context:
+            - cloudwatch-monitoring
           name: Expo - next
           framework: expo_ios
           main-file-path: ./App.js
@@ -1777,6 +1797,9 @@ workflows:
 # Start Canary Orb
 orbs:
   getting-started-smoke-test:
+    orbs:
+      aws-cli: circleci/aws-cli@3.1.1
+
     executors:
       web-executor:
         docker:
@@ -1839,7 +1862,7 @@ orbs:
                     exit 1
                   fi
                 }
-                eval << parameters.pre-command >> 
+                eval << parameters.pre-command >>
                 retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 
@@ -1870,6 +1893,9 @@ orbs:
         <<: *common_env_vars
         working_directory: ~/project/amplify-getting-started-<< parameters.framework >>
         steps:
+          - aws-cli/setup:
+              role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
+              role-arn: ${AWS_ROLE_ARN}
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../
@@ -1898,6 +1924,12 @@ orbs:
                 - run-with-retry:
                     label: Run in Prod Mode
                     command: npm run build && (npm start & wait-on http://localhost:3000 -t $MAX_WAIT_ON_TIMEOUT)
+          - run:
+              name: Invoking lambda
+              command: |
+                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
+                echo $payload
+                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
 
       rn-ios:
         parameters:
@@ -1919,6 +1951,9 @@ orbs:
         resource_class: large
         working_directory: ~/amplify_getting_started_<< parameters.framework >>
         steps:
+          - aws-cli/setup:
+              role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
+              role-arn: ${AWS_ROLE_ARN}
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
@@ -1942,6 +1977,12 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run ios
+          - run:
+              name: Invoking lambda
+              command: |
+                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
+                echo $payload
+                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
 
       rn-android:
         parameters:
@@ -1955,6 +1996,9 @@ orbs:
         executor: android-executor
         working_directory: ~/amplify_getting_started_<< parameters.framework >>
         steps:
+          - aws-cli/setup:
+              role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
+              role-arn: ${AWS_ROLE_ARN}
           - run:
               name: Create avd
               command: |
@@ -1997,6 +2041,12 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run android
+          - run:
+              name: Invoking lambda
+              command: |
+                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
+                echo $payload
+                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
 
       expo:
         parameters:
@@ -2011,6 +2061,9 @@ orbs:
         <<: *common_env_vars
         working_directory: ~/amplify_getting_started_<< parameters.framework >>
         steps:
+          - aws-cli/setup:
+              role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
+              role-arn: ${AWS_ROLE_ARN}
           - run-with-retry:
               label: Install Expo
               command: npm i -g --prefix=$HOME/.local expo-cli@<< parameters.tag >> wait-on
@@ -2032,4 +2085,11 @@ orbs:
           - run-with-retry:
               label: Start App
               command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
+          - run:
+              name: Invoking lambda
+              command: |
+                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
+                echo $payload
+                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
+
 # End Canary Orb
