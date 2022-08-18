@@ -12,14 +12,8 @@
  */
 package com.amazonaws.amplify.pushnotification.modules;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Set;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -44,7 +38,7 @@ public class RNPushNotificationJsDelivery {
 
     public void emitTokenReceived(Bundle bundle) {
         String bundleString = RNPushNotificationCommon.convertJSON(bundle);
-        
+
         WritableMap params = Arguments.createMap();
         params.putString("dataJSON", bundleString);
         Log.i("emit", "token registration");

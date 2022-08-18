@@ -6,6 +6,89 @@ import {
 	SchemaModel,
 } from '../src/types';
 
+/**
+ * Convenience function to wait for a number of ms.
+ *
+ * Intended as a cheap way to wait for async operations to settle.
+ *
+ * @param ms number of ms to pause for
+ */
+export async function pause(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Case insensitive regex that matches GUID's and UUID's.
+ * It does NOT permit whitespace on either end of the string. The caller must `trim()` first as-needed.
+ */
+export const UUID_REGEX =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Tests a mutation for expected values. If values are present on the mutation
+ * that are not expected, throws an error. Expected values can be listed as a
+ * literal value, a regular expression, or a function (v => bool).
+ *
+ * `id` is automatically tested and expected to be a UUID unless an alternative
+ *  matcher is provided.
+ *
+ * @param mutation A mutation record to check
+ * @param values An object for specific values to test. Format of key: value | regex | v => bool
+ */
+export function expectMutation(mutation, values) {
+	const data = JSON.parse(mutation.data);
+	const matchers = {
+		id: UUID_REGEX,
+		...values,
+	};
+	const errors = [
+		...errorsFrom(data, matchers),
+		...extraFieldsFrom(data, matchers).map(f => `Unexpected field: ${f}`),
+	];
+	if (errors.length > 0) {
+		throw new Error(
+			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`
+		);
+	}
+}
+
+/**
+ * Checks an object for adherence to expected values from a set of matchers.
+ * Returns a list of erroneous key-value pairs.
+ * @param data the object to validate.
+ * @param matchers the matcher functions/values/regexes to test the object with
+ */
+export function errorsFrom(data, matchers) {
+	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
+		const value = data[property];
+		if (
+			!(
+				(typeof matcher === 'function' && matcher(value)) ||
+				(matcher instanceof RegExp && matcher.test(value)) ||
+				value === matcher
+			)
+		) {
+			errors.push(
+				`Property '${property}' value "${value}" does not match "${matcher}"`
+			);
+		}
+		return errors;
+	}, []);
+}
+
+/**
+ * Checks to see if a given object contains any extra, unexpected properties.
+ * If any are present, it returns the list of unexpectd fields.
+ *
+ * @param data the object that MIGHT contain extra fields.
+ * @param template the authorative template object.
+ */
+export function extraFieldsFrom(data, template) {
+	const fields = Object.keys(data);
+	const expectedFields = new Set(Object.keys(template));
+	return fields.filter(name => !expectedFields.has(name));
+}
+
 export declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
@@ -909,5 +992,15 @@ export function internalTestSchema(): InternalSchema {
 			},
 		},
 		version: '1',
+	};
+}
+
+export function smallTestSchema(): Schema {
+	const schema = testSchema();
+	return {
+		...schema,
+		models: {
+			Model: schema.models.Model,
+		},
 	};
 }

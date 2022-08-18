@@ -41,13 +41,7 @@ const hash = function(src) {
  */
 const escape_RFC3986 = function(component) {
 	return component.replace(/[!'()*]/g, function(c) {
-		return (
-			'%' +
-			c
-				.charCodeAt(0)
-				.toString(16)
-				.toUpperCase()
-		);
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 	});
 };
 
@@ -289,6 +283,12 @@ export class Signer {
     */
 	static sign(request, access_info, service_info = null) {
 		request.headers = request.headers || {};
+
+		if (request.body && !request.data) {
+			throw new Error(
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+			);
+		}
 
 		// datetime string and date string
 		const dt = DateUtils.getDateWithClockOffset(),

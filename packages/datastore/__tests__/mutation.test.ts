@@ -1,3 +1,4 @@
+const mockRestPost = jest.fn();
 import {
 	MutationProcessor,
 	safeJitteredBackoff,
@@ -16,14 +17,21 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
+import { Constants } from '@aws-amplify/core';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
+let axiosError;
 
-describe('Jittered retry', () => {
+beforeEach(() => {
+	axiosError = timeoutError;
+});
+
+describe('Jittered backoff', () => {
 	it('should progress exponentially until some limit', () => {
 		const COUNT = 13;
 
@@ -141,11 +149,103 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual(100);
 		});
 	});
+	describe('Call to rest api', () => {
+		it('Should send a user agent with the datastore suffix the rest api request', async () => {
+			jest.spyOn(mutationProcessor, 'resume');
+			await mutationProcessor.resume();
+
+			expect(mockRestPost).toBeCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+					}),
+				})
+			);
+		});
+	});
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
 });
 
+describe('error handler', () => {
+	let mutationProcessor: MutationProcessor;
+	const errorHandler = jest.fn();
+
+	beforeEach(async () => {
+		errorHandler.mockClear();
+		mutationProcessor = await instantiateMutationProcessor({ errorHandler });
+	});
+
+	test('newly required field', async () => {
+		axiosError = {
+			message: "Variable 'name' has coerced Null value for NonNull type",
+			name: 'Error',
+			code: '',
+			errorType: '',
+		};
+		await mutationProcessor.resume();
+		expect(errorHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				operation: 'Create',
+				process: 'mutate',
+				errorType: 'BadRecord',
+			})
+		);
+	});
+
+	test('connection timout', async () => {
+		axiosError = {
+			message: 'Connection failed: Connection Timeout',
+			name: 'Error',
+			code: '',
+			errorType: '',
+		};
+		await mutationProcessor.resume();
+		expect(errorHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				operation: 'Create',
+				process: 'mutate',
+				errorType: 'Transient',
+			})
+		);
+	});
+
+	test('server error', async () => {
+		axiosError = {
+			message: 'Error: Request failed with status code 500',
+			name: 'Error',
+			code: '',
+			errorType: '',
+		};
+		await mutationProcessor.resume();
+		expect(errorHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				operation: 'Create',
+				process: 'mutate',
+				errorType: 'Transient',
+			})
+		);
+	});
+
+	test('no auth decorator', async () => {
+		axiosError = {
+			message: 'Request failed with status code 401',
+			name: 'Error',
+			code: '',
+			errorType: '',
+		};
+		await mutationProcessor.resume();
+		expect(errorHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				operation: 'Create',
+				process: 'mutate',
+				errorType: 'Unauthorized',
+			})
+		);
+	});
+});
 // Mocking restClient.post to throw the error we expect
 // when experiencing poor network conditions
 jest.mock('@aws-amplify/api-rest', () => {
@@ -153,7 +253,7 @@ jest.mock('@aws-amplify/api-rest', () => {
 		...jest.requireActual('@aws-amplify/api-rest'),
 		RestClient() {
 			return {
-				post: jest.fn().mockImplementation(() => {
+				post: mockRestPost.mockImplementation(() => {
 					return Promise.reject(axiosError);
 				}),
 				getCancellableToken: () => {},
@@ -181,6 +281,7 @@ jest.mock('@aws-amplify/api', () => {
 	graphqlInstance.configure(awsconfig);
 
 	return {
+		...jest.requireActual('@aws-amplify/api'),
 		graphql: graphqlInstance.graphql.bind(graphqlInstance),
 	};
 });
@@ -202,7 +303,9 @@ jest.mock('@aws-amplify/core', () => {
 // Mocking just enough dependencies for us to be able to
 // instantiate a working MutationProcessor
 // includes functional mocked outbox containing a single MutationEvent
-async function instantiateMutationProcessor() {
+async function instantiateMutationProcessor({
+	errorHandler = () => null,
+} = {}) {
 	let schema: InternalSchema = internalTestSchema();
 
 	jest.doMock('../src/sync/', () => ({
@@ -266,7 +369,10 @@ async function instantiateMutationProcessor() {
 			aws_appsync_authenticationType: 'API_KEY',
 			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 		},
-		() => null
+		() => null,
+		errorHandler,
+		() => null as any,
+		{} as any
 	);
 
 	(mutationProcessor as any).observer = true;
@@ -296,7 +402,7 @@ async function createMutationEvent(model, opType): Promise<MutationEvent> {
 }
 
 // expected error when experiencing 100% packet loss
-const axiosError = {
+const timeoutError = {
 	message: 'timeout of 0ms exceeded',
 	name: 'Error',
 	stack:

@@ -110,6 +110,9 @@ export const authErrorMessages: AuthErrorMessages = {
 	networkError: {
 		message: AuthErrorStrings.NETWORK_ERROR,
 	},
+	autoSignInError: {
+		message: AuthErrorStrings.AUTOSIGNIN_ERROR,
+	},
 	default: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 	},

@@ -14,27 +14,19 @@
 package com.amazonaws.amplify.pushnotification;
 
 import android.util.Log;
-import android.os.Bundle;
 import android.app.Application;
 import android.content.IntentFilter;
-import android.content.BroadcastReceiver;
 
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
-
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
 import androidx.annotation.NonNull;
 
-import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver;
 
 public class RNPushNotificationModule extends ReactContextBaseJavaModule {

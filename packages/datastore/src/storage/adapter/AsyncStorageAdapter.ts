@@ -399,6 +399,7 @@ export class AsyncStorageAdapter implements Adapter {
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
+
 			if (condition) {
 				const fromDB = await this.db.get(model.id, storeName);
 

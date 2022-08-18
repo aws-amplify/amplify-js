@@ -13,7 +13,16 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Comment, Model, Post, Metadata, testSchema } from './helpers';
+import {
+	Comment,
+	Model,
+	Post,
+	Profile,
+	Metadata,
+	User,
+	testSchema,
+	pause,
+} from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -39,6 +48,20 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			Post: PersistentModelConstructor<Post>;
 		});
 		await DataStore.clear();
+	});
+
+	test('clear without starting', async () => {
+		await DataStore.save(
+			new Model({
+				field1: 'Smurfs',
+				optionalField1: 'More Smurfs',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+		expect(await DataStore.query(Model)).toHaveLength(1);
+		await DataStore.stop();
+		await DataStore.clear();
+		expect(await DataStore.query(Model)).toHaveLength(0);
 	});
 
 	test('subscribe to all models', async done => {
@@ -251,14 +274,24 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 	let Comment: PersistentModelConstructor<Comment>;
 	let Post: PersistentModelConstructor<Post>;
+	let User: PersistentModelConstructor<User>;
+	let Profile: PersistentModelConstructor<Profile>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
-		({ Comment, Post } = classes as {
+		({ Comment, Post, User, Profile } = classes as {
 			Comment: PersistentModelConstructor<Comment>;
 			Post: PersistentModelConstructor<Post>;
+			User: PersistentModelConstructor<User>;
+			Profile: PersistentModelConstructor<Profile>;
 		});
+
+		// This prevents pollution between tests. DataStore may have processes in
+		// flight that need to settle. If we stampede ahead before we do this,
+		// we can end up in very goofy states when we try to re-init the schema.
+		await DataStore.stop();
+		await DataStore.start();
 		await DataStore.clear();
 
 		// Fully faking or mocking the sync engine would be pretty significant.
@@ -335,25 +368,275 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}
 	});
 
-	test('publishes preexisting local data AND follows up with subsequent saves', async done => {
+	test('can filter items', async done => {
+		try {
+			const expecteds = [0, 5];
+
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (const item of items) {
+					expect(item.title).toMatch('include');
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	// Fix for: https://github.com/aws-amplify/amplify-js/issues/9325
+	test('can remove newly-unmatched items out of the snapshot on subsequent saves', async done => {
+		try {
+			// watch for post snapshots.
+			// the first "real" snapshot should include all five posts with "include"
+			// in the title. after the update to change ONE of those posts to "omit" instead,
+			// we should see a snapshot of 4 posts with the updated post removed.
+			const expecteds = [0, 4, 3];
+			const sub = DataStore.observeQuery(Post, p =>
+				p.title('contains', 'include')
+			).subscribe(async ({ items }) => {
+				const expected = expecteds.shift() || 0;
+				expect(items.length).toBe(expected);
+
+				for (const item of items) {
+					expect(item.title).toMatch('include');
+				}
+
+				if (expecteds.length === 1) {
+					// After the second snapshot arrives, changes a single post from
+					//   "the post # - include"
+					// to
+					//   "edited post - omit"
+
+					// This is intended to trigger a new, after-sync'd snapshot.
+					// This sanity-checks helps confirms we're testing what we think
+					// we're testing:
+					expect(
+						((DataStore as any).sync as any).getModelSyncedStatus({})
+					).toBe(true);
+
+					await pause(100);
+					const itemToEdit = (
+						await DataStore.query(Post, p => p.title('contains', 'include'))
+					).pop();
+					await DataStore.save(
+						Post.copyOf(itemToEdit, draft => {
+							draft.title = 'second edited post - omit';
+						})
+					);
+				} else if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			});
+
+			setTimeout(async () => {
+				// Creates posts like:
+				//
+				// "the post 0 - include"
+				// "the post 1 - omit"
+				// "the post 2 - include"
+				// "the post 3 - omit"
+				//
+				// etc.
+				//
+				for (let i = 0; i < 10; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
+						})
+					);
+				}
+
+				// Changes a single post from
+				//   "the post # - include"
+				// to
+				//   "edited post - omit"
+				await pause(100);
+				((DataStore as any).sync as any).getModelSyncedStatus = (model: any) =>
+					true;
+
+				// the first edit simulates a quick-turnaround update that gets
+				// applied while the first snapshot is still being generated
+				const itemToEdit = (
+					await DataStore.query(Post, p => p.title('contains', 'include'))
+				).pop();
+				await DataStore.save(
+					Post.copyOf(itemToEdit, draft => {
+						draft.title = 'first edited post - omit';
+					})
+				);
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 15];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post).subscribe(
+					({ items, isSynced }) => {
+						const expected = expecteds.shift() || 0;
+						expect(items.length).toBe(expected);
+
+						for (let i = 0; i < expected; i++) {
+							expect(items[i].title).toEqual(`the post ${i}`);
+						}
+
+						if (expecteds.length === 0) {
+							sub.unsubscribe();
+							done();
+						}
+					}
+				);
+
+				setTimeout(async () => {
+					for (let i = 5; i < 15; i++) {
+						await DataStore.save(
+							new Post({
+								title: `the post ${i}`,
+							})
+						);
+					}
+				}, 100);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post).subscribe(
+					({ items, isSynced }) => {
+						const expected = expecteds.shift() || 0;
+						expect(items.length).toBe(expected);
+
+						for (let i = 0; i < expected; i++) {
+							expect(items[i].title).toContain(`the post`);
+						}
+
+						if (expecteds.length === 0) {
+							sub.unsubscribe();
+							done();
+						}
+					}
+				);
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 100);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes deleted items from the snapshot with a predicate', done => {
+		(async () => {
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(Post, p =>
+					p.title('beginsWith', 'the post')
+				).subscribe(({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].title).toContain(`the post`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				setTimeout(async () => {
+					const itemToDelete = (await DataStore.query(Post)).pop();
+					await DataStore.delete(itemToDelete);
+				}, 100);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('attaches related belongsTo properties consistently with query() on INSERT', async done => {
 		try {
 			const expecteds = [5, 15];
 
 			for (let i = 0; i < 5; i++) {
 				await DataStore.save(
-					new Post({
-						title: `the post ${i}`,
+					new Comment({
+						content: `comment content ${i}`,
+						post: await DataStore.save(
+							new Post({
+								title: `new post ${i}`,
+							})
+						),
 					})
 				);
 			}
 
-			const sub = DataStore.observeQuery(Post).subscribe(
+			const sub = DataStore.observeQuery(Comment).subscribe(
 				({ items, isSynced }) => {
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
 					for (let i = 0; i < expected; i++) {
-						expect(items[i].title).toEqual(`the post ${i}`);
+						expect(items[i].content).toEqual(`comment content ${i}`);
+						expect(items[i].post.title).toEqual(`new post ${i}`);
 					}
 
 					if (expecteds.length === 0) {
@@ -366,8 +649,203 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			setTimeout(async () => {
 				for (let i = 5; i < 15; i++) {
 					await DataStore.save(
+						new Comment({
+							content: `comment content ${i}`,
+							post: await DataStore.save(
+								new Post({
+									title: `new post ${i}`,
+								})
+							),
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related hasOne properties consistently with query() on INSERT', async done => {
+		try {
+			const expecteds = [5, 15];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new User({
+						name: `user ${i}`,
+						profile: await DataStore.save(
+							new Profile({
+								firstName: `firstName ${i}`,
+								lastName: `lastName ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(User).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].name).toEqual(`user ${i}`);
+						expect(items[i].profile.firstName).toEqual(`firstName ${i}`);
+						expect(items[i].profile.lastName).toEqual(`lastName ${i}`);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				for (let i = 5; i < 15; i++) {
+					await DataStore.save(
+						new User({
+							name: `user ${i}`,
+							profile: await DataStore.save(
+								new Profile({
+									firstName: `firstName ${i}`,
+									lastName: `lastName ${i}`,
+								})
+							),
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related belongsTo properties consistently with query() on UPDATE', async done => {
+		try {
+			const expecteds = [
+				['old post 0', 'old post 1', 'old post 2', 'old post 3', 'old post 4'],
+				['new post 0', 'new post 1', 'new post 2', 'new post 3', 'new post 4'],
+			];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new Comment({
+						content: `comment content ${i}`,
+						post: await DataStore.save(
+							new Post({
+								title: `old post ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(Comment).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || [];
+					expect(items.length).toBe(expected.length);
+
+					for (let i = 0; i < expected.length; i++) {
+						expect(items[i].content).toContain(`comment content ${i}`);
+						expect(items[i].post.title).toEqual(expected[i]);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				let postIndex = 0;
+				const comments = await DataStore.query(Comment);
+				for (const comment of comments) {
+					const newPost = await DataStore.save(
 						new Post({
-							title: `the post ${i}`,
+							title: `new post ${postIndex++}`,
+						})
+					);
+
+					await DataStore.save(
+						Comment.copyOf(comment, draft => {
+							draft.content = `updated: ${comment.content}`;
+							draft.post = newPost;
+						})
+					);
+				}
+			}, 100);
+		} catch (error) {
+			done(error);
+		}
+	});
+
+	test('attaches related hasOne properties consistently with query() on UPDATE', async done => {
+		try {
+			const expecteds = [
+				[
+					'first name 0',
+					'first name 1',
+					'first name 2',
+					'first name 3',
+					'first name 4',
+				],
+				[
+					'new first name 0',
+					'new first name 1',
+					'new first name 2',
+					'new first name 3',
+					'new first name 4',
+				],
+			];
+
+			for (let i = 0; i < 5; i++) {
+				await DataStore.save(
+					new User({
+						name: `user ${i}`,
+						profile: await DataStore.save(
+							new Profile({
+								firstName: `first name ${i}`,
+								lastName: `last name ${i}`,
+							})
+						),
+					})
+				);
+			}
+
+			const sub = DataStore.observeQuery(User).subscribe(
+				({ items, isSynced }) => {
+					const expected = expecteds.shift() || [];
+					expect(items.length).toBe(expected.length);
+
+					for (let i = 0; i < expected.length; i++) {
+						expect(items[i].name).toContain(`user ${i}`);
+						expect(items[i].profile.firstName).toEqual(expected[i]);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				}
+			);
+
+			setTimeout(async () => {
+				let userIndex = 0;
+				const users = await DataStore.query(User);
+				for (const user of users) {
+					const newProfile = await DataStore.save(
+						new Profile({
+							firstName: `new first name ${userIndex++}`,
+							lastName: `new last name ${userIndex}`,
+						})
+					);
+
+					await DataStore.save(
+						User.copyOf(user, draft => {
+							draft.name = `updated: ${user.name}`;
+							draft.profile = newProfile;
 						})
 					);
 				}
@@ -396,6 +874,22 @@ describe('DataStore tests', () => {
 			return { ExclusiveStorage: mock };
 		});
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	});
+
+	test('error on schema not initialized on start', async () => {
+		const errorLog = jest.spyOn(console, 'error');
+		const errorRegex = /Schema is not initialized/;
+		await expect(DataStore.start()).rejects.toThrow(errorRegex);
+
+		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
+	});
+
+	test('error on schema not initialized on clear', async () => {
+		const errorLog = jest.spyOn(console, 'error');
+		const errorRegex = /Schema is not initialized/;
+		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
+
+		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
 	});
 
 	describe('initSchema tests', () => {
@@ -622,6 +1116,77 @@ describe('DataStore tests', () => {
 
 			expect(model1.optionalField1).toBeUndefined();
 			expect(model2.optionalField1).toBeNull();
+		});
+
+		test('multiple copyOf operations carry all changes on save', async () => {
+			let model: Model;
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			const model1 = new Model({
+				dateCreated: new Date().toISOString(),
+				field1: 'original',
+				optionalField1: 'original',
+			});
+			model = model1;
+
+			await DataStore.save(model1);
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).field1 = 'field1Change1';
+				(<any>draft).optionalField1 = 'optionalField1Change1';
+			});
+
+			const model3 = Model.copyOf(model2, draft => {
+				(<any>draft).field1 = 'field1Change2';
+			});
+			model = model3;
+
+			await DataStore.save(model3);
+
+			const [settingsSave, saveOriginalModel, saveModel3] = <any>(
+				save.mock.calls
+			);
+
+			const [_model, _condition, _mutator, [patches]] = saveModel3;
+
+			const expectedPatches = [
+				{
+					op: 'replace',
+					path: ['field1'],
+					value: 'field1Change2',
+				},
+				{
+					op: 'replace',
+					path: ['optionalField1'],
+					value: 'optionalField1Change1',
+				},
+			];
+			expect(patches).toMatchObject(expectedPatches);
 		});
 
 		test('Non @model - Field cannot be changed', () => {
@@ -871,9 +1436,9 @@ describe('DataStore tests', () => {
 
 			const expectedPatches2 = [
 				{
-					op: 'add',
-					path: ['emails', 3],
-					value: 'joe@doe.com',
+					op: 'replace',
+					path: ['emails'],
+					value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com', 'joe@doe.com'],
 				},
 			];
 

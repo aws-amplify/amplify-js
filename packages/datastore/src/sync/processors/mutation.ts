@@ -24,8 +24,10 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 	TypeConstructorMap,
+	ProcessName,
+	AmplifyContext,
 } from '../../types';
-import { exhaustiveCheck, USER } from '../../util';
+import { exhaustiveCheck, USER, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -34,6 +36,7 @@ import {
 	TransformerMutationType,
 	getTokenForCustomAuth,
 } from '../utils';
+import { getMutationErrorType } from './errorMaps';
 
 const MAX_ATTEMPTS = 10;
 
@@ -63,9 +66,11 @@ class MutationProcessor {
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly conflictHandler?: ConflictHandler,
-		private readonly errorHandler?: ErrorHandler
+		private readonly errorHandler: ErrorHandler,
+		private readonly conflictHandler: ConflictHandler,
+		private readonly amplifyContext: AmplifyContext
 	) {
+		this.amplifyContext.API = this.amplifyContext.API || API;
 		this.generateQueries();
 	}
 
@@ -266,7 +271,13 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				const tryWith = { query, variables, authMode, authToken };
+				const tryWith = {
+					query,
+					variables,
+					authMode,
+					authToken,
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+				};
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -274,7 +285,7 @@ class MutationProcessor {
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await API.graphql(tryWith)
+							await this.amplifyContext.API.graphql(tryWith)
 						);
 						return [result, opName, modelDefinition];
 					} catch (err) {
@@ -341,11 +352,12 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await API.graphql({
+									>await this.amplifyContext.API.graphql({
 										query,
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
+										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 									});
 
 									return [serverData, opName, modelDefinition];
@@ -373,20 +385,21 @@ class MutationProcessor {
 							} else {
 								try {
 									await this.errorHandler({
-										localModel: this.modelInstanceCreator(
-											modelConstructor,
-											variables.input
-										),
+										recoverySuggestion:
+											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+										localModel: variables.input,
 										message: error.message,
 										operation,
-										errorType: error.errorType,
+										errorType: getMutationErrorType(error),
 										errorInfo: error.errorInfo,
+										process: ProcessName.mutate,
+										cause: error,
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
 											: null,
 									});
 								} catch (err) {
-									logger.warn('failed to execute errorHandler', err);
+									logger.warn('Mutation error handler failed with:', err);
 								} finally {
 									// Return empty tuple, dequeues the mutation
 									return error.data

@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
+import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
@@ -27,6 +28,21 @@ import {
 	LimitTimerRaceResolvedValues,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+
+export enum NAMESPACES {
+	DATASTORE = 'datastore',
+	USER = 'user',
+	SYNC = 'sync',
+	STORAGE = 'storage',
+}
+
+const DATASTORE = NAMESPACES.DATASTORE;
+const USER = NAMESPACES.USER;
+const SYNC = NAMESPACES.SYNC;
+const STORAGE = NAMESPACES.STORAGE;
+
+export { USER, SYNC, STORAGE, DATASTORE };
+export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -146,7 +162,7 @@ export const isNonModelConstructor = (
 	return nonModelClasses.has(obj);
 };
 
-/* 
+/*
   When we have GSI(s) with composite sort keys defined on a model
 	There are some very particular rules regarding which fields must be included in the update mutation input
 	The field selection becomes more complex as the number of GSIs with composite sort keys grows
@@ -156,7 +172,7 @@ export const isNonModelConstructor = (
 	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
 
 	 E.g.,
-	 Model @model 
+	 Model @model
 		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
 		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
 		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
@@ -192,7 +208,7 @@ export const processCompositeKeys = (
 		.filter(isModelAttributeCompositeKey)
 		.map(extractCompositeSortKey);
 
-	/* 
+	/*
 		if 2 sets of fields have any intersecting fields => combine them into 1 union set
 		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
 	*/
@@ -447,20 +463,6 @@ export const getIndexFromAssociation = (
 	const index = indexes.find(idx => idx === src);
 	return index;
 };
-
-export enum NAMESPACES {
-	DATASTORE = 'datastore',
-	USER = 'user',
-	SYNC = 'sync',
-	STORAGE = 'storage',
-}
-
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
-
-export { USER, SYNC, STORAGE, DATASTORE };
 
 let privateModeCheckResult;
 
@@ -772,4 +774,40 @@ export class DeferredCallbackResolver {
 	public resolve(): void {
 		this.limitPromise.resolve(LimitTimerRaceResolvedValues.LIMIT);
 	}
+}
+
+/**
+ * merge two sets of patches created by immer produce.
+ * newPatches take precedent over oldPatches for patches modifying the same path.
+ * In the case many consecutive pathces are merged the original model should
+ * always be the root model.
+ *
+ * Example:
+ * A -> B, patches1
+ * B -> C, patches2
+ *
+ * mergePatches(A, patches1, patches2) to get patches for A -> C
+ *
+ * @param originalSource the original Model the patches should be applied to
+ * @param oldPatches immer produce patch list
+ * @param newPatches immer produce patch list (will take precedence)
+ * @return merged patches
+ */
+export function mergePatches<T>(
+	originalSource: T,
+	oldPatches: Patch[],
+	newPatches: Patch[]
+): Patch[] {
+	const patchesToMerge = oldPatches.concat(newPatches);
+	let patches: Patch[];
+	produce(
+		originalSource,
+		draft => {
+			applyPatches(draft, patchesToMerge);
+		},
+		p => {
+			patches = p;
+		}
+	);
+	return patches;
 }

@@ -8,6 +8,9 @@ import {
 	PredicatesGroup,
 	GraphQLFilter,
 	AuthModeStrategy,
+	ErrorHandler,
+	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import {
 	buildGraphQLOperation,
@@ -17,6 +20,7 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
@@ -24,7 +28,7 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
-
+import { getSyncErrorType } from './errorMaps';
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -40,8 +44,11 @@ class SyncProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler: ErrorHandler,
+		private readonly amplifyContext: AmplifyContext
 	) {
+		amplifyContext.API = amplifyContext.API || API;
 		this.generateQueries();
 	}
 
@@ -203,11 +210,12 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await API.graphql({
+					return await this.amplifyContext.API.graphql({
 						query,
 						variables,
 						authMode,
 						authToken,
+						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 					});
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
@@ -223,15 +231,33 @@ class SyncProcessor {
 							error.data[opName] &&
 							error.data[opName].items
 					);
-
 					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
 								item => item !== null
 							);
-
 							if (error.errors) {
+								await Promise.all(
+									error.errors.map(async err => {
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null,
+												message: err.message,
+												model: modelDefinition.name,
+												operation: opName,
+												errorType: getSyncErrorType(err),
+												process: ProcessName.sync,
+												remoteModel: null,
+												cause: err,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+									})
+								);
 								Hub.dispatch('datastore', {
 									event: 'syncQueriesPartialSyncError',
 									data: {

@@ -2,10 +2,12 @@ import AsyncStorageAdapter from '../src/storage/adapter/AsyncStorageAdapter';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
+	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Profile, testSchema } from './helpers';
+import { pause, Model, User, Profile, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
+import { addCommonQueryTests } from './commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -15,6 +17,25 @@ const ASAdapter = <any>AsyncStorageAdapter;
 describe('AsyncStorageAdapter tests', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	async function getMutations(adapter) {
+		await pause(250);
+		return await adapter.getAll('sync_MutationEvent');
+	}
+
+	async function clearOutbox(adapter) {
+		await pause(250);
+		return await adapter.delete(syncClasses['MutationEvent']);
+	}
+
+	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	addCommonQueryTests({
+		initSchema,
+		DataStore,
+		storageAdapter: AsyncStorageAdapter,
+		getMutations,
+		clearOutbox,
 	});
 
 	describe('Query', () => {
@@ -40,24 +61,35 @@ describe('AsyncStorageAdapter tests', () => {
 				Model: PersistentModelConstructor<Model>;
 			});
 
+			// NOTE: sort() test on these models can be flaky unless we
+			// strictly control the datestring of each! In a non-negligible percentage
+			// of test runs on a reasonably fast machine, DataStore.save() seemed to return
+			// quickly enough that dates were colliding. (or so it seemed!)
+
+			const baseDate = new Date();
+
 			({ id: model1Id } = await DataStore.save(
 				new Model({
 					field1: 'Some value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: baseDate.toISOString(),
 				})
 			));
 			await DataStore.save(
 				new Model({
 					field1: 'another value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
 				})
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'a third value',
-					dateCreated: new Date().toISOString(),
+					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
+		});
+
+		afterAll(async () => {
+			await DataStore.clear();
 		});
 
 		it('Should call getById for query by id', async () => {
