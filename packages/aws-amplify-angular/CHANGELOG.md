@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.50](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.49...aws-amplify-angular@6.0.50) (2022-08-18)
+
+
+### Bug Fixes
+
+* An update to @types/lodash breaks the build - specify last working version to unblock ([#10221](https://github.com/aws-amplify/amplify-js/issues/10221)) ([f54b645](https://github.com/aws-amplify/amplify-js/commit/f54b64502bb163307a1e8701d686d9b6b90a6eee))
+
+
+
+
+
 ## [6.0.49](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.48...aws-amplify-angular@6.0.49) (2022-08-16)
 
 **Note:** Version bump only for package aws-amplify-angular
