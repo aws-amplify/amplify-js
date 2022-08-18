@@ -1814,6 +1814,29 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('debouncer happy case', async () => {
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback(null, session);
+				});
+
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			expect.assertions(1);
+
+			for (let index = 0; index < 10; index++) {
+				auth.userSession(user);
+			}
+			expect(spyon).toHaveBeenCalledTimes(1);
+
+			spyon.mockClear();
+		});
+
 		test('callback error', async () => {
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
