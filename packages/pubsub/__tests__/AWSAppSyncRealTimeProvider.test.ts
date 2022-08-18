@@ -682,9 +682,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(20);
 
 						// Wait until the socket is automatically disconnected
-						await expect(fakeWebSocketInterface?.currentConnectionState).toBe(
-							CS.Connecting
-						);
+						await expect(
+							fakeWebSocketInterface?.hubConnectionListener
+								?.currentConnectionState
+						).toBe(CS.Connecting);
 
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).not.toBeCalledWith(
