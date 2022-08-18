@@ -449,6 +449,13 @@ jobs:
           sample_name: auto-signin-after-signup
           spec: auto-signin-after-signup
           browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Session Debouncer'
+          framework: react
+          category: auth
+          sample_name: session-debouncer
+          spec: session-debouncer
+          browser: << parameters.browser >>
   integ_angular_auth:
     parameters:
       browser:
@@ -1271,6 +1278,7 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
+      - feat/session-debouncer
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
