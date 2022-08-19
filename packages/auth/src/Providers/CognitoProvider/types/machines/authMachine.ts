@@ -40,30 +40,6 @@ export type AuthTypeState =
 			};
 	  }
 	| {
-			value: 'configuringAuth';
-			context: AuthMachineContext & {
-				config: null;
-				service: CognitoService;
-				// authenticationMachine: null;
-			};
-	  }
-	| {
-			value: 'waitingForCachedCredentials';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: null;
-			};
-	  }
-	| {
-			value: 'validatingCredentialsAndConfiguration';
-			context: AuthMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: null;
-			};
-	  }
-	| {
 			value: 'configuringAuthentication';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
@@ -73,6 +49,14 @@ export type AuthTypeState =
 	  }
 	| {
 			value: 'configuringAuthorization';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+				// authenticationMachine: any;
+			};
+	  }
+	| {
+			value: 'configuringAuthorizationFailed';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;

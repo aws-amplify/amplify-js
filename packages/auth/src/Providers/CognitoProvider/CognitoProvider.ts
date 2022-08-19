@@ -165,8 +165,6 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		this._authService.send(authMachineEvents.configureAuth(this._config));
-
-		this._authService.send(authMachineEvents.configureAuthentication());
 		// this._authnService.send(
 		// 	authenticationMachineEvents.configure(this._config)
 		// );
@@ -237,9 +235,17 @@ export class CognitoProvider implements AuthProvider {
 	async signIn(
 		params: SignInParams & { password?: string }
 	): Promise<SignInResult> {
-		var signInMachine = this._authService.children.get(
-			'authenticationStateMachine'
-		) as Interpreter<AuthenticationMachineContext>;
+		// var signInMachine = this._authService.children.get(
+		// 	'authenticationMachine'
+		// ) as Interpreter<AuthenticationMachineContext>;
+
+		const { authenticationActorRef } = this._authService.state.context;
+		const signInMachine = authenticationActorRef as ActorRefFrom<
+			typeof authenticationMachine
+		>;
+
+		const { actorRef } = signInMachine.state.context;
+		const passwordMachine = actorRef as ActorRefFrom<typeof signInMachine>;
 
 		if (signInMachine.state.matches('notConfigured')) {
 			throw new Error('AuthN is not configured');
@@ -269,10 +275,11 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private async waitForSignInComplete(): Promise<SignInResult> {
-		const authService = this._authService.children.get(
-			'authenticationStateMachine'
-		) as Interpreter<AuthenticationMachineContext>;
-		const signingInState = await waitFor(authService, state =>
+		const { authenticationActorRef } = this._authService.state.context;
+		const authenticationService = authenticationActorRef as ActorRefFrom<
+			typeof authenticationMachine
+		>;
+		const signingInState = await waitFor(authenticationService, state =>
 			state.matches('signingIn')
 		);
 		const { actorRef } = signingInState.context;
@@ -285,17 +292,17 @@ export class CognitoProvider implements AuthProvider {
 			// TODO: Can I refactor signInMachine or the main AuthMachine state to avoid using Promise.race?
 			await Promise.race([
 				waitFor(
-					authService,
+					authenticationService,
 					state => state.matches('signedIn') || state.matches('error')
 				),
 				waitFor(signInActorRef, state => state.matches('nextAuthChallenge')),
 			]);
 			// if it reaches error state, throw the caught error
-			if (authService.state.matches('error')) {
-				throw authService.state.context.error;
+			if (authenticationService.state.matches('error')) {
+				throw authenticationService.state.context.error;
 			}
 			return {
-				signInSuccesful: authService.state.matches('signedIn'),
+				signInSuccesful: authenticationService.state.matches('signedIn'),
 				nextStep: signInActorRef.state.matches('nextAuthChallenge'),
 			};
 		}
@@ -582,8 +589,14 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
+		const { authenticationActorRef } = this._authService.state.context;
+		const signInMachine = authenticationActorRef as ActorRefFrom<
+			typeof authenticationMachine
+		>;
+
 		this.clearCachedTokens();
-		this._authnService.send(authenticationMachineEvents.signOutRequested());
+		signInMachine.send(authenticationMachineEvents.signOutRequested());
+
 		this._authzService.send(authorizationMachineEvents.signOutRequested());
 		dispatchAuthEvent(
 			'signOut',

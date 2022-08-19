@@ -40,7 +40,21 @@ export type AuthenticationTypeState =
 			};
 	  }
 	| {
+			value: 'configuring';
+			context: AuthenticationMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
 			value: 'configured';
+			context: AuthenticationMachineContext & {
+				config: CognitoProviderConfig;
+				service: CognitoService;
+			};
+	  }
+	| {
+			value: 'configurationFailed';
 			context: AuthenticationMachineContext & {
 				config: CognitoProviderConfig;
 				service: CognitoService;

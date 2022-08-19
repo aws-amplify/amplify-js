@@ -7,8 +7,9 @@ import {
 	interpret,
 	EventFrom,
 	AssignAction,
+	ActorRefFrom,
 } from 'xstate';
-import { stop } from 'xstate/lib/actions';
+import { pure, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	authenticationMachine,
@@ -22,7 +23,7 @@ import { AuthMachineContext, AuthTypeState } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
 
-let authenticationActorRef;
+let authenticationActorRef: ActorRefFrom<typeof authenticationMachine>;
 let authorizationActorRef;
 
 async function configureAuthN(context: AuthMachineContext) {
@@ -50,8 +51,10 @@ export const authMachineModel = createModel(
 			configureAuthentication: () => ({}),
 			configureAuthorization: () => ({}),
 			authenticationConfigured: () => ({}),
+			authenticationConfigurationFailed: () => ({}),
 			authorizationConfigured: () => ({}),
-			error: (error: any) => ({ error }),
+			// error: (error: any) => ({ error }),
+			error: () => ({}),
 		},
 	}
 );
@@ -68,21 +71,16 @@ const authStateMachineActions: Record<
 		},
 		'configureAuth'
 	),
-	// setAuthenticationActor: authMachineModel.assign(
-	// 	{
-	// 		authenticationActorRef: context => {
-	// 			const authenticationActorRef = context.authenticationMachine;
-	// 			return authenticationActorRef;
-	// 		},
-	// 	},
-	// 	'configureAuthentication'
-	// ),
+	setAuthenticationActor: authMachineModel.assign(
+		{
+			authenticationActorRef: () =>
+				spawn(authenticationMachine, { name: 'authenticationActor' }),
+		},
+		'configureAuthentication'
+	),
 	setAuthorizationActor: authMachineModel.assign(
 		{
-			authorizationActorRef: context => {
-				const authorizationActorRef = context.authorizationMachine;
-				return authorizationActorRef;
-			},
+			authorizationActorRef: () => spawn(authorizationMachine),
 		},
 		'configureAuthorization'
 	),
@@ -96,61 +94,51 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 		notConfigured: {
 			on: {
 				configureAuth: {
-					target: 'configuringAuth',
-					actions: [authStateMachineActions.assignConfig],
+					target: 'configuringAuthentication',
+					actions: [
+						authStateMachineActions.assignConfig,
+						authStateMachineActions.setAuthenticationActor,
+					],
 				},
-			},
-		},
-		configuringAuth: {
-			on: {
-				// TODO: implement credentialStore state machine
-				// fetchCachedCredentials: 'waitingForCachedCredentials',
-
-				// Following line is temporary until credential store is implemented
-				configureAuthentication: 'configuringAuthentication',
-			},
-		},
-		waitingForCachedCredentials: {
-			on: {
-				receivedCachedCredentials: 'validatingCredentialsAndConfiguration',
-			},
-		},
-		validatingCredentialsAndConfiguration: {
-			on: {
-				configureAuthentication: 'configuringAuthentication',
-				configureAuthorization: 'configuringAuthorization',
 			},
 		},
 		configuringAuthentication: {
-			invoke: {
-				id: 'authenticationStateMachine',
-				src: authenticationMachine,
-				onDone: 'configuringAuthorization',
-				data: {
-					config: (context: { config: any }, event: any) => context.config,
-				},
+			entry: (context, _) => {
+				context.authenticationActorRef?.send(
+					authenticationMachineEvents.configure(context.config!)
+				);
 			},
-			entry: send(authenticationMachineEvents.configure(), {
-				to: 'authenticationStateMachine',
-			}),
+			on: {
+				authenticationConfigured: 'configuringAuthorization',
+				authenticationConfigurationFailed: 'authenticationNotConfigured',
+				error: 'error',
+			},
+		},
+		authenticationNotConfigured: {
+			// onEntry: [
+			// 	(context, event) => {
+			// 		console.log('HEY!!!!');
+			// 		// context.authenticationActorRef!.stop;
+			// 	},
+			// ],
+			entry: ['stopAuthenticationActor'],
+			always: 'configuringAuthorization',
 		},
 		configuringAuthorization: {
-			invoke: {
-				id: 'authorizationStateMachine',
-				src: context => {
-					if (context.config) {
-						return context.authorizationMachine.send(
-							authorizationMachineEvents.configure(context.config)
-						);
-					}
-					// error?
-				},
-				onDone: {
-					target: 'configured',
-				},
+			entry: (context, event) => {
+				context.authorizationActorRef?.send(
+					authorizationMachineEvents.configure(context.config!)
+				);
+			},
+			on: {
+				authenticationConfigured: 'configuringAuthorization',
+				error: 'error',
 			},
 		},
 		error: {
+			entry: (context, event) => {
+				console.log('authenticationMachine error!');
+			},
 			type: 'final',
 		},
 		configured: {
@@ -164,8 +152,7 @@ export const authMachine = createMachine<
 	AuthTypeState
 >(authStateMachine, {
 	actions: {
-		// stopAuthenticationActor: stop(authenticationActorName),
-		// stopAuthorizationActor: stop(authorizationActorName),
+		stopAuthenticationActor: stop('authenticationActor'),
 	},
 	guards: {},
 	services: {},

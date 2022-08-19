@@ -12,14 +12,15 @@
  */
 
 import {
-	createMachine,
-	MachineConfig,
-	spawn,
-	assign,
-	EventFrom,
 	AssignAction,
+	EventFrom,
+	MachineConfig,
+	assign,
+	createMachine,
+	sendParent,
+	spawn,
 } from 'xstate';
-import { stop } from 'xstate/lib/actions';
+import { pure, respond, send, sendTo, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
@@ -31,24 +32,19 @@ import {
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../serviceClass';
+import { authMachine, authMachineEvents } from './authMachine';
 
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
 
-async function checkActiveSession(context: AuthenticationMachineContext) {
-	try {
-		if (
-			!context.config?.identityPoolId ||
-			!context.config.userPoolId ||
-			!context.service
-		) {
-			throw new Error('no configured identityPoolId and userPoolId');
-		}
-		const session = await context.service.fetchSession();
-		return session;
-	} catch (err) {
-		return false;
+async function checkConfig(context: AuthenticationMachineContext) {
+	if (context.config?.userPoolId) {
+		throw new Error('Userpool has not been configured.');
 	}
+	if (!context.service) {
+		throw new Error('The Cognito service has not been initialized.');
+	}
+	return;
 }
 
 export const authenticationMachineModel = createModel(
@@ -57,9 +53,11 @@ export const authenticationMachineModel = createModel(
 		service: null,
 	} as AuthenticationMachineContext,
 	{
-		id: 'authenticationStateMachine',
+		id: 'authenticationMachine',
 		events: {
-			configure: () => ({}),
+			configure: (config: CognitoProviderConfig) => ({ config }),
+			configurationSuccessful: () => ({}),
+			failedToConfigure: () => ({}),
 			initializedSignedIn: () => ({}),
 			initializedSignedOut: () => ({}),
 			cancelSignUp: () => ({}),
@@ -79,19 +77,21 @@ export const authenticationMachineModel = createModel(
 			initiateSignUp: (params: SignUpParams) => ({ params }),
 			signInSuccessful: () => ({}),
 			signUpSuccessful: () => ({}),
+
+			test: () => ({}),
 		},
 	}
 );
 
 export type AuthenticationEvents = EventFrom<typeof authenticationMachineModel>;
 
-const authenticationStateMachineActions: Record<
+const authenticationMachineActions: Record<
 	string,
 	AssignAction<AuthenticationMachineContext, any>
 > = {
 	assignConfig: authenticationMachineModel.assign(
 		{
-			config: (_context, event) => _context.config,
+			config: (_context, event) => event.config,
 		},
 		'configure'
 	),
@@ -193,53 +193,55 @@ const authenticationStateMachine: MachineConfig<
 	any,
 	AuthenticationEvents
 > = {
-	id: 'authenticationStateMachine',
+	id: 'authenticationMachine',
 	initial: 'notConfigured',
 	context: authenticationMachineModel.initialContext,
 	states: {
 		notConfigured: {
 			on: {
 				configure: {
-					target: 'configured',
+					target: 'configuring',
 					actions: [
-						authenticationStateMachineActions.assignConfig,
-						authenticationStateMachineActions.assignService,
+						authenticationMachineActions.assignConfig,
+						authenticationMachineActions.assignService,
 					],
 				},
 			},
 		},
-		configured: {
+		configuring: {
 			invoke: {
-				src: checkActiveSession,
-				onDone: [
-					{
-						cond: (_context, event) => !!event.data,
-						actions: [
-							assign((_context, event) => ({
-								session: event.data,
-							})),
-						],
-						target: 'signedIn',
-					},
-					{
-						// by default set the user to signedOut
-						target: 'signedOut',
-					},
-				],
-				// in any cases, if there are errors, the user is considered 'signedOut'
-				// TODO: we should only have user as 'signedOut' if they are unauthorized
-				// There could be legitimate network errors during the requests, maybe 'error' will be a more accurate state for
-				// those scenarios
-				onError: 'signedOut',
+				id: 'authenticationConfigCallback',
+				src: (context, event) => (callback, _) => {
+					console.log('configuring callback...');
+					callback('failedToConfigure');
+				},
+			},
+			on: {
+				failedToConfigure: 'configurationFailed',
+				configurationSuccessful: 'signedOut',
 			},
 		},
-		// signingOut: {
-		// 	on: {
-		// 		initializedSignedIn: 'signedIn',
-		// 		initializedSignedOut: 'signedOut',
-		// 	},
-		// },
+		configurationFailed: {
+			entry: [
+				pure((_, event) => {
+					console.log('configurationFailed');
+					return sendParent({ type: 'authenticationConfigurationFailed' });
+				}),
+			],
+		},
+		signingOut: {
+			on: {
+				initializedSignedIn: 'signedIn',
+				initializedSignedOut: 'signedOut',
+			},
+		},
 		signedOut: {
+			entry: [
+				pure((_, event) => {
+					console.log('configured');
+					return sendParent({ type: 'authenticationConfigured' });
+				}),
+			],
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',
@@ -251,16 +253,16 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signingUp: {
-			onEntry: [authenticationStateMachineActions.spawnSignUpActor],
+			onEntry: [authenticationMachineActions.spawnSignUpActor],
 			on: {
 				cancelSignUp: {
-					target: '#authenticationStateMachine.signedOut',
+					target: '#authenticationMachine.signedOut',
 				},
 				error: {
-					target: '#authenticationStateMachine.error',
+					target: '#authenticationMachine.error',
 				},
 				signUpSuccessful: {
-					target: '#authenticationStateMachine.signedUp',
+					target: '#authenticationMachine.signedUp',
 				},
 			},
 			onExit: [
@@ -278,13 +280,13 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signingIn: {
-			onEntry: [authenticationStateMachineActions.spawnSignInActor],
+			onEntry: [authenticationMachineActions.spawnSignInActor],
 			on: {
 				cancelSignIn: {
-					target: '#authenticationStateMachine.signedOut',
+					target: '#authenticationMachine.signedOut',
 				},
 				error: {
-					target: '#authenticationStateMachine.error',
+					target: '#authenticationMachine.error',
 					actions: [
 						assign((_context, event) => ({
 							error: event.error,
@@ -292,13 +294,16 @@ const authenticationStateMachine: MachineConfig<
 					],
 				},
 				signInSuccessful: {
-					target: '#authenticationStateMachine.signedIn',
+					target: '#authenticationMachine.signedIn',
 				},
 			},
 			onExit: ['stopSignInActor'],
 			// ...srpSignInState,
 		},
 		error: {
+			entry: (context, event) => {
+				console.log('authenticationMachine error!');
+			},
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',
