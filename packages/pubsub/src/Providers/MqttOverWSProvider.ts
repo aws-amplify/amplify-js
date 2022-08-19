@@ -116,7 +116,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				this.connectionState = connectionStateChange;
 
 				// Trigger reconnection when the connection is disrupted
-				if ('ConnectionDisrupted' === connectionStateChange) {
+				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
 					this.reconnectObservers.forEach(reconnectObserver => {
 						reconnectObserver.next?.();
 					});
@@ -343,40 +343,38 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				});
 			})();
 
-			return () => {
-				(async () => {
-					const client = await this.clientsQueue.get(clientId);
+			return async () => {
+				const client = await this.clientsQueue.get(clientId);
 
-					reconnectSubscription?.unsubscribe();
+				reconnectSubscription?.unsubscribe();
 
-					if (client) {
-						this._clientIdObservers.get(clientId)?.delete(observer);
-						// No more observers per client => client not needed anymore
-						if (this._clientIdObservers.get(clientId)?.size === 0) {
-							this.disconnect(clientId);
-							this.connectionStateMonitor.record(
-								CONNECTION_CHANGE.CLOSING_CONNECTION
-							);
-							this._clientIdObservers.delete(clientId);
-						}
-
-						targetTopics.forEach(topic => {
-							const observersForTopic =
-								this._topicObservers.get(topic) ||
-								(new Set() as Set<SubscriptionObserver<any>>);
-
-							observersForTopic.delete(observer);
-
-							// if no observers exists for the topic, topic should be removed
-							if (observersForTopic.size === 0) {
-								this._topicObservers.delete(topic);
-								if (client.isConnected()) {
-									client.unsubscribe(topic);
-								}
-							}
-						});
+				if (client) {
+					this._clientIdObservers.get(clientId)?.delete(observer);
+					// No more observers per client => client not needed anymore
+					if (this._clientIdObservers.get(clientId)?.size === 0) {
+						this.disconnect(clientId);
+						this.connectionStateMonitor.record(
+							CONNECTION_CHANGE.CLOSING_CONNECTION
+						);
+						this._clientIdObservers.delete(clientId);
 					}
-				})();
+
+					targetTopics.forEach(topic => {
+						const observersForTopic =
+							this._topicObservers.get(topic) ||
+							(new Set() as Set<SubscriptionObserver<any>>);
+
+						observersForTopic.delete(observer);
+
+						// if no observers exists for the topic, topic should be removed
+						if (observersForTopic.size === 0) {
+							this._topicObservers.delete(topic);
+							if (client.isConnected()) {
+								client.unsubscribe(topic);
+							}
+						}
+					});
+				}
 
 				return null;
 			};

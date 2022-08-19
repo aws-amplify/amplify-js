@@ -97,7 +97,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
-	private connectionState: ConnectionState;
 	private reconnectObservers: Observer<void>[] = [];
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private connectionStateMonitorSubscription: ZenObservable.Subscription;
@@ -117,11 +116,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						`Connection state is ${connectionState}`
 					);
 
-					// Track the current connection state
-					this.connectionState = connectionState;
-
 					// Trigger reconnection when the connection is disrupted
-					if (['ConnectionDisrupted'].includes(connectionState)) {
+					if (connectionState === ConnectionState.ConnectionDisrupted) {
 						this.reconnectObservers.forEach(reconnectObserver => {
 							reconnectObserver.next?.();
 						});

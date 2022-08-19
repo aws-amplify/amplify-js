@@ -446,11 +446,11 @@ describe('PubSub', () => {
 				]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					'Disconnected',
-					'Connecting',
-					'Connected',
-					'ConnectedPendingNetwork',
-					'ConnectionDisruptedPendingNetwork',
+					ConnectionState.Disconnected,
+					ConnectionState.Connecting,
+					ConnectionState.Connected,
+					ConnectionState.ConnectedPendingNetwork,
+					ConnectionState.ConnectionDisruptedPendingNetwork,
 				]);
 			});
 		});
