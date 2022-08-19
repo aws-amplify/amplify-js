@@ -1930,7 +1930,7 @@ orbs:
                 payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
                 echo $payload
                 aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-
+              when: on_fail
       rn-ios:
         parameters:
           framework:
@@ -1983,7 +1983,7 @@ orbs:
                 payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
                 echo $payload
                 aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-
+              when: on_fail
       rn-android:
         parameters:
           framework:
@@ -2047,7 +2047,7 @@ orbs:
                 payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
                 echo $payload
                 aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-
+              when: on_fail
       expo:
         parameters:
           framework:
@@ -2091,5 +2091,5 @@ orbs:
                 payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
                 echo $payload
                 aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-
+              when: on_fail
 # End Canary Orb
