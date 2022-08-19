@@ -169,3 +169,6 @@ export type DeleteGeofencesResults = {
 	successes: GeofenceId[];
 	errors: GeofenceError[];
 };
+
+// Return type for searchForSuggestions
+export type SearchForSuggestionsResults = string[];
