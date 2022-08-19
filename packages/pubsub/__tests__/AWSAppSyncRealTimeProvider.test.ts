@@ -261,13 +261,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				test('subscription fails when onerror triggered while waiting for onopen', async () => {
 					expect.assertions(1);
-
 					provider
 						.subscribe('test', {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						})
 						.subscribe({ error: () => {} });
-
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerError();
 					expect(loggerSpy).toHaveBeenCalledWith(
@@ -303,16 +301,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				test('subscription fails when onerror triggered while waiting for handshake', async () => {
 					expect.assertions(1);
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						provider
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							})
+							.subscribe({ error: () => {} });
 
-					provider
-						.subscribe('test', {
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
-						})
-						.subscribe({ error: () => {} });
-
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.triggerError();
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
+						await fakeWebSocketInterface?.triggerError();
+					});
 					// When the socket throws an error during handshake
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
@@ -323,15 +322,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription fails when onclose triggered while waiting for handshake', async () => {
 					expect.assertions(1);
 
-					provider
-						.subscribe('test', {
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
-						})
-						.subscribe({ error: () => {} });
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						provider
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							})
+							.subscribe({ error: () => {} });
 
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.triggerClose();
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
+						await fakeWebSocketInterface?.triggerClose();
+					});
 
 					// When the socket is closed during handshake
 					// Watching for raised exception to be caught and logged
@@ -662,7 +663,44 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 				});
 
-				test('connection init timeout', async () => {
+				test('connection init timeout met', async () => {
+					expect.assertions(2);
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						const observer = provider.subscribe('test', {
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						});
+
+						const subscription = observer.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+						Promise.resolve();
+						await fakeWebSocketInterface?.triggerOpen();
+						Promise.resolve();
+						await fakeWebSocketInterface?.handShakeMessage();
+
+						// Wait no less than 20 ms
+						await delay(20);
+
+						// Wait until the socket is automatically disconnected
+						await expect(
+							fakeWebSocketInterface?.hubConnectionListener
+								?.currentConnectionState
+						).toBe(CS.Connecting);
+
+						// Watching for raised exception to be caught and logged
+						expect(loggerSpy).not.toBeCalledWith(
+							'DEBUG',
+							'error on bound ',
+							expect.objectContaining({
+								message: expect.stringMatching(
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
+								),
+							})
+						);
+					});
+				});
+
+				test('connection init timeout missed', async () => {
 					expect.assertions(1);
 
 					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
@@ -690,7 +728,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'error on bound ',
 							expect.objectContaining({
 								message: expect.stringMatching(
-									'Connection timeout: ack from AWSRealTime'
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
 								),
 							})
 						);

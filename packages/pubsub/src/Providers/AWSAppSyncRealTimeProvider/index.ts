@@ -747,20 +747,20 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						};
 						this.awsRealTimeSocket.send(JSON.stringify(gqlInit));
 
-						setTimeout(checkAckOk.bind(this, ackOk), CONNECTION_INIT_TIMEOUT);
-					}
+						const checkAckOk = (ackOk: boolean) => {
+							if (!ackOk) {
+								this.connectionStateMonitor.record(
+									CONNECTION_CHANGE.CONNECTION_FAILED
+								);
+								rej(
+									new Error(
+										`Connection timeout: ack from AWSAppSyncRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`
+									)
+								);
+							}
+						};
 
-					function checkAckOk(ackOk: boolean) {
-						if (!ackOk) {
-							this.connectionStateMonitor.record(
-								CONNECTION_CHANGE.CONNECTION_FAILED
-							);
-							rej(
-								new Error(
-									`Connection timeout: ack from AWSRealTime was not received on ${CONNECTION_INIT_TIMEOUT} ms`
-								)
-							);
-						}
+						setTimeout(() => checkAckOk(ackOk), CONNECTION_INIT_TIMEOUT);
 					}
 				});
 			})();
