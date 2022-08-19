@@ -768,6 +768,11 @@ cognitoUser.initiateAuth(authenticationDetails, {
 });
 ```
 
+Note:
+
+- To set the flow type as 'CUSTOM_AUTH' is not needed, because `initiateAuth` function always use 'CUSTOM_AUTH' flow.
+- If you are trying a different flow type, please use `setAuthenticationFlowType` and `authenticateUser` functions.
+
 **Use case 26.** Using cookies to store cognito tokens
 
 To use the CookieStorage you have to pass it in the constructor map of CognitoUserPool and CognitoUser (when constructed directly):
