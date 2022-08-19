@@ -328,7 +328,6 @@ class IndexedDBAdapter implements Adapter {
 				return value;
 			});
 
-			// debugger;
 			const fromDB = <T>await this._get(store, itemKeyValues);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
@@ -339,7 +338,6 @@ class IndexedDBAdapter implements Adapter {
 			// Even if the parent is an INSERT, the child might not be, so we need to get its key
 			if (keysEqual || opType === OpType.INSERT) {
 				const key = await store.index('byPk').getKey(itemKeyValues);
-				// debugger;
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -386,7 +384,6 @@ class IndexedDBAdapter implements Adapter {
 
 			switch (relation.relationType) {
 				case 'HAS_ONE':
-					debugger;
 					for await (const recordItem of records) {
 						// POST CPK codegen changes:
 						if (targetNames?.length) {
@@ -536,7 +533,6 @@ class IndexedDBAdapter implements Adapter {
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
-		// debugger;
 		const record = <T>await this._get(storeName, keyValue);
 		return record;
 	}
@@ -738,8 +734,6 @@ class IndexedDBAdapter implements Adapter {
 				const tx = this.db.transaction([storeName], 'readwrite');
 				const store = tx.objectStore(storeName);
 				const keyValues = this.getIndexKeyValues(model);
-
-				// debugger;
 				const fromDB = await this._get(store, keyValues);
 
 				if (fromDB === undefined) {
@@ -1015,7 +1009,6 @@ class IndexedDBAdapter implements Adapter {
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
-			// debugger;
 
 			const keyValues = this.getIndexKeyValues(model);
 			const { _deleted } = item;
