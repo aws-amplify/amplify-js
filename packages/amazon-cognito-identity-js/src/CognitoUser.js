@@ -1322,78 +1322,77 @@ export default class CognitoUser {
 		}
 
 		if (attributeList.includes('phone_number')) {
+			//Taken from _getUserData(user, param){...} in Auth Package
 			const clientMetaData = null;
 			const params = { bypassCache: true, clientMetaData };
 			let valid = false;
 			let ret = null;
+			let data = null;
 			try {
-				data = this.getUserData(async (err, data) => {
+				data = this.getUserData((err, data) => {
 					if (err) {
+						console.log(err);
 						return err;
 					} else {
 						valid = true;
-						return data;
+						console.log(data);
+						if (valid) {
+							//Taken from _getMfaTypeFromUserData(data){...} in Auth Package
+							const preferredMFA = data.PreferredMfaSetting;
+							if (preferredMFA) {
+								ret = preferredMFA;
+							} else {
+								const mfaList = data.UserMFASettingList;
+								if (!mfaList) {
+									const MFAOptions = data.MFAOptions;
+									if (MFAOptions) {
+										ret = 'SMS_MFA';
+									} else {
+										ret = 'NOMFA';
+									}
+								} else if (mfaList.length === 0) {
+									ret = 'NOMFA';
+								} else {
+									ret = 'Invalid Case for MFA'; //changed
+								}
+							}
+
+							let MFAtype = ret;
+
+							if (MFAtype == 'SMS_MFA' || MFAtype == 'SMS' || true) {
+								let totpMfaSettings = null;
+								let smsMfaSettings = {
+									PreferredMfa: false,
+									Enabled: false,
+								};
+								try {
+									this.setUserMfaPreference(
+										smsMfaSettings,
+										totpMfaSettings,
+										(err, result) => {
+											if (err) {
+												return err;
+											}
+											console.log(result);
+											return;
+										}
+									);
+								} catch (error) {
+									return callback(
+										new Error(
+											'Unable to disable SMS_MFA so phone_number attribute can be disabled',
+											error
+										)
+									);
+								}
+							}
+						}
 					}
+					return data;
 				}, params);
 			} catch (error) {
+				console.log(error);
 				return callback(new Error('Unable to get user data', error));
-			}
-
-			if (valid) {
-				const preferredMFA = data.PreferredMfaSetting;
-				// if the user has used Auth.setPreferredMFA() to setup the mfa type
-				// then the "PreferredMfaSetting" would exist in the response
-				if (preferredMFA) {
-					ret = preferredMFA;
-				} else {
-					// if mfaList exists but empty, then its noMFA
-					const mfaList = data.UserMFASettingList;
-					if (!mfaList) {
-						// if SMS was enabled by using Auth.enableSMS(),
-						// the response would contain MFAOptions
-						// as for now Cognito only supports for SMS, so we will say it is 'SMS_MFA'
-						// if it does not exist, then it should be NOMFA
-						const MFAOptions = data.MFAOptions;
-						if (MFAOptions) {
-							ret = 'SMS_MFA';
-						} else {
-							ret = 'NOMFA';
-						}
-					} else if (mfaList.length === 0) {
-						ret = 'NOMFA';
-					} else {
-						ret = 'NULL'; //changed
-					}
-				}
-
-				let MFAtype = ret;
-
-				if (MFAtype == 'SMS_MFA' || MFAtype == 'SMS') {
-					let totpMfaSettings = null;
-					let smsMfaSettings = {
-						PreferredMfa: false,
-						Enabled: false,
-					};
-					try {
-						this.setUserMfaPreference(
-							smsMfaSettings,
-							totpMfaSettings,
-							(err, result) => {
-								if (err) {
-									return err;
-								}
-								return;
-							}
-						);
-					} catch (error) {
-						return callback(
-							new Error(
-								'Unable to disable SMS_MFA so phone_number attribute can be disabled',
-								error
-							)
-						);
-					}
-				}
 			}
 		}
 
@@ -1414,6 +1413,7 @@ export default class CognitoUser {
 				});
 			}
 		);
+
 		return undefined;
 	}
 
