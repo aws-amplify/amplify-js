@@ -213,8 +213,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 				startSubscription();
 
-				let reconnectSubscription: ZenObservable.Subscription | undefined =
-					undefined;
+				let reconnectSubscription: ZenObservable.Subscription;
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {
@@ -530,9 +529,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
 			if (this.keepAliveAlertTimeoutId)
 				clearTimeout(this.keepAliveAlertTimeoutId);
-			this.keepAliveTimeoutId = setTimeout(() => {
-				return this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
-			}, this.keepAliveTimeout);
+			this.keepAliveTimeoutId = setTimeout(
+				() => this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT),
+				this.keepAliveTimeout
+			);
 			this.keepAliveAlertTimeoutId = setTimeout(() => {
 				this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
 			}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
@@ -577,8 +577,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		if (this.awsRealTimeSocket) {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-			this.awsRealTimeSocket.onclose = null;
-			this.awsRealTimeSocket.onerror = null;
 			this.awsRealTimeSocket.close();
 		}
 
@@ -727,7 +725,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					};
 					newSocket.onopen = () => {
 						this.awsRealTimeSocket = newSocket;
-						res();
+						return res();
 					};
 				});
 			})();
@@ -742,7 +740,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						};
 						this.awsRealTimeSocket.onclose = event => {
 							logger.debug(`WebSocket closed ${event.reason}`);
-
 							rej(new Error(JSON.stringify(event)));
 						};
 

@@ -13,7 +13,6 @@
 
 import { Reachability } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
-
 import { ConnectionState } from '../index';
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 

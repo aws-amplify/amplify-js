@@ -226,6 +226,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	): Promise<any> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
+
+			// Once connected, subscribe to all topics registered observers
 			this._topicObservers.forEach(
 				(_value: Set<SubscriptionObserver<any>>, key: string) => {
 					client.subscribe(key);
@@ -237,12 +239,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	protected async disconnect(clientId: string): Promise<void> {
 		const client = await this.clientsQueue.get(clientId);
-		this.clientsQueue.remove(clientId);
 
 		if (client && client.isConnected()) {
 			client.disconnect();
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		}
+		this.clientsQueue.remove(clientId);
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
@@ -292,8 +293,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	): Observable<any> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
-		let reconnectSubscription: ZenObservable.Subscription | undefined =
-			undefined;
+		let reconnectSubscription: ZenObservable.Subscription;
 
 		return new Observable(observer => {
 			targetTopics.forEach(topic => {
