@@ -13,6 +13,7 @@
 import { InteractionsClass as Interactions } from '../src/Interactions';
 import { AbstractInteractionsProvider } from '../src/Providers';
 import { InteractionsOptions } from '../src/types';
+import { AWSLexProvider } from '../src/Providers';
 
 (global as any).Response = () => {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
@@ -216,7 +217,12 @@ describe('Interactions', () => {
 			expect.assertions(4);
 		});
 
-		test('Check if default provider is AWSLexProvider', async () => {
+		test('Configure bot with default provider (AWSLexProvider) using manual config', async () => {
+			const lexV1ConfigureSpy = jest.spyOn(
+				AWSLexProvider.prototype,
+				'configure'
+			);
+
 			const myBot = {
 				MyBot: {
 					name: 'MyBot', // default provider 'AWSLexProvider'
@@ -230,10 +236,46 @@ describe('Interactions', () => {
 				},
 			};
 
-			expect(interactions.configure(myConfig)).toEqual({
-				bots: myBot,
+			interactions.configure(myConfig);
+
+			// check if provider's configure was called
+			expect(lexV1ConfigureSpy).toBeCalledTimes(Object.keys(myBot).length);
+			expect(lexV1ConfigureSpy).toHaveBeenCalledWith({
+				MyBot: myBot.MyBot,
 			});
-			expect.assertions(1);
+			expect.assertions(2);
+		});
+
+		test('Configure bot with default provider (AWSLexProvider) using aws-exports config', async () => {
+			const lexV1ConfigureSpy = jest.spyOn(
+				AWSLexProvider.prototype,
+				'configure'
+			);
+
+			const awsmobileBot = {
+				name: 'BookTripMOBILEHUB',
+				alias: '$LATEST',
+				region: 'us-east-1',
+				description: 'Bot to make reservations for a visit to a city.',
+				'bot-template': 'bot-trips',
+			};
+			const awsmobile = {
+				aws_bots: 'enable',
+				aws_bots_config: [awsmobileBot],
+				aws_project_name: 'bots',
+				aws_project_region: 'us-east-1',
+			};
+
+			interactions.configure(awsmobile);
+
+			// check if provider's configure was called
+			expect(lexV1ConfigureSpy).toBeCalledTimes(
+				awsmobile.aws_bots_config.length
+			);
+			expect(lexV1ConfigureSpy).toHaveBeenCalledWith({
+				BookTripMOBILEHUB: awsmobileBot,
+			});
+			expect.assertions(2);
 		});
 
 		test('Configure bot belonging to non-existing plugin', async () => {
