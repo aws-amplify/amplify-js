@@ -1877,7 +1877,7 @@ orbs:
               no_output_timeout: 2m
           - run-with-retry:
               label: Install AmplifyJS
-              command: npm i -S aws-amplify && npm i -g wait-on serve
+              command: npm i -S aws-amplify && npm i -g --prefix=$HOME/.local wait-on serve
           - run:
               name: Call Amplify library in code
               command: |
@@ -2013,7 +2013,7 @@ orbs:
         steps:
           - run-with-retry:
               label: Install Expo
-              command: npm i -g expo-cli@<< parameters.tag >> wait-on
+              command: npm i -g --prefix=$HOME/.local expo-cli@<< parameters.tag >> wait-on
           - run-with-retry:
               label: Scaffold App
               command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >> && expo-cli init amplify_getting_started_<< parameters.framework >> --yes
