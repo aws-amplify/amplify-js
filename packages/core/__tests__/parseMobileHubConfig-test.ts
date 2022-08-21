@@ -40,6 +40,7 @@ describe('Parser', () => {
 				},
 			},
 			Auth: {
+				endpoint: undefined,
 				identityPoolId: 'a',
 				identityPoolRegion: '',
 				mandatorySignIn: true,
