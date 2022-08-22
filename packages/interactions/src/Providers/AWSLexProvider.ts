@@ -22,10 +22,8 @@ import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
 	PostTextCommandInput,
-	PostTextCommandOutput,
 	PostContentCommand,
 	PostContentCommandInput,
-	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
