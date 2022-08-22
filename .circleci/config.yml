@@ -1669,6 +1669,10 @@ workflows:
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
+    when:
+      and:
+        - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]
+        - equal: [ canaries, << pipeline.schedule.name >> ]
     jobs:
       ## Web
       # React
@@ -1818,6 +1822,16 @@ orbs:
         MAX_WAIT_ON_TIMEOUT: 180000 # 3 minutes; how long we wait for the build to succeed before failing the job
 
     commands:
+      record-failure:
+        description: Publish failure datapoint to cloudwatch
+        steps:
+          - run:
+              name: Invoking lambda
+              command: |
+                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
+                echo $payload
+                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
+              when: on_fail
       run-with-retry:
         description: Run command with retry
         parameters:
@@ -1896,6 +1910,7 @@ orbs:
           - aws-cli/setup:
               role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
               role-arn: ${AWS_ROLE_ARN}
+              session-duration: '2000'
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../
@@ -1924,13 +1939,7 @@ orbs:
                 - run-with-retry:
                     label: Run in Prod Mode
                     command: npm run build && (npm start & wait-on http://localhost:3000 -t $MAX_WAIT_ON_TIMEOUT)
-          - run:
-              name: Invoking lambda
-              command: |
-                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
-                echo $payload
-                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-              when: on_fail
+          - record-failure
       rn-ios:
         parameters:
           framework:
@@ -1954,6 +1963,7 @@ orbs:
           - aws-cli/setup:
               role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
               role-arn: ${AWS_ROLE_ARN}
+              session-duration: '2000'
           - run-with-retry:
               label: Scaffold App
               pre-command: cd ../ && rm -rf amplify_getting_started_<< parameters.framework >>
@@ -1977,13 +1987,7 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run ios
-          - run:
-              name: Invoking lambda
-              command: |
-                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
-                echo $payload
-                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-              when: on_fail
+          - record-failure
       rn-android:
         parameters:
           framework:
@@ -1999,6 +2003,7 @@ orbs:
           - aws-cli/setup:
               role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
               role-arn: ${AWS_ROLE_ARN}
+              session-duration: '2000'
           - run:
               name: Create avd
               command: |
@@ -2041,13 +2046,7 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run android
-          - run:
-              name: Invoking lambda
-              command: |
-                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
-                echo $payload
-                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-              when: on_fail
+          - record-failure
       expo:
         parameters:
           framework:
@@ -2064,6 +2063,7 @@ orbs:
           - aws-cli/setup:
               role-session-name: ${CIRCLE_WORKFLOW_JOB_ID}
               role-arn: ${AWS_ROLE_ARN}
+              session-duration: '2000'
           - run-with-retry:
               label: Install Expo
               command: npm i -g --prefix=$HOME/.local expo-cli@<< parameters.tag >> wait-on
@@ -2085,11 +2085,5 @@ orbs:
           - run-with-retry:
               label: Start App
               command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
-          - run:
-              name: Invoking lambda
-              command: |
-                payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
-                echo $payload
-                aws lambda invoke --function-name CircleCIWorkflowFailureHandler --payload "$payload" --cli-binary-format raw-in-base64-out response.json
-              when: on_fail
+          - record-failure
 # End Canary Orb
