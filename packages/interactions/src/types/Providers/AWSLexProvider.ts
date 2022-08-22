@@ -26,12 +26,3 @@ export interface AWSLexProviderOption {
 export interface AWSLexProviderOptions {
 	[key: string]: AWSLexProviderOption;
 }
-
-export interface PostContentCommandOutputFormatted
-	extends Omit<PostContentCommandOutput, 'audioStream'> {
-	audioStream?: Uint8Array;
-}
-
-export type AWSLexProviderV2SendResponse =
-	| PostTextCommandOutput
-	| PostContentCommandOutputFormatted;

@@ -16,14 +16,15 @@ import {
 	AWSLexProviderOptions,
 	InteractionsResponse,
 	InteractionsMessage,
-	AWSLexProviderV2SendResponse,
 } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
 	PostTextCommandInput,
+	PostTextCommandOutput,
 	PostContentCommand,
 	PostContentCommandInput,
+	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
@@ -33,6 +34,15 @@ import {
 import { convert } from './AWSLexProviderHelper/convert';
 
 const logger = new Logger('AWSLexProvider');
+
+interface PostContentCommandOutputFormatted
+	extends Omit<PostContentCommandOutput, 'audioStream'> {
+	audioStream?: Uint8Array;
+}
+
+type AWSLexProviderSendResponse =
+	| PostTextCommandOutput
+	| PostContentCommandOutputFormatted;
 
 export class AWSLexProvider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceClient: LexRuntimeServiceClient;
@@ -66,7 +76,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	 * for a bot if configured
 	 * @deprecated
 	 */
-	reportBotStatus(data: AWSLexProviderV2SendResponse, botname: string) {
+	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
