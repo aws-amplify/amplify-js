@@ -90,29 +90,27 @@ export class InteractionsClass {
 	}
 
 	public addPluggable(pluggable: InteractionsProvider) {
-		if (!(pluggable && pluggable.getCategory() === 'Interactions')) {
-			throw new Error('Invalid pluggable');
-		}
+		if (pluggable && pluggable.getCategory() === 'Interactions') {
+			if (!this._pluggables[pluggable.getProviderName()]) {
+				// configure bots for the new plugin
+				Object.keys(this._options.bots)
+					.filter(
+						botKey =>
+							this._options.bots[botKey].providerName ===
+							pluggable.getProviderName()
+					)
+					.forEach(botKey => {
+						const bot = this._options.bots[botKey];
+						pluggable.configure({ [bot.name]: bot });
+					});
 
-		if (!this._pluggables[pluggable.getProviderName()]) {
-			// configure bots for the new plugin
-			Object.keys(this._options.bots)
-				.filter(
-					botKey =>
-						this._options.bots[botKey].providerName ===
-						pluggable.getProviderName()
-				)
-				.forEach(botKey => {
-					const bot = this._options.bots[botKey];
-					pluggable.configure({ [bot.name]: bot });
-				});
-
-			this._pluggables[pluggable.getProviderName()] = pluggable;
-			return;
-		} else {
-			throw new Error(
-				'Pluggable ' + pluggable.getProviderName() + ' already plugged'
-			);
+				this._pluggables[pluggable.getProviderName()] = pluggable;
+				return;
+			} else {
+				throw new Error(
+					'Pluggable ' + pluggable.getProviderName() + ' already plugged'
+				);
+			}
 		}
 	}
 
