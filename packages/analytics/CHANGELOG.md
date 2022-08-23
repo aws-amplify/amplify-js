@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.16...@aws-amplify/analytics@5.2.17) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.15...@aws-amplify/analytics@5.2.16) (2022-08-16)
+
+
+### Reverts
+
+* Revert "kinesis fix" ([88f118e](https://github.com/aws-amplify/amplify-js/commit/88f118e1340c38ba237362644035b4d7c9f72557))
+* Revert "update personalize type to accomodate string" ([4e0e22b](https://github.com/aws-amplify/amplify-js/commit/4e0e22bd733aac715681953dac90440a44fd49bd))
+
+
+
+
+
+## [5.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.14...@aws-amplify/analytics@5.2.15) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [5.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.13...@aws-amplify/analytics@5.2.14) (2022-07-28)
 
 **Note:** Version bump only for package @aws-amplify/analytics

@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.0...@aws-amplify/core@4.7.1) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.6.1...@aws-amplify/core@4.7.0) (2022-08-16)
+
+
+### Features
+
+* **@aws-amplify/core:** Throw Error if body attribute passed to Sign… ([#10137](https://github.com/aws-amplify/amplify-js/issues/10137)) ([360bde2](https://github.com/aws-amplify/amplify-js/commit/360bde20716778b69af339f4f66b42c05ccf4639))
+
+
+
+
+
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.6.0...@aws-amplify/core@4.6.1) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 # [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.5.10...@aws-amplify/core@4.6.0) (2022-07-28)
 
 

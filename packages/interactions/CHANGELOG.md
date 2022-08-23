@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.49...@aws-amplify/interactions@4.0.50) (2022-08-18)
+
+
+### Bug Fixes
+
+* **interactions:** fix configure default provider ([#10215](https://github.com/aws-amplify/amplify-js/issues/10215)) ([d4c3955](https://github.com/aws-amplify/amplify-js/commit/d4c395520bc66f24325babbe53e6ab7ebdea4d3b))
+
+
+
+
+
+## [4.0.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.48...@aws-amplify/interactions@4.0.49) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.48](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.47...@aws-amplify/interactions@4.0.48) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
 ## [4.0.47](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.46...@aws-amplify/interactions@4.0.47) (2022-07-28)
 
 **Note:** Version bump only for package @aws-amplify/interactions
