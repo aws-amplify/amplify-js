@@ -16,13 +16,12 @@ import {
 	AWSLexProviderV2Options,
 	InteractionsResponse,
 	InteractionsMessage,
-	AWSLexProviderV2SendResponse,
-	RecognizeUtteranceCommandOutputFormatted,
 } from '../types';
 import {
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
 	RecognizeTextCommandInput,
+	RecognizeTextCommandOutput,
 	RecognizeUtteranceCommand,
 	RecognizeUtteranceCommandInput,
 	RecognizeUtteranceCommandOutput,
@@ -35,6 +34,26 @@ import {
 import { convert, unGzipBase64AsJson } from './AWSLexProviderHelper/convert';
 
 const logger = new Logger('AWSLexProviderV2');
+
+interface RecognizeUtteranceCommandOutputFormatted
+	extends Omit<
+		RecognizeUtteranceCommandOutput,
+		| 'messages'
+		| 'interpretations'
+		| 'sessionState'
+		| 'requestAttributes'
+		| 'audioStream'
+	> {
+	messages?: RecognizeTextCommandOutput['messages'];
+	sessionState?: RecognizeTextCommandOutput['sessionState'];
+	interpretations?: RecognizeTextCommandOutput['interpretations'];
+	requestAttributes?: RecognizeTextCommandOutput['requestAttributes'];
+	audioStream?: Uint8Array;
+}
+
+type AWSLexProviderV2SendResponse =
+	| RecognizeTextCommandOutput
+	| RecognizeUtteranceCommandOutputFormatted;
 
 export class AWSLexProviderV2 extends AbstractInteractionsProvider {
 	private lexRuntimeServiceV2Client: LexRuntimeV2Client;
@@ -267,6 +286,9 @@ export class AWSLexProviderV2 extends AbstractInteractionsProvider {
 				: undefined,
 			requestAttributes: data.requestAttributes
 				? unGzipBase64AsJson(data.requestAttributes)
+				: undefined,
+			inputTranscript: data.inputTranscript
+				? unGzipBase64AsJson(data.inputTranscript)
 				: undefined,
 			audioStream: data.audioStream
 				? await convert(data.audioStream)

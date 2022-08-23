@@ -10,11 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-	RecognizeTextCommandOutput,
-	RecognizeUtteranceCommandOutput,
-} from '@aws-sdk/client-lex-runtime-v2';
-
 export interface AWSLexProviderV2Option {
 	name: string;
 	botId: string;
@@ -28,23 +23,3 @@ export interface AWSLexProviderV2Option {
 export interface AWSLexProviderV2Options {
 	[key: string]: AWSLexProviderV2Option;
 }
-
-export interface RecognizeUtteranceCommandOutputFormatted
-	extends Omit<
-		RecognizeUtteranceCommandOutput,
-		| 'messages'
-		| 'interpretations'
-		| 'sessionState'
-		| 'requestAttributes'
-		| 'audioStream'
-	> {
-	messages?: RecognizeTextCommandOutput['messages'];
-	sessionState?: RecognizeTextCommandOutput['sessionState'];
-	interpretations?: RecognizeTextCommandOutput['interpretations'];
-	requestAttributes?: RecognizeTextCommandOutput['requestAttributes'];
-	audioStream?: Uint8Array;
-}
-
-export type AWSLexProviderV2SendResponse =
-	| RecognizeTextCommandOutput
-	| RecognizeUtteranceCommandOutputFormatted;
