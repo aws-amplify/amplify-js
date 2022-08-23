@@ -1822,11 +1822,11 @@ orbs:
         MAX_WAIT_ON_TIMEOUT: 180000 # 3 minutes; how long we wait for the build to succeed before failing the job
 
     commands:
-      record-failure:
-        description: Publish failure datapoint to cloudwatch
+      send-metric-on-fail:
+        description: Send failure datapoint to cloudwatch
         steps:
           - run:
-              name: Invoking lambda
+              name: Send failure datapoint to cloudwatch
               command: |
                 payload="{\"jobName\": \"${CIRCLE_JOB}\", \"projectRepoName\": \"${CIRCLE_PROJECT_REPONAME}\"}"
                 echo $payload
@@ -1939,7 +1939,7 @@ orbs:
                 - run-with-retry:
                     label: Run in Prod Mode
                     command: npm run build && (npm start & wait-on http://localhost:3000 -t $MAX_WAIT_ON_TIMEOUT)
-          - record-failure
+          - send-metric-on-fail
       rn-ios:
         parameters:
           framework:
@@ -1987,7 +1987,7 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run ios
-          - record-failure
+          - send-metric-on-fail
       rn-android:
         parameters:
           framework:
@@ -2046,7 +2046,7 @@ orbs:
           - run-with-retry:
               label: Start App
               command: npm run android
-          - record-failure
+          - send-metric-on-fail
       expo:
         parameters:
           framework:
@@ -2085,5 +2085,5 @@ orbs:
           - run-with-retry:
               label: Start App
               command: yarn web & wait-on http://localhost:19006  -t $MAX_WAIT_ON_TIMEOUT
-          - record-failure
+          - send-metric-on-fail
 # End Canary Orb
