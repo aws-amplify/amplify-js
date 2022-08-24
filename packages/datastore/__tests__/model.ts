@@ -1,11 +1,10 @@
 import {
 	initSchema,
-	NonModelTypeConstructor,
 	ModelInit,
 	MutableModel,
+	NonModelTypeConstructor,
 	PersistentModelConstructor,
-	AsyncCollection,
-	Schema,
+	AsyncCollection
 } from '../src/index';
 import { newSchema } from './schema';
 
@@ -64,12 +63,12 @@ declare class PostMetadataType {
 	readonly rating: number;
 	readonly tags?: string[];
 	readonly nested?: NestedType;
-	constructor(init: ModelInit<PostMetadataType>);
+	constructor(init: PostMetadataType);
 }
 
 declare class NestedType {
 	readonly aField: string;
-	constructor(init: ModelInit<NestedType>);
+	constructor(init: NestedType);
 }
 
 declare class CommentModel {
@@ -168,6 +167,13 @@ declare class PersonModel {
 	readonly firstName: string;
 	readonly lastName: string;
 	readonly username?: string;
+	constructor(init: ModelInit<PersonModel>);
+	static copyOf(
+		source: PersonModel,
+		mutator: (
+			draft: MutableModel<PersonModel>
+		) => MutableModel<PersonModel> | void
+	): PersonModel;
 }
 
 declare class SongModel {
@@ -233,7 +239,6 @@ const {
 	Project: PersistentModelConstructor<ProjectModel>;
 	Team: PersistentModelConstructor<TeamModel>;
 };
-``;
 
 export {
 	Author,

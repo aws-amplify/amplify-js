@@ -1,7 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
+import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+let mockGraphQl;
 
 const sessionStorageMock = (() => {
 	let store = {};
@@ -25,10 +26,7 @@ const sessionStorageMock = (() => {
 Object.defineProperty(window, 'sessionStorage', {
 	value: sessionStorageMock,
 });
-
-describe('Sync', () => {
-	describe('jitteredRetry', () => {
-		const defaultQuery = `query {
+const defaultQuery = `query {
 			syncPosts {
 				items {
 					id
@@ -42,11 +40,13 @@ describe('Sync', () => {
 				startedAt
 			}
 		}`;
-		const defaultVariables = {};
-		const defaultOpName = 'syncPosts';
-		const defaultModelDefinition = { name: 'Post' };
-		const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+const defaultVariables = {};
+const defaultOpName = 'syncPosts';
+const defaultModelDefinition = { name: 'Post' };
+const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
+describe('Sync', () => {
+	describe('jitteredRetry', () => {
 		beforeEach(() => {
 			window.sessionStorage.clear();
 			jest.resetModules();
@@ -65,6 +65,39 @@ describe('Sync', () => {
 							},
 							{
 								id: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			const data = await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(data).toMatchSnapshot();
+		});
+
+		it('custom pk: should return all data', async () => {
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								postId: '1',
+								title: 'Item 1',
+							},
+							{
+								postId: '2',
 								title: 'Item 2',
 							},
 						],
@@ -282,6 +315,157 @@ describe('Sync', () => {
 				}
 			});
 		});
+
+		it('should send user agent suffix with graphql request', async () => {
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								id: '1',
+								title: 'Item 1',
+							},
+							{
+								id: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(mockGraphQl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+				})
+			);
+		});
+	});
+
+	describe('error handler', () => {
+		const errorHandler = jest.fn();
+		const data = {
+			syncPosts: {
+				items: [
+					{
+						id: '1',
+						title: 'Item 1',
+					},
+					null,
+					{
+						id: '3',
+						title: 'Item 3',
+					},
+				],
+			},
+		};
+
+		beforeEach(async () => {
+			window.sessionStorage.clear();
+			jest.resetModules();
+			jest.resetAllMocks();
+			errorHandler.mockClear();
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+		});
+
+		test('bad record', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Cannot return boolean for string type',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'BadRecord',
+				})
+			);
+		});
+
+		test('connection timeout', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Connection failed: Connection Timeout',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'Transient',
+				})
+			);
+		});
+
+		test('server error', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							message: 'Error: Request failed with status code 500',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'Transient',
+				})
+			);
+		});
 	});
 });
 
@@ -289,21 +473,26 @@ function jitteredRetrySyncProcessorSetup({
 	rejectResponse,
 	resolveResponse,
 	coreMocks,
+	errorHandler = () => null,
 }: {
 	rejectResponse?: any;
 	resolveResponse?: any;
 	coreMocks?: object;
+	errorHandler?: () => null;
 }) {
-	jest.mock('@aws-amplify/api', () => ({
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: () =>
+	mockGraphQl = jest.fn(
+		() =>
 			new Promise((res, rej) => {
 				if (resolveResponse) {
 					res(resolveResponse);
 				} else if (rejectResponse) {
 					rej(rejectResponse);
 				}
-			}),
+			})
+	);
+	jest.mock('@aws-amplify/api', () => ({
+		...jest.requireActual('@aws-amplify/api'),
+		graphql: mockGraphQl,
 	}));
 
 	jest.mock('@aws-amplify/core', () => ({
@@ -314,8 +503,8 @@ function jitteredRetrySyncProcessorSetup({
 		...coreMocks,
 	}));
 
-	const SyncProcessorClass = require('../src/sync/processors/sync')
-		.SyncProcessor;
+	const SyncProcessorClass =
+		require('../src/sync/processors/sync').SyncProcessor;
 
 	const testInternalSchema = {
 		namespaces: {},
@@ -326,7 +515,9 @@ function jitteredRetrySyncProcessorSetup({
 		testInternalSchema,
 		null, // syncPredicates
 		{ aws_appsync_authenticationType: 'userPools' },
-		defaultAuthStrategy
+		defaultAuthStrategy,
+		errorHandler,
+		{}
 	);
 
 	return SyncProcessor;

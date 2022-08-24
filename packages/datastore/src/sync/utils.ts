@@ -28,6 +28,11 @@ import {
 	AuthModeStrategy,
 	ModelAttributes,
 } from '../types';
+import {
+	exhaustiveCheck,
+	extractPrimaryKeyFieldNames,
+	establishRelationAndKeys,
+} from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -47,10 +52,10 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Partial<Omit<ModelInstanceMetadata, 'id'>> = {
-	_version: undefined,
-	_lastChangedAt: undefined,
-	_deleted: undefined,
+const dummyMetadata: ModelInstanceMetadata = {
+	_version: undefined!,
+	_lastChangedAt: undefined!,
+	_deleted: undefined!,
 };
 
 const metadataFields = <(keyof ModelInstanceMetadata)[]>(
@@ -79,7 +84,7 @@ export function generateSelectionSet(
 	if (isSchemaModel(modelDefinition)) {
 		scalarAndMetadataFields = scalarAndMetadataFields
 			.concat(getMetadataFields())
-			.concat(getConnectionFields(modelDefinition));
+			.concat(getConnectionFields(modelDefinition, namespace));
 	}
 
 	const result = scalarAndMetadataFields.join('\n');
@@ -104,11 +109,9 @@ function getOwnerFields(
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
-		modelDefinition.attributes.forEach((attr) => {
+		modelDefinition.attributes.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
-				const rule = attr.properties.rules.find(
-					(rule) => rule.allow === 'owner'
-				);
+				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
 				if (rule && rule.ownerField) {
 					ownerFields.push(rule.ownerField);
 				}
@@ -124,7 +127,7 @@ function getScalarFields(
 	const { fields } = modelDefinition;
 
 	const result = Object.values(fields)
-		.filter((field) => {
+		.filter(field => {
 			if (isGraphQLScalarType(field.type) || isEnumFieldType(field.type)) {
 				return true;
 			}
@@ -140,7 +143,11 @@ function getScalarFields(
 	return result;
 }
 
-function getConnectionFields(modelDefinition: SchemaModel): string[] {
+// Used for generating the selection set for queries and mutations
+function getConnectionFields(
+	modelDefinition: SchemaModel,
+	namespace: SchemaNamespace
+): string[] {
 	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
@@ -156,7 +163,26 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					break;
 				case 'BELONGS_TO':
 					if (isTargetNameAssociation(association)) {
-						result.push(`${name} { id _deleted }`);
+						// New codegen (CPK)
+						if (association.targetNames && association.targetNames.length > 0) {
+							// Need to retrieve relations in order to get connected model keys
+							const [relations] = establishRelationAndKeys(namespace);
+
+							const connectedModelName =
+								modelDefinition.fields[name].type['model'];
+
+							const byPkIndex = relations[connectedModelName].indexes.find(
+								([name]) => name === 'byPk'
+							);
+							const keyFields = byPkIndex && byPkIndex[1];
+							const keyFieldSelectionSet = keyFields?.join(' ');
+
+							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
+							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
+						} else {
+							// backwards-compatability for schema generated prior to custom primary key support
+							result.push(`${name} { id _deleted }`);
+						}
 					}
 					break;
 				default:
@@ -181,7 +207,7 @@ function getNonModelFields(
 			);
 
 			const nested: string[] = [];
-			Object.values(typeDefinition.fields).forEach((field) => {
+			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
@@ -205,13 +231,13 @@ export function getAuthorizationRules(
 	// Searching for owner authorization on attributes
 	const authConfig = ([] as ModelAttributes)
 		.concat(modelDefinition.attributes || [])
-		.find((attr) => attr && attr.type === 'auth');
+		.find(attr => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
 
 	const resultRules: AuthorizationRule[] = [];
 	// Multiple rules can be declared for allow: owner
-	rules.forEach((rule) => {
+	rules.forEach(rule => {
 		// setting defaults for backwards compatibility with old cli
 		const {
 			identityClaim = 'cognito:username',
@@ -245,7 +271,7 @@ export function getAuthorizationRules(
 			// only pay attention to the public level
 			const modelConfig = ([] as ModelAttributes)
 				.concat(modelDefinition.attributes || [])
-				.find((attr) => attr && attr.type === 'model');
+				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
 			const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
@@ -413,10 +439,13 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		...(id ? { id } : {}),
+		...optionalId,
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
 		operation: operation!,
 		condition: JSON.stringify(condition),
@@ -426,7 +455,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -434,17 +464,27 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
-	predicate.predicates.forEach((p) => {
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
+	predicate.predicates.forEach(p => {
 		if (isPredicateObj(p)) {
 			const { field, operator, operand } = p;
 
-			if (field === 'id') {
+			// This is compatible with how the GQL Transform currently generates the Condition Input,
+			// i.e. any PK and SK fields are omitted and can't be used as conditions.
+			// However, I think this limits usability.
+			// What if we want to delete all records where SK > some value
+			// Or all records where PK = some value but SKs are different values
+
+			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
+			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
+			if (keyFields.includes(field as string)) {
 				return;
 			}
 
 			result[field] = { [operator]: operand };
 		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
+			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
 		}
 	});
 
@@ -465,10 +505,10 @@ export function predicateToGraphQLFilter(
 
 	result[type] = isList ? [] : {};
 
-	const appendToFilter = (value) =>
+	const appendToFilter = value =>
 		isList ? result[type].push(value) : (result[type] = value);
 
-	predicates.forEach((predicate) => {
+	predicates.forEach(predicate => {
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
@@ -532,7 +572,7 @@ export async function getModelAuthModes({
 
 	try {
 		await Promise.all(
-			operations.map(async (operation) => {
+			operations.map(async operation => {
 				const authModes = await authModeStrategy({
 					schema,
 					modelName,
@@ -562,7 +602,7 @@ export function getForbiddenError(error) {
 	];
 	let forbiddenError;
 	if (error && error.errors) {
-		forbiddenError = (error.errors as [any]).find((err) =>
+		forbiddenError = (error.errors as [any]).find(err =>
 			forbiddenErrorMessages.includes(err.message)
 		);
 	} else if (error && error.message) {
@@ -580,7 +620,7 @@ export function getClientSideAuthError(error) {
 	const clientSideError =
 		error &&
 		error.message &&
-		clientSideAuthErrors.find((clientError) =>
+		clientSideAuthErrors.find(clientError =>
 			error.message.includes(clientError)
 		);
 	return clientSideError || null;
@@ -610,4 +650,16 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
+export function getIdentifierValue(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata | PersistentModel
+): string {
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
+	const idOrPk = pkFieldNames.map(f => model[f]).join('-');
+
+	return idOrPk;
 }

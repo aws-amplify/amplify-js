@@ -8,6 +8,11 @@ import {
 	ProducerModelPredicate,
 	SchemaModel,
 } from '../types';
+import {
+	exhaustiveCheck,
+	extractPrimaryKeyFieldNames,
+	extractPrimaryKeyValues,
+} from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 
@@ -24,7 +29,7 @@ export const PredicateAll = Symbol('A predicate that matches all records');
 
 export class Predicates {
 	public static get ALL(): typeof PredicateAll {
-		const predicate = <ProducerModelPredicate<any>>((c) => c);
+		const predicate = <ProducerModelPredicate<any>>(c => c);
 
 		predicatesAllSet.add(predicate);
 
@@ -43,7 +48,7 @@ export class ModelPredicateCreator {
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
-		Object.values(modelDefinition.fields).forEach((field) => {
+		Object.values(modelDefinition.fields).forEach(field => {
 			if (field.association) {
 				if (field.association.targetName) {
 					fieldNames.add(field.association.targetName);
@@ -91,8 +96,8 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver as any)
-									?.predicates.push(group);
+									.get(receiver as any)!
+									.predicates.push(group);
 
 								return receiver;
 							};
@@ -115,8 +120,8 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver as any)
-							?.predicates.push({ field, operator, operand });
+							.get(receiver as any)!
+							.predicates.push({ field, operator, operand });
 						return receiver;
 					};
 					return result;
@@ -164,13 +169,31 @@ export class ModelPredicateCreator {
 		);
 	}
 
-	static createForId<T extends PersistentModel>(
+	static createForSingleField<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		id: string
+		fieldName: string,
+		value: string
 	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition).id(
-			'eq',
-			<any>id
-		);
+		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
+			fieldName
+		](<any>'eq', <any>value);
+	}
+
+	static createForPk<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		model: T
+	) {
+		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+		const keyValues = extractPrimaryKeyValues(model, keyFields);
+
+		let modelPredicate =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		keyFields.forEach((field, idx) => {
+			const operand = keyValues[idx];
+			modelPredicate = modelPredicate[field](<any>'eq', <any>operand);
+		});
+
+		return modelPredicate;
 	}
 }

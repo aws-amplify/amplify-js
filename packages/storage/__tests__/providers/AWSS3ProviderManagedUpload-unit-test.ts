@@ -22,7 +22,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { Logger } from '@aws-amplify/core';
 import * as events from 'events';
-import * as sinon from 'sinon';
 
 jest.useRealTimers();
 
@@ -79,39 +78,64 @@ afterEach(() => {
 
 describe('single part upload tests', () => {
 	test('upload a string as body', async () => {
-		const putObjectSpyOn = jest.spyOn(S3Client.prototype, 'send').mockImplementation(command => {
-			if (command instanceof PutObjectCommand) return Promise.resolve(command.input.Key);
-		});
-		const uploader = new AWSS3ProviderManagedUpload(testParams, testOpts, new events.EventEmitter());
+		const putObjectSpyOn = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(command => {
+				if (command instanceof PutObjectCommand)
+					return Promise.resolve(command.input.Key);
+			});
+		const uploader = new AWSS3ProviderManagedUpload(
+			testParams,
+			testOpts,
+			new events.EventEmitter()
+		);
 		const data = await uploader.upload();
 		expect(data).toBe(testParams.Key);
 		expect(putObjectSpyOn.mock.calls[0][0].input).toStrictEqual(testParams);
 	});
 
 	test('upload a javascript object as body', async () => {
-		const putObjectSpyOn = jest.spyOn(S3Client.prototype, 'send').mockImplementation(command => {
-			if (command instanceof PutObjectCommand) return Promise.resolve(command.input.Key);
-		});
+		const putObjectSpyOn = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(command => {
+				if (command instanceof PutObjectCommand)
+					return Promise.resolve(command.input.Key);
+			});
 		const objectBody = { key1: 'value1', key2: 'value2' };
 		const testParamsWithObjectBody: any = Object.assign({}, testParams);
 		testParamsWithObjectBody.Body = objectBody;
-		const uploader = new AWSS3ProviderManagedUpload(testParamsWithObjectBody, testOpts, new events.EventEmitter());
+		const uploader = new AWSS3ProviderManagedUpload(
+			testParamsWithObjectBody,
+			testOpts,
+			new events.EventEmitter()
+		);
 		const data = await uploader.upload();
 		expect(data).toBe(testParamsWithObjectBody.Key);
-		expect(putObjectSpyOn.mock.calls[0][0].input).toStrictEqual(testParamsWithObjectBody);
+		expect(putObjectSpyOn.mock.calls[0][0].input).toStrictEqual(
+			testParamsWithObjectBody
+		);
 	});
 
 	test('upload a file as body', async () => {
-		const putObjectSpyOn = jest.spyOn(S3Client.prototype, 'send').mockImplementation(command => {
-			if (command instanceof PutObjectCommand) return Promise.resolve(command.input.Key);
-		});
+		const putObjectSpyOn = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(command => {
+				if (command instanceof PutObjectCommand)
+					return Promise.resolve(command.input.Key);
+			});
 		const file = new File(['TestFileContent'], 'testFileName');
 		const testParamsWithFileBody: any = Object.assign({}, testParams);
 		testParamsWithFileBody.Body = file;
-		const uploader = new AWSS3ProviderManagedUpload(testParamsWithFileBody, testOpts, new events.EventEmitter());
+		const uploader = new AWSS3ProviderManagedUpload(
+			testParamsWithFileBody,
+			testOpts,
+			new events.EventEmitter()
+		);
 		const data = await uploader.upload();
 		expect(data).toBe(testParamsWithFileBody.Key);
-		expect(putObjectSpyOn.mock.calls[0][0].input).toStrictEqual(testParamsWithFileBody);
+		expect(putObjectSpyOn.mock.calls[0][0].input).toStrictEqual(
+			testParamsWithFileBody
+		);
 	});
 });
 
@@ -119,21 +143,23 @@ describe('multi part upload tests', () => {
 	test('happy case: upload a string as body that splits in two parts', async () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
-		const eventSpy = sinon.spy();
+		const eventSpy = jest.fn();
 		emitter.on('sendUploadProgress', eventSpy);
 
 		// Setup Spy for S3 service calls
-		const s3ServiceCallSpy = jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof CreateMultipartUploadCommand) {
-				return Promise.resolve({ UploadId: testUploadId });
-			} else if (command instanceof UploadPartCommand) {
-				return Promise.resolve({
-					ETag: 'test_etag_' + command.input.PartNumber,
-				});
-			} else if (command instanceof CompleteMultipartUploadCommand) {
-				return Promise.resolve({ Key: testParams.Key });
-			}
-		});
+		const s3ServiceCallSpy = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async command => {
+				if (command instanceof CreateMultipartUploadCommand) {
+					return Promise.resolve({ UploadId: testUploadId });
+				} else if (command instanceof UploadPartCommand) {
+					return Promise.resolve({
+						ETag: 'test_etag_' + command.input.PartNumber,
+					});
+				} else if (command instanceof CompleteMultipartUploadCommand) {
+					return Promise.resolve({ Key: testParams.Key });
+				}
+			});
 
 		// Now make calls
 		const uploader = new TestClass(testParams, testOpts, emitter);
@@ -187,14 +213,14 @@ describe('multi part upload tests', () => {
 
 		// Progress report testing
 		// First progress is reported at the end, when first full part is uploaded
-		expect(eventSpy.getCall(0).args[0]).toStrictEqual({
+		expect(eventSpy).toHaveBeenNthCalledWith(1, {
 			key: testParams.Key,
 			loaded: testMinPartSize,
 			part: 1,
 			total: testParams.Body.length,
 		});
 		// Second progress is reported at the end of second and final part
-		expect(eventSpy.getCall(1).args[0]).toStrictEqual({
+		expect(eventSpy).toHaveBeenNthCalledWith(2, {
 			key: testParams.Key,
 			loaded: testParams.Body.length,
 			part: 2,
@@ -205,35 +231,37 @@ describe('multi part upload tests', () => {
 	test('error case: upload a string as body that splits in two parts but second part fails', async () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
-		const eventSpy = sinon.spy();
+		const eventSpy = jest.fn();
 		emitter.on('sendUploadProgress', eventSpy);
 
 		// Setup Spy for S3 service calls and introduce a service failure
-		const s3ServiceCallSpy = jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof CreateMultipartUploadCommand) {
-				return Promise.resolve({ UploadId: testUploadId });
-			} else if (command instanceof UploadPartCommand) {
-				let promise = null;
-				if (command.input.PartNumber === 2) {
-					promise = new Promise((resolve, reject) => {
-						setTimeout(() => {
-							reject(new Error('Part 2 just going to fail in 100ms'));
-						}, 100);
-					});
-				} else {
-					promise = new Promise((resolve, reject) => {
-						setTimeout(() => {
-							resolve({
-								ETag: 'test_etag_' + command.input.PartNumber,
-							});
-						}, 200);
-					});
+		const s3ServiceCallSpy = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async command => {
+				if (command instanceof CreateMultipartUploadCommand) {
+					return Promise.resolve({ UploadId: testUploadId });
+				} else if (command instanceof UploadPartCommand) {
+					let promise = null;
+					if (command.input.PartNumber === 2) {
+						promise = new Promise((resolve, reject) => {
+							setTimeout(() => {
+								reject(new Error('Part 2 just going to fail in 100ms'));
+							}, 100);
+						});
+					} else {
+						promise = new Promise((resolve, reject) => {
+							setTimeout(() => {
+								resolve({
+									ETag: 'test_etag_' + command.input.PartNumber,
+								});
+							}, 200);
+						});
+					}
+					return promise;
+				} else if (command instanceof CompleteMultipartUploadCommand) {
+					return Promise.resolve({ Key: testParams.key });
 				}
-				return promise;
-			} else if (command instanceof CompleteMultipartUploadCommand) {
-				return Promise.resolve({ Key: testParams.key });
-			}
-		});
+			});
 
 		// Now make calls
 		const uploader = new TestClass(testParams, testOpts, emitter);
@@ -241,7 +269,7 @@ describe('multi part upload tests', () => {
 		try {
 			await uploader.upload();
 		} catch (error) {
-			expect(error.message).toBe('Upload was cancelled.');
+			expect(error.message).toBe('Part 2 just going to fail in 100ms');
 		}
 
 		// Should have called 5 times =>
@@ -286,19 +314,10 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			UploadId: testUploadId,
 		});
-		// Progress reporting works as well
-		expect(eventSpy.getCall(0).args[0]).toStrictEqual({
-			key: testParams.Key,
-			loaded: testMinPartSize,
-			part: 1,
-			total: testParams.Body.length,
-		});
-		expect(eventSpy.getCall(1).args[0]).toStrictEqual({
-			key: testParams.Key,
-			loaded: testParams.Body.length,
-			part: 2,
-			total: testParams.Body.length,
-		});
+
+		// As the 'sendUploadProgress' happens when the upload is 100% complete, 
+		// it won't be called, as an error is thrown before upload completion.
+		expect(eventSpy).toBeCalledTimes(0);
 	});
 
 	test('error case: cleanup failed', async () => {
@@ -306,7 +325,13 @@ describe('multi part upload tests', () => {
 			if (command instanceof CreateMultipartUploadCommand) {
 				return Promise.resolve({ UploadId: testUploadId });
 			} else if (command instanceof UploadPartCommand) {
-				return Promise.reject(new Error('failed to upload'));
+				return Promise.resolve({
+					PartNumber: testParams.part,
+					Body: testParams.body,
+					UploadId: testUploadId,
+					Key: testParams.key,
+					Bucket: testParams.bucket,
+				});
 			} else if (command instanceof ListPartsCommand) {
 				return Promise.resolve({
 					Parts: [
@@ -319,8 +344,14 @@ describe('multi part upload tests', () => {
 				return Promise.resolve();
 			}
 		});
-		const uploader = new TestClass(testParams, testOpts, new events.EventEmitter());
-		await expect(uploader.upload()).rejects.toThrow('Upload was cancelled. Multi Part upload clean up failed');
+		const uploader = new TestClass(
+			testParams,
+			testOpts,
+			new events.EventEmitter()
+		);
+		await expect(uploader.upload()).rejects.toThrow(
+			'Multipart upload clean up failed.'
+		);
 	});
 
 	test('error case: finish multipart upload failed', async () => {
@@ -332,16 +363,19 @@ describe('multi part upload tests', () => {
 					ETag: 'test_etag_' + command.input.PartNumber,
 				});
 			} else if (command instanceof CompleteMultipartUploadCommand) {
-				return Promise.reject('error');
+				return Promise.reject(new Error('Error completing multipart upload.'));
 			}
 		});
 		const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-		const uploader = new TestClass(testParams, testOpts, new events.EventEmitter());
-		await uploader.upload();
-		expect(loggerSpy).toHaveBeenCalledWith(
-			'ERROR',
-			'error happened while finishing the upload. Cancelling the multipart upload',
-			'error'
+		const uploader = new TestClass(
+			testParams,
+			testOpts,
+			new events.EventEmitter()
 		);
-	});
+
+		await expect(uploader.upload()).rejects.toThrow('Error completing multipart upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(1, 'DEBUG', 'testUploadId');
+		expect(loggerSpy).toHaveBeenNthCalledWith(2, 'ERROR', 'Error happened while finishing the upload.');
+		expect(loggerSpy).toHaveBeenNthCalledWith(3, 'ERROR', 'Error. Cancelling the multipart upload.');
+	})
 });

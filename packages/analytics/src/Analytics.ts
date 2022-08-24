@@ -19,7 +19,16 @@ import {
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventMetrics } from './types';
+import {
+	AnalyticsProvider,
+	EventAttributes,
+	EventMetrics,
+	AnalyticsEvent,
+	AutoTrackSessionOpts,
+	AutoTrackPageViewOpts,
+	AutoTrackEventOpts,
+	PersonalizeAnalyticsEvent,
+} from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
@@ -45,6 +54,8 @@ const trackers = {
 	session: SessionTracker,
 };
 
+type TrackerTypes = keyof typeof trackers;
+type Trackers = typeof trackers[TrackerTypes];
 let _instance = null;
 
 /**
@@ -53,8 +64,8 @@ let _instance = null;
 export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
-	private _disabled;
-	private _trackers;
+	private _disabled: boolean;
+	private _trackers: Trackers | {};
 
 	/**
 	 * Initialize Analtyics
@@ -130,7 +141,7 @@ export class AnalyticsClass {
 
 	/**
 	 * add plugin into Analytics category
-	 * @param {Object} pluggable - an instance of the plugin
+	 * @param pluggable - an instance of the plugin
 	 */
 	public addPluggable(pluggable: AnalyticsProvider) {
 		if (pluggable && pluggable.getCategory() === 'Analytics') {
@@ -149,9 +160,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Get the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public getPluggable(providerName) {
+	public getPluggable(providerName: string): AnalyticsProvider {
 		for (let i = 0; i < this._pluggables.length; i += 1) {
 			const pluggable = this._pluggables[i];
 			if (pluggable.getProviderName() === providerName) {
@@ -165,9 +176,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Remove the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public removePluggable(providerName) {
+	public removePluggable(providerName: string): void {
 		let idx = 0;
 		while (idx < this._pluggables.length) {
 			if (this._pluggables[idx].getProviderName() === providerName) {
@@ -201,6 +212,7 @@ export class AnalyticsClass {
 
 	/**
 	 * Record Session start
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async startSession(provider?: string) {
@@ -210,6 +222,7 @@ export class AnalyticsClass {
 
 	/**
 	 * Record Session stop
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async stopSession(provider?: string) {
@@ -219,14 +232,29 @@ export class AnalyticsClass {
 
 	/**
 	 * Record one analytic event and send it to Pinpoint
-	 * @param {String} name - The name of the event
-	 * @param {Object} [attributes] - Attributes of the event
-	 * @param {Object} [metrics] - Event metrics
+	 * @param event - An object with the name of the event, attributes of the event and event metrics.
+	 * @param [provider] - name of the provider.
+	 */
+	public async record(
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent,
+		provider?: string
+	);
+	/**
+	 * Record one analytic event and send it to Pinpoint
+	 * @deprecated Use the new syntax and pass in the event as an object instead.
+	 * @param eventName - The name of the event
+	 * @param [attributes] - Attributes of the event
+	 * @param [metrics] - Event metrics
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async record(
-		event: string | object,
-		provider?,
+		eventName: string,
+		attributes?: EventAttributes,
+		metrics?: EventMetrics
+	);
+	public async record(
+		event: string | AnalyticsEvent | PersonalizeAnalyticsEvent,
+		providerOrAttributes?: string | EventAttributes,
 		metrics?: EventMetrics
 	) {
 		let params = null;
@@ -235,24 +263,27 @@ export class AnalyticsClass {
 			params = {
 				event: {
 					name: event,
-					attributes: provider,
+					attributes: providerOrAttributes,
 					metrics,
 				},
 				provider: 'AWSPinpoint',
 			};
 		} else {
-			params = { event, provider };
+			params = { event, provider: providerOrAttributes };
 		}
 		return this._sendEvent(params);
 	}
 
-	public async updateEndpoint(attrs, provider?) {
+	public async updateEndpoint(
+		attrs: { [key: string]: any },
+		provider?: string
+	) {
 		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}
 
-	private _sendEvent(params) {
+	private _sendEvent(params: { event: AnalyticsEvent; provider?: string }) {
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();
@@ -269,7 +300,20 @@ export class AnalyticsClass {
 		});
 	}
 
-	public autoTrack(trackerType, opts) {
+	/**
+	 * Enable or disable auto tracking
+	 * @param trackerType - The type of tracker to activate.
+	 * @param [opts] - Auto tracking options.
+	 */
+	public autoTrack(trackerType: 'session', opts: AutoTrackSessionOpts);
+	public autoTrack(trackerType: 'pageView', opts: AutoTrackPageViewOpts);
+	public autoTrack(trackerType: 'event', opts: AutoTrackEventOpts);
+	// ensures backwards compatibility for non-pinpoint provider users
+	public autoTrack(
+		trackerType: TrackerTypes,
+		opts: { provider: string; [key: string]: any }
+	);
+	public autoTrack(trackerType: TrackerTypes, opts: { [key: string]: any }) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
 			return;

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
-  "version": "2.0.31",
+  "version": "2.0.46",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -41,8 +41,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "4.3.13",
-    "axios": "0.21.4"
+    "@aws-amplify/core": "4.5.10",
+    "axios": "0.26.0"
   },
   "jest": {
     "globals": {

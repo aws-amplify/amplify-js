@@ -5,6 +5,7 @@ import {
 	ModelAttributeAuthProperty,
 	ModelAttributeAuthProvider,
 	ModelAttributeAuthAllow,
+	AmplifyContext,
 } from '../types';
 
 function getProviderFromRule(
@@ -62,7 +63,7 @@ function getAuthRules({
 	// Using Set to ensure uniqueness
 	const authModes = new Set<GRAPHQL_AUTH_MODE>();
 
-	rules.forEach((rule) => {
+	rules.forEach(rule => {
 		switch (rule.allow) {
 			case ModelAttributeAuthAllow.CUSTOM:
 				// custom with no provider -> function
@@ -121,29 +122,42 @@ function getAuthRules({
 	return Array.from(authModes);
 }
 
-export const multiAuthStrategy: AuthModeStrategy = async ({
-	schema,
-	modelName,
-}) => {
-	let currentUser;
-	try {
-		currentUser = await Auth.currentAuthenticatedUser();
-	} catch (e) {
-		// No current user
-	}
-
-	const { attributes } = schema.namespaces.user.models[modelName];
-
-	if (attributes) {
-		const authAttribute = attributes.find((attr) => attr.type === 'auth')!;
-
-		if (authAttribute.properties && authAttribute.properties.rules) {
-			const sortedRules = sortAuthRulesWithPriority(
-				authAttribute.properties.rules
-			);
-
-			return getAuthRules({ currentUser, rules: sortedRules });
+/**
+ * Returns an array of auth modes to try based on the schema, model, and
+ * authenticated user (or lack thereof). Rules are sourced from `getAuthRules`
+ * and returned in the order they ought to be attempted.
+ *
+ * @see sortAuthRulesWithPriority
+ * @see getAuthRules
+ *
+ * @param param0 The `{schema, modelName}` to inspect.
+ * @returns A sorted array of auth modes to attempt.
+ */
+export const multiAuthStrategy: (
+	amplifyContext: AmplifyContext
+) => AuthModeStrategy =
+	(amplifyContext: AmplifyContext) =>
+	async ({ schema, modelName }) => {
+		amplifyContext.Auth = amplifyContext.Auth || Auth;
+		let currentUser;
+		try {
+			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
+		} catch (e) {
+			// No current user
 		}
-	}
-	return [];
-};
+
+		const { attributes } = schema.namespaces.user.models[modelName];
+
+		if (attributes) {
+			const authAttribute = attributes.find(attr => attr.type === 'auth');
+
+			if (authAttribute?.properties?.rules) {
+				const sortedRules = sortAuthRulesWithPriority(
+					authAttribute.properties.rules
+				);
+
+				return getAuthRules({ currentUser, rules: sortedRules });
+			}
+		}
+		return [];
+	};

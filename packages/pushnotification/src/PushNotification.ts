@@ -131,7 +131,6 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
-		RNPushNotification.initialize();
 
 		// check if the token is cached properly
 		if (!(await this._registerTokenCached())) {

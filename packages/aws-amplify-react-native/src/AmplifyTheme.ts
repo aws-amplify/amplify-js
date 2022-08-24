@@ -137,6 +137,9 @@ export default StyleSheet.create({
 	inputLabel: {
 		marginBottom: 8,
 	},
+	linkUnderlay: {
+		color: linkUnderlayColor,
+	},
 	phoneContainer: {
 		display: 'flex',
 		flexDirection: 'row',

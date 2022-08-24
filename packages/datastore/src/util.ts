@@ -1,7 +1,8 @@
 import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
-// import { ModelInstanceCreator } from './datastore/datastore';
+import { produce, applyPatches, Patch } from 'immer';
+import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
 	isPredicateGroup,
@@ -26,9 +27,108 @@ import {
 	PaginationInput,
 	DeferredCallbackResolverOptions,
 	LimitTimerRaceResolvedValues,
+	SchemaModel,
+	ModelAttribute,
+	IndexesType,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 import { ModelSortPredicateCreator } from './predicates';
+
+const ID = 'id';
+
+export const errorMessages = {
+	idEmptyString: 'An index field cannot contain an empty string value',
+	queryByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	deleteByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be deleted by a single key value, unless using a predicate. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	observeWithObjectLiteral:
+		'Object literal syntax cannot be used with observe. Use a predicate instead: https://docs.amplify.aws/lib/datastore/data-access/q/platform/js/#predicates',
+};
+
+export function extractKeyIfExists(
+	modelDefinition: SchemaModel
+): ModelAttribute | undefined {
+	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
+
+	return keyAttribute;
+}
+
+export function extractPrimaryKeyFieldNames(
+	modelDefinition: SchemaModel
+): string[] {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return keyAttribute.properties.fields;
+	}
+
+	return [ID];
+}
+
+export function extractPrimaryKeyValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): string[] {
+	return keyFields.map(key => model[key]);
+}
+
+export function extractPrimaryKeysAndValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): any {
+	const primaryKeysAndValues = {};
+	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
+	return primaryKeysAndValues;
+}
+
+// IdentifierFields<ManagedIdentifier>
+// Default behavior without explicit @primaryKey defined
+export function isIdManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return false;
+	}
+
+	return true;
+}
+
+// IdentifierFields<OptionallyManagedIdentifier>
+// @primaryKey with explicit `id` in the PK. Single key or composite
+export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		// const idInKey = !!keyAttribute.properties.fields.find(
+		// 	field => field === ID
+		// );
+		// return idInKey && keyAttribute.properties.fields.length === 1;
+		return keyAttribute.properties.fields[0] === ID;
+	}
+
+	return false;
+}
+
+export enum NAMESPACES {
+	DATASTORE = 'datastore',
+	USER = 'user',
+	SYNC = 'sync',
+	STORAGE = 'storage',
+}
+
+const DATASTORE = NAMESPACES.DATASTORE;
+const USER = NAMESPACES.USER;
+const SYNC = NAMESPACES.SYNC;
+const STORAGE = NAMESPACES.STORAGE;
+
+export { USER, SYNC, STORAGE, DATASTORE };
+export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
+
+export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
+	if (throwOnError) {
+		throw new Error(`Invalid ${obj}`);
+	}
+};
 
 export const isNullOrUndefined = (val: any): boolean => {
 	return typeof val === 'undefined' || val === undefined || val === null;
@@ -141,7 +241,7 @@ export const isNonModelConstructor = (
 	return nonModelClasses.has(obj);
 };
 
-/* 
+/*
   When we have GSI(s) with composite sort keys defined on a model
 	There are some very particular rules regarding which fields must be included in the update mutation input
 	The field selection becomes more complex as the number of GSIs with composite sort keys grows
@@ -151,7 +251,7 @@ export const isNonModelConstructor = (
 	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
 
 	 E.g.,
-	 Model @model 
+	 Model @model
 		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
 		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
 		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
@@ -187,7 +287,7 @@ export const processCompositeKeys = (
 		.filter(isModelAttributeCompositeKey)
 		.map(extractCompositeSortKey);
 
-	/* 
+	/*
 		if 2 sets of fields have any intersecting fields => combine them into 1 union set
 		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
 	*/
@@ -252,16 +352,19 @@ export const establishRelationAndKeys = (
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
 					targetName: fieldAttribute.association['targetName'],
+					targetNames: fieldAttribute.association['targetNames'],
 					associatedWith: fieldAttribute.association['associatedWith'],
 				});
 
-				if (
-					connectionType === 'BELONGS_TO' &&
-					fieldAttribute.association['targetName']
-				) {
-					relationship[mKey].indexes.push(
-						fieldAttribute.association['targetName']
+				if (connectionType === 'BELONGS_TO') {
+					const targetNames = extractTargetNamesFromSrc(
+						fieldAttribute.association
 					);
+
+					if (targetNames) {
+						const idxName = indexNameFromKeys(targetNames);
+						relationship[mKey].indexes.push([idxName, targetNames]);
+					}
 				}
 			}
 		});
@@ -274,20 +377,36 @@ export const establishRelationAndKeys = (
 					continue;
 				}
 
+				const { fields } = attribute.properties;
+
 				if (isModelAttributePrimaryKey(attribute)) {
-					keys[mKey].primaryKey = attribute.properties.fields;
+					keys[mKey].primaryKey = fields;
+					continue;
 				}
 
-				const { fields } = attribute.properties;
-				for (const field of fields) {
-					// only add index if it hasn't already been added
-					const exists = relationship[mKey].indexes.includes(field);
-					if (!exists) {
-						relationship[mKey].indexes.push(field);
-					}
+				// create indexes for all other keys
+				const idxName = indexNameFromKeys(fields);
+				const idxExists = relationship[mKey].indexes.find(
+					([index]) => index === idxName
+				);
+
+				if (!idxExists) {
+					relationship[mKey].indexes.push([idxName, fields]);
 				}
 			}
 		}
+
+		// set 'id' as the PK for models without a custom PK explicitly defined
+		if (!keys[mKey].primaryKey) {
+			keys[mKey].primaryKey = [ID];
+		}
+
+		// create primary index
+		relationship[mKey].indexes.push([
+			'byPk',
+			keys[mKey].primaryKey as string[],
+			{ unique: true },
+		]);
 	});
 
 	return [relationship, keys];
@@ -298,117 +417,173 @@ const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 export const traverseModel = <T extends PersistentModel>(
 	srcModelName: string,
 	instance: T,
-	namespace: SchemaNamespace
-	// modelInstanceCreator: ModelInstanceCreator,
-	// getModelConstructorByModelName: (
-	// 	namsespaceName: string,
-	// 	modelName: string
-	// ) => PersistentModelConstructor<any>
+	namespace: SchemaNamespace,
+	modelInstanceCreator: ModelInstanceCreator,
+	getModelConstructorByModelName: (
+		namsespaceName: string,
+		modelName: string
+	) => PersistentModelConstructor<any>
 ) => {
-	// const relationships = namespace.relationships;
-	// const modelConstructor = getModelConstructorByModelName(
-	// 	namespace.name,
-	// 	srcModelName
-	// );
+	const relationships = namespace.relationships;
 
-	// const relation = relationships[srcModelName];
+	const modelConstructor = getModelConstructorByModelName(
+		namespace.name,
+		srcModelName
+	);
+
+	const relation = relationships[srcModelName];
+
 	const result: {
 		modelName: string;
 		item: T;
 		instance: T;
 	}[] = [];
 
-	// Temporarily disabling this. Logic will be re-worked as part of the Cascading Saves task
+	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
+		relation.relationTypes.forEach((rItem: RelationType) => {
+			const modelConstructor = getModelConstructorByModelName(
+				namespace.name,
+				rItem.modelName
+			);
 
-	// const newInstance = modelConstructor.copyOf(instance, draftInstance => {
-	// 	relation.relationTypes.forEach((rItem: RelationType) => {
-	// 		const modelConstructor = getModelConstructorByModelName(
-	// 			namespace.name,
-	// 			rItem.modelName
-	// 		);
+			switch (rItem.relationType) {
+				case 'HAS_ONE':
+					if (instance[rItem.fieldName]) {
+						let modelInstance: T;
+						try {
+							modelInstance = modelInstanceCreator(
+								modelConstructor,
+								instance[rItem.fieldName]
+							);
+						} catch (error) {
+							// Do nothing
+							console.log(error);
+						}
 
-	// 		switch (rItem.relationType) {
-	// 			case 'HAS_ONE':
-	// 				if (instance[rItem.fieldName]) {
-	// 					let modelInstance: T;
-	// 					try {
-	// 						modelInstance = modelInstanceCreator(
-	// 							modelConstructor,
-	// 							instance[rItem.fieldName]
-	// 						);
-	// 					} catch (error) {
-	// 						// Do nothing
-	// 					}
+						result.push({
+							modelName: rItem.modelName,
+							item: instance[rItem.fieldName],
+							instance: modelInstance,
+						});
 
-	// 					result.push({
-	// 						modelName: rItem.modelName,
-	// 						item: instance[rItem.fieldName],
-	// 						instance: modelInstance,
-	// 					});
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(rItem);
 
-	// 					(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-	// 						draftInstance[rItem.fieldName]
-	// 					)).id;
-	// 				}
+						// `targetName` will be defined for Has One if feature flag
+						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
+						// is true (default as of 5/7/21)
+						// Making this conditional for backward-compatibility
+						if (targetNames) {
+							targetNames.forEach((targetName, idx) => {
+								// Get the connected record
+								const relatedRecordInProxy = <PersistentModel>(
+									draftInstance[rItem.fieldName]
+								);
 
-	// 				break;
-	// 			case 'BELONGS_TO':
-	// 				if (instance[rItem.fieldName]) {
-	// 					let modelInstance: T;
-	// 					try {
-	// 						modelInstance = modelInstanceCreator(
-	// 							modelConstructor,
-	// 							instance[rItem.fieldName]
-	// 						);
-	// 					} catch (error) {
-	// 						// Do nothing
-	// 					}
+								// Previously, we used the hardcoded 'id' as they key,
+								// now we need the value of the key to get the PK (and SK)
+								// values from the related record
 
-	// 					const isDeleted = (<ModelInstanceMetadata>(
-	// 						draftInstance[rItem.fieldName]
-	// 					))._deleted;
+								const { primaryKey } = namespace.keys[modelConstructor.name];
+								const keyField = primaryKey && primaryKey[idx];
 
-	// 					if (!isDeleted) {
-	// 						result.push({
-	// 							modelName: rItem.modelName,
-	// 							item: instance[rItem.fieldName],
-	// 							instance: modelInstance,
-	// 						});
-	// 					}
-	// 				}
+								// Get the value
+								const relatedRecordInProxyPkValue =
+									relatedRecordInProxy[keyField];
 
-	// 				if (draftInstance[rItem.fieldName]) {
-	// 					(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
-	// 						draftInstance[rItem.fieldName]
-	// 					)).id;
-	// 					delete draftInstance[rItem.fieldName];
-	// 				}
+								// Set the targetName value
+								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+							});
+							// Delete the instance from the proxy
+							delete (<any>draftInstance)[rItem.fieldName];
+						} else {
+							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
+								draftInstance[rItem.fieldName]
+							)).id;
+						}
+					}
 
-	// 				break;
-	// 			case 'HAS_MANY':
-	// 				// Intentionally blank
-	// 				break;
-	// 			default:
-	// 				throw new Error(`Invalid ${rItem.relationType}`);
-	// 				break;
-	// 		}
-	// 	});
-	// });
+					break;
+				case 'BELONGS_TO':
+					if (instance[rItem.fieldName]) {
+						let modelInstance: T;
+						try {
+							modelInstance = modelInstanceCreator(
+								modelConstructor,
+								instance[rItem.fieldName]
+							);
+						} catch (error) {
+							// Do nothing
+						}
+
+						const isDeleted = (<ModelInstanceMetadata>(
+							draftInstance[rItem.fieldName]
+						))._deleted;
+
+						if (!isDeleted) {
+							result.push({
+								modelName: rItem.modelName,
+								item: instance[rItem.fieldName],
+								instance: modelInstance,
+							});
+						}
+					}
+
+					if (draftInstance[rItem.fieldName]) {
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(rItem);
+
+						if (targetNames) {
+							targetNames.forEach((targetName, idx) => {
+								// Get the connected record
+								const relatedRecordInProxy = <PersistentModel>(
+									draftInstance[rItem.fieldName]
+								);
+								// Previously, we used the hardcoded `id` for the key.
+								// Now, we need the value of the key to get the PK (and SK)
+								// values from the related record
+								const { primaryKey } = namespace.keys[modelConstructor.name];
+
+								// fall back to ID if
+								const keyField = primaryKey && primaryKey[idx];
+
+								// Get the value
+								const relatedRecordInProxyPkValue =
+									relatedRecordInProxy[keyField];
+
+								// Set the targetName value
+								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+							});
+							// Delete the instance from the proxy
+							delete (<any>draftInstance)[rItem.fieldName];
+						}
+					}
+
+					break;
+				case 'HAS_MANY':
+					// Intentionally blank
+					break;
+				default:
+					exhaustiveCheck(rItem.relationType);
+					break;
+			}
+		});
+	});
 
 	result.unshift({
 		modelName: srcModelName,
-		item: instance,
-		instance,
+		item: newInstance,
+		instance: newInstance,
 	});
 
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering?.keys() || [])
+			Array.from(namespace.modelTopologicalOrdering.keys())
 		);
 	}
 
-	const sortedModels = topologicallySortedModels.get(namespace) || [];
+	const sortedModels = topologicallySortedModels.get(namespace);
 
 	result.sort((a, b) => {
 		return (
@@ -419,37 +594,36 @@ export const traverseModel = <T extends PersistentModel>(
 	return result;
 };
 
-export const getIndex = (rel: RelationType[], src: string): string => {
-	let index = '';
+export const getIndex = (
+	rel: RelationType[],
+	src: string
+): string | undefined => {
+	let indexName;
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
-			index = relItem.targetName || '';
+			const targetNames = extractTargetNamesFromSrc(relItem);
+			indexName = targetNames && indexNameFromKeys(targetNames);
+			return true;
 		}
 	});
-	return index;
+	return indexName;
 };
 
 export const getIndexFromAssociation = (
-	indexes: string[],
-	src: string
-): string => {
-	const index = indexes.find(idx => idx === src);
-	return index || '';
+	indexes: IndexesType,
+	src: string | string[]
+): string | undefined => {
+	let indexName: string;
+
+	if (Array.isArray(src)) {
+		indexName = indexNameFromKeys(src);
+	} else {
+		indexName = src;
+	}
+
+	const associationIndex = indexes.find(([idxName]) => idxName === indexName);
+	return associationIndex && associationIndex[0];
 };
-
-export enum NAMESPACES {
-	DATASTORE = 'datastore',
-	USER = 'user',
-	SYNC = 'sync',
-	STORAGE = 'storage',
-}
-
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
-
-export { USER, SYNC, STORAGE, DATASTORE };
 
 let privateModeCheckResult;
 
@@ -492,9 +666,9 @@ export const isPrivateMode = () => {
 	});
 };
 
-function randomBytes(nBytes: number): Buffer {
+const randomBytes = (nBytes: number): Buffer => {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
-}
+};
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
@@ -852,4 +1026,67 @@ export class DeferredCallbackResolver {
 	public resolve(): void {
 		this.limitPromise.resolve(LimitTimerRaceResolvedValues.LIMIT);
 	}
+}
+
+/**
+ * merge two sets of patches created by immer produce.
+ * newPatches take precedent over oldPatches for patches modifying the same path.
+ * In the case many consecutive pathces are merged the original model should
+ * always be the root model.
+ *
+ * Example:
+ * A -> B, patches1
+ * B -> C, patches2
+ *
+ * mergePatches(A, patches1, patches2) to get patches for A -> C
+ *
+ * @param originalSource the original Model the patches should be applied to
+ * @param oldPatches immer produce patch list
+ * @param newPatches immer produce patch list (will take precedence)
+ * @return merged patches
+ */
+export function mergePatches<T>(
+	originalSource: T,
+	oldPatches: Patch[],
+	newPatches: Patch[]
+): Patch[] {
+	const patchesToMerge = oldPatches.concat(newPatches);
+	let patches: Patch[];
+	produce(
+		originalSource,
+		draft => {
+			applyPatches(draft, patchesToMerge);
+		},
+		p => {
+			patches = p;
+		}
+	);
+	return patches;
+}
+
+/* Backwards-compatability for schema generated prior to custom primary key support:
+the single field `targetName` has been replaced with an array of `targetNames`
+*/
+export function extractTargetNamesFromSrc(src: any): string[] | undefined {
+	const targetName = src?.targetName;
+	const targetNames = src?.targetNames;
+
+	if (Array.isArray(targetNames) && targetNames?.length) {
+		return targetNames;
+	} else if (typeof targetName === 'string') {
+		return [targetName];
+	} else {
+		return undefined;
+	}
+}
+
+// Generates snake-cased index name from an aray of key field names
+// E.g. for keys `[id, title]` => 'id-title'
+export function indexNameFromKeys(keys: string[]): string {
+	return keys.reduce((prev: string, cur: string, idx: number) => {
+		if (idx === 0) {
+			return cur;
+		}
+		return `${prev}-${cur}`;
+	}, '');
 }

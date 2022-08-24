@@ -16,6 +16,7 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	SchemaNamespace,
+	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
@@ -26,11 +27,12 @@ import {
 	valuesEqual,
 	NAMESPACES,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
-	SubscriptionMessage<T> & {
+	InternalSubscriptionMessage<T> & {
 		mutator?: Symbol;
 	};
 
@@ -113,7 +115,7 @@ class StorageClass implements StorageFacade {
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [originalElement, opType] = r;
+			const [savedElement, opType] = r;
 
 			// truthy when save is called by the Merger
 			const syncResponse = !!mutator;
@@ -122,9 +124,21 @@ class StorageClass implements StorageFacade {
 			// don't attempt to calc mutation input when storage.save
 			// is called by Merger, i.e., when processing an AppSync response
 			if (opType === OpType.UPDATE && !syncResponse) {
+				//
+				// TODO: LOOK!!!
+				// the `model` used here is in effect regardless of what model
+				// comes back from adapter.save().
+				// Prior to fix, SQLite adapter had been returning two models
+				// of different types, resulting in invalid outbox entries.
+				//
+				// the bug is essentially fixed in SQLite adapter.
+				// leaving as-is, because it's currently unclear whether anything
+				// depends on this remaining as-is.
+				//
+
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
-					originalElement,
+					savedElement,
 					patchesTuple
 				);
 				// // an update without changed user fields
@@ -134,11 +148,10 @@ class StorageClass implements StorageFacade {
 				}
 			}
 
-			const element = updateMutationInput || originalElement;
+			const element = updateMutationInput || savedElement;
 
-			const modelConstructor = (
-				Object.getPrototypeOf(originalElement) as Object
-			).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor as any,
@@ -149,6 +162,7 @@ class StorageClass implements StorageFacade {
 					(condition &&
 						ModelPredicateCreator.getPredicates(condition, false)) ||
 					null,
+				savedElement,
 			});
 		});
 
@@ -183,7 +197,21 @@ class StorageClass implements StorageFacade {
 			condition
 		);
 
-		const modelIds = new Set(models.map(({ id }) => id));
+		const modelConstructor = isModelConstructor(modelOrModelConstructor)
+			? modelOrModelConstructor
+			: (Object.getPrototypeOf(modelOrModelConstructor || {})
+					.constructor as PersistentModelConstructor<T>);
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
+
+		const modelIds = new Set(
+			models.map(model => {
+				const modelId = getIdentifierValue(modelDefinition, model);
+				return modelId;
+			})
+		);
 
 		if (
 			!isModelConstructor(modelOrModelConstructor) &&
@@ -199,10 +227,10 @@ class StorageClass implements StorageFacade {
 			let theCondition: PredicatesGroup<any> | undefined;
 
 			if (!isModelConstructor(modelOrModelConstructor)) {
-				theCondition =
-					modelIds.has(model.id) && condition
-						? ModelPredicateCreator.getPredicates(condition, false)
-						: undefined;
+				const modelId = getIdentifierValue(modelDefinition, model);
+				theCondition = modelIds.has(modelId)
+					? ModelPredicateCreator.getPredicates(condition!, false)
+					: undefined;
 			}
 
 			this.pushStream.next({
@@ -345,24 +373,55 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			const targetName: any = isTargetNameAssociation(
+			// CPK TODO: rename:
+			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
 
-			// if field refers to a belongsTo relation, use the target field instead
-			const key = targetName || field;
+			if (Array.isArray(targetNames)) {
+				// if field refers to a belongsTo relation, use the target field instead
 
-			// check field values by value. Ignore unchanged fields
-			if (!valuesEqual(source[key], originalElement[key])) {
-				// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
-				updatedElement[key] =
-					originalElement[key] === undefined ? null : originalElement[key];
+				for (const targetName of targetNames) {
+					// check field values by value. Ignore unchanged fields
+					if (!valuesEqual(source[targetName], originalElement[targetName])) {
+						// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
 
-				for (const fieldSet of compositeKeys) {
-					// include all of the fields that comprise the composite key
-					if (fieldSet.has(key)) {
-						for (const compositeField of fieldSet) {
-							updatedElement[compositeField] = originalElement[compositeField];
+						updatedElement[targetName] =
+							originalElement[targetName] === undefined
+								? null
+								: originalElement[targetName];
+
+						for (const fieldSet of compositeKeys) {
+							// include all of the fields that comprise the composite key
+							if (fieldSet.has(targetName)) {
+								for (const compositeField of fieldSet) {
+									updatedElement[compositeField] =
+										originalElement[compositeField];
+								}
+							}
+						}
+					}
+				}
+			} else {
+				// Backwards compatibility pre-CPK
+
+				// if field refers to a belongsTo relation, use the target field instead
+				const key = targetNames || field;
+
+				// check field values by value. Ignore unchanged fields
+				if (!valuesEqual(source[key], originalElement[key])) {
+					// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+
+					updatedElement[key] =
+						originalElement[key] === undefined ? null : originalElement[key];
+
+					for (const fieldSet of compositeKeys) {
+						// include all of the fields that comprise the composite key
+						if (fieldSet.has(key)) {
+							for (const compositeField of fieldSet) {
+								updatedElement[compositeField] =
+									originalElement[compositeField];
+							}
 						}
 					}
 				}
@@ -429,7 +488,7 @@ class ExclusiveStorage implements StorageFacade {
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patchesTuple)
+			storage.save(model, condition, mutator, patchesTuple)
 		);
 	}
 
@@ -493,11 +552,11 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	async clear() {
-		await this.storage.clear();
+		await this.runExclusive(storage => storage.clear());
 	}
 
 	batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<any>,
+		modelConstructor: PersistentModelConstructor<T>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		return this.storage.batchSave(modelConstructor, items);

@@ -1,10 +1,29 @@
-/packages/auth @elorzafe
-/packages/analytics @iartemiev
-/packages/pubsub @manueliglesias
-/packages/xr @jordanranz
-/packages/amplify-ui @jordanranz
-/packages/aws-amplify-react-native @Ashish-Nanda
-/packages/pushnotification @Ashish-Nanda
-/packages/datastore @manueliglesias
-/.github/ @sammartinez
+/packages/amplify-ui @calebpollman
+/packages/amplify-ui-angular @calebpollman
+/packages/amplify-ui-components @calebpollman
+/packages/amplify-ui-react @calebpollman
+/packages/amplify-ui-storybook @calebpollman
+/packages/amplify-ui-vue @calebpollman
+/packages/analytics @elorzafe
+/packages/api @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/api-graphql @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/api-rest @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/auth @elorzafe @ashika01 @jamesaucode
+/packages/aws-amplify @aws-amplify/amplify-js
+/packages/aws-amplify-angular @aws-amplify/amplify-js
+/packages/aws-amplify-react @aws-amplify/amplify-js
+/packages/aws-amplify-react-native @calebpollman
+/packages/aws-amplify-vue @aws-amplify/amplify-js
+/packages/cache @aws-amplify/amplify-js
+/packages/core @elorzafe @manueliglesias @iartemiev
+/packages/datastore @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/datastore-storage-adapter @svidgen @david-mcafee @manueliglesias @dpilch
+/packages/geo @thaddmt
+/packages/interactions @katiegoines
+/packages/predictions @elorzafe @stocaaro
+/packages/pubsub @stocaaro @elorzafe @ashika01
+/packages/pushnotification @cshfang
+/packages/storage @jamesaucode @katiegoines
+/packages/xr @aws-amplify/amplify-js
 /.circleci/ @iartemiev
+/.github/ @Ashish-Nanda
