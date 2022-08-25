@@ -15,7 +15,7 @@ import { InteractionsResponse } from './Response';
 
 export interface InteractionsProvider {
 	// configure your provider
-	configure(config: object): object;
+	configure(config: InteractionsOptions): InteractionsOptions;
 
 	// return 'Interactions'
 	getCategory(): string;

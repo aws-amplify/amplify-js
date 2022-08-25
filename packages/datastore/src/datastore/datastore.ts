@@ -794,9 +794,9 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	Auth = Auth;
-	API = API;
-	Cache = Cache;
+	private Auth = Auth;
+	private API = API;
+	private Cache = Cache;
 
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy: AuthModeStrategy;

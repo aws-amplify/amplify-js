@@ -16,13 +16,6 @@
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
 		"no-eval": true,
-		"space-before-function-paren": [
-			true,
-			{
-				"anonymous": "never",
-				"named": "never"
-			}
-		],
 		"no-parameter-reassignment": true,
 		"align": [true, "parameters"],
 		"no-duplicate-imports": true,
