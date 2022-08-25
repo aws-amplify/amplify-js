@@ -162,7 +162,7 @@ describe('datastore util', () => {
 			},
 		];
 
-		let expected = [];
+		let expected: Set<string>[] = [];
 
 		expect(processCompositeKeys(attributes)).toEqual(expected);
 

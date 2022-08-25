@@ -59,7 +59,9 @@ class SubscriptionProcessor {
 	>();
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
-	private dataObserver: ZenObservable.Observer<any>;
+	private dataObserver!: ZenObservable.Observer<any>;
+
+	private runningProcesses: BackgroundProcessManager;
 
 	private runningProcesses: BackgroundProcessManager;
 
@@ -105,7 +107,7 @@ class SubscriptionProcessor {
 			model,
 			transformerMutationType,
 			isOwner,
-			ownerField
+			ownerField!
 		);
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
@@ -128,7 +130,7 @@ class SubscriptionProcessor {
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
-			return null;
+			return null!;
 		}
 
 		// Group auth should take precedence over owner auth, so we are checking
@@ -192,8 +194,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Owner auth needs additional values to be returned in order to create the subscription with
@@ -219,8 +221,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Fallback: return authMode or default auth type
@@ -399,7 +401,7 @@ class SubscriptionProcessor {
 											return;
 										}
 
-										variables[ownerField] = ownerValue;
+										variables[ownerField!] = ownerValue;
 									}
 
 									logger.debug(
@@ -615,7 +617,7 @@ class SubscriptionProcessor {
 			this.drainBuffer();
 
 			return this.runningProcesses.addCleaner(async () => {
-				this.dataObserver = null;
+				this.dataObserver = null!;
 			});
 		});
 
@@ -649,7 +651,7 @@ class SubscriptionProcessor {
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next(data));
+			this.buffer.forEach(data => this.dataObserver.next!(data));
 			this.buffer = [];
 		}
 	}

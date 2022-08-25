@@ -30,7 +30,7 @@ import {
 	__modelMeta__,
 	AmplifyContext,
 } from '../types';
-import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
+import { getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -120,7 +120,7 @@ export class SyncEngine {
 	public getModelSyncedStatus(
 		modelConstructor: PersistentModelConstructor<any>
 	): boolean {
-		return this.modelSyncedStatus.get(modelConstructor);
+		return this.modelSyncedStatus.get(modelConstructor)!;
 	}
 
 	constructor(
@@ -497,7 +497,7 @@ export class SyncEngine {
 					fullSyncInterval,
 					lastSyncPredicate,
 				}) => {
-					const nextFullSync = lastFullSync + fullSyncInterval;
+					const nextFullSync = lastFullSync! + fullSyncInterval;
 					const syncFrom =
 						!lastFullSync || nextFullSync < currentTimeStamp
 							? 0 // perform full sync if expired
@@ -505,7 +505,7 @@ export class SyncEngine {
 
 					return [
 						this.schema.namespaces[namespace].models[model],
-						[namespace, syncFrom],
+						[namespace, syncFrom!],
 					];
 				}
 			)
@@ -723,9 +723,9 @@ export class SyncEngine {
 					});
 
 					const msNextFullSync =
-						newestFullSyncStartedAt +
-						theInterval -
-						(newestStartedAt + duration);
+						newestFullSyncStartedAt! +
+						theInterval! -
+						(newestStartedAt! + duration!);
 
 					logger.debug(
 						`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
@@ -859,7 +859,7 @@ export class SyncEngine {
 		const promises = models.map(async ([namespace, model]) => {
 			const modelMetadata = await this.getModelMetadata(namespace, model.name);
 			const syncPredicate = ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
 			);
 			const lastSyncPredicate = syncPredicate
@@ -893,7 +893,7 @@ export class SyncEngine {
 						if (syncPredicateUpdated) {
 							draft.lastSync = null;
 							draft.lastFullSync = null;
-							draft.lastSyncPredicate = lastSyncPredicate;
+							(draft.lastSyncPredicate as any) = lastSyncPredicate;
 						}
 					})
 				);

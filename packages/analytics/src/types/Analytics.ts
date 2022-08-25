@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { ICredentials } from '@aws-amplify/core';
+
 /**
  * Analytics instance options
  */

@@ -183,6 +183,81 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Song: {
+			syncable: true,
+			name: 'Song',
+			pluralName: 'Songs',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				songID: {
+					name: 'songID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				content: {
+					name: 'content',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		},
+		Album: {
+			syncable: true,
+			name: 'Album',
+			pluralName: 'Albums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				songs: {
+					name: 'songs',
+					isArray: true,
+					type: {
+						model: 'Song',
+					},
+					isRequired: false,
+					attributes: [],
+					isArrayNullable: true,
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'songID',
+					},
+				},
+			},
+		},
 		PostAuthorJoin: {
 			syncable: true,
 			name: 'PostAuthorJoin',
@@ -283,6 +358,146 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Forum: {
+			syncable: true,
+			name: 'Forum',
+			pluralName: 'Forums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				editors: {
+					name: 'editors',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'forum',
+					},
+				},
+			},
+		},
+		Editor: {
+			syncable: true,
+			name: 'Editor',
+			pluralName: 'Editors',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				forums: {
+					name: 'forums',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'editor',
+					},
+				},
+			},
+		},
+		ForumEditorJoin: {
+			syncable: true,
+			name: 'ForumEditorJoin',
+			pluralName: 'ForumEditorJoins',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byEditor',
+						fields: ['editorID', 'forumID'],
+					},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byForum',
+						fields: ['forumID', 'editorID'],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				editor: {
+					name: 'editor',
+					isArray: false,
+					type: {
+						model: 'Editor',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'editorID',
+					},
+				},
+				forum: {
+					name: 'forum',
+					isArray: false,
+					type: {
+						model: 'Forum',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'forumID',
+					},
+				},
+			},
+		},
 		BlogOwner: {
 			syncable: true,
 			name: 'BlogOwner',
@@ -361,6 +576,81 @@ export const newSchema: Schema = {
 					type: 'String',
 					isRequired: false,
 					attributes: [],
+				},
+			},
+		},
+		Team: {
+			syncable: true,
+			name: 'Team',
+			pluralName: 'Teams',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+		Project: {
+			syncable: true,
+			name: 'Project',
+			pluralName: 'Projects',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				teamID: {
+					name: 'teamID',
+					isArray: false,
+					type: 'ID',
+					isRequired: false,
+					attributes: [],
+				},
+				team: {
+					name: 'team',
+					isArray: false,
+					type: {
+						model: 'Team',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_ONE',
+						associatedWith: 'id',
+						targetName: 'teamID',
+					},
 				},
 			},
 		},

@@ -26,6 +26,7 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ModelAttributes,
 } from '../types';
 import {
 	exhaustiveCheck,
@@ -52,9 +53,9 @@ export enum TransformerMutationType {
 }
 
 const dummyMetadata: ModelInstanceMetadata = {
-	_version: undefined,
-	_lastChangedAt: undefined,
-	_deleted: undefined,
+	_version: undefined!,
+	_lastChangedAt: undefined!,
+	_deleted: undefined!,
 };
 
 const metadataFields = <(keyof ModelInstanceMetadata)[]>(
@@ -152,11 +153,12 @@ function getConnectionFields(
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
 		.forEach(({ name, association }) => {
-			const { connectionType } = association;
+			const { connectionType } = association || {};
 
 			switch (connectionType) {
 				case 'HAS_ONE':
 				case 'HAS_MANY':
+					// case 'MANY_TO_MANY':
 					// Intentionally blank
 					break;
 				case 'BELONGS_TO':
@@ -184,7 +186,7 @@ function getConnectionFields(
 					}
 					break;
 				default:
-					exhaustiveCheck(connectionType);
+					throw new Error(`Invalid connection type ${connectionType}`);
 			}
 		});
 
@@ -195,7 +197,7 @@ function getNonModelFields(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
@@ -204,13 +206,12 @@ function getNonModelFields(
 				({ name }) => name
 			);
 
-			const nested = [];
+			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
 					);
@@ -228,8 +229,8 @@ export function getAuthorizationRules(
 	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
-	const authConfig = []
-		.concat(modelDefinition.attributes)
+	const authConfig = ([] as ModelAttributes)
+		.concat(modelDefinition.attributes || [])
 		.find(attr => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
@@ -268,8 +269,8 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// look for the subscription level override
 			// only pay attention to the public level
-			const modelConfig = (<typeof modelDefinition.attributes>[])
-				.concat(modelDefinition.attributes)
+			const modelConfig = ([] as ModelAttributes)
+				.concat(modelDefinition.attributes || [])
 				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
@@ -335,8 +336,8 @@ export function buildGraphQLOperation(
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	let operation: string;
-	let documentArgs: string = ' ';
-	let operationArgs: string = ' ';
+	let documentArgs: string;
+	let operationArgs: string;
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -375,17 +376,16 @@ export function buildGraphQLOperation(
 			operationArgs = '(id: $id)';
 			transformerMutationType = TransformerMutationType.GET;
 			break;
-
 		default:
-			exhaustiveCheck(graphQLOpType);
+			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
 
 	return [
 		[
-			transformerMutationType,
-			operation,
+			transformerMutationType!,
+			operation!,
 			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-		${operation}${operationArgs}{
+		${operation!}${operationArgs}{
 			${selectionSet}
 		}
 	}`,
@@ -419,7 +419,7 @@ export function createMutationInstanceFromModelOperation<
 			operation = TransformerMutationType.DELETE;
 			break;
 		default:
-			exhaustiveCheck(opType);
+			throw new Error(`Invalid opType ${opType}`);
 	}
 
 	// stringify nested objects of type AWSJSON
@@ -447,7 +447,7 @@ export function createMutationInstanceFromModelOperation<
 		data: JSON.stringify(element, replacer),
 		modelId,
 		model: model.name,
-		operation,
+		operation: operation!,
 		condition: JSON.stringify(condition),
 	});
 

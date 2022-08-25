@@ -14,6 +14,7 @@ import { Credentials } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForSuggestionsCommand,
 	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
@@ -51,6 +52,18 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Place: TestPlacePascalCase,
+				},
+			],
+		};
+	}
+	if (command instanceof SearchPlaceIndexForSuggestionsCommand) {
+		return {
+			Results: [
+				{
+					Text: 'star',
+				},
+				{
+					Text: 'not star',
 				},
 			],
 		};
@@ -159,7 +172,7 @@ describe('AmazonLocationServiceProvider', () => {
 	});
 
 	describe('searchByText', () => {
-		const testString = 'starbucks';
+		const testString = 'star';
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {

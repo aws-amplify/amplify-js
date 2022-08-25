@@ -41,7 +41,7 @@ class AsyncStorageDatabase {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());
 		}
 
-		return monotonicFactoriesMap.get(storeName);
+		return monotonicFactoriesMap.get(storeName)!;
 	}
 
 	async init(): Promise<void> {
@@ -49,7 +49,7 @@ class AsyncStorageDatabase {
 
 		const allKeys: string[] = await this.storage.getAllKeys();
 
-		const keysForCollectionEntries = [];
+		const keysForCollectionEntries: string[] = [];
 
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
@@ -70,7 +70,7 @@ class AsyncStorageDatabase {
 
 						const item = await this.storage.getItem(oldKey);
 
-						await this.storage.setItem(newKey, item);
+						await this.storage.setItem(newKey, item!);
 						await this.storage.removeItem(oldKey);
 
 						ulid = newUlid;
@@ -78,7 +78,7 @@ class AsyncStorageDatabase {
 						ulid = ulidOrId;
 					}
 
-					this.getCollectionIndex(storeName).set(id, ulid);
+					this.getCollectionIndex(storeName)!.set(id, ulid);
 				} else if (recordType === COLLECTION) {
 					keysForCollectionEntries.push(key);
 				}
@@ -99,14 +99,13 @@ class AsyncStorageDatabase {
 		const idxName = indexNameFromKeys(keys);
 
 		const ulid =
-			this.getCollectionIndex(storeName).get(idxName) ||
+			this.getCollectionIndex(storeName)!.get(item.id) ||
 			this.getMonotonicFactory(storeName)();
 
 		// Retrieve db key for item
 		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
 
-		// Set key in collection index
-		this.getCollectionIndex(storeName).set(keyValuesPath, ulid);
+		this.getCollectionIndex(storeName)!.set(item.id, ulid);
 
 		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));
@@ -122,11 +121,12 @@ class AsyncStorageDatabase {
 		}
 
 		const result: [T, OpType][] = [];
-		const collection = this.getCollectionIndex(storeName);
+
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const keysToDelete = new Set<string>();
 		const keysToSave = new Set<string>();
-		const allItemsKeys = [];
+		const allItemsKeys: string[] = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
 
 		/* Populate allItemKeys, keysToDelete, and keysToSave */
@@ -243,7 +243,7 @@ class AsyncStorageDatabase {
 		keyValuePath: string,
 		storeName: string
 	): Promise<T> {
-		const ulid = this.getCollectionIndex(storeName).get(keyValuePath);
+		const ulid = this.getCollectionIndex(storeName)!.get(keyValuePath)!;
 		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
@@ -251,19 +251,19 @@ class AsyncStorageDatabase {
 	}
 
 	async getOne(firstOrLast: QueryOne, storeName: string) {
-		const collection = this.getCollectionIndex(storeName);
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const [itemId, ulid] =
 			firstOrLast === QueryOne.FIRST
 				? (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection) break; // Get first element of the set
-						return [id, ulid];
+						return [id!, ulid!];
 				  })()
 				: (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection); // Get last element of the set
-						return [id, ulid];
+						return [id!, ulid!];
 				  })();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);
 
@@ -282,7 +282,7 @@ class AsyncStorageDatabase {
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		const collection = this.getCollectionIndex(storeName);
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
@@ -313,9 +313,9 @@ class AsyncStorageDatabase {
 	}
 
 	async delete(key: string, storeName: string) {
-		const ulid = this.getCollectionIndex(storeName).get(key);
+		const ulid = this.getCollectionIndex(storeName)!.get(key)!;
 		const itemKey = this.getKeyForItem(storeName, key, ulid);
-		this.getCollectionIndex(storeName).delete(key);
+		this.getCollectionIndex(storeName)!.delete(key);
 		await this.storage.removeItem(itemKey);
 	}
 

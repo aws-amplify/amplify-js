@@ -41,7 +41,7 @@ const logger = new Logger('DataStore');
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
-	private runningProcesses: BackgroundProcessManager;
+	private runningProcesses: BackgroundProcessManager | undefined;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -73,16 +73,16 @@ class SyncProcessor {
 
 	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
-			return null;
+			return null!;
 		}
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
-			);
+			)!;
 
 		if (!predicatesGroup) {
-			return null;
+			return null!;
 		}
 
 		return predicateToGraphQLFilter(predicatesGroup);
@@ -92,11 +92,11 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null,
+		limit: number = null!,
 		filter: GraphQLFilter,
 		onTerminate: Promise<void>
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
-		const [opName, query] = this.typeQuery.get(modelDefinition);
+		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
 		const variables = {
 			limit,
@@ -117,7 +117,7 @@ class SyncProcessor {
 
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
-			if (!this.runningProcesses.isOpen) {
+			if (!this.runningProcesses!.isOpen) {
 				throw new Error(
 					'sync.retreievePage termination was requested. Exiting.'
 				);
@@ -344,10 +344,10 @@ class SyncProcessor {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering.keys()
+						namespace.modelTopologicalOrdering!.keys()
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync);
+						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
@@ -357,19 +357,19 @@ class SyncProcessor {
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
 				.map(([modelDefinition, [namespace, lastSync]]) =>
-					this.runningProcesses.add(async onTerminate => {
+					this.runningProcesses!.add(async onTerminate => {
 						let done = false;
-						let nextToken: string = null;
-						let startedAt: number = null;
-						let items: ModelInstanceMetadata[] = null;
+						let nextToken: string = null!;
+						let startedAt: number = null!;
+						let items: ModelInstanceMetadata[] = null!;
 
 						let recordsReceived = 0;
 						const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
 						const parents = this.schema.namespaces[
 							namespace
-						].modelTopologicalOrdering.get(modelDefinition.name);
-						const promises = parents.map(parent =>
+						].modelTopologicalOrdering!.get(modelDefinition.name);
+						const promises = parents!.map(parent =>
 							parentPromises.get(`${namespace}_${parent}`)
 						);
 
@@ -423,7 +423,7 @@ class SyncProcessor {
 				observer.complete();
 			});
 
-			return this.runningProcesses.addCleaner(async () => {
+			return this.runningProcesses!.addCleaner(async () => {
 				this.runningProcesses = undefined;
 			});
 		});

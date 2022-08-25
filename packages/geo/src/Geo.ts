@@ -24,6 +24,7 @@ import {
 	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,
@@ -162,6 +163,27 @@ export class GeoClass {
 
 		try {
 			return await prov.searchByText(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for search term suggestions based on input text
+	 * @param  {string} text - The text string that is to be search for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
+	 */
+	public async searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	) {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchForSuggestions(text, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

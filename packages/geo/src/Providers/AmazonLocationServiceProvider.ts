@@ -19,9 +19,11 @@ import {
 } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
-	SearchPlaceIndexForTextCommandInput,
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForTextCommandInput,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForSuggestionsCommandInput,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForPositionCommandInput,
 	BatchPutGeofenceCommand,

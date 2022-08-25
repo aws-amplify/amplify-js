@@ -48,6 +48,13 @@ export class ModelPredicateCreator {
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
+		Object.values(modelDefinition.fields).forEach(field => {
+			if (field.association) {
+				if (field.association.targetName) {
+					fieldNames.add(field.association.targetName);
+				}
+			}
+		});
 
 		let handler: ProxyHandler<ModelPredicate<T>>;
 		const predicate = new Proxy(
@@ -80,7 +87,7 @@ export class ModelPredicateCreator {
 
 								// Set the recorder group
 								ModelPredicateCreator.predicateGroupsMap.set(
-									tmpPredicateRecorder,
+									tmpPredicateRecorder as any,
 									group
 								);
 
@@ -89,7 +96,7 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver)!
+									.get(receiver as any)!
 									.predicates.push(group);
 
 								return receiver;
@@ -97,7 +104,7 @@ export class ModelPredicateCreator {
 
 							return result;
 						default:
-							exhaustiveCheck(groupType, false);
+						// intentionally blank.
 					}
 
 					const field = propertyKey as keyof T;
@@ -113,7 +120,7 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver)!
+							.get(receiver as any)!
 							.predicates.push({ field, operator, operand });
 						return receiver;
 					};
@@ -126,7 +133,7 @@ export class ModelPredicateCreator {
 			type: 'and',
 			predicates: [],
 		};
-		ModelPredicateCreator.predicateGroupsMap.set(predicate, group);
+		ModelPredicateCreator.predicateGroupsMap.set(predicate as any, group);
 
 		return predicate;
 	}
@@ -145,12 +152,12 @@ export class ModelPredicateCreator {
 			throw new Error('The predicate is not valid');
 		}
 
-		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
+		return ModelPredicateCreator.predicateGroupsMap.get(predicate as any);
 	}
 
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
+		modelDefinition?: SchemaModel,
 		existing?: ProducerModelPredicate<T>
 	) {
 		if (!existing || !modelDefinition) {

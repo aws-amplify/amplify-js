@@ -7,7 +7,7 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
-	ModelInstanceMetadata,
+	// ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
@@ -24,6 +24,7 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	PaginationInput,
 	DeferredCallbackResolverOptions,
 	LimitTimerRaceResolvedValues,
 	SchemaModel,
@@ -31,6 +32,97 @@ import {
 	IndexesType,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+import { ModelSortPredicateCreator } from './predicates';
+
+const ID = 'id';
+
+export const errorMessages = {
+	idEmptyString: 'An index field cannot contain an empty string value',
+	queryByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	deleteByPkWithCompositeKeyPresent:
+		'Models with composite primary keys cannot be deleted by a single key value, unless using a predicate. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
+	observeWithObjectLiteral:
+		'Object literal syntax cannot be used with observe. Use a predicate instead: https://docs.amplify.aws/lib/datastore/data-access/q/platform/js/#predicates',
+};
+
+export function extractKeyIfExists(
+	modelDefinition: SchemaModel
+): ModelAttribute | undefined {
+	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
+
+	return keyAttribute;
+}
+
+export function extractPrimaryKeyFieldNames(
+	modelDefinition: SchemaModel
+): string[] {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return keyAttribute.properties.fields;
+	}
+
+	return [ID];
+}
+
+export function extractPrimaryKeyValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): string[] {
+	return keyFields.map(key => model[key]);
+}
+
+export function extractPrimaryKeysAndValues<T extends PersistentModel>(
+	model: T,
+	keyFields: string[]
+): any {
+	const primaryKeysAndValues = {};
+	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
+	return primaryKeysAndValues;
+}
+
+// IdentifierFields<ManagedIdentifier>
+// Default behavior without explicit @primaryKey defined
+export function isIdManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		return false;
+	}
+
+	return true;
+}
+
+// IdentifierFields<OptionallyManagedIdentifier>
+// @primaryKey with explicit `id` in the PK. Single key or composite
+export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		// const idInKey = !!keyAttribute.properties.fields.find(
+		// 	field => field === ID
+		// );
+		// return idInKey && keyAttribute.properties.fields.length === 1;
+		return keyAttribute.properties.fields[0] === ID;
+	}
+
+	return false;
+}
+
+export enum NAMESPACES {
+	DATASTORE = 'datastore',
+	USER = 'user',
+	SYNC = 'sync',
+	STORAGE = 'storage',
+}
+
+const DATASTORE = NAMESPACES.DATASTORE;
+const USER = NAMESPACES.USER;
+const SYNC = NAMESPACES.SYNC;
+const STORAGE = NAMESPACES.STORAGE;
+
+export { USER, SYNC, STORAGE, DATASTORE };
+export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 const ID = 'id';
 
@@ -156,7 +248,7 @@ export const validatePredicate = <T extends PersistentModel>(
 			filterType = 'some';
 			break;
 		default:
-			exhaustiveCheck(groupType);
+			throw new Error(`Invalid ${groupType}`);
 	}
 
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
@@ -215,7 +307,6 @@ export const validatePredicateField = <T>(
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
-			exhaustiveCheck(operator, false);
 			return false;
 	}
 };
@@ -342,7 +433,8 @@ export const establishRelationAndKeys = (
 			const fieldAttribute = model.fields[attr];
 			if (
 				typeof fieldAttribute.type === 'object' &&
-				'model' in fieldAttribute.type
+				'model' in fieldAttribute.type &&
+				fieldAttribute.association
 			) {
 				const connectionType = fieldAttribute.association.connectionType;
 				relationship[mKey].relationTypes.push({
@@ -804,6 +896,97 @@ export function valuesEqual(
 	return true;
 }
 
+/**
+ * Statelessly extracts the specified page from an array.
+ *
+ * @param records - The source array to extract a page from.
+ * @param pagination - A definition of the page to extract.
+ * @returns This items from `records` matching the `pagination` definition.
+ */
+export function inMemoryPagination<T extends PersistentModel>(
+	records: T[],
+	pagination?: PaginationInput<T>
+): T[] {
+	if (pagination && records.length > 1) {
+		if (pagination.sort) {
+			const sortPredicates = ModelSortPredicateCreator.getPredicates(
+				pagination.sort
+			);
+
+			if (sortPredicates.length) {
+				const compareFn = sortCompareFunction(sortPredicates);
+				records.sort(compareFn);
+			}
+		}
+		const { page = 0, limit = 0 } = pagination;
+		const start = Math.max(0, page * limit) || 0;
+
+		const end = limit > 0 ? start + limit : records.length;
+
+		return records.slice(start, end);
+	}
+	return records;
+}
+
+/**
+ * An `aysnc` implementation of `Array.some()`. Returns as soon as a match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if "some" items match; `false` otherwise.
+ */
+export async function asyncSome(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (await matches(item)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * An `aysnc` implementation of `Array.every()`. Returns as soon as a non-match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if every item matches; `false` otherwise.
+ */
+export async function asyncEvery(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (!(await matches(item))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * An `async` implementation of `Array.filter()`. Returns after all items have been filtered.
+ * TODO: Return AsyncIterable.
+ * @param items The items to filter.
+ * @param matches The `async` matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<T>` of matching items.
+ */
+export async function asyncFilter<T>(
+	items: T[],
+	matches: (item: T) => Promise<boolean>
+): Promise<T[]> {
+	const results: T[] = [];
+	for (const item of items) {
+		if (await matches(item)) {
+			results.push(item);
+		}
+	}
+	return results;
+}
+
 export const isAWSDate = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
 };
@@ -918,7 +1101,7 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
-			return winner;
+			return winner!;
 		}
 	}
 

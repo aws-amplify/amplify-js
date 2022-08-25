@@ -407,8 +407,8 @@ async function createMutationEvent(model, opType): Promise<MutationEvent> {
 		.constructor as PersistentModelConstructor<any>;
 
 	return createMutationInstanceFromModelOperation(
-		undefined,
-		undefined,
+		undefined!,
+		undefined!,
 		opType,
 		modelConstructor,
 		model,

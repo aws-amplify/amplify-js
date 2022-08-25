@@ -111,7 +111,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1('eq', 'field1 value 1')
+				c.field1.eq('field1 value 1')
 			);
 
 			expect(results.length).toEqual(1);
@@ -206,8 +206,8 @@ describe('IndexedDBAdapter tests', () => {
 			let profile = await DataStore.query(Profile, profile1Id);
 
 			// double-checking that both of the records exist at first
-			expect(user.id).toEqual(user1Id);
-			expect(profile.id).toEqual(profile1Id);
+			expect(user!.id).toEqual(user1Id);
+			expect(profile!.id).toEqual(profile1Id);
 
 			await DataStore.delete(User, user1Id);
 
@@ -236,6 +236,52 @@ describe('IndexedDBAdapter tests', () => {
 			// both should be undefined, even though we only explicitly deleted the post
 			expect(post).toBeUndefined();
 			expect(comment).toBeUndefined();
+		});
+	});
+
+	describe('Save', () => {
+		let User: PersistentModelConstructor<User>;
+		let Profile: PersistentModelConstructor<Profile>;
+		let profile: Profile;
+
+		beforeAll(async () => {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ User } = classes as {
+				User: PersistentModelConstructor<User>;
+			});
+
+			({ Profile } = classes as {
+				Profile: PersistentModelConstructor<Profile>;
+			});
+
+			profile = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			);
+		});
+
+		it('should allow linking model via model field', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profile })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
+		});
+
+		it('should allow linking model via FK', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profileID: profile.id })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 	});
 });
