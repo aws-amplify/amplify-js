@@ -84,11 +84,6 @@ type AWSAppSyncRealTimeAuthInput =
 		payload: string;
 	};
 
-const standardDomainPattern =
-	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
-
-const customDomainPath = '/realtime';
-
 export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
