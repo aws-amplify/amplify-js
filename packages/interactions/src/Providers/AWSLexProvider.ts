@@ -10,17 +10,21 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
+	AWSLexProviderOptions,
 	InteractionsResponse,
 	InteractionsMessage,
 } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
+	PostTextCommandInput,
+	PostTextCommandOutput,
 	PostContentCommand,
+	PostContentCommandInput,
+	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
@@ -44,7 +48,24 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return 'AWSLexProvider';
 	}
 
-	reportBotStatus(data, botname) {
+	configure(config: AWSLexProviderOptions = {}): AWSLexProviderOptions {
+		const propertiesToTest = ['name', 'alias', 'region'];
+
+		Object.keys(config).forEach(botKey => {
+			const botConfig = config[botKey];
+
+			// is bot config correct
+			if (!propertiesToTest.every(x => x in botConfig)) {
+				throw new Error('invalid bot configuration');
+			}
+		});
+		return super.configure(config);
+	}
+
+	reportBotStatus(
+		data: PostTextCommandOutput | PostContentCommandOutput,
+		botname: string
+	) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
@@ -94,11 +115,16 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
+		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
-		const credentials = await Credentials.get();
-		if (!credentials) {
+
+		// check if credentials are present
+		let credentials;
+		try {
+			credentials = await Credentials.get();
+		} catch (error) {
 			return Promise.reject('No credentials');
 		}
 
@@ -108,7 +134,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
-		let params;
+		let params: PostTextCommandInput | PostContentCommandInput;
 		if (typeof message === 'string') {
 			params = {
 				botAlias: this._config[botname].alias,
@@ -118,10 +144,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			};
 
 			logger.debug('postText to lex', message);
-
 			try {
 				const postTextCommand = new PostTextCommand(params);
 				const data = await this.lexRuntimeServiceClient.send(postTextCommand);
+
 				this.reportBotStatus(data, botname);
 				return data;
 			} catch (err) {
@@ -133,15 +159,21 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				options: { messageType },
 			} = message;
 			if (messageType === 'voice') {
+				if (!(content instanceof Blob || content instanceof ReadableStream))
+					return Promise.reject('invalid content type');
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
-					contentType: 'audio/x-l16; sample-rate=16000',
-					inputStream: content,
+					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
+					inputStream: await convert(content),
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
 				};
 			} else {
+				if (typeof content !== 'string')
+					return Promise.reject('invalid content type');
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
@@ -157,7 +189,11 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const data = await this.lexRuntimeServiceClient.send(
 					postContentCommand
 				);
-				const audioArray = await convert(data.audioStream);
+
+				const audioArray = data.audioStream
+					? await convert(data.audioStream)
+					: undefined;
+
 				this.reportBotStatus(data, botname);
 				return { ...data, ...{ audioStream: audioArray } };
 			} catch (err) {
@@ -166,9 +202,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		}
 	}
 
-	onComplete(botname: string, callback) {
+	onComplete(botname: string, callback: (err, confirmation) => void) {
+		// does bot exist
 		if (!this._config[botname]) {
-			throw new ErrorEvent('Bot ' + botname + ' does not exist');
+			throw new Error('Bot ' + botname + ' does not exist');
 		}
 		this._botsCompleteCallback[botname] = callback;
 	}

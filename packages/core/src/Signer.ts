@@ -22,13 +22,13 @@ const logger = new Logger('Signer');
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 
-const encrypt = function(key, src) {
+const encrypt = function (key, src) {
 	const hash = new jsSha256(key);
 	hash.update(src);
 	return hash.digestSync();
 };
 
-const hash = function(src) {
+const hash = function (src) {
 	const arg = src || '';
 	const hash = new jsSha256();
 	hash.update(arg);
@@ -39,15 +39,9 @@ const hash = function(src) {
  * @private
  * RFC 3986 compliant version of encodeURIComponent
  */
-const escape_RFC3986 = function(component) {
-	return component.replace(/[!'()*]/g, function(c) {
-		return (
-			'%' +
-			c
-				.charCodeAt(0)
-				.toString(16)
-				.toUpperCase()
-		);
+const escape_RFC3986 = function (component) {
+	return component.replace(/[!'()*]/g, function (c) {
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 	});
 };
 
@@ -56,7 +50,7 @@ const escape_RFC3986 = function(component) {
  * Create canonical query string
  *
  */
-const canonical_query = function(query) {
+const canonical_query = function (query) {
 	if (!query || query.length === 0) {
 		return '';
 	}
@@ -96,23 +90,23 @@ CanonicalHeadersEntry =
     Lowercase(HeaderName) + ':' + Trimall(HeaderValue) + '\n'
 </pre>
 */
-const canonical_headers = function(headers) {
+const canonical_headers = function (headers) {
 	if (!headers || Object.keys(headers).length === 0) {
 		return '';
 	}
 
 	return (
 		Object.keys(headers)
-			.map(function(key) {
+			.map(function (key) {
 				return {
 					key: key.toLowerCase(),
 					value: headers[key] ? headers[key].trim().replace(/\s+/g, ' ') : '',
 				};
 			})
-			.sort(function(a, b) {
+			.sort(function (a, b) {
 				return a.key < b.key ? -1 : 1;
 			})
-			.map(function(item) {
+			.map(function (item) {
 				return item.key + ':' + item.value;
 			})
 			.join('\n') + '\n'
@@ -123,9 +117,9 @@ const canonical_headers = function(headers) {
  * List of header keys included in the canonical headers.
  * @access private
  */
-const signed_headers = function(headers) {
+const signed_headers = function (headers) {
 	return Object.keys(headers)
-		.map(function(key) {
+		.map(function (key) {
 			return key.toLowerCase();
 		})
 		.sort()
@@ -148,7 +142,7 @@ CanonicalRequest =
     HexEncode(Hash(RequestPayload))
 </pre>
 */
-const canonical_request = function(request) {
+const canonical_request = function (request) {
 	const url_info = parse(request.url);
 
 	return [
@@ -161,7 +155,7 @@ const canonical_request = function(request) {
 	].join('\n');
 };
 
-const parse_service_info = function(request) {
+const parse_service_info = function (request) {
 	const url_info = parse(request.url),
 		host = url_info.host;
 
@@ -179,7 +173,7 @@ const parse_service_info = function(request) {
 	};
 };
 
-const credential_scope = function(d_str, region, service) {
+const credential_scope = function (d_str, region, service) {
 	return [d_str, region, service, 'aws4_request'].join('/');
 };
 
@@ -197,7 +191,7 @@ StringToSign =
     HashedCanonicalRequest
 </pre>
 */
-const string_to_sign = function(algorithm, canonical_request, dt_str, scope) {
+const string_to_sign = function (algorithm, canonical_request, dt_str, scope) {
 	return [algorithm, dt_str, scope, hash(canonical_request)].join('\n');
 };
 
@@ -215,7 +209,7 @@ kService = HMAC(kRegion, Service)
 kSigning = HMAC(kService, "aws4_request")
 </pre>
 */
-const get_signing_key = function(secret_key, d_str, service_info) {
+const get_signing_key = function (secret_key, d_str, service_info) {
 	logger.debug(service_info);
 	const k = 'AWS4' + secret_key,
 		k_date = encrypt(k, d_str),
@@ -226,7 +220,7 @@ const get_signing_key = function(secret_key, d_str, service_info) {
 	return k_signing;
 };
 
-const get_signature = function(signing_key, str_to_sign) {
+const get_signature = function (signing_key, str_to_sign) {
 	return toHex(encrypt(signing_key, str_to_sign));
 };
 
@@ -236,7 +230,7 @@ const get_signature = function(signing_key, str_to_sign) {
  * Refer to
  * {@link http://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html|Add the Signing Information}
  */
-const get_authorization_header = function(
+const get_authorization_header = function (
 	algorithm,
 	access_key,
 	scope,
@@ -289,6 +283,12 @@ export class Signer {
     */
 	static sign(request, access_info, service_info = null) {
 		request.headers = request.headers || {};
+
+		if (request.body && !request.data) {
+			throw new Error(
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+			);
+		}
 
 		// datetime string and date string
 		const dt = DateUtils.getDateWithClockOffset(),

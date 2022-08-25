@@ -1,11 +1,26 @@
-import { Auth } from '@aws-amplify/auth';
-import { Credentials, Logger, Signer } from '@aws-amplify/core';
-import { GraphQLError, isCompositeType } from 'graphql';
+jest.mock('@aws-amplify/core', () => ({
+	__esModule: true,
+	...jest.requireActual('@aws-amplify/core'),
+	browserOrNode() {
+		return {
+			isBrowser: true,
+			isNode: false,
+		};
+	},
+}));
+
 import Observable from 'zen-observable-ts';
-import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { Reachability, Credentials, Logger, Signer } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { MESSAGE_TYPES } from '../src/Providers/AWSAppSyncRealTimeProvider/constants';
-import { FakeWebSocketInterface, delay, replaceConstant } from './helpers';
+
+import { MESSAGE_TYPES } from '../src/Providers/constants';
+import * as constants from '../src/Providers/constants';
+
+import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
+import { ConnectionState as CS } from '../src';
+
+import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 
 describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {
@@ -76,11 +91,73 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						fakeWebSocketInterface.newWebSocket();
 						return fakeWebSocketInterface.webSocket;
 					});
+
+					// Reduce retry delay for tests to 100ms
+					Object.defineProperty(constants, 'MAX_DELAY_MS', {
+						value: 100,
+					});
+
+					// Set the network to "online" for these tests
+					const spyon = jest
+						.spyOn(Reachability.prototype, 'networkMonitor')
+						.mockImplementationOnce(
+							() =>
+								new Observable(observer => {
+									observer.next?.({ online: true });
+								})
+						);
 				});
 
 				afterEach(async () => {
 					await fakeWebSocketInterface?.closeInterface();
+					fakeWebSocketInterface?.teardown();
 					loggerSpy.mockClear();
+				});
+
+				test('standard subscription / unsubscription steps through the expected connection states', async () => {
+					const observer = provider.subscribe('test', {
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const subscription = observer.subscribe({
+						next: () => {},
+						error: x => {},
+					});
+
+					// Wait for the socket to be ready
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.sendMessage(
+						new MessageEvent('start_ack', {
+							data: JSON.stringify({
+								type: MESSAGE_TYPES.GQL_START_ACK,
+								payload: { connectionTimeoutMs: 100 },
+								id: fakeWebSocketInterface?.webSocket.subscriptionId,
+							}),
+						})
+					);
+
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connected,
+					]);
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
+						CS.Disconnected,
+						CS.Connecting,
+						CS.Connected,
+					]);
+
+					subscription.unsubscribe();
+
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.ConnectedPendingDisconnect,
+					]);
+
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
+						CS.Disconnected,
+						CS.Connecting,
+						CS.Connected,
+						CS.ConnectedPendingDisconnect,
+						CS.Disconnected,
+					]);
 				});
 
 				test('returns error when no appSyncGraphqlEndpoint is provided', async () => {
@@ -117,7 +194,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe('test', {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						})
-						.subscribe({});
+						.subscribe({ error: () => {} });
 
 					// Wait for the socket to be initialize
 					await fakeWebSocketInterface.readyForUse;
@@ -143,7 +220,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe('test', {
 							appSyncGraphqlEndpoint: 'http://localhost:8080',
 						})
-						.subscribe({});
+						.subscribe({ error: () => {} });
 
 					// Wait for the socket to be initialize
 					await fakeWebSocketInterface.readyForUse;
@@ -170,7 +247,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint:
 								'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
 						})
-						.subscribe({});
+						.subscribe({ error: () => {} });
 
 					// Wait for the socket to be initialize
 					await fakeWebSocketInterface.readyForUse;
@@ -184,12 +261,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				test('subscription fails when onerror triggered while waiting for onopen', async () => {
 					expect.assertions(1);
-
 					provider
 						.subscribe('test', {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						})
-						.subscribe({});
+						.subscribe({ error: () => {} });
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerError();
 					expect(loggerSpy).toHaveBeenCalledWith(
@@ -205,11 +281,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						.subscribe('test', {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						})
-						.subscribe({});
+						.subscribe({ error: () => {} });
+
 					await fakeWebSocketInterface?.readyForUse;
 					await fakeWebSocketInterface?.triggerClose();
-					await delay(50);
 
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Disconnected,
+					]);
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
@@ -222,16 +301,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				test('subscription fails when onerror triggered while waiting for handshake', async () => {
 					expect.assertions(1);
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						provider
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							})
+							.subscribe({ error: () => {} });
 
-					provider
-						.subscribe('test', {
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
-						})
-						.subscribe({});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.triggerError();
-
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
+						await fakeWebSocketInterface?.triggerError();
+					});
 					// When the socket throws an error during handshake
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
@@ -242,14 +322,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('subscription fails when onclose triggered while waiting for handshake', async () => {
 					expect.assertions(1);
 
-					provider
-						.subscribe('test', {
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
-						})
-						.subscribe({});
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-					await fakeWebSocketInterface?.triggerClose();
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						provider
+							.subscribe('test', {
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
+						await fakeWebSocketInterface?.triggerClose();
+					});
 
 					// When the socket is closed during handshake
 					// Watching for raised exception to be caught and logged
@@ -305,6 +388,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							data: JSON.stringify({
 								type: MESSAGE_TYPES.GQL_START_ACK,
 								payload: { connectionTimeoutMs: 100 },
+								id: fakeWebSocketInterface?.webSocket.subscriptionId,
 							}),
 						})
 					);
@@ -336,6 +420,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							data: JSON.stringify({
 								type: MESSAGE_TYPES.GQL_START_ACK,
 								payload: { connectionTimeoutMs: 100 },
+								id: fakeWebSocketInterface?.webSocket.subscriptionId,
 							}),
 						})
 					);
@@ -473,39 +558,59 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription observer error is triggered when a connection is formed and an ack data message is received then ack timeout prompts disconnect', async () => {
-					expect.assertions(1);
+				test('subscription observer error is triggered when a connection is formed and an ack data message is received then ka timeout prompts disconnect', async () => {
+					expect.assertions(2);
 
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
-						error: () => {},
-					});
-
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
-
+					const subscription = observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
-					await Promise.resolve(
-						fakeWebSocketInterface?.sendMessage(
-							new MessageEvent('connection_ack', {
-								data: JSON.stringify({
-									type: MESSAGE_TYPES.GQL_CONNECTION_ACK,
-									payload: { connectionTimeoutMs: 20 },
-								}),
-							})
-						)
+					await replaceConstant(
+						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
+						5,
+						async () => {
+							await fakeWebSocketInterface?.readyForUse;
+							await fakeWebSocketInterface?.triggerOpen();
+							await fakeWebSocketInterface?.sendMessage(
+								new MessageEvent('connection_ack', {
+									data: JSON.stringify({
+										type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
+										payload: { connectionTimeoutMs: 100 },
+									}),
+								})
+							);
+
+							await fakeWebSocketInterface?.sendMessage(
+								new MessageEvent('start_ack', {
+									data: JSON.stringify({
+										type: MESSAGE_TYPES.GQL_START_ACK,
+										payload: {},
+										id: fakeWebSocketInterface?.webSocket.subscriptionId,
+									}),
+								})
+							);
+
+							await fakeWebSocketInterface?.sendDataMessage({
+								type: MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
+								payload: { data: {} },
+							});
+						}
 					);
 
-					await fakeWebSocketInterface?.sendDataMessage({
-						type: MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
-						payload: { data: {} },
-					});
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connected,
+					]);
 
-					// Now wait for the timeout to elapse
-					await delay(100);
+					// Wait until the socket is automatically disconnected
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.ConnectionDisrupted,
+					]);
+
+					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
+						CS.ConnectedPendingKeepAlive
+					);
 
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
@@ -520,7 +625,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({});
+					const subscription = observer.subscribe({ error: () => {} });
 
 					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.sendDataMessage({
@@ -536,19 +641,19 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				test('failure to ack before timeout', async () => {
 					expect.assertions(1);
 
-					await replaceConstant('START_ACK_TIMEOUT', 20, async () => {
+					await replaceConstant('START_ACK_TIMEOUT', 30, async () => {
 						const observer = provider.subscribe('test', {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						const subscription = observer.subscribe({
-							error: () => {},
-						});
+						const subscription = observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.standardConnectionHandshake();
 
-						// Wait long enough that the shortened timeout will elapse
-						await delay(100);
+						// Wait until the socket is automatically disconnected
+						await fakeWebSocketInterface?.waitForConnectionState([
+							CS.Disconnected,
+						]);
 
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
@@ -558,7 +663,44 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 				});
 
-				test('connection init timeout', async () => {
+				test('connection init timeout met', async () => {
+					expect.assertions(2);
+					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
+						const observer = provider.subscribe('test', {
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						});
+
+						const subscription = observer.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+						Promise.resolve();
+						await fakeWebSocketInterface?.triggerOpen();
+						Promise.resolve();
+						await fakeWebSocketInterface?.handShakeMessage();
+
+						// Wait no less than 20 ms
+						await delay(20);
+
+						// Wait until the socket is automatically disconnected
+						await expect(
+							fakeWebSocketInterface?.hubConnectionListener
+								?.currentConnectionState
+						).toBe(CS.Connecting);
+
+						// Watching for raised exception to be caught and logged
+						expect(loggerSpy).not.toBeCalledWith(
+							'DEBUG',
+							'error on bound ',
+							expect.objectContaining({
+								message: expect.stringMatching(
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
+								),
+							})
+						);
+					});
+				});
+
+				test('connection init timeout missed', async () => {
 					expect.assertions(1);
 
 					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
@@ -566,15 +708,19 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						const subscription = observer.subscribe({
-							error: () => {},
-						});
+						const subscription = observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
+						Promise.resolve();
 						await fakeWebSocketInterface?.triggerOpen();
 
-						// Wait long enough that the shortened timeout will elapse
-						await delay(100);
+						// Wait no less than 20 ms
+						await delay(20);
+
+						// Wait until the socket is automatically disconnected
+						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+							CS.Disconnected,
+						]);
 
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).toBeCalledWith(
@@ -582,7 +728,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							'error on bound ',
 							expect.objectContaining({
 								message: expect.stringMatching(
-									'Connection timeout: ack from AWSRealTime'
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
 								),
 							})
 						);
@@ -598,7 +744,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'API_KEY',
 							})
-							.subscribe({});
+							.subscribe({ error: () => {} });
+
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
@@ -626,7 +773,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
 							})
-							.subscribe({});
+							.subscribe({ error: () => {} });
+
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
@@ -704,8 +852,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								},
 							});
 
-						// It takes time for the credentials to resolve
-						await delay(50);
+						// Wait until the socket is automatically disconnected
+						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+							CS.Disconnected,
+						]);
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'WARN',
@@ -730,7 +880,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
 							})
-							.subscribe({});
+							.subscribe({ error: () => {} });
+
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
@@ -785,9 +936,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
 							})
-							.subscribe({});
-						await fakeWebSocketInterface?.readyForUse;
+							.subscribe({ error: () => {} });
 
+						await fakeWebSocketInterface?.readyForUse;
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
 							'Authenticating with OPENID_CONNECT'
@@ -814,7 +965,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AMAZON_COGNITO_USER_POOLS',
 							})
-							.subscribe({});
+							.subscribe({ error: () => {} });
+
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
@@ -834,7 +986,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 									Authorization: 'test',
 								},
 							})
-							.subscribe({});
+							.subscribe({ error: () => {} });
+
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
@@ -851,7 +1004,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_LAMBDA',
 								additionalHeaders: {
-									Authorization: undefined,
+									Authorization: '',
 								},
 							})
 							.subscribe({
