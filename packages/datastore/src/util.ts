@@ -30,99 +30,10 @@ import {
 	SchemaModel,
 	ModelAttribute,
 	IndexesType,
+	ModelInstanceMetadata,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 import { ModelSortPredicateCreator } from './predicates';
-
-const ID = 'id';
-
-export const errorMessages = {
-	idEmptyString: 'An index field cannot contain an empty string value',
-	queryByPkWithCompositeKeyPresent:
-		'Models with composite primary keys cannot be queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
-	deleteByPkWithCompositeKeyPresent:
-		'Models with composite primary keys cannot be deleted by a single key value, unless using a predicate. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
-	observeWithObjectLiteral:
-		'Object literal syntax cannot be used with observe. Use a predicate instead: https://docs.amplify.aws/lib/datastore/data-access/q/platform/js/#predicates',
-};
-
-export function extractKeyIfExists(
-	modelDefinition: SchemaModel
-): ModelAttribute | undefined {
-	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
-
-	return keyAttribute;
-}
-
-export function extractPrimaryKeyFieldNames(
-	modelDefinition: SchemaModel
-): string[] {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return keyAttribute.properties.fields;
-	}
-
-	return [ID];
-}
-
-export function extractPrimaryKeyValues<T extends PersistentModel>(
-	model: T,
-	keyFields: string[]
-): string[] {
-	return keyFields.map(key => model[key]);
-}
-
-export function extractPrimaryKeysAndValues<T extends PersistentModel>(
-	model: T,
-	keyFields: string[]
-): any {
-	const primaryKeysAndValues = {};
-	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
-	return primaryKeysAndValues;
-}
-
-// IdentifierFields<ManagedIdentifier>
-// Default behavior without explicit @primaryKey defined
-export function isIdManaged(modelDefinition: SchemaModel): boolean {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return false;
-	}
-
-	return true;
-}
-
-// IdentifierFields<OptionallyManagedIdentifier>
-// @primaryKey with explicit `id` in the PK. Single key or composite
-export function isIdOptionallyManaged(modelDefinition: SchemaModel): boolean {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		// const idInKey = !!keyAttribute.properties.fields.find(
-		// 	field => field === ID
-		// );
-		// return idInKey && keyAttribute.properties.fields.length === 1;
-		return keyAttribute.properties.fields[0] === ID;
-	}
-
-	return false;
-}
-
-export enum NAMESPACES {
-	DATASTORE = 'datastore',
-	USER = 'user',
-	SYNC = 'sync',
-	STORAGE = 'storage',
-}
-
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
-
-export { USER, SYNC, STORAGE, DATASTORE };
-export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 const ID = 'id';
 
@@ -521,7 +432,7 @@ export const traverseModel = <T extends PersistentModel>(
 		srcModelName
 	);
 
-	const relation = relationships[srcModelName];
+	const relation = relationships![srcModelName];
 
 	const result: {
 		modelName: string;
@@ -553,7 +464,7 @@ export const traverseModel = <T extends PersistentModel>(
 						result.push({
 							modelName: rItem.modelName,
 							item: instance[rItem.fieldName],
-							instance: modelInstance,
+							instance: modelInstance!,
 						});
 
 						const targetNames: string[] | undefined =
@@ -574,12 +485,12 @@ export const traverseModel = <T extends PersistentModel>(
 								// now we need the value of the key to get the PK (and SK)
 								// values from the related record
 
-								const { primaryKey } = namespace.keys[modelConstructor.name];
+								const { primaryKey } = namespace.keys![modelConstructor.name];
 								const keyField = primaryKey && primaryKey[idx];
 
 								// Get the value
 								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
+									relatedRecordInProxy[keyField!];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
@@ -614,7 +525,7 @@ export const traverseModel = <T extends PersistentModel>(
 							result.push({
 								modelName: rItem.modelName,
 								item: instance[rItem.fieldName],
-								instance: modelInstance,
+								instance: modelInstance!,
 							});
 						}
 					}
@@ -632,14 +543,14 @@ export const traverseModel = <T extends PersistentModel>(
 								// Previously, we used the hardcoded `id` for the key.
 								// Now, we need the value of the key to get the PK (and SK)
 								// values from the related record
-								const { primaryKey } = namespace.keys[modelConstructor.name];
+								const { primaryKey } = namespace.keys![modelConstructor.name];
 
 								// fall back to ID if
 								const keyField = primaryKey && primaryKey[idx];
 
 								// Get the value
 								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
+									relatedRecordInProxy[keyField!];
 
 								// Set the targetName value
 								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
@@ -669,7 +580,7 @@ export const traverseModel = <T extends PersistentModel>(
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering.keys())
+			Array.from(namespace.modelTopologicalOrdering!.keys())
 		);
 	}
 
@@ -677,7 +588,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 	result.sort((a, b) => {
 		return (
-			sortedModels.indexOf(a.modelName) - sortedModels.indexOf(b.modelName)
+			sortedModels!.indexOf(a.modelName) - sortedModels!.indexOf(b.modelName)
 		);
 	});
 

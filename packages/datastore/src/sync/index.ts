@@ -350,7 +350,7 @@ export class SyncEngine {
 								// TODO: extract to function
 								if (!isNode) {
 									subscriptions.push(
-										dataSubsObservable.subscribe(
+										dataSubsObservable!.subscribe(
 											([_transformerMutationType, modelDefinition, item]) =>
 												this.runningProcesses.add(async () => {
 													const modelConstructor = this.userModelClasses[
@@ -409,11 +409,11 @@ export class SyncEngine {
 								] as PersistentModelConstructor<MutationEvent>;
 								const modelDefinition = this.getModelDefinition(model);
 								const graphQLCondition = predicateToGraphQLCondition(
-									condition,
+									condition!,
 									modelDefinition
 								);
 								const mutationEvent = createMutationInstanceFromModelOperation(
-									namespace.relationships,
+									namespace.relationships!,
 									this.getModelDefinition(model),
 									opType,
 									model,
@@ -626,7 +626,7 @@ export class SyncEngine {
 												))
 											);
 
-											const counts = count.get(modelConstructor);
+											const counts = count.get(modelConstructor)!;
 
 											opTypeCount.forEach(([, opType]) => {
 												switch (opType) {
@@ -640,7 +640,7 @@ export class SyncEngine {
 														counts.deleted++;
 														break;
 													default:
-														exhaustiveCheck(opType);
+														throw new Error(`Invalid opType ${opType}`);
 												}
 											});
 										});
@@ -660,10 +660,10 @@ export class SyncEngine {
 
 											newestFullSyncStartedAt =
 												newestFullSyncStartedAt === undefined
-													? lastFullSync
+													? lastFullSync!
 													: Math.max(
 															newestFullSyncStartedAt,
-															isFullSync ? startedAt : lastFullSync
+															isFullSync ? startedAt : lastFullSync!
 													  );
 
 											modelMetadata = (
@@ -871,9 +871,9 @@ export class SyncEngine {
 					this.modelInstanceCreator(ModelMetadataConstructor, {
 						model: model.name,
 						namespace,
-						lastSync: null,
+						lastSync: null!,
 						fullSyncInterval,
-						lastFullSync: null,
+						lastFullSync: null!,
 						lastSyncPredicate,
 					}),
 					undefined,
@@ -891,8 +891,8 @@ export class SyncEngine {
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
 						if (syncPredicateUpdated) {
-							draft.lastSync = null;
-							draft.lastFullSync = null;
+							draft.lastSync = null!;
+							draft.lastFullSync = null!;
 							(draft.lastSyncPredicate as any) = lastSyncPredicate;
 						}
 					})

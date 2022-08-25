@@ -68,7 +68,7 @@ export class AsyncStorageAdapter implements Adapter {
 	private getIndexKeys(namespaceName: string, modelName: string): string[] {
 		const namespace = this.schema.namespaces[namespaceName];
 
-		const keyPath = namespace?.keys[modelName]?.primaryKey;
+		const keyPath = namespace?.keys?.[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;
@@ -162,7 +162,7 @@ export class AsyncStorageAdapter implements Adapter {
 			model,
 			this.schema.namespaces[namespaceName],
 			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.getModelConstructorByModelName as any
 		);
 
 		const set = new Set<string>();
@@ -310,7 +310,7 @@ export class AsyncStorageAdapter implements Adapter {
 			return;
 		}
 
-		const keyValues = [];
+		const keyValues = [] as any[];
 
 		for (const key of keys) {
 			const predicateObj = predicateObjs.find(
@@ -463,20 +463,7 @@ export class AsyncStorageAdapter implements Adapter {
 					relations,
 					[model],
 					modelConstructor.name,
-					namespaceName,
-					deleteQueue
-				);
-			} else {
-				const relations =
-					this.schema.namespaces[namespaceName].relationships[
-						modelConstructor.name
-					].relationTypes;
-
-				await this.deleteTraverse(
-					relations,
-					[model],
-					modelConstructor.name,
-					namespaceName,
+					nameSpace,
 					deleteQueue
 				);
 			}

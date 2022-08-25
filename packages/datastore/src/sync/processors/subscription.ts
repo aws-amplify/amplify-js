@@ -63,8 +63,6 @@ class SubscriptionProcessor {
 
 	private runningProcesses: BackgroundProcessManager;
 
-	private runningProcesses: BackgroundProcessManager;
-
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
@@ -450,10 +448,11 @@ class SubscriptionProcessor {
 
 													const predicatesGroup =
 														ModelPredicateCreator.getPredicates(
-															this.syncPredicates.get(modelDefinition),
+															this.syncPredicates.get(modelDefinition)!,
 															false
 														);
 
+													// @ts-ignore
 													const { [opName]: record } = data;
 
 													// checking incoming subscription against syncPredicate.
@@ -463,7 +462,7 @@ class SubscriptionProcessor {
 													if (
 														this.passesPredicateValidation(
 															record,
-															predicatesGroup
+															predicatesGroup!
 														)
 													) {
 														this.pushToBuffer(
@@ -536,14 +535,14 @@ class SubscriptionProcessor {
 														await this.errorHandler({
 															recoverySuggestion:
 																'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-															localModel: null,
+															localModel: null!,
 															message,
 															model: modelDefinition.name,
 															operation,
 															errorType:
 																getSubscriptionErrorType(subscriptionError),
 															process: ProcessName.subscribe,
-															remoteModel: null,
+															remoteModel: null!,
 															cause: subscriptionError,
 														});
 													} catch (e) {
