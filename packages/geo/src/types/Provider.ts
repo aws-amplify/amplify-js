@@ -13,7 +13,6 @@
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
 	Place,
 	MapStyle,
