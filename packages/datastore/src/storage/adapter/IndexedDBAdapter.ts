@@ -807,61 +807,34 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, fieldName, modelName, targetName, targetNames } =
-				rel;
+			const {
+				relationType,
+				modelName,
+				targetName,
+				targetNames,
+				associatedWith,
+			} = rel;
 
 			const storeName = this.getStorename(nameSpace, modelName);
 
-			const index: string | string[] | undefined =
-				getIndex(
-					this.schema.namespaces[nameSpace].relationships![modelName]
-						.relationTypes,
-					srcModel
-				) ||
-				// if we were unable to find an index via relationTypes
-				// i.e. for keyName connections, attempt to find one by the
-				// associatedWith property
-				getIndexFromAssociation(
-					this.schema.namespaces[nameSpace].relationships![modelName].indexes,
-					rel.associatedWith!
-				);
-
-			// TODO: refactor
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const hasOneIndex = index || 'byPk';
+						const hasOneIndex = 'byPk';
 
-						// CPK
-						if (targetNames && targetNames.length > 0) {
-							// iterate over targetNames array and see if each item is present in model object
-							// targetNames here being the keys for the CHILD model
-							const hasConnectedModelFields = targetNames.every(targetName =>
-								model.hasOwnProperty(targetName)
-							);
-
-							// PK / Composite key for the PARENT model
-							const keyValues = this.getIndexKeyValues(model);
-
-							let values = [];
-
-							if (hasConnectedModelFields) {
-								// Values will be that of the child model
-								values = targetNames.map(
-									targetName => model[targetName]
-								) as any;
-							} else {
-								// values will be that of the parent model
-								values = keyValues as any;
-							}
+						if (targetNames?.length) {
+							// CPK codegen
+							const values = targetNames.map(targetName => model[targetName]);
 
 							if (values.length === 0) break;
 
-							const recordToDelete = <T>await this.db
-								.transaction(storeName, 'readwrite')
-								.objectStore(storeName)
-								.index(hasOneIndex as string)
-								.get(values);
+							const recordToDelete = <T>(
+								await this.db
+									.transaction(storeName, 'readwrite')
+									.objectStore(storeName)
+									.index(hasOneIndex)
+									.get(values)
+							);
 
 							await this.deleteTraverse(
 								this.schema.namespaces[nameSpace].relationships[modelName]
@@ -873,20 +846,36 @@ class IndexedDBAdapter implements Adapter {
 							);
 							break;
 						} else {
-							// Backwards compatibility (TODO: combine with above)
-							const hasOneIndex = index || 'byPk';
+							// PRE-CPK codegen
+							let index;
+							let values: string[];
 
-							const hasOneCustomField = targetName in model;
-							const keyValues = this.getIndexKeyValues(model);
-							const value = hasOneCustomField ? [model[targetName]] : keyValues;
+							if (targetName && targetName in model) {
+								index = hasOneIndex;
+								const value = model[targetName];
+								values = [value];
+							} else {
+								// backwards compatability for older versions of codegen that did not emit targetName for HAS_ONE relations
+								// TODO: can we deprecate this? it's been ~2 years since codegen started including targetName for HAS_ONE
+								// If we deprecate, we'll need to re-gen the MIPR in __tests__/schema.ts > newSchema
+								// otherwise some unit tests will fail
+								index = getIndex(
+									this.schema.namespaces[nameSpace].relationships[modelName]
+										.relationTypes,
+									srcModel
+								);
+								values = this.getIndexKeyValues(model);
+							}
 
-							if (!value) break;
+							if (!values || !index) break;
 
-							const recordToDelete = <T>await this.db
-								.transaction(storeName, 'readwrite')
-								.objectStore(storeName)
-								.index(hasOneIndex as string)
-								.get(value);
+							const recordToDelete = <T>(
+								await this.db
+									.transaction(storeName, 'readwrite')
+									.objectStore(storeName)
+									.index(index)
+									.get(values)
+							);
 
 							await this.deleteTraverse(
 								this.schema.namespaces[nameSpace].relationships[modelName]
@@ -901,6 +890,19 @@ class IndexedDBAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
+						const index =
+							// explicit bi-directional @hasMany and @manyToMany
+							getIndex(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.relationTypes,
+								srcModel
+							) ||
+							// uni and/or implicit @hasMany
+							getIndexFromAssociation(
+								this.schema.namespaces[nameSpace].relationships[modelName]
+									.indexes,
+								associatedWith
+							);
 						const keyValues = this.getIndexKeyValues(model);
 
 						const childrenArray = await this.db

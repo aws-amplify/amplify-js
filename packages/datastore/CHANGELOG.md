@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.7...@aws-amplify/datastore@3.12.8) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.12.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.6...@aws-amplify/datastore@3.12.7) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.12.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.5...@aws-amplify/datastore@3.12.6) (2022-08-16)
+
+### Bug Fixes
+
+- **datastore:** make di context fields private ([#10162](https://github.com/aws-amplify/amplify-js/issues/10162)) ([88a9ec9](https://github.com/aws-amplify/amplify-js/commit/88a9ec97fca2eb19c9cc9496b8b7d25b75f02073))
+
+## [3.12.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.4...@aws-amplify/datastore@3.12.5) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.12.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.3...@aws-amplify/datastore@3.12.4) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 ## [3.12.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.2...@aws-amplify/datastore@3.12.3) (2022-07-21)
 
 ### Bug Fixes
@@ -20,45 +42,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 - decrease error handler verbosity on self recovering errors ([#9987](https://github.com/aws-amplify/amplify-js/issues/9987)) ([67ccf09](https://github.com/aws-amplify/amplify-js/commit/67ccf09a93221a06d4560300cfd67fdd9efeda71))
-
-## [3.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.0...@aws-amplify/datastore@3.12.1) (2022-06-18)
-
-### Bug Fixes
-
-- decrease error handler verbosity on self recovering errors ([#9987](https://github.com/aws-amplify/amplify-js/issues/9987)) ([67ccf09](https://github.com/aws-amplify/amplify-js/commit/67ccf09a93221a06d4560300cfd67fdd9efeda71))
-
-## [3.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.1...@aws-amplify/datastore@3.7.2) (2021-12-03)
-
-**Note:** Version bump only for package @aws-amplify/datastore
-
-## [3.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.7.0...@aws-amplify/datastore@3.7.1) (2021-12-02)
-
-### Bug Fixes
-
-- **@aws-amplify/datastore:** belongsTo bug ([#9268](https://github.com/aws-amplify/amplify-js/issues/9268)) ([5106639](https://github.com/aws-amplify/amplify-js/commit/510663981a32443b79dd065ca075b664ca8bdff6))
-- **@aws-amplify/datastore:** consecutive saves with timestamps ([#9298](https://github.com/aws-amplify/amplify-js/issues/9298)) ([807dea0](https://github.com/aws-amplify/amplify-js/commit/807dea0acae8389854560ca73b035ecbf220d040))
-
-# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.1...@aws-amplify/datastore@3.7.0) (2021-11-18)
-
-### Features
-
-- **@aws-amplify/datastore:** hasOne CRUD improvements ([#9239](https://github.com/aws-amplify/amplify-js/issues/9239)) ([d521d17](https://github.com/aws-amplify/amplify-js/commit/d521d17c45a246c63c02a29e103e8a3db374c11e))
-
-## [3.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.0...@aws-amplify/datastore@3.6.1) (2021-11-16)
-
-**Note:** Version bump only for package @aws-amplify/datastore
-
-# [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.2...@aws-amplify/datastore@3.6.0) (2021-11-12)
-
-### Features
-
-- **@aws-amplify/datastore:** ObserveQuery performance and type enhancements ([#9141](https://github.com/aws-amplify/amplify-js/issues/9141)) ([755ce09](https://github.com/aws-amplify/amplify-js/commit/755ce09f5152c54d215f023089f30b2c98ace33a))
-
-## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.1...@aws-amplify/datastore@3.5.2) (2021-11-09)
-
-### Bug Fixes
-
-- **@aws-amplify/datastore:** use forEach instead of map to iterate over unsubscribe callbacks ([#9146](https://github.com/aws-amplify/amplify-js/issues/9146)) ([ec6ee1c](https://github.com/aws-amplify/amplify-js/commit/ec6ee1c066a283e4e34a287db5712f2bb944e6ba))
 
 ### Reverts
 

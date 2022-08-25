@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.5.0...@aws-amplify/pubsub@4.5.1) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.10...@aws-amplify/pubsub@4.5.0) (2022-08-18)
+
+### Bug Fixes
+
+- **pubsub:** Connection Ack verification bug ([#10200](https://github.com/aws-amplify/amplify-js/issues/10200)) ([d6cb7f9](https://github.com/aws-amplify/amplify-js/commit/d6cb7f95d68b05c9668bfd1f823b9db264f6291e))
+
+### Features
+
+- PubSub Connection state tracking for MQTT and IoT providers ([#10136](https://github.com/aws-amplify/amplify-js/issues/10136)) ([f28918b](https://github.com/aws-amplify/amplify-js/commit/f28918b1ca1111f98c231c8ed6bccace9ad9e607))
+
+## [4.4.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.9...@aws-amplify/pubsub@4.4.10) (2022-08-16)
+
+### Bug Fixes
+
+- **pubsub:** Add distinct RN Reachibility implementation ([#10175](https://github.com/aws-amplify/amplify-js/issues/10175)) ([5f427f3](https://github.com/aws-amplify/amplify-js/commit/5f427f3ae47d76231a81084c216527b7fabd668a))
+
+## [4.4.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.8...@aws-amplify/pubsub@4.4.9) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [4.4.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.7...@aws-amplify/pubsub@4.4.8) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 ## [4.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.4.6...@aws-amplify/pubsub@4.4.7) (2022-07-21)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

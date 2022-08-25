@@ -1012,9 +1012,9 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	Auth = Auth;
-	API = API;
-	Cache = Cache;
+	private Auth = Auth;
+	private API = API;
+	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
 	// to make TS happy. These properties are all expected to be set immediately after
