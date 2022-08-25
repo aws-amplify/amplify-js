@@ -13,7 +13,7 @@
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
-	AWSLexProviderV2Options,
+	AWSLexV2ProviderOptions,
 	InteractionsResponse,
 	InteractionsMessage,
 } from '../types';
@@ -33,7 +33,7 @@ import {
 } from '@aws-amplify/core';
 import { convert, unGzipBase64AsJson } from './AWSLexProviderHelper/convert';
 
-const logger = new Logger('AWSLexProviderV2');
+const logger = new Logger('AWSLexV2Provider');
 
 interface RecognizeUtteranceCommandOutputFormatted
 	extends Omit<
@@ -51,11 +51,11 @@ interface RecognizeUtteranceCommandOutputFormatted
 	audioStream?: Uint8Array;
 }
 
-type AWSLexProviderV2SendResponse =
+type AWSLexV2ProviderSendResponse =
 	| RecognizeTextCommandOutput
 	| RecognizeUtteranceCommandOutputFormatted;
 
-export class AWSLexProviderV2 extends AbstractInteractionsProvider {
+export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceV2Client: LexRuntimeV2Client;
 	private _botsCompleteCallback: object;
 
@@ -73,17 +73,17 @@ export class AWSLexProviderV2 extends AbstractInteractionsProvider {
 	 * @returns {string} name of the provider
 	 */
 	public getProviderName() {
-		return 'AWSLexProviderV2';
+		return 'AWSLexV2Provider';
 	}
 
 	/**
 	 * Configure Interactions part with aws configuration
-	 * @param {AWSLexProviderV2Options} config - Configuration of the Interactions
-	 * @return {AWSLexProviderV2Options} - Current configuration
+	 * @param {AWSLexV2ProviderOptions} config - Configuration of the Interactions
+	 * @return {AWSLexV2ProviderOptions} - Current configuration
 	 */
 	public configure(
-		config: AWSLexProviderV2Options = {}
-	): AWSLexProviderV2Options {
+		config: AWSLexV2ProviderOptions = {}
+	): AWSLexV2ProviderOptions {
 		const propertiesToTest = [
 			'name',
 			'botId',
@@ -223,7 +223,7 @@ export class AWSLexProviderV2 extends AbstractInteractionsProvider {
 	 * call onComplete callback for a bot if configured
 	 */
 	private _reportBotStatus(
-		data: AWSLexProviderV2SendResponse,
+		data: AWSLexV2ProviderSendResponse,
 		botname: string
 	) {
 		const sessionState = data?.sessionState;

@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWSLexProviderV2 } from '../../src/Providers';
+import { AWSLexV2Provider } from '../../src/Providers';
 import { Credentials } from '@aws-amplify/core';
 import {
 	LexRuntimeV2Client,
@@ -41,7 +41,7 @@ const botConfig = {
 		aliasId: 'O1O8YV2JTG',
 		localeId: 'en_US',
 		region: 'us-west-2',
-		providerName: 'AWSLexProviderV2',
+		providerName: 'AWSLexV2Provider',
 	},
 	OrderFlowers: {
 		name: 'OrderFlowers',
@@ -49,7 +49,7 @@ const botConfig = {
 		aliasId: '0DNZS5QI8M',
 		localeId: 'en_US',
 		region: 'us-west-2',
-		providerName: 'AWSLexProviderV2',
+		providerName: 'AWSLexV2Provider',
 	},
 };
 
@@ -172,22 +172,22 @@ afterEach(() => {
 
 describe('Interactions', () => {
 	// Test 'getProviderName' API
-	test(`Is provider name 'AWSLexProviderV2'`, () => {
-		const provider = new AWSLexProviderV2();
-		expect(provider.getProviderName()).toEqual('AWSLexProviderV2');
+	test(`Is provider name 'AWSLexV2Provider'`, () => {
+		const provider = new AWSLexV2Provider();
+		expect(provider.getProviderName()).toEqual('AWSLexV2Provider');
 		expect.assertions(1);
 	});
 
 	// Test 'getCategory' API
 	test(`Is category name 'Interactions'`, () => {
-		const provider = new AWSLexProviderV2();
+		const provider = new AWSLexV2Provider();
 		expect(provider.getCategory()).toEqual('Interactions');
 		expect.assertions(1);
 	});
 
 	// Test 'configure' API
 	describe('configure API', () => {
-		const provider = new AWSLexProviderV2();
+		const provider = new AWSLexV2Provider();
 
 		test('Check if bot is successfully configured by validating config response', () => {
 			expect(provider.configure(botConfig)).toEqual(botConfig);
@@ -205,7 +205,7 @@ describe('Interactions', () => {
 					aliasId: 'O1O8YV2JTG',
 					localeId: 'en_US',
 					region: 'us-west-2',
-					providerName: 'AWSLexProviderV2',
+					providerName: 'AWSLexV2Provider',
 				},
 			};
 			// config 2nd bot
@@ -221,7 +221,7 @@ describe('Interactions', () => {
 					aliasId: '7542RC2HTD',
 					localeId: 'en_IN',
 					region: 'us-west-2',
-					providerName: 'AWSLexProviderV2',
+					providerName: 'AWSLexV2Provider',
 				},
 			};
 			// re-configure updated 2nd bot
@@ -258,7 +258,7 @@ describe('Interactions', () => {
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-			provider = new AWSLexProviderV2();
+			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
 		});
 
@@ -329,7 +329,7 @@ describe('Interactions', () => {
 					botId: '0DNZS5QI8M:hi',
 					aliasId: 'O1O8YV2JTG',
 					localeId: 'en_US',
-					providerName: 'AWSLexProviderV2',
+					providerName: 'AWSLexV2Provider',
 					region: 'us-west-2',
 				},
 			};
@@ -401,7 +401,7 @@ describe('Interactions', () => {
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-			provider = new AWSLexProviderV2();
+			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
 		});
 
@@ -436,7 +436,7 @@ describe('Interactions', () => {
 				.spyOn(Credentials, 'get')
 				.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-			provider = new AWSLexProviderV2();
+			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
 
 			// mock callbacks
@@ -507,7 +507,7 @@ describe('Interactions', () => {
 					aliasId: 'O1O8YV2JTG',
 					localeId: 'en_US',
 					region: 'us-west-2',
-					providerName: 'AWSLexProviderV2',
+					providerName: 'AWSLexV2Provider',
 				},
 			};
 
