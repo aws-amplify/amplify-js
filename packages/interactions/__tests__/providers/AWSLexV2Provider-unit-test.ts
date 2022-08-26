@@ -458,7 +458,7 @@ describe('Interactions', () => {
 			});
 
 			completeFailCallback = jest.fn((err, confirmation) =>
-				expect(err).toEqual('Bot conversation failed')
+				expect(err).toEqual(new Error('Bot conversation failed'))
 			);
 
 			// mock responses

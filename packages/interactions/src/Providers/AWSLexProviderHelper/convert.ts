@@ -12,7 +12,7 @@
  */
 
 import { Readable } from 'stream';
-import { gunzipSync, strFromU8 } from 'fflate';
+import { gunzip, strFromU8 } from 'fflate';
 
 export const convert = (
 	stream: Blob | Readable | ReadableStream
@@ -27,20 +27,32 @@ export const convert = (
 };
 
 export const base64ToArrayBuffer = (base64: string): Uint8Array => {
-	const binary_string = window.atob(base64);
-	const len = binary_string.length;
-	const bytes = new Uint8Array(len);
-	for (let i = 0; i < len; i++) {
-		bytes[i] = binary_string.charCodeAt(i);
-	}
-	return bytes;
+	return Uint8Array.from(window.atob(base64), c => c.charCodeAt(0));
 };
 
-export const unGzipBase64AsJson = <T>(gzipBase64: string): T => {
-	// base64 decode
-	// gzip decompress and convert to string
-	// string to obj
-	return JSON.parse(
-		strFromU8(gunzipSync(base64ToArrayBuffer(gzipBase64)))
-	) as T;
+export const unGzipBase64AsJson = async (gzipBase64: string | undefined) => {
+	if (typeof gzipBase64 === 'undefined') return undefined;
+
+	try {
+		// 1. base64 decode
+		const decodedArrayBuffer = base64ToArrayBuffer(gzipBase64);
+
+		// 2. gzip decompress
+		const decompressedData: Uint8Array = await new Promise(
+			(resolve, reject) => {
+				gunzip(decodedArrayBuffer, (err, data) => {
+					if (err) reject('Unable to decompress ' + err);
+					else resolve(data);
+				});
+			}
+		);
+
+		// 3. decompressedData to string
+		const objString = strFromU8(decompressedData);
+
+		// 4. string to obj
+		return JSON.parse(objString);
+	} catch (error) {
+		return Promise.reject('unable to decode and decompress ' + error);
+	}
 };

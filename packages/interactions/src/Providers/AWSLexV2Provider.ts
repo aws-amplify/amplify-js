@@ -56,7 +56,7 @@ type AWSLexV2ProviderSendResponse =
 	| RecognizeUtteranceCommandOutputFormatted;
 
 export class AWSLexV2Provider extends AbstractInteractionsProvider {
-	private lexRuntimeServiceV2Client: LexRuntimeV2Client;
+	private _lexRuntimeServiceV2Client: LexRuntimeV2Client;
 	private _botsCompleteCallback: object;
 
 	/**
@@ -128,86 +128,39 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 			return Promise.reject('No credentials');
 		}
 
-		this.lexRuntimeServiceV2Client = new LexRuntimeV2Client({
+		this._lexRuntimeServiceV2Client = new LexRuntimeV2Client({
 			region: this._config[botname].region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 		});
-		let params: RecognizeTextCommandInput | RecognizeUtteranceCommandInput;
+
+		let response: AWSLexV2ProviderSendResponse;
 		if (typeof message === 'string') {
-			params = {
-				botAliasId: this._config[botname].aliasId,
-				botId: this._config[botname].botId,
-				localeId: this._config[botname].localeId,
-				text: message,
-				sessionId: credentials.identityId,
-			};
-
-			logger.debug('postText to lex2', message);
-			try {
-				const recognizeTextCommand = new RecognizeTextCommand(params);
-				const data = await this.lexRuntimeServiceV2Client.send(
-					recognizeTextCommand
-				);
-
-				this._reportBotStatus(data, botname);
-				return data;
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			response = await this._handleRecognizeTextCommand(
+				botname,
+				message,
+				credentials.identityId
+			);
 		} else {
-			const {
-				content,
-				options: { messageType },
-			} = message;
-			if (messageType === 'voice') {
-				if (!(content instanceof Blob || content instanceof ReadableStream))
-					return Promise.reject('invalid content type');
-
-				params = {
-					botAliasId: this._config[botname].aliasId,
-					botId: this._config[botname].botId,
-					localeId: this._config[botname].localeId,
-					sessionId: credentials.identityId,
-					requestContentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
-					inputStream: await convert(content),
-				};
-			} else {
-				if (typeof content !== 'string')
-					return Promise.reject('invalid content type');
-
-				params = {
-					botAliasId: this._config[botname].aliasId,
-					botId: this._config[botname].botId,
-					localeId: this._config[botname].localeId,
-					sessionId: credentials.identityId,
-					requestContentType: 'text/plain; charset=utf-8',
-					inputStream: content,
-				};
-			}
-			logger.debug('postContent to lex2', message);
-			try {
-				const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
-				const data = await this.lexRuntimeServiceV2Client.send(
-					recognizeUtteranceCommand
-				);
-
-				const response = await this._formatUtteranceCommandOutput(data);
-				this._reportBotStatus(response, botname);
-				return response;
-			} catch (err) {
-				return Promise.reject(err);
-			}
+			response = await this._handleRecognizeUtteranceCommand(
+				botname,
+				message,
+				credentials.identityId
+			);
 		}
+		return response;
 	}
 
 	/**
 	 * Attach a onComplete callback function to a bot.
 	 * The callback is called once the bot's intent is fulfilled
 	 * @param {string} botname - Bot name to attach the onComplete callback
-	 * @param {(err, confirmation) => void} callback - callback function to call once intent is completed
+	 * @param {(err: Error | null, confirmation: InteractionsResponse) => void} callback - called when Intent Fulfilled
 	 */
-	public onComplete(botname: string, callback: (err, confirmation) => void) {
+	public onComplete(
+		botname: string,
+		callback: (err: Error | null, confirmation: InteractionsResponse) => void
+	) {
 		// does bot exist
 		if (!this._config[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
@@ -217,9 +170,6 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 
 	/**
 	 * @private
-	 */
-
-	/**
 	 * call onComplete callback for a bot if configured
 	 */
 	private _reportBotStatus(
@@ -231,38 +181,36 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', sessionState?.intent?.state);
 
+		const isConfigOnCompleteAttached =
+			typeof this._config?.[botname].onComplete === 'function';
+
+		const isApiOnCompleteAttached =
+			typeof this._botsCompleteCallback?.[botname] === 'function';
+
+		// no onComplete callbacks added
+		if (!isConfigOnCompleteAttached && !isApiOnCompleteAttached) return;
+
 		if (
 			sessionState?.intent?.state === 'ReadyForFulfillment' ||
 			sessionState?.intent?.state === 'Fulfilled'
 		) {
-			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
+			if (isApiOnCompleteAttached) {
+				setTimeout(() => this._botsCompleteCallback?.[botname](null, data), 0);
 			}
 
-			if (
-				this._config &&
-				typeof this._config[botname].onComplete === 'function'
-			) {
+			if (isConfigOnCompleteAttached) {
 				setTimeout(() => this._config[botname].onComplete(null, data), 0);
 			}
 		}
 
 		if (sessionState?.intent?.state === 'Failed') {
-			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(
-					() => this._botsCompleteCallback[botname]('Bot conversation failed'),
-					0
-				);
+			const error = new Error('Bot conversation failed');
+			if (isApiOnCompleteAttached) {
+				setTimeout(() => this._botsCompleteCallback[botname](error), 0);
 			}
 
-			if (
-				this._config &&
-				typeof this._config[botname].onComplete === 'function'
-			) {
-				setTimeout(
-					() => this._config[botname].onComplete('Bot conversation failed'),
-					0
-				);
+			if (isConfigOnCompleteAttached) {
+				setTimeout(() => this._config[botname].onComplete(error), 0);
 			}
 		}
 	}
@@ -277,23 +225,108 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	): Promise<RecognizeUtteranceCommandOutputFormatted> {
 		const response: RecognizeUtteranceCommandOutputFormatted = {
 			...data,
-			messages: data.messages ? unGzipBase64AsJson(data.messages) : undefined,
-			sessionState: data.sessionState
-				? unGzipBase64AsJson(data.sessionState)
-				: undefined,
-			interpretations: data.interpretations
-				? unGzipBase64AsJson(data.interpretations)
-				: undefined,
-			requestAttributes: data.requestAttributes
-				? unGzipBase64AsJson(data.requestAttributes)
-				: undefined,
-			inputTranscript: data.inputTranscript
-				? unGzipBase64AsJson(data.inputTranscript)
-				: undefined,
+			messages: await unGzipBase64AsJson(data.messages),
+			sessionState: await unGzipBase64AsJson(data.sessionState),
+			interpretations: await unGzipBase64AsJson(data.interpretations),
+			requestAttributes: await unGzipBase64AsJson(data.requestAttributes),
+			inputTranscript: await unGzipBase64AsJson(data.inputTranscript),
 			audioStream: data.audioStream
 				? await convert(data.audioStream)
 				: undefined,
 		};
 		return response;
+	}
+
+	/**
+	 * handle client's `RecognizeTextCommand`
+	 * used for sending simple text message
+	 */
+	private async _handleRecognizeTextCommand(
+		botname: string,
+		data: string,
+		sessionId: string
+	) {
+		logger.debug('postText to lex2', data);
+
+		const params: RecognizeTextCommandInput = {
+			botAliasId: this._config[botname].aliasId,
+			botId: this._config[botname].botId,
+			localeId: this._config[botname].localeId,
+			text: data,
+			sessionId,
+		};
+
+		try {
+			const recognizeTextCommand = new RecognizeTextCommand(params);
+			const data = await this._lexRuntimeServiceV2Client.send(
+				recognizeTextCommand
+			);
+
+			this._reportBotStatus(data, botname);
+			return data;
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * handle client's `RecognizeUtteranceCommand`
+	 * used for obj text or obj voice message
+	 */
+	private async _handleRecognizeUtteranceCommand(
+		botname: string,
+		data: InteractionsMessage,
+		sessionId: string
+	) {
+		const {
+			content,
+			options: { messageType },
+		} = data;
+
+		logger.debug('postContent to lex2', data);
+		let params: RecognizeUtteranceCommandInput;
+
+		// prepare params
+		if (messageType === 'voice') {
+			// voice input
+			if (!(content instanceof Blob || content instanceof ReadableStream))
+				return Promise.reject('invalid content type');
+
+			params = {
+				botAliasId: this._config[botname].aliasId,
+				botId: this._config[botname].botId,
+				localeId: this._config[botname].localeId,
+				sessionId,
+				requestContentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
+				inputStream: await convert(content),
+			};
+		} else {
+			// text input
+			if (typeof content !== 'string')
+				return Promise.reject('invalid content type');
+
+			params = {
+				botAliasId: this._config[botname].aliasId,
+				botId: this._config[botname].botId,
+				localeId: this._config[botname].localeId,
+				sessionId,
+				requestContentType: 'text/plain; charset=utf-8',
+				inputStream: content,
+			};
+		}
+
+		// make API call to lex
+		try {
+			const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
+			const data = await this._lexRuntimeServiceV2Client.send(
+				recognizeUtteranceCommand
+			);
+
+			const response = await this._formatUtteranceCommandOutput(data);
+			this._reportBotStatus(response, botname);
+			return response;
+		} catch (err) {
+			return Promise.reject(err);
+		}
 	}
 }
