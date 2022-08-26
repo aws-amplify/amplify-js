@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.10](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.9...amazon-cognito-identity-js@5.2.10) (2022-07-07)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** Missing cognito user challenge name … ([#10047](https://github.com/aws-amplify/amplify-js/issues/10047)) ([de0441b](https://github.com/aws-amplify/amplify-js/commit/de0441b4fa67409ccbc630c42890e2c58ee779fb)), closes [#6974](https://github.com/aws-amplify/amplify-js/issues/6974)
+
+
+
+
+
 ## [5.2.9](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.8...amazon-cognito-identity-js@5.2.9) (2022-05-23)
 
 

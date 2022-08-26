@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.7...@aws-amplify/datastore@3.12.8) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.6...@aws-amplify/datastore@3.12.7) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.5...@aws-amplify/datastore@3.12.6) (2022-08-16)
+
+
+### Bug Fixes
+
+* **datastore:** make di context fields private ([#10162](https://github.com/aws-amplify/amplify-js/issues/10162)) ([88a9ec9](https://github.com/aws-amplify/amplify-js/commit/88a9ec97fca2eb19c9cc9496b8b7d25b75f02073))
+
+
+
+
+
+## [3.12.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.4...@aws-amplify/datastore@3.12.5) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.3...@aws-amplify/datastore@3.12.4) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.2...@aws-amplify/datastore@3.12.3) (2022-07-21)
+
+
+### Bug Fixes
+
+* preserve ssr context when using DataStore ([#10088](https://github.com/aws-amplify/amplify-js/issues/10088)) ([a10d920](https://github.com/aws-amplify/amplify-js/commit/a10d920f7fb6199539fb8d9cec2cb4426dbfd47b))
+
+
+
+
+
+## [3.12.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.1...@aws-amplify/datastore@3.12.2) (2022-07-07)
+
+
+### Bug Fixes
+
+* decrease error handler verbosity on self recovering errors ([#10030](https://github.com/aws-amplify/amplify-js/issues/10030)) ([fb1f02c](https://github.com/aws-amplify/amplify-js/commit/fb1f02cfa914b81fe0411e8f4d654c69aed22385))
+
+
+
+
+
 ## [3.12.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.0...@aws-amplify/datastore@3.12.1) (2022-06-18)
 
 

@@ -15,7 +15,7 @@ import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import {
 	S3Client,
-	ListObjectsCommand,
+	ListObjectsV2Command,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 } from '@aws-sdk/client-s3';
@@ -40,26 +40,25 @@ const mockEventEmitter = {
 	removeAllListeners: mockRemoveAllListeners,
 };
 
-jest.mock('events', function() {
+jest.mock('events', function () {
 	return {
 		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter),
 	};
 });
 
 S3Client.prototype.send = jest.fn(async command => {
-	if (command instanceof ListObjectsCommand) {
+	if (command instanceof ListObjectsV2Command) {
+		const resultObj = {
+			Key: 'public/path/itemsKey',
+			ETag: 'etag',
+			LastModified: 'lastmodified',
+			Size: 'size',
+		};
 		if (command.input.Prefix === 'public/emptyListResultsPath') {
 			return {};
 		}
 		return {
-			Contents: [
-				{
-					Key: 'public/path/itemsKey',
-					ETag: 'etag',
-					LastModified: 'lastmodified',
-					Size: 'size',
-				},
-			],
+			Contents: [resultObj],
 		};
 	}
 	return 'data';
@@ -137,7 +136,8 @@ describe('StorageProvider test', () => {
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
 				aws_user_files_s3_bucket_region: 'region',
-				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing: true,
+				aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing:
+					true,
 			};
 
 			const config = storage.configure(aws_options);
@@ -311,7 +311,8 @@ describe('StorageProvider test', () => {
 				});
 			await storage.get('key', {
 				download: true,
-				progressCallback: ('this is not a function' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback:
+					'this is not a function' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith(
 				'WARN',
@@ -729,7 +730,8 @@ describe('StorageProvider test', () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
-				progressCallback: ('hello' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
+				progressCallback:
+					'hello' as unknown as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith(
 				'WARN',
@@ -947,6 +949,12 @@ describe('StorageProvider test', () => {
 	});
 
 	describe('list test', () => {
+		const resultObj = {
+			eTag: 'etag',
+			key: 'path/itemsKey',
+			lastModified: 'lastmodified',
+			size: 'size',
+		};
 		test('list object successfully', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
@@ -960,15 +968,11 @@ describe('StorageProvider test', () => {
 
 			expect.assertions(2);
 			expect(await storage.list('path', { level: 'public' })).toEqual([
-				{
-					eTag: 'etag',
-					key: 'path/itemsKey',
-					lastModified: 'lastmodified',
-					size: 'size',
-				},
+				resultObj,
 			]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
 			spyon.mockClear();
@@ -991,6 +995,7 @@ describe('StorageProvider test', () => {
 			).toEqual([]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				MaxKeys: 1000,
 				Prefix: 'public/emptyListResultsPath',
 			});
 			spyon.mockClear();
@@ -1011,16 +1016,10 @@ describe('StorageProvider test', () => {
 			expect.assertions(3);
 			expect(
 				await storage.list('path', { level: 'public', track: true })
-			).toEqual([
-				{
-					eTag: 'etag',
-					key: 'path/itemsKey',
-					lastModified: 'lastmodified',
-					size: 'size',
-				},
-			]);
+			).toEqual([resultObj]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
+				MaxKeys: 1000,
 				Prefix: 'public/path',
 			});
 			expect(spyon2).toBeCalledWith(
@@ -1052,20 +1051,73 @@ describe('StorageProvider test', () => {
 			expect.assertions(2);
 			expect(
 				await storage.list('path', { level: 'public', maxKeys: 1 })
-			).toEqual([
-				{
-					eTag: 'etag',
-					key: 'path/itemsKey',
-					lastModified: 'lastmodified',
-					size: 'size',
-				},
-			]);
+			).toEqual([resultObj]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/path',
 				MaxKeys: 1,
 			});
 
+			spyon.mockClear();
+			curCredSpyOn.mockClear();
+		});
+
+		test('list object with maxKeys with ALL having 3 pages', async () => {
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const listResultObj = {
+				Key: 'public/path/itemsKey',
+				ETag: 'etag',
+				LastModified: 'lastmodified',
+				Size: 'size',
+			};
+			let methodCalls = 0;
+			let continuationToken = 'TEST_TOKEN';
+			let listResult = [];
+			const listAllFunction = async command => {
+				if (command instanceof ListObjectsV2Command) {
+					let token = undefined;
+					methodCalls++;
+					if (command.input.ContinuationToken === undefined || methodCalls < 3)
+						token = continuationToken;
+
+					if (command.input.Prefix === 'public/listALLResultsPath') {
+						return {
+							Contents: [listResultObj],
+							NextContinuationToken: token,
+						};
+					}
+				}
+				return 'data';
+			};
+			S3Client.prototype.send = jest.fn(listAllFunction);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			expect.assertions(5);
+			for (let i = 0; i < 3; i++) listResult.push(resultObj);
+			expect(
+				await storage.list('listALLResultsPath', {
+					level: 'public',
+					maxKeys: 'ALL',
+				})
+			).toEqual(listResult);
+			expect(spyon).toHaveBeenCalledTimes(3);
+			const inputResult = {
+				Bucket: 'bucket',
+				Prefix: 'public/listALLResultsPath',
+				MaxKeys: 1000,
+				ContinuationToken: undefined,
+			};
+			for (let i = 0; i < 3; i++) {
+				expect(spyon.mock.calls[i][0].input).toEqual(inputResult);
+				inputResult.ContinuationToken = continuationToken;
+			}
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 		});
@@ -1158,13 +1210,10 @@ describe('StorageProvider test', () => {
 
 			// wrong key type
 			await expect(
-				storage.copy(
-					({ level: 'public', key: 123 } as unknown) as S3CopySource,
-					{
-						key: 'dest',
-						level: 'public',
-					}
-				)
+				storage.copy({ level: 'public', key: 123 } as unknown as S3CopySource, {
+					key: 'dest',
+					level: 'public',
+				})
 			).rejects.toThrowError(
 				'source param should be an object with the property "key" with value of type string'
 			);
@@ -1188,10 +1237,10 @@ describe('StorageProvider test', () => {
 
 			// wrong key type
 			await expect(
-				storage.copy({ key: 'src', level: 'public' }, ({
+				storage.copy({ key: 'src', level: 'public' }, {
 					key: 123,
 					level: 'public',
-				} as unknown) as S3CopyDestination)
+				} as unknown as S3CopyDestination)
 			).rejects.toThrowError(
 				'destination param should be an object with the property "key" with value of type string'
 			);

@@ -27,6 +27,8 @@ import {
 	AutoTrackSessionOpts,
 	AutoTrackPageViewOpts,
 	AutoTrackEventOpts,
+	PersonalizeAnalyticsEvent,
+	KinesisAnalyticsEvent,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
@@ -250,7 +252,10 @@ export class AnalyticsClass {
 	 * @param event - An object with the name of the event, attributes of the event and event metrics.
 	 * @param [provider] - name of the provider.
 	 */
-	public async record(event: AnalyticsEvent, provider?: string);
+	public async record(
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
+		provider?: string
+	);
 	/**
 	 * Record one analytic event and send it to Pinpoint
 	 * @deprecated Use the new syntax and pass in the event as an object instead.
@@ -265,7 +270,11 @@ export class AnalyticsClass {
 		metrics?: EventMetrics
 	);
 	public async record(
-		event: string | AnalyticsEvent,
+		event:
+			| string
+			| AnalyticsEvent
+			| PersonalizeAnalyticsEvent
+			| KinesisAnalyticsEvent,
 		providerOrAttributes?: string | EventAttributes,
 		metrics?: EventMetrics
 	) {
@@ -298,7 +307,10 @@ export class AnalyticsClass {
 		return this.record(event, provider);
 	}
 
-	private _sendEvent(params: { event: AnalyticsEvent; provider?: string }) {
+	private _sendEvent(params: {
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent;
+		provider?: string;
+	}) {
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();

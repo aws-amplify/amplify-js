@@ -5,6 +5,7 @@ import {
 	ModelAttributeAuthProperty,
 	ModelAttributeAuthProvider,
 	ModelAttributeAuthAllow,
+	AmplifyContext,
 } from '../types';
 
 function getProviderFromRule(
@@ -121,29 +122,31 @@ function getAuthRules({
 	return Array.from(authModes);
 }
 
-export const multiAuthStrategy: AuthModeStrategy = async ({
-	schema,
-	modelName,
-}) => {
-	let currentUser;
-	try {
-		currentUser = await Auth.currentAuthenticatedUser();
-	} catch (e) {
-		// No current user
-	}
-
-	const { attributes } = schema.namespaces.user.models[modelName];
-
-	if (attributes) {
-		const authAttribute = attributes.find(attr => attr.type === 'auth');
-
-		if (authAttribute.properties && authAttribute.properties.rules) {
-			const sortedRules = sortAuthRulesWithPriority(
-				authAttribute.properties.rules
-			);
-
-			return getAuthRules({ currentUser, rules: sortedRules });
+export const multiAuthStrategy: (
+	amplifyContext: AmplifyContext
+) => AuthModeStrategy =
+	(amplifyContext: AmplifyContext) =>
+	async ({ schema, modelName }) => {
+		amplifyContext.Auth = amplifyContext.Auth || Auth;
+		let currentUser;
+		try {
+			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
+		} catch (e) {
+			// No current user
 		}
-	}
-	return [];
-};
+
+		const { attributes } = schema.namespaces.user.models[modelName];
+
+		if (attributes) {
+			const authAttribute = attributes.find(attr => attr.type === 'auth');
+
+			if (authAttribute?.properties?.rules) {
+				const sortedRules = sortAuthRulesWithPriority(
+					authAttribute.properties.rules
+				);
+
+				return getAuthRules({ currentUser, rules: sortedRules });
+			}
+		}
+		return [];
+	};
