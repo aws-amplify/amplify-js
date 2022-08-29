@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.3...@aws-amplify/storage@4.5.4) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.2...@aws-amplify/storage@4.5.3) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.1...@aws-amplify/storage@4.5.2) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.0...@aws-amplify/storage@4.5.1) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.29...@aws-amplify/storage@4.5.0) (2022-07-28)
+
+
+### Features
+
+* **@aws-amplify/storage:** Access all files from S3 with List API ([#10095](https://github.com/aws-amplify/amplify-js/issues/10095)) ([366c32e](https://github.com/aws-amplify/amplify-js/commit/366c32e2d87d73210bbd01ca1da55a5899f5a503))
+
+
+
+
+
+## [4.4.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.28...@aws-amplify/storage@4.4.29) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.27...@aws-amplify/storage@4.4.28) (2022-07-07)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [4.4.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.26...@aws-amplify/storage@4.4.27) (2022-06-18)
 
 

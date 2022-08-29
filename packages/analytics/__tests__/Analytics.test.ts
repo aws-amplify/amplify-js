@@ -123,8 +123,8 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 			const event = {
 				name: 'event',
-				attributes: 'attributes',
-				metrics: 'metrics',
+				attributes: { key: 'value' },
+				metrics: { metric: 123 },
 			};
 
 			await analytics.record(event);
