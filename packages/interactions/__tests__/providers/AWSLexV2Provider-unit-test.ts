@@ -17,11 +17,9 @@ import {
 	RecognizeTextCommand,
 	RecognizeTextCommandOutput,
 	RecognizeUtteranceCommand,
-	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
-
 import { prototype } from 'stream';
 
 (global as any).Response = () => {};
@@ -478,7 +476,7 @@ describe('Interactions', () => {
 		jest.useFakeTimers();
 		let provider;
 
-		// action types callback function can handle
+		// enum, action types callback function can handle
 		const ACTION_TYPE = Object.freeze({
 			IN_PROGRESS: 'inProgress',
 			COMPLETE: 'complete',
