@@ -77,10 +77,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	 * This is used internally by 'sendMessage' to call onComplete callback
 	 * for a bot if configured
 	 */
-	reportBotStatus(
-		data: PostTextCommandOutput | PostContentCommandOutput,
-		botname: string
-	) {
+	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
