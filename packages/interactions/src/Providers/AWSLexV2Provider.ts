@@ -31,7 +31,8 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert, unGzipBase64AsJson } from './AWSLexProviderHelper/convert';
+import { convert } from './AWSLexProviderHelper/convert';
+import { unGzipBase64AsJson } from './AWSLexProviderHelper/commonUtils';
 
 const logger = new Logger('AWSLexV2Provider');
 
@@ -54,6 +55,13 @@ interface RecognizeUtteranceCommandOutputFormatted
 type AWSLexV2ProviderSendResponse =
 	| RecognizeTextCommandOutput
 	| RecognizeUtteranceCommandOutputFormatted;
+
+type lexV2BaseReqParams = {
+	botId: string;
+	botAliasId: string;
+	localeId: string;
+	sessionId: string;
+};
 
 export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	private _lexRuntimeServiceV2Client: LexRuntimeV2Client;
@@ -135,17 +143,26 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		});
 
 		let response: AWSLexV2ProviderSendResponse;
+
+		// common base params for all requests
+		const reqBaseParams: lexV2BaseReqParams = {
+			botAliasId: this._config[botname].aliasId,
+			botId: this._config[botname].botId,
+			localeId: this._config[botname].localeId,
+			sessionId: credentials.identityId,
+		};
+
 		if (typeof message === 'string') {
 			response = await this._handleRecognizeTextCommand(
 				botname,
 				message,
-				credentials.identityId
+				reqBaseParams
 			);
 		} else {
 			response = await this._handleRecognizeUtteranceCommand(
 				botname,
 				message,
-				credentials.identityId
+				reqBaseParams
 			);
 		}
 		return response;
@@ -244,16 +261,13 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	private async _handleRecognizeTextCommand(
 		botname: string,
 		data: string,
-		sessionId: string
+		baseParams: lexV2BaseReqParams
 	) {
 		logger.debug('postText to lex2', data);
 
 		const params: RecognizeTextCommandInput = {
-			botAliasId: this._config[botname].aliasId,
-			botId: this._config[botname].botId,
-			localeId: this._config[botname].localeId,
+			...baseParams,
 			text: data,
-			sessionId,
 		};
 
 		try {
@@ -276,7 +290,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 	private async _handleRecognizeUtteranceCommand(
 		botname: string,
 		data: InteractionsMessage,
-		sessionId: string
+		baseParams: lexV2BaseReqParams
 	) {
 		const {
 			content,
@@ -289,16 +303,23 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		// prepare params
 		if (messageType === 'voice') {
 			// voice input
-			if (!(content instanceof Blob || content instanceof ReadableStream))
+			if (
+				!(
+					content instanceof Blob ||
+					content instanceof ReadableStream ||
+					content instanceof Uint8Array
+				)
+			) {
 				return Promise.reject('invalid content type');
+			}
+
+			const inputStream =
+				content instanceof Uint8Array ? content : await convert(content);
 
 			params = {
-				botAliasId: this._config[botname].aliasId,
-				botId: this._config[botname].botId,
-				localeId: this._config[botname].localeId,
-				sessionId,
+				...baseParams,
 				requestContentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
-				inputStream: await convert(content),
+				inputStream,
 			};
 		} else {
 			// text input
@@ -306,10 +327,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 				return Promise.reject('invalid content type');
 
 			params = {
-				botAliasId: this._config[botname].aliasId,
-				botId: this._config[botname].botId,
-				localeId: this._config[botname].localeId,
-				sessionId,
+				...baseParams,
 				requestContentType: 'text/plain; charset=utf-8',
 				inputStream: content,
 			};

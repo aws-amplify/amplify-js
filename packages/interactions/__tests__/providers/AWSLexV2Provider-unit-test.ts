@@ -19,8 +19,9 @@ import {
 	RecognizeUtteranceCommand,
 	RecognizeUtteranceCommandOutput,
 } from '@aws-sdk/client-lex-runtime-v2';
+import { gzip, strToU8 } from 'fflate';
+import { encode } from 'base-64';
 
-import { unGzipBase64AsJson } from '../../src/Providers/AWSLexProviderHelper/convert';
 import { prototype } from 'stream';
 
 (global as any).Response = () => {};
@@ -53,117 +54,171 @@ const botConfig = {
 	},
 };
 
-jest.mock('../../src/Providers/AWSLexProviderHelper/convert', () => ({
-	...jest.requireActual('../../src/Providers/AWSLexProviderHelper/convert'),
-	unGzipBase64AsJson: data => data,
-}));
+const arrayBufferToBase64 = (buffer: Uint8Array) => {
+	var binary = '';
+	var bytes = new Uint8Array(buffer);
+	var len = bytes.byteLength;
+	for (var i = 0; i < len; i++) {
+		binary += String.fromCharCode(bytes[i]);
+	}
+	return encode(binary);
+};
 
-LexRuntimeV2Client.prototype.send = jest.fn((command, callback) => {
+const gzipBase64Json = async (dataObject: object) => {
+	try {
+		// 1. obj to string
+		const objString = JSON.stringify(dataObject);
+
+		// 2. objectString to arrayBuffer
+		const arrayBuffer = strToU8(objString);
+
+		// 3. gzip compress
+		const compressedData: Uint8Array = await new Promise((resolve, reject) => {
+			gzip(arrayBuffer, (err, data) => {
+				if (err) reject(err);
+				else resolve(data);
+			});
+		});
+
+		// 4. arrayBuffer to base64
+		return arrayBufferToBase64(compressedData);
+	} catch (error) {
+		return Promise.reject('unable to compress and encode ' + error);
+	}
+};
+
+const handleRecognizeTextCommand = command => {
+	if (command.input.text === 'done') {
+		const result = {
+			sessionState: {
+				intent: {
+					slots: { m1: 'hi', m2: 'done' },
+					state: 'ReadyForFulfillment',
+				},
+			},
+			messages: [{ content: 'echo:' + command.input.text }],
+		};
+		return Promise.resolve(result);
+	} else if (command.input.text === 'error') {
+		const result = {
+			sessionState: {
+				intent: { state: 'Failed' },
+			},
+			messages: [{ content: 'echo:' + command.input.text }],
+		};
+		return Promise.resolve(result);
+	} else {
+		const result = {
+			sessionState: {
+				intent: { state: 'ElicitSlot' },
+			},
+			messages: [{ content: 'echo:' + command.input.text }],
+		};
+
+		return Promise.resolve(result);
+	}
+};
+
+const handleRecognizeUtteranceCommandAudio = async command => {
+	const bot = command.input.botId as string;
+	const [botName, status] = bot.split(':');
+
+	if (status === 'done') {
+		// we add the status to the botName
+		// because inputStream would just be a blob if type is voice
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: {
+					slots: { m1: 'voice:hi', m2: 'voice:done' },
+					state: 'ReadyForFulfillment',
+				},
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'voice:echo:' + command.input.botId },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	} else if (status === 'error') {
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: { state: 'Failed' },
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'voice:echo:' + command.input.botId },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	} else {
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: { state: 'ElicitSlot' },
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'voice:echo:' + command.input.botId },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	}
+};
+
+const handleRecognizeUtteranceCommandText = async command => {
+	if (command.input.inputStream === 'done') {
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: {
+					slots: { m1: 'hi', m2: 'done' },
+					state: 'ReadyForFulfillment',
+				},
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'echo:' + command.input.inputStream },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	} else if (command.input.inputStream === 'error') {
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: { state: 'Failed' },
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'echo:' + command.input.inputStream },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	} else {
+		const result = {
+			sessionState: await gzipBase64Json({
+				intent: { state: 'ElicitSlot' },
+			}),
+			messages: await gzipBase64Json([
+				{ content: 'echo:' + command.input.inputStream },
+			]),
+			audioStream: createBlob(),
+		};
+		return Promise.resolve(result);
+	}
+};
+
+LexRuntimeV2Client.prototype.send = jest.fn(async (command, callback) => {
+	let response;
 	if (command instanceof RecognizeTextCommand) {
-		if (command.input.text === 'done') {
-			const result = {
-				sessionState: {
-					intent: {
-						slots: { m1: 'hi', m2: 'done' },
-						state: 'ReadyForFulfillment',
-					},
-				},
-				messages: [{ content: 'echo:' + command.input.text }],
-			};
-			return Promise.resolve(result);
-		} else if (command.input.text === 'error') {
-			const result = {
-				sessionState: {
-					intent: { state: 'Failed' },
-				},
-				messages: [{ content: 'echo:' + command.input.text }],
-			};
-			return Promise.resolve(result);
-		} else {
-			const result = {
-				sessionState: {
-					intent: { state: 'ElicitSlot' },
-				},
-				messages: [{ content: 'echo:' + command.input.text }],
-			};
-
-			return Promise.resolve(result);
-		}
+		response = handleRecognizeTextCommand(command);
 	} else if (command instanceof RecognizeUtteranceCommand) {
 		if (
 			command.input.requestContentType ===
 			'audio/x-l16; sample-rate=16000; channel-count=1'
 		) {
-			const bot = command.input.botId as string;
-			const [botName, status] = bot.split(':');
-
-			if (status === 'done') {
-				// we add the status to the botName
-				// because inputStream would just be a blob if type is voice
-				const result = {
-					sessionState: {
-						intent: {
-							slots: { m1: 'voice:hi', m2: 'voice:done' },
-							state: 'ReadyForFulfillment',
-						},
-					},
-					messages: [{ content: 'voice:echo:' + command.input.botId }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else if (status === 'error') {
-				const result = {
-					sessionState: {
-						intent: { state: 'Failed' },
-					},
-					messages: [{ content: 'voice:echo:' + command.input.botId }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else {
-				const result = {
-					sessionState: {
-						intent: { state: 'ElicitSlot' },
-					},
-					messages: [{ content: 'voice:echo:' + command.input.botId }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			}
+			response = await handleRecognizeUtteranceCommandAudio(command);
 		} else {
-			if (command.input.inputStream === 'done') {
-				const result = {
-					sessionState: {
-						intent: {
-							slots: { m1: 'hi', m2: 'done' },
-							state: 'ReadyForFulfillment',
-						},
-					},
-					messages: [{ content: 'echo:' + command.input.inputStream }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else if (command.input.inputStream === 'error') {
-				const result = {
-					sessionState: {
-						intent: { state: 'Failed' },
-					},
-					messages: [{ content: 'echo:' + command.input.inputStream }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			} else {
-				const result = {
-					sessionState: {
-						intent: { state: 'ElicitSlot' },
-					},
-					messages: [{ content: 'echo:' + command.input.inputStream }],
-					audioStream: createBlob(),
-				};
-				return Promise.resolve(result);
-			}
+			response = await handleRecognizeUtteranceCommandText(command);
 		}
 	}
+	return response;
 }) as any;
 
 afterEach(() => {
@@ -423,13 +478,15 @@ describe('Interactions', () => {
 		jest.useFakeTimers();
 		let provider;
 
-		let inProgressResp;
-		let completeSuccessResp;
-		let completeFailResp;
+		// action types callback function can handle
+		const ACTION_TYPE = Object.freeze({
+			IN_PROGRESS: 'inProgress',
+			COMPLETE: 'complete',
+			ERROR: 'error',
+		});
 
-		let inProgressCallback;
-		let completeSuccessCallback;
-		let completeFailCallback;
+		let mockCallbackProvider;
+		let mockResponseProvider;
 
 		beforeEach(async () => {
 			jest
@@ -439,67 +496,112 @@ describe('Interactions', () => {
 			provider = new AWSLexV2Provider();
 			provider.configure(botConfig);
 
-			// mock callbacks
-			inProgressCallback = jest.fn((err, confirmation) =>
-				fail(`callback shouldn't be called`)
-			);
+			mockCallbackProvider = actionType => {
+				switch (actionType) {
+					case ACTION_TYPE.IN_PROGRESS:
+						return jest.fn((err, confirmation) =>
+							fail(`callback shouldn't be called`)
+						);
 
-			completeSuccessCallback = jest.fn((err, confirmation) => {
-				expect(err).toEqual(null);
-				expect(confirmation).toEqual({
-					sessionState: {
-						intent: {
-							slots: { m1: 'hi', m2: 'done' },
-							state: 'ReadyForFulfillment',
-						},
-					},
-					messages: [{ content: 'echo:done' }],
-				});
-			});
+					case ACTION_TYPE.COMPLETE:
+						return jest.fn((err, confirmation) => {
+							expect(err).toEqual(null);
+							expect(confirmation).toEqual({
+								sessionState: {
+									intent: {
+										slots: { m1: 'hi', m2: 'done' },
+										state: 'ReadyForFulfillment',
+									},
+								},
+								messages: [{ content: 'echo:done' }],
+							});
+						});
+					case ACTION_TYPE.ERROR:
+						return jest.fn((err, confirmation) =>
+							expect(err).toEqual(new Error('Bot conversation failed'))
+						);
+				}
+			};
 
-			completeFailCallback = jest.fn((err, confirmation) =>
-				expect(err).toEqual(new Error('Bot conversation failed'))
-			);
-
-			// mock responses
-			inProgressResp = (await provider.sendMessage(
+			const inProgressResp = (await provider.sendMessage(
 				'BookTrip',
-				'hi'
+				'in progress. callback isnt fired'
 			)) as RecognizeTextCommandOutput;
 
-			completeSuccessResp = (await provider.sendMessage(
+			const completeSuccessResp = (await provider.sendMessage(
 				'BookTrip',
 				'done'
 			)) as RecognizeTextCommandOutput;
 
-			completeFailResp = (await provider.sendMessage(
+			const completeFailResp = (await provider.sendMessage(
 				'BookTrip',
 				'error'
 			)) as RecognizeTextCommandOutput;
+
+			mockResponseProvider = actionType => {
+				switch (actionType) {
+					case ACTION_TYPE.IN_PROGRESS:
+						return inProgressResp;
+					case ACTION_TYPE.COMPLETE:
+						return completeSuccessResp;
+					case ACTION_TYPE.ERROR:
+						return completeFailResp;
+				}
+			};
 		});
 
-		test('onComplete callback from `Interactions.onComplete`', async () => {
-			// 1. In progress, callback shouldn't be called
-			provider.onComplete('BookTrip', inProgressCallback);
-			provider._reportBotStatus(inProgressResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(inProgressCallback).toBeCalledTimes(0);
+		describe('onComplete callback from `Interactions.onComplete`', () => {
+			test(`In progress, callback shouldn't be called`, async () => {
+				// callback is only called once conversation is completed
+				const inProgressCallback = mockCallbackProvider(
+					ACTION_TYPE.IN_PROGRESS
+				);
+				provider.onComplete('BookTrip', inProgressCallback);
 
-			// 2. task complete; success, callback be called with response
-			provider.onComplete('BookTrip', completeSuccessCallback);
-			provider._reportBotStatus(completeSuccessResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(completeSuccessCallback).toBeCalledTimes(1);
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
+					'BookTrip'
+				);
 
-			// 3. task complete; error, callback be called with error
-			provider.onComplete('BookTrip', completeFailCallback);
-			provider._reportBotStatus(completeFailResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(completeFailCallback).toBeCalledTimes(1);
-			expect.assertions(6);
+				jest.runAllTimers();
+				expect(inProgressCallback).toBeCalledTimes(0);
+				expect.assertions(1);
+			});
+
+			test(`task complete; callback with success resp`, async () => {
+				const completeSuccessCallback = mockCallbackProvider(
+					ACTION_TYPE.COMPLETE
+				);
+
+				provider.onComplete('BookTrip', completeSuccessCallback);
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.COMPLETE),
+					'BookTrip'
+				);
+
+				jest.runAllTimers();
+				expect(completeSuccessCallback).toBeCalledTimes(1);
+				// 2 assertions from callback
+				expect.assertions(3);
+			});
+
+			test(`task complete; callback with error resp`, async () => {
+				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
+				provider.onComplete('BookTrip', completeFailCallback);
+
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.ERROR),
+					'BookTrip'
+				);
+
+				jest.runAllTimers();
+				expect(completeFailCallback).toBeCalledTimes(1);
+				// 1 assertion from callback
+				expect.assertions(2);
+			});
 		});
 
-		test('onComplete callback from `Configure`', async () => {
+		describe('onComplete callback from `Interactions.onComplete`', () => {
 			const myBot: any = {
 				BookTrip: {
 					name: 'BookTrip',
@@ -511,27 +613,56 @@ describe('Interactions', () => {
 				},
 			};
 
-			// 1. In progress, callback shouldn't be called
-			myBot.BookTrip.onComplete = inProgressCallback;
-			provider.configure(myBot);
-			provider._reportBotStatus(inProgressResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(inProgressCallback).toBeCalledTimes(0);
+			test(`In progress, callback shouldn't be called`, async () => {
+				const inProgressCallback = mockCallbackProvider(
+					ACTION_TYPE.IN_PROGRESS
+				);
+				myBot.BookTrip.onComplete = inProgressCallback;
 
-			// 2. In progress, callback shouldn't be called
-			myBot.BookTrip.onComplete = completeSuccessCallback;
-			provider.configure(myBot);
-			provider._reportBotStatus(completeSuccessResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(completeSuccessCallback).toBeCalledTimes(1);
+				provider.configure(myBot);
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
+					'BookTrip'
+				);
 
-			// 3. In progress, callback shouldn't be called
-			myBot.BookTrip.onComplete = completeFailCallback;
-			provider.configure(myBot);
-			provider._reportBotStatus(completeFailResp, 'BookTrip');
-			jest.runAllTimers();
-			expect(completeFailCallback).toBeCalledTimes(1);
-			expect.assertions(6);
+				jest.runAllTimers();
+				expect(inProgressCallback).toBeCalledTimes(0);
+				expect.assertions(1);
+			});
+
+			test(`task complete; callback with success resp`, async () => {
+				const completeSuccessCallback = mockCallbackProvider(
+					ACTION_TYPE.COMPLETE
+				);
+				myBot.BookTrip.onComplete = completeSuccessCallback;
+
+				provider.configure(myBot);
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.COMPLETE),
+					'BookTrip'
+				);
+
+				jest.runAllTimers();
+				expect(completeSuccessCallback).toBeCalledTimes(1);
+				// 2 assertions from callback
+				expect.assertions(3);
+			});
+
+			test(`task complete; callback with error resp`, async () => {
+				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
+				myBot.BookTrip.onComplete = completeFailCallback;
+
+				provider.configure(myBot);
+				provider._reportBotStatus(
+					mockResponseProvider(ACTION_TYPE.ERROR),
+					'BookTrip'
+				);
+
+				jest.runAllTimers();
+				expect(completeFailCallback).toBeCalledTimes(1);
+				// 1 assertion from callback
+				expect.assertions(2);
+			});
 		});
 	});
 });
