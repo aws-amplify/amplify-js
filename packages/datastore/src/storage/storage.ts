@@ -60,7 +60,7 @@ class StorageClass implements StorageFacade {
 		private readonly sessionId?: string
 	) {
 		this.adapter = this.adapter || getDefaultAdapter();
-		this.pushStream = new PushStream();
+		this.pushStream = new PushStream() as any;
 	}
 
 	static getNamespace() {
@@ -355,7 +355,7 @@ class StorageClass implements StorageFacade {
 			return null;
 		}
 
-		const [patches, source] = patchesTuple;
+		const [patches, source] = patchesTuple!;
 		const updatedElement = {};
 		// extract array of updated fields from patches
 		const updatedFields = <string[]>(

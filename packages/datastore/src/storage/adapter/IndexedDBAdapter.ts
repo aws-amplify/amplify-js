@@ -87,7 +87,7 @@ class IndexedDBAdapter implements Adapter {
 	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
 		const namespace = this.schema.namespaces[namespaceName];
 
-		const keyPath = namespace?.keys[modelName]?.primaryKey;
+		const keyPath = namespace?.keys?.[modelName]?.primaryKey;
 
 		if (keyPath) {
 			return keyPath;
@@ -279,7 +279,7 @@ class IndexedDBAdapter implements Adapter {
 			model,
 			this.schema.namespaces[namespaceName],
 			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.getModelConstructorByModelName!
 		);
 
 		const set = new Set<string>();
@@ -445,7 +445,7 @@ class IndexedDBAdapter implements Adapter {
 			return;
 		}
 
-		const keyValues = [];
+		const keyValues = [] as any[];
 
 		for (const key of keyPath) {
 			const predicateObj = predicateObjs.find(
@@ -781,7 +781,7 @@ class IndexedDBAdapter implements Adapter {
 
 			for await (const item of items) {
 				if (item) {
-					let key: IDBValidKey;
+					let key: IDBValidKey | undefined;
 
 					if (typeof item === 'object') {
 						const keyValues = this.getIndexKeyValues(item as T);
@@ -837,7 +837,7 @@ class IndexedDBAdapter implements Adapter {
 							);
 
 							await this.deleteTraverse(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete ? [recordToDelete] : [],
 								modelName,
@@ -860,7 +860,7 @@ class IndexedDBAdapter implements Adapter {
 								// If we deprecate, we'll need to re-gen the MIPR in __tests__/schema.ts > newSchema
 								// otherwise some unit tests will fail
 								index = getIndex(
-									this.schema.namespaces[nameSpace].relationships[modelName]
+									this.schema.namespaces[nameSpace].relationships![modelName]
 										.relationTypes,
 									srcModel
 								);
@@ -878,7 +878,7 @@ class IndexedDBAdapter implements Adapter {
 							);
 
 							await this.deleteTraverse(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete ? [recordToDelete] : [],
 								modelName,
@@ -893,15 +893,15 @@ class IndexedDBAdapter implements Adapter {
 						const index =
 							// explicit bi-directional @hasMany and @manyToMany
 							getIndex(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								srcModel
 							) ||
 							// uni and/or implicit @hasMany
 							getIndexFromAssociation(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.indexes,
-								associatedWith
+								associatedWith!
 							);
 						const keyValues = this.getIndexKeyValues(model);
 
@@ -979,7 +979,7 @@ class IndexedDBAdapter implements Adapter {
 				model,
 				this.schema.namespaces[namespaceName],
 				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.getModelConstructorByModelName!
 			);
 
 			const keyValues = this.getIndexKeyValues(model);
@@ -992,7 +992,7 @@ class IndexedDBAdapter implements Adapter {
 				const { instance } = connectedModels.find(({ instance }) => {
 					const instanceKeyValues = this.getIndexKeyValues(instance);
 					return this.keysEqual(instanceKeyValues, keyValues);
-				});
+				})!;
 
 				result.push([
 					<T>(<unknown>instance),
@@ -1024,7 +1024,7 @@ class IndexedDBAdapter implements Adapter {
 		});
 
 		const { indexes } =
-			this.schema.namespaces[namespaceName].relationships[modelName];
+			this.schema.namespaces[namespaceName].relationships![modelName];
 
 		indexes.forEach(([idxName, keyPath, options]) => {
 			store.createIndex(idxName, keyPath, options);

@@ -162,9 +162,9 @@ class MutationProcessor {
 				const modelConstructor = this.userClasses[
 					model
 				] as PersistentModelConstructor<MutationEvent>;
-				let result: GraphQLResult<Record<string, PersistentModel>>;
-				let opName: string;
-				let modelDefinition: SchemaModel;
+				let result: GraphQLResult<Record<string, PersistentModel>> = undefined!;
+				let opName: string = undefined!;
+				let modelDefinition: SchemaModel = undefined!;
 
 				try {
 					const modelAuthModes = await getModelAuthModes({
@@ -239,7 +239,7 @@ class MutationProcessor {
 					continue;
 				}
 
-				const record = result.data[opName];
+				const record = result.data![opName!];
 				let hasMore = false;
 
 				await this.storage.runExclusive(async storage => {
@@ -249,7 +249,7 @@ class MutationProcessor {
 					hasMore = (await this.outbox.peek(storage)) !== undefined;
 				});
 
-				this.observer.next({
+				this.observer.next!({
 					operation,
 					modelDefinition,
 					model: record,
@@ -268,7 +268,7 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<unknown>,
+		modelConstructor: PersistentModelConstructor<any>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE,
@@ -485,7 +485,7 @@ class MutationProcessor {
 
 		const [, opName, query] = queriesTuples!.find(
 			([transformerMutationType]) => transformerMutationType === operation
-		);
+		)!;
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
 

@@ -310,7 +310,7 @@ class CustomIdentifierNoRO {
 			draft: MutableModel<CustomIdentifierNoRO>
 		) => MutableModel<CustomIdentifierNoRO> | void
 	): CustomIdentifierDefaultRO {
-		return undefined;
+		return undefined as unknown as any;
 	}
 }
 
@@ -320,33 +320,35 @@ class CustomIdentifierNoRO {
 
 describe('IdentifierFields', () => {
 	test('Types for identifiers match model definition', () => {
-		expectType<'id'>(undefined as IdentifierFields<LegacyNoMetadata>);
+		expectType<'id'>(
+			undefined as unknown as IdentifierFields<LegacyNoMetadata>
+		);
 
-		expectType<'id'>(undefined as IdentifierFields<LegacyCustomRO>);
+		expectType<'id'>(undefined as unknown as IdentifierFields<LegacyCustomRO>);
 
 		expectType<'id'>(
-			undefined as IdentifierFields<
+			undefined as unknown as IdentifierFields<
 				ManagedCustomRO,
 				ManagedCustomRO[typeof __modelMeta__]
 			>
 		);
 
 		expectType<'id'>(
-			undefined as IdentifierFields<
+			undefined as unknown as IdentifierFields<
 				OptionallyManagedCustomRO,
 				OptionallyManagedCustomRO[typeof __modelMeta__]
 			>
 		);
 
 		expectType<'myId'>(
-			undefined as IdentifierFields<
+			undefined as unknown as IdentifierFields<
 				CustomIdentifierCustomRO,
 				CustomIdentifierCustomRO[typeof __modelMeta__]
 			>
 		);
 
 		expectType<'tenant' | 'dob'>(
-			undefined as IdentifierFields<
+			undefined as unknown as IdentifierFields<
 				CompositeCustomRO,
 				CompositeCustomRO[typeof __modelMeta__]
 			>
@@ -414,7 +416,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(LegacyNoMetadata, Predicates.ALL)
 			);
 			expectType<LegacyNoMetadata[]>(
-				await DataStore.query(LegacyNoMetadata, c => c.createdAt('ge', '2019'))
+				await DataStore.query(LegacyNoMetadata, c => c.createdAt.ge('2019'))
 			);
 
 			// Save
@@ -452,7 +454,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyNoMetadata>(element);
 			});
 			DataStore.observe(LegacyNoMetadata, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
 				expectType<LegacyNoMetadata>(element);
@@ -473,13 +475,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyNoMetadata[]>(items);
 			});
 			DataStore.observeQuery(LegacyNoMetadata, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<LegacyNoMetadata[]>(items);
 			});
 			DataStore.observeQuery(
 				LegacyNoMetadata,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<LegacyNoMetadata[]>(items);
@@ -519,7 +521,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<LegacyDefaultRO>(
+			expectType<LegacyDefaultRO | undefined>(
 				await DataStore.query(LegacyDefaultRO, 'someid')
 			);
 			expectType<LegacyDefaultRO[]>(await DataStore.query(LegacyDefaultRO));
@@ -527,7 +529,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(LegacyDefaultRO, Predicates.ALL)
 			);
 			expectType<LegacyDefaultRO[]>(
-				await DataStore.query(LegacyDefaultRO, c => c.createdAt('ge', '2019'))
+				await DataStore.query(LegacyDefaultRO, c => c.createdAt.ge('2019'))
 			);
 
 			// Save
@@ -565,7 +567,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyDefaultRO>(element);
 			});
 			DataStore.observe(LegacyDefaultRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
 				expectType<LegacyDefaultRO>(element);
@@ -582,13 +584,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(LegacyDefaultRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<LegacyDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(
 				LegacyDefaultRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<LegacyDefaultRO[]>(items);
@@ -641,7 +643,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<LegacyCustomRO>(
+			expectType<LegacyCustomRO | undefined>(
 				await DataStore.query(LegacyCustomRO, 'someid')
 			);
 			expectType<LegacyCustomRO[]>(await DataStore.query(LegacyCustomRO));
@@ -649,7 +651,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(LegacyCustomRO, Predicates.ALL)
 			);
 			expectType<LegacyCustomRO[]>(
-				await DataStore.query(LegacyCustomRO, c => c.createdOn('ge', '2019'))
+				await DataStore.query(LegacyCustomRO, c => c.createdOn.ge('2019'))
 			);
 
 			// Save
@@ -685,7 +687,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyCustomRO>(element);
 			});
 			DataStore.observe(LegacyCustomRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
 				expectType<LegacyCustomRO>(element);
@@ -702,13 +704,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<LegacyCustomRO[]>(items);
 			});
 			DataStore.observeQuery(LegacyCustomRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<LegacyCustomRO[]>(items);
 			});
 			DataStore.observeQuery(
 				LegacyCustomRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdOn('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<LegacyCustomRO[]>(items);
@@ -760,10 +762,10 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			});
 
 			// Query
-			expectType<CustomIdentifierNoRO>(
+			expectType<CustomIdentifierNoRO | undefined>(
 				await DataStore.query(CustomIdentifierNoRO, 'someid')
 			);
-			expectType<CustomIdentifierNoRO>(
+			expectType<CustomIdentifierNoRO | undefined>(
 				await DataStore.query(CustomIdentifierNoRO, { myId: 'someid' })
 			);
 			expectType<CustomIdentifierNoRO[]>(
@@ -773,9 +775,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(CustomIdentifierNoRO, Predicates.ALL)
 			);
 			expectType<CustomIdentifierNoRO[]>(
-				await DataStore.query(CustomIdentifierNoRO, c =>
-					c.createdAt('ge', '2019')
-				)
+				await DataStore.query(CustomIdentifierNoRO, c => c.createdAt.ge('2019'))
 			);
 
 			// Save
@@ -817,7 +817,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				}
 			);
 			DataStore.observe(CustomIdentifierNoRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
 				expectType<CustomIdentifierNoRO>(element);
@@ -834,13 +834,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<CustomIdentifierNoRO[]>(items);
 			});
 			DataStore.observeQuery(CustomIdentifierNoRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<CustomIdentifierNoRO[]>(items);
 			});
 			DataStore.observeQuery(
 				CustomIdentifierNoRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<CustomIdentifierNoRO[]>(items);
@@ -900,7 +900,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(ManagedDefaultRO, Predicates.ALL)
 			);
 			expectType<ManagedDefaultRO[]>(
-				await DataStore.query(ManagedDefaultRO, c => c.createdAt('ge', '2019'))
+				await DataStore.query(ManagedDefaultRO, c => c.createdAt.ge('2019'))
 			);
 
 			// Save
@@ -938,7 +938,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<ManagedDefaultRO>(element);
 			});
 			DataStore.observe(ManagedDefaultRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<ManagedDefaultRO>>(model);
 				expectType<ManagedDefaultRO>(element);
@@ -955,13 +955,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<ManagedDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(ManagedDefaultRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<ManagedDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(
 				ManagedDefaultRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<ManagedDefaultRO[]>(items);
@@ -1016,7 +1016,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(ManagedCustomRO, Predicates.ALL)
 			);
 			expectType<ManagedCustomRO[]>(
-				await DataStore.query(ManagedCustomRO, c => c.createdOn('ge', '2019'))
+				await DataStore.query(ManagedCustomRO, c => c.createdOn.ge('2019'))
 			);
 
 			// Save
@@ -1054,7 +1054,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<ManagedCustomRO>(element);
 			});
 			DataStore.observe(ManagedCustomRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<ManagedCustomRO>>(model);
 				expectType<ManagedCustomRO>(element);
@@ -1071,13 +1071,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<ManagedCustomRO[]>(items);
 			});
 			DataStore.observeQuery(ManagedCustomRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<ManagedCustomRO[]>(items);
 			});
 			DataStore.observeQuery(
 				ManagedCustomRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdOn('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<ManagedCustomRO[]>(items);
@@ -1154,7 +1154,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 			expectType<OptionallyManagedDefaultRO[]>(
 				await DataStore.query(OptionallyManagedDefaultRO, c =>
-					c.createdAt('ge', '2019')
+					c.createdAt.ge('2019')
 				)
 			);
 
@@ -1199,7 +1199,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				}
 			);
 			DataStore.observe(OptionallyManagedDefaultRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
 					model
@@ -1222,13 +1222,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				}
 			);
 			DataStore.observeQuery(OptionallyManagedDefaultRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<OptionallyManagedDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(
 				OptionallyManagedDefaultRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<OptionallyManagedDefaultRO[]>(items);
@@ -1308,7 +1308,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 			);
 			expectType<OptionallyManagedCustomRO[]>(
 				await DataStore.query(OptionallyManagedCustomRO, c =>
-					c.createdOn('ge', '2019')
+					c.createdOn.ge('ge', '2019')
 				)
 			);
 
@@ -1353,7 +1353,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				}
 			);
 			DataStore.observe(OptionallyManagedCustomRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
 					model
@@ -1376,13 +1376,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				}
 			);
 			DataStore.observeQuery(OptionallyManagedCustomRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<OptionallyManagedCustomRO[]>(items);
 			});
 			DataStore.observeQuery(
 				OptionallyManagedCustomRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdOn('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<OptionallyManagedCustomRO[]>(items);
@@ -1453,9 +1453,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				await DataStore.query(CompositeDefaultRO, Predicates.ALL)
 			);
 			expectType<CompositeDefaultRO[]>(
-				await DataStore.query(CompositeDefaultRO, c =>
-					c.createdAt('ge', '2019')
-				)
+				await DataStore.query(CompositeDefaultRO, c => c.createdAt.ge('2019'))
 			);
 
 			// Save
@@ -1499,7 +1497,7 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<CompositeDefaultRO>(element);
 			});
 			DataStore.observe(CompositeDefaultRO, c =>
-				c.description('beginsWith', 'something')
+				c.description.beginsWith('something')
 			).subscribe(({ model, element }) => {
 				expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
 				expectType<CompositeDefaultRO>(element);
@@ -1510,13 +1508,13 @@ describe('ModelInit and MutableModel typings (no runtime validation)', () => {
 				expectType<CompositeDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(CompositeDefaultRO, c =>
-				c.description('notContains', 'something')
+				c.description.notContains('something')
 			).subscribe(({ items }) => {
 				expectType<CompositeDefaultRO[]>(items);
 			});
 			DataStore.observeQuery(
 				CompositeDefaultRO,
-				c => c.description('notContains', 'something'),
+				c => c.description.notContains('something'),
 				{ sort: c => c.createdAt('ASCENDING') }
 			).subscribe(({ items }) => {
 				expectType<CompositeDefaultRO[]>(items);

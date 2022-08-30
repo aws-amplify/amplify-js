@@ -453,9 +453,13 @@ export interface AsyncCollection<T> extends AsyncIterable<T> {
 }
 
 export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
-	? InnerPromiseType
+	? undefined extends InnerPromiseType
+		? InnerPromiseType | null
+		: InnerPromiseType
 	: T extends AsyncCollection<infer InnerCollectionType>
 	? InnerCollectionType[] | undefined
+	: undefined extends T
+	? T | null
 	: T;
 
 export type PredicateFieldType<T> = NonNullable<
@@ -482,6 +486,14 @@ type OptionalRelativesOf<T> =
 
 type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
 type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
+type OmitOptionalFields<T> = Omit<
+	T,
+	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
+>;
+type PickOptionalFields<T> = Pick<
+	T,
+	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
+>;
 
 export type DefaultPersistentModelMetaData = {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
@@ -507,6 +519,11 @@ export type MetadataReadOnlyFields<
 	keyof T
 >;
 
+// This type omits the metadata field in the constructor init object
+// This type omits identifier fields in the constructor init object
+// This type omits readOnlyFields in the constructor init object
+// This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
+// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
@@ -521,16 +538,12 @@ export type ModelInitBase<
 		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
 		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
 
-// This type omits the metadata field in the constructor init object
-// This type omits identifier fields in the constructor init object
-// This type omits readOnlyFields in the constructor init object
-// This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
-// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInit<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
+		// [P in keyof OmitOptionalFields<ModelInitBase<T, M>>]: SettableFieldType<
 		ModelInitBase<T, M>[P]
 	>;
 } & {

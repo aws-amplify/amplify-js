@@ -421,14 +421,14 @@ export const traverseModel = <T extends PersistentModel>(
 	namespace: SchemaNamespace,
 	modelInstanceCreator: ModelInstanceCreator,
 	getModelConstructorByModelName: (
-		namsespaceName: string,
+		namsespaceName: NAMESPACES,
 		modelName: string
 	) => PersistentModelConstructor<any>
 ) => {
 	const relationships = namespace.relationships;
 
 	const modelConstructor = getModelConstructorByModelName(
-		namespace.name,
+		namespace.name as NAMESPACES,
 		srcModelName
 	);
 
@@ -443,7 +443,7 @@ export const traverseModel = <T extends PersistentModel>(
 	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
 		relation.relationTypes.forEach((rItem: RelationType) => {
 			const modelConstructor = getModelConstructorByModelName(
-				namespace.name,
+				namespace.name as NAMESPACES,
 				rItem.modelName
 			);
 
@@ -778,8 +778,8 @@ export function valuesEqual(
 	}
 
 	if (a instanceof Map && b instanceof Map) {
-		a = Object.fromEntries(a);
-		b = Object.fromEntries(b);
+		a = (Object as any).fromEntries(a);
+		b = (Object as any).fromEntries(b);
 	}
 
 	const aKeys = Object.keys(a);
@@ -1062,7 +1062,7 @@ export function mergePatches<T>(
 			patches = p;
 		}
 	);
-	return patches;
+	return patches!;
 }
 
 /* Backwards-compatability for schema generated prior to custom primary key support:

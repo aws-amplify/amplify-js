@@ -585,7 +585,7 @@ export class AsyncStorageAdapter implements Adapter {
 							}
 
 							await this.deleteTraverse<T>(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete,
 								modelName,
@@ -594,10 +594,10 @@ export class AsyncStorageAdapter implements Adapter {
 							);
 						} else {
 							const hasOneIndex = index || associatedWith;
-							const hasOneCustomField = targetName in model;
+							const hasOneCustomField = targetName! in model;
 							const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 							const value = hasOneCustomField
-								? model[targetName]
+								? model[targetName!]
 								: keyValuesPath;
 
 							if (!value) break;
@@ -609,7 +609,7 @@ export class AsyncStorageAdapter implements Adapter {
 							) as T[];
 
 							await this.deleteTraverse<T>(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete,
 								modelName,
@@ -634,7 +634,7 @@ export class AsyncStorageAdapter implements Adapter {
 						) as T[];
 
 						await this.deleteTraverse<T>(
-							this.schema.namespaces[nameSpace].relationships[modelName]
+							this.schema.namespaces[nameSpace].relationships![modelName]
 								.relationTypes,
 							childrenArray,
 							modelName,
@@ -695,7 +695,7 @@ export class AsyncStorageAdapter implements Adapter {
 			const { instance } = connectedModels.find(({ instance }) => {
 				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
 				return this.keysEqual([instanceKeyValuesPath], [keyValuesPath]);
-			});
+			})!;
 
 			batch.push(instance);
 		}

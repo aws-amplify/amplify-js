@@ -70,6 +70,7 @@ import {
 	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
+	isFieldAssociation,
 	isModelAttributePrimaryKey,
 } from '../types';
 import {
@@ -359,7 +360,7 @@ const createTypeClasses: (
 
 	Object.entries(namespace.nonModels || {}).forEach(
 		([typeName, typeDefinition]) => {
-			const clazz = createNonModelClass(typeDefinition);
+			const clazz = createNonModelClass(typeDefinition) as any;
 			classes[typeName] = clazz;
 		}
 	);
@@ -383,7 +384,7 @@ export declare type ModelInstanceCreator = typeof modelInstanceCreator;
  * the model visible to the consuming app -- in case the app doesn't have
  * metadata fields (_version, _deleted, etc.) exposed on the model itself.
  */
-const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
+const instancesMetadata = new WeakSet<ModelInit<any, any>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
@@ -632,7 +633,8 @@ const createModelClass = <T extends PersistentModel>(
 			const hasExistingPatches = modelPatchesMap.has(source);
 			if (patches.length || hasExistingPatches) {
 				if (hasExistingPatches) {
-					const [existingPatches, existingSource] = modelPatchesMap.get(source);
+					const [existingPatches, existingSource] =
+						modelPatchesMap.get(source)!;
 					const mergedPatches = mergePatches(
 						existingSource,
 						existingPatches,
@@ -734,18 +736,18 @@ const createModelClass = <T extends PersistentModel>(
 						const relatedModelDefinition = getModelDefinition(relatedModel);
 						if (
 							relatedModelDefinition?.fields[
-								associatedWith
+								associatedWith as any
 							].type.hasOwnProperty('model')
 						) {
 							const resultPromise = instance.query(relatedModel, c =>
-								c[associatedWith].id.eq(this.id)
+								c[associatedWith as any].id.eq(this.id)
 							);
 							const asyncResult = new AsyncCollection(resultPromise);
 							instanceMemos[field] = asyncResult;
 							return asyncResult;
 						}
 						const resultPromise = instance.query(relatedModel, c =>
-							c[associatedWith].eq(this.id)
+							c[associatedWith as any].eq(this.id)
 						);
 						const asyncResult = new AsyncCollection(resultPromise);
 						instanceMemos[field] = asyncResult;
@@ -1032,7 +1034,7 @@ class DataStore {
 	private sync?: SyncEngine;
 	private syncPageSize!: number;
 	private syncExpressions!: SyncExpression[];
-	private syncPredicates!: WeakMap<SchemaModel, ModelPredicate<any>> =
+	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId?: string;
 	private storageAdapter!: Adapter;
@@ -1656,8 +1658,9 @@ class DataStore {
 									// item from storage to ensure it's fully populated.
 									if (item.opType !== 'DELETE') {
 										const modelDefinition = getModelDefinition(item.model);
-										const keyFields =
-											extractPrimaryKeyFieldNames(modelDefinition);
+										const keyFields = extractPrimaryKeyFieldNames(
+											modelDefinition!
+										);
 										const primaryKeysAndValues = extractPrimaryKeysAndValues(
 											item.element,
 											keyFields
@@ -1714,7 +1717,7 @@ class DataStore {
 			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
-			let predicate: ModelPredicate<T> | undefined;
+			// let predicate: ModelPredicate<T> | undefined;
 			let executivePredicate: GroupCondition | undefined;
 
 			/**
@@ -1916,7 +1919,7 @@ class DataStore {
 					}
 
 					const itemModelDefinition = getModelDefinition(model);
-					const idOrPk = getIdentifierValue(itemModelDefinition, record);
+					const idOrPk = getIdentifierValue(itemModelDefinition!, record);
 					items.set(idOrPk, record);
 				});
 
@@ -1955,10 +1958,10 @@ class DataStore {
 			 */
 			const sortItems = (itemsToSort: T[]): void => {
 				const modelDefinition = getModelDefinition(model);
-				const pagination = this.processPagination(modelDefinition, options);
+				const pagination = this.processPagination(modelDefinition!, options);
 
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
-					pagination.sort
+					pagination!.sort!
 				);
 
 				if (sortPredicates.length) {

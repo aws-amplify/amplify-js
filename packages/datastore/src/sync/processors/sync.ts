@@ -257,13 +257,13 @@ class SyncProcessor {
 											await this.errorHandler({
 												recoverySuggestion:
 													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-												localModel: null,
+												localModel: null!,
 												message: err.message,
 												model: modelDefinition.name,
 												operation: opName,
 												errorType: getSyncErrorType(err),
 												process: ProcessName.sync,
-												remoteModel: null,
+												remoteModel: null!,
 												cause: err,
 											});
 										} catch (e) {
