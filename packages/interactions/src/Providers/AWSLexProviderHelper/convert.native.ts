@@ -17,16 +17,13 @@ import { gunzipSync } from 'fflate';
 export const convert = async (stream: Blob): Promise<Uint8Array> => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			// 1. use 'FileReader' to create blobUrl
 			const fileReaderInstance = new FileReader();
 			fileReaderInstance.readAsDataURL(stream);
 			fileReaderInstance.onload = async () => {
 				const blobURL = fileReaderInstance.result as string;
 
-				// 2. slice base64 encoded string from blobUrl
 				const base64Blob = blobURL.split(/,(.*)/s)[1];
 
-				// 3. base64 to arrayBuffer
 				const decodedArrayBuffer = base64ToArrayBuffer(base64Blob);
 				resolve(decodedArrayBuffer);
 			};
@@ -42,7 +39,5 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 };
 
 export const gzipDecompress = async (data: Uint8Array): Promise<Uint8Array> => {
-	// gunzip uses web-workers which RN doesn't support
-	// alternative; wrap gunzipSync in promise
 	return new Promise(resolve => resolve(gunzipSync(data)));
 };

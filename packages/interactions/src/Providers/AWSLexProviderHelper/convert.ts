@@ -31,7 +31,6 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 };
 
 export const gzipDecompress = async (data: Uint8Array): Promise<Uint8Array> => {
-	// gunzip uses web-workers
 	return await new Promise((resolve, reject) => {
 		gunzip(data, (err, resp) => {
 			if (err) reject(err);
