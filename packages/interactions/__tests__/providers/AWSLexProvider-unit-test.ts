@@ -155,7 +155,7 @@ describe('Interactions', () => {
 		expect.assertions(1);
 	});
 
-	// Test 'configure' API
+	// configure bot uisng aws-exports and manual config
 	describe('configure API', () => {
 		const provider = new AWSLexProvider();
 
@@ -213,7 +213,7 @@ describe('Interactions', () => {
 		});
 	});
 
-	// Test 'send' API
+	// send text and audio message to bot
 	describe('send API', () => {
 		let provider;
 
@@ -340,7 +340,7 @@ describe('Interactions', () => {
 		});
 	});
 
-	// Test 'onComplete' API
+	// attach 'onComplete' callback to bot
 	describe('onComplete API', () => {
 		const callback = (err, confirmation) => {};
 		let provider;
@@ -367,7 +367,7 @@ describe('Interactions', () => {
 		});
 	});
 
-	// Test 'reportBotStatus' API
+	// test if 'onComplete' callback is fired for different actions
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
 		let provider;

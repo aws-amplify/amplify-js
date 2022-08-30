@@ -72,9 +72,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	}
 
 	/**
+	 * @private
+	 * @deprecated
 	 * This is used internally by 'sendMessage' to call onComplete callback
 	 * for a bot if configured
-	 * @deprecated
 	 */
 	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
