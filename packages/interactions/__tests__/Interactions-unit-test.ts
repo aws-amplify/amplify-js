@@ -363,13 +363,6 @@ describe('Interactions', () => {
 			expect.assertions(4);
 		});
 
-		test('Add a invalid pluggable', () => {
-			expect(() => interactions.addPluggable(new WrongProvider())).toThrow(
-				'Invalid pluggable'
-			);
-			expect.assertions(1);
-		});
-
 		test('Add existing pluggable again', () => {
 			interactions.addPluggable(new DummyProvider());
 			expect(() => {

@@ -35,6 +35,15 @@ import { convert } from './AWSLexProviderHelper/convert';
 
 const logger = new Logger('AWSLexProvider');
 
+interface PostContentCommandOutputFormatted
+	extends Omit<PostContentCommandOutput, 'audioStream'> {
+	audioStream?: Uint8Array;
+}
+
+type AWSLexProviderSendResponse =
+	| PostTextCommandOutput
+	| PostContentCommandOutputFormatted;
+
 export class AWSLexProvider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceClient: LexRuntimeServiceClient;
 	private _botsCompleteCallback: object;
@@ -62,10 +71,12 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return super.configure(config);
 	}
 
-	reportBotStatus(
-		data: PostTextCommandOutput | PostContentCommandOutput,
-		botname: string
-	) {
+	/**
+	 * This is used internally by 'sendMessage' to call onComplete callback
+	 * for a bot if configured
+	 * @deprecated
+	 */
+	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
@@ -73,21 +84,14 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			data.dialogState === 'Fulfilled'
 		) {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(
-					() =>
-						this._botsCompleteCallback[botname](null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
 			}
 
 			if (
 				this._config &&
 				typeof this._config[botname].onComplete === 'function'
 			) {
-				setTimeout(
-					() => this._config[botname].onComplete(null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._config[botname].onComplete(null, data), 0);
 			}
 		}
 
@@ -194,8 +198,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					? await convert(data.audioStream)
 					: undefined;
 
-				this.reportBotStatus(data, botname);
-				return { ...data, ...{ audioStream: audioArray } };
+				const response = { ...data, ...{ audioStream: audioArray } };
+
+				this.reportBotStatus(response, botname);
+				return response;
 			} catch (err) {
 				return Promise.reject(err);
 			}

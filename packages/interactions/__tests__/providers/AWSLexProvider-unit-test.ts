@@ -395,7 +395,14 @@ describe('Interactions', () => {
 
 			completeSuccessCallback = jest.fn((err, confirmation) => {
 				expect(err).toEqual(null);
-				expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
+				expect(confirmation).toEqual({
+					message: 'echo:done',
+					dialogState: 'ReadyForFulfillment',
+					slots: {
+						m1: 'hi',
+						m2: 'done',
+					},
+				});
 			});
 
 			completeFailCallback = jest.fn((err, confirmation) =>
