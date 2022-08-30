@@ -17,15 +17,10 @@ import { gunzipSync } from 'fflate';
 export const convert = async (stream: Blob): Promise<Uint8Array> => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			console.log('stream', stream);
-
 			// 1. use 'FileReader' to create blobUrl
 			const fileReaderInstance = new FileReader();
-			console.log('after 1');
 			fileReaderInstance.readAsDataURL(stream);
-			console.log('after 2');
 			fileReaderInstance.onload = async () => {
-				console.log('getting output');
 				const blobURL = fileReaderInstance.result as string;
 
 				// 2. slice base64 encoded string from blobUrl
