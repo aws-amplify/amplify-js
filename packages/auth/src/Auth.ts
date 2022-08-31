@@ -133,6 +133,9 @@ export class AuthClass {
 				case 'signOut':
 					this._storage.removeItem('amplify-signin-with-hostedUI');
 					break;
+				case 'oAuthSignOut':
+					this._storage.removeItem('amplify-signin-with-hostedUI');
+					break;
 				case 'cognitoHostedUI':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'true');
 					break;
@@ -2480,11 +2483,17 @@ export class AuthClass {
 					currentUser.setSignInUserSession(session);
 
 					if (window && typeof window.history !== 'undefined') {
-						window.history.replaceState(
-							{},
-							null,
-							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
-						);
+						if (
+							(
+								this._config.oauth as AwsCognitoOAuthOpts
+							).redirectSignIn.startsWith('http')
+						) {
+							window.history.replaceState(
+								{},
+								null,
+								(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+							);
+						}
 					}
 
 					dispatchAuthEvent(
@@ -2516,11 +2525,17 @@ export class AuthClass {
 					// Just like a successful handling of `?code`, replace the window history to "dispose" of the `code`.
 					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
 					if (window && typeof window.history !== 'undefined') {
-						window.history.replaceState(
-							{},
-							null,
-							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
-						);
+						if (
+							(
+								this._config.oauth as AwsCognitoOAuthOpts
+							).redirectSignIn.startsWith('http')
+						) {
+							window.history.replaceState(
+								{},
+								null,
+								(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+							);
+						}
 					}
 
 					dispatchAuthEvent(
