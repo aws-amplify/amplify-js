@@ -12,7 +12,7 @@
  */
 import * as Paho from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
-import Observable, { Observer, ZenObservable } from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import {
@@ -161,7 +161,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		if (errorCode !== 0) {
 			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
 
-			const topicsToDelete: string[] = [];
 			if (!clientId) {
 				return;
 			}

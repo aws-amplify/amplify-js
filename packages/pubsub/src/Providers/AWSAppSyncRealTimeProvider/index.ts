@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import Observable, { Observer, ZenObservable } from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -43,7 +43,6 @@ import {
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
-	RECONNECT_DELAY,
 } from '../constants';
 import {
 	ConnectionStateMonitor,
