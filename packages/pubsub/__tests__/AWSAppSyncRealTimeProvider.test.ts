@@ -106,6 +106,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					Object.defineProperty(constants, 'MAX_DELAY_MS', {
 						value: 100,
 					});
+					// Reduce retry delay for tests to 100ms
+					Object.defineProperty(constants, 'RECONNECT_DELAY', {
+						value: 100,
+					});
 				});
 
 				afterEach(async () => {
@@ -623,6 +627,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.handShakeMessage({
 						connectionTimeoutMs: 100,
 					});
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
 					fakeWebSocketInterface?.startAckMessage();
 					await fakeWebSocketInterface.keepAlive();
 
@@ -656,6 +663,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.handShakeMessage({
 						connectionTimeoutMs: 100,
 					});
+
 					await fakeWebSocketInterface?.startAckMessage();
 					await fakeWebSocketInterface.keepAlive();
 
@@ -685,6 +693,10 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.triggerOpen();
 					await fakeWebSocketInterface?.handShakeMessage();
+
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
 
 					await fakeWebSocketInterface?.startAckMessage();
 

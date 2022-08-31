@@ -27,6 +27,10 @@ import {
 } from '../utils/ConnectionStateMonitor';
 import { AMPLIFY_SYMBOL } from './constants';
 import { CONNECTION_STATE_CHANGE } from '..';
+import {
+	ReconnectEvent,
+	ReconnectionMonitor,
+} from '../utils/ReconnectionMonitor';
 
 const logger = new Logger('MqttOverWSProvider');
 
@@ -93,13 +97,11 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
-	private reconnectObservers: Observer<void>[];
+	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionState: ConnectionState;
 
 	constructor(options: MqttProviderOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
-
-		this.reconnectObservers = [];
 
 		// Monitor the connection health state and pass changes along to Hub
 		this.connectionStateMonitor.connectionStateObservable.subscribe(
@@ -117,9 +119,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 				// Trigger reconnection when the connection is disrupted
 				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
-					this.reconnectObservers.forEach(reconnectObserver => {
-						reconnectObserver.next?.();
-					});
+					this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
 				}
 			}
 		);
@@ -337,7 +337,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {
-					this.reconnectObservers.push(observer);
+					this.reconnectionMonitor.addObserver(observer);
 				}).subscribe(() => {
 					getClient();
 				});

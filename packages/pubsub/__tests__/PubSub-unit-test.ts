@@ -28,6 +28,7 @@ import * as Paho from 'paho-mqtt';
 import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
+import * as constants from '../src/Providers/constants';
 
 const pahoClientMockCache = {};
 
@@ -127,6 +128,11 @@ beforeEach(() => {
 		return new Promise((res, rej) => {
 			res(credentials);
 		});
+	});
+
+	// Reduce retry delay for tests to 100ms
+	Object.defineProperty(constants, 'RECONNECT_DELAY', {
+		value: 100,
 	});
 });
 

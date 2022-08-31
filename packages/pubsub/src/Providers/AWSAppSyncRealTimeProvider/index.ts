@@ -43,11 +43,16 @@ import {
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
+	RECONNECT_DELAY,
 } from '../constants';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
 } from '../../utils/ConnectionStateMonitor';
+import {
+	ReconnectEvent,
+	ReconnectionMonitor,
+} from '../../utils/ReconnectionMonitor';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -97,8 +102,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
-	private reconnectObservers: Observer<void>[] = [];
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
+	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: ZenObservable.Subscription;
 
 	constructor(options: ProviderOptions = {}) {
@@ -118,9 +123,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					// Trigger reconnection when the connection is disrupted
 					if (connectionState === ConnectionState.ConnectionDisrupted) {
-						this.reconnectObservers.forEach(reconnectObserver => {
-							reconnectObserver.next?.();
-						});
+						this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
 					}
 				}
 			);
@@ -137,9 +140,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		// Turn off the subscription monitor Hub publishing
 		this.connectionStateMonitorSubscription.unsubscribe();
 		// Complete all reconnect observers
-		this.reconnectObservers.forEach(reconnectObserver => {
-			reconnectObserver.complete?.();
-		});
+		this.reconnectionMonitor.close();
 	}
 
 	getNewWebSocket(url, protocol) {
@@ -217,7 +218,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
 				reconnectSubscription = new Observable(observer => {
-					this.reconnectObservers.push(observer);
+					this.reconnectionMonitor.addObserver(observer);
 				}).subscribe(() => {
 					startSubscription();
 				});
