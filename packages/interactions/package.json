@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "4.0.50",
+	"version": "4.0.51",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -41,8 +41,11 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "4.7.1",
-		"@aws-sdk/client-lex-runtime-service": "3.6.1"
+		"@aws-amplify/core": "4.7.2",
+		"@aws-sdk/client-lex-runtime-service": "3.6.1",
+		"@aws-sdk/client-lex-runtime-v2": "3.31.0",
+		"base-64": "1.0.0",
+		"fflate": "0.7.3"
 	},
 	"jest": {
 		"globals": {
