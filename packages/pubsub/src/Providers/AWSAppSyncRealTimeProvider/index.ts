@@ -102,6 +102,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
+	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: ZenObservable.Subscription;
@@ -120,6 +121,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						},
 						`Connection state is ${connectionState}`
 					);
+					this.connectionState = connectionState;
 
 					// Trigger reconnection when the connection is disrupted
 					if (connectionState === ConnectionState.ConnectionDisrupted) {
@@ -204,7 +206,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 									],
 								});
 								this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-								observer.complete();
 							});
 						startSubscriptionPromise.finally(() => {
 							subscriptionStartActive = false;
@@ -339,21 +340,32 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		} catch (err) {
 			logger.debug({ err });
 			const message = err['message'] ?? '';
-			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-			observer.error({
-				errors: [
-					{
-						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
-					},
-				],
-			});
-			observer.complete();
-			const { subscriptionFailedCallback } =
-				this.subscriptionObserverMap.get(subscriptionId) || {};
+			// Resolving to give the state observer time to propogate the update
+			Promise.resolve(
+				this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED)
+			);
 
-			// Notify concurrent unsubscription
-			if (typeof subscriptionFailedCallback === 'function') {
-				subscriptionFailedCallback();
+			if (
+				this.connectionState !==
+				ConnectionState.ConnectionDisruptedPendingNetwork
+			) {
+				this.connectionStateMonitor.record(CONNECTION_CHANGE.CONNECTION_FAILED);
+				observer.error({
+					errors: [
+						{
+							...new GraphQLError(
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`
+							),
+						},
+					],
+				});
+				const { subscriptionFailedCallback } =
+					this.subscriptionObserverMap.get(subscriptionId) || {};
+
+				// Notify concurrent unsubscription
+				if (typeof subscriptionFailedCallback === 'function') {
+					subscriptionFailedCallback();
+				}
 			}
 			return;
 		}
@@ -719,9 +731,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						logger.debug(`WebSocket connection error`);
 					};
 					newSocket.onclose = () => {
-						this.connectionStateMonitor.record(
-							CONNECTION_CHANGE.CONNECTION_FAILED
-						);
 						rej(new Error('Connection handshake error'));
 					};
 					newSocket.onopen = () => {
@@ -730,7 +739,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					};
 				});
 			})();
-
 			// Step 2: wait for ack from AWS AppSyncReaTime after sending init
 			await (() => {
 				return new Promise((res, rej) => {

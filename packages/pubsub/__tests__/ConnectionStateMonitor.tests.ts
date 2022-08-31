@@ -43,6 +43,11 @@ describe('ConnectionStateMonitor', () => {
 				return new Observable(observer => {
 					reachabilityObserver = observer;
 				});
+			})
+			.mockImplementationOnce(() => {
+				return new Observable(observer => {
+					reachabilityObserver = observer;
+				});
 			});
 	});
 

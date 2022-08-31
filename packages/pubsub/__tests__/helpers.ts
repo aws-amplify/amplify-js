@@ -86,7 +86,7 @@ export class HubConnectionListener {
 }
 
 export class FakeWebSocketInterface {
-	readonly webSocket: FakeWebSocket;
+	webSocket: FakeWebSocket;
 	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
 	hubConnectionListener: HubConnectionListener;
@@ -95,6 +95,10 @@ export class FakeWebSocketInterface {
 
 	constructor() {
 		this.hubConnectionListener = new HubConnectionListener('api');
+		this.resetWebsocket();
+	}
+
+	resetWebsocket() {
 		this.readyForUse = new Promise((res, rej) => {
 			this.readyResolve = res;
 		});
@@ -180,6 +184,7 @@ export class FakeWebSocketInterface {
 	 * @returns A websocket
 	 */
 	newWebSocket() {
+		//this.resetWebsocket();
 		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
 		return this.webSocket;
 	}
@@ -249,7 +254,7 @@ export class FakeWebSocketInterface {
 	}
 
 	/**
-	 * Run a gicommand and resolve to allow internal behavior to execute
+	 * Run a command and resolve to allow internal behavior to execute
 	 */
 	async runAndResolve(fn) {
 		fn();

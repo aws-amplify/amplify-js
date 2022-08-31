@@ -354,6 +354,12 @@ describe('PubSub', () => {
 							new Observable(observer => {
 								reachabilityObserver = observer;
 							})
+					)
+					.mockImplementationOnce(
+						() =>
+							new Observable(observer => {
+								reachabilityObserver = observer;
+							})
 					);
 				reachabilityObserver?.next?.({ online: true });
 			});

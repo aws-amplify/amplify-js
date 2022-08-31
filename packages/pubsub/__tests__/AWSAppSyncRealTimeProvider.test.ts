@@ -89,6 +89,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							return new Observable(observer => {
 								reachabilityObserver = observer;
 							});
+						})
+						.mockImplementationOnce(() => {
+							return new Observable(observer => {
+								reachabilityObserver = observer;
+							});
 						});
 
 					fakeWebSocketInterface = new FakeWebSocketInterface();
@@ -108,7 +113,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 					// Reduce retry delay for tests to 100ms
 					Object.defineProperty(constants, 'RECONNECT_DELAY', {
-						value: 100,
+						value: 10,
 					});
 				});
 
@@ -279,7 +284,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription fails when onclose triggered while waiting for onopen', async () => {
+				test('subscription failes when onclose triggered while waiting for onopen', async () => {
 					expect.assertions(1);
 
 					provider
@@ -302,6 +307,65 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							message: expect.stringMatching('Connection handshake error'),
 						})
 					);
+				});
+
+				test('subscription reconnects when onclose triggered while offline and waiting for onopen', async () => {
+					expect.assertions(1);
+					reachabilityObserver?.next?.({ online: false });
+
+					provider
+						.subscribe('test', {
+							appSyncGraphqlEndpoint: 'ws://localhost:8080',
+						})
+						.subscribe({ error: () => {} });
+					reachabilityObserver?.next?.({ online: false });
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
+					await fakeWebSocketInterface?.readyForUse;
+
+					await fakeWebSocketInterface?.triggerClose();
+
+					// Wait until the socket is disrupted pending network
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.ConnectionDisruptedPendingNetwork,
+					]);
+
+					reachabilityObserver?.next?.({ online: true });
+
+					// Wait until the socket is disrupted
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.ConnectionDisrupted,
+					]);
+
+					// Wait until we've started connecting the second time
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
+
+					await fakeWebSocketInterface?.readyForUse;
+
+					await fakeWebSocketInterface?.triggerOpen();
+
+					fakeWebSocketInterface?.handShakeMessage({
+						connectionTimeoutMs: 100,
+					});
+
+					await fakeWebSocketInterface?.startAckMessage();
+
+					// Wait until the socket is automatically reconnected
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connected,
+					]);
+
+					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
+						CS.Disconnected,
+						CS.Connecting,
+						CS.ConnectionDisruptedPendingNetwork,
+						CS.ConnectionDisrupted,
+						CS.Connecting,
+						CS.Connected,
+					]);
 				});
 
 				test('subscription fails when onerror triggered while waiting for handshake', async () => {

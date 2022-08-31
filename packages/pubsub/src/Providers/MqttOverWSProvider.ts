@@ -96,9 +96,9 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
+	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
-	private connectionState: ConnectionState;
 
 	constructor(options: MqttProviderOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
@@ -204,11 +204,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
 				onSuccess: () => resolve(client),
-				onFailure: () => {
+				onFailure: x => {
 					reject();
-					this.connectionStateMonitor.record(
-						CONNECTION_CHANGE.CONNECTION_FAILED
-					);
+					if (clientId) this._clientsQueue.remove(clientId);
+					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 				},
 			});
 		});
@@ -328,7 +327,12 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 							client.subscribe(topic);
 						});
 					} catch (e) {
-						observer.error(e);
+						if (
+							this.connectionState !==
+							ConnectionState.ConnectionDisruptedPendingNetwork
+						) {
+							observer.error(e);
+						}
 					}
 				};
 
