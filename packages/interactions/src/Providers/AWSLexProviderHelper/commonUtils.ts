@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { strFromU8 } from 'fflate';
-import { base64ToArrayBuffer, gzipDecompress } from './convert';
+import { base64ToArrayBuffer, gzipDecompress } from './utils';
 
 export const unGzipBase64AsJson = async (gzipBase64: string | undefined) => {
 	if (typeof gzipBase64 === 'undefined') return undefined;

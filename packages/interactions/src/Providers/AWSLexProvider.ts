@@ -31,7 +31,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexProviderHelper/convert';
+import { convert } from './AWSLexProviderHelper/utils';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -163,17 +163,17 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				content,
 				options: { messageType },
 			} = message;
-			if (messageType === 'voice') {
-				if (!(content instanceof Blob || content instanceof ReadableStream))
-					return Promise.reject('invalid content type');
+			if (messageType === 'voice' && typeof content === 'object') {
+				const inputStream =
+					content instanceof Uint8Array ? content : await convert(content);
 
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
-					inputStream: await convert(content),
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
+					inputStream,
 				};
 			} else {
 				if (typeof content !== 'string')

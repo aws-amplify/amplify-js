@@ -31,7 +31,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexProviderHelper/convert';
+import { convert } from './AWSLexProviderHelper/utils';
 import { unGzipBase64AsJson } from './AWSLexProviderHelper/commonUtils';
 
 const logger = new Logger('AWSLexV2Provider');
@@ -301,18 +301,7 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		let params: RecognizeUtteranceCommandInput;
 
 		// prepare params
-		if (messageType === 'voice') {
-			// voice input
-			if (
-				!(
-					content instanceof Blob ||
-					content instanceof ReadableStream ||
-					content instanceof Uint8Array
-				)
-			) {
-				return Promise.reject('invalid content type');
-			}
-
+		if (messageType === 'voice' && typeof content === 'object') {
 			const inputStream =
 				content instanceof Uint8Array ? content : await convert(content);
 
