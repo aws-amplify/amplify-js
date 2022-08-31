@@ -213,8 +213,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 				};
 
-				startSubscription();
-
 				let reconnectSubscription: ZenObservable.Subscription;
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
@@ -223,6 +221,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				}).subscribe(() => {
 					startSubscription();
 				});
+
+				startSubscription();
 
 				return async () => {
 					// Cleanup reconnection subscription
