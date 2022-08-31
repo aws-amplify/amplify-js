@@ -102,7 +102,7 @@ describe('IndexedDBAdapter tests', () => {
 		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
-			expect(result.field1).toEqual('field1 value 0');
+			expect(result!.field1).toEqual('field1 value 0');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
@@ -225,10 +225,10 @@ describe('IndexedDBAdapter tests', () => {
 			let comment = await DataStore.query(Comment, comment1Id);
 
 			// double-checking that both of the records exist at first
-			expect(post.id).toEqual(post1Id);
-			expect(comment.id).toEqual(comment1Id);
+			expect(post!.id).toEqual(post1Id);
+			expect(comment!.id).toEqual(comment1Id);
 
-			await DataStore.delete(Post, post.id);
+			await DataStore.delete(Post, post!.id);
 
 			post = await DataStore.query(Post, post1Id);
 			comment = await DataStore.query(Comment, comment1Id);

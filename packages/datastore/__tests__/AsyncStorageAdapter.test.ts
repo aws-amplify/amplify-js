@@ -103,7 +103,7 @@ describe('AsyncStorageAdapter tests', () => {
 		it('Should call getById for query by key', async () => {
 			const result = await DataStore.query(Model, model1Id);
 			expect.assertions(4);
-			expect(result.field1).toEqual('Some value');
+			expect(result!.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
@@ -238,8 +238,8 @@ describe('AsyncStorageAdapter tests', () => {
 		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
 			expect.assertions(4);
 
-			let post = await DataStore.query(Post, post1Id);
-			let comment = await DataStore.query(Comment, comment1Id);
+			let post = (await DataStore.query(Post, post1Id))!;
+			let comment = (await DataStore.query(Comment, comment1Id))!;
 
 			// double-checking that both of the records exist at first
 			expect(post.id).toEqual(post1Id);
@@ -247,8 +247,8 @@ describe('AsyncStorageAdapter tests', () => {
 
 			await DataStore.delete(Post, post.id);
 
-			post = await DataStore.query(Post, post1Id);
-			comment = await DataStore.query(Comment, comment1Id);
+			post = (await DataStore.query(Post, post1Id))!;
+			comment = (await DataStore.query(Comment, comment1Id))!;
 
 			// both should be undefined, even though we only explicitly deleted the post
 			expect(post).toBeUndefined();
@@ -287,8 +287,8 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(user!.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -299,8 +299,8 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(user!.profile).toEqual(profile);
 		});
 	});
 
