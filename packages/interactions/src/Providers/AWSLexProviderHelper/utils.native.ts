@@ -14,7 +14,11 @@
 import { decode } from 'base-64';
 import { gunzipSync } from 'fflate';
 
-export const convert = async (stream: Blob): Promise<Uint8Array> => {
+export const convert = async (stream: object): Promise<Uint8Array> => {
+	if (!(stream instanceof Blob)) {
+		return Promise.reject('Invalid content type');
+	}
+
 	return new Promise(async (resolve, reject) => {
 		try {
 			const fileReaderInstance = new FileReader();

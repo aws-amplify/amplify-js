@@ -11,18 +11,15 @@
  * and limitations under the License.
  */
 
-import { Readable } from 'stream';
 import { gunzip } from 'fflate';
 
-export const convert = async (
-	stream: Blob | Readable | ReadableStream
-): Promise<Uint8Array> => {
+export const convert = async (stream: object): Promise<Uint8Array> => {
 	if (stream instanceof Blob || stream instanceof ReadableStream) {
 		return new Response(stream)
 			.arrayBuffer()
 			.then(buffer => new Uint8Array(buffer));
 	} else {
-		return Promise.reject('Readable is not supported.');
+		return Promise.reject('Invalid content type');
 	}
 };
 
