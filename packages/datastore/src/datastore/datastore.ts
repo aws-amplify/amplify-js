@@ -682,13 +682,42 @@ const createModelClass = <T extends PersistentModel>(
 		const {
 			type,
 			association,
-			association: { targetName },
+			association: { targetName, targetNames },
 		} = modelDefinition.fields[field] as Required<ModelField>;
-		const relatedModelName = type['model'];
+
+		const { model: relatedModelName, modelConstructor: relatedModelMeta } =
+			type as ModelFieldType;
+
+		const finalTargetNames = targetNames || [targetName];
+		const tentativeLocalFKValues = finalTargetNames.map(name => this[name!]);
+		const localFKValues = tentativeLocalFKValues.every(v => v)
+			? tentativeLocalFKValues
+			: null;
+
+		const relatedModel = relatedModelMeta!.builder!;
+		const relatedModelDefinition = getModelDefinition(relatedModel)!;
+
+		const relatedModelPKFields =
+			association.connectionType === 'HAS_ONE'
+				? association.associatedWith
+				: extractPrimaryKeyFieldNames(relatedModelDefinition);
+		const relatedModelQueryObject = localFKValues
+			? Object.fromEntries(
+					localFKValues.map((value, idx) => [relatedModelPKFields[idx], value])
+			  )
+			: null;
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
-				if (!model || !model.id) return;
+				console.log(
+					'set',
+					targetName,
+					targetNames,
+					finalTargetNames,
+					this,
+					model
+				);
+				if (!model || !(typeof model === 'object')) return;
 				// Avoid validation error when processing AppSync response with nested
 				// selection set. Nested entitites lack version field and can not be validated
 				// TODO: explore a more reliable method to solve this
@@ -713,60 +742,57 @@ const createModelClass = <T extends PersistentModel>(
 						throw new Error(msg);
 					}
 				}
-				if (targetName) {
-					this[targetName] = model.id;
+				if (targetNames) {
+					// assumes targetNames is in same-order as relatedModelPKFields
+					for (let i = 0; i < targetNames.length; i++) {
+						this[targetNames[i]] = model[relatedModelPKFields[i]];
+					}
 				}
 			},
 			get() {
-				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
-				if (targetName && instanceMemos.hasOwnProperty(targetName)) {
-					return instanceMemos[targetName];
-				}
-				const associatedId = this[targetName ?? ''] as string;
+				const instanceMemos = modelInstanceAssociationsMap.has(this)
+					? modelInstanceAssociationsMap.get(this)!
+					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
 
-				if (!associatedId) {
-					if (association.connectionType === 'HAS_MANY') {
-						if (instanceMemos.hasOwnProperty(field)) {
-							return instanceMemos[field];
-						}
-						const associatedWith = association.associatedWith;
-						const relatedModel: PersistentModelConstructor<
-							typeof relatedModelName
-						> = getModelConstructorByModelName(USER, relatedModelName);
-						const relatedModelDefinition = getModelDefinition(relatedModel);
-						if (
-							relatedModelDefinition?.fields[
-								associatedWith as any
-							].type.hasOwnProperty('model')
-						) {
-							const resultPromise = instance.query(relatedModel, c =>
-								c[associatedWith as any].id.eq(this.id)
+				if (instanceMemos.hasOwnProperty(field)) {
+					return instanceMemos[field];
+				}
+
+				switch (association.connectionType) {
+					case 'BELONGS_TO':
+					case 'HAS_ONE':
+						if (!localFKValues)
+							throw new Error(
+								'Corrupt schema. Missing local FK values on ' + this
 							);
-							const asyncResult = new AsyncCollection(resultPromise);
-							instanceMemos[field] = asyncResult;
-							return asyncResult;
-						}
-						const resultPromise = instance.query(relatedModel, c =>
-							c[associatedWith as any].eq(this.id)
+						instanceMemos[field] = instance.query(
+							relatedModel,
+							relatedModelQueryObject
 						);
-						const asyncResult = new AsyncCollection(resultPromise);
-						instanceMemos[field] = asyncResult;
-						return asyncResult;
-					}
-					// unable to load related model
-					targetName && (instanceMemos[targetName] = undefined);
-					return;
+						return instanceMemos[field];
+					case 'HAS_MANY':
+						if (!relatedModelQueryObject)
+							throw new Error(
+								'Corrupt schema. Missing local FK values on ' + this
+							);
+						const resultPromise = instance.query(relatedModel, base =>
+							base.and(andGroup =>
+								Object.entries(relatedModelQueryObject).reduce(
+									(conditions, [key, value]) => {
+										return conditions[key].eq(value);
+									},
+									andGroup
+								)
+							)
+						);
+						const collection = new AsyncCollection(resultPromise as any);
+						instanceMemos[field] = collection;
+						return instanceMemos[field];
+					default:
+						throw new Error(
+							'Invalid association: ' + (association as any).connectionType
+						);
 				}
-
-				const relatedModel = getModelConstructorByModelName(
-					USER,
-					relatedModelName
-				);
-
-				const resultPromise = instance.query(relatedModel, associatedId);
-				targetName && (instanceMemos[targetName] = resultPromise);
-				modelInstanceAssociationsMap.set(this, instanceMemos);
-				return resultPromise;
 			},
 		});
 	}

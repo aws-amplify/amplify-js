@@ -447,127 +447,127 @@ export const traverseModel = <T extends PersistentModel>(
 				rItem.modelName
 			);
 
-			switch (rItem.relationType) {
-				case 'HAS_ONE':
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-							console.log(error);
-						}
+			// switch (rItem.relationType) {
+			// 	case 'HAS_ONE':
+			// 		if (instance[rItem.fieldName]) {
+			// 			let modelInstance: T;
+			// 			try {
+			// 				modelInstance = modelInstanceCreator(
+			// 					modelConstructor,
+			// 					instance[rItem.fieldName]
+			// 				);
+			// 			} catch (error) {
+			// 				// Do nothing
+			// 				console.log(error);
+			// 			}
 
-						result.push({
-							modelName: rItem.modelName,
-							item: instance[rItem.fieldName],
-							instance: modelInstance!,
-						});
+			// 			result.push({
+			// 				modelName: rItem.modelName,
+			// 				item: instance[rItem.fieldName],
+			// 				instance: modelInstance!,
+			// 			});
 
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
+			// 			const targetNames: string[] | undefined =
+			// 				extractTargetNamesFromSrc(rItem);
 
-						// `targetName` will be defined for Has One if feature flag
-						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
-						// is true (default as of 5/7/21)
-						// Making this conditional for backward-compatibility
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
+			// 			// `targetName` will be defined for Has One if feature flag
+			// 			// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
+			// 			// is true (default as of 5/7/21)
+			// 			// Making this conditional for backward-compatibility
+			// 			if (targetNames) {
+			// 				targetNames.forEach((targetName, idx) => {
+			// 					// Get the connected record
+			// 					const relatedRecordInProxy = <PersistentModel>(
+			// 						draftInstance[rItem.fieldName]
+			// 					);
 
-								// Previously, we used the hardcoded 'id' as they key,
-								// now we need the value of the key to get the PK (and SK)
-								// values from the related record
+			// 					// Previously, we used the hardcoded 'id' as they key,
+			// 					// now we need the value of the key to get the PK (and SK)
+			// 					// values from the related record
 
-								const { primaryKey } = namespace.keys![modelConstructor.name];
-								const keyField = primaryKey && primaryKey[idx];
+			// 					const { primaryKey } = namespace.keys![modelConstructor.name];
+			// 					const keyField = primaryKey && primaryKey[idx];
 
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField!];
+			// 					// Get the value
+			// 					const relatedRecordInProxyPkValue =
+			// 						relatedRecordInProxy[keyField!];
 
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
-						} else {
-							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-								draftInstance[rItem.fieldName]
-							)).id;
-						}
-					}
+			// 					// Set the targetName value
+			// 					(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+			// 				});
+			// 				// Delete the instance from the proxy
+			// 				delete (<any>draftInstance)[rItem.fieldName];
+			// 			} else {
+			// 				(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
+			// 					draftInstance[rItem.fieldName]
+			// 				)).id;
+			// 			}
+			// 		}
 
-					break;
-				case 'BELONGS_TO':
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-						}
+			// 		break;
+			// 	case 'BELONGS_TO':
+			// 		if (instance[rItem.fieldName]) {
+			// 			let modelInstance: T;
+			// 			try {
+			// 				modelInstance = modelInstanceCreator(
+			// 					modelConstructor,
+			// 					instance[rItem.fieldName]
+			// 				);
+			// 			} catch (error) {
+			// 				// Do nothing
+			// 			}
 
-						const isDeleted = (<ModelInstanceMetadata>(
-							draftInstance[rItem.fieldName]
-						))._deleted;
+			// 			const isDeleted = (<ModelInstanceMetadata>(
+			// 				draftInstance[rItem.fieldName]
+			// 			))._deleted;
 
-						if (!isDeleted) {
-							result.push({
-								modelName: rItem.modelName,
-								item: instance[rItem.fieldName],
-								instance: modelInstance!,
-							});
-						}
-					}
+			// 			if (!isDeleted) {
+			// 				result.push({
+			// 					modelName: rItem.modelName,
+			// 					item: instance[rItem.fieldName],
+			// 					instance: modelInstance!,
+			// 				});
+			// 			}
+			// 		}
 
-					if (draftInstance[rItem.fieldName]) {
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
+			// 		if (draftInstance[rItem.fieldName]) {
+			// 			const targetNames: string[] | undefined =
+			// 				extractTargetNamesFromSrc(rItem);
 
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
-								// Previously, we used the hardcoded `id` for the key.
-								// Now, we need the value of the key to get the PK (and SK)
-								// values from the related record
-								const { primaryKey } = namespace.keys![modelConstructor.name];
+			// 			if (targetNames) {
+			// 				targetNames.forEach((targetName, idx) => {
+			// 					// Get the connected record
+			// 					const relatedRecordInProxy = <PersistentModel>(
+			// 						draftInstance[rItem.fieldName]
+			// 					);
+			// 					// Previously, we used the hardcoded `id` for the key.
+			// 					// Now, we need the value of the key to get the PK (and SK)
+			// 					// values from the related record
+			// 					const { primaryKey } = namespace.keys![modelConstructor.name];
 
-								// fall back to ID if
-								const keyField = primaryKey && primaryKey[idx];
+			// 					// fall back to ID if
+			// 					const keyField = primaryKey && primaryKey[idx];
 
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField!];
+			// 					// Get the value
+			// 					const relatedRecordInProxyPkValue =
+			// 						relatedRecordInProxy[keyField!];
 
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
-						}
-					}
+			// 					// Set the targetName value
+			// 					(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
+			// 				});
+			// 				// Delete the instance from the proxy
+			// 				delete (<any>draftInstance)[rItem.fieldName];
+			// 			}
+			// 		}
 
-					break;
-				case 'HAS_MANY':
-					// Intentionally blank
-					break;
-				default:
-					exhaustiveCheck(rItem.relationType);
-					break;
-			}
+			// 		break;
+			// 	case 'HAS_MANY':
+			// 		// Intentionally blank
+			// 		break;
+			// 	default:
+			// 		exhaustiveCheck(rItem.relationType);
+			// 		break;
+			// }
 		});
 	});
 
