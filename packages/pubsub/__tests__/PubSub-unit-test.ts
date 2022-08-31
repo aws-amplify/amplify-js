@@ -355,6 +355,7 @@ describe('PubSub', () => {
 								reachabilityObserver = observer;
 							})
 					)
+					// Twice because we subscribe to get the initial state then again to monitor reachability
 					.mockImplementationOnce(
 						() =>
 							new Observable(observer => {
