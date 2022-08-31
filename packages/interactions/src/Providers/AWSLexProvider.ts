@@ -31,9 +31,18 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexProviderHelper/convert';
+import { convert } from './AWSLexProviderHelper/utils';
 
 const logger = new Logger('AWSLexProvider');
+
+interface PostContentCommandOutputFormatted
+	extends Omit<PostContentCommandOutput, 'audioStream'> {
+	audioStream?: Uint8Array;
+}
+
+type AWSLexProviderSendResponse =
+	| PostTextCommandOutput
+	| PostContentCommandOutputFormatted;
 
 export class AWSLexProvider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceClient: LexRuntimeServiceClient;
@@ -62,10 +71,13 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return super.configure(config);
 	}
 
-	reportBotStatus(
-		data: PostTextCommandOutput | PostContentCommandOutput,
-		botname: string
-	) {
+	/**
+	 * @private
+	 * @deprecated
+	 * This is used internally by 'sendMessage' to call onComplete callback
+	 * for a bot if configured
+	 */
+	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
@@ -73,21 +85,14 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			data.dialogState === 'Fulfilled'
 		) {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(
-					() =>
-						this._botsCompleteCallback[botname](null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
 			}
 
 			if (
 				this._config &&
 				typeof this._config[botname].onComplete === 'function'
 			) {
-				setTimeout(
-					() => this._config[botname].onComplete(null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._config[botname].onComplete(null, data), 0);
 			}
 		}
 
@@ -158,17 +163,17 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				content,
 				options: { messageType },
 			} = message;
-			if (messageType === 'voice') {
-				if (!(content instanceof Blob || content instanceof ReadableStream))
-					return Promise.reject('invalid content type');
+			if (messageType === 'voice' && typeof content === 'object') {
+				const inputStream =
+					content instanceof Uint8Array ? content : await convert(content);
 
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
-					inputStream: await convert(content),
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
+					inputStream,
 				};
 			} else {
 				if (typeof content !== 'string')
@@ -194,8 +199,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					? await convert(data.audioStream)
 					: undefined;
 
-				this.reportBotStatus(data, botname);
-				return { ...data, ...{ audioStream: audioArray } };
+				const response = { ...data, ...{ audioStream: audioArray } };
+
+				this.reportBotStatus(response, botname);
+				return response;
 			} catch (err) {
 				return Promise.reject(err);
 			}
