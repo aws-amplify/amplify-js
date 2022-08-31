@@ -12,7 +12,7 @@
  */
 
 import { decode } from 'base-64';
-import { gunzipSync } from 'fflate';
+import { ungzip } from 'pako';
 
 export const convert = async (stream: Blob): Promise<Uint8Array> => {
 	return new Promise(async (resolve, reject) => {
@@ -38,6 +38,15 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 	return Uint8Array.from(binaryString, c => c.charCodeAt(0));
 };
 
-export const gzipDecompress = async (data: Uint8Array): Promise<Uint8Array> => {
-	return new Promise(resolve => resolve(gunzipSync(data)));
+export const gzipDecompressToString = async (
+	data: Uint8Array
+): Promise<string> => {
+	return new Promise((resolve, reject) => {
+		try {
+			const result: string = ungzip(data, { to: 'string' });
+			resolve(result);
+		} catch (error) {
+			reject('unable to decompress' + error);
+		}
+	});
 };
