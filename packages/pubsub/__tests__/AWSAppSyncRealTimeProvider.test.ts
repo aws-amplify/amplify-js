@@ -113,7 +113,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 					// Reduce retry delay for tests to 100ms
 					Object.defineProperty(constants, 'RECONNECT_DELAY', {
-						value: 10,
+						value: 100,
 					});
 				});
 
