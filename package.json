@@ -105,7 +105,8 @@
 		"@types/react": "16.9.10",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12",
-		"error-stack-parser": "2.0.6"
+		"error-stack-parser": "2.0.6",
+		"@types/minimatch": "3.0.5"
 	},
 	"bundlewatch": {
 		"files": [
