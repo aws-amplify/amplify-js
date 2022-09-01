@@ -142,7 +142,7 @@ class MutationProcessor {
 	}
 
 	public async resume(): Promise<void> {
-		if (this.runningProcesses.isOpen) return;
+		if (!this.runningProcesses.isOpen) return;
 		return this.runningProcesses.add(async onTerminate => {
 			if (this.processing || !this.isReady() || !this.runningProcesses.isOpen) {
 				return;

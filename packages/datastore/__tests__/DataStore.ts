@@ -1378,7 +1378,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}
 	});
 
-	test.only('attaches related hasOne properties consistently with query() on UPDATE', async done => {
+	test('attaches related hasOne properties consistently with query() on UPDATE', async done => {
 		try {
 			const expecteds = [
 				[

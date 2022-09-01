@@ -688,35 +688,46 @@ const createModelClass = <T extends PersistentModel>(
 		const { model: relatedModelName, modelConstructor: relatedModelMeta } =
 			type as ModelFieldType;
 
-		const finalTargetNames = targetNames || [targetName];
-		const tentativeLocalFKValues = finalTargetNames.map(name => this[name!]);
-		const localFKValues = tentativeLocalFKValues.every(v => v)
-			? tentativeLocalFKValues
-			: null;
+		const finalTargetNames = (targetNames || [targetName]) as string[];
+		const tentativeLocalFKValues = self =>
+			finalTargetNames.map(name => self[name!]);
+		const localFKValues = self =>
+			tentativeLocalFKValues(self).every(v => v)
+				? tentativeLocalFKValues(self)
+				: null;
 
-		const relatedModel = relatedModelMeta!.builder!;
-		const relatedModelDefinition = getModelDefinition(relatedModel)!;
+		const relatedModel = () =>
+			getModelConstructorByModelName(NAMESPACES.USER, relatedModelName);
+		const relatedModelDefinition = () => getModelDefinition(relatedModel())!;
 
-		const relatedModelPKFields =
+		const relatedModelPKFields = () =>
 			association.connectionType === 'HAS_ONE'
-				? association.associatedWith
-				: extractPrimaryKeyFieldNames(relatedModelDefinition);
-		const relatedModelQueryObject = localFKValues
-			? Object.fromEntries(
-					localFKValues.map((value, idx) => [relatedModelPKFields[idx], value])
-			  )
-			: null;
+				? Array.isArray(association.associatedWith)
+					? association.associatedWith
+					: [association.associatedWith]
+				: extractPrimaryKeyFieldNames(relatedModelDefinition());
+
+		const relatedModelQueryObject = self =>
+			localFKValues(self)
+				? Object.fromEntries(
+						localFKValues(self)!.map((value, idx) => [
+							relatedModelPKFields()[idx],
+							value,
+						])
+				  )
+				: null;
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
-				console.log(
-					'set',
-					targetName,
-					targetNames,
-					finalTargetNames,
-					this,
-					model
-				);
+				const relatedModelFieldNames = relatedModelPKFields();
+				// console.log(
+				// 	'set',
+				// 	field,
+				// 	finalTargetNames,
+				// 	relatedModelFieldNames,
+				// 	this,
+				// 	model
+				// );
 				if (!model || !(typeof model === 'object')) return;
 				// Avoid validation error when processing AppSync response with nested
 				// selection set. Nested entitites lack version field and can not be validated
@@ -742,14 +753,22 @@ const createModelClass = <T extends PersistentModel>(
 						throw new Error(msg);
 					}
 				}
-				if (targetNames) {
+
+				if (finalTargetNames && relatedModelFieldNames) {
 					// assumes targetNames is in same-order as relatedModelPKFields
-					for (let i = 0; i < targetNames.length; i++) {
-						this[targetNames[i]] = model[relatedModelPKFields[i]];
+					for (let i = 0; i < finalTargetNames.length; i++) {
+						// console.log(
+						// 	`setting ${finalTargetNames[i]} = ${relatedModelFieldNames[i]} (${
+						// 		model[relatedModelFieldNames[i]]
+						// 	})`
+						// );
+						this[finalTargetNames[i]] = model[relatedModelFieldNames[i]];
 					}
 				}
 			},
 			get() {
+				// console.log('get', field, finalTargetNames, this);
+
 				const instanceMemos = modelInstanceAssociationsMap.has(this)
 					? modelInstanceAssociationsMap.get(this)!
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
@@ -761,23 +780,24 @@ const createModelClass = <T extends PersistentModel>(
 				switch (association.connectionType) {
 					case 'BELONGS_TO':
 					case 'HAS_ONE':
-						if (!localFKValues)
-							throw new Error(
-								'Corrupt schema. Missing local FK values on ' + this
-							);
+						// console.log(
+						// 	'FK',
+						// 	finalTargetNames,
+						// 	tentativeLocalFKValues(this),
+						// 	localFKValues(this)
+						// );
+						if (!localFKValues(this)) return null;
 						instanceMemos[field] = instance.query(
-							relatedModel,
-							relatedModelQueryObject
+							relatedModel(),
+							relatedModelQueryObject(this)
 						);
 						return instanceMemos[field];
 					case 'HAS_MANY':
-						if (!relatedModelQueryObject)
-							throw new Error(
-								'Corrupt schema. Missing local FK values on ' + this
-							);
-						const resultPromise = instance.query(relatedModel, base =>
+						const queryObject = relatedModelQueryObject(this);
+						if (!queryObject) return [];
+						const resultPromise = instance.query(relatedModel(), base =>
 							base.and(andGroup =>
-								Object.entries(relatedModelQueryObject).reduce(
+								Object.entries(queryObject).reduce(
 									(conditions, [key, value]) => {
 										return conditions[key].eq(value);
 									},
