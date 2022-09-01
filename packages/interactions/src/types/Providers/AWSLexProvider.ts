@@ -10,6 +10,14 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export * from './AWSLexProvider';
-export * from './AWSLexV2Provider';
-export * from './InteractionsProvider';
+export interface AWSLexProviderOption {
+	name: string;
+	alias: string;
+	region: string;
+	providerName?: string;
+	onComplete?(botname: string, callback: (err, confirmation) => void): void;
+}
+
+export interface AWSLexProviderOptions {
+	[key: string]: AWSLexProviderOption;
+}
