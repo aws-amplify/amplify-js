@@ -10,8 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { strFromU8 } from 'fflate';
-import { base64ToArrayBuffer, gzipDecompress } from './utils';
+import { base64ToArrayBuffer, gzipDecompressToString } from './utils';
 
 export const unGzipBase64AsJson = async (gzipBase64: string | undefined) => {
 	if (typeof gzipBase64 === 'undefined') return undefined;
@@ -19,11 +18,7 @@ export const unGzipBase64AsJson = async (gzipBase64: string | undefined) => {
 	try {
 		const decodedArrayBuffer = base64ToArrayBuffer(gzipBase64);
 
-		const decompressedData: Uint8Array = await gzipDecompress(
-			decodedArrayBuffer
-		);
-
-		const objString = strFromU8(decompressedData, true);
+		const objString: string = await gzipDecompressToString(decodedArrayBuffer);
 
 		return JSON.parse(objString);
 	} catch (error) {

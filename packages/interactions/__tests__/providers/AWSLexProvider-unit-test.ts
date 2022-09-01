@@ -338,6 +338,28 @@ describe('Interactions', () => {
 			);
 			expect.assertions(1);
 		});
+
+		test('send obj text and obj voice messages in wrong format', async () => {
+			// obj text in wrong format
+			await expect(
+				provider.sendMessage('BookTrip', {
+					content: createBlob(),
+					options: {
+						messageType: 'text',
+					},
+				})
+			).rejects.toEqual('invalid content type');
+
+			// obj voice in wrong format
+			await expect(
+				provider.sendMessage('BookTrip', {
+					content: 'Hi',
+					options: {
+						messageType: 'voice',
+					},
+				})
+			).rejects.toEqual('invalid content type');
+		});
 	});
 
 	// attach 'onComplete' callback to bot
