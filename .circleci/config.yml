@@ -558,14 +558,14 @@ jobs:
           test_name: 'Chatbot V1'
           framework: react
           category: interactions
-          sample_name: lext-test-component
+          sample_name: lex-test-component
           spec: chatbot-v1
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Chatbot V2'
           framework: react
           category: interactions
-          sample_name: lext-test-component
+          sample_name: lex-test-component
           spec: chatbot-v2
           browser: << parameters.browser >>
 
@@ -1218,7 +1218,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - lex/test
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
