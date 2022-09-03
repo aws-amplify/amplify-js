@@ -288,7 +288,7 @@ describe('AsyncStorageAdapter tests', () => {
 
 			const user = await DataStore.query(User, user1Id);
 			expect(user!.profileID).toEqual(profile.id);
-			expect(user!.profile).toEqual(profile);
+			expect(await user!.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -300,7 +300,7 @@ describe('AsyncStorageAdapter tests', () => {
 
 			const user = await DataStore.query(User, user1Id);
 			expect(user!.profileID).toEqual(profile.id);
-			expect(user!.profile).toEqual(profile);
+			expect(await user!.profile).toEqual(profile);
 		});
 	});
 

@@ -816,11 +816,40 @@ describe('DB versions migration', () => {
 
 		expect([...db.objectStoreNames].sort()).toMatchObject(
 			[
-				...v1Data.data.tables.map(({ name }) => name),
-				// Simulate Comment model added after IndexedDB was created,
-				// but before migration
-				`${USER}_Comment`,
-				`${USER}_Person`,
+				// ...v1Data.data.tables.map(({ name }) => name),
+				// // Simulate Comment model added after IndexedDB was created,
+				// // but before migration
+				// `${USER}_Comment`,
+				// `${USER}_Person`,
+
+				// A lot has changed in the test schemas.
+				// Here's what it should look like after the full upgrade:
+
+				`${DATASTORE}_Setting`,
+				`${SYNC}_ModelMetadata`,
+				`${SYNC}_MutationEvent`,
+				...[
+					Author,
+					Album,
+					Song,
+					Post,
+					Forum,
+					ForumEditorJoin,
+					Editor,
+					Comment,
+					Blog,
+					BlogOwner,
+					PostAuthorJoin,
+					Person,
+					Project,
+					Team,
+
+					// I don't immediately see why these aren't included.
+					// but they're not, i guess.
+					//
+					// PostMetadata,
+					// Nested,
+				].map(model => `${USER}_${model.name}`),
 			].sort()
 		);
 

@@ -358,10 +358,20 @@ export class GroupCondition {
 
 		const negateChildren = negate !== (this.operator === 'not');
 
+		/**
+		 * Conditions that must be branched out and used to generate a base, "candidate"
+		 * result set.
+		 *
+		 * If `field` is populated, these groups select *related* records, and the base,
+		 * candidate results are selected to match those.
+		 */
 		const groups = this.operands.filter(
 			op => op instanceof GroupCondition
 		) as GroupCondition[];
 
+		/**
+		 * Simple conditions that must match the target model of `this`.
+		 */
 		const conditions = this.operands.filter(
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
@@ -385,12 +395,12 @@ export class GroupCondition {
 			//
 			// select a.* from a where
 			//   id in [a,b,c]
-			//     AND
-			//   id in EMTPY_SET
-			//     AND
+			//     AND                        <
+			//   id in EMTPY_SET            <<< Look!
+			//     AND                        <
 			//   id in [x,y,z]
 			//
-			// YIELDS: EMPTY_SET
+			// YIELDS: EMPTY_SET           // <-- Easy peasy. Lemon squeezy.
 			//
 			if (relatives.length === 0) {
 				// aggressively short-circuit as soon as we know the group condition will fail
@@ -405,44 +415,78 @@ export class GroupCondition {
 			}
 
 			if (g.field) {
+				// `relatives` are actual relatives. We'll skim them for FK query values.
 				// Use the relatives to add candidate result sets (`resultGroups`)
-				const meta = this.model.schema.fields[g.field];
 
-				if (meta.association) {
-					let leftHandField;
-					if (meta.association.targetName == null) {
-						leftHandField = 'id';
+				const fieldMeta = this.model.schema.fields[g.field];
+				const rightHandMeta = g.model;
+
+				if (fieldMeta.association) {
+					let leftHandFields;
+					if (fieldMeta.association.targetNames) {
+						leftHandFields = fieldMeta.association.targetNames;
+					} else if (fieldMeta.association.targetName) {
+						leftHandFields = [fieldMeta.association.targetName];
 					} else {
-						leftHandField = meta.association.targetName;
+						leftHandFields = this.model.pkField;
 					}
 
-					let rightHandField;
-					if ((meta.association as any).associatedWith) {
-						rightHandField = (meta.association as any).associatedWith;
-					} else {
-						rightHandField = 'id';
+					let rightHandFields: string[] = [];
+					if (
+						fieldMeta.association.connectionType === 'HAS_MANY' ||
+						fieldMeta.association.connectionType === 'HAS_ONE'
+					) {
+						rightHandFields = Array.isArray(
+							fieldMeta.association.associatedWith
+						)
+							? fieldMeta.association.associatedWith
+							: fieldMeta.association.associatedWith
+							? [fieldMeta.association.associatedWith]
+							: [];
 					}
 
-					const joinConditions: FieldCondition[] = [];
+					if (rightHandFields.length === 0) {
+						// g.model is the model meta for the "right hand" Model
+						rightHandFields = g.model.pkField;
+					}
+
+					const rightHandAssociation =
+						rightHandFields.length === 1
+							? rightHandMeta.schema.fields[rightHandFields[0]].association
+							: undefined;
+					if (rightHandAssociation) {
+						// dereference the RH association fields.
+						rightHandFields = rightHandAssociation.targetNames!;
+					}
+
+					const relativesPredicates: ((
+						p: ModelPredicate<any>
+					) => ModelPredicate<any>)[] = [];
 					for (const relative of relatives) {
-						// await right-hand value, b/c it will eventually be lazy-loaded in some cases.
-						const rightHandValue =
-							(await relative[rightHandField]).id || relative[rightHandField];
-						joinConditions.push(
-							new FieldCondition(leftHandField, 'eq', [rightHandValue])
-						);
+						const individualRowJoinConditions: FieldCondition[] = [];
+
+						for (let i = 0; i < leftHandFields.length; i++) {
+							// rightHandValue
+							individualRowJoinConditions.push(
+								new FieldCondition(leftHandFields[i], 'eq', [
+									relative[rightHandFields[i]],
+								])
+							);
+						}
+
+						const predicate = p =>
+							applyConditionsToV1Predicate(
+								p,
+								individualRowJoinConditions,
+								negateChildren
+							);
+						relativesPredicates.push(predicate as any);
 					}
 
-					const predicate = FlatModelPredicateCreator.createFromExisting(
+					const predicate = FlatModelPredicateCreator.createGroupFromExisting(
 						this.model.schema,
-						p =>
-							p.or(inner =>
-								applyConditionsToV1Predicate(
-									inner,
-									joinConditions,
-									negateChildren
-								)
-							)
+						'or',
+						relativesPredicates as any
 					);
 
 					resultGroups.push(
@@ -538,9 +582,11 @@ export class GroupCondition {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
 
+		console.log('v2 checking', itemToCheck, this);
+
 		// if there is no item to check, we can stop recursing immediately.
 		// a condition cannot match against an item that does not exist. this
-		// can occur when `item.field` is optional.
+		// can occur when `item.field` is optional in the schema.
 		if (!itemToCheck) {
 			return false;
 		}
@@ -549,6 +595,7 @@ export class GroupCondition {
 			this.relationshipType === 'HAS_MANY' &&
 			typeof itemToCheck[Symbol.asyncIterator] === 'function'
 		) {
+			console.log('checking has many', await itemToCheck.toArray());
 			for await (const singleItem of itemToCheck) {
 				if (await this.matches(singleItem, true)) {
 					return true;

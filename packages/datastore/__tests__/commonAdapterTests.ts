@@ -99,115 +99,103 @@ export function addCommonQueryTests({
 		});
 
 		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('ne', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.ne(undefined));
 			expect(results.length).toEqual(3);
 		});
 
 		it('should match fields of any non-empty value for `("ne", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('ne', null));
+			const results = await DataStore.query(Model, m => m.field1.ne(null));
 			expect(results.length).toEqual(3);
 		});
 
 		it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('eq', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.eq(undefined));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("eq", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('eq', null));
+			const results = await DataStore.query(Model, m => m.field1.eq(null));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("gt", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('gt', null));
+			const results = await DataStore.query(Model, m => m.field1.gt(null));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT  match fields of any non-empty value for `("ge", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('ge', null));
+			const results = await DataStore.query(Model, m => m.field1.ge(null));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('lt', null));
+			const results = await DataStore.query(Model, m => m.field1.lt(null));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1('le', null));
+			const results = await DataStore.query(Model, m => m.field1.le(null));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('gt', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.gt(undefined));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('ge', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.ge(undefined));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('lt', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.lt(undefined));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
-			const results = await DataStore.query(Model, m =>
-				m.field1('le', undefined)
-			);
+			const results = await DataStore.query(Model, m => m.field1.le(undefined));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should match gt', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('gt', 'field1 value 0')
+				m.field1.gt('field1 value 0')
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match ge', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('ge', 'field1 value 1')
+				m.field1.ge('field1 value 1')
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match lt', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('lt', 'field1 value 2')
+				m.field1.lt('field1 value 2')
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match le', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('le', 'field1 value 1')
+				m.field1.le('field1 value 1')
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match eq', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('eq', 'field1 value 1')
+				m.field1.eq('field1 value 1')
 			);
 			expect(results.length).toEqual(1);
 		});
 
 		it('should match ne', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1('ne', 'field1 value 1')
+				m.field1.ne('field1 value 1')
 			);
 			expect(results.length).toEqual(2);
 		});
@@ -268,7 +256,7 @@ export function addCommonQueryTests({
 
 			const user = await DataStore.query(User, user1Id);
 			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(await user.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -283,7 +271,7 @@ export function addCommonQueryTests({
 
 			const user = await DataStore.query(User, user1Id);
 			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(await user.profile).toEqual(profile);
 		});
 
 		it('should produce a single mutation for an updated model with a BelongTo (regression test)', async () => {

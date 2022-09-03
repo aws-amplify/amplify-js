@@ -43,7 +43,7 @@ export class ModelPredicateCreator {
 		PredicatesGroup<any>
 	>();
 
-	private static createPredicateBuilder<T extends PersistentModel>(
+	static createPredicateBuilder<T extends PersistentModel>(
 		modelDefinition: SchemaModel
 	) {
 		const { name: modelName } = modelDefinition;
@@ -195,5 +195,47 @@ export class ModelPredicateCreator {
 		});
 
 		return modelPredicate;
+	}
+
+	/**
+	 * Searches a `Model` table for records matching the given equalities object.
+	 *
+	 * This only matches against fields given in the equalities object. No other
+	 * fields are tested by the predicate.
+	 *
+	 * @param modelDefinition The model we need a predicate for.
+	 * @param flatEqualities An object holding field equalities to search for.
+	 */
+	static createFromFlatEqualities<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		flatEqualities: Record<string, any>
+	) {
+		let predicate =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		for (const [field, value] of Object.entries(flatEqualities)) {
+			predicate = predicate[field]('eq' as any, value);
+		}
+
+		return predicate;
+	}
+
+	static createGroupFromExisting<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		group: 'and' | 'or' | 'not',
+		existingPredicates: ProducerModelPredicate<T>[]
+	) {
+		let outer =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		outer = outer[group](seed => {
+			let inner = seed;
+			for (const existing of existingPredicates) {
+				inner = existing(inner);
+			}
+			return inner;
+		});
+
+		return outer;
 	}
 }

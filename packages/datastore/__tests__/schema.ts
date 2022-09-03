@@ -253,7 +253,7 @@ export const newSchema: Schema = {
 					isArrayNullable: true,
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'songID',
+						associatedWith: ['songID'],
 					},
 				},
 			},
@@ -465,6 +465,20 @@ export const newSchema: Schema = {
 			fields: {
 				id: {
 					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				forumID: {
+					name: 'forumID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				editorID: {
+					name: 'editorID',
 					isArray: false,
 					type: 'ID',
 					isRequired: true,

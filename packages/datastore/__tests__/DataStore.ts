@@ -773,7 +773,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		);
 	});
 
-	test('subscribe with hasMany criteria', async done => {
+	test.only('subscribe with hasMany criteria', async done => {
 		// want to set up a few posts and a few "non-target" comments
 		// to ensure we can observe post based on a single comment that's
 		// somewhat "buried" alongside other comments.
