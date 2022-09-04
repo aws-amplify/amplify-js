@@ -12,9 +12,7 @@
  */
 
 import { CognitoProviderConfig } from '../../CognitoProvider';
-import { CognitoService } from '../../serviceClass';
-import { AmplifyUser } from '../../../../types';
-import { ActorRefFrom, StateMachine } from 'xstate';
+import { ActorRefFrom } from 'xstate';
 import { authenticationMachine } from '../../machines/authenticationMachine';
 import { authorizationMachine } from '../../machines/authorizationMachine';
 
@@ -24,10 +22,7 @@ export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;
 export interface AuthMachineContext {
 	authenticationActorRef?: AuthnActorRef;
 	authorizationActorRef?: AuthzActorRef;
-	// authenticationMachine: any;
-	authorizationMachine: any;
 	config?: null | CognitoProviderConfig;
-	error?: any;
 }
 
 export type AuthTypeState =
@@ -35,39 +30,29 @@ export type AuthTypeState =
 			value: 'notConfigured';
 			context: AuthMachineContext & {
 				config: null;
-				service: null;
-				// authenticationMachine: null;
 			};
 	  }
 	| {
 			value: 'configuringAuthentication';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: any;
 			};
 	  }
 	| {
 			value: 'configuringAuthorization';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: any;
 			};
 	  }
 	| {
 			value: 'configuringAuthorizationFailed';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: any;
 			};
 	  }
 	| {
 			value: 'configured';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				service: CognitoService;
-				// authenticationMachine: any;
 			};
 	  };

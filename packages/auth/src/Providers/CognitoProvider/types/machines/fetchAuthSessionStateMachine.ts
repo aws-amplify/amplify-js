@@ -12,7 +12,7 @@
  */
 
 import { CognitoProviderConfig } from '../../CognitoProvider';
-import { CognitoService } from '../../serviceClass';
+import { CognitoService } from '../../services/CognitoService';
 
 export interface FetchAuthSessionStateMachineContext {
 	config: null | CognitoProviderConfig;

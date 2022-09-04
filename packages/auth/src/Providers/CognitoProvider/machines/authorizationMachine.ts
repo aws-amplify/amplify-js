@@ -18,8 +18,9 @@ import {
 	assign,
 	EventFrom,
 	AssignAction,
+	sendParent,
 } from 'xstate';
-import { stop, forwardTo } from 'xstate/lib/actions';
+import { pure, stop, forwardTo } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	AuthorizationMachineContext,
@@ -28,7 +29,7 @@ import {
 	beginningSessionEvent,
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../serviceClass';
+import { CognitoService } from '../service';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
 
@@ -125,19 +126,24 @@ const authorizationStateMachine: MachineConfig<
 	states: {
 		notConfigured: {
 			on: {
-				configure: {
-					target: 'configured',
-					actions: [
-						authorizationStateMachineActions.assignConfig,
-						authorizationStateMachineActions.assignService,
-					],
-				},
-				cachedCredentialAvailable: 'sessionEstablished',
-				throwError: 'error',
+				configure: [
+					{
+						target: 'configured',
+						cond: (context, _) => {
+							if (context.config?.userPoolId == null) {
+								sendParent({ type: 'authorizationNotConfigured' });
+								return false;
+							}
+							return true;
+						},
+					},
+				],
 			},
 		},
-		// state after cognito is configured
 		configured: {
+			entry: pure((_, event) => {
+				return sendParent({ type: 'authorizationConfigured' });
+			}),
 			on: {
 				signInRequested: 'signingIn',
 				fetchUnAuthSession: 'fetchingUnAuthSession',

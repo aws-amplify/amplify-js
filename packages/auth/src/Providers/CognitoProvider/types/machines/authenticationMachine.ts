@@ -12,7 +12,7 @@
  */
 
 import { CognitoProviderConfig } from '../../CognitoProvider';
-import { CognitoService } from '../../serviceClass';
+import { CognitoService } from '../../services/CognitoService';
 import { AmplifyUser } from '../../../../types';
 import { ActorRefFrom } from 'xstate';
 import { signInMachine } from '../../machines/signInMachine';
@@ -24,7 +24,7 @@ export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 export interface AuthenticationMachineContext {
 	// TODO: union other valid actor refs here when we add more actors
 	actorRef?: SignInActorRef | SignUpActorRef;
-	config: null | CognitoProviderConfig;
+	config?: null | CognitoProviderConfig;
 	service: null | CognitoService;
 	session?: AmplifyUser;
 	error?: any;
@@ -34,7 +34,7 @@ export type AuthenticationTypeState =
 	| {
 			value: 'notConfigured';
 			context: AuthenticationMachineContext & {
-				config: null;
+				config: CognitoProviderConfig;
 				service: null;
 				session: undefined;
 			};

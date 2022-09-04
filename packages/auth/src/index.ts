@@ -27,7 +27,7 @@ export {
 	SignInWithWebAuthn,
 	SignInResult,
 	SignInParams,
-	isAWSCredentials,
+	AmplifyUser,
 	isApiKey,
 	isAuthorizationToken,
 	GRAPHQL_AUTH_MODE,

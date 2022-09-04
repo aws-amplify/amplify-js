@@ -19,9 +19,9 @@ import {
 	UserPoolTokens,
 } from '../types/machines';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
-import { cacheRefreshTokenResult } from '../service';
 import { AWSCredentials } from '../../../types';
 import { decodeJWT } from '../Util';
+import { cacheRefreshTokenResult } from '../service';
 
 export const refreshSessionMachineModel = createModel(
 	{

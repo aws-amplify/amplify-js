@@ -1,7 +1,6 @@
-import {
-	ChallengeNameType,
-	ConfirmSignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
+import { ConfirmSignUpParams } from './model/signup/ConfirmSignUpParams';
+import { ConfirmSignUpResult } from './model/signup/ConfirmSignUpResult';
+import { SignUpResult } from './model/signup/SignUpResult';
 
 export enum USER_PARAM_TYPE {
 	EMAIL = 'email',
@@ -12,11 +11,6 @@ export enum SOCIAL_PROVIDER {
 	FACEBOOK = 'Facebook',
 	GOOGLE = 'Google',
 }
-
-type SignInResult = {
-	signInSuccesful: boolean;
-	nextStep: boolean;
-};
 
 type AddAuthenticatorResponse = {
 	addAuthenticatorSuccessful: boolean;
@@ -88,63 +82,7 @@ export function isSignInWithSocial(
 	return signInParams && !!Object.keys(signInParams).find(k => k === 'social');
 }
 
-type ConfirmSignUpParams = {
-	confirmationCode: string;
-	username: string;
-};
-
-type SignUpResult = ConfirmSignUpCommandOutput;
-
-type ConfirmSignUpResult = {};
-
-type ConfirmSignInParams = {
-	confirmationCode: string;
-	newPassword?: string;
-	challengeName:
-		| ChallengeNameType.SMS_MFA
-		| ChallengeNameType.SOFTWARE_TOKEN_MFA
-		| ChallengeNameType.NEW_PASSWORD_REQUIRED;
-	// challengeName: ChallengeNameType;
-	// default to SMS_MFA
-	mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
-	clientMetadata?: { [key: string]: string };
-};
-
-type UserIdentifiers = {
-	type: string;
-	value: string;
-};
-
-type AmplifyUser = {
-	isSignedIn?: boolean;
-	sessionId?: string;
-	userInfo?: {
-		userid: string;
-		identifiers?: UserIdentifiers[];
-		username?: string;
-	};
-	credentials?: {
-		// scope
-		[key: string]: {
-			jwt?: {
-				idToken: string;
-				accessToken: string;
-				refreshToken: string;
-			};
-			aws?: AWSCredentials;
-		};
-	};
-};
-
 type PluginConfig = any | { Auth: any };
-
-export type SignUpParams = {
-	username: string;
-	password: string;
-	attributes?: object;
-	validationData?: { [key: string]: any };
-	clientMetadata?: { [key: string]: string };
-};
 
 export type AuthZOptions = {
 	category: 'Storage' | 'API' | 'Analytics' | 'Interactions' | 'Predictions';
@@ -152,13 +90,6 @@ export type AuthZOptions = {
 	resourceId: {
 		[key: string]: string;
 	};
-};
-
-export type AWSCredentials = {
-	accessKeyId: string;
-	secretAccessKey: string;
-	sessionToken?: string;
-	expiration: Date;
 };
 
 export type AuthorizationToken = {
@@ -169,27 +100,12 @@ export type ApiKey = {
 	apiKey: string;
 };
 
-export type AuthorizationResponse =
-	| AuthorizationToken
-	| AWSCredentials
-	| ApiKey;
+export type AuthorizationResponse = AuthorizationToken | ApiKey;
 
 export function isAuthorizationToken(
 	authResponse: AuthorizationResponse
 ): authResponse is AuthorizationToken {
 	return authResponse && !!Object.keys(authResponse).find(k => k === 'token');
-}
-
-export function isAWSCredentials(
-	authResponse: AuthorizationResponse
-): authResponse is AWSCredentials {
-	return (
-		authResponse &&
-		!!Object.keys(authResponse).find(k => k === 'accessKeyId') &&
-		!!Object.keys(authResponse).find(k => k === 'secretAccessKey') &&
-		!!Object.keys(authResponse).find(k => k === 'sessionToken') &&
-		!!Object.keys(authResponse).find(k => k === 'expiration')
-	);
 }
 
 export function isApiKey(
@@ -199,13 +115,10 @@ export function isApiKey(
 }
 
 export {
-	SignInResult,
 	SignInParams,
 	ConfirmSignUpParams,
 	SignUpResult,
 	ConfirmSignUpResult,
-	ConfirmSignInParams,
-	AmplifyUser,
 	PluginConfig,
 	AddAuthenticatorResponse,
 	RequestScopeResponse,

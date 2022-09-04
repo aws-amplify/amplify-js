@@ -20,9 +20,8 @@ import {
 	sendParent,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { CognitoService } from '../serviceClass';
+import { CognitoService } from '../service';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { cacheInitiateAuthResult } from '../service';
 import { SignUpResult } from '../../../types/AuthPluggable';
 
 // TODO: what should we store here?

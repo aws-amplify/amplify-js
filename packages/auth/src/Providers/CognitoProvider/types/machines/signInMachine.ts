@@ -17,9 +17,9 @@ import {
 	ChallengeNameType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { EventObject } from 'xstate';
-import { CognitoService } from '../../serviceClass';
 import { CognitoProviderConfig } from '../../CognitoProvider';
 import { SignInParams, SOCIAL_PROVIDER } from '../../../../types';
+import { CognitoService } from '../../services/CognitoService';
 
 export type SignInMachineContext = BaseSignInMachineContext &
 	(UserPasswordSignInContext | SocialSignInContext | SRPSignInContext);

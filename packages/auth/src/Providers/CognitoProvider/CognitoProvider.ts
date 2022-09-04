@@ -126,7 +126,6 @@ export class CognitoProvider implements AuthProvider {
 	private _authService = interpret(
 		authMachine.withContext({
 			// authenticationMachine: this._authnService,
-			authorizationMachine: this._authzService,
 		}),
 		{ devTools: true }
 	).start();
@@ -151,6 +150,7 @@ export class CognitoProvider implements AuthProvider {
 		logger.debug(
 			`Configuring provider with ${JSON.stringify(config, null, 2)}`
 		);
+
 		if (!config.userPoolId || !config.region) {
 			throw new Error(`Invalid config for ${this.getProviderName()}`);
 		}
@@ -165,23 +165,24 @@ export class CognitoProvider implements AuthProvider {
 			this._userStorage = config.storage;
 		}
 		this._authService.send(authMachineEvents.configureAuth(this._config));
+
 		// this._authnService.send(
 		// 	authenticationMachineEvents.configure(this._config)
 		// );
-		// this._authzService.send(authorizationMachineEvents.configure(this._config));
-		console.log('successfully configured cognito provider');
-		if (this._handlingOAuthCodeResponse()) {
-			// wait for state machine to finish transitioning to signed out state
-			waitFor(this._authnService, state => state.matches('signedOut')).then(
-				() => {
-					this._authnService.send(
-						authenticationMachineEvents.signInRequested({
-							signInType: 'Social',
-						})
-					);
-				}
-			);
-		}
+		// // this._authzService.send(authorizationMachineEvents.configure(this._config));
+		// console.log('successfully configured cognito provider');
+		// if (this._handlingOAuthCodeResponse()) {
+		// 	// wait for state machine to finish transitioning to signed out state
+		// 	waitFor(this._authnService, state => state.matches('configured')).then(
+		// 		() => {
+		// 			this._authnService.send(
+		// 				authenticationMachineEvents.signInRequested({
+		// 					signInType: 'Social',
+		// 				})
+		// 			);
+		// 		}
+		// 	);
+		// }
 	}
 
 	private _handlingOAuthCodeResponse(): boolean {
@@ -635,5 +636,17 @@ export class CognitoProvider implements AuthProvider {
 	}): CognitoIdentityClient {
 		const cognitoIdentityClient = new CognitoIdentityClient(config);
 		return cognitoIdentityClient;
+	}
+
+	isAWSCredentials(
+		authResponse: AuthorizationResponse
+	): authResponse is AWSCredentials {
+		return (
+			authResponse &&
+			!!Object.keys(authResponse).find(k => k === 'accessKeyId') &&
+			!!Object.keys(authResponse).find(k => k === 'secretAccessKey') &&
+			!!Object.keys(authResponse).find(k => k === 'sessionToken') &&
+			!!Object.keys(authResponse).find(k => k === 'expiration')
+		);
 	}
 }

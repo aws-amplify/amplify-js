@@ -12,19 +12,19 @@
  */
 
 import {
-	AmplifyUser,
-	ConfirmSignInParams,
 	ConfirmSignUpParams,
 	PluginConfig,
 	SignInParams,
-	SignInResult,
 	SignUpResult,
-	SignUpParams,
 	AddAuthenticatorResponse,
 	RequestScopeResponse,
 	AuthZOptions,
 	AuthorizationResponse,
 } from '.';
+import { ConfirmSignInParams } from './model/signin/ConfirmSignInParams';
+import { SignInResult } from './model/signin/SignInResult';
+import { SignUpParams } from './model/signup/SignUpParams';
+import { AmplifyUser } from './model/user/AmplifyUser';
 
 /*
  * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.

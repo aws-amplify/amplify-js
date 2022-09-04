@@ -20,7 +20,6 @@ import {
 	AssignAction,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { cacheInitiateAuthResult } from '../service';
 import {
 	AuthFlowType,
 	ChallengeNameType,
@@ -188,7 +187,10 @@ export const signInMachineConfig: MachineConfig<
 							password: context.password,
 						});
 						if (res && typeof res.AuthenticationResult !== 'undefined') {
-							cacheInitiateAuthResult(res, context.authConfig.storage);
+							context.service?.cacheInitiateAuthResult(
+								res,
+								context.authConfig.storage
+							);
 						}
 						return res;
 					} catch (err) {
@@ -227,7 +229,10 @@ export const signInMachineConfig: MachineConfig<
 					assertEventType(event, 'respondToAuthChallenge');
 					const res = await respondToAuthChallenge(context, event);
 					if (res && typeof res.AuthenticationResult !== 'undefined') {
-						cacheInitiateAuthResult(res, context.authConfig.storage);
+						context.service?.cacheInitiateAuthResult(
+							res,
+							context.authConfig.storage
+						);
 					}
 					return res;
 				},

@@ -20,7 +20,7 @@ import {
 	sendParent,
 	spawn,
 } from 'xstate';
-import { pure, respond, send, sendTo, stop } from 'xstate/lib/actions';
+import { pure, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
@@ -31,8 +31,9 @@ import {
 	AuthenticationTypeState,
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../serviceClass';
+import { CognitoService } from '../service';
 import { authMachine, authMachineEvents } from './authMachine';
+import { NoUserPoolError } from '../../../Errors';
 
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
@@ -77,8 +78,6 @@ export const authenticationMachineModel = createModel(
 			initiateSignUp: (params: SignUpParams) => ({ params }),
 			signInSuccessful: () => ({}),
 			signUpSuccessful: () => ({}),
-
-			test: () => ({}),
 		},
 	}
 );
@@ -89,24 +88,24 @@ const authenticationMachineActions: Record<
 	string,
 	AssignAction<AuthenticationMachineContext, any>
 > = {
-	assignConfig: authenticationMachineModel.assign(
-		{
-			config: (_context, event) => event.config,
-		},
-		'configure'
-	),
-	assignService: authenticationMachineModel.assign(
-		{
-			service: (_context, event) =>
-				new CognitoService({
-					region: _context?.config?.region || '',
-					userPoolId: _context?.config?.userPoolId || '',
-					identityPoolId: _context?.config?.identityPoolId || '',
-					clientId: _context?.config?.clientId || '',
-				}),
-		},
-		'configure'
-	),
+	// assignConfig: authenticationMachineModel.assign(
+	// 	{
+	// 		config: (_context, event) => event.config,
+	// 	},
+	// 	'configure'
+	// ),
+	// assignService: authenticationMachineModel.assign(
+	// 	{
+	// 		service: (_context, event) =>
+	// 			new CognitoService({
+	// 				region: _context?.config?.region || '',
+	// 				userPoolId: _context?.config?.userPoolId || '',
+	// 				identityPoolId: _context?.config?.identityPoolId || '',
+	// 				clientId: _context?.config?.clientId || '',
+	// 			}),
+	// 	},
+	// 	'configure'
+	// ),
 	spawnSignInActor: authenticationMachineModel.assign(
 		{
 			actorRef: (context, event) => {
@@ -199,35 +198,28 @@ const authenticationStateMachine: MachineConfig<
 	states: {
 		notConfigured: {
 			on: {
-				configure: {
-					target: 'configuring',
-					actions: [
-						authenticationMachineActions.assignConfig,
-						authenticationMachineActions.assignService,
-					],
-				},
+				configure: [
+					{
+						target: 'configured',
+						cond: (context, _) => {
+							if (context.config?.userPoolId == null) {
+								sendParent({ type: 'authenticationNotConfigured' });
+								return false;
+							}
+							return true;
+						},
+					},
+				],
 			},
 		},
-		configuring: {
-			invoke: {
-				id: 'authenticationConfigCallback',
-				src: (context, event) => (callback, _) => {
-					console.log('configuring callback...');
-					callback('failedToConfigure');
-				},
-			},
+		configured: {
+			entry: pure((_, event) => {
+				return sendParent({ type: 'authenticationConfigured' });
+			}),
 			on: {
-				failedToConfigure: 'configurationFailed',
-				configurationSuccessful: 'signedOut',
+				signInRequested: 'signingIn',
+				initiateSignUp: 'signingUp',
 			},
-		},
-		configurationFailed: {
-			entry: [
-				pure((_, event) => {
-					console.log('configurationFailed');
-					return sendParent({ type: 'authenticationConfigurationFailed' });
-				}),
-			],
 		},
 		signingOut: {
 			on: {
@@ -236,12 +228,6 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signedOut: {
-			entry: [
-				pure((_, event) => {
-					console.log('configured');
-					return sendParent({ type: 'authenticationConfigured' });
-				}),
-			],
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',

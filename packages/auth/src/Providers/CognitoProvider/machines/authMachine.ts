@@ -1,15 +1,24 @@
+/*
+ * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
 import {
 	createMachine,
 	MachineConfig,
-	send,
 	spawn,
-	assign,
-	interpret,
 	EventFrom,
 	AssignAction,
-	ActorRefFrom,
 } from 'xstate';
-import { pure, stop } from 'xstate/lib/actions';
+import { stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	authenticationMachine,
@@ -21,43 +30,19 @@ import {
 } from './authorizationMachine';
 import { AuthMachineContext, AuthTypeState } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../serviceClass';
+import { CognitoService } from '../service';
 
-let authenticationActorRef: ActorRefFrom<typeof authenticationMachine>;
-let authorizationActorRef;
-
-async function configureAuthN(context: AuthMachineContext) {
-	try {
-		if (!context.config?.userPoolId) {
-			throw new Error('no configured userPoolId');
-		}
-		send('configure', { to: 'child' });
-	} catch (err) {
-		return false;
-	}
-}
-
-export const authMachineModel = createModel(
-	{
-		// config: null,
-		// authenticationMachine: null,
-		// authorizationMachine: null,
-	} as AuthMachineContext,
-	{
-		events: {
-			configureAuth: (config: CognitoProviderConfig) => ({ config }),
-			fetchCachedCredentials: () => ({}),
-			receivedCachedCredentials: () => ({}),
-			configureAuthentication: () => ({}),
-			configureAuthorization: () => ({}),
-			authenticationConfigured: () => ({}),
-			authenticationConfigurationFailed: () => ({}),
-			authorizationConfigured: () => ({}),
-			// error: (error: any) => ({ error }),
-			error: () => ({}),
-		},
-	}
-);
+export const authMachineModel = createModel({} as AuthMachineContext, {
+	events: {
+		configureAuth: (config: CognitoProviderConfig) => ({ config }),
+		configureAuthentication: () => ({}),
+		configureAuthorization: () => ({}),
+		authenticationConfigured: () => ({}),
+		authenticationNotConfigured: () => ({}),
+		authorizationConfigured: () => ({}),
+		authorizationNotConfigured: () => ({}),
+	},
+});
 
 export type AuthEvents = EventFrom<typeof authMachineModel>;
 
@@ -73,14 +58,43 @@ const authStateMachineActions: Record<
 	),
 	setAuthenticationActor: authMachineModel.assign(
 		{
-			authenticationActorRef: () =>
-				spawn(authenticationMachine, { name: 'authenticationActor' }),
+			authenticationActorRef: (context, _) => {
+				const authenticationMachineWithContext =
+					authenticationMachine.withContext({
+						config: context.config,
+						service: new CognitoService({
+							region: context?.config?.region || '',
+							userPoolId: context?.config?.userPoolId || '',
+							identityPoolId: context?.config?.identityPoolId || '',
+							clientId: context?.config?.clientId || '',
+						}),
+					});
+				const authenticationRef = spawn(authenticationMachineWithContext, {
+					name: 'authenticationActor',
+				});
+				return authenticationRef;
+			},
 		},
-		'configureAuthentication'
+		'configureAuth'
 	),
 	setAuthorizationActor: authMachineModel.assign(
 		{
-			authorizationActorRef: () => spawn(authorizationMachine),
+			authorizationActorRef: (context, _) => {
+				const authorizationMachineWithContext =
+					authorizationMachine.withContext({
+						config: context.config,
+						service: new CognitoService({
+							region: context?.config?.region || '',
+							userPoolId: context?.config?.userPoolId || '',
+							identityPoolId: context?.config?.identityPoolId || '',
+							clientId: context?.config?.clientId || '',
+						}),
+					});
+				const authorizationRef = spawn(authorizationMachineWithContext, {
+					name: 'authorizationActor',
+				});
+				return authorizationRef;
+			},
 		},
 		'configureAuthorization'
 	),
@@ -98,6 +112,7 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 					actions: [
 						authStateMachineActions.assignConfig,
 						authStateMachineActions.setAuthenticationActor,
+						authStateMachineActions.setAuthorizationActor,
 					],
 				},
 			},
@@ -110,36 +125,25 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 			},
 			on: {
 				authenticationConfigured: 'configuringAuthorization',
-				authenticationConfigurationFailed: 'authenticationNotConfigured',
-				error: 'error',
+				authenticationNotConfigured: {
+					actions: [stop(context => context.authenticationActorRef!)],
+					target: 'configuringAuthorization',
+				},
 			},
 		},
-		authenticationNotConfigured: {
-			// onEntry: [
-			// 	(context, event) => {
-			// 		console.log('HEY!!!!');
-			// 		// context.authenticationActorRef!.stop;
-			// 	},
-			// ],
-			entry: ['stopAuthenticationActor'],
-			always: 'configuringAuthorization',
-		},
 		configuringAuthorization: {
-			entry: (context, event) => {
+			entry: (context, _) => {
 				context.authorizationActorRef?.send(
 					authorizationMachineEvents.configure(context.config!)
 				);
 			},
 			on: {
-				authenticationConfigured: 'configuringAuthorization',
-				error: 'error',
+				authorizationConfigured: 'configured',
+				authenticationNotConfigured: {
+					actions: [stop(context => context.authorizationActorRef!)],
+					target: 'configured',
+				},
 			},
-		},
-		error: {
-			entry: (context, event) => {
-				console.log('authenticationMachine error!');
-			},
-			type: 'final',
 		},
 		configured: {
 			type: 'final',
@@ -151,9 +155,7 @@ export const authMachine = createMachine<
 	AuthEvents,
 	AuthTypeState
 >(authStateMachine, {
-	actions: {
-		stopAuthenticationActor: stop('authenticationActor'),
-	},
+	actions: {},
 	guards: {},
 	services: {},
 });
