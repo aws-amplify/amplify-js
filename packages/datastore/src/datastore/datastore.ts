@@ -166,7 +166,16 @@ const getModelPKFieldName = (
 const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
-	return isModelConstructor(obj) && modelNamespaceMap.has(obj);
+	if (isModelConstructor(obj) && modelNamespaceMap.has(obj)) {
+		return true;
+	} else {
+		console.error('isValidModelConstructor', {
+			obj,
+			isModelConstructor: isModelConstructor(obj),
+			'modelNamespaceMap.has': modelNamespaceMap.has(obj),
+		});
+		return false;
+	}
 };
 
 const namespaceResolver: NamespaceResolver = modelConstructor => {
@@ -761,6 +770,10 @@ const createModelClass = <T extends PersistentModel>(
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
 
 				if (!instanceMemos.hasOwnProperty(field)) {
+					console.log(
+						'remote constructor',
+						relationship.remoteModelConstructor
+					);
 					const resultPromise = instance.query(
 						relationship.remoteModelConstructor as PersistentModelConstructor<T>,
 						base =>
@@ -780,16 +793,17 @@ const createModelClass = <T extends PersistentModel>(
 					);
 
 					if (relationship.relationship === 'HAS_MANY') {
-						resultPromise.catch(err => console.error(`wtf`, err));
 						instanceMemos[field] = new AsyncCollection(resultPromise);
 					} else {
 						instanceMemos[field] = resultPromise.then(rows => {
 							if (rows.length > 1) {
 								// should never happen for a HAS_ONE or BELONGS_TO.
-								throw new Error(`
+								const err = new Error(`
 									Data integrity error.
 									Too many records found for a HAS_ONE/BELONGS_TO field '${modelDefinition.name}.${field}'
 								`);
+								console.error(err);
+								throw err;
 							} else {
 								return rows[0];
 							}
@@ -1247,7 +1261,7 @@ class DataStore {
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'Constructor is not for a valid model';
 				logger.error(msg, { modelConstructor });
-
+				console.error(new Error('ahhhh'), modelConstructor);
 				throw new Error(msg);
 			}
 

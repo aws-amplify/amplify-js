@@ -482,7 +482,7 @@ export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
 	public readonly post: Promise<Post>;
-	public readonly postId: string;
+	public readonly postId?: string;
 
 	constructor(init: ModelInit<Comment>);
 
@@ -723,7 +723,7 @@ export function testSchema(): Schema {
 						name: 'postId',
 						isArray: false,
 						type: 'ID',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					content: {

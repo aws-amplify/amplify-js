@@ -308,7 +308,13 @@ export function addCommonQueryTests({
 			});
 		});
 
-		it('should produce a mutation for a nested BELONGS_TO insert', async () => {
+		/**
+		 * TODO: AFAIK, nested saves like this were always undefined behavior. The spec draft
+		 * seems to suggest now that scenario should actually throw an Error.
+		 *
+		 * Update and un-skip this test once we have solid guidance.
+		 */
+		it.skip('should produce a mutation for a nested BELONGS_TO insert', async () => {
 			const comment = await DataStore.save(
 				new Comment({
 					content: 'newly created comment',

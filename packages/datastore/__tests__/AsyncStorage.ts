@@ -40,6 +40,13 @@ let PostMetadata: NonModelTypeConstructor<
 
 const inmemoryMap = new Map<string, string>();
 
+/**
+ * Renders more complete out of band traces.
+ */
+process.on('unhandledRejection', reason => {
+	console.log(reason); // log the reason including the stack trace
+});
+
 // ! We have to mock the same storage interface the AsyncStorageDatabase depends on
 // ! as a singleton so that new instances all share the same underlying data structure.
 jest.mock('../src/storage/adapter/InMemoryStore', () => {
@@ -86,7 +93,7 @@ jest.mock(
  * @param beforeSetUp Executed after reseting modules but before re-requiring the schema initialization
  */
 function setUpSchema(beforeSetUp?: Function) {
-	jest.resetModules();
+	// jest.resetModules();
 
 	if (typeof beforeSetUp === 'function') {
 		beforeSetUp();
@@ -162,9 +169,7 @@ describe('AsyncStorage tests', () => {
 
 	test('setup function', async () => {
 		const allKeys = await AsyncStorage.getAllKeys();
-
 		expect(allKeys).not.toHaveLength(0); // At leaset the settings entry should be present
-
 		expect(allKeys[0]).toMatch(
 			new RegExp(
 				`@AmplifyDatastore::${DATASTORE}_Setting::Data::\\w{26}::\\w{26}`
@@ -282,26 +287,39 @@ describe('AsyncStorage tests', () => {
 		});
 	});
 
-	test('query M:1 eager load', async () => {
+	test('query M:1 lazy load', async () => {
 		const p = new Post({
 			title: 'Avatar',
 			blog,
 		});
+		console.log('here 1');
+
 		const c1 = new Comment({
 			content: 'comment 1',
 			post: p,
 		});
+		console.log('here 2');
+
 		const c2 = new Comment({
 			content: 'comment 2',
 			post: p,
 		});
+		console.log('here 3');
 
 		await DataStore.save(p);
+		console.log('here 4');
+
 		await DataStore.save(c1);
+		console.log('here 5');
+
 		await DataStore.save(c2);
+		console.log('here 6');
 
 		const q1 = await DataStore.query(Comment, c1.id);
+		console.log('here 7', q1);
+
 		const resolvedPost = await q1!.post;
+		console.log('here 8');
 
 		expect(resolvedPost!.id).toEqual(p.id);
 	});
