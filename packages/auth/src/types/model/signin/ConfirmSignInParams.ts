@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 
-export type ConfirmSignInParams = {
+export type ConfirmSignInParams<T extends any> = {
+	username: string;
 	confirmationCode: string;
 	newPassword?: string;
+	pluginOptions?: T;
+	session: string;
+	clientId: string;
 };

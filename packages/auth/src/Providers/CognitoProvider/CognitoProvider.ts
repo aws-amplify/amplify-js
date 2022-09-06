@@ -25,7 +25,6 @@ import {
 	SignInResult,
 	SignUpParams,
 	SignUpResult,
-	AWSCredentials,
 	SOCIAL_PROVIDER,
 } from '../../types';
 import {
@@ -45,7 +44,6 @@ import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
 import { interpret, ActorRefFrom, StateMachine, Interpreter } from 'xstate';
 import { inspect } from '@xstate/inspect';
 import { waitFor } from 'xstate/lib/waitFor';
-import { cognitoSignUp, cognitoConfirmSignUp } from './service';
 import {
 	AuthenticationEvents,
 	authenticationMachine,
@@ -70,6 +68,13 @@ import {
 	AuthenticationMachineContext,
 	AuthenticationTypeState,
 } from './types/machines/authenticationMachine';
+import { CognitoUser } from './types/model/user/CognitoUser';
+import { CognitoConfirmSignInPluginOptions } from './types/model';
+import { CognitoSignUpPluginOptions } from './types/model/signup/CognitoSignUpPluginOptions';
+import { AWSCredentials } from './types/model/session/AWSCredentials';
+
+export { CognitoUser } from './types/model/user/CognitoUser';
+export { AWSCredentials } from './types/model/session/AWSCredentials';
 
 const logger = new Logger('CognitoProvider');
 
@@ -197,36 +202,15 @@ export class CognitoProvider implements AuthProvider {
 	getProviderName(): string {
 		return CognitoProvider.PROVIDER_NAME;
 	}
-	async signUp(params: SignUpParams): Promise<SignUpResult> {
-		const signUpRes = cognitoSignUp(
-			{
-				region: this._config.region,
-			},
-			{
-				...params,
-				clientId: this._config.clientId,
-			}
-		);
-		return signUpRes;
+	async signUp(
+		params: SignUpParams<CognitoSignUpPluginOptions>
+	): Promise<SignUpResult> {
+		//TODO implement state machine call
+		return {} as SignUpResult;
 	}
 	async confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult> {
-		const { username, confirmationCode } = params;
-		try {
-			const res = await cognitoConfirmSignUp(
-				{
-					region: this._config.region,
-				},
-				{
-					clientId: this._config.clientId,
-					username,
-					confirmationCode,
-				}
-			);
-			return res;
-		} catch (err) {
-			logger.error(err);
-			throw err;
-		}
+		//TODO implement state machine call
+		return {} as SignUpResult;
 	}
 	private isAuthenticated() {
 		// TODO: should also check if token has expired?
@@ -310,12 +294,16 @@ export class CognitoProvider implements AuthProvider {
 		return { signInSuccesful: false, nextStep: false };
 	}
 
-	async confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult> {
+	async confirmSignIn(
+		params: ConfirmSignInParams<CognitoConfirmSignInPluginOptions>
+	): Promise<SignInResult> {
 		console.log('confirm signin');
 		if (
-			params.challengeName !== ChallengeNameType.SMS_MFA &&
-			params.challengeName !== ChallengeNameType.SOFTWARE_TOKEN_MFA &&
-			params.challengeName !== ChallengeNameType.NEW_PASSWORD_REQUIRED
+			params.pluginOptions!.challengeName !== ChallengeNameType.SMS_MFA &&
+			params.pluginOptions!.challengeName !==
+				ChallengeNameType.SOFTWARE_TOKEN_MFA &&
+			params.pluginOptions!.challengeName !==
+				ChallengeNameType.NEW_PASSWORD_REQUIRED
 		) {
 			throw new Error('Not implemented');
 		}
@@ -519,7 +507,7 @@ export class CognitoProvider implements AuthProvider {
 
 		// assign aws credentials to the session
 		const userpoolTokens = this.getCachedUserpoolTokens();
-		const amplifyUser: AmplifyUser = {
+		const amplifyUser: CognitoUser = {
 			isSignedIn,
 			credentials: {
 				default: {
@@ -638,15 +626,15 @@ export class CognitoProvider implements AuthProvider {
 		return cognitoIdentityClient;
 	}
 
-	isAWSCredentials(
-		authResponse: AuthorizationResponse
-	): authResponse is AWSCredentials {
-		return (
-			authResponse &&
-			!!Object.keys(authResponse).find(k => k === 'accessKeyId') &&
-			!!Object.keys(authResponse).find(k => k === 'secretAccessKey') &&
-			!!Object.keys(authResponse).find(k => k === 'sessionToken') &&
-			!!Object.keys(authResponse).find(k => k === 'expiration')
-		);
-	}
+	// isAWSCredentials(
+	// 	authResponse: AuthorizationResponse
+	// ): authResponse is AWSCredentials {
+	// 	return (
+	// 		authResponse &&
+	// 		!!Object.keys(authResponse).find(k => k === 'accessKeyId') &&
+	// 		!!Object.keys(authResponse).find(k => k === 'secretAccessKey') &&
+	// 		!!Object.keys(authResponse).find(k => k === 'sessionToken') &&
+	// 		!!Object.keys(authResponse).find(k => k === 'expiration')
+	// 	);
+	// }
 }

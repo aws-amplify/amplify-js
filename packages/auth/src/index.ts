@@ -19,7 +19,11 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
  */
 export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
 
-export { CognitoProvider } from './Providers/CognitoProvider';
+export {
+	CognitoProvider,
+	CognitoUser,
+	AWSCredentials,
+} from './Providers/CognitoProvider';
 export { AuthPluggable } from './AuthPluggable';
 export {
 	USER_PARAM_TYPE,
@@ -27,7 +31,6 @@ export {
 	SignInWithWebAuthn,
 	SignInResult,
 	SignInParams,
-	AmplifyUser,
 	isApiKey,
 	isAuthorizationToken,
 	GRAPHQL_AUTH_MODE,

@@ -29,7 +29,7 @@ import {
 	beginningSessionEvent,
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../service';
+import { CognitoService } from '../services/CognitoService';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
 

@@ -12,3 +12,5 @@
  */
 
 export { CognitoProvider } from './CognitoProvider';
+export { CognitoUser } from './types/model/user/CognitoUser';
+export { AWSCredentials } from './types/model/session/AWSCredentials';

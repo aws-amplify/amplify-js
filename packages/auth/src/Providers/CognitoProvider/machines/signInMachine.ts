@@ -35,6 +35,7 @@ import {
 	assertUserPasswordSignInContext,
 } from '../types/machines';
 import { federatedSignInMachine } from './oAuthSignInMachine';
+import { CognitoConfirmSignInPluginOptions } from '../types/model/signin';
 
 export const signInMachineModel = createModel(
 	{
@@ -107,10 +108,12 @@ async function respondToMFAChallenge(
 ) {
 	assertUserPasswordSignInContext(context);
 	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
-		mfaType: respondToAuthChallengeOptions.challengeName as
-			| ChallengeNameType.SOFTWARE_TOKEN_MFA
-			| ChallengeNameType.SMS_MFA,
-		challengeName: respondToAuthChallengeOptions.challengeName,
+		pluginOptions: {
+			mfaType: respondToAuthChallengeOptions.challengeName as
+				| ChallengeNameType.SOFTWARE_TOKEN_MFA
+				| ChallengeNameType.SMS_MFA,
+			challengeName: respondToAuthChallengeOptions.challengeName,
+		} as CognitoConfirmSignInPluginOptions,
 		confirmationCode: respondToAuthChallengeOptions.confirmationCode,
 		username: context.username,
 		session: context.session!,

@@ -282,110 +282,110 @@ export class AuthClass {
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
-	public signUp(
-		params: string | SignUpParams,
-		...restOfAttrs: string[]
-	): Promise<ISignUpResult> {
-		if (!this.userPool) {
-			return this.rejectNoUserPool();
-		}
+	// public signUp(
+	// 	params: string | SignUpParams<any>,
+	// 	...restOfAttrs: string[]
+	// ): Promise<ISignUpResult> {
+	// 	if (!this.userPool) {
+	// 		return this.rejectNoUserPool();
+	// 	}
 
-		let username: string = null;
-		let password: string = null;
-		const attributes: CognitoUserAttribute[] = [];
-		let validationData: CognitoUserAttribute[] = null;
-		let clientMetadata;
+	// 	let username: string = null;
+	// 	let password: string = null;
+	// 	const attributes: CognitoUserAttribute[] = [];
+	// 	let validationData: CognitoUserAttribute[] = null;
+	// 	let clientMetadata;
 
-		if (params && typeof params === 'string') {
-			username = params;
-			password = restOfAttrs ? restOfAttrs[0] : null;
-			const email: string = restOfAttrs ? restOfAttrs[1] : null;
-			const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
+	// 	if (params && typeof params === 'string') {
+	// 		username = params;
+	// 		password = restOfAttrs ? restOfAttrs[0] : null;
+	// 		const email: string = restOfAttrs ? restOfAttrs[1] : null;
+	// 		const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
 
-			if (email)
-				attributes.push(
-					new CognitoUserAttribute({ Name: 'email', Value: email })
-				);
+	// 		if (email)
+	// 			attributes.push(
+	// 				new CognitoUserAttribute({ Name: 'email', Value: email })
+	// 			);
 
-			if (phone_number)
-				attributes.push(
-					new CognitoUserAttribute({
-						Name: 'phone_number',
-						Value: phone_number,
-					})
-				);
-		} else if (params && typeof params === 'object') {
-			username = params['username'];
-			password = params['password'];
+	// 		if (phone_number)
+	// 			attributes.push(
+	// 				new CognitoUserAttribute({
+	// 					Name: 'phone_number',
+	// 					Value: phone_number,
+	// 				})
+	// 			);
+	// 	} else if (params && typeof params === 'object') {
+	// 		username = params['username'];
+	// 		password = params['password'];
 
-			if (params && params.clientMetadata) {
-				clientMetadata = params.clientMetadata;
-			} else if (this._config.clientMetadata) {
-				clientMetadata = this._config.clientMetadata;
-			}
+	// 		if (params && params.clientMetadata) {
+	// 			clientMetadata = params.clientMetadata;
+	// 		} else if (this._config.clientMetadata) {
+	// 			clientMetadata = this._config.clientMetadata;
+	// 		}
 
-			const attrs = params['attributes'];
-			if (attrs) {
-				Object.keys(attrs).map(key => {
-					attributes.push(
-						new CognitoUserAttribute({ Name: key, Value: attrs[key] })
-					);
-				});
-			}
+	// 		const attrs = params['attributes'];
+	// 		if (attrs) {
+	// 			Object.keys(attrs).map(key => {
+	// 				attributes.push(
+	// 					new CognitoUserAttribute({ Name: key, Value: attrs[key] })
+	// 				);
+	// 			});
+	// 		}
 
-			const validationDataObject = params['validationData'];
-			if (validationDataObject) {
-				validationData = [];
-				Object.keys(validationDataObject).map(key => {
-					validationData.push(
-						new CognitoUserAttribute({
-							Name: key,
-							Value: validationDataObject[key],
-						})
-					);
-				});
-			}
-		} else {
-			return this.rejectAuthError(AuthErrorTypes.SignUpError);
-		}
+	// 		const validationDataObject = params['validationData'];
+	// 		if (validationDataObject) {
+	// 			validationData = [];
+	// 			Object.keys(validationDataObject).map(key => {
+	// 				validationData.push(
+	// 					new CognitoUserAttribute({
+	// 						Name: key,
+	// 						Value: validationDataObject[key],
+	// 					})
+	// 				);
+	// 			});
+	// 		}
+	// 	} else {
+	// 		return this.rejectAuthError(AuthErrorTypes.SignUpError);
+	// 	}
 
-		if (!username) {
-			return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
-		}
-		if (!password) {
-			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
-		}
+	// 	if (!username) {
+	// 		return this.rejectAuthError(AuthErrorTypes.EmptyUsername);
+	// 	}
+	// 	if (!password) {
+	// 		return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
+	// 	}
 
-		logger.debug('signUp attrs:', attributes);
-		logger.debug('signUp validation data:', validationData);
+	// 	logger.debug('signUp attrs:', attributes);
+	// 	logger.debug('signUp validation data:', validationData);
 
-		return new Promise((resolve, reject) => {
-			this.userPool.signUp(
-				username,
-				password,
-				attributes,
-				validationData,
-				(err, data) => {
-					if (err) {
-						dispatchAuthEvent(
-							'signUp_failure',
-							err,
-							`${username} failed to signup`
-						);
-						reject(err);
-					} else {
-						dispatchAuthEvent(
-							'signUp',
-							data,
-							`${username} has signed up successfully`
-						);
-						resolve(data);
-					}
-				},
-				clientMetadata
-			);
-		});
-	}
+	// 	return new Promise((resolve, reject) => {
+	// 		this.userPool.signUp(
+	// 			username,
+	// 			password,
+	// 			attributes,
+	// 			validationData,
+	// 			(err, data) => {
+	// 				if (err) {
+	// 					dispatchAuthEvent(
+	// 						'signUp_failure',
+	// 						err,
+	// 						`${username} failed to signup`
+	// 					);
+	// 					reject(err);
+	// 				} else {
+	// 					dispatchAuthEvent(
+	// 						'signUp',
+	// 						data,
+	// 						`${username} has signed up successfully`
+	// 					);
+	// 					resolve(data);
+	// 				}
+	// 			},
+	// 			clientMetadata
+	// 		);
+	// 	});
+	// }
 
 	/**
 	 * Send the verification code to confirm sign up

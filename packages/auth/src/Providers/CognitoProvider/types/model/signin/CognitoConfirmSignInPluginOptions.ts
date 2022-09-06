@@ -1,7 +1,6 @@
 import { ChallengeNameType } from '@aws-sdk/client-cognito-identity-provider';
-import { ConfirmSignInPluginOptions } from 'src/types/model/signin/ConfirmSignInPluginOptions';
 
-export type CognitoConfirmSignInPluginOptions = ConfirmSignInPluginOptions & {
+export type CognitoConfirmSignInPluginOptions = {
 	challengeName:
 		| ChallengeNameType.SMS_MFA
 		| ChallengeNameType.SOFTWARE_TOKEN_MFA

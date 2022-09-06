@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * Copyright 2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -11,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 
 export * from './authMachine';
 export * from './signInMachine';

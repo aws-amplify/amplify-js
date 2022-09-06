@@ -15,6 +15,7 @@ import { CognitoProviderConfig } from '../../CognitoProvider';
 import { ActorRefFrom } from 'xstate';
 import { authenticationMachine } from '../../machines/authenticationMachine';
 import { authorizationMachine } from '../../machines/authorizationMachine';
+import { CognitoServiceConfig } from '../model/config/CognitoServiceConfig';
 
 export type AuthnActorRef = ActorRefFrom<typeof authenticationMachine>;
 export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;
@@ -22,7 +23,7 @@ export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;
 export interface AuthMachineContext {
 	authenticationActorRef?: AuthnActorRef;
 	authorizationActorRef?: AuthzActorRef;
-	config?: null | CognitoProviderConfig;
+	config?: null | CognitoServiceConfig;
 }
 
 export type AuthTypeState =

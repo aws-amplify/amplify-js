@@ -19,7 +19,7 @@ import {
 import { EventObject } from 'xstate';
 import { CognitoProviderConfig } from '../../CognitoProvider';
 import { SignInParams, SOCIAL_PROVIDER } from '../../../../types';
-import { CognitoService } from '../../services/CognitoService';
+import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
 
 export type SignInMachineContext = BaseSignInMachineContext &
 	(UserPasswordSignInContext | SocialSignInContext | SRPSignInContext);
@@ -45,7 +45,7 @@ type BaseSignInMachineContext = {
 	// NOTE: Could also just pass down the client directly
 	clientConfig: CognitoIdentityProviderClientConfig;
 	authConfig: CognitoProviderConfig;
-	service: CognitoService | null;
+	service: CognitoUserPoolService | null;
 	authFlow?: AuthFlowType | 'federated';
 	error?: any;
 	session?: string;

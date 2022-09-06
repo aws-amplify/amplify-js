@@ -1,2 +1,2 @@
-export { CognitoConfirmSignInOptions } from './CognitoConfirmSignInOptions';
+export { CognitoConfirmSignInPluginOptions } from './CognitoConfirmSignInPluginOptions';
 export { CognitoCompletePasswordOptions } from './CognitoCompletePasswordOptions';

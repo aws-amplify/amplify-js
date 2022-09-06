@@ -50,13 +50,13 @@ export interface AuthProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	signUp(params: SignUpParams): Promise<SignUpResult>;
+	signUp(params: SignUpParams<any>): Promise<SignUpResult>;
 
 	confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult>;
 
 	signIn(params: SignInParams): Promise<SignInResult>;
 
-	confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult>;
+	confirmSignIn(params: ConfirmSignInParams<any>): Promise<SignInResult>;
 
 	fetchSession(): Promise<AmplifyUser>;
 

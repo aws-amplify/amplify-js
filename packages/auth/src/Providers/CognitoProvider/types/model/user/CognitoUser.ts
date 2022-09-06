@@ -1,4 +1,4 @@
-import { AmplifyUser } from 'src/types/model/user/AmplifyUser';
+import { AmplifyUser } from '../../../../../types/model/user/AmplifyUser';
 import { AWSCredentials } from '../session/AWSCredentials';
 
 export type CognitoUser = AmplifyUser & {

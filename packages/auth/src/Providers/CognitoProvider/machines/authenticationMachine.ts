@@ -31,9 +31,7 @@ import {
 	AuthenticationTypeState,
 } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../service';
-import { authMachine, authMachineEvents } from './authMachine';
-import { NoUserPoolError } from '../../../Errors';
+import { CognitoConfirmSignInPluginOptions } from '../types/model';
 
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
@@ -75,7 +73,9 @@ export const authenticationMachineModel = createModel(
 				console.log('request sign in');
 				return { signInEventParams };
 			},
-			initiateSignUp: (params: SignUpParams) => ({ params }),
+			initiateSignUp: (
+				params: SignUpParams<CognitoConfirmSignInPluginOptions>
+			) => ({ params }),
 			signInSuccessful: () => ({}),
 			signUpSuccessful: () => ({}),
 		},
@@ -131,8 +131,7 @@ const authenticationMachineActions: Record<
 							username: event.signInEventParams.username,
 							password: event.signInEventParams.password,
 							authFlow: event.signInEventParams.signInFlow,
-
-							service: context.service,
+							service: context.service?.cognitoUserPoolService!,
 						});
 						const signInActorRef = spawn(machine, {
 							name: signInActorName,
@@ -145,7 +144,7 @@ const authenticationMachineActions: Record<
 						clientConfig: { region: context.config?.region },
 						authConfig: context.config,
 						authFlow: 'federated',
-						service: context.service,
+						service: context.service?.cognitoUserPoolService!,
 						oAuthProvider: event.signInEventParams?.social?.provider,
 					});
 					const signInActorRef = spawn(machine, {
@@ -171,9 +170,8 @@ const authenticationMachineActions: Record<
 					username: event.params.username,
 					password: event.params.password,
 					attributes: event.params.attributes,
-					validationData: event.params.validationData,
-					clientMetadata: event.params.clientMetadata,
-					service: context.service,
+					pluginOptions: event.params.pluginOptions,
+					service: context.service?.cognitoUserPoolService!,
 				});
 				const signUpActorRef = spawn(machine, {
 					name: signUpActorName,

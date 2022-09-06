@@ -1,21 +1,20 @@
 import {
-	CognitoIdentityProviderClient,
 	CognitoIdentityProviderClientConfig,
-	InitiateAuthCommandOutput,
 	GetUserCommand,
+	InitiateAuthCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClientConfig,
-	CognitoIdentityClient,
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
 	GetCredentialsForIdentityCommandOutput,
 } from '@aws-sdk/client-cognito-identity';
-import { AmplifyUser, AWSCredentials } from '../../../types';
 import { getExpirationTimeFromJWT, decodeJWT } from '../Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
 import { CognitoUserPoolService } from './CognitoUserPoolService';
 import { CognitoIdentityPoolService } from './CognitoIdentityPoolService';
+import { CognitoUser } from '../types/model/user/CognitoUser';
+import { AWSCredentials } from '../types/model/session/AWSCredentials';
 
 const logger = new Logger('CognitoStatelessService');
 
@@ -35,8 +34,8 @@ export class CognitoService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
 	private cognitoIDPLoginKey: string;
-	private cognitoIdentityPoolClient: CognitoIdentityClient;
-	private cognitoUserPoolClient: CognitoIdentityProviderClient;
+	cognitoIdentityPoolService: CognitoIdentityPoolService;
+	cognitoUserPoolService: CognitoUserPoolService;
 
 	constructor(
 		config: CognitoServiceConfig,
@@ -49,16 +48,50 @@ export class CognitoService {
 		};
 		this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
 
-		this.cognitoIdentityPoolClient = new CognitoIdentityPoolService(
+		this.cognitoIdentityPoolService = new CognitoIdentityPoolService(
 			this.config,
 			this.clientConfig,
 			this.cognitoIDPLoginKey
-		).client;
+		);
 
-		this.cognitoUserPoolClient = new CognitoUserPoolService(
+		this.cognitoUserPoolService = new CognitoUserPoolService(
 			this.config,
-			this.clientConfig
-		).client;
+			this.clientConfig,
+			COGNITO_CACHE_KEY
+		);
+	}
+
+	refreshUserPoolTokens(refreshToken: string) {
+		return this.cognitoUserPoolService.refreshUserPoolTokens(refreshToken);
+	}
+
+	fetchAWSCredentials(identityID: string, idToken: string) {
+		return this.cognitoIdentityPoolService.fetchAWSCredentials(
+			identityID,
+			idToken
+		);
+	}
+
+	cacheRefreshTokenResult(
+		output: InitiateAuthCommandOutput,
+		userStorage = new StorageHelper().getStorage()
+	) {
+		const { AuthenticationResult } = output;
+		if (!AuthenticationResult) {
+			throw new Error(
+				'Cannot cache session data - Initiate Auth did not return tokens'
+			);
+		}
+		const { AccessToken, IdToken } = AuthenticationResult;
+		const oldRefreshToken = this.getSessionData()?.refreshToken;
+		userStorage.setItem(
+			COGNITO_CACHE_KEY,
+			JSON.stringify({
+				accessToken: AccessToken,
+				idToken: IdToken,
+				refreshToken: oldRefreshToken,
+			})
+		);
 	}
 
 	getSessionData(userStorage = new StorageHelper().getStorage()): {
@@ -99,9 +132,9 @@ export class CognitoService {
 		};
 	}
 
-	async fetchSession(): Promise<AmplifyUser> {
+	async fetchSession(): Promise<CognitoUser> {
 		// TODO: add param for cognito client config
-		const cognitoClient = this.cognitoUserPoolClient;
+		const cognitoClient = this.cognitoUserPoolService;
 		const session = this.getSessionData();
 		if (session === null) {
 			throw new Error(
@@ -112,7 +145,7 @@ export class CognitoService {
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
 		const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		const getIdRes = await this.cognitoIdentityPoolClient.send(
+		const getIdRes = await this.cognitoIdentityPoolService.client.send(
 			new GetIdCommand({
 				IdentityPoolId: this.config.identityPoolId,
 				Logins: {
@@ -123,7 +156,7 @@ export class CognitoService {
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		const getCredentialsRes = await this.cognitoIdentityPoolClient.send(
+		const getCredentialsRes = await this.cognitoIdentityPoolService.client.send(
 			new GetCredentialsForIdentityCommand({
 				IdentityId: getIdRes.IdentityId,
 				Logins: {
@@ -136,7 +169,7 @@ export class CognitoService {
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const getUserRes = await cognitoClient.send(
+		const getUserRes = await cognitoClient.client.send(
 			new GetUserCommand({
 				AccessToken: accessToken,
 			})
@@ -183,34 +216,5 @@ export class CognitoService {
 				refreshToken,
 			},
 		};
-	}
-
-	cacheInitiateAuthResult(
-		output: InitiateAuthCommandOutput,
-		userStorage = new StorageHelper().getStorage()
-	) {
-		const { AuthenticationResult, Session } = output;
-		if (!AuthenticationResult) {
-			throw new Error(
-				'Cannot cache session data - Initiate Auth did not return tokens'
-			);
-		}
-		const {
-			AccessToken,
-			IdToken,
-			RefreshToken,
-			ExpiresIn = 0,
-		} = AuthenticationResult;
-		userStorage.setItem(
-			COGNITO_CACHE_KEY,
-			JSON.stringify({
-				accessToken: AccessToken,
-				idToken: IdToken,
-				refreshToken: RefreshToken,
-				// ExpiresIn is in seconds, but Date().getTime is in milliseconds
-				expiration: new Date().getTime() + ExpiresIn * 1000,
-				...(Session && { session: Session }),
-			})
-		);
 	}
 }

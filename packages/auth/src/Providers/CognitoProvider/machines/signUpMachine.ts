@@ -20,20 +20,20 @@ import {
 	sendParent,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { CognitoService } from '../service';
+import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { SignUpResult } from '../../../types/AuthPluggable';
+import { CognitoSignUpPluginOptions } from '../types/model/signup/CognitoSignUpPluginOptions';
 
 // TODO: what should we store here?
 interface SignUpMachineContext {
-	service: CognitoService | null;
+	service: CognitoUserPoolService | null;
 	authConfig: CognitoProviderConfig;
 	clientConfig: CognitoIdentityProviderClientConfig;
 	username: string;
 	password: string;
 	attributes?: object;
-	validationData?: { [key: string]: any };
-	clientMetadata?: { [key: string]: string };
+	pluginOptions?: CognitoSignUpPluginOptions;
 	error?: any; // TODO: should this be a proper error type?
 	signUpResult?: SignUpResult | null;
 }
@@ -69,8 +69,7 @@ export const signUpMachineModel = createModel(
 		username: '',
 		password: '',
 		attributes: {},
-		validationData: {},
-		clientMetadata: {},
+		pluginOptions: {},
 		service: null,
 	} as SignUpMachineContext,
 	{
@@ -101,8 +100,7 @@ const signUpStateMachine: MachineConfig<
 		username: '',
 		password: '',
 		attributes: {},
-		validationData: {},
-		clientMetadata: {},
+		pluginOptions: {},
 		error: undefined,
 		signUpResult: null,
 	},
@@ -130,8 +128,7 @@ const signUpStateMachine: MachineConfig<
 								username: context.username,
 								password: context.password,
 								attributes: context.attributes,
-								validationData: context.validationData,
-								clientMetadata: context.clientMetadata,
+								pluginOptions: context.pluginOptions,
 								clientId: context.authConfig.clientId,
 							}
 						);
@@ -177,7 +174,7 @@ const signUpStateMachine: MachineConfig<
 			invoke: {
 				src: async (context, event) => {
 					try {
-						const res = await context.service?.cognitoConfirmSignUp(
+						const res = await context.service?.confirmSignUp(
 							context.clientConfig,
 							{
 								clientId: context.authConfig.clientId,

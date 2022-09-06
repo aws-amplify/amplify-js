@@ -11,11 +11,9 @@
  * and limitations under the License.
  */
 
-import { SignUpPluginOptions } from './SignUpPluginOptions';
-
-export type SignUpParams = {
+export type SignUpParams<T extends any> = {
 	username: string;
 	password: string;
 	attributes?: object;
-	pluginOptions?: SignUpPluginOptions;
+	pluginOptions?: T;
 };

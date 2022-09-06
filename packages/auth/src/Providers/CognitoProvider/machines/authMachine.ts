@@ -30,7 +30,8 @@ import {
 } from './authorizationMachine';
 import { AuthMachineContext, AuthTypeState } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../service';
+import { CognitoService } from '../services/CognitoService';
+import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
 
 export const authMachineModel = createModel({} as AuthMachineContext, {
 	events: {
@@ -62,11 +63,8 @@ const authStateMachineActions: Record<
 				const authenticationMachineWithContext =
 					authenticationMachine.withContext({
 						config: context.config,
-						service: new CognitoService({
-							region: context?.config?.region || '',
-							userPoolId: context?.config?.userPoolId || '',
-							identityPoolId: context?.config?.identityPoolId || '',
-							clientId: context?.config?.clientId || '',
+						service: new CognitoService(context?.config!, {
+							region: context.config?.region,
 						}),
 					});
 				const authenticationRef = spawn(authenticationMachineWithContext, {

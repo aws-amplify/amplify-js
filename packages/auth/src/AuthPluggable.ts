@@ -132,7 +132,7 @@ export class AuthPlugClass {
 		);
 	}
 
-	public signUp(signUpParams: SignUpParams): Promise<SignUpResult> {
+	public signUp(signUpParams: SignUpParams<any>): Promise<SignUpResult> {
 		if (this._pluggables.length > 0) {
 			return this._pluggables[0].signUp(signUpParams);
 		}
@@ -155,7 +155,7 @@ export class AuthPlugClass {
 	}
 
 	public confirmSignIn(
-		confirmSignInParams: ConfirmSignInParams
+		confirmSignInParams: ConfirmSignInParams<any>
 	): Promise<SignInResult> {
 		if (this._pluggables.length > 0) {
 			return this._pluggables[0].confirmSignIn(confirmSignInParams);

@@ -38,20 +38,24 @@ import {
 	SignInWithPassword,
 	ConfirmSignInParams,
 	AmplifyUser,
-	AWSCredentials,
 } from '../../../types';
 import {
-	CognitoConfirmSignInOptions,
 	CognitoCompletePasswordOptions,
+	CognitoConfirmSignInPluginOptions,
 } from '../types/model';
+import { StorageHelper } from '@aws-amplify/core';
+import { CognitoSignUpPluginOptions } from '../types/model/signup/CognitoSignUpPluginOptions';
 
 export class CognitoUserPoolService {
 	private readonly config: CognitoServiceConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
+	private readonly cognitoCacheKey: string;
 	client: CognitoIdentityProviderClient;
+
 	constructor(
 		config: CognitoServiceConfig,
-		clientConfig: CognitoIdentityProviderClientConfig = {}
+		clientConfig: CognitoIdentityProviderClientConfig = {},
+		cognitoCacheKey: string
 	) {
 		this.config = config;
 		this.clientConfig = {
@@ -59,6 +63,7 @@ export class CognitoUserPoolService {
 			...clientConfig,
 		};
 		this.client = new CognitoIdentityProviderClient(this.clientConfig);
+		this.cognitoCacheKey = cognitoCacheKey;
 	}
 
 	async refreshUserPoolTokens(refreshToken: string) {
@@ -118,15 +123,14 @@ export class CognitoUserPoolService {
 
 	async cognitoConfirmSignIn(
 		clientConfig: CognitoIdentityProviderClientConfig,
-		params: CognitoConfirmSignInOptions
+		params: ConfirmSignInParams<CognitoConfirmSignInPluginOptions>
 	): Promise<RespondToAuthChallengeCommandOutput> {
+		const { confirmationCode = '', username, pluginOptions } = params;
 		const {
-			confirmationCode = '',
 			mfaType = 'SMS_MFA',
-			username,
-			session,
-			clientId,
-		} = params;
+			challengeName,
+			clientMetadata,
+		} = pluginOptions as CognitoConfirmSignInPluginOptions;
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.USERNAME = username;
@@ -137,8 +141,8 @@ export class CognitoUserPoolService {
 			new RespondToAuthChallengeCommand({
 				ChallengeName: mfaType,
 				ChallengeResponses: challengeResponses,
-				ClientId: clientId,
-				Session: session,
+				ClientId: this.config.clientId,
+				// Session: session,
 			})
 		);
 		return res;
@@ -146,7 +150,7 @@ export class CognitoUserPoolService {
 
 	async cognitoSignUp(
 		clientConfig: CognitoIdentityProviderClientConfig,
-		params: SignUpParams & { clientId: string }
+		params: SignUpParams<CognitoSignUpPluginOptions> & { clientId: string }
 	): Promise<SignUpResult> {
 		const client = this.client;
 		const { username, password, clientId, attributes } = params;
@@ -216,5 +220,34 @@ export class CognitoUserPoolService {
 			new InitiateAuthCommand(initiateAuthInput)
 		);
 		return res;
+	}
+
+	cacheInitiateAuthResult(
+		output: InitiateAuthCommandOutput,
+		userStorage = new StorageHelper().getStorage()
+	) {
+		const { AuthenticationResult, Session } = output;
+		if (!AuthenticationResult) {
+			throw new Error(
+				'Cannot cache session data - Initiate Auth did not return tokens'
+			);
+		}
+		const {
+			AccessToken,
+			IdToken,
+			RefreshToken,
+			ExpiresIn = 0,
+		} = AuthenticationResult;
+		userStorage.setItem(
+			this.cognitoCacheKey,
+			JSON.stringify({
+				accessToken: AccessToken,
+				idToken: IdToken,
+				refreshToken: RefreshToken,
+				// ExpiresIn is in seconds, but Date().getTime is in milliseconds
+				expiration: new Date().getTime() + ExpiresIn * 1000,
+				...(Session && { session: Session }),
+			})
+		);
 	}
 }

@@ -19,9 +19,9 @@ import {
 	UserPoolTokens,
 } from '../types/machines';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
-import { AWSCredentials } from '../../../types';
 import { decodeJWT } from '../Util';
-import { cacheRefreshTokenResult } from '../service';
+import { CognitoService } from '../services/CognitoService';
+import { AWSCredentials } from '../types/model/session/AWSCredentials';
 
 export const refreshSessionMachineModel = createModel(
 	{
@@ -88,7 +88,7 @@ async function invokeRefreshToken(
 	) {
 		throw new Error('no access token or id token');
 	}
-	cacheRefreshTokenResult(refreshTokensRes);
+	context.service.cacheRefreshTokenResult(refreshTokensRes);
 	return {
 		accessToken: refreshTokensRes.AuthenticationResult.AccessToken,
 		idToken: refreshTokensRes.AuthenticationResult.IdToken,

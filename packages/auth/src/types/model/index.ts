@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-export { ConfirmSignInPluginOptions } from './signin/ConfirmSignInPluginOptions';
 export { ConfirmSignInParams } from './signin/ConfirmSignInParams';
 export { SignInResult } from './signin/SignInResult';
 
