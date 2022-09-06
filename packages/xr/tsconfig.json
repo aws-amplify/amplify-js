@@ -3,5 +3,5 @@
 	"compilerOptions": {
 		"composite": true
 	},
-	"include": ["lib*/**/*.ts"]
+	"include": ["src"]
 }
