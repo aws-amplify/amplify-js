@@ -329,7 +329,7 @@ describe('Indexed db storage test', () => {
 		});
 	});
 
-	test('query lazily HAS_MANY', async () => {
+	test('query lazily HAS_MANY, setting FK', async () => {
 		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
 		await DataStore.save(album1);
 		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
@@ -344,6 +344,39 @@ describe('Indexed db storage test', () => {
 
 		const songs = await q1!.songs.toArray();
 		expect(songs).toStrictEqual([savedSong1, savedSong2, savedSong3]);
+	});
+
+	test('query lazily HAS_MANY, setting parent entity', async () => {
+		const post = await DataStore.save(
+			new Post({
+				title: 'some title',
+			})
+		);
+
+		const comment1 = await DataStore.save(
+			new Comment({
+				content: 'some really impressive comment',
+				post,
+			})
+		);
+
+		const comment2 = await DataStore.save(
+			new Comment({
+				content: 'a less impressive comment',
+				post,
+			})
+		);
+
+		const comment3 = await DataStore.save(
+			new Comment({
+				content: 'just a regular comment',
+				post,
+			})
+		);
+
+		const queriedPost = await DataStore.query(Post, post.id);
+		const comments = await queriedPost?.comments.toArray();
+		expect(comments).toEqual([comment1, comment2, comment3]);
 	});
 
 	test('query lazily MANY to MANY ', async () => {

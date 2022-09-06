@@ -9,6 +9,7 @@ import {
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
+import { ModelRelationship } from '../storage/relationship';
 import { asyncSome, asyncEvery, asyncFilter } from '../util';
 
 type MatchableTypes =
@@ -418,58 +419,20 @@ export class GroupCondition {
 				// `relatives` are actual relatives. We'll skim them for FK query values.
 				// Use the relatives to add candidate result sets (`resultGroups`)
 
-				const fieldMeta = this.model.schema.fields[g.field];
-				const rightHandMeta = g.model;
+				const relationship = ModelRelationship.from(this.model, g.field);
 
-				if (fieldMeta.association) {
-					let leftHandFields;
-					if (fieldMeta.association.targetNames) {
-						leftHandFields = fieldMeta.association.targetNames;
-					} else if (fieldMeta.association.targetName) {
-						leftHandFields = [fieldMeta.association.targetName];
-					} else {
-						leftHandFields = this.model.pkField;
-					}
-
-					let rightHandFields: string[] = [];
-					if (
-						fieldMeta.association.connectionType === 'HAS_MANY' ||
-						fieldMeta.association.connectionType === 'HAS_ONE'
-					) {
-						rightHandFields = Array.isArray(
-							fieldMeta.association.associatedWith
-						)
-							? fieldMeta.association.associatedWith
-							: fieldMeta.association.associatedWith
-							? [fieldMeta.association.associatedWith]
-							: [];
-					}
-
-					if (rightHandFields.length === 0) {
-						// g.model is the model meta for the "right hand" Model
-						rightHandFields = g.model.pkField;
-					}
-
-					const rightHandAssociation =
-						rightHandFields.length === 1
-							? rightHandMeta.schema.fields[rightHandFields[0]].association
-							: undefined;
-					if (rightHandAssociation) {
-						// dereference the RH association fields.
-						rightHandFields = rightHandAssociation.targetNames!;
-					}
-
+				if (relationship) {
 					const relativesPredicates: ((
 						p: ModelPredicate<any>
 					) => ModelPredicate<any>)[] = [];
 					for (const relative of relatives) {
 						const individualRowJoinConditions: FieldCondition[] = [];
 
-						for (let i = 0; i < leftHandFields.length; i++) {
+						for (let i = 0; i < relationship.localJoinFields.length; i++) {
 							// rightHandValue
 							individualRowJoinConditions.push(
-								new FieldCondition(leftHandFields[i], 'eq', [
-									relative[rightHandFields[i]],
+								new FieldCondition(relationship.localJoinFields[i], 'eq', [
+									relative[relationship.remoteJoinFields[i]],
 								])
 							);
 						}
@@ -582,7 +545,7 @@ export class GroupCondition {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
 
-		console.log('v2 checking', itemToCheck, this);
+		// console.log('v2 checking', itemToCheck, this);
 
 		// if there is no item to check, we can stop recursing immediately.
 		// a condition cannot match against an item that does not exist. this
@@ -595,7 +558,8 @@ export class GroupCondition {
 			this.relationshipType === 'HAS_MANY' &&
 			typeof itemToCheck[Symbol.asyncIterator] === 'function'
 		) {
-			console.log('checking has many', await itemToCheck.toArray());
+			// console.log(await itemToCheck.toArray());
+			// console.log('checking has many');
 			for await (const singleItem of itemToCheck) {
 				if (await this.matches(singleItem, true)) {
 					return true;

@@ -168,6 +168,13 @@ export const newSchema: Schema = {
 					isRequired: false,
 					attributes: [],
 				},
+				commentPostId: {
+					name: 'commentPostId',
+					isArray: false,
+					type: 'ID',
+					isRequired: false,
+					attributes: [],
+				},
 				post: {
 					name: 'post',
 					isArray: false,
