@@ -14,6 +14,8 @@
 import {
 	AuthFlowType,
 	ChallengeNameType,
+	CognitoIdentityProviderClient,
+	CognitoIdentityProviderClientConfig,
 	ConfirmSignUpCommand,
 	ConfirmSignUpCommandInput,
 	InitiateAuthCommand,
@@ -25,10 +27,6 @@ import {
 	SignUpCommand,
 	SignUpCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
-import {
-	CognitoIdentityProviderClient,
-	CognitoIdentityProviderClientConfig,
-} from '@aws-sdk/client-cognito-identity-provider/dist-types/CognitoIdentityProviderClient';
 import { CognitoServiceConfig } from '../types/model/config/CognitoServiceConfig';
 import {
 	SignInParams,

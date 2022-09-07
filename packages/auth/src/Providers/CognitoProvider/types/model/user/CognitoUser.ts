@@ -1,7 +1,7 @@
 import { AmplifyUser } from '../../../../../types/model/user/AmplifyUser';
 import { AWSCredentials } from '../session/AWSCredentials';
 
-export type CognitoUser = AmplifyUser & {
+export type AmplifyCognitoUser = AmplifyUser & {
 	credentials?: {
 		// scope
 		[key: string]: {

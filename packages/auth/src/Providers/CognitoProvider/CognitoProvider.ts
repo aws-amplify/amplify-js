@@ -68,12 +68,11 @@ import {
 	AuthenticationMachineContext,
 	AuthenticationTypeState,
 } from './types/machines/authenticationMachine';
-import { CognitoUser } from './types/model/user/CognitoUser';
 import { CognitoConfirmSignInPluginOptions } from './types/model';
 import { CognitoSignUpPluginOptions } from './types/model/signup/CognitoSignUpPluginOptions';
 import { AWSCredentials } from './types/model/session/AWSCredentials';
+import { AmplifyCognitoUser } from './types/model/user/CognitoUser';
 
-export { CognitoUser } from './types/model/user/CognitoUser';
 export { AWSCredentials } from './types/model/session/AWSCredentials';
 
 const logger = new Logger('CognitoProvider');
@@ -122,18 +121,15 @@ function listenToAuthHub(send: any) {
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
-	private _authnService = interpret(authenticationMachine, {
-		devTools: true,
-	}).start();
-	private _authzService = interpret(authorizationMachine, {
-		devTools: true,
-	}).start();
-	private _authService = interpret(
-		authMachine.withContext({
-			// authenticationMachine: this._authnService,
-		}),
-		{ devTools: true }
-	).start();
+	private _authService: any;
+	private _authnService: any;
+	private _authzService: any;
+	// private _authnService = interpret(authenticationMachine, {
+	// 	devTools: true,
+	// }).start();
+	// private _authzService = interpret(authorizationMachine, {
+	// 	devTools: true,
+	// }).start();
 
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
@@ -145,16 +141,17 @@ export class CognitoProvider implements AuthProvider {
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
 		this._userStorage = config.storage ?? new StorageHelper().getStorage();
-		listenToAuthHub(this._authnService.send);
+		// listenToAuthHub(this._authnService.send);
 		// @ts-ignore ONLY FOR DEBUGGING AND TESTING!
 		window.Hub = Hub;
-		this._authnService.subscribe(state => {});
+		// this._authnService.subscribe(state => {});
 	}
 
 	configure(config: PluginConfig) {
 		logger.debug(
 			`Configuring provider with ${JSON.stringify(config, null, 2)}`
 		);
+		console.log('hello!');
 
 		if (!config.userPoolId || !config.region) {
 			throw new Error(`Invalid config for ${this.getProviderName()}`);
@@ -169,7 +166,25 @@ export class CognitoProvider implements AuthProvider {
 		if (config.storage) {
 			this._userStorage = config.storage;
 		}
+		this._authService = interpret(authMachine, { devTools: true }).start();
+
 		this._authService.send(authMachineEvents.configureAuth(this._config));
+
+		debugger;
+		waitFor(this._authService, state => state.matches('configured')).then(
+			() => {
+				const { authenticationActorRef, authorizationActorRef } =
+					this._authService.state.context;
+				this._authnService = authenticationActorRef as ActorRefFrom<
+					typeof authenticationMachine
+				>;
+				this._authzService = authorizationActorRef as ActorRefFrom<
+					typeof authorizationMachine
+				>;
+
+				logger.debug('provider configured');
+			}
+		);
 
 		// this._authnService.send(
 		// 	authenticationMachineEvents.configure(this._config)
@@ -224,15 +239,12 @@ export class CognitoProvider implements AuthProvider {
 		// 	'authenticationMachine'
 		// ) as Interpreter<AuthenticationMachineContext>;
 
-		const { authenticationActorRef } = this._authService.state.context;
-		const signInMachine = authenticationActorRef as ActorRefFrom<
-			typeof authenticationMachine
-		>;
+		// const { authenticationActorRef } = this._authService.state.context;
+		// const signInMachine = authenticationActorRef as ActorRefFrom<
+		// 	typeof authenticationMachine
+		// >;
 
-		const { actorRef } = signInMachine.state.context;
-		const passwordMachine = actorRef as ActorRefFrom<typeof signInMachine>;
-
-		if (signInMachine.state.matches('notConfigured')) {
+		if (this._authnService.state.matches('notConfigured')) {
 			throw new Error('AuthN is not configured');
 		}
 		// TODO: implement the other sign in method
@@ -247,7 +259,7 @@ export class CognitoProvider implements AuthProvider {
 			);
 		}
 		// kick off the sign in request
-		signInMachine.send(
+		this._authnService.send(
 			authenticationMachineEvents.signInRequested({
 				...params,
 				signInFlow: this._authFlow,
@@ -507,7 +519,7 @@ export class CognitoProvider implements AuthProvider {
 
 		// assign aws credentials to the session
 		const userpoolTokens = this.getCachedUserpoolTokens();
-		const amplifyUser: CognitoUser = {
+		const amplifyUser: AmplifyCognitoUser = {
 			isSignedIn,
 			credentials: {
 				default: {

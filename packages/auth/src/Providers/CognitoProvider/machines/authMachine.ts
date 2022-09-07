@@ -17,8 +17,9 @@ import {
 	spawn,
 	EventFrom,
 	AssignAction,
+	sendParent,
 } from 'xstate';
-import { stop } from 'xstate/lib/actions';
+import { pure, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	authenticationMachine,
@@ -32,6 +33,7 @@ import { AuthMachineContext, AuthTypeState } from '../types/machines';
 import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoService } from '../services/CognitoService';
 import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
+import { Logger } from '@aws-amplify/core';
 
 export const authMachineModel = createModel({} as AuthMachineContext, {
 	events: {
@@ -42,10 +44,13 @@ export const authMachineModel = createModel({} as AuthMachineContext, {
 		authenticationNotConfigured: () => ({}),
 		authorizationConfigured: () => ({}),
 		authorizationNotConfigured: () => ({}),
+		error: () => ({}),
 	},
 });
 
 export type AuthEvents = EventFrom<typeof authMachineModel>;
+const logger = new Logger('authMachine');
+console.log('why???');
 
 const authStateMachineActions: Record<
 	string,
@@ -63,8 +68,11 @@ const authStateMachineActions: Record<
 				const authenticationMachineWithContext =
 					authenticationMachine.withContext({
 						config: context.config,
-						service: new CognitoService(context?.config!, {
-							region: context.config?.region,
+						service: new CognitoService({
+							region: context?.config?.region || '',
+							userPoolId: context?.config?.userPoolId || '',
+							identityPoolId: context?.config?.identityPoolId || '',
+							clientId: context?.config?.clientId || '',
 						}),
 					});
 				const authenticationRef = spawn(authenticationMachineWithContext, {
@@ -94,7 +102,7 @@ const authStateMachineActions: Record<
 				return authorizationRef;
 			},
 		},
-		'configureAuthorization'
+		'configureAuth'
 	),
 };
 
@@ -104,33 +112,35 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 	initial: 'notConfigured',
 	states: {
 		notConfigured: {
+			entry: [
+				authStateMachineActions.assignConfig,
+				authStateMachineActions.setAuthenticationActor,
+				authStateMachineActions.setAuthorizationActor,
+			],
 			on: {
 				configureAuth: {
 					target: 'configuringAuthentication',
-					actions: [
-						authStateMachineActions.assignConfig,
-						authStateMachineActions.setAuthenticationActor,
-						authStateMachineActions.setAuthorizationActor,
-					],
 				},
 			},
 		},
 		configuringAuthentication: {
 			entry: (context, _) => {
+				console.log('entered configuringAuthorization');
 				context.authenticationActorRef?.send(
-					authenticationMachineEvents.configure(context.config!)
+					authorizationMachineEvents.configure(context.config!)
 				);
 			},
 			on: {
 				authenticationConfigured: 'configuringAuthorization',
 				authenticationNotConfigured: {
-					actions: [stop(context => context.authenticationActorRef!)],
+					// actions: [stop(context => context.authenticationActorRef!)],
 					target: 'configuringAuthorization',
 				},
 			},
 		},
 		configuringAuthorization: {
 			entry: (context, _) => {
+				console.log('entered configuringAuthorization');
 				context.authorizationActorRef?.send(
 					authorizationMachineEvents.configure(context.config!)
 				);
@@ -138,12 +148,20 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 			on: {
 				authorizationConfigured: 'configured',
 				authenticationNotConfigured: {
-					actions: [stop(context => context.authorizationActorRef!)],
+					// actions: [stop(context => context.authorizationActorRef!)],
 					target: 'configured',
 				},
 			},
 		},
 		configured: {
+			entry: (context, _) => {
+				console.log('entered configured');
+			},
+			on: {
+				error: 'error',
+			},
+		},
+		error: {
 			type: 'final',
 		},
 	},

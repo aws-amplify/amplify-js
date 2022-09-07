@@ -21,7 +21,7 @@ export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
 
 export {
 	CognitoProvider,
-	CognitoUser,
+	AmplifyCognitoUser,
 	AWSCredentials,
 } from './Providers/CognitoProvider';
 export { AuthPluggable } from './AuthPluggable';
@@ -39,3 +39,5 @@ export {
 export { Auth } from './Auth';
 export { Auth as default } from './Auth';
 export * from './types';
+
+export { appendToCognitoUserAgent } from 'amazon-cognito-identity-js';

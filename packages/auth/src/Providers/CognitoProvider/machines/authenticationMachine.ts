@@ -88,24 +88,6 @@ const authenticationMachineActions: Record<
 	string,
 	AssignAction<AuthenticationMachineContext, any>
 > = {
-	// assignConfig: authenticationMachineModel.assign(
-	// 	{
-	// 		config: (_context, event) => event.config,
-	// 	},
-	// 	'configure'
-	// ),
-	// assignService: authenticationMachineModel.assign(
-	// 	{
-	// 		service: (_context, event) =>
-	// 			new CognitoService({
-	// 				region: _context?.config?.region || '',
-	// 				userPoolId: _context?.config?.userPoolId || '',
-	// 				identityPoolId: _context?.config?.identityPoolId || '',
-	// 				clientId: _context?.config?.clientId || '',
-	// 			}),
-	// 	},
-	// 	'configure'
-	// ),
 	spawnSignInActor: authenticationMachineModel.assign(
 		{
 			actorRef: (context, event) => {
@@ -211,9 +193,9 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		configured: {
-			entry: pure((_, event) => {
-				return sendParent({ type: 'authenticationConfigured' });
-			}),
+			// entry: pure((_, event) => {
+			// 	return sendParent({ type: 'authenticationConfigured' });
+			// }),
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',

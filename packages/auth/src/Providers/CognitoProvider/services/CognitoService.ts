@@ -13,8 +13,8 @@ import { getExpirationTimeFromJWT, decodeJWT } from '../Util';
 import { StorageHelper, Logger } from '@aws-amplify/core';
 import { CognitoUserPoolService } from './CognitoUserPoolService';
 import { CognitoIdentityPoolService } from './CognitoIdentityPoolService';
-import { CognitoUser } from '../types/model/user/CognitoUser';
 import { AWSCredentials } from '../types/model/session/AWSCredentials';
+import { AmplifyCognitoUser } from '../types/model/user/CognitoUser';
 
 const logger = new Logger('CognitoStatelessService');
 
@@ -132,7 +132,7 @@ export class CognitoService {
 		};
 	}
 
-	async fetchSession(): Promise<CognitoUser> {
+	async fetchSession(): Promise<AmplifyCognitoUser> {
 		// TODO: add param for cognito client config
 		const cognitoClient = this.cognitoUserPoolService;
 		const session = this.getSessionData();

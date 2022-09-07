@@ -56,4 +56,10 @@ export type AuthTypeState =
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
 			};
+	  }
+	| {
+			value: 'error';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+			};
 	  };
