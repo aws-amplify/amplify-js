@@ -52,8 +52,7 @@
 						"es2015",
 						"dom",
 						"esnext.asynciterable",
-						"es2019",
-						"dom"
+						"es2019"
 					],
 					"allowJs": true,
 					"esModuleInterop": true,

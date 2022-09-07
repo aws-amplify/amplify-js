@@ -4,6 +4,7 @@
 		"outDir": "./lib/",
 		"target": "es5",
 		"noImplicitAny": false,
+		"downlevelIteration": true,
 		"lib": [
 			"es5",
 			"es2015",
@@ -23,7 +24,7 @@
 		"esModuleInterop": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		// temporary fix
-		"types": ["node", "lodash"]
+		"types": ["jest", "node", "lodash"]
 	},
 	"include": ["src/**/*"]
 }

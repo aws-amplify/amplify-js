@@ -19,6 +19,7 @@ import {
 	isPredicateObj,
 	ModelPredicate,
 	NamespaceResolver,
+	NAMESPACES,
 	OpType,
 	PaginationInput,
 	PersistentModel,
@@ -56,7 +57,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
