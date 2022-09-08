@@ -61,6 +61,7 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Text: 'star',
+					PlaceId: 'a1b2c3d4',
 				},
 				{
 					Text: 'not star',
@@ -321,7 +322,15 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('searchForSuggestions', () => {
 		const testString = 'star';
-		const testResults = ['star', 'not star'];
+		const testResults = [
+			{
+				text: 'star',
+				placeId: 'a1b2c3d4',
+			},
+			{
+				text: 'not star',
+			},
+		];
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -464,7 +473,7 @@ describe('AmazonLocationServiceProvider', () => {
 			await expect(
 				locationProvider.searchForSuggestions(testString)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
 	});

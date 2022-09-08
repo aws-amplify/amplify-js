@@ -62,6 +62,7 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Text: 'star',
+					PlaceId: 'a1b2c3d4',
 				},
 				{
 					Text: 'not star',
@@ -333,7 +334,15 @@ describe('Geo', () => {
 
 	describe('searchForSuggestions', () => {
 		const testString = 'star';
-		const testResults = ['star', 'not star'];
+		const testResults = [
+			{
+				text: 'star',
+				placeId: 'a1b2c3d4',
+			},
+			{
+				text: 'not star',
+			},
+		];
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {

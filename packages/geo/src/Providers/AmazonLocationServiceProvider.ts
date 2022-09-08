@@ -292,10 +292,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		/**
-		 * The response from Amazon Location Service is a "Results" array of objects with a single `Text` item.
-		 * Here we want to flatten that to an array of just the strings from those `Text` items.
+		 * The response from Amazon Location Service is a "Results" array of objects with `Text` and `PlaceId`.
 		 */
-		const results = response.Results.map(result => result.Text);
+		const results = response.Results.map(result => ({
+			text: result.Text,
+			placeId: result.PlaceId,
+		}));
 
 		return results;
 	}

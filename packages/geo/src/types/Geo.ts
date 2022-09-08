@@ -171,4 +171,9 @@ export type DeleteGeofencesResults = {
 };
 
 // Return type for searchForSuggestions
-export type SearchForSuggestionsResults = string[];
+export type SearchForSuggestionsResults = SearchForSuggestionsResult[];
+
+export type SearchForSuggestionsResult = {
+	text: string;
+	placeId?: string;
+};
