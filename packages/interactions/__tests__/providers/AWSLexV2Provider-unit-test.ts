@@ -18,14 +18,26 @@ import {
 	RecognizeTextCommandOutput,
 	RecognizeUtteranceCommand,
 } from '@aws-sdk/client-lex-runtime-v2';
-import { gzip, strToU8 } from 'fflate';
+import { strFromU8, strToU8 } from 'fflate';
+import { gzip, ungzip } from 'pako';
 import { encode } from 'base-64';
 import { prototype } from 'stream';
+import * as UtilsHelper from '../../src/Providers/AWSLexProviderHelper/utils';
 
 (global as any).Response = () => {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
 	return Promise.resolve(new ArrayBuffer(0));
 };
+
+UtilsHelper.gzipDecompressToString = jest.fn(async (data: Uint8Array) => {
+	try {
+		const decoded = strFromU8(ungzip(data));
+		return decoded;
+	} catch (err) {
+		console.log(err, data);
+		throw err;
+	}
+});
 
 // mock stream response
 const createBlob = () => {
@@ -71,12 +83,7 @@ const gzipBase64Json = async (dataObject: object) => {
 		const arrayBuffer = strToU8(objString);
 
 		// 3. gzip compress
-		const compressedData: Uint8Array = await new Promise((resolve, reject) => {
-			gzip(arrayBuffer, (err, data) => {
-				if (err) reject(err);
-				else resolve(data);
-			});
-		});
+		const compressedData: Uint8Array = gzip(arrayBuffer);
 
 		// 4. arrayBuffer to base64
 		return arrayBufferToBase64(compressedData);
