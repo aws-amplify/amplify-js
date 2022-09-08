@@ -36,6 +36,7 @@ import {
 	ListGeofenceOptions,
 	ListGeofenceResults,
 	DeleteGeofencesResults,
+	SearchForLocationByIdOptions,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -184,6 +185,27 @@ export class GeoClass {
 
 		try {
 			return await prov.searchForSuggestions(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for location by unique ID
+	 * @param  {string} placeId - Unique ID of the location that is to be searched for
+	 * @param  {SearchForLocationByIdOptions} options? - Optional parameters to the search
+	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
+	 */
+	public async searchForLocationById(
+		placeId: string,
+		options?: SearchForLocationByIdOptions
+	) {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchForLocationById(placeId, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

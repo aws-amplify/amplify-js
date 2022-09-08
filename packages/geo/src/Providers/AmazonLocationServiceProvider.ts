@@ -30,6 +30,9 @@ import {
 	BatchPutGeofenceCommandInput,
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
+	GetPlaceCommand,
+	GetPlaceCommandInput,
+	GetPlaceCommandOutput,
 	GetGeofenceCommand,
 	GetGeofenceCommandInput,
 	GetGeofenceCommandOutput,
@@ -62,6 +65,7 @@ import {
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
+	SearchForLocationByIdOptions,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -300,6 +304,49 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}));
 
 		return results;
+	}
+
+	private _verifyPlaceId(placeId: string) {
+		// if (isValid(placeId)) { - if we have more validation rules for placeId
+		if (placeId.length === 0) {
+			const errorString = 'PlaceId is empty';
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+	}
+
+	public async searchForLocationById(
+		placeId: string,
+		options?: SearchForLocationByIdOptions
+	): Promise<Place> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifyPlaceId(placeId);
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		const searchForLocationByIdInput: GetPlaceCommandInput = {
+			PlaceId: placeId,
+			IndexName: options?.searchIndexName,
+		};
+		const command = new GetPlaceCommand(searchForLocationByIdInput);
+
+		let response: GetPlaceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		return response;
 	}
 
 	/**
