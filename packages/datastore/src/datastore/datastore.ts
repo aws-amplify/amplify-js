@@ -99,7 +99,9 @@ import {
 	mergePatches,
 } from '../util';
 import {
-	SingularModelPredicateExtender,
+	RecursiveModelPredicateExtender,
+	ModelPredicateExtender,
+	recursivePredicateFor,
 	predicateFor,
 	GroupCondition,
 } from '../predicates/next';
@@ -204,7 +206,7 @@ const buildSeedPredicate = <T extends PersistentModel>(
 	);
 	if (!pks) throw new Error('Could not determine PK');
 
-	return predicateFor<T>({
+	return recursivePredicateFor<T>({
 		builder: modelConstructor as PersistentModelConstructor<T>,
 		schema: modelSchema,
 		pkField: pks,
@@ -1233,14 +1235,17 @@ class DataStore {
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll | null,
+			criteria?:
+				| RecursiveModelPredicateExtender<T>
+				| typeof PredicateAll
+				| null,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
-			| SingularModelPredicateExtender<T>
+			| RecursiveModelPredicateExtender<T>
 			| typeof PredicateAll
 			| null,
 		paginationProducer?: ProducerPaginationInput<T>
@@ -1322,13 +1327,13 @@ class DataStore {
 						pagination
 					);
 				} else {
-					const seedPredicate = predicateFor<T>({
+					const seedPredicate = recursivePredicateFor<T>({
 						builder: modelConstructor,
 						schema: modelDefinition,
 						pkField: getModelPKFieldName(modelConstructor),
 					});
 					const predicate = (
-						identifierOrCriteria as SingularModelPredicateExtender<T>
+						identifierOrCriteria as RecursiveModelPredicateExtender<T>
 					)(seedPredicate).__query;
 					result = (await predicate.fetch(this.storage)) as T[];
 					result = inMemoryPagination(result, pagination);
@@ -1347,7 +1352,7 @@ class DataStore {
 
 	save = async <T extends PersistentModel>(
 		model: T,
-		condition?: ProducerModelPredicate<T>
+		condition?: ModelPredicateExtender<T>
 	): Promise<T> => {
 		return this.runningProcesses.add(async () => {
 			await this.start();
@@ -1376,10 +1381,15 @@ class DataStore {
 				throw new Error('Model Definition could not be found for model');
 			}
 
-			const producedCondition = ModelPredicateCreator.createFromExisting(
-				modelDefinition,
-				condition!
-			);
+			const producedCondition = condition
+				? condition(
+						predicateFor({
+							builder: modelConstructor,
+							schema: modelDefinition,
+							pkField: extractPrimaryKeyFieldNames(modelDefinition),
+						})
+				  ).__query.toStoragePredicate()
+				: undefined;
 
 			const [savedModel] = await this.storage.runExclusive(async s => {
 				const saved = await s.save(
@@ -1595,7 +1605,7 @@ class DataStore {
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll
+			criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll
 		): Observable<SubscriptionMessage<T>>;
 
 		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
@@ -1603,7 +1613,7 @@ class DataStore {
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| string
-			| SingularModelPredicateExtender<T>
+			| RecursiveModelPredicateExtender<T>
 			| typeof PredicateAll
 	): Observable<SubscriptionMessage<T>> => {
 		let executivePredicate: GroupCondition;
@@ -1671,7 +1681,7 @@ class DataStore {
 			).__query;
 		} else if (modelConstructor && typeof identifierOrCriteria === 'function') {
 			executivePredicate = (
-				identifierOrCriteria as SingularModelPredicateExtender<T>
+				identifierOrCriteria as RecursiveModelPredicateExtender<T>
 			)(buildSeedPredicate(modelConstructor) as any).__query;
 		}
 
@@ -1754,12 +1764,12 @@ class DataStore {
 	observeQuery: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll,
+			criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
 			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
 	} = <T extends PersistentModel>(
 		model: PersistentModelConstructor<T>,
-		criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll,
+		criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
@@ -1808,7 +1818,7 @@ class DataStore {
 			// 	executivePredicate = buildIdPredicate(buildSeedPredicate(model)).__query;
 			// } else
 			if (model && typeof criteria === 'function') {
-				executivePredicate = (criteria as SingularModelPredicateExtender<T>)(
+				executivePredicate = (criteria as RecursiveModelPredicateExtender<T>)(
 					buildSeedPredicate(model)
 				).__query;
 			} else if (isPredicatesAll(criteria)) {

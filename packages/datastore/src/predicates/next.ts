@@ -35,22 +35,18 @@ const ops: AllFieldOperators[] = [
 	'notContains',
 ];
 
-export type ModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: ModelPredicate<RT>
-) => {
-	__query: GroupCondition;
-}[];
-
 /**
- * A function that accepts a ModelPrecicate<T>, which it must use to return a final condition.
+ * A function that accepts a RecursiveModelPrecicate<T>, which it must use to
+ * return a final condition.
  *
- * This is used in `DataStore.query()` as the second argument. E.g.,
+ * This is used in `DataStore.query()`, `DataStore.observe()`, and
+ * `DataStore.observeQuery()` as the second argument. E.g.,
  *
  * ```
  * DataStore.query(MyModel, model => model.field.eq('some value'))
  * ```
  *
- * More complex queries should also be supported.
+ * More complex queries should also be supported. E.g.,
  *
  * ```
  * DataStore.query(MyModel, model => model.and(m => [
@@ -62,36 +58,88 @@ export type ModelPredicateExtender<RT extends PersistentModel> = (
  * ]))
  * ```
  */
-export type SingularModelPredicateExtender<RT extends PersistentModel> = (
+export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
+	lambda: RecursiveModelPredicate<RT>
+) => {
+	__query: GroupCondition;
+};
+
+export type RecursiveModelPredicateAggregateExtender<
+	RT extends PersistentModel
+> = (lambda: RecursiveModelPredicate<RT>) => {
+	__query: GroupCondition;
+}[];
+
+/**
+ * A function that accepts a ModelPrecicate<T>, which it must use to return a
+ * final condition.
+ *
+ * This is used as predicates in `DataStore.save()`, `DataStore.delete()`, and
+ * DataStore sync expressions.
+ *
+ * ```
+ * DataStore.save(record, model => model.field.eq('some value'))
+ * ```
+ *
+ * Logical operators are supported. But, condtiions are related records are
+ * NOT supported. E.g.,
+ *
+ * ```
+ * DataStore.delete(record, model => model.or(m => [
+ * 	m.field.eq('whatever'),
+ * 	m.field.eq('whatever else')
+ * ]))
+ * ```
+ */
+export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
 	__query: GroupCondition;
 };
 
+export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
+	lambda: ModelPredicate<RT>
+) => {
+	__query: GroupCondition;
+}[];
+
 type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
-	[K in AllFieldOperators]: (...operands: Scalar<MT>[]) => FinalModelPredicate;
+	[K in AllFieldOperators]: (...operands: Scalar<MT>[]) => ModelPredicateLeaf;
 };
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateExtender<RT>] | FinalModelPredicate[]
-) => FinalModelPredicate;
+	...predicates:
+		| [RecursiveModelPredicateAggregateExtender<RT>]
+		| ModelPredicateLeaf[]
+) => ModelPredicateLeaf;
 
 type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: SingularModelPredicateExtender<RT> | FinalModelPredicate
-) => FinalModelPredicate;
+	predicate: RecursiveModelPredicateExtender<RT> | ModelPredicateLeaf
+) => ModelPredicateLeaf;
+
+export type RecursiveModelPredicate<RT extends PersistentModel> = {
+	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
+		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
+		: ValuePredicate<RT, RT[K]>;
+} & {
+	or: ModelPredicateOperator<RT>;
+	and: ModelPredicateOperator<RT>;
+	not: ModelPredicateNegation<RT>;
+	__copy: () => RecursiveModelPredicate<RT>;
+} & ModelPredicateLeaf;
 
 export type ModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
-		? ModelPredicate<PredicateFieldType<RT[K]>>
+		? never
 		: ValuePredicate<RT, RT[K]>;
 } & {
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
 	__copy: () => ModelPredicate<RT>;
-} & FinalModelPredicate;
+} & ModelPredicateLeaf;
 
-export type FinalModelPredicate = {
+export type ModelPredicateLeaf = {
 	__query: GroupCondition;
 	__tail: GroupCondition;
 	filter: <T>(items: T[]) => Promise<T[]>;
@@ -303,10 +351,46 @@ export class GroupCondition {
 	public groupId = getGroupId();
 
 	constructor(
+		/**
+		 * The `ModelMeta` of the model to query and/or filter against.
+		 * Expected to contain:
+		 *
+		 * ```js
+		 * {
+		 * 	builder: ModelConstructor,
+		 * 	schema: SchemaModel,
+		 * 	pkField: string[]
+		 * }
+		 * ```
+		 */
 		public model: ModelMeta<any>,
+
+		/**
+		 * If populated, this group specifices a condition on a relationship.
+		 *
+		 * If `field` does *not* point to a related model, that's an error. It
+		 * could indicate that the `GroupCondition` was instantiated with bad
+		 * data, or that the model metadata is incorrect.
+		 */
 		public field: string | undefined,
+
+		/**
+		 * If a `field` is given, whether the relationship is a `HAS_ONE`,
+		 * 'HAS_MANY`, or `BELONGS_TO`.
+		 *
+		 * TODO: Remove this and replace with derivation using
+		 * `ModelRelationship.from(this.model, this.field).relationship`;
+		 */
 		public relationshipType: string | undefined,
+
+		/**
+		 *
+		 */
 		public operator: GroupOperator,
+
+		/**
+		 *
+		 */
 		public operands: UntypedCondition[]
 	) {}
 
@@ -423,8 +507,8 @@ export class GroupCondition {
 
 				if (relationship) {
 					const relativesPredicates: ((
-						p: ModelPredicate<any>
-					) => ModelPredicate<any>)[] = [];
+						p: RecursiveModelPredicate<any>
+					) => RecursiveModelPredicate<any>)[] = [];
 					for (const relative of relatives) {
 						const individualRowJoinConditions: FieldCondition[] = [];
 
@@ -583,6 +667,16 @@ export class GroupCondition {
 			throw new Error('Invalid group operator!');
 		}
 	}
+
+	toStoragePredicate() {
+		let predicate = FlatModelPredicateCreator.createPredicateBuilder(
+			this.model.schema
+		) as any;
+		FlatModelPredicateCreator.createGroupFromExisting(this.model.schema);
+		for (const operand of this.operands) {
+			// predicate = predicate[this.field || this.operator]
+		}
+	}
 }
 
 // TODO: `predicateFor` is potentially too long, too complicatd. DECOMPOSE?
@@ -620,12 +714,13 @@ export class GroupCondition {
  * @returns A ModelPredicate (builder) that customers can create queries with.
  * (As shown in function description.)
  */
-export function predicateFor<T extends PersistentModel>(
+export function recursivePredicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>,
+	allowRecursion: boolean = true,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
-): ModelPredicate<T> {
+): RecursiveModelPredicate<T> {
 	let starter: GroupCondition | undefined;
 	// if we don't have an existing query + tail to build onto,
 	// we need to start a new query chain.
@@ -640,21 +735,27 @@ export function predicateFor<T extends PersistentModel>(
 		__tail: starter || tail,
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
-			return predicateFor(ModelType, undefined, query, newtail);
+			return recursivePredicateFor(
+				ModelType,
+				allowRecursion,
+				undefined,
+				query,
+				newtail
+			);
 		},
 		filter: items => {
 			return asyncFilter(items, i => link.__query.matches(i));
 		},
-	} as ModelPredicate<T>;
+	} as RecursiveModelPredicate<T>;
 
 	// TODO: consider a proxy
 	// adds .or() and .and() methods to the link.
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
-				| [ModelPredicateExtender<T>]
-				| FinalModelPredicate[]
-		): FinalModelPredicate => {
+				| [RecursiveModelPredicateAggregateExtender<T>]
+				| ModelPredicateLeaf[]
+		): ModelPredicateLeaf => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
 			const newlink = link.__copy();
@@ -669,11 +770,11 @@ export function predicateFor<T extends PersistentModel>(
 					op as 'and' | 'or',
 					typeof builderOrPredicates[0] === 'function'
 						? // handle the the `c => [c.field.eq(v)]` form
-						  builderOrPredicates[0](predicateFor(ModelType)).map(
-								p => p.__query
-						  )
+						  builderOrPredicates[0](
+								recursivePredicateFor(ModelType, allowRecursion)
+						  ).map(p => p.__query)
 						: // handle the `[MyModel.field.eq(v)]` form (not yet available)
-						  (builderOrPredicates as FinalModelPredicate[]).map(p => p.__query)
+						  (builderOrPredicates as ModelPredicateLeaf[]).map(p => p.__query)
 				)
 			);
 
@@ -690,8 +791,8 @@ export function predicateFor<T extends PersistentModel>(
 
 	// TODO: consider proxy
 	link.not = (
-		builderOrPredicate: SingularModelPredicateExtender<T> | FinalModelPredicate
-	): FinalModelPredicate => {
+		builderOrPredicate: RecursiveModelPredicateExtender<T> | ModelPredicateLeaf
+	): ModelPredicateLeaf => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
 		const newlink = link.__copy();
@@ -707,7 +808,11 @@ export function predicateFor<T extends PersistentModel>(
 				'not',
 				typeof builderOrPredicate === 'function'
 					? // handle the the `c => c.field.eq(v)` form
-					  [builderOrPredicate(predicateFor(ModelType)).__query]
+					  [
+							builderOrPredicate(
+								recursivePredicateFor(ModelType, allowRecursion)
+							).__query,
+					  ]
 					: // handle the `MyModel.field.eq(v)` form (not yet available)
 					  [builderOrPredicate.__query]
 			)
@@ -772,7 +877,11 @@ export function predicateFor<T extends PersistentModel>(
 						};
 					}, {});
 				} else {
-					if (
+					if (!allowRecursion) {
+						throw new Error(
+							'Predication on releated models is not supported in this context.'
+						);
+					} else if (
 						def.association.connectionType === 'BELONGS_TO' ||
 						def.association.connectionType === 'HAS_ONE' ||
 						def.association.connectionType === 'HAS_MANY'
@@ -803,8 +912,9 @@ export function predicateFor<T extends PersistentModel>(
 						// so, it's safe to modify at this point. and we need to modify
 						// it to push the *new* tail onto the end of it.
 						(oldtail as GroupCondition).operands.push(newtail);
-						const newlink = predicateFor(
+						const newlink = recursivePredicateFor(
 							relatedMeta,
+							allowRecursion,
 							undefined,
 							newquery,
 							newtail
@@ -821,4 +931,10 @@ export function predicateFor<T extends PersistentModel>(
 	}
 
 	return link;
+}
+
+export function predicateFor<T extends PersistentModel>(
+	ModelType: ModelMeta<T>
+): ModelPredicate<T> {
+	return recursivePredicateFor(ModelType, false) as ModelPredicate<T>;
 }
