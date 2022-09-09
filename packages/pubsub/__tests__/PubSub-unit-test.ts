@@ -70,7 +70,8 @@ const credentials = {
 };
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
-	new Promise((resolve, reject) => {
+	new Promise(async (resolve, reject) => {
+		let hubConnectionListener = new HubConnectionListener('pubsub');
 		const obs = pubsub.subscribe(topic, options).subscribe({
 			next: data => {
 				expect(data.value).toEqual(message);
@@ -80,7 +81,9 @@ const testPubSubAsync = (pubsub, topic, message, options?) =>
 			close: () => console.log('close'),
 			error: reject,
 		});
-
+		await hubConnectionListener.waitUntilConnectionStateIn([
+			ConnectionState.Connected,
+		]);
 		pubsub.publish(topic, message, options);
 	});
 
@@ -181,6 +184,8 @@ describe('PubSub', () => {
 
 	describe('AWSIoTProvider', () => {
 		test('subscribe and publish to the same topic using AWSIoTProvider', async done => {
+			let hubConnectionListener = new HubConnectionListener('pubsub');
+
 			const config = {
 				PubSub: {
 					aws_pubsub_region: 'region',
@@ -207,6 +212,10 @@ describe('PubSub', () => {
 				complete: () => console.log('done'),
 				error: error => console.log('error', error),
 			});
+
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Connected,
+			]);
 
 			await pubsub.publish('topicA', 'my message');
 		});
@@ -292,7 +301,6 @@ describe('PubSub', () => {
 			pubsub.addPluggable(awsIotProvider);
 
 			pubsub.subscribe('topic', { clientId: '123' }).subscribe({});
-
 			await hubConnectionListener.waitUntilConnectionStateIn([
 				ConnectionState.Connected,
 			]);

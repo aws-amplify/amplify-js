@@ -674,7 +674,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({ error: () => {} });
+					observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
 
 					await fakeWebSocketInterface?.readyForUse;
@@ -817,7 +817,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						const subscription = observer.subscribe({ error: () => {} });
+						observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.standardConnectionHandshake();
 
