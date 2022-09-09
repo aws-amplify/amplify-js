@@ -1,12 +1,14 @@
 import { Observer } from 'zen-observable-ts';
-import { RECONNECT_DELAY } from '../Providers/constants';
+import { RECONNECT_DELAY, RECONNECT_INTERVAL } from '../Providers/constants';
 
 export enum ReconnectEvent {
 	RECONNECT = 'RECONNECT',
+	CONNECTED = 'CONNECTED',
 }
 
 export class ReconnectionMonitor {
 	private reconnectObservers: Observer<void>[] = [];
+	private reconnectIntervalId?: ReturnType<typeof setInterval>;
 
 	addObserver(reconnectObserver: Observer<void>) {
 		this.reconnectObservers.push(reconnectObserver);
@@ -14,11 +16,29 @@ export class ReconnectionMonitor {
 
 	record(event: ReconnectEvent) {
 		if (event === ReconnectEvent.RECONNECT) {
-			setTimeout(() => {
+			const triggerReconnect = () => {
 				this.reconnectObservers.forEach(reconnectObserver => {
 					reconnectObserver.next?.();
 				});
-			}, RECONNECT_DELAY);
+			};
+			// If the reconnect interval isn't set
+			if (this.reconnectIntervalId === undefined) {
+				setTimeout(() => {
+					// Reconnect now
+					triggerReconnect();
+					// Retry reconnect every periodically until it works
+					this.reconnectIntervalId = setInterval(() => {
+						triggerReconnect();
+					}, RECONNECT_INTERVAL);
+				}, RECONNECT_DELAY);
+			}
+		}
+
+		if (event === ReconnectEvent.CONNECTED) {
+			if (this.reconnectIntervalId) {
+				clearInterval(this.reconnectIntervalId);
+				this.reconnectIntervalId = undefined;
+			}
 		}
 	}
 

@@ -285,7 +285,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription failes when onclose triggered while waiting for onopen', async () => {
+				test('subscription disrupted triggering reconnect when onclose triggered while waiting for onopen', async () => {
 					expect.assertions(1);
 
 					provider
@@ -298,7 +298,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.triggerClose();
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Disconnected,
+						CS.ConnectionDisrupted,
 					]);
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -308,6 +308,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							message: expect.stringMatching('Connection handshake error'),
 						})
 					);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
 				});
 
 				test('subscription reconnects when onclose triggered while offline and waiting for onopen', async () => {
@@ -489,18 +492,16 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect(mockNext).toBeCalled();
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a error data message is received', async () => {
+				test('subscription observer error is triggered when a connection is formed the error is logged and reconnect is triggered', async () => {
 					// Test for error message path message receipt has nothing to assert (only passes when error triggers error subscription method)
 					expect.assertions(1);
-					const mockError = jest.fn();
 
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
 					const subscription = observer.subscribe({
-						// Succeed only when the first message comes through
-						error: mockError,
+						error: () => {},
 					});
 
 					await fakeWebSocketInterface?.standardConnectionHandshake();
@@ -508,7 +509,13 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_ERROR,
 						payload: { data: {} },
 					});
-					expect(mockError).toBeCalled();
+					expect(loggerSpy).toBeCalledWith(
+						'ERROR',
+						'Connection failed: {"data":{}}'
+					);
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.Connecting,
+					]);
 				});
 
 				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
@@ -816,7 +823,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						// Wait until the socket is automatically disconnected
 						await fakeWebSocketInterface?.waitForConnectionState([
-							CS.Disconnected,
+							CS.ConnectionDisrupted,
 						]);
 
 						expect(loggerSpy).toBeCalledWith(
@@ -968,18 +975,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
 							})
-							.subscribe({
-								error: e => {
-									expect(e).toEqual({
-										errors: [
-											{
-												message:
-													'AppSync Realtime subscription init error: Error: No credentials',
-											},
-										],
-									});
-								},
-							});
+							.subscribe({ error: () => {} });
+
+						// TODO Find a better way to give the catch stack time to resolve
+						await delay(10);
+
+						expect(loggerSpy).toBeCalledWith(
+							'ERROR',
+							'AppSync Realtime subscription init error: Error: No credentials'
+						);
 					});
 
 					test('authenticating with AWS_IAM with credentials exception', async () => {
@@ -1003,18 +1007,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
 							})
-							.subscribe({
-								error: e => {
-									expect(e).toEqual({
-										errors: [
-											{
-												message:
-													'AppSync Realtime subscription init error: Error: No credentials',
-											},
-										],
-									});
-								},
-							});
+							.subscribe({ error: () => {} });
+
+						// TODO Find a better way to give the catch stack time to resolve
+						await delay(10);
+
+						expect(loggerSpy).toBeCalledWith(
+							'ERROR',
+							'AppSync Realtime subscription init error: Error: No credentials'
+						);
 
 						// Wait until the socket is automatically disconnected
 						await fakeWebSocketInterface?.waitUntilConnectionStateIn([
@@ -1070,18 +1071,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
 							})
-							.subscribe({
-								error: e => {
-									expect(e).toEqual({
-										errors: [
-											{
-												message:
-													'AppSync Realtime subscription init error: Error: No federated jwt',
-											},
-										],
-									});
-								},
-							});
+							.subscribe({ error: () => {} });
+
+						// TODO Find a better way to give the catch stack time to resolve
+						await delay(10);
+
+						expect(loggerSpy).toBeCalledWith(
+							'ERROR',
+							'AppSync Realtime subscription init error: Error: No federated jwt'
+						);
 					});
 
 					test('authenticating with OPENID_CONNECT from cached token', async () => {
@@ -1171,18 +1169,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 									Authorization: '',
 								},
 							})
-							.subscribe({
-								error: e => {
-									expect(e).toEqual({
-										errors: [
-											{
-												message:
-													'AppSync Realtime subscription init error: Error: No auth token specified',
-											},
-										],
-									});
-								},
-							});
+							.subscribe({ error: () => {} });
+
+						// TODO Find a better way to give the catch stack time to resolve
+						await delay(10);
+
+						expect(loggerSpy).toBeCalledWith(
+							'ERROR',
+							'AppSync Realtime subscription init error: Error: No auth token specified'
+						);
 					});
 				});
 			});

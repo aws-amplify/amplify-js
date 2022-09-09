@@ -59,21 +59,19 @@ export interface MqttProviderOptions extends ProviderOptions {
 export type MqttProvidertOptions = MqttProviderOptions;
 
 class ClientsQueue {
-	private promises: Map<string, Promise<any>> = new Map();
+	private promises: Map<string, Promise<any> | any> = new Map();
 
 	async get(clientId: string, clientFactory?: (input: string) => Promise<any>) {
 		const cachedPromise = this.promises.get(clientId);
-		if (cachedPromise === undefined && clientFactory) {
+		if (cachedPromise) return cachedPromise;
+
+		if (clientFactory) {
 			const newPromise = clientFactory(clientId);
 			this.promises.set(clientId, newPromise);
+			newPromise.then(v => this.promises.set(clientId, v));
+			newPromise.catch(v => this.promises.delete(clientId));
+			newPromise.finally();
 			return newPromise;
-		}
-
-		try {
-			const cachedClient = await cachedPromise;
-			if (cachedClient) return cachedClient;
-		} catch (error) {
-			logger.warn('Client error when attempting to use cached client', error);
 		}
 
 		return undefined;
@@ -120,6 +118,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				// Trigger reconnection when the connection is disrupted
 				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
 					this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
+				}
+
+				// Trigger connected to halt reconnection attempts
+				if (connectionStateChange === ConnectionState.Connected) {
+					this.reconnectionMonitor.record(ReconnectEvent.CONNECTED);
 				}
 			}
 		);
@@ -178,7 +181,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
 		// @ts-ignore
 		const client = new Paho.Client(url, clientId);
-		// client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
+
 		client.onMessageArrived = ({
 			destinationName: topic,
 			payloadString: msg,
@@ -198,22 +201,24 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		};
 
-		await new Promise((resolve, reject) => {
+		const connected = await new Promise((resolve, reject) => {
 			client.connect({
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
-				onSuccess: () => resolve(client),
+				onSuccess: () => resolve(true),
 				onFailure: x => {
-					reject();
 					if (clientId) this._clientsQueue.remove(clientId);
 					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+					resolve(false);
 				},
 			});
 		});
 
-		this.connectionStateMonitor.record(
-			CONNECTION_CHANGE.CONNECTION_ESTABLISHED
-		);
+		if (connected) {
+			this.connectionStateMonitor.record(
+				CONNECTION_CHANGE.CONNECTION_ESTABLISHED
+			);
+		}
 
 		return client;
 	}
@@ -225,12 +230,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
 
-			// Once connected, subscribe to all topics registered observers
-			this._topicObservers.forEach(
-				(_value: Set<SubscriptionObserver<any>>, key: string) => {
-					client.subscribe(key);
-				}
-			);
+			if (client) {
+				// Once connected, subscribe to all topics registered observers
+				this._topicObservers.forEach(
+					(_value: Set<SubscriptionObserver<any>>, key: string) => {
+						client.subscribe(key);
+					}
+				);
+			}
 			return client;
 		});
 	}
@@ -251,10 +258,18 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 		const url = await this.endpoint;
 
-		const client = await this.connect(this.clientId, { url });
+		const client = await this.clientsQueue.get(this.clientId);
 
-		logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-		targetTopics.forEach(topic => client.send(topic, message));
+		if (client) {
+			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
+			targetTopics.forEach(topic => client.send(topic, message));
+		} else {
+			logger.debug(
+				'Publishing to topic(s) failed',
+				targetTopics.join(','),
+				message
+			);
+		}
 	}
 
 	protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> =
@@ -322,16 +337,13 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					try {
 						const { url = await this.endpoint } = options;
 						const client = await this.connect(clientId, { url });
-						targetTopics.forEach(topic => {
-							client.subscribe(topic);
-						});
-					} catch (e) {
-						if (
-							this.connectionState !==
-							ConnectionState.ConnectionDisruptedPendingNetwork
-						) {
-							observer.error(e);
+						if (client !== undefined) {
+							targetTopics.forEach(topic => {
+								client.subscribe(topic);
+							});
 						}
+					} catch (e) {
+						logger.error('Error forming connection', e);
 					}
 				};
 

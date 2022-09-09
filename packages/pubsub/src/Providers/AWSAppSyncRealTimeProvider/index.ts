@@ -126,6 +126,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					if (connectionState === ConnectionState.ConnectionDisrupted) {
 						this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
 					}
+
+					// Trigger connected to halt reconnection attempts
+					if (connectionState === ConnectionState.Connected) {
+						this.reconnectionMonitor.record(ReconnectEvent.CONNECTED);
+					}
 				}
 			);
 	}
@@ -195,15 +200,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 								observer,
 								subscriptionId,
 							}).catch<any>(err => {
-								observer.error({
-									errors: [
-										{
-											...new GraphQLError(
-												`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
-											),
-										},
-									],
-								});
+								logger.error(
+									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
+								);
+
 								this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 							});
 						startSubscriptionPromise.finally(() => {
@@ -348,16 +348,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				this.connectionState !==
 				ConnectionState.ConnectionDisruptedPendingNetwork
 			) {
-				this.connectionStateMonitor.record(CONNECTION_CHANGE.CONNECTION_FAILED);
-				observer.error({
-					errors: [
-						{
-							...new GraphQLError(
-								`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`
-							),
-						},
-					],
-				});
+				logger.error(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
+				this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+
 				const { subscriptionFailedCallback } =
 					this.subscriptionObserverMap.get(subscriptionId) || {};
 
@@ -565,18 +558,12 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					subscriptionState,
 				});
 
-				observer.error({
-					errors: [
-						{
-							...new GraphQLError(
-								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
-							),
-						},
-					],
-				});
+				logger.error(
+					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
+				);
+
 				if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 
-				observer.complete();
 				if (typeof subscriptionFailedCallback === 'function') {
 					subscriptionFailedCallback();
 				}
@@ -610,22 +597,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				subscriptionState: SUBSCRIPTION_STATUS.FAILED,
 			});
 
-			if (observer && !observer.closed) {
-				observer.error({
-					errors: [
-						{
-							...new GraphQLError(
-								`Subscription timeout ${JSON.stringify({
-									query,
-									variables,
-								})}`
-							),
-						},
-					],
-				});
-				// Cleanup will be automatically executed
-				observer.complete();
-			}
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 			logger.debug(
 				'timeoutStartSubscription',
 				JSON.stringify({ query, variables })
@@ -694,6 +666,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					this.socketStatus = SOCKET_STATUS.READY;
 					this.promiseArray = [];
 				} catch (err) {
+					logger.error(err);
 					this.promiseArray.forEach(({ rej }) => rej(err));
 					this.promiseArray = [];
 					if (

@@ -100,6 +100,11 @@ export const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
 export const DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT = 65 * 1000;
 
 /**
- * Default delay between when reconnect is triggered vs when it is attempted
+ * Default delay time in milleseconds between when reconnect is triggered vs when it is attempted
  */
 export const RECONNECT_DELAY = 5 * 1000;
+
+/**
+ * Default interval time in milleseconds between when reconnect is re-attempted
+ */
+export const RECONNECT_INTERVAL = 60 * 1000;
