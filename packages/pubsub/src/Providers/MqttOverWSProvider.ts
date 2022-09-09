@@ -254,8 +254,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
-		const url = await this.endpoint;
-
 		const client = await this.clientsQueue.get(this.clientId);
 
 		if (client) {
