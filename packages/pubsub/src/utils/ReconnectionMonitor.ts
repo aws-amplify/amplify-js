@@ -3,7 +3,7 @@ import { RECONNECT_DELAY, RECONNECT_INTERVAL } from '../Providers/constants';
 
 export enum ReconnectEvent {
 	RECONNECT = 'RECONNECT',
-	CONNECTED = 'CONNECTED',
+	HALT_RECONNECT = 'HALT_RECONNECT',
 }
 
 export class ReconnectionMonitor {

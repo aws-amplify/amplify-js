@@ -118,11 +118,9 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				// Trigger reconnection when the connection is disrupted
 				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
 					this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
-				}
-
-				// Trigger connected to halt reconnection attempts
-				if (connectionStateChange === ConnectionState.Connected) {
-					this.reconnectionMonitor.record(ReconnectEvent.CONNECTED);
+				} else if (connectionStateChange !== ConnectionState.Connecting) {
+					// Trigger connected to halt reconnection attempts
+					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
 				}
 			}
 		);

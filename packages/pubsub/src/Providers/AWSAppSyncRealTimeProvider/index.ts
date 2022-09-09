@@ -125,11 +125,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					// Trigger reconnection when the connection is disrupted
 					if (connectionState === ConnectionState.ConnectionDisrupted) {
 						this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
-					}
-
-					// Trigger connected to halt reconnection attempts
-					if (connectionState === ConnectionState.Connected) {
-						this.reconnectionMonitor.record(ReconnectEvent.CONNECTED);
+					} else if (connectionState !== ConnectionState.Connecting) {
+						// Trigger connected to halt reconnection attempts
+						this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
 					}
 				}
 			);
