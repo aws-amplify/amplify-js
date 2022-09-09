@@ -34,7 +34,7 @@ export class ReconnectionMonitor {
 			}
 		}
 
-		if (event === ReconnectEvent.CONNECTED) {
+		if (event === ReconnectEvent.HALT_RECONNECT) {
 			if (this.reconnectIntervalId) {
 				clearInterval(this.reconnectIntervalId);
 				this.reconnectIntervalId = undefined;
