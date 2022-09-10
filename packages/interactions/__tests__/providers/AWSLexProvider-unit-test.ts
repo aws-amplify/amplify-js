@@ -155,7 +155,7 @@ describe('Interactions', () => {
 		expect.assertions(1);
 	});
 
-	// Test 'configure' API
+	// configure bot uisng aws-exports and manual config
 	describe('configure API', () => {
 		const provider = new AWSLexProvider();
 
@@ -213,7 +213,7 @@ describe('Interactions', () => {
 		});
 	});
 
-	// Test 'send' API
+	// send text and audio message to bot
 	describe('send API', () => {
 		let provider;
 
@@ -338,9 +338,31 @@ describe('Interactions', () => {
 			);
 			expect.assertions(1);
 		});
+
+		test('send obj text and obj voice messages in wrong format', async () => {
+			// obj text in wrong format
+			await expect(
+				provider.sendMessage('BookTrip', {
+					content: createBlob(),
+					options: {
+						messageType: 'text',
+					},
+				})
+			).rejects.toEqual('invalid content type');
+
+			// obj voice in wrong format
+			await expect(
+				provider.sendMessage('BookTrip', {
+					content: 'Hi',
+					options: {
+						messageType: 'voice',
+					},
+				})
+			).rejects.toEqual('invalid content type');
+		});
 	});
 
-	// Test 'onComplete' API
+	// attach 'onComplete' callback to bot
 	describe('onComplete API', () => {
 		const callback = (err, confirmation) => {};
 		let provider;
@@ -367,7 +389,7 @@ describe('Interactions', () => {
 		});
 	});
 
-	// Test 'reportBotStatus' API
+	// test if 'onComplete' callback is fired for different actions
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
 		let provider;
@@ -395,7 +417,14 @@ describe('Interactions', () => {
 
 			completeSuccessCallback = jest.fn((err, confirmation) => {
 				expect(err).toEqual(null);
-				expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
+				expect(confirmation).toEqual({
+					message: 'echo:done',
+					dialogState: 'ReadyForFulfillment',
+					slots: {
+						m1: 'hi',
+						m2: 'done',
+					},
+				});
 			});
 
 			completeFailCallback = jest.fn((err, confirmation) =>
