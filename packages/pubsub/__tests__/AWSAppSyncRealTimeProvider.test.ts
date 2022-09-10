@@ -426,7 +426,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						// Succeed only when the first message comes through
 						next: mockNext,
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
@@ -449,7 +449,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						// Succeed only when the first message comes through
 						next: mockNext,
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
@@ -475,7 +475,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						// Succeed only when the first message comes through
 						next: mockNext,
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
@@ -500,7 +500,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						error: () => {},
 					});
 
@@ -531,7 +531,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						error: x => {},
 					});
 
@@ -572,7 +572,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						error: x => {},
 					});
 
@@ -591,7 +591,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({
+					observer.subscribe({
 						error: x => {},
 					});
 
@@ -630,7 +630,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({ error: () => {} });
+					observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
 					await replaceConstant(
 						'DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT',
@@ -727,7 +727,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
 					});
 
-					const subscription = observer.subscribe({ error: () => {} });
+					observer.subscribe({ error: () => {} });
 					// Resolve the message delivery actions
 
 					await fakeWebSocketInterface?.readyForUse;
@@ -841,7 +841,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						const subscription = observer.subscribe({ error: () => {} });
+						observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
 						Promise.resolve();
@@ -879,7 +879,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						const subscription = observer.subscribe({ error: () => {} });
+						observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
 						Promise.resolve();
@@ -910,7 +910,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with API_KEY', async () => {
 						expect.assertions(1);
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'API_KEY',
@@ -939,7 +939,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							};
 						});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
@@ -970,7 +970,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							};
 						});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
@@ -1002,7 +1002,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							};
 						});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_IAM',
@@ -1040,7 +1040,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								});
 							});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
@@ -1058,7 +1058,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with OPENID_CONNECT with empty token', async () => {
 						expect.assertions(1);
 
-						const userSpy = jest
+						jest
 							.spyOn(Auth, 'currentAuthenticatedUser')
 							.mockImplementation(() => {
 								return Promise.resolve({
@@ -1066,7 +1066,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								});
 							});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
@@ -1085,15 +1085,13 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with OPENID_CONNECT from cached token', async () => {
 						expect.assertions(1);
 
-						const userSpy = jest
-							.spyOn(Cache, 'getItem')
-							.mockImplementation(() => {
-								return Promise.resolve({
-									token: 'test',
-								});
+						jest.spyOn(Cache, 'getItem').mockImplementation(() => {
+							return Promise.resolve({
+								token: 'test',
 							});
+						});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'OPENID_CONNECT',
@@ -1110,19 +1108,17 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with AMAZON_COGNITO_USER_POOLS', async () => {
 						expect.assertions(1);
 
-						const sessionSpy = jest
-							.spyOn(Auth, 'currentSession')
-							.mockImplementation(() => {
-								return Promise.resolve({
-									getAccessToken: () => {
-										return {
-											getJwtToken: () => {},
-										};
-									},
-								} as any);
-							});
+						jest.spyOn(Auth, 'currentSession').mockImplementation(() => {
+							return Promise.resolve({
+								getAccessToken: () => {
+									return {
+										getJwtToken: () => {},
+									};
+								},
+							} as any);
+						});
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AMAZON_COGNITO_USER_POOLS',
@@ -1140,7 +1136,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with AWS_LAMBDA', async () => {
 						expect.assertions(1);
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_LAMBDA',
@@ -1161,7 +1157,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test('authenticating with AWS_LAMBDA without Authorization', async () => {
 						expect.assertions(1);
 
-						const subscription = provider
+						provider
 							.subscribe('test', {
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
 								authenticationType: 'AWS_LAMBDA',
