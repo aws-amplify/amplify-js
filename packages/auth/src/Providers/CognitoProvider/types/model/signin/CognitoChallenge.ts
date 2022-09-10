@@ -11,14 +11,12 @@
  * and limitations under the License.
  */
 
-import { UserPoolConfig } from '../model/config';
-import { SOCIAL_PROVIDER } from '../../../../types';
-
-export interface FederatedSignInMachineContext {
-	scopes: string[];
-	oAuthStorage: Storage;
-	authConfig: UserPoolConfig;
-	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
-	customState?: string;
-	oAuthProvider?: SOCIAL_PROVIDER;
-}
+export type CognitoChallenge =
+	| 'SMS_MFA'
+	| 'SELECT_MFA_TYPE'
+	| 'MFA_SETUP'
+	| 'SOFTWARE_TOKEN_MFA'
+	| 'CUSTOM_CHALLENGE'
+	| 'NEW_PASSWORD_REQUIRED'
+	| 'DEVICE_SRP_AUTH'
+	| 'DEVICE_PASSWORD_VERIFIER';

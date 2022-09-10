@@ -27,7 +27,6 @@ import {
 	SignUpCommand,
 	SignUpCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoServiceConfig } from '../types/model/config/CognitoServiceConfig';
 import {
 	SignInParams,
 	SignUpResult,
@@ -43,22 +42,25 @@ import {
 } from '../types/model';
 import { StorageHelper } from '@aws-amplify/core';
 import { CognitoSignUpPluginOptions } from '../types/model/signup/CognitoSignUpPluginOptions';
+import { UserPoolConfig } from '../types/model/config';
+
+interface CognitoUserPoolServiceConfig {
+	region: string;
+	userPoolId: string;
+	clientId: string;
+}
 
 export class CognitoUserPoolService {
-	private readonly config: CognitoServiceConfig;
+	private readonly config: UserPoolConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
-	private readonly cognitoCacheKey: string;
+	private readonly cognitoCacheKey: String;
+
 	client: CognitoIdentityProviderClient;
 
-	constructor(
-		config: CognitoServiceConfig,
-		clientConfig: CognitoIdentityProviderClientConfig = {},
-		cognitoCacheKey: string
-	) {
+	constructor(config: CognitoUserPoolServiceConfig, cognitoCacheKey: String) {
 		this.config = config;
 		this.clientConfig = {
 			region: this.config.region,
-			...clientConfig,
 		};
 		this.client = new CognitoIdentityProviderClient(this.clientConfig);
 		this.cognitoCacheKey = cognitoCacheKey;

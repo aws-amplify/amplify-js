@@ -30,8 +30,9 @@ import {
 	AuthenticationMachineContext,
 	AuthenticationTypeState,
 } from '../types/machines';
-import { CognitoProviderConfig } from '../CognitoProvider';
 import { CognitoConfirmSignInPluginOptions } from '../types/model';
+import { UserPoolConfig } from '../types/model/config';
+import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
 
 const signInActorName = 'signInActor';
 const signUpActorName = 'signUpActor';
@@ -54,7 +55,10 @@ export const authenticationMachineModel = createModel(
 	{
 		id: 'authenticationMachine',
 		events: {
-			configure: (config: CognitoProviderConfig) => ({ config }),
+			configure: (config: UserPoolConfig, storagePrefix: String) => ({
+				config,
+				storagePrefix,
+			}),
 			configurationSuccessful: () => ({}),
 			failedToConfigure: () => ({}),
 			initializedSignedIn: () => ({}),
@@ -88,6 +92,27 @@ const authenticationMachineActions: Record<
 	string,
 	AssignAction<AuthenticationMachineContext, any>
 > = {
+	assignConfig: authenticationMachineModel.assign(
+		{
+			config: (_, event) => event.config,
+			storagePrefix: (_, event) => event.storagePrefix,
+		},
+		'configure'
+	),
+	assignService: authenticationMachineModel.assign(
+		{
+			service: (_, event) =>
+				new CognitoUserPoolService(
+					{
+						region: event.config.region,
+						userPoolId: event.config.userPoolId,
+						clientId: event.config.clientId,
+					},
+					event.storagePrefix
+				),
+		},
+		'configure'
+	),
 	spawnSignInActor: authenticationMachineModel.assign(
 		{
 			actorRef: (context, event) => {
@@ -113,7 +138,7 @@ const authenticationMachineActions: Record<
 							username: event.signInEventParams.username,
 							password: event.signInEventParams.password,
 							authFlow: event.signInEventParams.signInFlow,
-							service: context.service?.cognitoUserPoolService!,
+							service: context.service,
 						});
 						const signInActorRef = spawn(machine, {
 							name: signInActorName,
@@ -126,7 +151,7 @@ const authenticationMachineActions: Record<
 						clientConfig: { region: context.config?.region },
 						authConfig: context.config,
 						authFlow: 'federated',
-						service: context.service?.cognitoUserPoolService!,
+						service: context.service,
 						oAuthProvider: event.signInEventParams?.social?.provider,
 					});
 					const signInActorRef = spawn(machine, {
@@ -153,7 +178,7 @@ const authenticationMachineActions: Record<
 					password: event.params.password,
 					attributes: event.params.attributes,
 					pluginOptions: event.params.pluginOptions,
-					service: context.service?.cognitoUserPoolService!,
+					service: context.service,
 				});
 				const signUpActorRef = spawn(machine, {
 					name: signUpActorName,
@@ -181,8 +206,8 @@ const authenticationStateMachine: MachineConfig<
 				configure: [
 					{
 						target: 'configured',
-						cond: (context, _) => {
-							if (context.config?.userPoolId == null) {
+						cond: (context, event) => {
+							if (event.config?.userPoolId == null) {
 								sendParent({ type: 'authenticationNotConfigured' });
 								return false;
 							}
@@ -191,11 +216,15 @@ const authenticationStateMachine: MachineConfig<
 					},
 				],
 			},
+			exit: [
+				authenticationMachineActions.assignConfig,
+				authenticationMachineActions.assignService,
+			],
 		},
 		configured: {
-			// entry: pure((_, event) => {
-			// 	return sendParent({ type: 'authenticationConfigured' });
-			// }),
+			entry: pure((_, event) => {
+				return sendParent({ type: 'authenticationConfigured' });
+			}),
 			on: {
 				signInRequested: 'signingIn',
 				initiateSignUp: 'signingUp',
@@ -294,23 +323,7 @@ export const authenticationMachine = createMachine<
 		stopSignInActor: stop(signInActorName),
 	},
 	guards: {},
-	services: {
-		checkActiveSession: async context => {
-			try {
-				if (
-					!context.config?.identityPoolId ||
-					!context.config.userPoolId ||
-					!context.service
-				) {
-					throw new Error('no configured identityPoolId and userPoolId');
-				}
-				const session = await context.service.fetchSession();
-				return session;
-			} catch (err) {
-				return false;
-			}
-		},
-	},
+	services: {},
 });
 
 export const authenticationMachineEvents = authenticationMachineModel.events;

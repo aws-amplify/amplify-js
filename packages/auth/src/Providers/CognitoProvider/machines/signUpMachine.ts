@@ -21,14 +21,14 @@ import {
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
 import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
-import { CognitoProviderConfig } from '../CognitoProvider';
 import { SignUpResult } from '../../../types/AuthPluggable';
 import { CognitoSignUpPluginOptions } from '../types/model/signup/CognitoSignUpPluginOptions';
+import { UserPoolConfig } from '../types/model/config';
 
 // TODO: what should we store here?
 interface SignUpMachineContext {
 	service: CognitoUserPoolService | null;
-	authConfig: CognitoProviderConfig;
+	authConfig: UserPoolConfig;
 	clientConfig: CognitoIdentityProviderClientConfig;
 	username: string;
 	password: string;

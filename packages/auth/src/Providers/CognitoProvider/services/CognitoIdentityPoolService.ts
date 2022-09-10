@@ -17,36 +17,41 @@ import {
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoServiceConfig } from '../types/model/config/CognitoServiceConfig';
+import { IdentityPoolConfig } from '../types/model/config';
 
 export class CognitoIdentityPoolService {
-	private readonly config: CognitoServiceConfig;
+	private readonly config: IdentityPoolConfig;
 	private readonly clientConfig: CognitoIdentityProviderClientConfig;
-	private cognitoIDPLoginKey: string;
+	private cognitoIDPLoginKey?: string;
 	client: CognitoIdentityClient;
 
-	constructor(
-		config: CognitoServiceConfig,
-		clientConfig: CognitoIdentityProviderClientConfig = {},
-		cognitoIDPLoginKey: string
-	) {
+	constructor(config: IdentityPoolConfig, userpoolId?: string) {
 		this.config = config;
 		this.clientConfig = {
 			region: this.config.region,
-			...clientConfig,
 		};
-		this.cognitoIDPLoginKey = cognitoIDPLoginKey;
+		if (userpoolId) {
+			this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${userpoolId}`;
+		}
+
 		this.client = new CognitoIdentityClient(this.clientConfig);
 	}
 
 	async fetchIdentityId(idToken: string) {
+		var getIdCommandParams = { IdentityPoolId: this.config.identityPoolId };
+		var logins = {
+			Logins: {
+				[this.cognitoIDPLoginKey!]: idToken,
+			},
+		};
+		if (this.cognitoIDPLoginKey) {
+			getIdCommandParams = {
+				...getIdCommandParams,
+				...logins,
+			};
+		}
 		const getIdRes = await this.client.send(
-			new GetIdCommand({
-				IdentityPoolId: this.config.identityPoolId,
-				Logins: {
-					[this.cognitoIDPLoginKey]: idToken,
-				},
-			})
+			new GetIdCommand(getIdCommandParams)
 		);
 		if (!getIdRes.IdentityId) {
 			throw new Error('Could not get Identity ID');
@@ -67,13 +72,24 @@ export class CognitoIdentityPoolService {
 	}
 
 	async fetchAWSCredentials(identityID: string, idToken: string) {
+		var getCredentialsForIdentityCommandParams = {
+			IdentityId: identityID,
+		};
+		var logins = {
+			Logins: {
+				[this.cognitoIDPLoginKey!]: idToken,
+			},
+		};
+		if (this.cognitoIDPLoginKey) {
+			getCredentialsForIdentityCommandParams = {
+				...getCredentialsForIdentityCommandParams,
+				...logins,
+			};
+		}
 		const getCredentialsRes = await this.client.send(
-			new GetCredentialsForIdentityCommand({
-				IdentityId: identityID,
-				Logins: {
-					[this.cognitoIDPLoginKey]: idToken,
-				},
-			})
+			new GetCredentialsForIdentityCommand(
+				getCredentialsForIdentityCommandParams
+			)
 		);
 		if (!getCredentialsRes.Credentials) {
 			throw new Error(

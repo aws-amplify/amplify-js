@@ -29,23 +29,18 @@ import {
 } from '../../types';
 import {
 	CognitoIdentityProviderClient,
-	GetUserCommand,
 	AuthFlowType,
 	ChallengeNameType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	CognitoIdentityClient,
-	GetIdCommand,
-	GetCredentialsForIdentityCommand,
-	GetCredentialsForIdentityCommandOutput,
+	IdentityPool,
 } from '@aws-sdk/client-cognito-identity';
 import { dispatchAuthEvent, decodeJWT, getExpirationTimeFromJWT } from './Util';
 import { Hub, Logger, StorageHelper } from '@aws-amplify/core';
-import { interpret, ActorRefFrom, StateMachine, Interpreter } from 'xstate';
-import { inspect } from '@xstate/inspect';
+import { interpret, ActorRefFrom, Interpreter } from 'xstate';
 import { waitFor } from 'xstate/lib/waitFor';
 import {
-	AuthenticationEvents,
 	authenticationMachine,
 	authenticationMachineEvents,
 } from './machines/authenticationMachine';
@@ -53,63 +48,21 @@ import {
 	authorizationMachine,
 	authorizationMachineEvents,
 } from './machines/authorizationMachine';
-import {
-	AuthEvents,
-	authMachine,
-	authMachineEvents,
-} from './machines/authMachine';
+import { authMachine, authMachineEvents } from './machines/authMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
-import {
-	AWSCredsRes,
-	UserPoolTokens,
-} from './types/machines/authorizationMachine';
-import { Session } from 'inspector';
-import {
-	AuthenticationMachineContext,
-	AuthenticationTypeState,
-} from './types/machines/authenticationMachine';
+import { AWSCredsRes } from './types/machines/authorizationMachine';
 import { CognitoConfirmSignInPluginOptions } from './types/model';
 import { CognitoSignUpPluginOptions } from './types/model/signup/CognitoSignUpPluginOptions';
 import { AWSCredentials } from './types/model/session/AWSCredentials';
 import { AmplifyCognitoUser } from './types/model/user/CognitoUser';
+import { AuthMachineContext } from './types/machines';
+import { CognitoProviderConfig } from './types/model/config';
 
 export { AWSCredentials } from './types/model/session/AWSCredentials';
 
 const logger = new Logger('CognitoProvider');
 
 const COGNITO_CACHE_KEY = '__cognito_cached_tokens';
-
-export type CognitoChallenge =
-	| 'SMS_MFA'
-	| 'SELECT_MFA_TYPE'
-	| 'MFA_SETUP'
-	| 'SOFTWARE_TOKEN_MFA'
-	| 'CUSTOM_CHALLENGE'
-	| 'NEW_PASSWORD_REQUIRED'
-	| 'DEVICE_SRP_AUTH'
-	| 'DEVICE_PASSWORD_VERIFIER'
-	| 'ADMIN_NOSRP_AUTH';
-
-export type CognitoProviderOAuthConfig = {
-	oauth?: {
-		domain: string;
-		scope: string[];
-		redirectSignIn: string;
-		redirectSignOut: string;
-		responseType: string;
-		options?: object;
-		urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
-	};
-};
-
-export type CognitoProviderConfig = {
-	userPoolId: string;
-	clientId: string;
-	region: string;
-	storage?: Storage;
-	identityPoolId?: string;
-	clientMetadata?: { [key: string]: string };
-} & CognitoProviderOAuthConfig;
 
 // FOR DEBUGGING/TESTING
 function listenToAuthHub(send: any) {
@@ -121,15 +74,11 @@ function listenToAuthHub(send: any) {
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
-	private _authService: any;
+	private _authService:
+		| Interpreter<AuthMachineContext, any, any, any, any>
+		| undefined;
 	private _authnService: any;
 	private _authzService: any;
-	// private _authnService = interpret(authenticationMachine, {
-	// 	devTools: true,
-	// }).start();
-	// private _authzService = interpret(authorizationMachine, {
-	// 	devTools: true,
-	// }).start();
 
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
@@ -151,46 +100,49 @@ export class CognitoProvider implements AuthProvider {
 		logger.debug(
 			`Configuring provider with ${JSON.stringify(config, null, 2)}`
 		);
-		console.log('hello!');
 
 		if (!config.userPoolId || !config.region) {
 			throw new Error(`Invalid config for ${this.getProviderName()}`);
 		}
 		this._config = {
-			userPoolId: config.userPoolId,
-			region: config.region,
-			clientId: config.clientId,
-			identityPoolId: config.identityPoolId,
-			oauth: config.oauth,
+			userPoolConfig: {
+				userPoolId: config.userPoolId,
+				region: config.region,
+				clientId: config.clientId,
+				oauth: config.oauth,
+				storage: config.storage,
+			},
+			identityPoolConfig: {
+				identityPoolId: config.identityPoolId,
+				region: config.region,
+				storage: config.storage,
+			},
 		};
 		if (config.storage) {
 			this._userStorage = config.storage;
 		}
-		this._authService = interpret(authMachine, { devTools: true }).start();
 
-		this._authService.send(authMachineEvents.configureAuth(this._config));
+		this._authService = interpret(
+			authMachine.withContext({ config: null, storagePrefix: null })
+		).start();
 
-		debugger;
+		this._authService.send(
+			authMachineEvents.configureAuth(this._config, COGNITO_CACHE_KEY)
+		);
+
 		waitFor(this._authService, state => state.matches('configured')).then(
 			() => {
 				const { authenticationActorRef, authorizationActorRef } =
-					this._authService.state.context;
+					this._authService!.state.context;
 				this._authnService = authenticationActorRef as ActorRefFrom<
 					typeof authenticationMachine
 				>;
 				this._authzService = authorizationActorRef as ActorRefFrom<
 					typeof authorizationMachine
 				>;
-
-				logger.debug('provider configured');
 			}
 		);
 
-		// this._authnService.send(
-		// 	authenticationMachineEvents.configure(this._config)
-		// );
-		// // this._authzService.send(authorizationMachineEvents.configure(this._config));
-		// console.log('successfully configured cognito provider');
 		// if (this._handlingOAuthCodeResponse()) {
 		// 	// wait for state machine to finish transitioning to signed out state
 		// 	waitFor(this._authnService, state => state.matches('configured')).then(
@@ -272,11 +224,11 @@ export class CognitoProvider implements AuthProvider {
 	}
 
 	private async waitForSignInComplete(): Promise<SignInResult> {
-		const { authenticationActorRef } = this._authService.state.context;
-		const authenticationService = authenticationActorRef as ActorRefFrom<
-			typeof authenticationMachine
-		>;
-		const signingInState = await waitFor(authenticationService, state =>
+		// const { authenticationActorRef } = this._authService!.state.context;
+		// const authenticationService = authenticationActorRef as ActorRefFrom<
+		// 	typeof authenticationMachine
+		// >;
+		const signingInState = await waitFor(this._authnService, state =>
 			state.matches('signingIn')
 		);
 		const { actorRef } = signingInState.context;
@@ -289,17 +241,19 @@ export class CognitoProvider implements AuthProvider {
 			// TODO: Can I refactor signInMachine or the main AuthMachine state to avoid using Promise.race?
 			await Promise.race([
 				waitFor(
-					authenticationService,
+					this._authnService,
 					state => state.matches('signedIn') || state.matches('error')
 				),
-				waitFor(signInActorRef, state => state.matches('nextAuthChallenge')),
+				// waitFor(signInActorRef, state =>
+				// 	state.matches('nextAuthChallenge' || state.matches('signedIn'))
+				// ),
 			]);
 			// if it reaches error state, throw the caught error
-			if (authenticationService.state.matches('error')) {
-				throw authenticationService.state.context.error;
+			if (this._authnService.state.matches('error')) {
+				throw this._authnService.state.context.error;
 			}
 			return {
-				signInSuccesful: authenticationService.state.matches('signedIn'),
+				signInSuccesful: this._authnService.state.matches('signedIn'),
 				nextStep: signInActorRef.state.matches('nextAuthChallenge'),
 			};
 		}
@@ -590,13 +544,8 @@ export class CognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	async signOut(): Promise<void> {
-		const { authenticationActorRef } = this._authService.state.context;
-		const signInMachine = authenticationActorRef as ActorRefFrom<
-			typeof authenticationMachine
-		>;
-
 		this.clearCachedTokens();
-		signInMachine.send(authenticationMachineEvents.signOutRequested());
+		this._authnService.send(authenticationMachineEvents.signOutRequested());
 
 		this._authzService.send(authorizationMachineEvents.signOutRequested());
 		dispatchAuthEvent(
@@ -609,9 +558,9 @@ export class CognitoProvider implements AuthProvider {
 
 	private isConfigured(): boolean {
 		return (
-			Boolean(this._config?.userPoolId) &&
-			Boolean(this._config?.region) &&
-			Boolean(this._config?.identityPoolId)
+			Boolean(this._config?.userPoolConfig?.userPoolId) &&
+			Boolean(this._config?.userPoolConfig?.region) &&
+			Boolean(this._config?.identityPoolConfig?.identityPoolId)
 		);
 	}
 

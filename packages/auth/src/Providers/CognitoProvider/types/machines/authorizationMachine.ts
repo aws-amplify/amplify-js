@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
 import { ActorRefFrom } from 'xstate';
 import { fetchAuthSessionStateMachine } from '../../machines/fetchAuthSessionStateMachine';
 import { CognitoService } from '../../services/CognitoService';
+import { CognitoProviderConfig } from '../model/config';
 
 // info/context needed to pass to the fetchAuthSessionStateMachine in order to perform the fetch Session
 // First, fetch user pool tokens (JWT) from the user pool
@@ -40,6 +40,7 @@ export interface AuthorizationMachineContext {
 		accessToken: string;
 		refreshToken: string;
 	};
+	storagePrefix?: null | String;
 	identityID?: null;
 	AWSCredentials?: null;
 	sessionInfo?: any;

@@ -11,11 +11,10 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
 import { ActorRefFrom } from 'xstate';
 import { authenticationMachine } from '../../machines/authenticationMachine';
 import { authorizationMachine } from '../../machines/authorizationMachine';
-import { CognitoServiceConfig } from '../model/config/CognitoServiceConfig';
+import { CognitoProviderConfig } from '../model/config';
 
 export type AuthnActorRef = ActorRefFrom<typeof authenticationMachine>;
 export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;
@@ -23,7 +22,8 @@ export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;
 export interface AuthMachineContext {
 	authenticationActorRef?: AuthnActorRef;
 	authorizationActorRef?: AuthzActorRef;
-	config?: null | CognitoServiceConfig;
+	config?: null | CognitoProviderConfig;
+	storagePrefix?: null | String;
 }
 
 export type AuthTypeState =
@@ -31,35 +31,41 @@ export type AuthTypeState =
 			value: 'notConfigured';
 			context: AuthMachineContext & {
 				config: null;
+				storagePrefix: null;
 			};
 	  }
 	| {
 			value: 'configuringAuthentication';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'configuringAuthorization';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'configuringAuthorizationFailed';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'configured';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'error';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
+				storagePrefix: String;
 			};
 	  };

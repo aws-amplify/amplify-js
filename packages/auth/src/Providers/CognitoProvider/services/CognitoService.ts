@@ -15,58 +15,42 @@ import { CognitoUserPoolService } from './CognitoUserPoolService';
 import { CognitoIdentityPoolService } from './CognitoIdentityPoolService';
 import { AWSCredentials } from '../types/model/session/AWSCredentials';
 import { AmplifyCognitoUser } from '../types/model/user/CognitoUser';
+import { CognitoProviderConfig, UserPoolConfig } from '../types/model/config';
 
 const logger = new Logger('CognitoStatelessService');
 
 const COGNITO_CACHE_KEY = '__cognito_cached_tokens';
 
-interface CognitoServiceConfig {
-	region: string;
-	userPoolId: string;
-	identityPoolId?: string;
-	clientId: string;
-}
-
 /**
  * Provides an abstraction around aws-sdk interactions
  */
 export class CognitoService {
-	private readonly config: CognitoServiceConfig;
-	private readonly clientConfig: CognitoIdentityProviderClientConfig;
-	private cognitoIDPLoginKey: string;
-	cognitoIdentityPoolService: CognitoIdentityPoolService;
-	cognitoUserPoolService: CognitoUserPoolService;
+	private readonly config: CognitoProviderConfig;
+	cognitoIdentityPoolService?: CognitoIdentityPoolService;
+	cognitoUserPoolService?: CognitoUserPoolService;
 
-	constructor(
-		config: CognitoServiceConfig,
-		clientConfig: CognitoIdentityClientConfig = {}
-	) {
+	constructor(config: CognitoProviderConfig) {
 		this.config = config;
-		this.clientConfig = {
-			region: this.config.region,
-			...clientConfig,
-		};
-		this.cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-
-		this.cognitoIdentityPoolService = new CognitoIdentityPoolService(
-			this.config,
-			this.clientConfig,
-			this.cognitoIDPLoginKey
-		);
-
-		this.cognitoUserPoolService = new CognitoUserPoolService(
-			this.config,
-			this.clientConfig,
-			COGNITO_CACHE_KEY
-		);
+		if (this.config.identityPoolConfig) {
+			this.cognitoIdentityPoolService = new CognitoIdentityPoolService(
+				this.config.identityPoolConfig!,
+				this.config.userPoolConfig?.region
+			);
+		}
+		if (this.config.userPoolConfig) {
+			this.cognitoUserPoolService = new CognitoUserPoolService(
+				this.config.userPoolConfig!,
+				COGNITO_CACHE_KEY
+			);
+		}
 	}
 
 	refreshUserPoolTokens(refreshToken: string) {
-		return this.cognitoUserPoolService.refreshUserPoolTokens(refreshToken);
+		return this.cognitoUserPoolService?.refreshUserPoolTokens(refreshToken);
 	}
 
 	fetchAWSCredentials(identityID: string, idToken: string) {
-		return this.cognitoIdentityPoolService.fetchAWSCredentials(
+		return this.cognitoIdentityPoolService?.fetchAWSCredentials(
 			identityID,
 			idToken
 		);
@@ -144,32 +128,33 @@ export class CognitoService {
 		const { idToken, accessToken, refreshToken } = session;
 		const expiration = getExpirationTimeFromJWT(idToken);
 		console.log({ expiration });
-		const cognitoIDPLoginKey = `cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}`;
-		const getIdRes = await this.cognitoIdentityPoolService.client.send(
+		const cognitoIDPLoginKey = `cognito-idp.${this.config.identityPoolConfig?.region}.amazonaws.com/${this.config.userPoolConfig?.userPoolId}`;
+		const getIdRes = await this.cognitoIdentityPoolService?.client.send(
 			new GetIdCommand({
-				IdentityPoolId: this.config.identityPoolId,
+				IdentityPoolId: this.config.identityPoolConfig?.identityPoolId,
 				Logins: {
 					[cognitoIDPLoginKey]: idToken,
 				},
 			})
 		);
-		if (!getIdRes.IdentityId) {
+		if (!getIdRes?.IdentityId) {
 			throw new Error('Could not get Identity ID');
 		}
-		const getCredentialsRes = await this.cognitoIdentityPoolService.client.send(
-			new GetCredentialsForIdentityCommand({
-				IdentityId: getIdRes.IdentityId,
-				Logins: {
-					[cognitoIDPLoginKey]: idToken,
-				},
-			})
-		);
-		if (!getCredentialsRes.Credentials) {
+		const getCredentialsRes =
+			await this.cognitoIdentityPoolService?.client.send(
+				new GetCredentialsForIdentityCommand({
+					IdentityId: getIdRes.IdentityId,
+					Logins: {
+						[cognitoIDPLoginKey]: idToken,
+					},
+				})
+			);
+		if (!getCredentialsRes?.Credentials) {
 			throw new Error(
 				'No credentials from the response of GetCredentialsForIdentity call.'
 			);
 		}
-		const getUserRes = await cognitoClient.client.send(
+		const getUserRes = await cognitoClient?.client.send(
 			new GetUserCommand({
 				AccessToken: accessToken,
 			})

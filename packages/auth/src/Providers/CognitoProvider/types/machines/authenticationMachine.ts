@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
-import { CognitoService } from '../../services/CognitoService';
+import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
 import { AmplifyUser } from '../../../../types';
 import { ActorRefFrom } from 'xstate';
 import { signInMachine } from '../../machines/signInMachine';
 import { signUpMachine } from '../../machines/signUpMachine';
+import { UserPoolConfig } from '../model/config';
 
 export type SignInActorRef = ActorRefFrom<typeof signInMachine>;
 export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
@@ -24,8 +24,9 @@ export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 export interface AuthenticationMachineContext {
 	// TODO: union other valid actor refs here when we add more actors
 	actorRef?: SignInActorRef | SignUpActorRef;
-	config?: null | CognitoProviderConfig;
-	service: null | CognitoService;
+	config?: null | UserPoolConfig;
+	storagePrefix?: null | String;
+	service: null | CognitoUserPoolService;
 	session?: AmplifyUser;
 	error?: any;
 }
@@ -34,44 +35,50 @@ export type AuthenticationTypeState =
 	| {
 			value: 'notConfigured';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
+				config: UserPoolConfig;
 				service: null;
 				session: undefined;
+				storagePrefix: null;
 			};
 	  }
 	| {
 			value: 'configuring';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'configured';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'configurationFailed';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'signedOut';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  }
 	| {
 			value: 'signedIn';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  }
 	| {
@@ -82,14 +89,15 @@ export type AuthenticationTypeState =
 	| {
 			value: 'signedUp';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
 			};
 	  }
 	| {
 			value: 'signingIn';
 			context: AuthenticationMachineContext & {
-				config: CognitoProviderConfig;
-				service: CognitoService;
+				config: UserPoolConfig;
+				service: CognitoUserPoolService;
+				storagePrefix: String;
 			};
 	  };
