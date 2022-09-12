@@ -116,8 +116,5 @@
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
-	},
-	"dependencies": {
-		"@xstate/inspect": "^0.7.0"
 	}
 }
