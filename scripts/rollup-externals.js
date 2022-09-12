@@ -57,7 +57,6 @@ const amplify_externals = [
 	'@aws-amplify/interactions',
 	'@aws-amplify/pubsub',
 	'@aws-amplify/storage',
-	'@aws-amplify/ui',
 	'@aws-amplify/xr',
 ];
 
@@ -68,8 +67,6 @@ const aws_amplify_react = [
 	'@aws-amplify/core',
 	'@aws-amplify/interactions',
 	'@aws-amplify/storage',
-	'@aws-amplify/ui',
-	'@aws-amplify/ui/dist/style.css',
 	'@aws-amplify/xr',
 	'react',
 	'regenerator-runtime/runtime',
@@ -81,7 +78,6 @@ const rollup_externals = {
 	'@aws-amplify/api': api_externals,
 	'@aws-amplify/auth': auth_externals,
 	'aws-amplify': amplify_externals,
-	'aws-amplify-react': aws_amplify_react,
 	'@aws-amplify/cache': cache_externals,
 	'@aws-amplify/core': core_externals,
 	'@aws-amplify/interactions': interactions_externals,
