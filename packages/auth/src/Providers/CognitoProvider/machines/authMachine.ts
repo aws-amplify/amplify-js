@@ -42,6 +42,8 @@ export const authMachineModel = createModel({} as AuthMachineContext, {
 		authenticationNotConfigured: () => ({}),
 		authorizationConfigured: () => ({}),
 		authorizationNotConfigured: () => ({}),
+		authenticationReset: () => ({}),
+		authorizationReset: () => ({}),
 		error: () => ({}),
 	},
 });
@@ -135,6 +137,18 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 					// actions: [stop(context => context.authorizationActorRef!)],
 					target: 'configured',
 				},
+			},
+		},
+		resettingAuthentication: {
+			///TODO: implement storage clear
+			on: {
+				authenticationReset: 'resettingAuthorization',
+			},
+		},
+		resettingAuthorization: {
+			///TODO: implement storage clear
+			on: {
+				authorizationReset: 'configuringAuthorization',
 			},
 		},
 		configured: {

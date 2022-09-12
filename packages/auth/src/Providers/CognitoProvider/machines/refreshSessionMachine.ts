@@ -80,7 +80,7 @@ async function invokeRefreshToken(
 	const refreshTokensRes = await context.service.refreshUserPoolTokens(
 		context.userPoolTokens.refreshToken
 	);
-	if (!refreshTokensRes.AuthenticationResult)
+	if (!refreshTokensRes?.AuthenticationResult)
 		throw new Error('no authentication result');
 	if (
 		!refreshTokensRes.AuthenticationResult.AccessToken ||

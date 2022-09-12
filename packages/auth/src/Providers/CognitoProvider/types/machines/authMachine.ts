@@ -49,7 +49,14 @@ export type AuthTypeState =
 			};
 	  }
 	| {
-			value: 'configuringAuthorizationFailed';
+			value: 'resettingAuthentication';
+			context: AuthMachineContext & {
+				config: CognitoProviderConfig;
+				storagePrefix: String;
+			};
+	  }
+	| {
+			value: 'resettingAuthorization';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
 				storagePrefix: String;
