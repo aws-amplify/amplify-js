@@ -1,8 +1,16 @@
+import { ulid } from 'ulid';
+
 import {
 	DataStore as DataStoreType,
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
 } from '../src/';
+
+import { ModelRelationship } from '../src/storage/relationship';
+import {
+	extractPrimaryKeyFieldNames,
+	extractPrimaryKeysAndValues,
+} from '../src/util';
 
 import {
 	pause,
@@ -358,5 +366,128 @@ export function addCommonQueryTests({
 				_deleted: v => v === undefined || v === null,
 			});
 		});
+	});
+
+	describe('Related models', () => {
+		const schema = testSchema();
+		let classes: Record<string, PersistentModelConstructor<any>> = initSchema(
+			schema
+		);
+
+		const buildModelMeta = name => ({
+			builder: classes[name],
+			schema: schema.models[name],
+			pkField: extractPrimaryKeyFieldNames(schema.models[name]),
+		});
+
+		const randomInitializer = constructor => {
+			const meta = buildModelMeta(constructor.name);
+			const initializer = {};
+			for (const [field, def] of Object.entries(meta.schema.fields)) {
+				switch (def.type) {
+					case 'ID':
+						initializer[field] = ulid();
+						break;
+					case 'String':
+						initializer[field] = `some random content ${ulid()}`;
+						break;
+					case 'Int':
+						initializer[field] =
+							new Date().getTime() * 100 + Math.floor(Math.random() * 100);
+						break;
+					default:
+					// if (def.isArray === false && depth > 0 && (def.type as any).model) {
+					// 	initializer[field] = randomInstanceOf(
+					// 		(def.type as any).model,
+					// 		depth - 1
+					// 	);
+					// } else {
+					// 	// not supported yet.
+					// }
+				}
+			}
+			return initializer;
+		};
+
+		beforeEach(async () => {
+			DataStore.configure({ storageAdapter });
+			classes = initSchema(schema);
+			await DataStore.start();
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+		});
+
+		for (const modelName of Object.keys(schema.models)) {
+			const meta = buildModelMeta(modelName);
+			for (const field of Object.keys(meta.schema.fields)) {
+				const R = ModelRelationship.from(meta, field);
+				if (R) {
+					switch (R.relationship) {
+						case 'BELONGS_TO':
+						case 'HAS_ONE':
+							test(`can lazy load ${R.localConstructor.name}.${field} (${R.relationship})`, async () => {
+								// Create the "remote" instance first, because the "local" one will point to it.
+								const remote = await DataStore.save(
+									new R.remoteModelConstructor(
+										randomInitializer(R.remoteModelConstructor)
+									)
+								);
+								const local = await DataStore.save(
+									new R.localConstructor({
+										...randomInitializer(R.localConstructor),
+										[field]: remote,
+									})
+								);
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									extractPrimaryKeysAndValues(local, R.localPKFields)
+								);
+								const lazyLoaded = await fetched[field];
+								expect(lazyLoaded).toEqual(remote);
+							});
+							break;
+						case 'HAS_MANY':
+							test(`can lazy load ${R.localConstructor.name}.${field} (${R.relationship})`, async () => {
+								const local = await DataStore.save(
+									new R.localConstructor(randomInitializer(R.localConstructor))
+								);
+
+								const FK = {};
+								for (
+									let fieldIndex = 0;
+									fieldIndex < R.remoteJoinFields.length;
+									fieldIndex++
+								) {
+									FK[R.remoteJoinFields[fieldIndex]] =
+										local[R.localJoinFields[fieldIndex]];
+								}
+
+								const remotes = [1, 2, 3];
+								for (const [index, value] of remotes.entries()) {
+									remotes[index] = await DataStore.save(
+										new R.remoteModelConstructor({
+											...randomInitializer(R.remoteModelConstructor),
+											...FK,
+										})
+									);
+								}
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									extractPrimaryKeysAndValues(local, R.localPKFields)
+								);
+
+								const lazyLoaded = await fetched[field].toArray();
+								expect(lazyLoaded).toEqual(remotes);
+							});
+							break;
+						default:
+							throw new Error(`Invalid relationship: ${R.relationship}`);
+					}
+				}
+			}
+		}
 	});
 }

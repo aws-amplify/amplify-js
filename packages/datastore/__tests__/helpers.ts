@@ -696,7 +696,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: 'post',
+							associatedWith: ['post'],
 						},
 					},
 				},
@@ -743,7 +743,7 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'BELONGS_TO',
-							targetName: 'postId',
+							targetNames: ['postId'],
 						},
 					},
 				},
@@ -816,8 +816,8 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'HAS_ONE',
-							associatedWith: 'id',
-							targetName: 'profileID',
+							associatedWith: ['id'],
+							targetNames: ['profileID'],
 						},
 					},
 				},

@@ -27,6 +27,13 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				blogOwnerId: {
+					name: 'blogOwnerId',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
 				posts: {
 					name: 'posts',
 					isArray: true,
@@ -37,7 +44,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'blog',
+						associatedWith: ['blog'],
 					},
 				},
 				owner: {
@@ -50,7 +57,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'blogOwnerId',
+						targetNames: ['blogOwnerId'],
 					},
 				},
 			},
@@ -80,6 +87,13 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				referencePostId: {
+					name: 'referencePostId',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
 				reference: {
 					name: 'reference',
 					isArray: false,
@@ -90,7 +104,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'referencePostId',
+						targetNames: ['referencePostId'],
 					},
 				},
 				blog: {
@@ -103,7 +117,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'postBlogId',
+						targetNames: ['postBlogId'],
 					},
 				},
 				comments: {
@@ -116,7 +130,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'post',
+						associatedWith: ['post'],
 					},
 				},
 				authors: {
@@ -129,7 +143,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'post',
+						associatedWith: ['post'],
 					},
 				},
 				metadata: {
@@ -185,7 +199,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'commentPostId',
+						targetNames: ['commentPostId'],
 					},
 				},
 			},
@@ -307,7 +321,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'authorId',
+						targetNames: ['authorId'],
 					},
 				},
 				post: {
@@ -320,7 +334,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'postId',
+						targetNames: ['postId'],
 					},
 				},
 			},
@@ -360,7 +374,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'author',
+						associatedWith: ['author'],
 					},
 				},
 			},
@@ -400,7 +414,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'forum',
+						associatedWith: ['forum'],
 					},
 				},
 			},
@@ -440,7 +454,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'editor',
+						associatedWith: ['editor'],
 					},
 				},
 			},
@@ -501,7 +515,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'editorID',
+						targetNames: ['editorID'],
 					},
 				},
 				forum: {
@@ -514,7 +528,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'forumID',
+						targetNames: ['forumID'],
 					},
 				},
 			},
@@ -554,7 +568,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_ONE',
-						associatedWith: 'owner',
+						associatedWith: ['owner'],
 					},
 				},
 			},
@@ -669,8 +683,8 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_ONE',
-						associatedWith: 'id',
-						targetName: 'teamID',
+						associatedWith: ['id'],
+						targetNames: ['teamID'],
 					},
 				},
 			},

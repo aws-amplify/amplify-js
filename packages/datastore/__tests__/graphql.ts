@@ -18,6 +18,7 @@ import {
 const postSelectionSet = `
 id
 title
+referencePostId
 metadata {
 	rating
 	tags
