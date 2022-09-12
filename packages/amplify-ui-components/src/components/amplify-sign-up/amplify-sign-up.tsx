@@ -44,7 +44,7 @@ export class AmplifySignUp {
 	/** Fires when sign up form is submitted */
 	@Prop() handleSubmit: (event: Event) => void = event => this.signUp(event);
 	/** Override for handling the Auth.SignUp API call */
-	@Prop() handleSignUp: (params: SignUpParams<any>) => Promise<ISignUpResult> =
+	@Prop() handleSignUp: (params: SignUpParams) => Promise<ISignUpResult> =
 		params => this.authSignUp(params);
 	/** Engages when invalid actions occur, such as missing field, etc. */
 	@Prop() validationErrors: string;
@@ -121,7 +121,7 @@ export class AmplifySignUp {
 		fnToCall(event, callback.bind(this));
 	}
 
-	private async authSignUp(params: SignUpParams<any>): Promise<ISignUpResult> {
+	private async authSignUp(params: SignUpParams): Promise<ISignUpResult> {
 		const data = await Auth.signUp(params);
 		if (!data) {
 			throw new Error(Translations.SIGN_UP_FAILED);

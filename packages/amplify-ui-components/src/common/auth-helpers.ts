@@ -1,4 +1,4 @@
-import { Auth, AmplifyCognitoUser } from '@aws-amplify/auth';
+import { Auth, CognitoUser } from '@aws-amplify/auth';
 import { Logger, isEmpty } from '@aws-amplify/core';
 import {
 	AuthState,
@@ -100,5 +100,5 @@ export const handleSignIn = async (
 };
 
 export const isCognitoUser = (user: CognitoUserInterface) => {
-	return typeof user === AmplifyCognitoUser;
+	return user instanceof CognitoUser;
 };

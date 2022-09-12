@@ -75,7 +75,7 @@ const authStateMachineActions: Record<
 		},
 	}),
 	setAuthorizationActor: authMachineModel.assign({
-		authorizationActorRef: (context, _) => {
+		authorizationActorRef: (_, __) => {
 			const authorizationMachineWithContext = authorizationMachine.withContext({
 				config: null,
 				service: null,
@@ -153,6 +153,7 @@ const authStateMachine: MachineConfig<AuthMachineContext, any, AuthEvents> = {
 		},
 		configured: {
 			on: {
+				configureAuth: 'resettingAuthentication',
 				error: 'error',
 			},
 		},

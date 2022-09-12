@@ -1058,7 +1058,7 @@ export namespace Components {
 		/**
 		 * Override for handling the Auth.SignUp API call
 		 */
-		handleSignUp: (params: SignUpParams<any>) => Promise<ISignUpResult>;
+		handleSignUp: (params: SignUpParams) => Promise<ISignUpResult>;
 		/**
 		 * Fires when sign up form is submitted
 		 */
@@ -2659,7 +2659,7 @@ declare namespace LocalJSX {
 		/**
 		 * Override for handling the Auth.SignUp API call
 		 */
-		handleSignUp?: (params: SignUpParams<any>) => Promise<ISignUpResult>;
+		handleSignUp?: (params: SignUpParams) => Promise<ISignUpResult>;
 		/**
 		 * Fires when sign up form is submitted
 		 */
