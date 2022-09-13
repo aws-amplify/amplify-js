@@ -47,12 +47,18 @@ import {
 } from './machines/authorizationMachine';
 import { authMachine, authMachineEvents } from './machines/authMachine';
 import { signInMachine, signInMachineEvents } from './machines/signInMachine';
-import { AWSCredsRes } from './types/machines/authorizationMachine';
+import {
+	AuthorizationMachineContext,
+	AWSCredsRes,
+} from './types/machines/authorizationMachine';
 import { CognitoConfirmSignInPluginOptions } from './types/model';
 import { CognitoSignUpPluginOptions } from './types/model/signup/CognitoSignUpPluginOptions';
 import { AWSCredentials } from './types/model/session/AWSCredentials';
 import { AmplifyCognitoUser } from './types/model/user/CognitoUser';
-import { AuthMachineContext } from './types/machines';
+import {
+	AuthenticationMachineContext,
+	AuthMachineContext,
+} from './types/machines';
 import { CognitoProviderConfig } from './types/model/config';
 
 export { AWSCredentials } from './types/model/session/AWSCredentials';
@@ -71,11 +77,9 @@ function listenToAuthHub(send: any) {
 export class CognitoProvider implements AuthProvider {
 	static readonly CATEGORY = 'Auth';
 	static readonly PROVIDER_NAME = 'CognitoProvider';
-	private _authMachine:
-		| Interpreter<AuthMachineContext, any, any, any, any>
-		| undefined;
-	private _auth_n_machine: any;
-	private _auth_z_machine: any;
+	private _authMachine!: Interpreter<AuthMachineContext, any, any, any, any>;
+	private _auth_n_machine!: ActorRefFrom<typeof authenticationMachine>;
+	private _auth_z_machine!: ActorRefFrom<typeof authorizationMachine>;
 
 	private _config: CognitoProviderConfig;
 	private _userStorage: Storage;
@@ -87,10 +91,10 @@ export class CognitoProvider implements AuthProvider {
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
 		this._userStorage = config.storage ?? new StorageHelper().getStorage();
-		// listenToAuthHub(this._auth_n_machine.send);
+		listenToAuthHub(this._auth_n_machine.send);
 		// @ts-ignore ONLY FOR DEBUGGING AND TESTING!
 		window.Hub = Hub;
-		// this._auth_n_machine.subscribe(state => {});
+		this._auth_n_machine.subscribe(state => {});
 	}
 
 	configure(config: PluginConfig) {
@@ -140,18 +144,18 @@ export class CognitoProvider implements AuthProvider {
 			}
 		);
 
-		// if (this._handlingOAuthCodeResponse()) {
-		// 	// wait for state machine to finish transitioning to signed out state
-		// 	waitFor(this._auth_n_machine, state => state.matches('configured')).then(
-		// 		() => {
-		// 			this._auth_n_machine.send(
-		// 				authenticationMachineEvents.signInRequested({
-		// 					signInType: 'Social',
-		// 				})
-		// 			);
-		// 		}
-		// 	);
-		// }
+		if (this._handlingOAuthCodeResponse()) {
+			// wait for state machine to finish transitioning to signed out state
+			waitFor(this._auth_n_machine, state => state.matches('configured')).then(
+				() => {
+					this._auth_n_machine.send(
+						authenticationMachineEvents.signInRequested({
+							signInType: 'Social',
+						})
+					);
+				}
+			);
+		}
 	}
 
 	private _handlingOAuthCodeResponse(): boolean {
@@ -184,15 +188,6 @@ export class CognitoProvider implements AuthProvider {
 	async signIn(
 		params: SignInParams & { password?: string }
 	): Promise<SignInResult> {
-		// var signInMachine = this._authMachine.children.get(
-		// 	'authenticationMachine'
-		// ) as Interpreter<AuthenticationMachineContext>;
-
-		// const { authenticationActorRef } = this._authMachine.state.context;
-		// const signInMachine = authenticationActorRef as ActorRefFrom<
-		// 	typeof authenticationMachine
-		// >;
-
 		if (this._auth_n_machine.state.matches('notConfigured')) {
 			throw new Error('AuthN is not configured');
 		}
