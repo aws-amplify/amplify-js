@@ -163,7 +163,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				content,
 				options: { messageType },
 			} = message;
-			if (messageType === 'voice' && typeof content === 'object') {
+			if (messageType === 'voice') {
+				if (typeof content !== 'object') {
+					return Promise.reject('invalid content type');
+				}
 				const inputStream =
 					content instanceof Uint8Array ? content : await convert(content);
 
