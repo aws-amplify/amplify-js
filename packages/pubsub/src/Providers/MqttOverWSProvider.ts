@@ -25,7 +25,6 @@ import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
 } from '../utils/ConnectionStateMonitor';
-import { AMPLIFY_SYMBOL } from './constants';
 import {
 	ReconnectEvent,
 	ReconnectionMonitor,
