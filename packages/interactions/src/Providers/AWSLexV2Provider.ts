@@ -301,7 +301,11 @@ export class AWSLexV2Provider extends AbstractInteractionsProvider {
 		let params: RecognizeUtteranceCommandInput;
 
 		// prepare params
-		if (messageType === 'voice' && typeof content === 'object') {
+		if (messageType === 'voice') {
+			if (typeof content !== 'object') {
+				return Promise.reject('invalid content type');
+			}
+
 			const inputStream =
 				content instanceof Uint8Array ? content : await convert(content);
 
