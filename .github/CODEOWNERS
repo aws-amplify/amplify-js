@@ -18,4 +18,4 @@
 /packages/geo @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/pubsub @aws-amplify/amplify-js @aws-amplify/amplify-data
 /.circleci/ @aws-amplify/amplify-js @aws-amplify/amplify-devops
-/.github/ @aws-amplify/amplify-js-admin
+/.github/ @aws-amplify/amplify-js-admins
