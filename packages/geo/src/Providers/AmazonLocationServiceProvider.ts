@@ -65,7 +65,7 @@ import {
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
-	SearchForLocationByIdOptions,
+	searchByPlaceIdOptions,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -307,7 +307,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	private _verifyPlaceId(placeId: string) {
-		// if (isValid(placeId)) { - if we have more validation rules for placeId
 		if (placeId.length === 0) {
 			const errorString = 'PlaceId is empty';
 			logger.debug(errorString);
@@ -315,10 +314,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 	}
 
-	public async searchForLocationById(
+	public async searchByPlaceId(
 		placeId: string,
-		options?: SearchForLocationByIdOptions
-	): Promise<Place> {
+		options?: searchByPlaceIdOptions
+	): Promise<Place | undefined> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');
@@ -332,11 +331,11 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
-		const searchForLocationByIdInput: GetPlaceCommandInput = {
+		const searchByPlaceIdInput: GetPlaceCommandInput = {
 			PlaceId: placeId,
 			IndexName: options?.searchIndexName,
 		};
-		const command = new GetPlaceCommand(searchForLocationByIdInput);
+		const command = new GetPlaceCommand(searchByPlaceIdInput);
 
 		let response: GetPlaceCommandOutput;
 		try {
@@ -346,7 +345,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		return response;
+		let place: PlaceResult | undefined = response.Place;
+
+		if (place) {
+			return camelcaseKeys(place, { deep: true }) as unknown as Place;
+		}
+		return place;
 	}
 
 	/**

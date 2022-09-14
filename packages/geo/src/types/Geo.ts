@@ -84,7 +84,7 @@ export type SearchByCoordinatesOptions = {
 	providerName?: string;
 };
 
-export type SearchForLocationByIdOptions = {
+export type searchByPlaceIdOptions = {
 	searchIndexName?: string;
 	providerName?: string;
 };

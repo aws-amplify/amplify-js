@@ -16,6 +16,7 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForSuggestionsCommand,
 	SearchPlaceIndexForPositionCommand,
+	GetPlaceCommand,
 } from '@aws-sdk/client-location';
 
 import { AmazonLocationServiceProvider } from '../../src/Providers/AmazonLocationServiceProvider';
@@ -67,6 +68,11 @@ LocationClient.prototype.send = jest.fn(async command => {
 					Text: 'not star',
 				},
 			],
+		};
+	}
+	if (command instanceof GetPlaceCommand) {
+		return {
+			Place: TestPlacePascalCase,
 		};
 	}
 });
@@ -475,6 +481,56 @@ describe('AmazonLocationServiceProvider', () => {
 			).rejects.toThrow(
 				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
+		});
+	});
+
+	describe('searchByPlaceId', () => {
+		const testPlaceId = 'a1b2c3d4';
+		const testResults = {
+			Place: TestPlacePascalCase,
+		};
+
+		test('should search with PlaceId as input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const results = await locationProvider.searchByPlaceId(testPlaceId);
+
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+			});
+		});
+
+		test('should fail if credentials are invalid', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow('No credentials');
+		});
+
+		test('should fail if _getCredentials fails ', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject();
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow('No credentials');
 		});
 	});
 

@@ -16,6 +16,7 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForSuggestionsCommand,
 	SearchPlaceIndexForPositionCommand,
+	GetPlaceCommand,
 } from '@aws-sdk/client-location';
 
 import { GeoClass } from '../src/Geo';
@@ -68,6 +69,11 @@ LocationClient.prototype.send = jest.fn(async command => {
 					Text: 'not star',
 				},
 			],
+		};
+	}
+	if (command instanceof GetPlaceCommand) {
+		return {
+			Place: TestPlacePascalCase,
 		};
 	}
 });
@@ -327,6 +333,45 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByText(testString)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
+	describe('searchByPlaceId', () => {
+		const testPlaceId = 'a1b2c3d4';
+		const testResults = {
+			Place: TestPlacePascalCase,
+		};
+
+		test('should search with PlaceId as input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.searchByPlaceId(testPlaceId);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+			});
+		});
+
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationService');
+
+			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});
