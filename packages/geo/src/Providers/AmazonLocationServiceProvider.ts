@@ -323,6 +323,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
+		this._verifySearchIndex(options?.searchIndexName);
 		this._verifyPlaceId(placeId);
 
 		const client = new LocationClient({
@@ -333,7 +334,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		const searchByPlaceIdInput: GetPlaceCommandInput = {
 			PlaceId: placeId,
-			IndexName: options?.searchIndexName,
+			IndexName:
+				options?.searchIndexName || this._config.search_indices.default,
 		};
 		const command = new GetPlaceCommand(searchByPlaceIdInput);
 
