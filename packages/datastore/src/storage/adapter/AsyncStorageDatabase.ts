@@ -279,8 +279,6 @@ class AsyncStorageDatabase {
 
 		const result = itemString ? JSON.parse(itemString) || undefined : undefined;
 
-		debugger;
-
 		return result;
 	}
 
@@ -319,7 +317,6 @@ class AsyncStorageDatabase {
 			.filter(([, value]) => value)
 			.map(([, value]) => JSON.parse(value));
 
-		debugger;
 		return records;
 	}
 

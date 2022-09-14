@@ -700,9 +700,13 @@ export class AsyncStorageAdapter implements Adapter {
 								 * Retrieve record by finding the record where all
 								 * targetNames are present on the connected model
 								 */
+								// recordToDelete = allRecords.filter(childItem =>
+								// 	values.every(value => childItem[value] != null)
+								// ) as T[];
+
 								recordToDelete = allRecords.filter(childItem =>
-									values.every(value => childItem[value] != null)
-								) as T[];
+									hasOneIndex.every(index => values.includes(childItem[index]))
+								);
 							} else {
 								// values === keyValuePath
 								recordToDelete = allRecords.filter(
@@ -751,8 +755,6 @@ export class AsyncStorageAdapter implements Adapter {
 						const keyValues: string[] = this.getIndexKeyValues(model);
 
 						const allRecords = await this.db.getAll(storeName);
-
-						debugger;
 
 						// Use constant if we go with this approach
 						const indices = index.split('-');
@@ -829,7 +831,6 @@ export class AsyncStorageAdapter implements Adapter {
 			batch.push(instance);
 		}
 
-		debugger;
 		return await this.db.batchSave(storeName, batch, keys);
 	}
 }
