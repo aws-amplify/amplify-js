@@ -492,6 +492,14 @@ export type ModelInstanceMetadata = {
 	_deleted: boolean;
 };
 
+// TODO: deprecate when CPK is supported by CommonSQLiteAdapter
+export type ModelInstanceMetadataWithId = {
+	id: string;
+	_version: number;
+	_lastChangedAt: number;
+	_deleted: boolean;
+};
+
 export type IdentifierFieldValue<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
