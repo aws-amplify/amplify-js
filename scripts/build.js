@@ -33,6 +33,14 @@ const packageInfo = require(packageJsonPath);
 const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
 const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 
+// path of tsconfig.json file on every package
+const tsconfigPath = path.join(pkgRootPath, 'tsconfig');
+const tsconfigInfo = require(tsconfigPath);
+
+const tsconfigSettingsPath = path.join(rootPath, 'packages/tsconfig.settings');
+// tsconfig file that shares common compiler options for ES5 & ES6
+const tsconfigSettingsInfo = require(tsconfigSettingsPath);
+
 const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
 const es6TsBuildInfoFilePath = path.join(pkgTscES6OutDir, '.tsbuildinfo');
 
@@ -147,37 +155,22 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 	logger.info(ts.formatDiagnostic(diagnostic, formatHost));
 }
 
-async function buildES5(typeScriptCompiler, watchMode) {
+async function buildES5(typeScriptCompiler, watchMode, tsconfig) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
 		? 'react'
 		: undefined;
-	// tsconfig for ES5 generating
+
 	let compilerOptions = {
-		esModuleInterop: true,
-		noImplicitAny: false,
-		lib: [
-			'dom',
-			'es2017',
-			'esnext.asynciterable',
-			'es2018.asyncgenerator',
-			'es2019',
-		],
-		downlevelIteration: true,
-		jsx: jsx,
-		target: 'es5',
-		module: 'commonjs',
-		moduleResolution: 'node',
-		declaration: true,
-		noEmitOnError: true,
-		incremental: true,
-		tsBuildInfoFile: es5TsBuildInfoFilePath,
-		typeRoots,
-		// temporary fix
-		types: ['node'],
-		outDir: pkgTscES5OutDir,
+		...tsconfig.compilerOptions,
+		...tsconfigSettingsInfo.compilerOptions,
 	};
+	compilerOptions.jsx = jsx;
+	compilerOptions.tsBuildInfoFile = es5TsBuildInfoFilePath;
+	compilerOptions.typeRoots = typeRoots;
+	compilerOptions.outDir = pkgTscES5OutDir;
+	compilerOptions.jsx = jsx;
 
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
@@ -204,38 +197,23 @@ async function buildES5(typeScriptCompiler, watchMode) {
 	});
 }
 
-function buildES6(typeScriptCompiler, watchMode) {
+function buildES6(typeScriptCompiler, watchMode, tsconfig) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
 		? 'react'
 		: undefined;
 	// tsconfig for ESM generating
-	let compilerOptions = {
-		esModuleInterop: true,
-		noImplicitAny: false,
-		lib: [
-			'dom',
-			'es2017',
-			'esnext.asynciterable',
-			'es2018.asyncgenerator',
-			'es2019',
-		],
-		downlevelIteration: true,
-		jsx: jsx,
-		target: 'es5',
-		module: 'es2015',
-		moduleResolution: 'node',
-		declaration: true,
-		noEmitOnError: true,
-		incremental: true,
-		tsBuildInfoFile: es6TsBuildInfoFilePath,
-		typeRoots,
-		// temporary fix
-		types: ['node'],
-		outDir: pkgTscES6OutDir,
-	};
 
+	let compilerOptions = {
+		...tsconfig.compilerOptions,
+		...tsconfigSettingsInfo.compilerOptions,
+	};
+	compilerOptions.jsx = jsx;
+	compilerOptions.tsBuildInfoFile = es6TsBuildInfoFilePath;
+	compilerOptions.typeRoots = typeRoots;
+	compilerOptions.outDir = pkgTscES6OutDir;
+	compilerOptions.jsx = jsx;
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
 		compilerOptions.inlineSources = true;
@@ -261,15 +239,16 @@ function buildES6(typeScriptCompiler, watchMode) {
 	});
 }
 
-function build(type, watchMode) {
+function build(type, watchMode, tsconfig) {
+	console.log(tsconfig);
 	if (type === 'rollup') buildRollUp();
 
 	var typeScriptCompiler = watchMode
 		? runTypeScriptWithWatchMode
 		: runTypeScriptWithoutWatchMode;
 
-	if (type === 'es5') buildES5(typeScriptCompiler, watchMode);
-	if (type === 'es6') buildES6(typeScriptCompiler, watchMode);
+	if (type === 'es5') buildES5(typeScriptCompiler, watchMode, tsconfig);
+	if (type === 'es6') buildES6(typeScriptCompiler, watchMode, tsconfig);
 }
 
 module.exports = build;

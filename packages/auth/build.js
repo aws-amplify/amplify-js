@@ -1,5 +1,5 @@
 'use strict';
 
 const build = require('../../scripts/build');
-
-build(process.argv[2], process.argv[3]);
+const tsconfig = require('./tsconfig.json');
+build(process.argv[2], process.argv[3], tsconfig);
