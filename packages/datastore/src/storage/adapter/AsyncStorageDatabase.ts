@@ -109,6 +109,8 @@ class AsyncStorageDatabase {
 
 		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));
+
+		console.log('WTFuuuu', await this.getAll(storeName));
 	}
 
 	async batchSave<T extends PersistentModel>(
@@ -283,6 +285,8 @@ class AsyncStorageDatabase {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName)!;
+
+		console.log('get collection index collection', collection);
 
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;

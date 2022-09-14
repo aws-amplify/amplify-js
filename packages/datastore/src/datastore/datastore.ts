@@ -770,10 +770,10 @@ const createModelClass = <T extends PersistentModel>(
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
 
 				if (!instanceMemos.hasOwnProperty(field)) {
-					console.log(
-						'remote constructor',
-						relationship.remoteModelConstructor
-					);
+					// console.log(
+					// 	'remote constructor',
+					// 	relationship.remoteModelConstructor
+					// );
 					const resultPromise = instance.query(
 						relationship.remoteModelConstructor as PersistentModelConstructor<T>,
 						base =>
@@ -1384,8 +1384,12 @@ class DataStore {
 			);
 
 			const [savedModel] = await this.storage.runExclusive(async s => {
-				await s.save(model, producedCondition, undefined, patchesTuple);
-
+				const saved = await s.save(
+					model,
+					producedCondition,
+					undefined,
+					patchesTuple
+				);
 				return s.query<T>(
 					modelConstructor,
 					ModelPredicateCreator.createForPk(modelDefinition, model)

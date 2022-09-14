@@ -215,7 +215,6 @@ export class AsyncStorageAdapter implements Adapter {
 				result.push([instance, opType]);
 			}
 		}
-
 		return result;
 	}
 
@@ -290,6 +289,11 @@ export class AsyncStorageAdapter implements Adapter {
 		storeName: string,
 		keyValuePath: string
 	): Promise<T> {
+		console.log('getByKey', storeName, keyValuePath);
+		console.log(
+			'debug - getAll()',
+			await this.db.getAll('user_CompositePKChild')
+		);
 		const record = <T>await this.db.get(keyValuePath, storeName);
 		return record;
 	}

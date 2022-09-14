@@ -9,6 +9,7 @@ import {
 	__modelMeta__,
 	SchemaModel,
 	PersistentModelConstructor,
+	OptionallyManagedIdentifier,
 } from '../src/types';
 
 import {
@@ -591,6 +592,216 @@ export declare class PostCustomPKComposite {
 	): PostCustomPKComposite;
 }
 
+export declare class BasicModel {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<BasicModel, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<BasicModel>);
+	static copyOf(
+		source: BasicModel,
+		mutator: (
+			draft: MutableModel<BasicModel>
+		) => MutableModel<BasicModel> | void
+	): BasicModel;
+}
+
+export declare class HasOneParent {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneParent, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly child?: HasOneChild | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly hasOneParentChildId?: string | null;
+	constructor(init: ModelInit<HasOneParent>);
+	static copyOf(
+		source: HasOneParent,
+		mutator: (
+			draft: MutableModel<HasOneParent>
+		) => MutableModel<HasOneParent> | void
+	): HasOneParent;
+}
+
+export declare class HasOneChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<HasOneChild>);
+	static copyOf(
+		source: HasOneChild,
+		mutator: (
+			draft: MutableModel<HasOneChild>
+		) => MutableModel<HasOneChild> | void
+	): HasOneChild;
+}
+
+export declare class DefaultPKParent {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<DefaultPKParent, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly children?: (DefaultPKChild | null)[] | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<DefaultPKParent>);
+	static copyOf(
+		source: DefaultPKParent,
+		mutator: (
+			draft: MutableModel<DefaultPKParent>
+		) => MutableModel<DefaultPKParent> | void
+	): DefaultPKParent;
+}
+
+export declare class DefaultPKChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<DefaultPKChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly parent?: DefaultPKParent | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly defaultPKParentChildrenId?: string | null;
+	constructor(init: ModelInit<DefaultPKChild>);
+	static copyOf(
+		source: DefaultPKChild,
+		mutator: (
+			draft: MutableModel<DefaultPKChild>
+		) => MutableModel<DefaultPKChild> | void
+	): DefaultPKChild;
+}
+
+/**
+ * This is it.
+ */
+export declare class CompositePKParent {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositePKParent, ['customId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly customId: string;
+	readonly content: string;
+	readonly children?: (CompositePKChild | null)[] | null;
+	readonly implicitChildren?: (ImplicitChild | null)[] | null;
+	readonly strangeExplicitChildren?: (StrangeExplicitChild | null)[] | null;
+	readonly childrenWithoutBelongsTo?:
+		| (ChildWithoutReturnBelongsTo | null)[]
+		| null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<CompositePKParent>);
+	static copyOf(
+		source: CompositePKParent,
+		mutator: (
+			draft: MutableModel<CompositePKParent>
+		) => MutableModel<CompositePKParent> | void
+	): CompositePKParent;
+}
+
+export declare class CompositePKChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositePKChild, ['childId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly parent?: CompositePKParent | null;
+	readonly parentId?: string | null;
+	readonly parentTitle?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<CompositePKChild>);
+	static copyOf(
+		source: CompositePKChild,
+		mutator: (
+			draft: MutableModel<CompositePKChild>
+		) => MutableModel<CompositePKChild> | void
+	): CompositePKChild;
+}
+
+export declare class ImplicitChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<ImplicitChild, ['childId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly parent: CompositePKParent;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly compositePKParentImplicitChildrenCustomId?: string | null;
+	readonly compositePKParentImplicitChildrenContent?: string | null;
+	constructor(init: ModelInit<ImplicitChild>);
+	static copyOf(
+		source: ImplicitChild,
+		mutator: (
+			draft: MutableModel<ImplicitChild>
+		) => MutableModel<ImplicitChild> | void
+	): ImplicitChild;
+}
+
+export declare class StrangeExplicitChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<
+			StrangeExplicitChild,
+			['strangeExplicitChildId', 'content']
+		>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly strangeExplicitChildId: string;
+	readonly content: string;
+	readonly parent: CompositePKParent;
+	readonly strangeParentId?: string | null;
+	readonly strangeParentTitle?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<StrangeExplicitChild>);
+	static copyOf(
+		source: StrangeExplicitChild,
+		mutator: (
+			draft: MutableModel<StrangeExplicitChild>
+		) => MutableModel<StrangeExplicitChild> | void
+	): StrangeExplicitChild;
+}
+
+export declare class ChildWithoutReturnBelongsTo {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<
+			ChildWithoutReturnBelongsTo,
+			['childId', 'content']
+		>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly compositePKParentChildrenWithoutBelongsToCustomId?: string | null;
+	readonly compositePKParentChildrenWithoutBelongsToContent?: string | null;
+	constructor(init: ModelInit<ChildWithoutReturnBelongsTo>);
+	static copyOf(
+		source: ChildWithoutReturnBelongsTo,
+		mutator: (
+			draft: MutableModel<ChildWithoutReturnBelongsTo>
+		) => MutableModel<ChildWithoutReturnBelongsTo> | void
+	): ChildWithoutReturnBelongsTo;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1087,6 +1298,725 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							fields: ['id', 'postId', 'sort'],
+						},
+					},
+				],
+			},
+
+			BasicModel: {
+				name: 'BasicModel',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModels',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			HasOneParent: {
+				name: 'HasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'HasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: ['id'],
+							targetNames: ['hasOneParentChildId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					hasOneParentChildId: {
+						name: 'hasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			HasOneChild: {
+				name: 'HasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			DefaultPKParent: {
+				name: 'DefaultPKParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					children: {
+						name: 'children',
+						isArray: true,
+						type: {
+							model: 'DefaultPKChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['defaultPKParentChildrenId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			DefaultPKChild: {
+				name: 'DefaultPKChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'DefaultPKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['defaultPKParentChildrenId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					defaultPKParentChildrenId: {
+						name: 'defaultPKParentChildrenId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			CompositePKParent: {
+				name: 'CompositePKParent',
+				fields: {
+					customId: {
+						name: 'customId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					children: {
+						name: 'children',
+						isArray: true,
+						type: {
+							model: 'CompositePKChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['parent'],
+						},
+					},
+					implicitChildren: {
+						name: 'implicitChildren',
+						isArray: true,
+						type: {
+							model: 'ImplicitChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: [
+								'compositePKParentImplicitChildrenCustomId',
+								'compositePKParentImplicitChildrenContent',
+							],
+						},
+					},
+					strangeExplicitChildren: {
+						name: 'strangeExplicitChildren',
+						isArray: true,
+						type: {
+							model: 'StrangeExplicitChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['parent'],
+						},
+					},
+					childrenWithoutBelongsTo: {
+						name: 'childrenWithoutBelongsTo',
+						isArray: true,
+						type: {
+							model: 'ChildWithoutReturnBelongsTo',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: [
+								'compositePKParentChildrenWithoutBelongsToCustomId',
+								'compositePKParentChildrenWithoutBelongsToContent',
+							],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'CompositePKParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['customId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['content'],
+						},
+					},
+				],
+			},
+			CompositePKChild: {
+				name: 'CompositePKChild',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['parentId', 'parentTitle'],
+						},
+					},
+					parentId: {
+						name: 'parentId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					parentTitle: {
+						name: 'parentTitle',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'CompositePKChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byParent',
+							fields: ['parentId', 'parentTitle'],
+						},
+					},
+				],
+			},
+			ImplicitChild: {
+				name: 'ImplicitChild',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: [
+								'compositePKParentImplicitChildrenCustomId',
+								'compositePKParentImplicitChildrenContent',
+							],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					compositePKParentImplicitChildrenCustomId: {
+						name: 'compositePKParentImplicitChildrenCustomId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					compositePKParentImplicitChildrenContent: {
+						name: 'compositePKParentImplicitChildrenContent',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'ImplicitChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
+						},
+					},
+				],
+			},
+			StrangeExplicitChild: {
+				name: 'StrangeExplicitChild',
+				fields: {
+					strangeExplicitChildId: {
+						name: 'strangeExplicitChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['strangeParentId', 'strangeParentTitle'],
+						},
+					},
+					strangeParentId: {
+						name: 'strangeParentId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					strangeParentTitle: {
+						name: 'strangeParentTitle',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'StrangeExplicitChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['strangeExplicitChildId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byCompositePKParentX',
+							fields: ['strangeParentId', 'strangeParentTitle'],
+						},
+					},
+				],
+			},
+			ChildWithoutReturnBelongsTo: {
+				name: 'ChildWithoutReturnBelongsTo',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					compositePKParentChildrenWithoutBelongsToCustomId: {
+						name: 'compositePKParentChildrenWithoutBelongsToCustomId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					compositePKParentChildrenWithoutBelongsToContent: {
+						name: 'compositePKParentChildrenWithoutBelongsToContent',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'ChildWithoutReturnBelongsTos',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
 						},
 					},
 				],

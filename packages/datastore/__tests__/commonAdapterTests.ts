@@ -21,6 +21,7 @@ import {
 	Post,
 	Comment,
 	testSchema,
+	CompositePKParent,
 } from './helpers';
 
 export { pause };
@@ -419,37 +420,52 @@ export function addCommonQueryTests({
 			await DataStore.clear();
 		});
 
+		test('SANITY TEST', async () => {
+			const whatever = new classes.CompositePKParent({
+				customId: 'asdfadfasdf',
+				content: 'some absurdly awesome content',
+			});
+
+			console.log('whatever', whatever);
+			const saved = await DataStore.save(whatever);
+
+			expect(saved.customId).toEqual('asdfadfasdf');
+			expect(saved.content).toEqual('some absurdly awesome content');
+		});
+
 		for (const modelName of Object.keys(schema.models)) {
 			const meta = buildModelMeta(modelName);
 			for (const field of Object.keys(meta.schema.fields)) {
 				const R = ModelRelationship.from(meta, field);
 				if (R) {
+					const testname = `${R.localConstructor.name}.${field} -> ${R.remoteModelConstructor.name} (${R.relationship})`;
 					switch (R.relationship) {
 						case 'BELONGS_TO':
 						case 'HAS_ONE':
-							test(`can lazy load ${R.localConstructor.name}.${field} (${R.relationship})`, async () => {
+							test(`can lazy load ${testname}`, async () => {
 								// Create the "remote" instance first, because the "local" one will point to it.
-								const remote = await DataStore.save(
-									new R.remoteModelConstructor(
-										randomInitializer(R.remoteModelConstructor)
-									)
+								const remoteInit = new R.remoteModelConstructor(
+									randomInitializer(R.remoteModelConstructor)
 								);
-								const local = await DataStore.save(
-									new R.localConstructor({
-										...randomInitializer(R.localConstructor),
-										[field]: remote,
-									})
-								);
+								const remote = await DataStore.save(remoteInit);
+
+								const localInit = new R.localConstructor({
+									...randomInitializer(R.localConstructor),
+									[field]: remote,
+								});
+								const local = await DataStore.save(localInit);
+
 								const fetched = await DataStore.query(
 									R.localConstructor,
 									extractPrimaryKeysAndValues(local, R.localPKFields)
 								);
 								const lazyLoaded = await fetched[field];
+
 								expect(lazyLoaded).toEqual(remote);
 							});
 							break;
 						case 'HAS_MANY':
-							test(`can lazy load ${R.localConstructor.name}.${field} (${R.relationship})`, async () => {
+							test(`can lazy load ${testname}`, async () => {
 								const local = await DataStore.save(
 									new R.localConstructor(randomInitializer(R.localConstructor))
 								);
@@ -478,8 +494,8 @@ export function addCommonQueryTests({
 									R.localConstructor,
 									extractPrimaryKeysAndValues(local, R.localPKFields)
 								);
-
 								const lazyLoaded = await fetched[field].toArray();
+
 								expect(lazyLoaded).toEqual(remotes);
 							});
 							break;
