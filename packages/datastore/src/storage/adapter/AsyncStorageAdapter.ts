@@ -752,6 +752,8 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 
+						debugger;
+
 						// Use constant if we go with this approach
 						const indices = index.split('-');
 
@@ -827,6 +829,7 @@ export class AsyncStorageAdapter implements Adapter {
 			batch.push(instance);
 		}
 
+		debugger;
 		return await this.db.batchSave(storeName, batch, keys);
 	}
 }
