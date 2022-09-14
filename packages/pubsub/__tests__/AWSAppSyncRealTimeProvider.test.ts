@@ -510,7 +510,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						payload: { data: {} },
 					});
 					expect(loggerSpy).toBeCalledWith(
-						'ERROR',
+						'DEBUG',
 						'Connection failed: {"data":{}}'
 					);
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
@@ -981,7 +981,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(10);
 
 						expect(loggerSpy).toBeCalledWith(
-							'ERROR',
+							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No credentials'
 						);
 					});
@@ -1013,7 +1013,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(10);
 
 						expect(loggerSpy).toBeCalledWith(
-							'ERROR',
+							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No credentials'
 						);
 
@@ -1077,7 +1077,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(10);
 
 						expect(loggerSpy).toBeCalledWith(
-							'ERROR',
+							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No federated jwt'
 						);
 					});
@@ -1171,7 +1171,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await delay(10);
 
 						expect(loggerSpy).toBeCalledWith(
-							'ERROR',
+							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No auth token specified'
 						);
 					});

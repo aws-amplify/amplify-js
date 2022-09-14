@@ -124,7 +124,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					// Trigger reconnection when the connection is disrupted
 					if (connectionState === ConnectionState.ConnectionDisrupted) {
-						this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
+						this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
 					} else if (connectionState !== ConnectionState.Connecting) {
 						// Trigger connected to halt reconnection attempts
 						this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
@@ -198,7 +198,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 								observer,
 								subscriptionId,
 							}).catch<any>(err => {
-								logger.error(
+								logger.debug(
 									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
 								);
 
@@ -346,7 +346,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				this.connectionState !==
 				ConnectionState.ConnectionDisruptedPendingNetwork
 			) {
-				logger.error(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
+				logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
 				this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 
 				const { subscriptionFailedCallback } =
@@ -556,7 +556,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					subscriptionState,
 				});
 
-				logger.error(
+				logger.debug(
 					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
 				);
 
@@ -664,7 +664,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					this.socketStatus = SOCKET_STATUS.READY;
 					this.promiseArray = [];
 				} catch (err) {
-					logger.error(err);
+					logger.debug('Notifying connection exited with', err);
 					this.promiseArray.forEach(({ rej }) => rej(err));
 					this.promiseArray = [];
 					if (

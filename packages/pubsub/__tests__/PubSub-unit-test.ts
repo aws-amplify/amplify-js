@@ -16,7 +16,7 @@ import {
 	AWSIoTProvider,
 	mqttTopicMatch,
 } from '../src/Providers';
-// import Amplify from '../../src/';
+
 import {
 	Credentials,
 	Hub,

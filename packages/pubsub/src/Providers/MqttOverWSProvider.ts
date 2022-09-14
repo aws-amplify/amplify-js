@@ -58,7 +58,7 @@ export interface MqttProviderOptions extends ProviderOptions {
 export type MqttProvidertOptions = MqttProviderOptions;
 
 class ClientsQueue {
-	private promises: Map<string, Promise<any> | any> = new Map();
+	private promises: Map<string, Promise<any>> = new Map();
 
 	async get(clientId: string, clientFactory?: (input: string) => Promise<any>) {
 		const cachedPromise = this.promises.get(clientId);
@@ -67,9 +67,7 @@ class ClientsQueue {
 		if (clientFactory) {
 			const newPromise = clientFactory(clientId);
 			this.promises.set(clientId, newPromise);
-			newPromise.then(v => this.promises.set(clientId, v));
 			newPromise.catch(v => this.promises.delete(clientId));
-			newPromise.finally();
 			return newPromise;
 		}
 
@@ -116,7 +114,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 				// Trigger reconnection when the connection is disrupted
 				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
-					this.reconnectionMonitor.record(ReconnectEvent.RECONNECT);
+					this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
 				} else if (connectionStateChange !== ConnectionState.Connecting) {
 					// Trigger connected to halt reconnection attempts
 					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
@@ -338,7 +336,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 							});
 						}
 					} catch (e) {
-						logger.error('Error forming connection', e);
+						logger.debug('Error forming connection', e);
 					}
 				};
 
