@@ -21,6 +21,7 @@ import { delay, FakeWebSocketInterface, replaceConstant } from './helpers';
 import { ConnectionState as CS } from '../src';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { loggers } from 'winston';
 
 describe('AWSAppSyncRealTimeProvider', () => {
 	describe('isCustomDomain()', () => {
@@ -518,8 +519,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					]);
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
-					expect.assertions(2);
+				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async done => {
+					expect.assertions(3);
 
 					const socketCloseSpy = jest.spyOn(
 						fakeWebSocketInterface.webSocket,
@@ -532,7 +533,12 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					observer.subscribe({
-						error: x => {},
+						error: e => {
+							expect(e.errors[0].message).toEqual(
+								'Connection failed: Non-retriable Test'
+							);
+							done();
+						},
 					});
 
 					await fakeWebSocketInterface?.readyForUse;
@@ -584,8 +590,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a retriable connection_error data message is received', async () => {
-					expect.assertions(1);
+				test('subscription observer error is not triggered when a connection is formed and a retriable connection_error data message is received', async () => {
+					expect.assertions(2);
 
 					const observer = provider.subscribe('test', {
 						appSyncGraphqlEndpoint: 'ws://localhost:8080',
@@ -595,23 +601,30 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						error: x => {},
 					});
 
-					await fakeWebSocketInterface?.readyForUse;
-					await fakeWebSocketInterface?.triggerOpen();
+					const openSocketAttempt = async () => {
+						await fakeWebSocketInterface?.readyForUse;
+						await fakeWebSocketInterface?.triggerOpen();
 
-					// Resolve the message delivery actions
-					await Promise.resolve(
-						fakeWebSocketInterface?.sendDataMessage({
-							type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
-							payload: {
-								errors: [
-									{
-										errorType: 'Retriable Test',
-										errorCode: 408, // Request timed out - retriable
-									},
-								],
-							},
-						})
-					);
+						// Resolve the message delivery actions
+						await Promise.resolve(
+							fakeWebSocketInterface?.sendDataMessage({
+								type: MESSAGE_TYPES.GQL_CONNECTION_ERROR,
+								payload: {
+									errors: [
+										{
+											errorType: 'Retriable Test',
+											errorCode: 408, // Request timed out - retriable
+										},
+									],
+								},
+							})
+						);
+						await fakeWebSocketInterface?.resetWebsocket();
+					};
+
+					// Go through two connection attempts to excercise backoff and retriable raise
+					await openSocketAttempt();
+					await openSocketAttempt();
 
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
@@ -620,6 +633,15 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.objectContaining({
 							message: expect.stringMatching('Retriable Test'),
 						})
+					);
+
+					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
+						CS.ConnectionDisrupted,
+					]);
+
+					expect(loggerSpy).toBeCalledWith(
+						'DEBUG',
+						'Connection failed: Retriable Test'
 					);
 				});
 

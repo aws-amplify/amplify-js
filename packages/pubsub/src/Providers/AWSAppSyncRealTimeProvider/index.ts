@@ -26,6 +26,7 @@ import {
 	jitteredExponentialRetry,
 	NonRetryableError,
 	ICredentials,
+	isNonRetryableError,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
@@ -346,8 +347,19 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				this.connectionState !==
 				ConnectionState.ConnectionDisruptedPendingNetwork
 			) {
-				logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
-				this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+				if (isNonRetryableError(err)) {
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(
+									`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`
+								),
+							},
+						],
+					});
+				} else {
+					logger.debug(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`);
+				}
 
 				const { subscriptionFailedCallback } =
 					this.subscriptionObserverMap.get(subscriptionId) || {};
@@ -664,7 +676,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					this.socketStatus = SOCKET_STATUS.READY;
 					this.promiseArray = [];
 				} catch (err) {
-					logger.debug('Notifying connection exited with', err);
+					logger.debug('Connection exited with', err);
 					this.promiseArray.forEach(({ rej }) => rej(err));
 					this.promiseArray = [];
 					if (
