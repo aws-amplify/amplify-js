@@ -88,14 +88,6 @@ class AsyncStorageDatabase {
 		if (keysForCollectionEntries.length > 0) {
 			await this.storage.multiRemove(keysForCollectionEntries);
 		}
-
-		(<any>window).db = () => {
-			return {
-				_collectionInMemoryIndex: this._collectionInMemoryIndex,
-				monotonicFactoriesMap: monotonicFactoriesMap,
-				storage: this.storage,
-			};
-		};
 	}
 
 	async save<T extends PersistentModel>(
