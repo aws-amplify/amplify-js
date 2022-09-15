@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.32...@aws-amplify/ui-components@1.9.33) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.31...@aws-amplify/ui-components@1.9.32) (2022-09-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.30...@aws-amplify/ui-components@1.9.31) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.29...@aws-amplify/ui-components@1.9.30) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.28...@aws-amplify/ui-components@1.9.29) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.27...@aws-amplify/ui-components@1.9.28) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.26...@aws-amplify/ui-components@1.9.27) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.25...@aws-amplify/ui-components@1.9.26) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.24...@aws-amplify/ui-components@1.9.25) (2022-07-07)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.23...@aws-amplify/ui-components@1.9.24) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.22...@aws-amplify/ui-components@1.9.23) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.21...@aws-amplify/ui-components@1.9.22) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.20...@aws-amplify/ui-components@1.9.21) (2022-05-23)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.9.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.19...@aws-amplify/ui-components@1.9.20) (2022-05-12)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

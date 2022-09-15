@@ -2,6 +2,8 @@ export const MAX_DELAY_MS = 5000;
 
 export const NON_RETRYABLE_CODES = [400, 401, 403];
 
+export const CONNECTION_STATE_CHANGE = 'ConnectionStateChange';
+
 export enum MESSAGE_TYPES {
 	/**
 	 * Client -> Server message.
@@ -93,3 +95,8 @@ export const START_ACK_TIMEOUT = 15000;
  * Default Time in milleseconds to wait for GQL_CONNECTION_KEEP_ALIVE message
  */
 export const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
+
+/**
+ * Default Time in milleseconds to alert for missed GQL_CONNECTION_KEEP_ALIVE message
+ */
+export const DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT = 65 * 1000;

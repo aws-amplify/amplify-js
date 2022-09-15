@@ -108,8 +108,12 @@ describe('Analytics test', () => {
 
 			await analytics.record({
 				name: 'event',
-				attributes: 'attributes',
-				metrics: 'metrics',
+				attributes: {
+					key: 'value',
+				},
+				metrics: {
+					metric: 123,
+				},
 			});
 			expect(record_spyon).toBeCalled();
 		});

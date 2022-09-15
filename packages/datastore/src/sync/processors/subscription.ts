@@ -1,5 +1,5 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
@@ -14,6 +14,7 @@ import {
 	AuthModeStrategy,
 	ErrorHandler,
 	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -24,7 +25,7 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate } from '../../util';
+import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
@@ -60,7 +61,8 @@ class SubscriptionProcessor {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly errorHandler: ErrorHandler
+		private readonly errorHandler: ErrorHandler,
+		private readonly amplifyContext: AmplifyContext = { Auth, API, Cache }
 	) {}
 
 	private buildSubscription(
@@ -253,8 +255,8 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const credentials = await Auth.currentCredentials();
+					const credentials =
+						await this.amplifyContext.Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -264,8 +266,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const session = await Auth.currentSession();
+					const session = await this.amplifyContext.Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
@@ -282,11 +283,14 @@ class SubscriptionProcessor {
 
 					let token;
 					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
+					const federatedInfo = await this.amplifyContext.Cache.getItem(
+						'federatedInfo'
+					);
 					if (federatedInfo) {
 						token = federatedInfo.token;
 					} else {
-						const currentUser = await Auth.currentAuthenticatedUser();
+						const currentUser =
+							await this.amplifyContext.Auth.currentAuthenticatedUser();
 						if (currentUser) {
 							token = currentUser.token;
 						}
@@ -383,18 +387,24 @@ class SubscriptionProcessor {
 									}`
 								);
 
+								const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
+
+								>(<unknown>this.amplifyContext.API.graphql({ query, variables, ...{ authMode }, authToken, userAgentSuffix }));
+
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][
 									transformerMutationType
 								].push(
 									queryObservable
-										.map(({ value }) => value)
+										.map(({ value }) => {
+											return value;
+										})
 										.subscribe({
 											next: ({ data, errors }) => {
 												if (Array.isArray(errors) && errors.length > 0) {
@@ -446,23 +456,6 @@ class SubscriptionProcessor {
 														errors: [],
 													},
 												} = subscriptionError;
-												try {
-													await this.errorHandler({
-														recoverySuggestion:
-															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-														localModel: null,
-														message,
-														model: modelDefinition.name,
-														operation,
-														errorType:
-															getSubscriptionErrorType(subscriptionError),
-														process: ProcessName.subscribe,
-														remoteModel: null,
-														cause: subscriptionError,
-													});
-												} catch (e) {
-													logger.error('Sync error handler failed with:', e);
-												}
 
 												if (
 													message.includes(
@@ -483,6 +476,7 @@ class SubscriptionProcessor {
 														operationAuthModeAttempts[operation] >=
 														readAuthModes.length
 													) {
+														// last auth mode retry. Continue with error
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
 																readAuthModes[
@@ -490,9 +484,9 @@ class SubscriptionProcessor {
 																]
 															}`
 														);
-														logger.warn('subscriptionError', message);
-														return;
 													} else {
+														// retry with different auth mode. Do not trigger
+														// observer error or error handler
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
 																readAuthModes[
@@ -509,6 +503,27 @@ class SubscriptionProcessor {
 													}
 												}
 												logger.warn('subscriptionError', message);
+
+												try {
+													await this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null,
+														message,
+														model: modelDefinition.name,
+														operation,
+														errorType:
+															getSubscriptionErrorType(subscriptionError),
+														process: ProcessName.subscribe,
+														remoteModel: null,
+														cause: subscriptionError,
+													});
+												} catch (e) {
+													logger.error(
+														'Subscription error handler failed with:',
+														e
+													);
+												}
 
 												if (typeof subscriptionReadyCallback === 'function') {
 													subscriptionReadyCallback();

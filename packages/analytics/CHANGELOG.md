@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.19...@aws-amplify/analytics@5.2.20) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.18...@aws-amplify/analytics@5.2.19) (2022-09-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.17...@aws-amplify/analytics@5.2.18) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.16...@aws-amplify/analytics@5.2.17) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.15...@aws-amplify/analytics@5.2.16) (2022-08-16)
+
+
+### Reverts
+
+* Revert "kinesis fix" ([88f118e](https://github.com/aws-amplify/amplify-js/commit/88f118e1340c38ba237362644035b4d7c9f72557))
+* Revert "update personalize type to accomodate string" ([4e0e22b](https://github.com/aws-amplify/amplify-js/commit/4e0e22bd733aac715681953dac90440a44fd49bd))
+
+
+
+
+
+## [5.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.14...@aws-amplify/analytics@5.2.15) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.13...@aws-amplify/analytics@5.2.14) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.12...@aws-amplify/analytics@5.2.13) (2022-07-21)
+
+
+### Bug Fixes
+
+* Update AmazonPersonalizeProvider Analytics typings ([#10076](https://github.com/aws-amplify/amplify-js/issues/10076)) ([b7ad126](https://github.com/aws-amplify/amplify-js/commit/b7ad1260eb1bc6611cd902e7b8b3e58066ef22b4))
+
+
+
+
+
+## [5.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.11...@aws-amplify/analytics@5.2.12) (2022-07-07)
+
+
+### Bug Fixes
+
+* **analytics:** Buffer limit should be adhered to ([#10015](https://github.com/aws-amplify/amplify-js/issues/10015)) ([3dd9035](https://github.com/aws-amplify/amplify-js/commit/3dd903573843f6f53251d118a11de7dacd9edddd))
+
+
+
+
+
+## [5.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.10...@aws-amplify/analytics@5.2.11) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.9...@aws-amplify/analytics@5.2.10) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.8...@aws-amplify/analytics@5.2.9) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [5.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.7...@aws-amplify/analytics@5.2.8) (2022-05-23)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [5.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.2.6...@aws-amplify/analytics@5.2.7) (2022-05-12)
 
 **Note:** Version bump only for package @aws-amplify/analytics

@@ -3,6 +3,126 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.0...@aws-amplify/interactions@4.1.1) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.51...@aws-amplify/interactions@4.1.0) (2022-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** add audio type Uint8Array to lexV1 ([#10273](https://github.com/aws-amplify/amplify-js/issues/10273)) ([840086d](https://github.com/aws-amplify/amplify-js/commit/840086d6b58276c06128141cd04434e23d26e3a5))
+* **@aws-amplify/interactions:** use pako instead of fflate in RN ([#10278](https://github.com/aws-amplify/amplify-js/issues/10278)) ([0c804e4](https://github.com/aws-amplify/amplify-js/commit/0c804e402da30ed3bfdd25f5c16fd2e0dfd5a07b))
+
+
+### Features
+
+* **@aws-amplify/interactions:** Add LexV2 support to interactions ([#10217](https://github.com/aws-amplify/amplify-js/issues/10217)) ([91fdcd9](https://github.com/aws-amplify/amplify-js/commit/91fdcd919ee59f4e92b4abbbc18b33e3e38ed17e)), closes [#10167](https://github.com/aws-amplify/amplify-js/issues/10167)
+* **@aws-amplify/interactions:** call onComplete callback with entire response ([#10248](https://github.com/aws-amplify/amplify-js/issues/10248)) ([7f2534d](https://github.com/aws-amplify/amplify-js/commit/7f2534d5dc2c936eadc12b5d49c86a3704051f4a))
+
+
+
+
+
+## [4.0.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.50...@aws-amplify/interactions@4.0.51) (2022-08-23)
+
+
+### Bug Fixes
+
+* **interactions:** fix addPluggable API ([#10250](https://github.com/aws-amplify/amplify-js/issues/10250)) ([01aad60](https://github.com/aws-amplify/amplify-js/commit/01aad60ff14c3db47761db819dd47def75bfcb9d))
+
+
+
+
+
+## [4.0.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.49...@aws-amplify/interactions@4.0.50) (2022-08-18)
+
+
+### Bug Fixes
+
+* **interactions:** fix configure default provider ([#10215](https://github.com/aws-amplify/amplify-js/issues/10215)) ([d4c3955](https://github.com/aws-amplify/amplify-js/commit/d4c395520bc66f24325babbe53e6ab7ebdea4d3b))
+
+
+
+
+
+## [4.0.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.48...@aws-amplify/interactions@4.0.49) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.48](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.47...@aws-amplify/interactions@4.0.48) (2022-08-01)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.47](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.46...@aws-amplify/interactions@4.0.47) (2022-07-28)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.46](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.45...@aws-amplify/interactions@4.0.46) (2022-07-21)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.45](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.44...@aws-amplify/interactions@4.0.45) (2022-07-07)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.44](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.43...@aws-amplify/interactions@4.0.44) (2022-06-18)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.43](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.42...@aws-amplify/interactions@4.0.43) (2022-06-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.42](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.41...@aws-amplify/interactions@4.0.42) (2022-05-24)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.41](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.40...@aws-amplify/interactions@4.0.41) (2022-05-23)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
 ## [4.0.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.39...@aws-amplify/interactions@4.0.40) (2022-05-12)
 
 **Note:** Version bump only for package @aws-amplify/interactions
