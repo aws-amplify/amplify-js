@@ -6,7 +6,7 @@ import {
 	PersistentModel,
 	QueryOne,
 } from '../../types';
-import { indexNameFromKeys, monotonicUlidFactory } from '../../util';
+import { DEFAULT_PRIMARY_KEY_SEPARATOR, indexNameFromKeys, monotonicUlidFactory } from '../../util';
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -14,8 +14,6 @@ const COLLECTION = 'Collection';
 const DATA = 'Data';
 
 const monotonicFactoriesMap = new Map<string, ULID>();
-
-const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
 class AsyncStorageDatabase {
 	/**

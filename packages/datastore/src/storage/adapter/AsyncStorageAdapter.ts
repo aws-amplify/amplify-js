@@ -22,6 +22,7 @@ import {
 	RelationType,
 } from '../../types';
 import {
+	DEFAULT_PRIMARY_KEY_SEPARATOR,
 	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
@@ -32,8 +33,6 @@ import {
 } from '../../util';
 
 const logger = new Logger('DataStore');
-
-const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
 export class AsyncStorageAdapter implements Adapter {
 	private schema: InternalSchema;
