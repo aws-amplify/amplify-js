@@ -86,7 +86,6 @@ export type SearchByCoordinatesOptions = {
 
 export type searchByPlaceIdOptions = {
 	searchIndexName?: string;
-	providerName?: string;
 };
 
 // Geometry object for Place points
