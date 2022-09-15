@@ -184,10 +184,10 @@ export class MediaAutoTrack {
 		const { eventData } = newParams;
 		eventData.eventType = eventType;
 		if (mediaType === MEDIA_TYPE.VIDEO) {
-			eventData.properties.timestamp = this._mediaElement.currentTime;
+			eventData.properties.timeStamp = this._mediaElement.currentTime;
 			eventData.properties.duration = this._mediaElement.duration;
 		} else {
-			eventData.properties.timestamp = this._financial(
+			eventData.properties.timeStamp = this._financial(
 				this._iframePlayer.getCurrentTime()
 			);
 			eventData.properties.duration = this._financial(
@@ -195,7 +195,7 @@ export class MediaAutoTrack {
 			);
 		}
 		const percentage =
-			parseFloat(eventData.properties.timestamp) /
+			parseFloat(eventData.properties.timeStamp) /
 			parseFloat(eventData.properties.duration);
 		eventData.properties.eventValue = Number(percentage.toFixed(4));
 		delete eventData.properties.domElementId;
