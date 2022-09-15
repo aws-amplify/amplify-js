@@ -120,7 +120,7 @@ export class CognitoService {
 		// TODO: add param for cognito client config
 		const cognitoClient = this.cognitoUserPoolService;
 		const session = this.getSessionData();
-		if (session === null) {
+		if (!session) {
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);
@@ -187,7 +187,7 @@ export class CognitoService {
 
 	async fetchUserPoolTokens() {
 		const session = this.getSessionData();
-		if (session === null) {
+		if (!session) {
 			throw new Error(
 				'Does not have active user session, have you called .signIn?'
 			);

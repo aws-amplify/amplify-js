@@ -24,7 +24,6 @@ import { pure, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
 import { signInMachine } from './signInMachine';
-import { signUpMachine } from './signUpMachine';
 import { SignInParams, SignInWithSocial, SignUpParams } from '../../../types';
 import {
 	AuthenticationMachineContext,
@@ -55,7 +54,7 @@ export const authenticationMachineModel = createModel(
 	{
 		id: 'authenticationMachine',
 		events: {
-			configure: (config: UserPoolConfig, storagePrefix: String) => ({
+			configure: (config: UserPoolConfig, storagePrefix: string) => ({
 				config,
 				storagePrefix,
 			}),
@@ -163,31 +162,6 @@ const authenticationMachineActions: Record<
 		},
 		'signInRequested'
 	),
-	spawnSignUpActor: authenticationMachineModel.assign(
-		{
-			actorRef: (context, event) => {
-				if (!context.config) {
-					return context.actorRef;
-				}
-
-				// TODO: discover what context is necessary for `signUp` event
-				const machine = signUpMachine.withContext({
-					clientConfig: { region: context.config?.region },
-					authConfig: context.config,
-					username: event.params.username,
-					password: event.params.password,
-					attributes: event.params.attributes,
-					pluginOptions: event.params.pluginOptions,
-					service: context.service,
-				});
-				const signUpActorRef = spawn(machine, {
-					name: signUpActorName,
-				});
-				return signUpActorRef;
-			},
-		},
-		'initiateSignUp'
-	),
 };
 
 // TODO: How to make this more easily extensible?
@@ -248,7 +222,6 @@ const authenticationStateMachine: MachineConfig<
 			},
 		},
 		signingUp: {
-			onEntry: [authenticationMachineActions.spawnSignUpActor],
 			on: {
 				cancelSignUp: {
 					target: '#authenticationMachine.signedOut',
@@ -260,13 +233,6 @@ const authenticationStateMachine: MachineConfig<
 					target: '#authenticationMachine.signedUp',
 				},
 			},
-			onExit: [
-				'stopSignUpActor',
-				(context, event) => {
-					console.log(context);
-					console.log(event);
-				},
-			],
 		},
 		signedUp: {
 			on: {

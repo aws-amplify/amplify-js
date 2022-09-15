@@ -104,7 +104,6 @@ export class CognitoUserPoolService {
 			storage?: Storage;
 		}
 	): Promise<InitiateAuthCommandOutput> {
-		console.log('le cognito stateless signin');
 		const { authFlow } = params;
 		if (
 			params.signInType === 'Link' ||
@@ -117,7 +116,7 @@ export class CognitoUserPoolService {
 			case AuthFlowType.USER_PASSWORD_AUTH:
 				return this.initiateAuthPlainUsernamePassword(clientConfig, params);
 			default:
-				throw new Error('Cagamos');
+				throw new Error('Flow not yet implemented');
 		}
 	}
 
@@ -126,11 +125,14 @@ export class CognitoUserPoolService {
 		params: ConfirmSignInParams<CognitoConfirmSignInPluginOptions>
 	): Promise<RespondToAuthChallengeCommandOutput> {
 		const { confirmationCode = '', username, pluginOptions } = params;
-		const {
-			mfaType = 'SMS_MFA',
-			challengeName,
-			clientMetadata,
-		} = pluginOptions as CognitoConfirmSignInPluginOptions;
+		let mfaType, challengeName, clientMetadata;
+		if (pluginOptions != null) {
+			const {
+				mfaType = 'SMS_MFA',
+				challengeName,
+				clientMetadata,
+			} = pluginOptions;
+		}
 		const challengeResponses: RespondToAuthChallengeCommandInput['ChallengeResponses'] =
 			{};
 		challengeResponses.USERNAME = username;
@@ -167,10 +169,8 @@ export class CognitoUserPoolService {
 		};
 		try {
 			const res = await client.send(new SignUpCommand(input));
-			console.log(res);
 			return res;
 		} catch (err) {
-			console.error(err);
 			throw err;
 		}
 	}

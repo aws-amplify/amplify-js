@@ -15,17 +15,14 @@ import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
 import { AmplifyUser } from '../../../../types';
 import { ActorRefFrom } from 'xstate';
 import { signInMachine } from '../../machines/signInMachine';
-import { signUpMachine } from '../../machines/signUpMachine';
 import { UserPoolConfig } from '../model/config';
 
 export type SignInActorRef = ActorRefFrom<typeof signInMachine>;
-export type SignUpActorRef = ActorRefFrom<typeof signUpMachine>;
 
 export interface AuthenticationMachineContext {
-	// TODO: union other valid actor refs here when we add more actors
-	actorRef?: SignInActorRef | SignUpActorRef;
+	actorRef?: SignInActorRef;
 	config?: null | UserPoolConfig;
-	storagePrefix?: null | String;
+	storagePrefix?: null | string;
 	service: null | CognitoUserPoolService;
 	session?: AmplifyUser;
 	error?: any;
@@ -46,7 +43,7 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
@@ -54,7 +51,7 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
@@ -62,7 +59,7 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
@@ -70,7 +67,7 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
@@ -78,7 +75,7 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
@@ -98,6 +95,6 @@ export type AuthenticationTypeState =
 			context: AuthenticationMachineContext & {
 				config: UserPoolConfig;
 				service: CognitoUserPoolService;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  };

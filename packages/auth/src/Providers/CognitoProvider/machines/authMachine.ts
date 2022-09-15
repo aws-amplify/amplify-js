@@ -32,7 +32,7 @@ import { CognitoProviderConfig } from '../types/model/config';
 
 export const authMachineModel = createModel({} as AuthMachineContext, {
 	events: {
-		configureAuth: (config: CognitoProviderConfig, storagePrefix: String) => ({
+		configureAuth: (config: CognitoProviderConfig, storagePrefix: string) => ({
 			config,
 			storagePrefix,
 		}),

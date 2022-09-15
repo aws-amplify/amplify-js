@@ -40,7 +40,7 @@ export interface AuthorizationMachineContext {
 		accessToken: string;
 		refreshToken: string;
 	};
-	storagePrefix?: null | String;
+	storagePrefix?: null | string;
 	identityID?: null;
 	AWSCredentials?: null;
 	sessionInfo?: any;

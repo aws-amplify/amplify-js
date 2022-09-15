@@ -132,7 +132,9 @@ export class AuthPlugClass {
 		);
 	}
 
-	public signUp(signUpParams: SignUpParams<any>): Promise<SignUpResult> {
+	public signUp<T extends any = any>(
+		signUpParams: SignUpParams<T>
+	): Promise<SignUpResult> {
 		if (this._pluggables.length > 0) {
 			return this._pluggables[0].signUp(signUpParams);
 		}

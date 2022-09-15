@@ -91,10 +91,10 @@ export class CognitoProvider implements AuthProvider {
 	constructor(config: PluginConfig) {
 		this._config = config ?? {};
 		this._userStorage = config.storage ?? new StorageHelper().getStorage();
-		listenToAuthHub(this._auth_n_machine.send);
+		// listenToAuthHub(this._auth_n_machine.send);
 		// @ts-ignore ONLY FOR DEBUGGING AND TESTING!
 		window.Hub = Hub;
-		this._auth_n_machine.subscribe(state => {});
+		// this._auth_n_machine.subscribe(state => {});
 	}
 
 	configure(config: PluginConfig) {

@@ -43,7 +43,7 @@ export const authorizationMachineModel = createModel(
 		events: {
 			cachedCredentialAvailable: () => ({}),
 			cancelSignIn: () => ({}),
-			configure: (config: CognitoProviderConfig, storagePrefix: String) => ({
+			configure: (config: CognitoProviderConfig, storagePrefix: string) => ({
 				config,
 				storagePrefix,
 			}),

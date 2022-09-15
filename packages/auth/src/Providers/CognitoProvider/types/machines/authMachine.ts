@@ -23,7 +23,7 @@ export interface AuthMachineContext {
 	authenticationActorRef?: AuthnActorRef;
 	authorizationActorRef?: AuthzActorRef;
 	config?: null | CognitoProviderConfig;
-	storagePrefix?: null | String;
+	storagePrefix?: null | string;
 }
 
 export type AuthTypeState =
@@ -38,41 +38,41 @@ export type AuthTypeState =
 			value: 'configuringAuthentication';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
 			value: 'configuringAuthorization';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
 			value: 'resettingAuthentication';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
 			value: 'resettingAuthorization';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
 			value: 'configured';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  }
 	| {
 			value: 'error';
 			context: AuthMachineContext & {
 				config: CognitoProviderConfig;
-				storagePrefix: String;
+				storagePrefix: string;
 			};
 	  };
