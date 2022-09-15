@@ -201,7 +201,7 @@ export class GeoClass {
 		placeId: string,
 		options?: searchByPlaceIdOptions
 	) {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const providerName = DEFAULT_PROVIDER;
 		const prov = this.getPluggable(providerName);
 
 		try {
