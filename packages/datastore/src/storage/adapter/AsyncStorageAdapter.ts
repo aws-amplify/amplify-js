@@ -700,9 +700,13 @@ export class AsyncStorageAdapter implements Adapter {
 								 * Retrieve record by finding the record where all
 								 * targetNames are present on the connected model
 								 */
+								// recordToDelete = allRecords.filter(childItem =>
+								// 	values.every(value => childItem[value] != null)
+								// ) as T[];
+
 								recordToDelete = allRecords.filter(childItem =>
-									values.every(value => childItem[value] != null)
-								) as T[];
+									hasOneIndex.every(index => values.includes(childItem[index]))
+								);
 							} else {
 								// values === keyValuePath
 								recordToDelete = allRecords.filter(

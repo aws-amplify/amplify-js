@@ -15,7 +15,7 @@ const DATA = 'Data';
 
 const monotonicFactoriesMap = new Map<string, ULID>();
 
-const DEFAULT_PRIMARY_KEY_SEPARATOR = ':::';
+const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
 class AsyncStorageDatabase {
 	/**
@@ -88,6 +88,14 @@ class AsyncStorageDatabase {
 		if (keysForCollectionEntries.length > 0) {
 			await this.storage.multiRemove(keysForCollectionEntries);
 		}
+
+		(<any>window).db = () => {
+			return {
+				_collectionInMemoryIndex: this._collectionInMemoryIndex,
+				monotonicFactoriesMap: monotonicFactoriesMap,
+				storage: this.storage,
+			};
+		};
 	}
 
 	async save<T extends PersistentModel>(

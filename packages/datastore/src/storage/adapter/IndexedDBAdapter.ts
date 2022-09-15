@@ -974,7 +974,7 @@ class IndexedDBAdapter implements Adapter {
 	async clear(): Promise<void> {
 		await this.checkPrivate();
 
-		this.db.close();
+		this.db?.close();
 
 		await idb.deleteDB(this.dbName);
 
