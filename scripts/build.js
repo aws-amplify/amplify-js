@@ -163,7 +163,7 @@ async function buildES5(typeScriptCompiler, watchMode, tsconfig) {
 		: undefined;
 
 	let compilerOptions = {
-		...tsconfig.compilerOptions,
+		...tsconfigInfo.compilerOptions,
 		...tsconfigSettingsInfo.compilerOptions,
 	};
 	compilerOptions.jsx = jsx;
@@ -203,10 +203,9 @@ function buildES6(typeScriptCompiler, watchMode, tsconfig) {
 	)
 		? 'react'
 		: undefined;
-	// tsconfig for ESM generating
 
 	let compilerOptions = {
-		...tsconfig.compilerOptions,
+		...tsconfigInfo.compilerOptions,
 		...tsconfigSettingsInfo.compilerOptions,
 	};
 	compilerOptions.jsx = jsx;
