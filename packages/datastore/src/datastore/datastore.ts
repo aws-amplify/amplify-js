@@ -1412,10 +1412,9 @@ class DataStore {
 				try {
 					// first, query and return any locally-available records
 					(await this.query(model, criteria, sortOptions)).forEach(item => {
-						let record = item;
 						const itemModelDefinition = getModelDefinition(model);
-						const idOrPk = getIdentifierValue(itemModelDefinition, record);
-						items.set(idOrPk, record);
+						const idOrPk = getIdentifierValue(itemModelDefinition, item);
+						items.set(idOrPk, item);
 					});
 
 					// Observe the model and send a stream of updates (debounced).
