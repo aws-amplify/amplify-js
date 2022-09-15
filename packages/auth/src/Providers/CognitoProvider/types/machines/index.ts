@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 
+export * from './authMachine';
 export * from './signInMachine';
 export * from './authenticationMachine';
 export * from './oAuthSignInMachine';

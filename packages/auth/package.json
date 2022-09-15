@@ -53,7 +53,10 @@
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0",
-    "@types/sjcl": "^1.0.30"
+    "@types/sjcl": "^1.0.30",
+    "@typescript-eslint/eslint-plugin": "~2.6.1",
+    "@typescript-eslint/parser": "~2.6.1",
+    "eslint": "~6.6.0"
   },
   "jest": {
     "globals": {

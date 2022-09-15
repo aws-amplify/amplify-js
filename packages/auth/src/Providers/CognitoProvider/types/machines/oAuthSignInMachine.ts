@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
+import { UserPoolConfig } from '../model/config';
 import { SOCIAL_PROVIDER } from '../../../../types';
 
 export interface FederatedSignInMachineContext {
 	scopes: string[];
 	oAuthStorage: Storage;
-	authConfig: CognitoProviderConfig;
+	authConfig: UserPoolConfig;
 	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 	customState?: string;
 	oAuthProvider?: SOCIAL_PROVIDER;

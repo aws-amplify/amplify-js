@@ -14,12 +14,11 @@
 import {
 	createMachine,
 	MachineConfig,
-	spawn,
-	assign,
 	EventFrom,
 	AssignAction,
+	sendParent,
 } from 'xstate';
-import { stop, forwardTo } from 'xstate/lib/actions';
+import { pure, stop } from 'xstate/lib/actions';
 import { createModel } from 'xstate/lib/model';
 import {
 	AuthorizationMachineContext,
@@ -27,10 +26,10 @@ import {
 	fetchAuthSessionEvent,
 	beginningSessionEvent,
 } from '../types/machines';
-import { CognitoProviderConfig } from '../CognitoProvider';
-import { CognitoService } from '../serviceClass';
+import { CognitoService } from '../services/CognitoService';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
+import { CognitoProviderConfig } from '../types/model/config';
 
 // state machine events
 export const authorizationMachineModel = createModel(
@@ -44,7 +43,10 @@ export const authorizationMachineModel = createModel(
 		events: {
 			cachedCredentialAvailable: () => ({}),
 			cancelSignIn: () => ({}),
-			configure: (config: CognitoProviderConfig) => ({ config }),
+			configure: (config: CognitoProviderConfig, storagePrefix: string) => ({
+				config,
+				storagePrefix,
+			}),
 			fetchAuthSession: () => ({}),
 			fetched: () => ({}),
 			fetchUnAuthSession: () => ({}),
@@ -83,16 +85,17 @@ const authorizationStateMachineActions: Record<
 	),
 	assignService: authorizationMachineModel.assign(
 		{
-			service: (_context, event) =>
+			service: (_, event) =>
 				new CognitoService({
-					region: event.config.region,
-					userPoolId: event.config.userPoolId,
-					identityPoolId: event.config.identityPoolId,
-					clientId: event.config.clientId,
+					userPoolConfig: event.config.userPoolConfig,
+					identityPoolConfig: event.config.identityPoolConfig,
 				}),
+
+			storagePrefix: (_, event) => event.storagePrefix,
 		},
 		'configure'
 	),
+
 	assignAuthedSession: authorizationMachineModel.assign({
 		sessionInfo: (_context: any, event: fetchAuthSessionEvent) => {
 			return {
@@ -125,19 +128,31 @@ const authorizationStateMachine: MachineConfig<
 	states: {
 		notConfigured: {
 			on: {
-				configure: {
-					target: 'configured',
-					actions: [
-						authorizationStateMachineActions.assignConfig,
-						authorizationStateMachineActions.assignService,
-					],
-				},
-				cachedCredentialAvailable: 'sessionEstablished',
-				throwError: 'error',
+				configure: [
+					{
+						target: 'configured',
+						cond: (_, event) => {
+							if (
+								event.config?.identityPoolConfig?.identityPoolId == null ||
+								event.config?.userPoolConfig == null
+							) {
+								sendParent({ type: 'authorizationNotConfigured' });
+								return false;
+							}
+							return true;
+						},
+					},
+				],
 			},
+			exit: [
+				authorizationStateMachineActions.assignConfig,
+				authorizationStateMachineActions.assignService,
+			],
 		},
-		// state after cognito is configured
 		configured: {
+			entry: pure((_, event) => {
+				return sendParent({ type: 'authorizationConfigured' });
+			}),
 			on: {
 				signInRequested: 'signingIn',
 				fetchUnAuthSession: 'fetchingUnAuthSession',
@@ -238,9 +253,9 @@ const authorizationStateMachine: MachineConfig<
 	},
 };
 
-export const authzMachine = createMachine(authorizationStateMachine, {
+export const authorizationMachine = createMachine(authorizationStateMachine, {
 	actions: {
 		stopFetchAuthSessionActor: stop('fetchAuthSessionActor'),
 	},
 });
-export const authzMachineEvents = authorizationMachineModel.events;
+export const authorizationMachineEvents = authorizationMachineModel.events;

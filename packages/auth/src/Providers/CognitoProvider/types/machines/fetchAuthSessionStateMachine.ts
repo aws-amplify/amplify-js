@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
-import { CognitoService } from '../../serviceClass';
+import { CognitoProviderConfig } from '../model/config';
+import { CognitoService } from '../../services/CognitoService';
 
 export interface FetchAuthSessionStateMachineContext {
 	config: null | CognitoProviderConfig;

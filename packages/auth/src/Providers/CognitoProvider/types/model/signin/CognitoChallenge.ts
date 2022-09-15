@@ -11,6 +11,12 @@
  * and limitations under the License.
  */
 
-export { CognitoProvider } from './CognitoProvider';
-export { AmplifyCognitoUser } from './types/model/user/CognitoUser';
-export { AWSCredentials } from './types/model/session/AWSCredentials';
+export type CognitoChallenge =
+	| 'SMS_MFA'
+	| 'SELECT_MFA_TYPE'
+	| 'MFA_SETUP'
+	| 'SOFTWARE_TOKEN_MFA'
+	| 'CUSTOM_CHALLENGE'
+	| 'NEW_PASSWORD_REQUIRED'
+	| 'DEVICE_SRP_AUTH'
+	| 'DEVICE_PASSWORD_VERIFIER';

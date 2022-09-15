@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 
-import { CognitoProviderConfig } from '../../CognitoProvider';
 import { ActorRefFrom } from 'xstate';
 import { fetchAuthSessionStateMachine } from '../../machines/fetchAuthSessionStateMachine';
-import { CognitoService } from '../../serviceClass';
+import { CognitoService } from '../../services/CognitoService';
+import { CognitoProviderConfig } from '../model/config';
 
 // info/context needed to pass to the fetchAuthSessionStateMachine in order to perform the fetch Session
 // First, fetch user pool tokens (JWT) from the user pool
@@ -33,20 +33,21 @@ export type FetchAuthSessionActorRef = ActorRefFrom<
 
 export interface AuthorizationMachineContext {
 	actorRef?: FetchAuthSessionActorRef;
-	config: null | CognitoProviderConfig;
-	service: null | CognitoService;
-	userPoolTokens: null | {
+	config?: null | CognitoProviderConfig;
+	service?: null | CognitoService;
+	userPoolTokens?: null | {
 		idToken: string;
 		accessToken: string;
 		refreshToken: string;
 	};
-	identityID: null;
-	AWSCredentials: null;
-	sessionInfo: any;
+	storagePrefix?: null | string;
+	identityID?: null;
+	AWSCredentials?: null;
+	sessionInfo?: any;
 	clientConfig?: CognitoProviderConfig;
 }
 
-export type AuthorizationTypestate =
+export type AuthorizationTypeState =
 	| {
 			value: 'notConfigured';
 			context: AuthorizationMachineContext;

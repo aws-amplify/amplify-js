@@ -17,9 +17,9 @@ import {
 	ChallengeNameType,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { EventObject } from 'xstate';
-import { CognitoService } from '../../serviceClass';
-import { CognitoProviderConfig } from '../../CognitoProvider';
 import { SignInParams, SOCIAL_PROVIDER } from '../../../../types';
+import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
+import { UserPoolConfig } from '../model/config';
 
 export type SignInMachineContext = BaseSignInMachineContext &
 	(UserPasswordSignInContext | SocialSignInContext | SRPSignInContext);
@@ -44,8 +44,8 @@ type BaseSignInRequestEventParam = SignInParams & {
 type BaseSignInMachineContext = {
 	// NOTE: Could also just pass down the client directly
 	clientConfig: CognitoIdentityProviderClientConfig;
-	authConfig: CognitoProviderConfig;
-	service: CognitoService | null;
+	authConfig: UserPoolConfig;
+	service: CognitoUserPoolService | null;
 	authFlow?: AuthFlowType | 'federated';
 	error?: any;
 	session?: string;

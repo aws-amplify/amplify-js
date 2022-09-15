@@ -14,3 +14,4 @@
 export * from './Auth';
 export * from './AuthPluggable';
 export * from './Provider';
+export * from './model/index';
