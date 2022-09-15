@@ -249,7 +249,7 @@ class IndexedDBAdapter implements Adapter {
 
 	private async _get<T>(
 		storeOrStoreName: idb.IDBPObjectStore | string,
-		keyArr: any[]
+		keyArr: string[]
 	): Promise<T> {
 		let index: idb.IDBPIndex;
 
