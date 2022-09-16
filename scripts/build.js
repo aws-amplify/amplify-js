@@ -40,8 +40,6 @@ const tsconfigInfo = require(tsconfigPath);
 const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
 const es6TsBuildInfoFilePath = path.join(pkgTscES6OutDir, '.tsbuildinfo');
 
-const defaultCompilerOptions = require('./tsconfig.settings.json');
-
 async function buildRollUp() {
 	logger.info(`Building Roll up bundle file under ${pkgRootPath}`);
 	const rollup = require('rollup');
