@@ -199,6 +199,10 @@ describe('AsyncStorageAdapter tests', () => {
 			({ id: user1Id } = await DataStore.save(
 				new User({ name: 'test', profileID: profile1Id })
 			));
+		});
+
+		beforeEach(async () => {
+			const classes = initSchema(testSchema());
 
 			({ Post } = classes as {
 				Post: PersistentModelConstructor<Post>;
