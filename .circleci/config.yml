@@ -118,11 +118,13 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
+            git checkout integ/session-debouncer
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> sample on prod'
           command: |
             cd ~/amplify-js-samples-staging
+            git checkout integ/session-debouncer
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos

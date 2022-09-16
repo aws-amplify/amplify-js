@@ -1811,7 +1811,7 @@ export class AuthClass {
 			return await this.inflightSessionPromise;
 		} else {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
-				(resolve, rej) => {
+				(res, rej) => {
 					user.getSession(
 						async (err, session) => {
 							if (err) {
@@ -1832,7 +1832,7 @@ export class AuthClass {
 								return;
 							} else {
 								logger.debug('Succeed to get the user session', session);
-								resolve(session);
+								res(session);
 								return;
 							}
 						},
