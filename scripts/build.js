@@ -166,11 +166,13 @@ async function buildES5(typeScriptCompiler, watchMode) {
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
 		...extendsCompilerOptions,
+		module: 'commonjs',
+		jsx: jsx,
+		tsBuildInfoFile: es5TsBuildInfoFilePath,
+		typeRoots,
+		pkgTscES5OutDir,
+		outDir: pkgTscES5OutDir,
 	};
-	compilerOptions.jsx = jsx;
-	compilerOptions.tsBuildInfoFile = es5TsBuildInfoFilePath;
-	compilerOptions.typeRoots = typeRoots;
-	compilerOptions.outDir = pkgTscES5OutDir;
 
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
@@ -212,11 +214,13 @@ function buildES6(typeScriptCompiler, watchMode) {
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
 		...extendsCompilerOptions,
+		module: 'es2015',
+		jsx: jsx,
+		tsBuildInfoFile: es6TsBuildInfoFilePath,
+		typeRoots,
+		outDir: pkgTscES6OutDir,
 	};
-	compilerOptions.jsx = jsx;
-	compilerOptions.tsBuildInfoFile = es6TsBuildInfoFilePath;
-	compilerOptions.typeRoots = typeRoots;
-	compilerOptions.outDir = pkgTscES6OutDir;
+
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
 		compilerOptions.inlineSources = true;
