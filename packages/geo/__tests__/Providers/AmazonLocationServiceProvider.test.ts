@@ -509,6 +509,19 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 		});
 
+		test('should fail if PlaceId as input is empty string', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow('PlaceId cannot be an empty string.');
+		});
+
 		test('should fail if credentials are invalid', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve();
@@ -531,6 +544,21 @@ describe('AmazonLocationServiceProvider', () => {
 			await expect(
 				locationProvider.searchByPlaceId(testPlaceId)
 			).rejects.toThrow('No credentials');
+		});
+
+		test('should fail if there are no search index resources', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow(
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
 		});
 	});
 

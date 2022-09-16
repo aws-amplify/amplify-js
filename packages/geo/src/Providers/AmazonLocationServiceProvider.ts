@@ -308,7 +308,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private _verifyPlaceId(placeId: string) {
 		if (placeId.length === 0) {
-			const errorString = 'PlaceId is empty';
+			const errorString = 'PlaceId cannot be an empty string.';
 			logger.debug(errorString);
 			throw new Error(errorString);
 		}
