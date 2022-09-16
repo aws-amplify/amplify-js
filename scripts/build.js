@@ -37,10 +37,6 @@ const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 const tsconfigPath = path.join(pkgRootPath, 'tsconfig');
 const tsconfigInfo = require(tsconfigPath);
 
-const tsconfigSettingsPath = path.join(rootPath, 'packages/tsconfig.settings');
-// tsconfig file that shares common compiler options for ES5 & ES6
-const tsconfigSettingsInfo = require(tsconfigSettingsPath);
-
 const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
 const es6TsBuildInfoFilePath = path.join(pkgTscES6OutDir, '.tsbuildinfo');
 
@@ -155,16 +151,21 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 	logger.info(ts.formatDiagnostic(diagnostic, formatHost));
 }
 
-async function buildES5(typeScriptCompiler, watchMode, tsconfig) {
+async function buildES5(typeScriptCompiler, watchMode) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
 		? 'react'
 		: undefined;
 
+	const extendsCompilerOptions = ts.readConfigFile(
+		tsconfigInfo.extends,
+		ts.sys.readFile
+	).config.compilerOptions;
+
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
-		...tsconfigSettingsInfo.compilerOptions,
+		...extendsCompilerOptions,
 	};
 	compilerOptions.jsx = jsx;
 	compilerOptions.tsBuildInfoFile = es5TsBuildInfoFilePath;
@@ -197,16 +198,21 @@ async function buildES5(typeScriptCompiler, watchMode, tsconfig) {
 	});
 }
 
-function buildES6(typeScriptCompiler, watchMode, tsconfig) {
+function buildES6(typeScriptCompiler, watchMode) {
 	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
 		packageInfo.name
 	)
 		? 'react'
 		: undefined;
 
+	const extendsCompilerOptions = ts.readConfigFile(
+		tsconfigInfo.extends,
+		ts.sys.readFile
+	).config.compilerOptions;
+
 	let compilerOptions = {
 		...tsconfigInfo.compilerOptions,
-		...tsconfigSettingsInfo.compilerOptions,
+		...extendsCompilerOptions,
 	};
 	compilerOptions.jsx = jsx;
 	compilerOptions.tsBuildInfoFile = es6TsBuildInfoFilePath;
@@ -238,16 +244,15 @@ function buildES6(typeScriptCompiler, watchMode, tsconfig) {
 	});
 }
 
-function build(type, watchMode, tsconfig) {
-	console.log(tsconfig);
+function build(type, watchMode) {
 	if (type === 'rollup') buildRollUp();
 
 	var typeScriptCompiler = watchMode
 		? runTypeScriptWithWatchMode
 		: runTypeScriptWithoutWatchMode;
 
-	if (type === 'es5') buildES5(typeScriptCompiler, watchMode, tsconfig);
-	if (type === 'es6') buildES6(typeScriptCompiler, watchMode, tsconfig);
+	if (type === 'es5') buildES5(typeScriptCompiler, watchMode);
+	if (type === 'es6') buildES6(typeScriptCompiler, watchMode);
 }
 
 module.exports = build;
