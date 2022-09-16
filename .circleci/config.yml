@@ -118,15 +118,11 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
-            git fetch origin main
-            git checkout integ/session-debouncer
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> sample on prod'
           command: |
             cd ~/amplify-js-samples-staging
-            git fetch origin main
-            git checkout integ/session-debouncer
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
@@ -390,6 +386,8 @@ jobs:
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
+            git fetch origin main
+            git checkout integ/session-debouncer
             cd amplify-js-samples-staging
             git checkout next-major-version/5
             yarn
