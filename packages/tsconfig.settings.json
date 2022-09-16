@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"noImplicitAny": false,
+		"lib": [
+			"dom",
+			"es2017",
+			"esnext.asynciterable",
+			"es2018.asyncgenerator",
+			"es2019"
+		],
+		"downlevelIteration": true,
+		"target": "es5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"declaration": true,
+		"noEmitOnError": true,
+		"incremental": true,
+		"types": ["node"]
+	}
+}
