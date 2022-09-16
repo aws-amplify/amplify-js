@@ -646,7 +646,7 @@ export class AsyncStorageAdapter implements Adapter {
 			} = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
-			const index: string | undefined =
+			const index: any =
 				getIndex(
 					this.schema.namespaces[nameSpace].relationships[modelName]
 						.relationTypes,
