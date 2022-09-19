@@ -34,7 +34,7 @@ const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
 const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 
 // path of tsconfig.json file on every package
-const tsconfigPath = path.join(pkgRootPath, 'tsconfig');
+const tsconfigPath = path.join(pkgRootPath, 'tsconfig.build');
 const tsconfigInfo = require(tsconfigPath);
 
 const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
