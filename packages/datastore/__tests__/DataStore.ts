@@ -2866,8 +2866,13 @@ describe('DataStore tests', () => {
 					m.title('eq', 'someField')
 				);
 
-				expect(deleted.length).toEqual(10);
-				deleted.forEach(deletedItem => {
+				const sortedRecords = deleted.sort((a, b) =>
+					a.postId < b.postId ? -1 : 1
+				);
+
+				expect(sortedRecords.length).toEqual(10);
+				sortedRecords.forEach((deletedItem, idx) => {
+					expect(deletedItem.postId).toEqual(`${idx}`);
 					expect(deletedItem.title).toEqual('someField');
 				});
 			});
