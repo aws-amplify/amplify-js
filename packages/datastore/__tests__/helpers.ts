@@ -1,3 +1,4 @@
+import Observable from 'zen-observable-ts';
 import {
 	ModelInit,
 	MutableModel,
@@ -7,6 +8,7 @@ import {
 	CustomIdentifier,
 	__modelMeta__,
 } from '../src/types';
+import { DataStore as DS, PersistentModel } from '../src';
 
 /**
  * Convenience function to wait for a number of ms.
@@ -54,6 +56,14 @@ export function expectMutation(mutation, values) {
 	}
 }
 
+export function expectType<T>(_param: T): _param is T {
+	return true;
+}
+
+export function dummyInstance<T extends PersistentModel>(): T {
+	return <T>{};
+}
+
 /**
  * Checks an object for adherence to expected values from a set of matchers.
  * Returns a list of erroneous key-value pairs.
@@ -92,6 +102,28 @@ export function extraFieldsFrom(data, template) {
 	const expectedFields = new Set(Object.keys(template));
 	return fields.filter(name => !expectedFields.has(name));
 }
+
+export const DataStore: typeof DS = (() => {
+	class clazz {}
+
+	const proxy = new Proxy(clazz, {
+		get: (_, prop) => {
+			const p = prop as keyof typeof DS;
+
+			switch (p) {
+				case 'query':
+				case 'save':
+				case 'delete':
+					return () => new Proxy({}, {});
+				case 'observe':
+				case 'observeQuery':
+					return () => Observable.of();
+			}
+		},
+	}) as unknown as typeof DS;
+
+	return proxy;
+})();
 
 export declare class Model {
 	public readonly id: string;

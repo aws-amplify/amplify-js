@@ -1,9 +1,7 @@
 // TODO: Look at ts-expect-error once we move to TypeScript 3.9 or above
-import Observable from 'zen-observable-ts';
 import {
 	CompositeIdentifier,
 	CustomIdentifier,
-	DataStore as DS,
 	IdentifierFields,
 	ManagedIdentifier,
 	ModelInit,
@@ -14,38 +12,7 @@ import {
 	Predicates,
 	__modelMeta__,
 } from '../src';
-
-//#region test helpers
-function expectType<T>(_param: T): _param is T {
-	return true;
-}
-
-function dummyInstance<T extends PersistentModel>(): T {
-	return <T>{};
-}
-
-const DataStore: typeof DS = (() => {
-	class clazz {}
-
-	const proxy = new Proxy(clazz, {
-		get: (_, prop) => {
-			const p = prop as keyof typeof DS;
-
-			switch (p) {
-				case 'query':
-				case 'save':
-				case 'delete':
-					return () => new Proxy({}, {});
-				case 'observe':
-				case 'observeQuery':
-					return () => Observable.of();
-			}
-		},
-	}) as unknown as typeof DS;
-
-	return proxy;
-})();
-//#endregion
+import { DataStore, dummyInstance, expectType } from './helpers';
 
 //#region Types
 
