@@ -170,9 +170,10 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		jsx: jsx,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
-		pkgTscES5OutDir,
 		outDir: pkgTscES5OutDir,
 	};
+
+	delete compilerOptions['composite'];
 
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
@@ -220,6 +221,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		typeRoots,
 		outDir: pkgTscES6OutDir,
 	};
+	delete compilerOptions['composite'];
 
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
