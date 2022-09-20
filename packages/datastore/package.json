@@ -81,7 +81,7 @@
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
 		"testPathIgnorePatterns": [
 			"__tests__/model.ts",
 			"__tests__/schema.ts",

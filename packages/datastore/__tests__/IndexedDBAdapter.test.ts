@@ -183,7 +183,11 @@ describe('IndexedDBAdapter tests', () => {
 			({ id: user1Id } = await DataStore.save(
 				new User({ name: 'test', profileID: profile1Id })
 			));
+		});
 
+		beforeEach(async () => {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			const classes = initSchema(testSchema());
 			({ Post } = classes as {
 				Post: PersistentModelConstructor<Post>;
 			});

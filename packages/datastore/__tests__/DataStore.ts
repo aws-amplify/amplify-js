@@ -3399,22 +3399,29 @@ describe('DataStore tests', () => {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
 
-				for (let i = 0; i < 10; i++) {
-					await DataStore.save(
-						new PostCustomPK({
-							postId: `${i}`,
-							title: 'someField',
-							dateCreated: new Date().toISOString(),
-						})
-					);
-				}
+				Promise.all(
+					[...Array(10).keys()].map(async i => {
+						await DataStore.save(
+							new PostCustomPK({
+								postId: `${i}`,
+								title: 'someField',
+								dateCreated: new Date().toISOString(),
+							})
+						);
+					})
+				);
 
 				const deleted = await DataStore.delete(PostCustomPK, m =>
 					m.title('eq', 'someField')
 				);
 
-				expect(deleted.length).toEqual(10);
-				deleted.forEach(deletedItem => {
+				const sortedRecords = deleted.sort((a, b) =>
+					a.postId < b.postId ? -1 : 1
+				);
+
+				expect(sortedRecords.length).toEqual(10);
+				sortedRecords.forEach((deletedItem, idx) => {
+					expect(deletedItem.postId).toEqual(`${idx}`);
 					expect(deletedItem.title).toEqual('someField');
 				});
 			});

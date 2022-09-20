@@ -258,14 +258,14 @@ describe('Storage tests', () => {
 			// to the assertion (until I added expect.assertions)
 			// TODO:check with Dane on expected behavior, as it is likely affected by the
 			// mergePatches work
-			test('update with list unchanged', async () => {
+			test.skip('update with list unchanged', async () => {
 				// expect.assertions(1);
 				const classes = initSchema(testSchema());
-				
+
 				const { Model } = classes as {
 					Model: PersistentModelConstructor<Model>;
 				};
-				
+
 				const model = await DataStore.save(
 					new Model({
 						field1: 'Some value',
@@ -273,7 +273,7 @@ describe('Storage tests', () => {
 						emails: ['john@doe.com', 'jane@doe.com'],
 					})
 				);
-					
+
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						// same as above. should not result in mutation event
