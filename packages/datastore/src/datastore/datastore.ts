@@ -35,6 +35,7 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
+	isSchemaModel2,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -69,7 +70,6 @@ import {
 	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
-	isModelAttributePrimaryKey,
 } from '../types';
 import {
 	DATASTORE,
@@ -318,10 +318,6 @@ function modelInstanceCreator<T extends PersistentModel>(
 	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
-function isSchemaModel(m: SchemaModel | SchemaNonModel): m is SchemaModel {
-	return (m as SchemaModel).attributes !== undefined;
-}
-
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
@@ -337,7 +333,7 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModel(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (isSchemaModel2(modelDefinition) && !isIdManaged(modelDefinition)) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
@@ -554,6 +550,7 @@ const createModelClass = <T extends PersistentModel>(
 			);
 
 			const hasExistingPatches = modelPatchesMap.has(source);
+		
 			if (patches.length || hasExistingPatches) {
 				if (hasExistingPatches) {
 					const [existingPatches, existingSource] = modelPatchesMap.get(source);

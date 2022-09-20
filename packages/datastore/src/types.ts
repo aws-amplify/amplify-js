@@ -47,8 +47,17 @@ export type SchemaModel = {
 	fields: ModelFields;
 	syncable?: boolean;
 };
+/** 
+ * Question for review: is there a reason we can't unify the approach of 
+ * checking if the input is a schema model? Or are there situations where
+ * we prefer to check for the existence of `pluralName` instead of `attributes`?
+ * */ 
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
+}
+// TODO: rename if we cannot unify the approach, otherwise, remove the first util
+export function isSchemaModel2(m: SchemaModel | SchemaNonModel): m is SchemaModel {
+	return (m as SchemaModel).attributes !== undefined;
 }
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaNonModel = {
@@ -487,6 +496,14 @@ export type MutableModel<
 	Readonly<Pick<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>>;
 
 export type ModelInstanceMetadata = {
+	_version: number;
+	_lastChangedAt: number;
+	_deleted: boolean;
+};
+
+// TODO: deprecate when CPK is supported by CommonSQLiteAdapter
+export type ModelInstanceMetadataWithId = {
+	id: string;
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;

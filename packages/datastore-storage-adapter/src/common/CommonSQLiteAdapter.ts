@@ -17,6 +17,7 @@ import {
 	ModelSortPredicateCreator,
 	InternalSchema,
 	isPredicateObj,
+	ModelInstanceMetadataWithId,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
@@ -404,10 +405,9 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		}
 	}
 
-	// Temp fix to test build, will either export a separate metadata type here, or implement Custom PK in this adapter
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
-		items: any[]
+		items: ModelInstanceMetadataWithId[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
 		const result: [T, OpType][] = [];
