@@ -28,7 +28,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'",
+    "build:state-machine": "node ./build es6 && webpack"
   },
   "repository": {
     "type": "git",
