@@ -21,8 +21,7 @@ import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
 } from '../utils/ConnectionStateMonitor';
-import { AMPLIFY_SYMBOL } from './constants';
-import { CONNECTION_STATE_CHANGE } from '..';
+import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new Logger('MqttOverWSProvider');
 

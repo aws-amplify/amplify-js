@@ -36,6 +36,7 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
+	isSchemaModel2,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -406,10 +407,6 @@ function modelInstanceCreator<T extends PersistentModel>(
 	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
-function isSchemaModel(m: SchemaModel | SchemaNonModel): m is SchemaModel {
-	return (m as SchemaModel).attributes !== undefined;
-}
-
 const validateModelFields =
 	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
 		const fieldDefinition = modelDefinition.fields[k];
@@ -425,7 +422,7 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModel(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (isSchemaModel2(modelDefinition) && !isIdManaged(modelDefinition)) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
@@ -642,6 +639,7 @@ const createModelClass = <T extends PersistentModel>(
 			);
 
 			const hasExistingPatches = modelPatchesMap.has(source);
+
 			if (patches.length || hasExistingPatches) {
 				if (hasExistingPatches) {
 					const [existingPatches, existingSource] =
@@ -1858,14 +1856,9 @@ class DataStore {
 					try {
 						// first, query and return any locally-available records
 						(await this.query(model, criteria, sortOptions)).forEach(item => {
-							let record = item;
-							// TODO: fix query
-							if (Array.isArray(item)) {
-								record = item[0];
-							}
-							const itemModelDefinition = getModelDefinition(model)!;
-							const idOrPk = getIdentifierValue(itemModelDefinition, record);
-							items.set(idOrPk, record);
+							const itemModelDefinition = getModelDefinition(model);
+							const idOrPk = getIdentifierValue(itemModelDefinition!, item);
+							items.set(idOrPk, item);
 						});
 
 						// Observe the model and send a stream of updates (debounced).
@@ -1963,16 +1956,9 @@ class DataStore {
 
 				items.clear();
 				itemsArray.forEach(item => {
-					// CPK TODO: fix query
-					let record = item;
-
-					if (Array.isArray(item)) {
-						record = item[0];
-					}
-
 					const itemModelDefinition = getModelDefinition(model);
-					const idOrPk = getIdentifierValue(itemModelDefinition!, record);
-					items.set(idOrPk, record);
+					const idOrPk = getIdentifierValue(itemModelDefinition!, item);
+					items.set(idOrPk, item);
 				});
 
 				// remove deleted items from the final result set

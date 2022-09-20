@@ -259,7 +259,7 @@ describe('Storage tests', () => {
 			// TODO:check with Dane on expected behavior, as it is likely affected by the
 			// mergePatches work
 			test.skip('update with list unchanged', async () => {
-				expect.assertions(1);
+				// expect.assertions(1);
 				const classes = initSchema(testSchema());
 
 				const { Model } = classes as {
@@ -281,6 +281,7 @@ describe('Storage tests', () => {
 					})
 				);
 
+				console.log(zenNext.mock.calls);
 				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
 
 				expect(modelUpdate).toBeUndefined();

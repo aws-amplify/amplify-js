@@ -19,6 +19,8 @@ import {
 	RelationType,
 } from '../../types';
 import {
+	DEFAULT_PRIMARY_KEY_SEPARATOR,
+	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
 	isModelConstructor,
@@ -29,8 +31,6 @@ import {
 } from '../../util';
 
 const logger = new Logger('DataStore');
-
-const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
 export class AsyncStorageAdapter implements Adapter {
 	// Non-null assertions (bang operators) added to most properties to make TS happy.
@@ -578,9 +578,13 @@ export class AsyncStorageAdapter implements Adapter {
 								 * Retrieve record by finding the record where all
 								 * targetNames are present on the connected model
 								 */
+								// recordToDelete = allRecords.filter(childItem =>
+								// 	values.every(value => childItem[value] != null)
+								// ) as T[];
+
 								recordToDelete = allRecords.filter(childItem =>
-									values.every(value => childItem[value] != null)
-								) as T[];
+									hasOneIndex.every(index => values.includes(childItem[index]))
+								);
 							} else {
 								// values === keyValuePath
 								recordToDelete = allRecords.filter(

@@ -37,6 +37,8 @@ import { ModelSortPredicateCreator } from './predicates';
 
 const ID = 'id';
 
+export const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
+
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
 	queryByPkWithCompositeKeyPresent:

@@ -247,7 +247,7 @@ class IndexedDBAdapter implements Adapter {
 
 	private async _get<T>(
 		storeOrStoreName: idb.IDBPObjectStore | string,
-		keyArr: any[]
+		keyArr: string[]
 	): Promise<T> {
 		let index: idb.IDBPIndex;
 
@@ -944,7 +944,7 @@ class IndexedDBAdapter implements Adapter {
 	async clear(): Promise<void> {
 		await this.checkPrivate();
 
-		this.db.close();
+		this.db?.close();
 
 		await idb.deleteDB(this.dbName);
 

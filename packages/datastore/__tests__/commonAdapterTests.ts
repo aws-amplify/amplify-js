@@ -420,7 +420,37 @@ export function addCommonQueryTests({
 			await DataStore.clear();
 		});
 
-		test('SANITY TEST', async () => {
+		test.only('SANITY TEST - basic model', async () => {
+			const whatever = new classes.BasicModel({
+				id: 'asdfadfasdf',
+				body: 'some absurdly awesome content',
+			});
+
+			console.log('whatever', whatever);
+			const saved = await DataStore.save(whatever);
+
+			expect(saved.id).toEqual('asdfadfasdf');
+			expect(saved.body).toEqual('some absurdly awesome content');
+		});
+
+		test.only('SANITY TEST - composite PK model', async () => {
+			const whatever = new classes.PostComposite({
+				id: 'asdfadfasdf',
+				title: 'some absurdly awesome content',
+				description: 'some description',
+				sort: 123,
+			});
+
+			console.log('whatever', whatever);
+			const saved = await DataStore.save(whatever);
+
+			expect(saved.id).toEqual('asdfadfasdf');
+			expect(saved.title).toEqual('some absurdly awesome content');
+			expect(saved.description).toEqual('some description');
+			expect(saved.sort).toEqual(123);
+		});
+
+		test.only('SANITY TEST - composite PK parent model', async () => {
 			const whatever = new classes.CompositePKParent({
 				customId: 'asdfadfasdf',
 				content: 'some absurdly awesome content',
