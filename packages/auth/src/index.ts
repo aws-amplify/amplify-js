@@ -20,7 +20,7 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
 export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
 
 export { CognitoProvider } from './Providers/CognitoProvider';
-export { AuthPluggable } from './AuthPluggable';
+export { AuthPluggable as default } from './AuthPluggable';
 export {
 	USER_PARAM_TYPE,
 	SignInWithLink,
@@ -33,6 +33,4 @@ export {
 	GRAPHQL_AUTH_MODE,
 } from './types';
 
-export { Auth } from './Auth';
-export { Auth as default } from './Auth';
 export * from './types';
