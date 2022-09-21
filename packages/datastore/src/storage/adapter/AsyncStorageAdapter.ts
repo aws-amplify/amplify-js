@@ -34,6 +34,7 @@ import {
 	getStorename,
 	getIndexKeys,
 	extractPrimaryKeyValues,
+	IDENTIFIER_VALUE_SEPARATOR,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -733,8 +734,8 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 
-						// Use constant if we go with this approach
-						const indices = index.split('-');
+						// TODO: double check this
+						const indices = index.split(IDENTIFIER_VALUE_SEPARATOR);
 
 						const childrenArray = allRecords.filter(childItem =>
 							indices.every(index => keyValues.includes(childItem[index]))

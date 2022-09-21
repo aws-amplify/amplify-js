@@ -8,7 +8,6 @@ import {
 	isPredicateGroup,
 	isPredicateObj,
 	ModelInstanceMetadata,
-	NamespaceResolver,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
@@ -36,6 +35,8 @@ import { WordArray } from 'amazon-cognito-identity-js';
 const ID = 'id';
 
 export const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
+
+export const IDENTIFIER_VALUE_SEPARATOR = '-';
 
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
