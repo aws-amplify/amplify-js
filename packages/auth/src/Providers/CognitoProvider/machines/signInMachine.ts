@@ -20,7 +20,6 @@ import {
 	AssignAction,
 } from 'xstate';
 import { createModel } from 'xstate/lib/model';
-import { cacheInitiateAuthResult } from '../service';
 import {
 	AuthFlowType,
 	ChallengeNameType,
@@ -36,6 +35,7 @@ import {
 	assertUserPasswordSignInContext,
 } from '../types/machines';
 import { federatedSignInMachine } from './oAuthSignInMachine';
+import { CognitoConfirmSignInPluginOptions } from '../types/model/signin';
 
 export const signInMachineModel = createModel(
 	{
@@ -108,10 +108,12 @@ async function respondToMFAChallenge(
 ) {
 	assertUserPasswordSignInContext(context);
 	return await context.service?.cognitoConfirmSignIn(context.clientConfig, {
-		mfaType: respondToAuthChallengeOptions.challengeName as
-			| ChallengeNameType.SOFTWARE_TOKEN_MFA
-			| ChallengeNameType.SMS_MFA,
-		challengeName: respondToAuthChallengeOptions.challengeName,
+		pluginOptions: {
+			mfaType: respondToAuthChallengeOptions.challengeName as
+				| ChallengeNameType.SOFTWARE_TOKEN_MFA
+				| ChallengeNameType.SMS_MFA,
+			challengeName: respondToAuthChallengeOptions.challengeName,
+		} as CognitoConfirmSignInPluginOptions,
 		confirmationCode: respondToAuthChallengeOptions.confirmationCode,
 		username: context.username,
 		session: context.session!,
@@ -188,7 +190,10 @@ export const signInMachineConfig: MachineConfig<
 							password: context.password,
 						});
 						if (res && typeof res.AuthenticationResult !== 'undefined') {
-							cacheInitiateAuthResult(res, context.authConfig.storage);
+							context.service?.cacheInitiateAuthResult(
+								res,
+								context.authConfig.storage
+							);
 						}
 						return res;
 					} catch (err) {
@@ -227,7 +232,10 @@ export const signInMachineConfig: MachineConfig<
 					assertEventType(event, 'respondToAuthChallenge');
 					const res = await respondToAuthChallenge(context, event);
 					if (res && typeof res.AuthenticationResult !== 'undefined') {
-						cacheInitiateAuthResult(res, context.authConfig.storage);
+						context.service?.cacheInitiateAuthResult(
+							res,
+							context.authConfig.storage
+						);
 					}
 					return res;
 				},

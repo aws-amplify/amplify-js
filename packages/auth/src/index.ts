@@ -18,19 +18,23 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
  * @deprecated use named import
  */
 export { CognitoHostedUIIdentityProvider, AuthErrorStrings };
-
-export { CognitoProvider } from './Providers/CognitoProvider';
-export { AuthPluggable as default } from './AuthPluggable';
+export {
+	CognitoProvider,
+	AmplifyCognitoUser,
+	AWSCredentials,
+} from './Providers/CognitoProvider';
+export { AuthPluggable } from './AuthPluggable';
 export {
 	USER_PARAM_TYPE,
 	SignInWithLink,
 	SignInWithWebAuthn,
 	SignInResult,
 	SignInParams,
-	isAWSCredentials,
 	isApiKey,
 	isAuthorizationToken,
 	GRAPHQL_AUTH_MODE,
 } from './types';
 
 export * from './types';
+
+export { appendToCognitoUserAgent } from 'amazon-cognito-identity-js';

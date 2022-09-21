@@ -12,19 +12,19 @@
  */
 
 import {
-	AmplifyUser,
-	ConfirmSignInParams,
 	ConfirmSignUpParams,
 	PluginConfig,
 	SignInParams,
-	SignInResult,
 	SignUpResult,
-	SignUpParams,
 	AddAuthenticatorResponse,
 	RequestScopeResponse,
 	AuthZOptions,
 	AuthorizationResponse,
 } from '.';
+import { ConfirmSignInParams } from './model/signin/ConfirmSignInParams';
+import { SignInResult } from './model/signin/SignInResult';
+import { SignUpParams } from './model/signup/SignUpParams';
+import { AmplifyUser } from './model/user/AmplifyUser';
 
 /*
  * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -50,13 +50,13 @@ export interface AuthProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	signUp(params: SignUpParams): Promise<SignUpResult>;
+	signUp(params: SignUpParams<any>): Promise<SignUpResult>;
 
 	confirmSignUp(params: ConfirmSignUpParams): Promise<SignUpResult>;
 
 	signIn(params: SignInParams): Promise<SignInResult>;
 
-	confirmSignIn(params: ConfirmSignInParams): Promise<SignInResult>;
+	confirmSignIn(params: ConfirmSignInParams<any>): Promise<SignInResult>;
 
 	fetchSession(): Promise<AmplifyUser>;
 

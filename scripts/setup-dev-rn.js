@@ -29,25 +29,11 @@ const MULTILINE_FLAG = '-e';
 const TO_DO_SCRIPT = `${MULTILINE_FLAG} 'tell application "Terminal" to do script`;
 const IN_FRONT_WINDOW = `in front window'${WHITE_SPACE}`;
 
-// List of packages to exclude that do not have build:watch script
-const EXCLUDED_PACKAGES = [
-	'aws-amplify-vue',
-	'@aws-amplify/ui',
-	'@aws-amplify/ui-vue',
-	'@aws-amplify/ui-angular',
-	'@aws-amplify/ui-components',
-	'@aws-amplify/ui-storybook',
-	'aws-amplify-angular',
-];
-
 // List of CJS identified packages
 const CJS_PACKAGES_PRESET = [
 	'aws-amplify-react-native',
 	'@aws-amplify/pushnotification',
-	'@aws-amplify/ui',
 ];
-
-const UI_PACKAGES_PRESET = ['@aws-amplify/ui-react'];
 
 // Utility functions for string manipulation
 // Explicit functions as they are important in an osaScript
@@ -151,9 +137,7 @@ function setupDevReactNative() {
 	}
 
 	// Exclude unrelated packages
-	const supportedPackages = getPackageNames('./packages/').filter(
-		packages => !EXCLUDED_PACKAGES.includes(packages)
-	);
+	const supportedPackages = getPackageNames('./packages/');
 
 	// ALL Packages list formation
 	const requestedPackages = all ? supportedPackages : packages.split(',');
@@ -237,12 +221,8 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 	packages.forEach(pack => {
 		const packageName = pack.split('/')[1] ?? pack;
 
-		let sourceDirectoryName = '';
-		if (UI_PACKAGES_PRESET.includes(pack)) {
-			sourceDirectoryName = `amplify-${packageName}`;
-		} else {
-			sourceDirectoryName = packageName;
-		}
+		let sourceDirectoryName = packageName;
+
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
 		wmlAddCommands += `${doubleQuotedFormOf(

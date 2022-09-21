@@ -4,7 +4,7 @@ import {
 	authzMachine,
 	authzMachineEvents,
 } from '../../../src/Providers/CognitoProvider/machines/authorizationMachine';
-import { CognitoService } from '../../../src/Providers/CognitoProvider/serviceClass';
+import { CognitoService } from '../../../src/Providers/CognitoProvider/service';
 import {
 	CognitoProviderConfig,
 	CognitoProvider,
