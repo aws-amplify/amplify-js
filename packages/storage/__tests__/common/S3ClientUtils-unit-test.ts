@@ -10,7 +10,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3ClientConfig } from '@aws-sdk/client-s3';
+import { S3ClientResolvedConfig } from '@aws-sdk/client-s3';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -174,7 +174,7 @@ describe('S3ClientUtils tests', () => {
 		const dateNow = Date.now();
 		// keep the Date.now() call inside the middleware consistent
 		jest.spyOn(Date, 'now').mockImplementation(() => dateNow);
-		const s3ClientConfig = { systemClockOffset: 0 } as S3ClientConfig;
+		const s3ClientConfig = { systemClockOffset: 0 } as S3ClientResolvedConfig;
 		const middleware = autoAdjustClockskewMiddleware(s3ClientConfig);
 		const oneHourInMs = 1000 * 60 * 60;
 		try {

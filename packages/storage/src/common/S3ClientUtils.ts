@@ -12,7 +12,7 @@ import {
 	FinalizeRequestMiddleware,
 	HandlerExecutionContext,
 } from '@aws-sdk/types';
-import { S3ClientConfig, S3Client } from '@aws-sdk/client-s3';
+import { S3ClientResolvedConfig, S3Client } from '@aws-sdk/client-s3';
 import { CancelTokenSource } from 'axios';
 import * as events from 'events';
 import { AxiosHttpHandler } from '../providers/axios-http-handler';
@@ -62,24 +62,24 @@ export const getPrefix = (config: {
 	}
 };
 
-export const createPrefixMiddleware = (
-	opt: Record<string, any>,
-	key: string
-): InitializeMiddleware<any, any> => (next, _context) => async args => {
-	const credentials = await Credentials.get();
-	const cred = Credentials.shear(credentials);
-	const prefix = getPrefix({ ...opt, credentials: cred });
-	const clonedInput = Object.assign({}, args.input);
-	if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
-		clonedInput.Key = prefix + key;
-		args.input = clonedInput;
-	} else if (Object.prototype.hasOwnProperty.call(args.input, 'Prefix')) {
-		clonedInput.Prefix = prefix + key;
-		args.input = clonedInput;
-	}
-	const result = next(args);
-	return result;
-};
+export const createPrefixMiddleware =
+	(opt: Record<string, any>, key: string): InitializeMiddleware<any, any> =>
+	(next, _context) =>
+	async args => {
+		const credentials = await Credentials.get();
+		const cred = Credentials.shear(credentials);
+		const prefix = getPrefix({ ...opt, credentials: cred });
+		const clonedInput = Object.assign({}, args.input);
+		if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
+			clonedInput.Key = prefix + key;
+			args.input = clonedInput;
+		} else if (Object.prototype.hasOwnProperty.call(args.input, 'Prefix')) {
+			clonedInput.Prefix = prefix + key;
+			args.input = clonedInput;
+		}
+		const result = next(args);
+		return result;
+	};
 
 const isTimeSkewedError = (err: any): boolean =>
 	err.ServerTime &&
@@ -87,27 +87,26 @@ const isTimeSkewedError = (err: any): boolean =>
 	err.Code === 'RequestTimeTooSkewed';
 
 // we want to take the S3Client config in parameter so we can modify it's systemClockOffset
-export const autoAdjustClockskewMiddleware = (
-	config: S3ClientConfig
-): FinalizeRequestMiddleware<any, any> => (
-	next,
-	_context: HandlerExecutionContext
-) => async args => {
-	try {
-		return await next(args);
-	} catch (err) {
-		if (isTimeSkewedError(err)) {
-			const serverDate = new Date(err.ServerTime);
-			config.systemClockOffset = serverDate.getTime() - Date.now();
+export const autoAdjustClockskewMiddleware =
+	(config: S3ClientResolvedConfig): FinalizeRequestMiddleware<any, any> =>
+	(next, _context: HandlerExecutionContext) =>
+	async args => {
+		try {
+			return await next(args);
+		} catch (err) {
+			if (isTimeSkewedError(err)) {
+				const serverDate = new Date(err.ServerTime);
+				config.systemClockOffset = serverDate.getTime() - Date.now();
+			}
+			throw err;
 		}
-		throw err;
-	}
-};
+	};
 
-export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions = {
-	step: 'finalizeRequest',
-	name: 'autoAdjustClockskewMiddleware',
-};
+export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions =
+	{
+		step: 'finalizeRequest',
+		name: 'autoAdjustClockskewMiddleware',
+	};
 
 export const prefixMiddlewareOptions: InitializeHandlerOptions = {
 	step: 'initialize',
