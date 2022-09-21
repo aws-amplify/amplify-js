@@ -530,7 +530,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private async getAll<T extends PersistentModel>(
-		storeName: any
+		storeName: string
 	): Promise<T[]> {
 		return await this.db.getAll(storeName);
 	}
