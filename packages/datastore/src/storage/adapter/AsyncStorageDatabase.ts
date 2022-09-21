@@ -101,18 +101,17 @@ class AsyncStorageDatabase {
 		const idxName = indexNameFromKeys(keys);
 
 		const ulid =
-			this.getCollectionIndex(storeName)!.get(item.id) ||
+			this.getCollectionIndex(storeName)?.get(idxName) ||
 			this.getMonotonicFactory(storeName)();
 
 		// Retrieve db key for item
 		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
 
-		this.getCollectionIndex(storeName)!.set(item.id, ulid);
+		// Set key in collection index
+		this.getCollectionIndex(storeName)?.set(keyValuesPath, ulid);
 
 		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));
-
-		console.log('WTFuuuu', await this.getAll(storeName));
 	}
 
 	async batchSave<T extends PersistentModel>(

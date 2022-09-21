@@ -194,6 +194,8 @@ export class AsyncStorageAdapter implements Adapter {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
+		console.log('HERE', result, connectionStoreNames);
+
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance, keys } = resItem;
 
@@ -210,9 +212,17 @@ export class AsyncStorageAdapter implements Adapter {
 
 			// If item key values and model key values are equal, save to db
 			if (keysEqual || opType === OpType.INSERT) {
+				console.log('saving the thing', {
+					item,
+					storeName,
+					keys,
+					itemKeyValuesPath,
+				});
 				await this.db.save(item, storeName, keys, itemKeyValuesPath);
 
 				result.push([instance, opType]);
+			} else {
+				console.log('not saving the thing');
 			}
 		}
 		return result;
