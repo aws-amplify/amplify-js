@@ -42,7 +42,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
 		"@aws-amplify/core": "4.7.5",
-		"@aws-sdk/client-location": "3.48.0",
+		"@aws-sdk/client-location": "3.171.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2"
 	},
