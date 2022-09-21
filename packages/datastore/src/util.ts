@@ -860,10 +860,6 @@ export const isIdOptionallyManaged = (
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		// const idInKey = !!keyAttribute.properties.fields.find(
-		// 	field => field === ID
-		// );
-		// return idInKey && keyAttribute.properties.fields.length === 1;
 		return keyAttribute.properties.fields[0] === ID;
 	}
 
