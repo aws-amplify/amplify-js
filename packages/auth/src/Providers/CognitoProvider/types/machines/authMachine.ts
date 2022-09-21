@@ -14,7 +14,7 @@
 import { ActorRefFrom } from 'xstate';
 import { authenticationMachine } from '../../machines/authenticationMachine';
 import { authorizationMachine } from '../../machines/authorizationMachine';
-import { CognitoProviderConfig } from '../model/config';
+import { CognitoProviderConfig } from '../model/amplifyConfig';
 
 export type AuthnActorRef = ActorRefFrom<typeof authenticationMachine>;
 export type AuthzActorRef = ActorRefFrom<typeof authorizationMachine>;

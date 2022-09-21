@@ -19,7 +19,7 @@ import {
 import { EventObject } from 'xstate';
 import { SignInParams, SOCIAL_PROVIDER } from '../../../../types';
 import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
-import { UserPoolConfig } from '../model/config';
+import { UserPoolConfig } from '../model/amplifyConfig';
 
 export type SignInMachineContext = BaseSignInMachineContext &
 	(UserPasswordSignInContext | SocialSignInContext | SRPSignInContext);

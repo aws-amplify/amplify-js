@@ -30,7 +30,7 @@ import {
 	AuthenticationTypeState,
 } from '../types/machines';
 import { CognitoConfirmSignInPluginOptions } from '../types/model';
-import { UserPoolConfig } from '../types/model/config';
+import { UserPoolConfig } from '../types/model/amplifyConfig';
 import { CognitoUserPoolService } from '../services/CognitoUserPoolService';
 
 const signInActorName = 'signInActor';
