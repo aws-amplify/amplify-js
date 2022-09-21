@@ -59,7 +59,7 @@ import {
 	AuthenticationMachineContext,
 	AuthMachineContext,
 } from './types/machines';
-import { CognitoProviderConfig } from './types/model/config';
+import { CognitoProviderConfig } from './types/model/amplifyConfig';
 
 export { AWSCredentials } from './types/model/session/AWSCredentials';
 

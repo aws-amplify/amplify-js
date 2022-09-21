@@ -15,7 +15,10 @@ import { CognitoUserPoolService } from './CognitoUserPoolService';
 import { CognitoIdentityPoolService } from './CognitoIdentityPoolService';
 import { AWSCredentials } from '../types/model/session/AWSCredentials';
 import { AmplifyCognitoUser } from '../types/model/user/CognitoUser';
-import { CognitoProviderConfig, UserPoolConfig } from '../types/model/config';
+import {
+	CognitoProviderConfig,
+	UserPoolConfig,
+} from '../types/model/amplifyConfig';
 
 const logger = new Logger('CognitoStatelessService');
 

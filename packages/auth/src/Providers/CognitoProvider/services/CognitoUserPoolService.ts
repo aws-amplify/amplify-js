@@ -42,7 +42,7 @@ import {
 } from '../types/model';
 import { StorageHelper } from '@aws-amplify/core';
 import { CognitoSignUpPluginOptions } from '../types/model/signup/CognitoSignUpPluginOptions';
-import { UserPoolConfig } from '../types/model/config';
+import { UserPoolConfig } from '../types/model/amplifyConfig';
 
 interface CognitoUserPoolServiceConfig {
 	region: string;

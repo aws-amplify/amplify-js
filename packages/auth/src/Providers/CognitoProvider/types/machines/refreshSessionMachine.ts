@@ -12,7 +12,7 @@
  */
 
 import { UserPoolTokens } from './authorizationMachine';
-import { CognitoProviderConfig } from '../model/config';
+import { CognitoProviderConfig } from '../model/amplifyConfig';
 import { CognitoService } from '../../services/CognitoService';
 
 export interface RefreshSessionStateMachineContext {

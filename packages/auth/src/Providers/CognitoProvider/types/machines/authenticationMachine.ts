@@ -15,7 +15,7 @@ import { CognitoUserPoolService } from '../../services/CognitoUserPoolService';
 import { AmplifyUser } from '../../../../types';
 import { ActorRefFrom } from 'xstate';
 import { signInMachine } from '../../machines/signInMachine';
-import { UserPoolConfig } from '../model/config';
+import { UserPoolConfig } from '../model/amplifyConfig';
 
 export type SignInActorRef = ActorRefFrom<typeof signInMachine>;
 
