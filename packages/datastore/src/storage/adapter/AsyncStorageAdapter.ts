@@ -33,7 +33,7 @@ import {
 	keysEqual,
 	getStorename,
 	getIndexKeys,
-	getIndexKeyValues,
+	extractPrimaryKeyValues,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -72,7 +72,7 @@ export class AsyncStorageAdapter implements Adapter {
 			modelConstructor.name
 		);
 
-		return getIndexKeyValues(model, keys);
+		return extractPrimaryKeyValues(model, keys);
 	}
 
 	// Retrieves concatenated primary key values from a model

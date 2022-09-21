@@ -8,12 +8,6 @@ import {
 	MutableModel,
 	PersistentModel,
 	OptionallyManagedIdentifier,
-	// IdentifierFields,
-	// ModelInit,
-	// PersistentModel,
-	// PersistentModelConstructor,
-	// Predicates,
-	// __modelMeta__,
 } from '../src';
 
 /**

@@ -15,6 +15,11 @@ import {
 	valuesEqual,
 	processCompositeKeys,
 	mergePatches,
+	extractPrimaryKeyValues,
+	isIdManaged,
+	isIdOptionallyManaged,
+	indexNameFromKeys,
+	keysEqual,
 } from '../src/util';
 
 import { testSchema } from './helpers';
@@ -598,49 +603,6 @@ describe('datastore util', () => {
 			expect(isAWSIPAddress(test)).toBe(false);
 		});
 	});
-	describe('extractKeyIfExists', () => {
-		const testUserSchema = testSchema();
-		test('model definition with custom pk', () => {
-			const result = extractKeyIfExists(testUserSchema.models.PostCustomPK);
-			expect(result.properties.fields.length).toBe(1);
-			expect(result.properties.fields[0]).toBe('postId');
-			expect(result.type).toBe('key');
-		});
-		test('model definition with custom pk + sk', () => {
-			const result = extractKeyIfExists(testUserSchema.models.PostCustomPKSort);
-			expect(result.properties.fields.length).toBe(2);
-			expect(result.properties.fields[0]).toBe('id');
-			expect(result.properties.fields[1]).toBe('postId');
-			expect(result.type).toBe('key');
-		});
-		test('model definition with id', () => {
-			const result = extractKeyIfExists(testUserSchema.models.Model);
-			expect(result).toBeUndefined();
-		});
-	});
-	describe('extractPrimaryKeyFieldNames', () => {
-		const testUserSchema = testSchema();
-		test('model definition with custom pk', () => {
-			const result = extractPrimaryKeyFieldNames(
-				testUserSchema.models.PostCustomPK
-			);
-			expect(result.length).toBe(1);
-			expect(result[0]).toBe('postId');
-		});
-		test('model definition with custom pk + sk', () => {
-			const result = extractPrimaryKeyFieldNames(
-				testUserSchema.models.PostCustomPKSort
-			);
-			expect(result.length).toBe(2);
-			expect(result[0]).toBe('id');
-			expect(result[1]).toBe('postId');
-		});
-		test('model definition with id', () => {
-			const result = extractPrimaryKeyFieldNames(testUserSchema.models.Model);
-			expect(result.length).toBe(1);
-			expect(result[0]).toBe('id');
-		});
-	});
 	describe('mergePatches', () => {
 		enablePatches();
 		test('merge patches with no conflict', () => {
@@ -762,6 +724,120 @@ describe('datastore util', () => {
 					value: 5,
 				},
 			]);
+		});
+	});
+	describe('Key Utils', () => {
+		describe('extractKeyIfExists', () => {
+			const testUserSchema = testSchema();
+			test('model definition with custom pk', () => {
+				const result = extractKeyIfExists(testUserSchema.models.PostCustomPK);
+				expect(result.properties.fields.length).toBe(1);
+				expect(result.properties.fields[0]).toBe('postId');
+				expect(result.type).toBe('key');
+			});
+			test('model definition with custom pk + sk', () => {
+				const result = extractKeyIfExists(
+					testUserSchema.models.PostCustomPKSort
+				);
+				expect(result.properties.fields.length).toBe(2);
+				expect(result.properties.fields[0]).toBe('id');
+				expect(result.properties.fields[1]).toBe('postId');
+				expect(result.type).toBe('key');
+			});
+			test('model definition with id', () => {
+				const result = extractKeyIfExists(testUserSchema.models.Model);
+				expect(result).toBeUndefined();
+			});
+		});
+		describe('extractPrimaryKeyFieldNames', () => {
+			const testUserSchema = testSchema();
+			test('model definition with custom pk', () => {
+				const result = extractPrimaryKeyFieldNames(
+					testUserSchema.models.PostCustomPK
+				);
+				expect(result.length).toBe(1);
+				expect(result[0]).toBe('postId');
+			});
+			test('model definition with custom pk + sk', () => {
+				const result = extractPrimaryKeyFieldNames(
+					testUserSchema.models.PostCustomPKSort
+				);
+				expect(result.length).toBe(2);
+				expect(result[0]).toBe('id');
+				expect(result[1]).toBe('postId');
+			});
+			test('model definition with id', () => {
+				const result = extractPrimaryKeyFieldNames(testUserSchema.models.Model);
+				expect(result.length).toBe(1);
+				expect(result[0]).toBe('id');
+			});
+		});
+		describe('extractPrimaryKeyValues', () => {
+			test('should extract key values from a model', () => {
+				const result = extractPrimaryKeyValues(
+					{
+						id: 'abcdef',
+						postId: '100',
+						title: 'New Post',
+						description: 'Desc',
+						sort: 1,
+					},
+					['id', 'postId', 'sort']
+				);
+				expect(result).toEqual(['abcdef', '100', 1]);
+			});
+		});
+		describe('isIdManaged', () => {
+			test('should return `false` for model with custom primary key', () => {
+				const testUserSchema = testSchema();
+				const result = isIdManaged(testUserSchema.models.PostCustomPK);
+				expect(result).toEqual(false);
+			});
+			test('should return `true` for model without custom primary key', () => {
+				const testUserSchema = testSchema();
+				const result = isIdManaged(testUserSchema.models.Model);
+				expect(result).toEqual(true);
+			});
+		});
+		describe('isIdOptionallyManaged', () => {
+			test('should return `false` for model with custom primary key', () => {
+				const testUserSchema = testSchema();
+				const result = isIdOptionallyManaged(
+					testUserSchema.models.PostCustomPK
+				);
+				expect(result).toBeFalsy();
+			});
+			test('should return `false` for model without custom primary key', () => {
+				const testUserSchema = testSchema();
+				const result = isIdOptionallyManaged(testUserSchema.models.Model);
+				expect(result).toBeFalsy();
+			});
+		});
+		describe('indexNameFromKeys', () => {
+			test('should generate spinal-cased index name from key field names', () => {
+				const result = indexNameFromKeys(['customId', 'sortKey']);
+				expect(result).toEqual('customId-sortKey');
+			});
+		});
+		describe('keysEqual', () => {
+			test('should return `false` when equal keys are not sequentially equal', () => {
+				const keys1 = ['id', 'sort'];
+				const keys2 = ['sort', 'id'];
+				const result = keysEqual(keys1, keys2);
+				expect(result).toBeFalsy();
+			});
+			test('should return `true` when equal keys are sequentially equal', () => {
+				const keys1 = ['id', 'sort'];
+				const keys2 = ['id', 'sort'];
+				const result = keysEqual(keys1, keys2);
+				expect(result).toBeTruthy();
+			});
+			test('should return `false` when keys are not of equal length', () => {
+				const keys1 = ['id', 'sort'];
+				const keys2 = ['id'];
+				const result = keysEqual(keys1, keys2);
+				expect(result).toBeFalsy();
+			});
 		});
 	});
 });

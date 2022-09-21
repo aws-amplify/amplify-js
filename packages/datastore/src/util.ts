@@ -996,7 +996,7 @@ export const extractTargetNamesFromSrc = (src: any): string[] | undefined => {
 	}
 };
 
-// Generates snake-cased index name from an aray of key field names
+// Generates spinal-cased index name from an array of key field names
 // E.g. for keys `[id, title]` => 'id-title'
 export const indexNameFromKeys = (keys: string[]): string => {
 	return keys.reduce((prev: string, cur: string, idx: number) => {
@@ -1027,15 +1027,6 @@ export const getIndexKeys = (
 	}
 
 	return ['id'];
-};
-
-// Retrieves concatenated primary key values from a model
-export const getIndexKeyValues = <T extends PersistentModel>(
-	model: T,
-	keys: string[]
-): string[] => {
-	// Retrieve key values from model
-	return keys.map(field => model[field]);
 };
 
 //#endregion

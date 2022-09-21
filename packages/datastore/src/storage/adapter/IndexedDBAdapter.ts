@@ -32,7 +32,7 @@ import {
 	keysEqual,
 	getStorename,
 	getIndexKeys,
-	getIndexKeyValues,
+	extractPrimaryKeyValues,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -75,7 +75,7 @@ class IndexedDBAdapter implements Adapter {
 			modelConstructor.name
 		);
 
-		return getIndexKeyValues(model, keys);
+		return extractPrimaryKeyValues(model, keys);
 	}
 
 	private async checkPrivate() {
