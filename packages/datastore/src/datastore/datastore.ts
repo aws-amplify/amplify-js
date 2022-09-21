@@ -526,7 +526,7 @@ const createModelClass = <T extends PersistentModel>(
 			);
 
 			const hasExistingPatches = modelPatchesMap.has(source);
-		
+
 			if (patches.length || hasExistingPatches) {
 				if (hasExistingPatches) {
 					const [existingPatches, existingSource] = modelPatchesMap.get(source);
@@ -1425,10 +1425,6 @@ class DataStore {
 						({ element, model, opType }) => {
 							let record = element;
 
-							// TODO: fix query
-							if (Array.isArray(element)) {
-								record = element[0];
-							}
 							const itemModelDefinition = getModelDefinition(model);
 							const idOrPk = getIdentifierValue(itemModelDefinition, record);
 							if (
