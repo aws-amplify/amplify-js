@@ -1423,13 +1423,11 @@ class DataStore {
 					// We need to explicitly remove those items from the existing snapshot.
 					handle = this.observe(model).subscribe(
 						({ element, model, opType }) => {
-							let record = element;
-
 							const itemModelDefinition = getModelDefinition(model);
-							const idOrPk = getIdentifierValue(itemModelDefinition, record);
+							const idOrPk = getIdentifierValue(itemModelDefinition, element);
 							if (
 								hasPredicate &&
-								!validatePredicate(record, predicateGroupType, predicates)
+								!validatePredicate(element, predicateGroupType, predicates)
 							) {
 								if (
 									opType === 'UPDATE' &&
@@ -1453,7 +1451,7 @@ class DataStore {
 							if (opType === 'DELETE') {
 								deletedItemIds.push(idOrPk);
 							} else {
-								itemsChanged.set(idOrPk, record);
+								itemsChanged.set(idOrPk, element);
 							}
 
 							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;

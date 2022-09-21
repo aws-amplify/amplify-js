@@ -1004,7 +1004,7 @@ export const indexNameFromKeys = (keys: string[]): string => {
 		if (idx === 0) {
 			return cur;
 		}
-		return `${prev}-${cur}`;
+		return `${prev}${IDENTIFIER_VALUE_SEPARATOR}${cur}`;
 	}, '');
 };
 
