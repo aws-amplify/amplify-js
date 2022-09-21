@@ -28,7 +28,7 @@ import {
 	authorizationMachineEvents,
 } from './authorizationMachine';
 import { AuthMachineContext, AuthTypeState } from '../types/machines';
-import { CognitoProviderConfig } from '../types/model/config';
+import { CognitoProviderConfig } from '../types/model/amplifyConfig';
 
 export const authMachineModel = createModel({} as AuthMachineContext, {
 	events: {

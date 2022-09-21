@@ -17,7 +17,7 @@ import {
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CognitoIdentityProviderClientConfig } from '@aws-sdk/client-cognito-identity-provider';
-import { IdentityPoolConfig } from '../types/model/config';
+import { IdentityPoolConfig } from '../types/model/amplifyConfig';
 
 export class CognitoIdentityPoolService {
 	private readonly config: IdentityPoolConfig;

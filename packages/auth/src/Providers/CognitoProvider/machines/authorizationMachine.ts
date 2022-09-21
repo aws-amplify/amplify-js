@@ -29,7 +29,7 @@ import {
 import { CognitoService } from '../services/CognitoService';
 import { fetchAuthSessionStateMachine } from '../machines/fetchAuthSessionStateMachine';
 import { refreshSessionStateMachine } from '../machines/refreshSessionMachine';
-import { CognitoProviderConfig } from '../types/model/config';
+import { CognitoProviderConfig } from '../types/model/amplifyConfig';
 
 // state machine events
 export const authorizationMachineModel = createModel(

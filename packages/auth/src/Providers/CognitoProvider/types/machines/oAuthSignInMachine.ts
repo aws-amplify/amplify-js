@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { UserPoolConfig } from '../model/config';
+import { UserPoolConfig } from '../model/amplifyConfig';
 import { SOCIAL_PROVIDER } from '../../../../types';
 
 export interface FederatedSignInMachineContext {
