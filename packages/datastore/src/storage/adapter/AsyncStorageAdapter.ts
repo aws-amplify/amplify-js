@@ -77,16 +77,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 	// Retrieves concatenated primary key values from a model
 	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
-		const namespaceName = this.namespaceResolver(modelConstructor);
-		const keys = this.getIndexKeys(namespaceName, modelConstructor.name);
-
-		// Retrieve key values from model
-		const keyValues = keys.map(field => model[field]);
-
-		// Return concatenated key values
-		return keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+		return this.getIndexKeyValues(model).join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 	}
 
 	// Retrieves concatenated primary key values from a model
