@@ -1218,6 +1218,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - bump-aws-sdk-3.175.0
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
