@@ -2273,7 +2273,7 @@ class DataStore {
 					syncExpression: SyncExpression
 				): Promise<[SchemaModel, ModelPredicate<any>]> => {
 					const { modelConstructor, conditionProducer } = await syncExpression;
-					const modelDefinition = getModelDefinition(modelConstructor);
+					const modelDefinition = getModelDefinition(modelConstructor)!;
 
 					// conditionProducer is either a predicate, e.g. (c) => c.field('eq', 1)
 					// OR a function/promise that returns a predicate
@@ -2282,10 +2282,13 @@ class DataStore {
 						return [modelDefinition as any, null as any];
 					}
 
-					const predicate = this.createFromCondition(
-						modelDefinition as any,
-						condition
-					);
+					const predicate = condition(
+						predicateFor({
+							builder: modelConstructor,
+							schema: modelDefinition,
+							pkField: extractPrimaryKeyFieldNames(modelDefinition),
+						})
+					).__query.toStoragePredicate<any>();
 
 					return [modelDefinition as any, predicate as any];
 				}
@@ -2312,7 +2315,7 @@ class DataStore {
 
 	private async unwrapPromise<T extends PersistentModel>(
 		conditionProducer
-	): Promise<ProducerModelPredicate<T>> {
+	): Promise<ModelPredicateExtender<T>> {
 		try {
 			const condition = await conditionProducer();
 			return condition;
