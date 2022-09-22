@@ -1384,11 +1384,11 @@ class DataStore {
 			const producedCondition = condition
 				? condition(
 						predicateFor({
-							builder: modelConstructor,
+							builder: modelConstructor as PersistentModelConstructor<T>,
 							schema: modelDefinition,
 							pkField: extractPrimaryKeyFieldNames(modelDefinition),
 						})
-				  ).__query.toStoragePredicate()
+				  ).__query.toStoragePredicate<T>()
 				: undefined;
 
 			const [savedModel] = await this.storage.runExclusive(async s => {

@@ -5,6 +5,7 @@ import {
 	ModelMeta,
 	AllOperators,
 	PredicateFieldType,
+	ModelPredicate as StoragePredicate,
 } from '../types';
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
@@ -668,28 +669,35 @@ export class GroupCondition {
 		}
 	}
 
-	toStoragePredicate() {
+	toStoragePredicate<T>(
+		baseCondition?: StoragePredicate<T>
+	): StoragePredicate<T> {
 		return FlatModelPredicateCreator.createGroupFromExisting(
 			this.model.schema,
 			this.operator,
-			this.operands.map(condition => {
-				if (condition instanceof GroupCondition) {
-					return condition.toStoragePredicate();
-				} else if (condition instanceof FieldCondition) {
-					const childSeedPredicate =
-						FlatModelPredicateCreator.createPredicateBuilder(this.model.schema);
-					return applyConditionsToV1Predicate(
-						childSeedPredicate,
-						[condition],
-						false
-					);
-				} else {
-					throw new Error(
-						'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
-					);
-				}
-			})
-		);
+			[
+				baseCondition,
+				...(this.operands.map(condition => {
+					if (condition instanceof GroupCondition) {
+						return condition.toStoragePredicate();
+					} else if (condition instanceof FieldCondition) {
+						const childSeedPredicate =
+							FlatModelPredicateCreator.createPredicateBuilder(
+								this.model.schema
+							);
+						return applyConditionsToV1Predicate(
+							childSeedPredicate,
+							[condition],
+							false
+						);
+					} else {
+						throw new Error(
+							'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
+						);
+					}
+				}) as any),
+			].filter(defined => defined)
+		) as StoragePredicate<T>;
 	}
 }
 
