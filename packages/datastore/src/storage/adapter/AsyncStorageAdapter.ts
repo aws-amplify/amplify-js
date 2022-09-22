@@ -246,10 +246,7 @@ export class AsyncStorageAdapter implements Adapter {
 								.map(getByField => recordItem[getByField])
 								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 
-							const connectionRecord = await this.db.get(
-								keys as any,
-								storeName
-							);
+							const connectionRecord = await this.db.get(keys, storeName);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -291,10 +288,7 @@ export class AsyncStorageAdapter implements Adapter {
 								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
 
 							// Retrieve the connected record
-							const connectionRecord = await this.db.get(
-								keys as any,
-								storeName
-							);
+							const connectionRecord = await this.db.get(keys, storeName);
 
 							recordItem[fieldName] =
 								connectionRecord &&
