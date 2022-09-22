@@ -36,7 +36,7 @@ export default {
 		'@aws-amplify/core',
 	],
 	plugins: [
-		nodeResolve({ preferBuiltins: false, modulesOnly: true }),
+		nodeResolve({ preferBuiltins: false, modulesOnly: true, browser: true }),
 		commonjs({ include: 'node_modules/**' }),
 		globals(),
 		json(),
