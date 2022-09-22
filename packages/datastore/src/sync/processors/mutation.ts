@@ -245,7 +245,7 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<unknown>,
+		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE
