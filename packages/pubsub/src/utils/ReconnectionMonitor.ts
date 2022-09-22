@@ -6,6 +6,12 @@ export enum ReconnectEvent {
 	HALT_RECONNECT = 'HALT_RECONNECT',
 }
 
+/**
+ * Captures the reconnect event logic used to determine when to reconnect to PubSub providers.
+ *   Reconnnect attempts are delayed by 5 seconds to let the interface settle.
+ *   Attempting to reconnect only once creates unrecoverable states when the network state isn't
+ *   supported by the browser, so this keeps retrying every minute until halted.
+ */
 export class ReconnectionMonitor {
 	private reconnectObservers: Observer<void>[] = [];
 	private reconnectIntervalId?: ReturnType<typeof setInterval>;
@@ -23,19 +29,17 @@ export class ReconnectionMonitor {
 	 */
 	record(event: ReconnectEvent) {
 		if (event === ReconnectEvent.START_RECONNECT) {
-			const triggerReconnect = () => {
-				this.reconnectObservers.forEach(reconnectObserver => {
-					reconnectObserver.next?.();
-				});
-			};
-			// If the reconnect interval isn't set
-			if (this.reconnectIntervalId === undefined) {
+			// If the reconnection hasn't been started
+			if (
+				this.reconnectSetTimeoutId === undefined &&
+				this.reconnectIntervalId === undefined
+			) {
 				this.reconnectSetTimeoutId = setTimeout(() => {
 					// Reconnect now
-					triggerReconnect();
+					this._triggerReconnect();
 					// Retry reconnect every periodically until it works
 					this.reconnectIntervalId = setInterval(() => {
-						triggerReconnect();
+						this._triggerReconnect();
 					}, RECONNECT_INTERVAL);
 				}, RECONNECT_DELAY);
 			}
@@ -59,6 +63,12 @@ export class ReconnectionMonitor {
 	close() {
 		this.reconnectObservers.forEach(reconnectObserver => {
 			reconnectObserver.complete?.();
+		});
+	}
+
+	private _triggerReconnect() {
+		this.reconnectObservers.forEach(reconnectObserver => {
+			reconnectObserver.next?.();
 		});
 	}
 }
