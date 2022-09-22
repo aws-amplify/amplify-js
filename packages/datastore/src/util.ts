@@ -32,7 +32,7 @@ import {
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
-const ID = 'id';
+export const ID = 'id';
 
 export const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
 
@@ -1027,7 +1027,7 @@ export const getIndexKeys = (
 		return keyPath;
 	}
 
-	return ['id'];
+	return [ID];
 };
 
 //#endregion

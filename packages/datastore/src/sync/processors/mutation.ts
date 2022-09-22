@@ -32,6 +32,7 @@ import {
 	extractTargetNamesFromSrc,
 	USER,
 	USER_AGENT_SUFFIX_DATASTORE,
+	ID,
 } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
@@ -464,7 +465,7 @@ class MutationProcessor {
 		} else {
 			// CPK TODO:
 			// Previous comment from Manuel: what if it was renamed ?
-			deleteInput['id'] = (<any>parsedData).id;
+			deleteInput[ID] = (<any>parsedData).id;
 		}
 
 		let mutationInput;
