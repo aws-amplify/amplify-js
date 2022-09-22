@@ -20,13 +20,13 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
-	EventStreamMarshaller,
+	EventStreamCodec,
 	MessageHeaderValue,
-} from '@aws-sdk/eventstream-marshaller';
+} from '@aws-sdk/eventstream-codec';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
-const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
+const eventCodec = new EventStreamCodec(toUtf8, fromUtf8);
 
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
 
@@ -206,9 +206,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 
 	public static serializeDataFromTranscribe(message) {
 		let decodedMessage = '';
-		const transcribeMessage = eventBuilder.unmarshall(
-			Buffer.from(message.data)
-		);
+		const transcribeMessage = eventCodec.decode(Buffer.from(message.data));
 		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(
@@ -254,9 +252,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
-					const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-						message
-					);
+					const decodedMessage =
+						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
+							message
+						);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
@@ -290,7 +289,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 
 			// sending end frame
 			const endFrameEventMessage = this.getAudioEventMessage(Buffer.from([]));
-			const endFrameBinary = eventBuilder.marshall(endFrameEventMessage);
+			const endFrameBinary = eventCodec.encode(endFrameEventMessage);
 			connection.send(endFrameBinary);
 		});
 	}
@@ -306,7 +305,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const audioEventMessage = this.getAudioEventMessage(
 			Buffer.from(pcmEncodedBuffer)
 		);
-		const binary = eventBuilder.marshall(audioEventMessage);
+		const binary = eventCodec.encode(audioEventMessage);
 		connection.send(binary);
 	}
 
