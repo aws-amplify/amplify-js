@@ -622,7 +622,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
 
-		await DataStore.delete(Blog, c => c.name('beginsWith', 'Avatar'));
+		await DataStore.delete(Blog, c => c.name.beginsWith('Avatar'));
 
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();

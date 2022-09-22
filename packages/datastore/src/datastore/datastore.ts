@@ -1450,17 +1450,17 @@ class DataStore {
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			condition: ProducerModelPredicate<T> | typeof PredicateAll
+			condition: ModelPredicateExtender<T> | typeof PredicateAll
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			model: T,
-			condition?: ProducerModelPredicate<T>
+			condition?: ModelPredicateExtender<T>
 		): Promise<T>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
 		identifierOrCriteria?:
 			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
-			| ProducerModelPredicate<T>
+			| ModelPredicateExtender<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
 		return this.runningProcesses.add(async () => {
@@ -1520,14 +1520,13 @@ class DataStore {
 							<T>identifierOrCriteria
 						);
 					} else {
-						condition = ModelPredicateCreator.createFromExisting(
-							modelDefinition,
-							/**
-							 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-							 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-							 */
-							identifierOrCriteria as ProducerModelPredicate<T>
-						);
+						condition = (identifierOrCriteria as ModelPredicateExtender<T>)(
+							predicateFor({
+								builder: modelConstructor as PersistentModelConstructor<T>,
+								schema: modelDefinition,
+								pkField: extractPrimaryKeyFieldNames(modelDefinition),
+							})
+						).__query.toStoragePredicate<T>();
 					}
 
 					if (
@@ -1581,9 +1580,13 @@ class DataStore {
 						throw new Error(msg);
 					}
 
-					condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
-						pkPredicate
-					);
+					condition = (identifierOrCriteria as ModelPredicateExtender<T>)(
+						predicateFor({
+							builder: modelConstructor as PersistentModelConstructor<T>,
+							schema: modelDefinition,
+							pkField: extractPrimaryKeyFieldNames(modelDefinition),
+						})
+					).__query.toStoragePredicate<T>(pkPredicate);
 				} else {
 					condition = pkPredicate;
 				}
