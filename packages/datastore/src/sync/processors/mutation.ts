@@ -493,16 +493,6 @@ class MutationProcessor {
 							for (const targetName of targetNames) {
 								mutationInput[targetName] = parsedData[targetName];
 							}
-							// if (association?.targetNames?.length) {
-							// 	// instead of including the connected model itself, we add its key(s) to the mutation input
-							// 	for (const targetName of association.targetNames) {
-							// 		mutationInput[targetName] = parsedData[targetName];
-							// 	}
-							// } else if (association.targetName) {
-							// 	// backwards-compatability for schema generated prior to custom primary key support
-							// 	mutationInput[association.targetName] =
-							// 		parsedData[association.targetName];
-							// }
 						}
 					}
 					continue;
