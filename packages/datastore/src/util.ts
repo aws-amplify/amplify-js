@@ -29,6 +29,7 @@ import {
 	SchemaModel,
 	ModelAttribute,
 	IndexesType,
+	ModelAssociation,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -981,14 +982,20 @@ export const getIndexFromAssociation = (
 	return associationIndex && associationIndex[0];
 };
 
-/* Backwards-compatability for schema generated prior to custom primary key support:
-the single field `targetName` has been replaced with an array of `targetNames`
-*/
-export const extractTargetNamesFromSrc = (src: any): string[] | undefined => {
+/**
+ * Backwards-compatability for schema generated prior to custom primary key support:
+the single field `targetName` has been replaced with an array of `targetNames`.
+`targetName` and `targetNames` are exclusive (will never exist on the same schema)
+ * @param src {RelationType | ModelAssociation | undefined}
+ * @returns array of targetNames, or `undefined`
+ */
+export const extractTargetNamesFromSrc = (
+	src: RelationType | ModelAssociation | undefined
+): string[] | undefined => {
 	const targetName = src?.targetName;
 	const targetNames = src?.targetNames;
 
-	if (Array.isArray(targetNames) && targetNames?.length) {
+	if (Array.isArray(targetNames)) {
 		return targetNames;
 	} else if (typeof targetName === 'string') {
 		return [targetName];

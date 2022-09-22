@@ -61,7 +61,7 @@ export class AsyncStorageAdapter implements Adapter {
 		return getStorename(namespace, modelName);
 	}
 
-	// Retrieves concatenated primary key values from a model
+	// Retrieves primary key values from a model
 	private getIndexKeyValuesFromModel<T extends PersistentModel>(
 		model: T
 	): string[] {
