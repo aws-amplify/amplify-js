@@ -463,8 +463,6 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			// CPK TODO:
-			// Previous comment from Manuel: what if it was renamed ?
 			deleteInput[ID] = (<any>parsedData).id;
 		}
 
