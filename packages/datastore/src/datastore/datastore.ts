@@ -512,7 +512,6 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					// @ts-ignore TODO: fix type
 					keyNames.forEach(key => (draft[key] = source[key]));
 
 					const modelValidator = validateModelFields(modelDefinition);
