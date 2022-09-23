@@ -530,7 +530,7 @@ export declare class Comment {
 export declare class User {
 	public readonly id: string;
 	public readonly name: string;
-	public readonly profile?: Profile;
+	public readonly profile: Promise<Profile | undefined>;
 	public readonly profileID?: string;
 
 	constructor(init: ModelInit<User>);
@@ -650,7 +650,7 @@ export declare class HasOneParent {
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	};
 	readonly id: string;
-	readonly child?: HasOneChild | null;
+	readonly child: Promise<HasOneChild | undefined>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	readonly hasOneParentChildId?: string | null;
@@ -688,7 +688,7 @@ export declare class DefaultPKParent {
 	};
 	readonly id: string;
 	readonly content?: string | null;
-	readonly children?: (DefaultPKChild | null)[] | null;
+	readonly children: AsyncCollection<DefaultPKChild>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	constructor(init: ModelInit<DefaultPKParent>);
@@ -707,7 +707,7 @@ export declare class DefaultPKChild {
 	};
 	readonly id: string;
 	readonly content?: string | null;
-	readonly parent?: DefaultPKParent | null;
+	readonly parent: Promise<DefaultPKParent | undefined>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	readonly defaultPKParentChildrenId?: string | null;
@@ -730,10 +730,10 @@ export declare class CompositePKParent {
 	};
 	readonly customId: string;
 	readonly content: string;
-	readonly children?: (CompositePKChild | null)[] | null;
-	readonly implicitChildren?: (ImplicitChild | null)[] | null;
-	readonly strangeChildren?: (StrangeExplicitChild | null)[] | null;
-	readonly childrenSansBelongsTo?: (ChildSansBelongsTo | null)[] | null;
+	readonly children: AsyncCollection<CompositePKChild>;
+	readonly implicitChildren: AsyncCollection<ImplicitChild>;
+	readonly strangeChildren: AsyncCollection<StrangeExplicitChild>;
+	readonly childrenSansBelongsTo: AsyncCollection<ChildSansBelongsTo>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	constructor(init: ModelInit<CompositePKParent>);
@@ -752,7 +752,7 @@ export declare class CompositePKChild {
 	};
 	readonly childId: string;
 	readonly content: string;
-	readonly parent?: CompositePKParent | null;
+	readonly parent: Promise<CompositePKParent | undefined>;
 	readonly parentId?: string | null;
 	readonly parentTitle?: string | null;
 	readonly createdAt?: string | null;
@@ -773,7 +773,7 @@ export declare class ImplicitChild {
 	};
 	readonly childId: string;
 	readonly content: string;
-	readonly parent: CompositePKParent;
+	readonly parent: Promise<CompositePKParent>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	readonly compositePKParentImplicitChildrenCustomId?: string | null;
@@ -797,7 +797,7 @@ export declare class StrangeExplicitChild {
 	};
 	readonly strangeId: string;
 	readonly content: string;
-	readonly parent: CompositePKParent;
+	readonly parent: Promise<CompositePKParent>;
 	readonly strangeParentId?: string | null;
 	readonly strangeParentTitle?: string | null;
 	readonly createdAt?: string | null;

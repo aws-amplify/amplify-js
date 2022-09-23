@@ -48,22 +48,16 @@ export class ModelPredicateCreator {
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
-		Object.values(modelDefinition.fields).forEach(field => {
-			if (field.association) {
-				if (field.association.targetName) {
-					fieldNames.add(field.association.targetName);
-				}
-			}
-		});
 
 		let handler: ProxyHandler<ModelPredicate<T>>;
+
 		const predicate = new Proxy(
 			{} as ModelPredicate<T>,
 			(handler = {
 				get(
-					_target,
+					_,
 					propertyKey,
-					receiver: ModelPredicate<T>
+					self: ModelPredicate<T>
 				): PredicateExpression<T, any> {
 					const groupType = propertyKey as keyof PredicateGroups<T>;
 
@@ -96,10 +90,10 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver as any)!
+									.get(self as any)!
 									.predicates.push(group);
 
-								return receiver;
+								return self;
 							};
 
 							return result;
@@ -120,9 +114,9 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver as any)!
+							.get(self as any)!
 							.predicates.push({ field, operator, operand });
-						return receiver;
+						return self;
 					};
 					return result;
 				},
@@ -223,7 +217,7 @@ export class ModelPredicateCreator {
 	static createGroupFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		group: 'and' | 'or' | 'not',
-		existingPredicates: ProducerModelPredicate<T>[]
+		existingPredicates: (ProducerModelPredicate<T> | ModelPredicate<T>)[]
 	) {
 		let outer =
 			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
@@ -231,7 +225,17 @@ export class ModelPredicateCreator {
 		outer = outer[group](seed => {
 			let inner = seed;
 			for (const existing of existingPredicates) {
-				inner = existing(inner);
+				if (typeof existing === 'function') {
+					inner = existing(inner);
+				} else {
+					ModelPredicateCreator.predicateGroupsMap
+						.get(inner)
+						?.predicates.push(
+							ModelPredicateCreator.predicateGroupsMap.get(
+								existing as ModelPredicate<T>
+							)!
+						);
+				}
 			}
 			return inner;
 		});

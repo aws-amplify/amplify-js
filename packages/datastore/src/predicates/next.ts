@@ -36,6 +36,12 @@ const ops: AllFieldOperators[] = [
 	'notContains',
 ];
 
+type NonNeverKeys<T> = {
+	[K in keyof T]: T[K] extends never ? never : K;
+}[keyof T];
+
+type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
+
 /**
  * A function that accepts a RecursiveModelPrecicate<T>, which it must use to
  * return a final condition.
@@ -108,14 +114,22 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 	[K in AllFieldOperators]: (...operands: Scalar<MT>[]) => ModelPredicateLeaf;
 };
 
-type ModelPredicateOperator<RT extends PersistentModel> = (
+type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
 	...predicates:
 		| [RecursiveModelPredicateAggregateExtender<RT>]
 		| ModelPredicateLeaf[]
 ) => ModelPredicateLeaf;
 
-type ModelPredicateNegation<RT extends PersistentModel> = (
+type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
 	predicate: RecursiveModelPredicateExtender<RT> | ModelPredicateLeaf
+) => ModelPredicateLeaf;
+
+type ModelPredicateOperator<RT extends PersistentModel> = (
+	...predicates: [ModelPredicateAggregateExtender<RT>] | ModelPredicateLeaf[]
+) => ModelPredicateLeaf;
+
+type ModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: ModelPredicateExtender<RT> | ModelPredicateLeaf
 ) => ModelPredicateLeaf;
 
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
@@ -123,17 +137,17 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
 		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
 		: ValuePredicate<RT, RT[K]>;
 } & {
-	or: ModelPredicateOperator<RT>;
-	and: ModelPredicateOperator<RT>;
-	not: ModelPredicateNegation<RT>;
+	or: RecursiveModelPredicateOperator<RT>;
+	and: RecursiveModelPredicateOperator<RT>;
+	not: RecursiveModelPredicateNegation<RT>;
 	__copy: () => RecursiveModelPredicate<RT>;
 } & ModelPredicateLeaf;
 
-export type ModelPredicate<RT extends PersistentModel> = {
+export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
 		? never
 		: ValuePredicate<RT, RT[K]>;
-} & {
+}> & {
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
@@ -674,8 +688,9 @@ export class GroupCondition {
 	): StoragePredicate<T> {
 		const childPredicates = [
 			baseCondition,
-			...(this.operands.map(condition => {
+			...this.operands.map(condition => {
 				if (condition instanceof GroupCondition) {
+					// TODO: what does this need to return!!??
 					return condition.toStoragePredicate();
 				} else if (condition instanceof FieldCondition) {
 					return seedPredicate =>
@@ -685,13 +700,13 @@ export class GroupCondition {
 						'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
 					);
 				}
-			}) as any),
-		].filter(defined => defined);
+			}),
+		].filter(v => v); // remove undefined
 
 		return FlatModelPredicateCreator.createGroupFromExisting(
 			this.model.schema,
 			this.operator,
-			childPredicates
+			childPredicates as any
 		) as StoragePredicate<T>;
 	}
 }
@@ -953,5 +968,5 @@ export function recursivePredicateFor<T extends PersistentModel>(
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>
 ): ModelPredicate<T> {
-	return recursivePredicateFor(ModelType, false) as ModelPredicate<T>;
+	return recursivePredicateFor(ModelType, false) as any as ModelPredicate<T>;
 }

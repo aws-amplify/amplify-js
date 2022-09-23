@@ -215,6 +215,32 @@ describe('IndexedDBAdapter tests', () => {
 
 			await DataStore.delete(User, user1Id);
 
+			/**
+			 * start temp
+			 */
+
+			const u = await DataStore.query(User, user =>
+				user.and(inner => [inner.profile.firstName.eq('whatever')])
+			);
+
+			await DataStore.delete(User, user =>
+				user.and(inner => [inner.name.eq('whatever')])
+			);
+
+			await DataStore.delete(User, user => user.name.eq('whataever else'));
+
+			await DataStore.delete(User, user => user.name.eq('ok'));
+			await DataStore.delete(User, user =>
+				user.not(user => user.name.eq('ok'))
+			);
+			await DataStore.delete(User, user =>
+				user.or(inner => [inner.name.eq('ok'), inner.name.gt('ZZ')])
+			);
+
+			/**
+			 * end temp
+			 */
+
 			user = await DataStore.query(User, user1Id);
 			profile = await DataStore.query(Profile, profile1Id);
 
