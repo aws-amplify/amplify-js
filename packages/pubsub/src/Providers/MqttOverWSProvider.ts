@@ -15,7 +15,7 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { SubscriptionObserver } from '../types/PubSub';
+import { SubscriptionObserver, ConnectionState } from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
