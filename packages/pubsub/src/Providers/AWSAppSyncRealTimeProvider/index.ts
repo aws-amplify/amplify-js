@@ -15,7 +15,7 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { ProviderOptions } from '../../types';
+import { ProviderOptions } from '../../types/Provider';
 import {
 	Logger,
 	Credentials,
@@ -30,7 +30,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONNECTION_STATE_CHANGE, CONTROL_MSG } from '../../index';
+import { CONTROL_MSG } from '../../types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,
@@ -44,6 +44,7 @@ import {
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
+	CONNECTION_STATE_CHANGE,
 } from '../constants';
 import {
 	ConnectionStateMonitor,
