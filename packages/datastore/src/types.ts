@@ -367,7 +367,8 @@ export type TypeConstructorMap = Record<
 >;
 
 /**
- * Each identifier type is represented using nominal types, see: https://basarat.gitbook.io/typescript/main-1/nominaltyping
+ * Each identifier type is represented using nominal types, see:
+ * https://basarat.gitbook.io/typescript/main-1/nominaltyping
  */
 export declare const __identifierBrand__: unique symbol;
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
