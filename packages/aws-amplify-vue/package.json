@@ -1,6 +1,5 @@
 {
   "name": "aws-amplify-vue",
-  "private": "true",
   "version": "2.1.7",
   "license": "Apache-2.0",
   "author": "Amazon Web Services",
