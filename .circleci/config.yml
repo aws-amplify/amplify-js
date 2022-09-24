@@ -1645,8 +1645,8 @@ workflows:
             - integ_react_datastore_subs_disabled_v2
             - integ_react_datastore_consecutive_saves
             - integ_react_datastore_consecutive_saves_v2
-            - integ_react_datastore_observe_query
-            - integ_react_datastore_observe_query_v2
+            # - integ_react_datastore_observe_query
+            # - integ_react_datastore_observe_query_v2
             - integ_react_datastore_schema_drift
             - integ_react_storage
             - integ_react_storage_multipart_progress
@@ -1660,7 +1660,7 @@ workflows:
             - integ_node_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
-            - integ_vue_auth
+            # - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
