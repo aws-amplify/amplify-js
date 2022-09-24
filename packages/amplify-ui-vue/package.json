@@ -1,6 +1,5 @@
 {
 	"name": "@aws-amplify/ui-vue",
-	"private": "true",
 	"sideEffects": true,
 	"version": "1.1.48",
 	"description": "Vue specific wrapper for @aws-amplify/ui-components",

@@ -53,6 +53,10 @@ export class AmplifyTOTPSetup {
 	private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
 	async componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+
 		/**
 		 * If this component is being used internally by the authenticator, we want to re-run
 		 * setup only when the current auth state is `AuthState.TOTPSetup`.

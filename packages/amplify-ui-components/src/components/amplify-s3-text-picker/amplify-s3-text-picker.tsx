@@ -28,6 +28,12 @@ export class AmplifyS3TextPicker {
 	/** Source content of text */
 	@State() src: string;
 
+	componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+	}
+
 	private async handleInput(event: Event) {
 		const file = (event.target as HTMLInputElement).files[0];
 
