@@ -28,7 +28,8 @@
 		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access"
+		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access",
+		"publish:sideEffects-storage": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=sideEffects-storage --preid=sideEffects-storage --exact --no-verify-access"
 	},
 	"husky": {
 		"hooks": {
