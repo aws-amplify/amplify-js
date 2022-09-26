@@ -18,6 +18,7 @@ import {
 } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import semverSatisfies from 'semver/functions/satisfies';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
@@ -230,6 +231,8 @@ const initSchema = (userSchema: Schema) => {
 
 	logger.log('validating schema', { schema: userSchema });
 
+	checkSchemaPragma(userSchema.pragma);
+
 	const internalUserNamespace: SchemaNamespace = {
 		name: USER,
 		...userSchema,
@@ -255,6 +258,7 @@ const initSchema = (userSchema: Schema) => {
 			[syncNamespace.name]: syncNamespace,
 		},
 		version: userSchema.version,
+		pragma: userSchema.pragma,
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
@@ -355,6 +359,23 @@ const checkSchemaInitialized = () => {
 	if (schema === undefined) {
 		const message =
 			'Schema is not initialized. DataStore will not function as expected. This could happen if you have multiple versions of DataStore installed. Please see https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js/#check-for-duplicate-versions';
+		logger.error(message);
+		throw new Error(message);
+	}
+};
+
+/**
+ * Throws an excpetion if the schema is using a pragma that is not supported.
+ *
+ * @param pragma schema pragma
+ */
+const checkSchemaPragma = (pragma: string) => {
+	// TODO: set to correct version when released in codegen
+	const supportedRange = '^3.2.0';
+	if (!semverSatisfies(pragma, supportedRange)) {
+		const message = `Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
+			pragma || 'an unknown version'
+		}, whereas ${supportedRange} is required. Update to the latest CLI and rerun codegen.`;
 		logger.error(message);
 		throw new Error(message);
 	}
