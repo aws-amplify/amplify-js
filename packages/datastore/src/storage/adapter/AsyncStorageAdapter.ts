@@ -619,7 +619,7 @@ export class AsyncStorageAdapter implements Adapter {
 			} = rel;
 			const storeName = getStorename(nameSpace, modelName);
 
-			const index: any =
+			const index: string | undefined =
 				getIndex(
 					this.schema.namespaces[nameSpace].relationships[modelName]
 						.relationTypes,
@@ -637,7 +637,17 @@ export class AsyncStorageAdapter implements Adapter {
 				case 'HAS_ONE':
 					for await (const model of models) {
 						if (targetNames && targetNames?.length) {
-							const hasOneIndex = index || associatedWith;
+							let hasOneIndex;
+
+							if (index) {
+								hasOneIndex = [index];
+							} else if (associatedWith) {
+								if (Array.isArray(associatedWith)) {
+									hasOneIndex = associatedWith;
+								} else {
+									hasOneIndex = [associatedWith];
+								}
+							}
 
 							// iterate over targetNames array and see if each item is present in model object
 							// targetNames here being the keys for the CHILD model
@@ -707,7 +717,7 @@ export class AsyncStorageAdapter implements Adapter {
 							const allRecords = await this.db.getAll(storeName);
 
 							const recordToDelete = allRecords.filter(
-								childItem => childItem[hasOneIndex] === value
+								childItem => childItem[hasOneIndex as string] === value
 							) as T[];
 
 							await this.deleteTraverse<T>(
