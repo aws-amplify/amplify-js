@@ -281,7 +281,6 @@ describe('Storage tests', () => {
 					})
 				);
 
-				console.log(zenNext.mock.calls);
 				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
 
 				expect(modelUpdate).toBeUndefined();
