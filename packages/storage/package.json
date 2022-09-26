@@ -9,9 +9,9 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib-esm/index.js",
+    "./src/Storage.ts",
+    "./lib/Storage.js",
+    "./lib-esm/Storage.js",
     "./dist/aws-amplify-storage.min.js",
     "./dist/aws-amplify-storage.js"
   ],
