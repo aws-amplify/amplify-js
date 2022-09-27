@@ -408,6 +408,7 @@ class StorageClass implements StorageFacade {
 			}
 		});
 
+        // Exit early when there are no changes introduced in the update mutation 
 		if (Object.keys(updatedElement).length === 0) {
 			return null;
 		}
