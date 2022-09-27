@@ -36,8 +36,8 @@ class MutationEventOutbox {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
-			// `id` is the id of the record in the mutationEvent
-			// `modelId` is the id of the actual record that was mutated
+			// `id` is the key for the record in the mutationEvent;
+			// `modelId` is the key for the actual record that was mutated
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
 				c =>

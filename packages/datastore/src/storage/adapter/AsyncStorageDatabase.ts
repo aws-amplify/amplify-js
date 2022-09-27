@@ -27,17 +27,24 @@ class AsyncStorageDatabase {
 
 	private storage = createInMemoryStore();
 
-	// Collection index is map of stores (i.e. sync, metadata, mutation event, and data)
+	/**
+	 * Collection index is map of stores (i.e. sync, metadata, mutation event, and data)
+	 * @param storeName {string} - Name of the store
+	 * @returns Map of ulid->id
+	 */
 	private getCollectionIndex(storeName: string) {
 		if (!this._collectionInMemoryIndex.has(storeName)) {
 			this._collectionInMemoryIndex.set(storeName, new Map());
 		}
 
-		// Map of ulid->id
 		return this._collectionInMemoryIndex.get(storeName);
 	}
 
-	// Return ULID for store if it exists, otherwise create a new one
+	/**
+	 * Return ULID for store if it exists, otherwise create a new one
+	 * @param storeName {string} - Name of the store
+	 * @returns ulid
+	 */
 	private getMonotonicFactory(storeName: string): ULID {
 		if (!monotonicFactoriesMap.has(storeName)) {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());

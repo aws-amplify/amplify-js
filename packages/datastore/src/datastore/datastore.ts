@@ -536,8 +536,7 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					// @ts-ignore TODO: fix type
-					keyNames.forEach(key => (draft[key] = source[key]));
+					keyNames.forEach(key => ((draft as Object)[key] = source[key]));
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
@@ -1524,17 +1523,11 @@ class DataStore {
 						// We need to explicitly remove those items from the existing snapshot.
 						handle = this.observe(model).subscribe(
 							({ element, model, opType }) => {
-								let record = element;
-
-								// TODO: fix query
-								if (Array.isArray(element)) {
-									record = element[0];
-								}
 								const itemModelDefinition = getModelDefinition(model);
-								const idOrPk = getIdentifierValue(itemModelDefinition, record);
+								const idOrPk = getIdentifierValue(itemModelDefinition, element);
 								if (
 									hasPredicate &&
-									!validatePredicate(record, predicateGroupType, predicates)
+									!validatePredicate(element, predicateGroupType, predicates)
 								) {
 									if (
 										opType === 'UPDATE' &&
@@ -1558,7 +1551,7 @@ class DataStore {
 								if (opType === 'DELETE') {
 									deletedItemIds.push(idOrPk);
 								} else {
-									itemsChanged.set(idOrPk, record);
+									itemsChanged.set(idOrPk, element);
 								}
 
 								const isSynced =
@@ -1569,7 +1562,6 @@ class DataStore {
 									this.syncPageSize;
 
 								if (limit || isSynced) {
-									// console.log('emitting here on element received', element);
 									limitTimerRace.resolve();
 								}
 
