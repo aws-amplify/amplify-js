@@ -29,7 +29,8 @@
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
+		"lint": "tslint 'src/**/*.ts'",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
