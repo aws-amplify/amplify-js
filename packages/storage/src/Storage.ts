@@ -439,7 +439,7 @@ const getInstance = () => {
 };
 
 export const StorageInstance: Storage = getInstance();
-Amplify.register(Storage);
+Amplify.register(StorageInstance);
 
 /**
  * @deprecated use named import
