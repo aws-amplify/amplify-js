@@ -10,15 +10,54 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export interface PubSubOptions {
-	[key: string]: any;
+
+export interface SubscriptionObserver<T> {
+	closed: boolean;
+	next(value: T): void;
+	error(errorValue: any): void;
+	complete(): void;
 }
 
-export interface ProviderOptions {
-	[key: string]: any;
+export enum CONTROL_MSG {
+	CONNECTION_CLOSED = 'Connection closed',
+	CONNECTION_FAILED = 'Connection failed',
+	REALTIME_SUBSCRIPTION_INIT_ERROR = 'AppSync Realtime subscription init error',
+	SUBSCRIPTION_ACK = 'Subscription ack',
+	TIMEOUT_DISCONNECT = 'Timeout disconnect',
 }
 
-/**
- * @deprecated Migrated to ProviderOptions
- */
-export type ProvidertOptions = ProviderOptions;
+/** @enum {string} */
+export enum ConnectionState {
+	/*
+	 * The connection is alive and healthy
+	 */
+	Connected = 'Connected',
+	/*
+	 * The connection is alive, but the connection is offline
+	 */
+	ConnectedPendingNetwork = 'ConnectedPendingNetwork',
+	/*
+	 * The connection has been disconnected while in use
+	 */
+	ConnectionDisrupted = 'ConnectionDisrupted',
+	/*
+	 * The connection has been disconnected and the network is offline
+	 */
+	ConnectionDisruptedPendingNetwork = 'ConnectionDisruptedPendingNetwork',
+	/*
+	 * The connection is in the process of connecting
+	 */
+	Connecting = 'Connecting',
+	/*
+	 * The connection is not in use and is being disconnected
+	 */
+	ConnectedPendingDisconnect = 'ConnectedPendingDisconnect',
+	/*
+	 * The connection is not in use and has been disconnected
+	 */
+	Disconnected = 'Disconnected',
+	/*
+	 * The connection is alive, but a keep alive message has been missed
+	 */
+	ConnectedPendingKeepAlive = 'ConnectedPendingKeepAlive',
+}

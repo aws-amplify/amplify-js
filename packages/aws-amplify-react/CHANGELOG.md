@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.37](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.36...aws-amplify-react@5.1.37) (2022-09-20)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
 ## [5.1.36](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.35...aws-amplify-react@5.1.36) (2022-09-08)
 
 **Note:** Version bump only for package aws-amplify-react

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.1...@aws-amplify/interactions@4.1.2) (2022-09-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** Upgrade client lex runtime v2 ([#10328](https://github.com/aws-amplify/amplify-js/issues/10328)) ([171b0c0](https://github.com/aws-amplify/amplify-js/commit/171b0c0d3523a7082d490e20c503027e306d953f))
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.0...@aws-amplify/interactions@4.1.1) (2022-09-08)
 
 **Note:** Version bump only for package @aws-amplify/interactions
