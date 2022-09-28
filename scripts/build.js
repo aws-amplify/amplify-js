@@ -158,6 +158,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		? 'react'
 		: undefined;
 
+	// security check: every tsconfig file should have an "extends" flag
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
 	const extendsCompilerOptions = ts.readConfigFile(
@@ -207,6 +208,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		? 'react'
 		: undefined;
 
+	// security check: every tsconfig file should have an "extends" flag
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
 	const extendsCompilerOptions = ts.readConfigFile(
