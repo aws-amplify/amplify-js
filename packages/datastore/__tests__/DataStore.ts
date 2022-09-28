@@ -1626,6 +1626,54 @@ describe('DataStore tests', () => {
 
 			expect(metadata).not.toHaveProperty('id');
 		});
+
+		describe('Check Pragma', () => {
+			const invalidPragmas = [
+				'1.2.0',
+				'4.0.0',
+				'3.0',
+				'3.1.9999',
+				'5.4.1',
+				'3',
+				'3.4.0.1',
+				'unknown',
+			];
+			const validPragmas = [
+				'3.2.0',
+				'3.2.4',
+				'3.4.0',
+				'3.5.6',
+				'3.5.0-beta',
+				'3.5.0-beta.1',
+				'3.8.1-tagged-release',
+				'3.8.1-tagged-release.1',
+				'3.9.4+alpha',
+			];
+
+			describe('Invalid Pragma', () => {
+				invalidPragmas.forEach(pragma => {
+					test.only(`fails on pragma = ${pragma}`, () => {
+						expect(() => {
+							initSchema({ ...testSchema(), pragma });
+						}).toThrow(
+							'Models were generated with an unsupported version of codegen.'
+						);
+					});
+				});
+			});
+
+			describe('Valid Pragma', () => {
+				validPragmas.forEach(pragma => {
+					test.only(`passes on pragma = ${pragma}`, () => {
+						expect(() => {
+							initSchema({ ...testSchema(), pragma });
+						}).not.toThrow(
+							'Models were generated with an unsupported version of codegen.'
+						);
+					});
+				});
+			});
+		});
 	});
 
 	describe('Immutability', () => {
