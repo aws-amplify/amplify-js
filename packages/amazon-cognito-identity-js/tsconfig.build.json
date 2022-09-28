@@ -1,7 +1,5 @@
 {
 	"extends": "../tsconfig.settings.json",
-	"compilerOptions": {
-		"composite": true
-	},
+	"compilerOptions": {},
 	"include": ["index.d.ts"]
 }
