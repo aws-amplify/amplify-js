@@ -24,7 +24,6 @@ import {
 	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
-	SearchForSuggestionsResults,
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,

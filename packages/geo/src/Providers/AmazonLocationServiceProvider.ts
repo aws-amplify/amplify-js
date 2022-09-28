@@ -44,7 +44,11 @@ import {
 	BatchDeleteGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
 
-import { validateGeofenceId, validateGeofencesInput } from '../util';
+import {
+	mapSearchOptions,
+	validateGeofenceId,
+	validateGeofencesInput,
+} from '../util';
 
 import {
 	GeoConfig,
@@ -169,7 +173,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		/**
 		 * Setup the searchInput
 		 */
-		const locationServiceInput: SearchPlaceIndexForTextCommandInput = {
+		let locationServiceInput: SearchPlaceIndexForTextCommandInput = {
 			Text: text,
 			IndexName: this._config.search_indices.default,
 		};
@@ -178,24 +182,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Map search options to Amazon Location Service input object
 		 */
 		if (options) {
-			locationServiceInput.FilterCountries = options.countries;
-			locationServiceInput.MaxResults = options.maxResults;
-
-			if (options.searchIndexName) {
-				locationServiceInput.IndexName = options.searchIndexName;
-			}
-
-			if (options['biasPosition'] && options['searchAreaConstraints']) {
-				throw new Error(
-					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
-				);
-			}
-			if (options['biasPosition']) {
-				locationServiceInput.BiasPosition = options['biasPosition'];
-			}
-			if (options['searchAreaConstraints']) {
-				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
-			}
+			locationServiceInput = {
+				...locationServiceInput,
+				...mapSearchOptions(options, locationServiceInput),
+			};
 		}
 
 		const client = new LocationClient({
@@ -249,7 +239,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		/**
 		 * Setup the searchInput
 		 */
-		const locationServiceInput: SearchPlaceIndexForSuggestionsCommandInput = {
+		let locationServiceInput: SearchPlaceIndexForSuggestionsCommandInput = {
 			Text: text,
 			IndexName: this._config.search_indices.default,
 		};
@@ -258,24 +248,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Map search options to Amazon Location Service input object
 		 */
 		if (options) {
-			locationServiceInput.FilterCountries = options.countries;
-			locationServiceInput.MaxResults = options.maxResults;
-
-			if (options.searchIndexName) {
-				locationServiceInput.IndexName = options.searchIndexName;
-			}
-
-			if (options['biasPosition'] && options['searchAreaConstraints']) {
-				throw new Error(
-					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
-				);
-			}
-			if (options['biasPosition']) {
-				locationServiceInput.BiasPosition = options['biasPosition'];
-			}
-			if (options['searchAreaConstraints']) {
-				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
-			}
+			locationServiceInput = {
+				...locationServiceInput,
+				...mapSearchOptions(options, locationServiceInput),
+			};
 		}
 
 		const client = new LocationClient({
