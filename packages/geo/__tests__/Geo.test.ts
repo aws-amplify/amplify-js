@@ -16,7 +16,9 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForSuggestionsCommand,
 	SearchPlaceIndexForPositionCommand,
+	GetPlaceCommand,
 } from '@aws-sdk/client-location';
+import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
@@ -62,11 +64,17 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Text: 'star',
+					PlaceId: 'a1b2c3d4',
 				},
 				{
 					Text: 'not star',
 				},
 			],
+		};
+	}
+	if (command instanceof GetPlaceCommand) {
+		return {
+			Place: TestPlacePascalCase,
 		};
 	}
 });
@@ -331,9 +339,55 @@ describe('Geo', () => {
 		});
 	});
 
+	describe('searchByPlaceId', () => {
+		const testPlaceId = 'a1b2c3d4';
+		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
+
+		test('should search with PlaceId as input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.searchByPlaceId(testPlaceId);
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+			});
+		});
+
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationService');
+
+			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
 	describe('searchForSuggestions', () => {
 		const testString = 'star';
-		const testResults = ['star', 'not star'];
+		const testResults = [
+			{
+				text: 'star',
+				placeId: 'a1b2c3d4',
+			},
+			{
+				text: 'not star',
+			},
+		];
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {

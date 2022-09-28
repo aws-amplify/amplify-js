@@ -30,6 +30,9 @@ import {
 	BatchPutGeofenceCommandInput,
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
+	GetPlaceCommand,
+	GetPlaceCommandInput,
+	GetPlaceCommandOutput,
 	GetGeofenceCommand,
 	GetGeofenceCommandInput,
 	GetGeofenceCommandOutput,
@@ -62,6 +65,7 @@ import {
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
+	searchByPlaceIdOptions,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -292,12 +296,63 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		/**
-		 * The response from Amazon Location Service is a "Results" array of objects with a single `Text` item.
-		 * Here we want to flatten that to an array of just the strings from those `Text` items.
+		 * The response from Amazon Location Service is a "Results" array of objects with `Text` and `PlaceId`.
 		 */
-		const results = response.Results.map(result => result.Text);
+		const results = response.Results.map(result => ({
+			text: result.Text,
+			placeId: result.PlaceId,
+		}));
 
 		return results;
+	}
+
+	private _verifyPlaceId(placeId: string) {
+		if (placeId.length === 0) {
+			const errorString = 'PlaceId cannot be an empty string.';
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+	}
+
+	public async searchByPlaceId(
+		placeId: string,
+		options?: searchByPlaceIdOptions
+	): Promise<Place | undefined> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifySearchIndex(options?.searchIndexName);
+		this._verifyPlaceId(placeId);
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		const searchByPlaceIdInput: GetPlaceCommandInput = {
+			PlaceId: placeId,
+			IndexName:
+				options?.searchIndexName || this._config.search_indices.default,
+		};
+		const command = new GetPlaceCommand(searchByPlaceIdInput);
+
+		let response: GetPlaceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		const place: PlaceResult | undefined = response.Place;
+
+		if (place) {
+			return camelcaseKeys(place, { deep: true }) as unknown as Place;
+		}
+		return;
 	}
 
 	/**

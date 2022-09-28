@@ -16,6 +16,7 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForSuggestionsCommand,
 	SearchPlaceIndexForPositionCommand,
+	GetPlaceCommand,
 } from '@aws-sdk/client-location';
 
 import { AmazonLocationServiceProvider } from '../../src/Providers/AmazonLocationServiceProvider';
@@ -42,6 +43,7 @@ import {
 	Coordinates,
 	AmazonLocationServiceGeofence,
 } from '../../src/types';
+import camelcaseKeys from 'camelcase-keys';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (
@@ -61,11 +63,17 @@ LocationClient.prototype.send = jest.fn(async command => {
 			Results: [
 				{
 					Text: 'star',
+					PlaceId: 'a1b2c3d4',
 				},
 				{
 					Text: 'not star',
 				},
 			],
+		};
+	}
+	if (command instanceof GetPlaceCommand) {
+		return {
+			Place: TestPlacePascalCase,
 		};
 	}
 });
@@ -321,7 +329,15 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('searchForSuggestions', () => {
 		const testString = 'star';
-		const testResults = ['star', 'not star'];
+		const testResults = [
+			{
+				text: 'star',
+				placeId: 'a1b2c3d4',
+			},
+			{
+				text: 'not star',
+			},
+		];
 
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -464,7 +480,84 @@ describe('AmazonLocationServiceProvider', () => {
 			await expect(
 				locationProvider.searchForSuggestions(testString)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
+		});
+	});
+
+	describe('searchByPlaceId', () => {
+		const testPlaceId = 'a1b2c3d4';
+		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
+
+		test('should search with PlaceId as input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const results = await locationProvider.searchByPlaceId(testPlaceId);
+
+			expect(results).toEqual(testResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				PlaceId: testPlaceId,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+			});
+		});
+
+		test('should fail if PlaceId as input is empty string', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			await expect(locationProvider.searchByPlaceId('')).rejects.toThrow(
+				'PlaceId cannot be an empty string.'
+			);
+		});
+
+		test('should fail if credentials are invalid', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow('No credentials');
+		});
+
+		test('should fail if _getCredentials fails ', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject();
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow('No credentials');
+		});
+
+		test('should fail if there are no search index resources', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			await expect(
+				locationProvider.searchByPlaceId(testPlaceId)
+			).rejects.toThrow(
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
 	});

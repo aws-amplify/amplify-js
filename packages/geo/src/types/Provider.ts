@@ -25,6 +25,7 @@ import {
 	ListGeofenceResults,
 	SaveGeofencesResults,
 	DeleteGeofencesResults,
+	searchByPlaceIdOptions,
 } from './Geo';
 
 export interface GeoProvider {
@@ -56,6 +57,11 @@ export interface GeoProvider {
 		text: string,
 		options?: SearchByTextOptions
 	): Promise<SearchForSuggestionsResults>;
+
+	searchByPlaceId(
+		placeId: string,
+		options?: searchByPlaceIdOptions
+	): Promise<Place | undefined>;
 
 	// create geofences
 	saveGeofences(
