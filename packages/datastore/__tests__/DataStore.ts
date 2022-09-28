@@ -2825,7 +2825,7 @@ describe('DataStore tests', () => {
 
 				jest.resetModules();
 				jest.doMock('../src/storage/storage', () => {
-					const mock = jest.fn().mockImplementation(() => {
+					const mock: jest.Mock<Storage> = jest.fn().mockImplementation(() => {
 						const _mock = {
 							init: jest.fn(),
 							save,
