@@ -384,14 +384,6 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	): T;
 };
 
-export declare class Enabled {
-	enabled: true;
-}
-export declare class Disabled {
-	disabled: true;
-}
-export declare class LazyLoading extends Enabled {}
-
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
