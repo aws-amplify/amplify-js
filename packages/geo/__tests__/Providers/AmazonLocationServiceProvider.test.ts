@@ -43,6 +43,7 @@ import {
 	Coordinates,
 	AmazonLocationServiceGeofence,
 } from '../../src/types';
+import camelcaseKeys from 'camelcase-keys';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (
@@ -486,9 +487,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 	describe('searchByPlaceId', () => {
 		const testPlaceId = 'a1b2c3d4';
-		const testResults = {
-			Place: TestPlacePascalCase,
-		};
+		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
 
 		test('should search with PlaceId as input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -506,6 +505,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -517,9 +517,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
-			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
-			).rejects.toThrow('PlaceId cannot be an empty string.');
+			await expect(locationProvider.searchByPlaceId('')).rejects.toThrow(
+				'PlaceId cannot be an empty string.'
+			);
 		});
 
 		test('should fail if credentials are invalid', async () => {

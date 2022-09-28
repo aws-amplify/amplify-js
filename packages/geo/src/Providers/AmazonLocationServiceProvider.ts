@@ -347,12 +347,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		let place: PlaceResult | undefined = response.Place;
+		const place: PlaceResult | undefined = response.Place;
 
 		if (place) {
 			return camelcaseKeys(place, { deep: true }) as unknown as Place;
 		}
-		return place;
+		return;
 	}
 
 	/**

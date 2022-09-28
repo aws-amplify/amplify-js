@@ -18,6 +18,7 @@ import {
 	SearchPlaceIndexForPositionCommand,
 	GetPlaceCommand,
 } from '@aws-sdk/client-location';
+import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
@@ -340,9 +341,7 @@ describe('Geo', () => {
 
 	describe('searchByPlaceId', () => {
 		const testPlaceId = 'a1b2c3d4';
-		const testResults = {
-			Place: TestPlacePascalCase,
-		};
+		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
 
 		test('should search with PlaceId as input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
@@ -359,6 +358,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
