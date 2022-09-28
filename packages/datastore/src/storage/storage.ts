@@ -353,7 +353,6 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			// CPK TODO: rename:
 			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
