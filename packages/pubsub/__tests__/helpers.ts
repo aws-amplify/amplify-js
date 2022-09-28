@@ -184,7 +184,6 @@ export class FakeWebSocketInterface {
 	 * @returns A websocket
 	 */
 	newWebSocket() {
-		//this.resetWebsocket();
 		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
 		return this.webSocket;
 	}
