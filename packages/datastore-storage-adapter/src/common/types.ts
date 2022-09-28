@@ -1,4 +1,4 @@
-import { PersistentModel } from '@aws-amplify/datastore';
+import { PersistentModel, ModelInstanceMetadata } from '@aws-amplify/datastore';
 
 export interface CommonSQLiteDatabase {
 	init(): Promise<void>;
@@ -27,3 +27,8 @@ export interface CommonSQLiteDatabase {
 }
 
 export type ParameterizedStatement = [string, any[]];
+
+// TODO: remove once we implement CPK for this adapter
+export type ModelInstanceMetadataWithId = ModelInstanceMetadata & {
+	id: string;
+};
