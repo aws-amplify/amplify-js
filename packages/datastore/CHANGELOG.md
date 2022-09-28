@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.12.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.10...@aws-amplify/datastore@3.12.11) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.9...@aws-amplify/datastore@3.12.10) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.12.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.8...@aws-amplify/datastore@3.12.9) (2022-09-01)
+
+
+### Bug Fixes
+
+* **datastore:** clear before start with nextjs ([#10234](https://github.com/aws-amplify/amplify-js/issues/10234)) ([98dd9f2](https://github.com/aws-amplify/amplify-js/commit/98dd9f27fe798d4337201d082e9f65d785366f8b))
+
+
+
+
+
+## [3.12.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.7...@aws-amplify/datastore@3.12.8) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [3.12.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.6...@aws-amplify/datastore@3.12.7) (2022-08-18)
 
 **Note:** Version bump only for package @aws-amplify/datastore
