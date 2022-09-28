@@ -1,5 +1,5 @@
 {
 	"extends": "../tsconfig.settings.json",
 	"compilerOptions": {},
-	"include": ["lib*/**/*.ts"]
+	"include": ["lib/"]
 }
