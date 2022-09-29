@@ -640,7 +640,7 @@ export class AsyncStorageAdapter implements Adapter {
 							let hasOneIndex;
 
 							if (index) {
-								hasOneIndex = [index];
+								hasOneIndex = index.split(IDENTIFIER_KEY_SEPARATOR);
 							} else if (associatedWith) {
 								if (Array.isArray(associatedWith)) {
 									hasOneIndex = associatedWith;
