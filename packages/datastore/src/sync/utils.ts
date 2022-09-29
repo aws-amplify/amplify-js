@@ -11,6 +11,7 @@ import {
 	isGraphQLScalarType,
 	isPredicateObj,
 	isSchemaModel,
+	isSchemaModelWithAttributes,
 	isTargetNameAssociation,
 	isNonModelFieldType,
 	ModelFields,
@@ -108,7 +109,7 @@ function getOwnerFields(
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const ownerFields: string[] = [];
-	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
