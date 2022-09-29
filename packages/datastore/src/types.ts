@@ -386,19 +386,9 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
  * @private
  * Internal use of Amplify only.
  *
- * Indicates what version of generated models should be used.
+ * Indicates to use lazy models or eager models.
  */
-export declare class Enabled {
-	enabled: true;
-}
-
-/**
- * @private
- * Internal use of Amplify only.
- *
- * Indicates what version of generated models should be used.
- */
-export declare class Disabled {
+export declare class LazyLoadingDisabled {
 	disabled: true;
 }
 
@@ -408,8 +398,7 @@ export declare class Disabled {
  *
  * Indicates to use lazy models or eager models.
  */
-export declare class LazyLoading extends Enabled {}
-// export declare class V5Model extends Enabled {}
+export declare class LazyLoading {}
 
 export type TypeConstructorMap = Record<
 	string,
