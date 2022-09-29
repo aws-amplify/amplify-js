@@ -230,7 +230,7 @@ const initSchema = (userSchema: Schema) => {
 
 	logger.log('validating schema', { schema: userSchema });
 
-	checkSchemaPragma(userSchema.pragma);
+	checkSchemaCodegenVersion(userSchema.codegenVersion);
 
 	const internalUserNamespace: SchemaNamespace = {
 		name: USER,
@@ -257,7 +257,7 @@ const initSchema = (userSchema: Schema) => {
 			[syncNamespace.name]: syncNamespace,
 		},
 		version: userSchema.version,
-		pragma: userSchema.pragma,
+		codegenVersion: userSchema.codegenVersion,
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
@@ -364,24 +364,24 @@ const checkSchemaInitialized = () => {
 };
 
 /**
- * Throws an excpetion if the schema is using a pragma that is not supported.
+ * Throws an excpetion if the schema is using a codegenVersion that is not supported.
  *
  * Set the supported version by setting majorVersion and minorVersion
  * This functions similar to ^ version range.
- * The tested pragma majorVersion must exactly match the set majorVersion
- * The tested pragme minorVersion must be gt or equal to the set minorVersion
- * Example: For a supported version of 5.4.0 set majorVersion = 5 and minorVersion = 4
+ * The tested codegenVersion major version must exactly match the set majorVersion
+ * The tested codegenVersion minor version must be gt or equal to the set minorVersion
+ * Example: For a min supported version of 5.4.0 set majorVersion = 5 and minorVersion = 4
  *
  * This regex will not work when setting a supported range with minor version
  * of 2 or more digits.
  * i.e. minorVersion = 10 will not work
- * The regex will work for testing a pragma with multi digit minor
+ * The regex will work for testing a codegenVersion with multi digit minor
  * versions as long as the minimum minorVersion is single digit.
- * i.e. pragma = 5.30.1, majorVersion = 5, minorVersion = 4 PASSES
+ * i.e. codegenVersion = 5.30.1, majorVersion = 5, minorVersion = 4 PASSES
  *
- * @param pragma schema pragma
+ * @param codegenVersion schema codegenVersion
  */
-const checkSchemaPragma = (pragma: string) => {
+const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	// TODO: set to correct version when released in codegen
 	const majorVersion = 3;
 	const minorVersion = 2;
@@ -390,9 +390,9 @@ const checkSchemaPragma = (pragma: string) => {
 			minorVersion + 1
 		}-9]{1,9}?)\\.)(?:0|[1-9]\\d{0,9})(?:-(?:--+)?(?:0|[1-9]\\d*|\\d*[a-z]+\\d*)){0,100}(?=$| |\\+|\\.)(?:(?<=-\\S+)(?:\\.(?:--?|[\\da-z-]*[a-z-]\\d*|0|[1-9]\\d*)){1,100}?)?(?!\\.)(?:\\+(?:[\\da-z]\\.?-?){1,100}?(?!\\w))?(?!\\+)`
 	);
-	if (!supportedRange.test(pragma)) {
+	if (!supportedRange.test(codegenVersion)) {
 		const message = `Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
-			pragma || 'an unknown version'
+			codegenVersion || 'an unknown version'
 		}, whereas ^${majorVersion}.${minorVersion}.0 is required. Update to the latest CLI and rerun codegen.`;
 		logger.error(message);
 		throw new Error(message);

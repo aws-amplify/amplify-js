@@ -24,7 +24,7 @@ export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 //#region Schema types
 export type Schema = UserSchema & {
 	version: string;
-	pragma: string;
+	codegenVersion: string;
 };
 export type UserSchema = {
 	models: SchemaModels;
@@ -37,7 +37,7 @@ export type UserSchema = {
 export type InternalSchema = {
 	namespaces: SchemaNamespaces;
 	version: string;
-	pragma: string;
+	codegenVersion: string;
 };
 export type SchemaNamespaces = Record<string, SchemaNamespace>;
 export type SchemaNamespace = UserSchema & {
