@@ -35,9 +35,21 @@ import { WordArray } from 'amazon-cognito-identity-js';
 
 export const ID = 'id';
 
-export const DEFAULT_PRIMARY_KEY_SEPARATOR = '#';
+/**
+ * Used by the Async Storage Adapter to concatenate key values
+ * for a record. For instance, if a model has the following keys:
+ * `customId: ID! @primaryKey(sortKeyFields: ["createdAt"])`,
+ * we concatenate the `customId` and `createdAt` as: 
+ * `12-234-5#2022-09-28T00:00:00.000Z`
+ */
+export const DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR = '#';
 
-export const IDENTIFIER_VALUE_SEPARATOR = '-';
+/**
+ * Used for generating spinal-cased index name from an array of 
+ * key field names.
+ * E.g. for keys `[id, title]` => 'id-title'
+ */
+export const IDENTIFIER_KEY_SEPARATOR = '-';
 
 export const errorMessages = {
 	idEmptyString: 'An index field cannot contain an empty string value',
@@ -1011,7 +1023,7 @@ export const indexNameFromKeys = (keys: string[]): string => {
 		if (idx === 0) {
 			return cur;
 		}
-		return `${prev}${IDENTIFIER_VALUE_SEPARATOR}${cur}`;
+		return `${prev}${IDENTIFIER_KEY_SEPARATOR}${cur}`;
 	}, '');
 };
 

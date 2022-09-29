@@ -31,7 +31,7 @@ import {
 	exhaustiveCheck,
 	extractPrimaryKeyFieldNames,
 	establishRelationAndKeys,
-	IDENTIFIER_VALUE_SEPARATOR,
+	IDENTIFIER_KEY_SEPARATOR,
 } from '../util';
 import { MutationEvent } from './';
 
@@ -662,7 +662,7 @@ export function getIdentifierValue(
 
 	const idOrPk = pkFieldNames
 		.map(f => model[f])
-		.join(IDENTIFIER_VALUE_SEPARATOR);
+		.join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
 }

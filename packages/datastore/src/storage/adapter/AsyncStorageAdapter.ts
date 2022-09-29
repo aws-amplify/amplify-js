@@ -22,7 +22,7 @@ import {
 	RelationType,
 } from '../../types';
 import {
-	DEFAULT_PRIMARY_KEY_SEPARATOR,
+	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
 	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
@@ -34,7 +34,7 @@ import {
 	getStorename,
 	getIndexKeys,
 	extractPrimaryKeyValues,
-	IDENTIFIER_VALUE_SEPARATOR,
+	IDENTIFIER_KEY_SEPARATOR,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -79,7 +79,7 @@ export class AsyncStorageAdapter implements Adapter {
 	// Retrieves concatenated primary key values from a model
 	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
 		return this.getIndexKeyValuesFromModel(model).join(
-			DEFAULT_PRIMARY_KEY_SEPARATOR
+			DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
 		);
 	}
 
@@ -172,7 +172,7 @@ export class AsyncStorageAdapter implements Adapter {
 			/* Find the key values in the item, and concatenate them */
 			const itemKeyValues: string[] = keys.map(key => item[key]);
 			const itemKeyValuesPath: string = itemKeyValues.join(
-				DEFAULT_PRIMARY_KEY_SEPARATOR
+				DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
 			);
 
 			const fromDB = <T>await this.db.get(itemKeyValuesPath, storeName);
@@ -244,7 +244,7 @@ export class AsyncStorageAdapter implements Adapter {
 							// keys are the key values
 							const keys = getByFields
 								.map(getByField => recordItem[getByField])
-								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 							const connectionRecord = await this.db.get(keys, storeName);
 
@@ -285,7 +285,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 							const keys = targetNames
 								.map(targetName => recordItem[targetName])
-								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 							// Retrieve the connected record
 							const connectionRecord = await this.db.get(keys, storeName);
@@ -401,7 +401,7 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 
 		return keyValues.length === keys.length
-			? keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
+			? keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)
 			: undefined;
 	}
 
@@ -739,7 +739,7 @@ export class AsyncStorageAdapter implements Adapter {
 						const allRecords = await this.db.getAll(storeName);
 
 						// TODO: double check this
-						const indices = index.split(IDENTIFIER_VALUE_SEPARATOR);
+						const indices = index.split(IDENTIFIER_KEY_SEPARATOR);
 
 						const childrenArray = allRecords.filter(childItem =>
 							indices.every(index => keyValues.includes(childItem[index]))
