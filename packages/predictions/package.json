@@ -27,7 +27,8 @@
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts'",
 		"generate-docs-local": "typedoc --out docs src",
-		"generate-docs-root": "typedoc --out ../../docs src"
+		"generate-docs-root": "typedoc --out ../../docs src",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
 	},
 	"repository": {
 		"type": "git",

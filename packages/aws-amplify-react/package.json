@@ -32,7 +32,8 @@
 		"cypress": "cypress run",
 		"cypress:open": "cypress open",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
+		"lint": "tslint 'src/**/*.ts'",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
 	},
 	"devDependencies": {
 		"@types/enzyme": "^3.1.0",
