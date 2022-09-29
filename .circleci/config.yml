@@ -1218,6 +1218,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - in-app-messaging/main
       - next-major-version/5
 
 test_browsers: &test_browsers

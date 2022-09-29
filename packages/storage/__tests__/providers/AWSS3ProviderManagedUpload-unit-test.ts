@@ -10,7 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWSS3ProviderManagedUpload, Part } from '../../src/providers/AWSS3ProviderManagedUpload';
+import {
+	AWSS3ProviderManagedUpload,
+	Part,
+} from '../../src/providers/AWSS3ProviderManagedUpload';
 import {
 	S3Client,
 	PutObjectCommand,
@@ -315,7 +318,7 @@ describe('multi part upload tests', () => {
 			UploadId: testUploadId,
 		});
 
-		// As the 'sendUploadProgress' happens when the upload is 100% complete, 
+		// As the 'sendUploadProgress' happens when the upload is 100% complete,
 		// it won't be called, as an error is thrown before upload completion.
 		expect(eventSpy).toBeCalledTimes(0);
 	});
@@ -373,9 +376,19 @@ describe('multi part upload tests', () => {
 			new events.EventEmitter()
 		);
 
-		await expect(uploader.upload()).rejects.toThrow('Error completing multipart upload.');
+		await expect(uploader.upload()).rejects.toThrow(
+			'Error completing multipart upload.'
+		);
 		expect(loggerSpy).toHaveBeenNthCalledWith(1, 'DEBUG', 'testUploadId');
-		expect(loggerSpy).toHaveBeenNthCalledWith(2, 'ERROR', 'Error happened while finishing the upload.');
-		expect(loggerSpy).toHaveBeenNthCalledWith(3, 'ERROR', 'Error. Cancelling the multipart upload.');
-	})
+		expect(loggerSpy).toHaveBeenNthCalledWith(
+			2,
+			'ERROR',
+			'Error happened while finishing the upload.'
+		);
+		expect(loggerSpy).toHaveBeenNthCalledWith(
+			3,
+			'ERROR',
+			'Error. Cancelling the multipart upload.'
+		);
+	});
 });

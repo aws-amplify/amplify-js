@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -44,5 +44,13 @@ module.exports = {
 		VERIFY_CONTACT_PICKER: 'aws-amplify__auth--verify-contact-picker',
 		VERIFY_CONTACT_TEXT: 'aws-amplify__auth--verify-contact-text',
 		VERIFY_BUTTON: 'aws-amplify__auth--verify-button',
+	},
+	IN_APP_MESSAGING: {
+		BODY: 'aws-amplify__in-app-messaging--body',
+		CLOSE_BUTTON: 'aws-amplify__in-app-messaging--close-button',
+		HEADER: 'aws-amplify__in-app-messaging--header',
+		IMAGE: 'aws-amplify__in-app-messaging--image',
+		PRIMARY_BUTTON: 'aws-amplify__in-app-messaging--primary-button',
+		SECONDARY_BUTTON: 'aws-amplify__in-app-messaging--secondary-button',
 	},
 };

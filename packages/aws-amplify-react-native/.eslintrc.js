@@ -23,6 +23,15 @@ module.exports = {
 		sourceType: 'module',
 	},
 	plugins: ['react', '@typescript-eslint', 'react-hooks', 'jest', 'prettier'],
+	overrides: [{
+      files: ['**/*.spec.*', '**/*.test.*'],
+      plugins: ['jest'],
+      rules: {
+        // turn the original rule off for test files
+        '@typescript-eslint/unbound-method': 'off',
+        'jest/unbound-method': 'error',
+      },
+    }],
 	rules: {
 		'@typescript-eslint/member-ordering': 'error',
 		'@typescript-eslint/no-extra-semi': 'error',
@@ -31,6 +40,7 @@ module.exports = {
 		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_', varsIgnorePattern: '_' }],
 		'@typescript-eslint/prefer-nullish-coalescing': 'error',
 		'@typescript-eslint/restrict-template-expressions': ['off'],
+		'@typescript-eslint/unbound-method': 'error',
 		'comma-dangle': ['error', 'only-multiline'],
 		'function-paren-newline': 'off',
 		'generator-star-spacing': 'off',

@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Carousel renders with just one item in the data 1`] = `
+Array [
+  <RCTScrollView
+    bounces={false}
+    data={
+      Array [
+        Object {
+          "key": 1,
+          "str": "qux",
+        },
+      ]
+    }
+    decelerationRate="fast"
+    disableIntervalMomentum={true}
+    disableVirtualization={false}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    horizontal={true}
+    initialNumToRender={10}
+    keyExtractor={[Function]}
+    maxToRenderPerBatch={10}
+    onContentSizeChange={[Function]}
+    onEndReachedThreshold={2}
+    onLayout={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    onViewableItemsChanged={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    renderToHardwareTextureAndroid={true}
+    scrollEventThrottle={50}
+    showsHorizontalScrollIndicator={false}
+    showsVerticalScrollIndicator={false}
+    snapToAlignment="start"
+    snapToInterval={750}
+    stickyHeaderIndices={Array []}
+    updateCellsBatchingPeriod={50}
+    viewabilityConfig={
+      Object {
+        "itemVisiblePercentThreshold": 60,
+      }
+    }
+    viewabilityConfigCallbackPairs={
+      Array [
+        Object {
+          "onViewableItemsChanged": [Function],
+          "viewabilityConfig": Object {
+            "itemVisiblePercentThreshold": 60,
+          },
+        },
+      ]
+    }
+    windowSize={21}
+  >
+    <View>
+      <View
+        onLayout={[Function]}
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            null,
+          ]
+        }
+      >
+        <View
+          style={
+            Object {
+              "width": 750,
+            }
+          }
+        >
+          <Text>
+            qux
+          </Text>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>,
+  <CarouselPageIndicator
+    currentIndex={0}
+    numberOfItems={1}
+    style={
+      Object {
+        "bottom": 0,
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+      }
+    }
+  />,
+]
+`;
+
+exports[`Carousel renders with multiple items in the data 1`] = `
+Array [
+  <RCTScrollView
+    bounces={false}
+    data={
+      Array [
+        Object {
+          "key": 1,
+          "str": "foo",
+        },
+        Object {
+          "key": 2,
+          "str": "bar",
+        },
+      ]
+    }
+    decelerationRate="fast"
+    disableIntervalMomentum={true}
+    disableVirtualization={false}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    horizontal={true}
+    initialNumToRender={10}
+    keyExtractor={[Function]}
+    maxToRenderPerBatch={10}
+    onContentSizeChange={[Function]}
+    onEndReachedThreshold={2}
+    onLayout={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    onViewableItemsChanged={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    renderToHardwareTextureAndroid={true}
+    scrollEventThrottle={50}
+    showsHorizontalScrollIndicator={false}
+    showsVerticalScrollIndicator={false}
+    snapToAlignment="start"
+    snapToInterval={750}
+    stickyHeaderIndices={Array []}
+    updateCellsBatchingPeriod={50}
+    viewabilityConfig={
+      Object {
+        "itemVisiblePercentThreshold": 60,
+      }
+    }
+    viewabilityConfigCallbackPairs={
+      Array [
+        Object {
+          "onViewableItemsChanged": [Function],
+          "viewabilityConfig": Object {
+            "itemVisiblePercentThreshold": 60,
+          },
+        },
+      ]
+    }
+    windowSize={21}
+  >
+    <View>
+      <View
+        onLayout={[Function]}
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            null,
+          ]
+        }
+      >
+        <View
+          style={
+            Object {
+              "width": 750,
+            }
+          }
+        >
+          <Text>
+            foo
+          </Text>
+        </View>
+      </View>
+      <View
+        onLayout={[Function]}
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            null,
+          ]
+        }
+      >
+        <View
+          style={
+            Object {
+              "width": 750,
+            }
+          }
+        >
+          <Text>
+            bar
+          </Text>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>,
+  <CarouselPageIndicator
+    currentIndex={0}
+    numberOfItems={2}
+    style={
+      Object {
+        "bottom": 0,
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+      }
+    }
+  />,
+]
+`;

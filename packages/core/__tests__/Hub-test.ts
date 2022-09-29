@@ -27,14 +27,14 @@ describe('Hub', () => {
 			}
 
 			// Default handler for listening events
-			onHubCapsule = jest.fn(function(capsule) {
+			onHubCapsule = jest.fn(function (capsule) {
 				const { channel, payload } = capsule;
 				if (channel === 'auth') {
 					this.onAuthEvent(payload);
 				}
 			});
 
-			onAuthEvent = jest.fn(function(payload) {
+			onAuthEvent = jest.fn(function (payload) {
 				// ... your implementation
 			});
 		}

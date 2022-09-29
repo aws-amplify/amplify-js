@@ -5,39 +5,35 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [2.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.4...@aws-amplify/ui@2.0.5) (2021-12-03)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/amplify-ui:** change private property to false in package.json ([#9303](https://github.com/aws-amplify/amplify-js/issues/9303)) ([454be65](https://github.com/aws-amplify/amplify-js/commit/454be65da7e071540447c13e12fa81032922fd28))
-* **@aws-amplify/amplify-ui:** remove private prop from package.json ([#9304](https://github.com/aws-amplify/amplify-js/issues/9304)) ([66626c2](https://github.com/aws-amplify/amplify-js/commit/66626c2f21df0a27f33309b120de072206ac0001))
-
-
-
-
+- **@aws-amplify/amplify-ui:** change private property to false in package.json ([#9303](https://github.com/aws-amplify/amplify-js/issues/9303)) ([454be65](https://github.com/aws-amplify/amplify-js/commit/454be65da7e071540447c13e12fa81032922fd28))
+- **@aws-amplify/amplify-ui:** remove private prop from package.json ([#9304](https://github.com/aws-amplify/amplify-js/issues/9304)) ([66626c2](https://github.com/aws-amplify/amplify-js/commit/66626c2f21df0a27f33309b120de072206ac0001))
 
 ## [2.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.3...@aws-amplify/ui@2.0.4) (2021-12-02)
 
 **Note:** Version bump only for package @aws-amplify/ui
 
+## [2.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.2...@aws-amplify/ui@2.0.3) (2021-05-14)
 
+**Note:** Version bump only for package @aws-amplify/ui
 
+### Bug Fixes
 
+- **@aws-amplify/amplify-ui:** change private property to false in package.json ([#9303](https://github.com/aws-amplify/amplify-js/issues/9303)) ([454be65](https://github.com/aws-amplify/amplify-js/commit/454be65da7e071540447c13e12fa81032922fd28))
+- **@aws-amplify/amplify-ui:** remove private prop from package.json ([#9304](https://github.com/aws-amplify/amplify-js/issues/9304)) ([66626c2](https://github.com/aws-amplify/amplify-js/commit/66626c2f21df0a27f33309b120de072206ac0001))
+
+## [2.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.3...@aws-amplify/ui@2.0.4) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/ui
 
 ## [2.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.2...@aws-amplify/ui@2.0.3) (2021-05-14)
 
 **Note:** Version bump only for package @aws-amplify/ui
 
-
-
-
-
 ## [2.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.1...@aws-amplify/ui@2.0.2) (2020-04-02)
 
 **Note:** Version bump only for package @aws-amplify/ui
-
-
-
-
 
 ## [2.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.6...@aws-amplify/ui@2.0.1) (2020-03-31)
 
