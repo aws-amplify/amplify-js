@@ -158,6 +158,8 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		? 'react'
 		: undefined;
 
+	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
+
 	const extendsCompilerOptions = ts.readConfigFile(
 		tsconfigInfo.extends,
 		ts.sys.readFile
@@ -207,6 +209,8 @@ function buildES6(typeScriptCompiler, watchMode) {
 		? 'react'
 		: undefined;
 
+	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
+
 	const extendsCompilerOptions = ts.readConfigFile(
 		tsconfigInfo.extends,
 		ts.sys.readFile
@@ -221,7 +225,6 @@ function buildES6(typeScriptCompiler, watchMode) {
 		typeRoots,
 		outDir: pkgTscES6OutDir,
 	};
-	if ('composite' in compilerOptions) delete compilerOptions['composite'];
 
 	if (watchMode) {
 		compilerOptions.inlineSourceMap = true;
