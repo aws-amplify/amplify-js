@@ -649,7 +649,7 @@ export class AsyncStorageAdapter implements Adapter {
 								}
 							}
 
-							// iterate over targetNames array and see if each item is present in model object
+							// iterate over targetNames array and see if each key is present in model object
 							// targetNames here being the keys for the CHILD model
 							const hasConnectedModelFields = targetNames.every(targetName =>
 								model.hasOwnProperty(targetName)
@@ -660,14 +660,19 @@ export class AsyncStorageAdapter implements Adapter {
 
 							let values;
 
-							if (hasConnectedModelFields) {
+							const isUnidirectionalConnection = hasOneIndex === associatedWith;
+
+							// TODO: explain
+							if (hasConnectedModelFields && isUnidirectionalConnection) {
 								// Values will be that of the child model
 								values = targetNames.map(
 									targetName => model[targetName]
 								) as any;
 							} else {
 								// values will be that of the parent model
-								values = keyValuesPath;
+								values = keyValuesPath.split(
+									DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
+								);
 							}
 
 							if (values.length === 0) break;
@@ -680,7 +685,8 @@ export class AsyncStorageAdapter implements Adapter {
 							if (hasConnectedModelFields) {
 								/**
 								 * Retrieve record by finding the record where all
-								 * targetNames are present on the connected model
+								 * targetNames are present on the connected model.
+								 *
 								 */
 								// recordToDelete = allRecords.filter(childItem =>
 								// 	values.every(value => childItem[value] != null)
