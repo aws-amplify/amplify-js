@@ -819,6 +819,8 @@ const createModelClass = <T extends PersistentModel>(
 	return clazz;
 };
 
+export class AsyncItem<T> extends Promise<T> {}
+
 export class AsyncCollection<T> implements AsyncIterable<T> {
 	values: Array<any> | Promise<Array<any>>;
 
