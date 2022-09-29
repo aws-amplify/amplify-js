@@ -662,7 +662,6 @@ export class AsyncStorageAdapter implements Adapter {
 
 							const isUnidirectionalConnection = hasOneIndex === associatedWith;
 
-							// TODO: explain
 							if (hasConnectedModelFields && isUnidirectionalConnection) {
 								// Values will be that of the child model
 								values = targetNames.map(
@@ -744,7 +743,6 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 
-						// TODO: double check this
 						const indices = index.split(IDENTIFIER_KEY_SEPARATOR);
 
 						const childrenArray = allRecords.filter(childItem =>
