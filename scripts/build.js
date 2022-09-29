@@ -33,6 +33,10 @@ const packageInfo = require(packageJsonPath);
 const pkgRollUpInputFile = path.join(pkgTscES5OutDir, 'index.js');
 const pkgRollUpOutputFile = path.join(pkgRootPath, packageInfo.main);
 
+// path of tsconfig.json file on every package
+const tsconfigPath = path.join(pkgRootPath, 'tsconfig.build');
+const tsconfigInfo = require(tsconfigPath);
+
 const es5TsBuildInfoFilePath = path.join(pkgTscES5OutDir, '.tsbuildinfo');
 const es6TsBuildInfoFilePath = path.join(pkgTscES6OutDir, '.tsbuildinfo');
 
@@ -148,30 +152,26 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 }
 
 async function buildES5(typeScriptCompiler, watchMode) {
-	// tsconfig for ES5 generating
+	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
+		packageInfo.name
+	)
+		? 'react'
+		: undefined;
+
+	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
+
+	const extendsCompilerOptions = ts.readConfigFile(
+		tsconfigInfo.extends,
+		ts.sys.readFile
+	).config.compilerOptions;
+
 	let compilerOptions = {
-		esModuleInterop: true,
-		noImplicitAny: false,
-		lib: [
-			'dom',
-			'es2017',
-			'esnext.asynciterable',
-			'es2018.asyncgenerator',
-			'es2019',
-			'es2020.promise',
-		],
-		downlevelIteration: true,
-		target: 'es5',
+		...tsconfigInfo.compilerOptions,
+		...extendsCompilerOptions,
 		module: 'commonjs',
-		moduleResolution: 'node',
-		declaration: false,
-		noEmitOnError: true,
-		incremental: true,
-		importHelpers: true,
+		jsx: jsx,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
-		// temporary fix
-		types: ['node'],
 		outDir: pkgTscES5OutDir,
 	};
 
@@ -201,30 +201,26 @@ async function buildES5(typeScriptCompiler, watchMode) {
 }
 
 function buildES6(typeScriptCompiler, watchMode) {
-	// tsconfig for ESM generating
+	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
+		packageInfo.name
+	)
+		? 'react'
+		: undefined;
+
+	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
+
+	const extendsCompilerOptions = ts.readConfigFile(
+		tsconfigInfo.extends,
+		ts.sys.readFile
+	).config.compilerOptions;
+
 	let compilerOptions = {
-		esModuleInterop: true,
-		noImplicitAny: false,
-		lib: [
-			'dom',
-			'es2017',
-			'esnext.asynciterable',
-			'es2018.asyncgenerator',
-			'es2019',
-			'es2020.promise',
-		],
-		downlevelIteration: true,
-		target: 'es5',
+		...tsconfigInfo.compilerOptions,
+		...extendsCompilerOptions,
 		module: 'es2015',
-		moduleResolution: 'node',
-		declaration: true,
-		noEmitOnError: true,
-		incremental: true,
-		importHelpers: true,
+		jsx: jsx,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
-		// temporary fix
-		types: ['node'],
 		outDir: pkgTscES6OutDir,
 	};
 

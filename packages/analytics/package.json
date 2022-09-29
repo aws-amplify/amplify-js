@@ -26,7 +26,8 @@
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
+		"lint": "tslint 'src/**/*.ts'",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 68"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
