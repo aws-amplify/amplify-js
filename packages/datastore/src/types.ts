@@ -382,12 +382,32 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	): T;
 };
 
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates what version of generated models should be used.
+ */
 export declare class Enabled {
 	enabled: true;
 }
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates what version of generated models should be used.
+ */
 export declare class Disabled {
 	disabled: true;
 }
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
 export declare class LazyLoading extends Enabled {}
 // export declare class V5Model extends Enabled {}
 
