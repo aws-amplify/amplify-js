@@ -25,10 +25,13 @@ import {
 	Reachability,
 } from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
-import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
+import {
+	ConnectionState,
+	ConnectionState,
+	CONNECTION_STATE_CHANGE,
+} from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
-import * as constants from '../src/Providers/constants';
 
 const pahoClientMockCache = {};
 
@@ -362,13 +365,6 @@ describe('PubSub', () => {
 							new Observable(observer => {
 								reachabilityObserver = observer;
 							})
-					)
-					// Twice because we subscribe to get the initial state then again to monitor reachability
-					.mockImplementationOnce(
-						() =>
-							new Observable(observer => {
-								reachabilityObserver = observer;
-							})
 					);
 				reachabilityObserver?.next?.({ online: true });
 			});
@@ -386,20 +382,18 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
 				sub.unsubscribe();
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Disconnected,
+					'Disconnected',
 				]);
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					ConnectionState.Disconnected,
-					ConnectionState.Connecting,
-					ConnectionState.Connected,
-					ConnectionState.ConnectedPendingDisconnect,
-					ConnectionState.Disconnected,
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingDisconnect',
+					'Disconnected',
 				]);
 			});
 
@@ -416,26 +410,22 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
 
 				reachabilityObserver?.next?.({ online: false });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectedPendingNetwork,
+					'ConnectedPendingNetwork',
 				]);
 
 				reachabilityObserver?.next?.({ online: true });
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					ConnectionState.Disconnected,
-					ConnectionState.Connecting,
-					ConnectionState.Connected,
-					ConnectionState.ConnectedPendingNetwork,
-					ConnectionState.Connected,
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingNetwork',
+					'Connected',
 				]);
 			});
 
@@ -452,26 +442,24 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.Connected,
-				]);
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
 
 				reachabilityObserver?.next?.({ online: false });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectedPendingNetwork,
+					'ConnectedPendingNetwork',
 				]);
 
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					ConnectionState.ConnectionDisruptedPendingNetwork,
+					'Disconnected',
 				]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					ConnectionState.Disconnected,
-					ConnectionState.Connecting,
-					ConnectionState.Connected,
-					ConnectionState.ConnectedPendingNetwork,
-					ConnectionState.ConnectionDisruptedPendingNetwork,
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingNetwork',
+					'Disconnected',
 				]);
 			});
 		});

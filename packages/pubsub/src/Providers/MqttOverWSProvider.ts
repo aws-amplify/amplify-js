@@ -15,17 +15,13 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { SubscriptionObserver, ConnectionState } from '../types/PubSub';
+import { SubscriptionObserver } from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
 } from '../utils/ConnectionStateMonitor';
-import {
-	ReconnectEvent,
-	ReconnectionMonitor,
-} from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new Logger('MqttOverWSProvider');
@@ -88,9 +84,7 @@ const topicSymbol = typeof Symbol !== 'undefined' ? Symbol('topic') : '@@topic';
 
 export class MqttOverWSProvider extends AbstractPubSubProvider {
 	private _clientsQueue = new ClientsQueue();
-	private connectionState: ConnectionState;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
-	private readonly reconnectionMonitor = new ReconnectionMonitor();
 
 	constructor(options: MqttProviderOptions = {}) {
 		super({ ...options, clientId: options.clientId || uuid() });
@@ -106,16 +100,6 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					},
 					`Connection state is ${connectionStateChange}`
 				);
-
-				this.connectionState = connectionStateChange;
-
-				// Trigger reconnection when the connection is disrupted
-				if (connectionStateChange === ConnectionState.ConnectionDisrupted) {
-					this.reconnectionMonitor.record(ReconnectEvent.START_RECONNECT);
-				} else if (connectionStateChange !== ConnectionState.Connecting) {
-					// Trigger connected to halt reconnection attempts
-					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
-				}
 			}
 		);
 	}
@@ -197,20 +181,19 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			client.connect({
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
-				onSuccess: () => resolve(true),
-				onFailure: x => {
-					if (clientId) this._clientsQueue.remove(clientId);
-					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
-					resolve(false);
+				onSuccess: () => resolve(client),
+				onFailure: () => {
+					reject();
+					this.connectionStateMonitor.record(
+						CONNECTION_CHANGE.CONNECTION_FAILED
+					);
 				},
 			});
 		});
 
-		if (connected) {
-			this.connectionStateMonitor.record(
-				CONNECTION_CHANGE.CONNECTION_ESTABLISHED
-			);
-		}
+		this.connectionStateMonitor.record(
+			CONNECTION_CHANGE.CONNECTION_ESTABLISHED
+		);
 
 		return client;
 	}
@@ -239,6 +222,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 		if (client && client.isConnected()) {
 			client.disconnect();
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		}
 		this.clientsQueue.remove(clientId);
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -357,6 +341,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					this._clientIdObservers.get(clientId)?.delete(observer);
 					// No more observers per client => client not needed anymore
 					if (this._clientIdObservers.get(clientId)?.size === 0) {
+						this.connectionStateMonitor.record(
+							CONNECTION_CHANGE.CLOSING_CONNECTION
+						);
+
 						this.disconnect(clientId);
 						this.connectionStateMonitor.record(
 							CONNECTION_CHANGE.CLOSING_CONNECTION

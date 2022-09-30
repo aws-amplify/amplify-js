@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.53...@aws-amplify/api@4.0.55) (2022-09-30)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+
+
+
+
 ## [4.0.54](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@4.0.53...@aws-amplify/api@4.0.54) (2022-09-20)
 
 **Note:** Version bump only for package @aws-amplify/api

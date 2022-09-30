@@ -316,65 +316,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 				test('subscription reconnects when onclose triggered while offline and waiting for onopen', async () => {
 					expect.assertions(1);
-					reachabilityObserver?.next?.({ online: false });
-
-					provider
-						.subscribe('test', {
-							appSyncGraphqlEndpoint: 'ws://localhost:8080',
-						})
-						.subscribe({ error: () => {} });
-					reachabilityObserver?.next?.({ online: false });
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
-					await fakeWebSocketInterface?.readyForUse;
-
-					await fakeWebSocketInterface?.triggerClose();
-
-					// Wait until the socket is disrupted pending network
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisruptedPendingNetwork,
-					]);
-
-					reachabilityObserver?.next?.({ online: true });
-
-					// Wait until the socket is disrupted
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.ConnectionDisrupted,
-					]);
-
-					// Wait until we've started connecting the second time
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connecting,
-					]);
-
-					await fakeWebSocketInterface?.readyForUse;
-
-					await fakeWebSocketInterface?.triggerOpen();
-
-					fakeWebSocketInterface?.handShakeMessage({
-						connectionTimeoutMs: 100,
-					});
-
-					await fakeWebSocketInterface?.startAckMessage();
-
-					// Wait until the socket is automatically reconnected
-					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
-						CS.Connected,
-					]);
-
-					expect(fakeWebSocketInterface?.observedConnectionStates).toEqual([
-						CS.Disconnected,
-						CS.Connecting,
-						CS.ConnectionDisruptedPendingNetwork,
-						CS.ConnectionDisrupted,
-						CS.Connecting,
-						CS.Connected,
-					]);
-				});
-
-				test('subscription fails when onerror triggered while waiting for handshake', async () => {
-					expect.assertions(1);
 					await replaceConstant('CONNECTION_INIT_TIMEOUT', 20, async () => {
 						provider
 							.subscribe('test', {
@@ -863,7 +804,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							appSyncGraphqlEndpoint: 'ws://localhost:8080',
 						});
 
-						observer.subscribe({ error: () => {} });
+						const subscription = observer.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
 						Promise.resolve();
