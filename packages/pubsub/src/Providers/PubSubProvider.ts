@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import Observable from 'zen-observable-ts';
-import { PubSubProvider, ProviderOptions } from '../types';
+import { PubSubProvider, ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractPubSubProvider');
