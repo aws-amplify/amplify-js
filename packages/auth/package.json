@@ -29,11 +29,11 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts'",
-    "size": "npm run build && size-limit"
+    "size": "size-limit"
   },
    "size-limit": [
        {
-        "limit": "41.65 kB",
+        "limit": "41.60 kB",
         "path": "dist/aws-amplify-auth.min.js"
        }
      ],
