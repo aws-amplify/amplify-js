@@ -1302,9 +1302,10 @@ describe('API test', () => {
 		});
 
 		test('call isInstanceCreated', () => {
+			const createInstanceMock = spyOn(API.prototype, 'createInstance');
 			const api = new API(config);
 			api.isInstanceCreated();
-			expect(api.createInstance).toHaveBeenCalled();
+			expect(createInstanceMock).toHaveBeenCalled();
 		});
 	});
 
