@@ -358,6 +358,7 @@ jobs:
           paths:
             - amplify-js
   bundle-size:
+    executor: build-executor
     steps:
       - checkout
       - run: yarn bundle-size
