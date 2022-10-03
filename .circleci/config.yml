@@ -358,12 +358,10 @@ jobs:
           paths:
             - amplify-js
   bundle-size:
-    working_directory: ~/amplify-js/packages/auth
     steps:
       - checkout
-      - run: yarn size
-        paths:
-          -
+      - run: yarn bundle-size
+  
 
   unit_test:
     executor: unit-test-executor
@@ -1259,6 +1257,10 @@ workflows:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
+
+      - bundle-size
+          requires:
+            - build
       - integ_setup:
           filters:
             <<: *releasable_branches
