@@ -28,8 +28,15 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'",
+    "size": "size-limit"
   },
+   "size-limit": [
+       {
+        "limit": "41.633 kB",
+        "path": "dist/aws-amplify-auth.min.js"
+       }
+     ],
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
