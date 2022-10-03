@@ -1,5 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Sync jitteredRetry custom pk: should return all data 1`] = `
+Object {
+  "data": Object {
+    "syncPosts": Object {
+      "items": Array [
+        Object {
+          "postId": "1",
+          "title": "Item 1",
+        },
+        Object {
+          "postId": "2",
+          "title": "Item 2",
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`Sync jitteredRetry should return all data 1`] = `
 Object {
   "data": Object {
