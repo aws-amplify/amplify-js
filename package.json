@@ -63,7 +63,7 @@
 		"@babel/core": "7.17.2",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
-		"@size-limit/file": "^8.1.0",
+		"@size-limit/file": "4.10.2",
 		"@types/jest": "^24.0.18",
 		"@types/lodash": "4.14.182",
 		"@types/node": "^8.9.5",
