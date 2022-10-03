@@ -1443,24 +1443,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_observe_query:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_observe_query_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_react_datastore_observe_query:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_observe_query_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - integ_react_datastore_schema_drift:
           requires:
             - integ_setup
@@ -1645,8 +1645,8 @@ workflows:
             - integ_react_datastore_subs_disabled_v2
             - integ_react_datastore_consecutive_saves
             - integ_react_datastore_consecutive_saves_v2
-            - integ_react_datastore_observe_query
-            - integ_react_datastore_observe_query_v2
+            # - integ_react_datastore_observe_query
+            # - integ_react_datastore_observe_query_v2
             - integ_react_datastore_schema_drift
             - integ_react_storage
             - integ_react_storage_multipart_progress
