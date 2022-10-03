@@ -357,12 +357,11 @@ jobs:
           root: /root
           paths:
             - amplify-js
-  bundle-size:
+  bundle_size:
     executor: build-executor
     steps:
       - checkout
       - run: yarn bundle-size
-  
 
   unit_test:
     executor: unit-test-executor
@@ -1258,7 +1257,7 @@ workflows:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
-      - bundle-size
+      - bundle_size:
           requires:
             - build
       - integ_setup:
