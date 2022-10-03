@@ -1257,7 +1257,6 @@ workflows:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
-
       - bundle-size
           requires:
             - build
