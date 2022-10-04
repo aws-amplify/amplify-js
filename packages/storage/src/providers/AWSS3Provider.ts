@@ -45,7 +45,6 @@ import {
 	S3ProviderGetOuput,
 	S3ProviderPutConfig,
 	S3ProviderRemoveConfig,
-	S3ProviderListOutput,
 	S3ProviderListConfig,
 	S3ProviderCopyConfig,
 	S3ProviderCopyOutput,
@@ -58,6 +57,7 @@ import {
 	ResumableUploadConfig,
 	UploadTask,
 	S3ClientOptions,
+	S3ProviderListOutputWithToken,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -69,7 +69,6 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
-import { S3ProviderListOutputWithToken } from '.././types/AWSS3Provider';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -686,15 +685,15 @@ export class AWSS3Provider implements StorageProvider {
 		opt: S3ClientOptions,
 		prefix: string
 	): Promise<S3ProviderListOutputWithToken> {
-		const result: S3ProviderListOutputWithToken = {
-			contents: [],
-			nextToken: '',
+		const list: S3ProviderListOutputWithToken = {
+			results: [],
+			hasNextPage: false,
 		};
 		const s3 = this._createNewS3Client(opt);
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
-			result.contents = response.Contents.map(item => {
+			list.results = response.Contents.map(item => {
 				return {
 					key: item.Key.substr(prefix.length),
 					eTag: item.ETag,
@@ -702,70 +701,73 @@ export class AWSS3Provider implements StorageProvider {
 					size: item.Size,
 				};
 			});
-			result.nextToken = response.NextContinuationToken;
+			list.nextPageToken = response.NextContinuationToken;
+			list.hasNextPage = response.IsTruncated;
 		}
-		return result;
+		return list;
 	}
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified and file size for
-	 * all objects in path
+	 * @return {Promise<S3ProviderListOutputWithToken>} - Promise resolves to list of keys, eTags, lastModified
+	 * and file size for all objects in path
 	 */
 	public async list(
 		path: string,
 		config?: S3ProviderListConfig
-	): Promise<S3ProviderListOutput> {
+	): Promise<S3ProviderListOutputWithToken> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt: S3ClientOptions = Object.assign({}, this._config, config);
-		const { bucket, track, maxKeys } = opt;
+		const { bucket, track, pageSize, pageToken } = opt;
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
 		try {
-			const list: S3ProviderListOutput = [];
-			let token: string;
+			const list: S3ProviderListOutputWithToken = {
+				results: [],
+				hasNextPage: false,
+			};
+			const MAX_PAGE_SIZE = 1000;
 			let listResult: S3ProviderListOutputWithToken;
 			const params: ListObjectsV2Request = {
 				Bucket: bucket,
 				Prefix: final_path,
-				MaxKeys: 1000,
+				MaxKeys: MAX_PAGE_SIZE,
+				ContinuationToken: pageToken,
 			};
-			if (maxKeys === 'ALL') {
+			params.ContinuationToken = pageToken;
+			if (pageSize === undefined) {
 				do {
-					params.ContinuationToken = token;
-					params.MaxKeys = 1000;
 					listResult = await this._list(params, opt, prefix);
-					list.push(...listResult.contents);
-					if (listResult.nextToken) token = listResult.nextToken;
-				} while (listResult.nextToken);
+					list.results.push(...listResult.results);
+					if (listResult.nextPageToken)
+						params.ContinuationToken = listResult.nextPageToken;
+				} while (listResult.nextPageToken);
 			} else {
-				maxKeys < 1000 || typeof maxKeys === 'string'
-					? (params.MaxKeys = maxKeys)
-					: (params.MaxKeys = 1000);
+				if (pageSize <= MAX_PAGE_SIZE && typeof pageSize === 'number')
+					params.MaxKeys = pageSize;
+				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
-				list.push(...listResult.contents);
-				if (maxKeys > 1000)
-					logger.warn(
-						"maxkeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
-					);
+				list.results.push(...listResult.results);
+				list.hasNextPage = listResult.hasNextPage;
+				list.nextPageToken = null ?? listResult.nextPageToken;
 			}
 			dispatchStorageEvent(
 				track,
 				'list',
 				{ method: 'list', result: 'success' },
 				null,
-				`${list.length} items returned from list operation`
+				`${list.results.length} items returned from list operation`
 			);
 			logger.debug('list', list);
 			return list;
 		} catch (error) {
-			logger.warn('list error', error);
+			logger.error('list InvalidArgument', error);
 			dispatchStorageEvent(
 				track,
 				'list',
