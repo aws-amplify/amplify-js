@@ -29,7 +29,7 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts'",
-    "bundle-size": "size-limit"
+    "test-module-size": "size-limit"
   },
    "size-limit": [
        {

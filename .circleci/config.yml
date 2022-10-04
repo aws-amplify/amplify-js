@@ -358,12 +358,12 @@ jobs:
           paths:
             - amplify-js
 
-  bundle_size:
+  test_module_size:
     executor: build-executor
     steps:
       - attach_workspace:
           at: /root
-      - run: yarn bundle-size
+      - run: yarn test-module-size
 
   unit_test:
     executor: unit-test-executor
@@ -1259,7 +1259,7 @@ workflows:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
-      - bundle_size:
+      - test_module_size:
           requires:
             - build
       - integ_setup:
