@@ -1516,438 +1516,493 @@ describe('DataStore tests', () => {
 			}).toThrow('updatedAt is read-only.');
 		});
 
-		test('Instantiation validations', async () => {
-			expect(() => {
-				new Model({
-					field1: undefined,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+		describe('Instantiation validations', () => {
+			test('required field (undefined)', () => {
+				expect(() => {
+					new Model({
+						field1: undefined,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: null,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+			test('required field (null)', () => {
+				expect(() => {
+					new Model({
+						field1: null,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: <any>1234,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('wrong type (number -> string)', () => {
+				expect(() => {
+					new Model({
+						field1: <any>1234,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: 'not-a-date',
-				});
-			}).toThrowError(
-				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
-			);
+			test('wrong type (string -> date)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: 'not-a-date',
+					});
+				}).toThrowError(
+					'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				);
+			});
 
-			expect(
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				}).metadata.tags
-			).toBeUndefined();
+			test('set nested non model field as undefined', () => {
+				expect(
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					}).metadata.tags
+				).toBeUndefined();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [null],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the rewards array should be of type string, [null] received. '
-			);
-
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						tags: undefined,
-						rewards: [null],
-						penNames: [],
-						nominations: [],
-					},
-				});
-			}).toThrowError(
-				'All elements in the rewards array should be of type string, [null] received. '
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: null,
-					ips: null,
-				});
-			}).not.toThrow();
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [null],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type string, [null] received. '
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: [null],
-				});
-			}).not.toThrow();
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1'],
-				});
-			}).not.toThrow();
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1', 'not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['test@example.com'],
-				});
-			}).not.toThrow();
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [],
-					ips: [],
-				});
-			}).not.toThrow();
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['not-an-email'],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not-an-ip'],
-				});
-			}).toThrowError(
-				'All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not-an-ip'
-			);
-
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: null,
-					}),
-				});
-			}).toThrowError('Field nominations is required');
+			test('pass null to nested non model array field (constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
 			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: null,
-					},
-				});
-			}).toThrowError('Field nominations is required');
+			test('pass null to nested non model non nullable array field (no constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [undefined],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the penNames array should be of type string, [undefined] received. '
-			);
+			test('valid model with nulls', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: null,
+						ips: null,
+					});
+				}).not.toThrow();
+			});
 
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [undefined],
-						nominations: [],
-					},
-				});
-			}).toThrowError(
-				'All elements in the penNames array should be of type string, [undefined] received. '
-			);
+			test('pass null to non nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [null],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: [<any>1234],
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
-			);
+			test('pass null to nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: [null],
+					});
+				}).not.toThrow();
+			});
 
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						tags: [<any>1234],
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					},
-				});
-			}).toThrowError(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
-			);
+			test('valid model array of AWSIPAdress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1'],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null],
-					}),
-				});
-			}).not.toThrow();
+			test('invalid AWSIPAddress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
+				);
+			});
 
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null],
-					},
-				});
-			}).not.toThrow();
+			test('invalid AWSIPAddress in one index', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1', 'not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined],
-					}),
-				});
-			}).not.toThrow();
+			test('valid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['test@example.com'],
+					});
+				}).not.toThrow();
+			});
 
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined],
-					},
-				});
-			}).not.toThrow();
+			test('valid empty array of AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [],
+						ips: [],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined, null],
-					}),
-				});
-			}).not.toThrow();
+			test('invalid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['not-an-email'],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				);
+			});
 
-			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined, null],
-					},
-				});
-			}).not.toThrow();
+			test('required sub non model field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null,
+						}),
+					});
+				}).toThrowError('Field nominations is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, 'ok'],
-					}),
-				});
-			}).not.toThrow();
+			test('required sub non model field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null,
+						},
+					});
+				}).toThrowError('Field nominations is required');
+			});
+
+			test('sub non model non nullable array field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
 			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, 'ok'],
-					},
-				});
-			}).not.toThrow();
+			test('sub non model non nullable array field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, <any>123],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
-			);
+			test('sub non model array field invalid type with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
 			// without non model constructor
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: {
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, <any>123],
-					},
-				});
-			}).toThrowError(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
-			);
+			test('sub non model array field invalid type without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
-			expect(
-				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
-			).toHaveProperty('extraAttribute');
+			test('valid sub non model nullable array field (null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						}),
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				Model.copyOf(<any>undefined, d => d);
-			}).toThrow('The source object is not a valid model');
-			expect(() => {
-				const source = new Model({
-					field1: 'something',
-					dateCreated: new Date().toISOString(),
-				});
-				Model.copyOf(source, d => (d.field1 = <any>1234));
-			}).toThrow(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('valid sub non model nullable array field (null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined, null],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined, null],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('wrong type sub non model nullable array field (null and number) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('wrong type sub non model nullable array field (null and number) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						},
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('allow extra attribute', () => {
+				expect(
+					new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
+				).toHaveProperty('extraAttribute');
+			});
+
+			test('throw on invalid constructor', () => {
+				expect(() => {
+					Model.copyOf(<any>undefined, d => d);
+				}).toThrow('The source object is not a valid model');
+			});
+
+			test('invalid type on copyOf', () => {
+				expect(() => {
+					const source = new Model({
+						field1: 'something',
+						dateCreated: new Date().toISOString(),
+					});
+					Model.copyOf(source, d => (d.field1 = <any>1234));
+				}).toThrow(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
 		});
 
 		test('Delete params', async () => {
