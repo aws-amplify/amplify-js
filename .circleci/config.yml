@@ -360,8 +360,8 @@ jobs:
   bundle_size:
     executor: build-executor
     steps:
-      - checkout
-      - run: yarn
+      - attach_workspace:
+          at: /root
       - run: yarn bundle-size
 
   unit_test:
