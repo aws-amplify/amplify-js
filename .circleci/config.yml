@@ -357,14 +357,6 @@ jobs:
           root: /root
           paths:
             - amplify-js
-  bundle-size:
-    working_directory: ~/amplify-js/packages/auth
-    steps:
-      - checkout
-      - run: yarn size
-        paths:
-          -
-
   unit_test:
     executor: unit-test-executor
     steps:
