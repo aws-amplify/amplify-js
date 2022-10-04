@@ -944,6 +944,7 @@ describe('StorageProvider test', () => {
 				.mockImplementation(listForNPages(3));
 			let response = await storage.list('listALLResultsPath', {
 				level: 'public',
+				pageSize: 'ALL',
 			});
 			expect(response.results).toEqual(listResult);
 			expect(response.hasNextToken).toEqual(false);
@@ -990,6 +991,7 @@ describe('StorageProvider test', () => {
 			let response = await storage.list('listALLResultsPath', {
 				level: 'public',
 				track: true,
+				pageSize: 'ALL',
 			});
 			expect(response.results).toEqual(listResult);
 			expect(response.hasNextToken).toEqual(false);
