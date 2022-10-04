@@ -2017,6 +2017,18 @@ describe('DataStore tests', () => {
 				);
 			});
 
+			test('sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: null,
+					});
+				}).not.toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
 			test('invalid nested sub non model type', () => {
 				expect(() => {
 					new Model({

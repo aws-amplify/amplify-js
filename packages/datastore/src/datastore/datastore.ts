@@ -398,7 +398,7 @@ const validateModelFields =
 					);
 				}
 			} else if (isNonModelFieldType(type)) {
-				// do not check non model fields if not defined
+				// do not check non model fields if undefined or null
 				if (!isNullOrUndefined(v)) {
 					const subNonModelDefinition =
 						schema.namespaces.user.nonModels[type.nonModel];
