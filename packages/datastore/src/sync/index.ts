@@ -400,7 +400,7 @@ export class SyncEngine {
 						return modelDefinition.syncable === true;
 					})
 					.subscribe({
-						next: ({ opType, model, element, condition }) =>
+						next: async ({ opType, model, element, condition }) =>
 							this.runningProcesses.add(async () => {
 								const namespace =
 									this.schema.namespaces[this.namespaceResolver(model)];
@@ -443,12 +443,7 @@ export class SyncEngine {
 								await startPromise;
 
 								if (this.online) {
-									try {
-										this.mutationsProcessor.resume();
-									} catch (error) {
-										logger.error('mutationProcessor.resume error', error);
-										throw error;
-									}
+									this.mutationsProcessor.resume();
 								}
 							}, 'storage event'),
 					});

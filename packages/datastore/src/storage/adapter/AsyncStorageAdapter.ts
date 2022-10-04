@@ -22,7 +22,7 @@ import {
 	RelationType,
 } from '../../types';
 import {
-	DEFAULT_PRIMARY_KEY_SEPARATOR,
+	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
 	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
@@ -34,7 +34,7 @@ import {
 	getStorename,
 	getIndexKeys,
 	extractPrimaryKeyValues,
-	IDENTIFIER_VALUE_SEPARATOR,
+	IDENTIFIER_KEY_SEPARATOR,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -79,7 +79,7 @@ export class AsyncStorageAdapter implements Adapter {
 	// Retrieves concatenated primary key values from a model
 	private getIndexKeyValuesPath<T extends PersistentModel>(model: T): string {
 		return this.getIndexKeyValuesFromModel(model).join(
-			DEFAULT_PRIMARY_KEY_SEPARATOR
+			DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
 		);
 	}
 
@@ -172,7 +172,7 @@ export class AsyncStorageAdapter implements Adapter {
 			/* Find the key values in the item, and concatenate them */
 			const itemKeyValues: string[] = keys.map(key => item[key]);
 			const itemKeyValuesPath: string = itemKeyValues.join(
-				DEFAULT_PRIMARY_KEY_SEPARATOR
+				DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
 			);
 
 			const fromDB = <T>await this.db.get(itemKeyValuesPath, storeName);
@@ -244,7 +244,7 @@ export class AsyncStorageAdapter implements Adapter {
 							// keys are the key values
 							const keys = getByFields
 								.map(getByField => recordItem[getByField])
-								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 							const connectionRecord = await this.db.get(keys, storeName);
 
@@ -285,7 +285,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 							const keys = targetNames
 								.map(targetName => recordItem[targetName])
-								.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 							// Retrieve the connected record
 							const connectionRecord = await this.db.get(keys, storeName);
@@ -401,7 +401,7 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 
 		return keyValues.length === keys.length
-			? keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)
+			? keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)
 			: undefined;
 	}
 
@@ -640,7 +640,7 @@ export class AsyncStorageAdapter implements Adapter {
 							let hasOneIndex;
 
 							if (index) {
-								hasOneIndex = [index];
+								hasOneIndex = index.split(IDENTIFIER_KEY_SEPARATOR);
 							} else if (associatedWith) {
 								if (Array.isArray(associatedWith)) {
 									hasOneIndex = associatedWith;
@@ -649,7 +649,7 @@ export class AsyncStorageAdapter implements Adapter {
 								}
 							}
 
-							// iterate over targetNames array and see if each item is present in model object
+							// iterate over targetNames array and see if each key is present in model object
 							// targetNames here being the keys for the CHILD model
 							const hasConnectedModelFields = targetNames.every(targetName =>
 								model.hasOwnProperty(targetName)
@@ -660,14 +660,18 @@ export class AsyncStorageAdapter implements Adapter {
 
 							let values;
 
-							if (hasConnectedModelFields) {
+							const isUnidirectionalConnection = hasOneIndex === associatedWith;
+
+							if (hasConnectedModelFields && isUnidirectionalConnection) {
 								// Values will be that of the child model
 								values = targetNames.map(
 									targetName => model[targetName]
 								) as any;
 							} else {
 								// values will be that of the parent model
-								values = keyValuesPath;
+								values = keyValuesPath.split(
+									DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR
+								);
 							}
 
 							if (values.length === 0) break;
@@ -680,7 +684,8 @@ export class AsyncStorageAdapter implements Adapter {
 							if (hasConnectedModelFields) {
 								/**
 								 * Retrieve record by finding the record where all
-								 * targetNames are present on the connected model
+								 * targetNames are present on the connected model.
+								 *
 								 */
 								// recordToDelete = allRecords.filter(childItem =>
 								// 	values.every(value => childItem[value] != null)
@@ -738,8 +743,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 
-						// TODO: double check this
-						const indices = index.split(IDENTIFIER_VALUE_SEPARATOR);
+						const indices = index.split(IDENTIFIER_KEY_SEPARATOR);
 
 						const childrenArray = allRecords.filter(childItem =>
 							indices.every(index => keyValues.includes(childItem[index]))

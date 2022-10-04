@@ -11,6 +11,7 @@ import {
 	isGraphQLScalarType,
 	isPredicateObj,
 	isSchemaModel,
+	isSchemaModelWithAttributes,
 	isTargetNameAssociation,
 	isNonModelFieldType,
 	ModelFields,
@@ -31,7 +32,7 @@ import {
 	exhaustiveCheck,
 	extractPrimaryKeyFieldNames,
 	establishRelationAndKeys,
-	IDENTIFIER_VALUE_SEPARATOR,
+	IDENTIFIER_KEY_SEPARATOR,
 } from '../util';
 import { MutationEvent } from './';
 
@@ -108,7 +109,7 @@ function getOwnerFields(
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const ownerFields: string[] = [];
-	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
@@ -660,9 +661,7 @@ export function getIdentifierValue(
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const idOrPk = pkFieldNames
-		.map(f => model[f])
-		.join(IDENTIFIER_VALUE_SEPARATOR);
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
 }

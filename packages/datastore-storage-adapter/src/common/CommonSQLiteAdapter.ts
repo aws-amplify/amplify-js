@@ -17,7 +17,6 @@ import {
 	ModelSortPredicateCreator,
 	InternalSchema,
 	isPredicateObj,
-	ModelInstanceMetadataWithId,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
@@ -29,7 +28,11 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase, ParameterizedStatement } from './types';
+import {
+	CommonSQLiteDatabase,
+	ParameterizedStatement,
+	ModelInstanceMetadataWithId,
+} from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 

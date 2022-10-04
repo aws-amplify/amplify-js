@@ -35,7 +35,7 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
-	isSchemaModel2,
+	isSchemaModelWithAttributes,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -333,7 +333,10 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModel2(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (
+				isSchemaModelWithAttributes(modelDefinition) &&
+				!isIdManaged(modelDefinition)
+			) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
