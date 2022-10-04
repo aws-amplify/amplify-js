@@ -342,6 +342,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
@@ -361,6 +362,7 @@ describe('Storage tests', () => {
 					author: 'some author',
 					rewards: [],
 					penNames: ['bob'],
+					nominations: [],
 				};
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
@@ -381,6 +383,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
@@ -417,6 +420,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
@@ -428,6 +432,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						};
 					})
 				);

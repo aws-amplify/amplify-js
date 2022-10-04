@@ -309,7 +309,10 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModelWithAttributes(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (
+				isSchemaModelWithAttributes(modelDefinition) &&
+				!isIdManaged(modelDefinition)
+			) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
@@ -393,6 +396,21 @@ const validateModelFields =
 					throw new Error(
 						`Field ${name} should be of type ${type}, validation failed. ${v}`
 					);
+				}
+			} else if (isNonModelFieldType(type)) {
+				const subNonModelDefinition =
+					schema.namespaces.user.nonModels[type.nonModel];
+				const modelValidator = validateModelFields(subNonModelDefinition);
+				if (isArray) {
+					v.forEach(item => {
+						Object.keys(subNonModelDefinition.fields).forEach(subKey => {
+							modelValidator(subKey, item[subKey]);
+						});
+					});
+				} else {
+					Object.keys(subNonModelDefinition.fields).forEach(subKey => {
+						modelValidator(subKey, v[subKey]);
+					});
 				}
 			}
 		}

@@ -1579,6 +1579,23 @@ describe('DataStore tests', () => {
 				'All elements in the rewards array should be of type string, [null] received. '
 			);
 
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						tags: undefined,
+						rewards: [null],
+						penNames: [],
+						nominations: [],
+					},
+				});
+			}).toThrowError(
+				'All elements in the rewards array should be of type string, [null] received. '
+			);
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
@@ -1685,6 +1702,21 @@ describe('DataStore tests', () => {
 				});
 			}).toThrowError('Field nominations is required');
 
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						penNames: [],
+						nominations: null,
+					},
+				});
+			}).toThrowError('Field nominations is required');
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
@@ -1696,6 +1728,23 @@ describe('DataStore tests', () => {
 						penNames: [undefined],
 						nominations: [],
 					}),
+				});
+			}).toThrowError(
+				'All elements in the penNames array should be of type string, [undefined] received. '
+			);
+
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						penNames: [undefined],
+						nominations: [],
+					},
 				});
 			}).toThrowError(
 				'All elements in the penNames array should be of type string, [undefined] received. '
@@ -1717,6 +1766,23 @@ describe('DataStore tests', () => {
 				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						tags: [<any>1234],
+						rewards: [],
+						penNames: [],
+						nominations: [],
+					},
+				});
+			}).toThrowError(
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+			);
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
@@ -1728,6 +1794,21 @@ describe('DataStore tests', () => {
 						nominations: [],
 						misc: [null],
 					}),
+				});
+			}).not.toThrow();
+
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [null],
+					},
 				});
 			}).not.toThrow();
 
@@ -1745,6 +1826,21 @@ describe('DataStore tests', () => {
 				});
 			}).not.toThrow();
 
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [undefined],
+					},
+				});
+			}).not.toThrow();
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
@@ -1756,6 +1852,21 @@ describe('DataStore tests', () => {
 						nominations: [],
 						misc: [undefined, null],
 					}),
+				});
+			}).not.toThrow();
+
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [undefined, null],
+					},
 				});
 			}).not.toThrow();
 
@@ -1773,6 +1884,21 @@ describe('DataStore tests', () => {
 				});
 			}).not.toThrow();
 
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [null, 'ok'],
+					},
+				});
+			}).not.toThrow();
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
@@ -1784,6 +1910,23 @@ describe('DataStore tests', () => {
 						nominations: [],
 						misc: [null, <any>123],
 					}),
+				});
+			}).toThrowError(
+				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+			);
+
+			// without non model constructor
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [null, <any>123],
+					},
 				});
 			}).toThrowError(
 				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
