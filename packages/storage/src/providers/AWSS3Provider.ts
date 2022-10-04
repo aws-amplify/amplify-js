@@ -757,7 +757,6 @@ export class AWSS3Provider implements StorageProvider {
 					params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
-				console.log(listResult);
 				list.results.push(...listResult.results);
 				list.hasNextToken = listResult.hasNextToken;
 				list.nextToken = null ?? listResult.nextToken;

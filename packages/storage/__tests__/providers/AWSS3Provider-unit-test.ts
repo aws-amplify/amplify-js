@@ -107,7 +107,7 @@ function listForNPages(pages) {
 	let methodCalls = 0;
 	return async command => {
 		if (command instanceof ListObjectsV2Command) {
-			let token = undefined;
+			let token: string | undefined = undefined;
 			methodCalls++;
 			if (command.input.ContinuationToken === undefined || methodCalls < pages)
 				token = continuationToken;
