@@ -1516,7 +1516,7 @@ describe('DataStore tests', () => {
 			}).toThrow('updatedAt is read-only.');
 		});
 
-		describe('Instantiation validations', () => {
+		describe.only('Instantiation validations', () => {
 			test('required field (undefined)', () => {
 				expect(() => {
 					new Model({
@@ -2002,6 +2002,74 @@ describe('DataStore tests', () => {
 				}).toThrow(
 					'Field field1 should be of type string, number received. 1234'
 				);
+			});
+
+			test('invalid sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						metadata: 'invalid',
+					});
+				}).toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
+			test('invalid nested sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							// @ts-ignore
+							login: 'login',
+						},
+					});
+				}).toThrowError(
+					'Field login should be of type Login, string recieved. login'
+				);
+			});
+
+			test('invalid array sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: ['bad type', 'another bad type'],
+					});
+				}).toThrowError(
+					'All elements in the logins array should be of type Login, [string] received. bad type'
+				);
+			});
+
+			test('invalid array sub non model field type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: [{ username: 4 }],
+					});
+				}).toThrowError(
+					'Field username should be of type string, number received. 4'
+				);
+			});
+
+			test('nullable array sub non model', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: [null, { username: 'user' }],
+					});
+				}).not.toThrowError();
 			});
 		});
 
@@ -2888,7 +2956,7 @@ describe('DataStore tests', () => {
 				}).toThrow('updatedAt is read-only.');
 			});
 
-			test('Instantiation validations', async () => {
+			test('Instantiation validations custom pk', async () => {
 				expect(() => {
 					new PostCustomPK({
 						postId: '12345',

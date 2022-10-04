@@ -401,16 +401,51 @@ const validateModelFields =
 				const subNonModelDefinition =
 					schema.namespaces.user.nonModels[type.nonModel];
 				const modelValidator = validateModelFields(subNonModelDefinition);
+
 				if (isArray) {
+					let errorTypeText: string = type.nonModel;
+					if (!isRequired) {
+						errorTypeText = `${type.nonModel} | null | undefined`;
+					}
+					if (!Array.isArray(v) && !isArrayNullable) {
+						throw new Error(
+							`Field ${name} should be of type [${errorTypeText}], ${typeof v} received. ${v}`
+						);
+					}
+
 					v.forEach(item => {
-						Object.keys(subNonModelDefinition.fields).forEach(subKey => {
-							modelValidator(subKey, item[subKey]);
-						});
+						if (
+							(isNullOrUndefined(item) && isRequired) ||
+							(typeof item !== 'object' && typeof item !== 'undefined')
+						) {
+							throw new Error(
+								`All elements in the ${name} array should be of type ${
+									type.nonModel
+								}, [${typeof item}] received. ${item}`
+							);
+						}
+
+						if (!isNullOrUndefined(item)) {
+							Object.keys(subNonModelDefinition.fields).forEach(subKey => {
+								modelValidator(subKey, item[subKey]);
+							});
+						}
 					});
 				} else {
-					Object.keys(subNonModelDefinition.fields).forEach(subKey => {
-						modelValidator(subKey, v[subKey]);
-					});
+					// do not check non model fields if not defined
+					if (!isNullOrUndefined(v)) {
+						if (typeof v !== 'object') {
+							throw new Error(
+								`Field ${name} should be of type ${
+									type.nonModel
+								}, ${typeof v} recieved. ${v}`
+							);
+						}
+
+						Object.keys(subNonModelDefinition.fields).forEach(subKey => {
+							modelValidator(subKey, v[subKey]);
+						});
+					}
 				}
 			}
 		}
