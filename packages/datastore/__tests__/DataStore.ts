@@ -2071,6 +2071,29 @@ describe('DataStore tests', () => {
 					});
 				}).not.toThrowError();
 			});
+
+			test('array sub non model wrong type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: 'my login',
+					});
+				}).toThrowError(
+					'Field logins should be of type [Login | null | undefined], string received. my login'
+				);
+			});
+
+			test('array sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: null,
+					});
+				}).not.toThrowError();
+			});
 		});
 
 		test('Delete params', async () => {
