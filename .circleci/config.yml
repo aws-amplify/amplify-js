@@ -361,6 +361,7 @@ jobs:
     executor: build-executor
     steps:
       - checkout
+      - run: yarn
       - run: yarn bundle-size
 
   unit_test:
