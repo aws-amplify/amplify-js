@@ -808,8 +808,8 @@ describe('Storage', () => {
 			storage.configure(options);
 			const result: S3ProviderListOutputWithToken = {
 				results: [],
-				hasNextPage: false,
-				nextPageToken: null,
+				hasNextToken: false,
+				nextToken: null,
 			};
 			listSpy = jest
 				.spyOn(AWSStorageProvider.prototype, 'list')

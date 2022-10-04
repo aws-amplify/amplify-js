@@ -946,7 +946,7 @@ describe('StorageProvider test', () => {
 				level: 'public',
 			});
 			expect(response.results).toEqual(listResult);
-			expect(response.hasNextPage).toEqual(false);
+			expect(response.hasNextToken).toEqual(false);
 			// listing three times for three pages
 			expect(spyon).toHaveBeenCalledTimes(3);
 			// first input recieves undefined as the Continuation Token
@@ -992,7 +992,7 @@ describe('StorageProvider test', () => {
 				track: true,
 			});
 			expect(response.results).toEqual(listResult);
-			expect(response.hasNextPage).toEqual(false);
+			expect(response.hasNextToken).toEqual(false);
 			// listing three times for three pages
 			expect(spyon).toHaveBeenCalledTimes(3);
 			// first input recieves undefined as the Continuation Token
@@ -1040,8 +1040,8 @@ describe('StorageProvider test', () => {
 					size: 'size',
 				},
 			]);
-			expect(response.nextPageToken).toEqual('TEST_TOKEN');
-			expect(response.hasNextPage).toEqual(true);
+			expect(response.nextToken).toEqual('TEST_TOKEN');
+			expect(response.hasNextToken).toEqual(true);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/listWithTokenResultsPath',

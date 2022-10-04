@@ -687,7 +687,7 @@ export class AWSS3Provider implements StorageProvider {
 	): Promise<S3ProviderListOutputWithToken> {
 		const list: S3ProviderListOutputWithToken = {
 			results: [],
-			hasNextPage: false,
+			hasNextToken: false,
 		};
 		const s3 = this._createNewS3Client(opt);
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
@@ -701,8 +701,8 @@ export class AWSS3Provider implements StorageProvider {
 					size: item.Size,
 				};
 			});
-			list.nextPageToken = response.NextContinuationToken;
-			list.hasNextPage = response.IsTruncated;
+			list.nextToken = response.NextContinuationToken;
+			list.hasNextToken = response.IsTruncated;
 		}
 		return list;
 	}
@@ -730,7 +730,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const list: S3ProviderListOutputWithToken = {
 				results: [],
-				hasNextPage: false,
+				hasNextToken: false,
 			};
 			const MAX_PAGE_SIZE = 1000;
 			let listResult: S3ProviderListOutputWithToken;
@@ -741,21 +741,26 @@ export class AWSS3Provider implements StorageProvider {
 				ContinuationToken: pageToken,
 			};
 			params.ContinuationToken = pageToken;
-			if (pageSize === undefined) {
+			if (pageSize === 'ALL') {
 				do {
 					listResult = await this._list(params, opt, prefix);
 					list.results.push(...listResult.results);
-					if (listResult.nextPageToken)
-						params.ContinuationToken = listResult.nextPageToken;
-				} while (listResult.nextPageToken);
+					if (listResult.nextToken)
+						params.ContinuationToken = listResult.nextToken;
+				} while (listResult.nextToken);
 			} else {
-				if (pageSize <= MAX_PAGE_SIZE && typeof pageSize === 'number')
+				if (
+					pageSize &&
+					pageSize <= MAX_PAGE_SIZE &&
+					typeof pageSize === 'number'
+				)
 					params.MaxKeys = pageSize;
 				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
+				console.log(listResult);
 				list.results.push(...listResult.results);
-				list.hasNextPage = listResult.hasNextPage;
-				list.nextPageToken = null ?? listResult.nextPageToken;
+				list.hasNextToken = listResult.hasNextToken;
+				list.nextToken = null ?? listResult.nextToken;
 			}
 			dispatchStorageEvent(
 				track,
