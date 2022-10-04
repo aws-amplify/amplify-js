@@ -16,7 +16,7 @@
 		"build:watch": "concurrently 'lerna run build:cjs:watch --parallel' 'lerna run build:esm:watch --parallel' --raw",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
 		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
-		"bundle-size": "lerna run bundle-size",
+		"bundle-size": "lerna run bundle-size --stream",
 		"clean": "lerna run clean --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
