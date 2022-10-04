@@ -357,6 +357,14 @@ jobs:
           root: /root
           paths:
             - amplify-js
+
+  bundle_size:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - run: yarn bundle-size
+
   unit_test:
     executor: unit-test-executor
     steps:
@@ -1251,6 +1259,9 @@ workflows:
         equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       - build
+      - bundle_size:
+          requires:
+            - build
       - integ_setup:
           filters:
             <<: *releasable_branches
