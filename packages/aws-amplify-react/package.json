@@ -1,5 +1,6 @@
 {
 	"name": "aws-amplify-react",
+	"private": true,
 	"version": "5.1.38",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./lib/index.js",
