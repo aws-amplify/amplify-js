@@ -1516,7 +1516,7 @@ describe('DataStore tests', () => {
 			}).toThrow('updatedAt is read-only.');
 		});
 
-		describe.only('Instantiation validations', () => {
+		describe('Instantiation validations', () => {
 			test('required field (undefined)', () => {
 				expect(() => {
 					new Model({
