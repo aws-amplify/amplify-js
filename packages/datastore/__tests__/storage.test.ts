@@ -212,7 +212,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.emails = [...draft.emails, 'joe@doe.com'];
+						draft.emails = [...draft.emails!, 'joe@doe.com'];
 					})
 				);
 
@@ -407,12 +407,7 @@ describe('Storage tests', () => {
 			});
 
 			test('allowing nested BELONGS_TO to be set', async () => {
-				const classes = initSchema(testSchema());
-
-				const { Post, Comment } = classes as {
-					Post: PersistentModelConstructor<Post>;
-					Comment: PersistentModelConstructor<Comment>;
-				};
+				const { DataStore, Post, Comment } = getDataStore();
 
 				const originalPost = await DataStore.save(
 					new Post({
@@ -449,12 +444,7 @@ describe('Storage tests', () => {
 			// TODO.
 			// Uncomment this test when implementing cascading saves
 			test.skip('allowing nested HAS_MANY to be set', async () => {
-				const classes = initSchema(testSchema());
-
-				const { Post, Comment } = classes as {
-					Post: PersistentModelConstructor<Post>;
-					Comment: PersistentModelConstructor<Comment>;
-				};
+				const { DataStore, Post, Comment } = getDataStore();
 
 				const post = await DataStore.save(
 					new Post({

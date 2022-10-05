@@ -2540,7 +2540,7 @@ describe('DataStore tests', () => {
 			}
 
 			const deleted = await DataStore.delete(Model, m =>
-				m.field1('eq', 'someField')
+				m.field1.eq('someField')
 			);
 
 			expect(deleted.length).toEqual(10);
@@ -3510,7 +3510,7 @@ describe('DataStore tests', () => {
 				);
 
 				const deleted = await DataStore.delete(PostCustomPK, m =>
-					m.title('eq', 'someField')
+					m.title.eq('someField')
 				);
 
 				const sortedRecords = deleted.sort((a, b) =>
@@ -3618,7 +3618,7 @@ describe('DataStore tests', () => {
 				const deleted: PostCustomPKType[] = await DataStore.delete(
 					PostCustomPK,
 
-					m => m.postId('eq', saved.postId)
+					m => m.postId.eq(saved.postId)
 				);
 
 				expect(deleted.length).toEqual(1);

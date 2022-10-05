@@ -84,7 +84,7 @@ describe('Composite Identifier', () => {
 		);
 		expectType<CompositeDefaultRO>(
 			await DataStore.save(dummyInstance<CompositeDefaultRO>(), c =>
-				c.createdAt('ge', '2019')
+				c.createdAt.ge('2019')
 			)
 		);
 
@@ -101,14 +101,14 @@ describe('Composite Identifier', () => {
 		);
 		expectType<CompositeDefaultRO>(
 			await DataStore.delete(dummyInstance<CompositeDefaultRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<CompositeDefaultRO[]>(
 			await DataStore.delete(CompositeDefaultRO, Predicates.ALL)
 		);
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.delete(CompositeDefaultRO, c => c.createdAt('le', '2019'))
+			await DataStore.delete(CompositeDefaultRO, c => c.createdAt.le('2019'))
 		);
 
 		// Observe

@@ -111,7 +111,7 @@ function getOwnerFields(
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModelWithAttributes(modelDefinition)) {
-		modelDefinition.attributes.forEach(attr => {
+		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
 				if (rule && rule.ownerField) {
