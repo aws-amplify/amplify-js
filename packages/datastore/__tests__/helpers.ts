@@ -8,13 +8,8 @@ import {
 	CustomIdentifier,
 	ManagedIdentifier,
 	PersistentModel,
-	// IdentifierFields,
-	// ModelInit,
-	// PersistentModel,
-	PersistentModelConstructor,
 	OptionallyManagedIdentifier,
-	// Predicates,
-	// __modelMeta__,
+	PersistentModelConstructor,
 } from '../src';
 
 import {

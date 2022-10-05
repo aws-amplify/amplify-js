@@ -92,7 +92,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.createdAt('ge', '2019')
+				c.createdAt.ge('2019')
 			)
 		);
 
@@ -105,7 +105,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
@@ -113,7 +113,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedDefaultRO, c =>
-				c.createdAt('le', '2019')
+				c.createdAt.le('2019')
 			)
 		);
 
@@ -244,7 +244,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.createdOn('ge', '2019')
+				c.createdOn.ge('2019')
 			)
 		);
 
@@ -257,7 +257,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<OptionallyManagedCustomRO[]>(
@@ -265,7 +265,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO[]>(
 			await DataStore.delete(OptionallyManagedCustomRO, c =>
-				c.createdOn('le', '2019')
+				c.createdOn.le('2019')
 			)
 		);
 

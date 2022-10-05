@@ -29,13 +29,9 @@ describe('retry', () => {
 			throw new NonRetryableError('bwahahahahaha');
 		}
 
-		// TODO: how the devil do you get expect().rejects.toThrow to work here?
-		try {
-			await retry(throwsNonRetryableError, [], () => 1);
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toEqual('bwahahahahaha');
-		}
+		await expect(retry(throwsNonRetryableError, [], () => 1)).rejects.toThrow(
+			'bwahahahahaha'
+		);
 	});
 
 	test('passes args to retried function', async () => {
@@ -90,15 +86,9 @@ describe('retry', () => {
 			return 1;
 		}
 
-		try {
-			await retry(alwaysFails, [], retryThreeTimes);
-
-			// retry should eventually throw our 'not today!' error.
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toEqual('not today!');
-		}
-
+		await expect(retry(alwaysFails, [], retryThreeTimes)).rejects.toThrow(
+			'not today'
+		);
 		expect(count).toEqual(3);
 	});
 
@@ -180,13 +170,9 @@ describe('jitteredExponentialRetry', () => {
 			throw new NonRetryableError('bwahahahahaha');
 		}
 
-		// TODO: how the devil do you get expect().rejects.toThrow to work here?
-		try {
-			await jitteredExponentialRetry(throwsNonRetryableError, []);
-			expect(true).toBe(false);
-		} catch (error) {
-			expect(error.message).toEqual('bwahahahahaha');
-		}
+		await expect(
+			jitteredExponentialRetry(throwsNonRetryableError, [])
+		).rejects.toThrow('bwahahahahaha');
 	});
 
 	test('passes args to retried function', async () => {

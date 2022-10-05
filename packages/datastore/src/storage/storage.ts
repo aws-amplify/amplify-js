@@ -373,7 +373,6 @@ class StorageClass implements StorageFacade {
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			// CPK TODO: rename:
 			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
@@ -428,15 +427,16 @@ class StorageClass implements StorageFacade {
 			}
 		});
 
+		// Exit early when there are no changes introduced in the update mutation
+		if (Object.keys(updatedElement).length === 0) {
+			return null;
+		}
+
 		// include field(s) from custom PK if one is specified for the model
 		if (primaryKey && primaryKey.length) {
 			for (const pkField of primaryKey) {
 				updatedElement[pkField] = originalElement[pkField];
 			}
-		}
-
-		if (Object.keys(updatedElement).length === 0) {
-			return null;
 		}
 
 		const { id, _version, _lastChangedAt, _deleted } = originalElement;

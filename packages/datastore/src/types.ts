@@ -51,20 +51,17 @@ export type SchemaModel = {
 	fields: ModelFields;
 	syncable?: boolean;
 };
-/**
- * Question for review: is there a reason we can't unify the approach of
- * checking if the input is a schema model? Or are there situations where
- * we prefer to check for the existence of `pluralName` instead of `attributes`?
- * */
+
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }
-// TODO: rename if we cannot unify the approach, otherwise, remove the first util
-export function isSchemaModel2(
+
+export function isSchemaModelWithAttributes(
 	m: SchemaModel | SchemaNonModel
 ): m is SchemaModel {
-	return (m as SchemaModel).attributes !== undefined;
+	return isSchemaModel(m) && (m as SchemaModel).attributes !== undefined;
 }
+
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaNonModel = {
 	name: string;
@@ -384,11 +381,33 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	): T;
 };
 
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoadingDisabled {
+	disabled: true;
+}
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoading {}
+
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
 >;
 
+/**
+ * Each identifier type is represented using nominal types, see:
+ * https://basarat.gitbook.io/typescript/main-1/nominaltyping
+ */
 export declare const __identifierBrand__: unique symbol;
 export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
 
@@ -591,14 +610,6 @@ export type ModelInstanceMetadata = {
 	_deleted: boolean;
 };
 
-// TODO: deprecate when CPK is supported by CommonSQLiteAdapter
-export type ModelInstanceMetadataWithId = {
-	id: string;
-	_version: number;
-	_lastChangedAt: number;
-	_deleted: boolean;
-};
-
 export type IdentifierFieldValue<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
@@ -612,37 +623,6 @@ export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>
 > = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
-
-export function isIdentifierFieldValue<T extends PersistentModel>(
-	obj: any,
-	modelDefinition: SchemaModel
-): obj is IdentifierFieldValue<T extends PersistentModel ? T : never, any> {
-	const keys = extractPrimaryKeyFieldNames(modelDefinition);
-
-	if (keys.length === 1) {
-		const { type } = modelDefinition?.fields[keys[0]] ?? {};
-
-		if (isGraphQLScalarType(type)) {
-			const jsType = GraphQLScalarType.getJSType(type);
-
-			return typeof obj === jsType;
-		}
-
-		return false;
-	}
-
-	return false;
-}
-
-export function isIdentifierFieldOrObject<T extends PersistentModel>(
-	obj: any,
-	modelDefinition: SchemaModel
-): obj is IdentifierFieldOrIdentifierObject<T, any> {
-	return (
-		isIdentifierFieldValue<T>(obj, modelDefinition) ||
-		isIdentifierObject<T>(obj, modelDefinition)
-	);
-}
 
 export function isIdentifierObject<T extends PersistentModel>(
 	obj: any,

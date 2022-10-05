@@ -7,7 +7,7 @@ import {
 	QueryOne,
 } from '../../types';
 import {
-	DEFAULT_PRIMARY_KEY_SEPARATOR,
+	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
 	indexNameFromKeys,
 	monotonicUlidFactory,
 } from '../../util';
@@ -27,17 +27,24 @@ class AsyncStorageDatabase {
 
 	private storage = createInMemoryStore();
 
-	// Collection index is map of stores (i.e. sync, metadata, mutation event, and data)
+	/**
+	 * Collection index is map of stores (i.e. sync, metadata, mutation event, and data)
+	 * @param storeName {string} - Name of the store
+	 * @returns Map of ulid->id
+	 */
 	private getCollectionIndex(storeName: string) {
 		if (!this._collectionInMemoryIndex.has(storeName)) {
 			this._collectionInMemoryIndex.set(storeName, new Map());
 		}
 
-		// Map of ulid->id
 		return this._collectionInMemoryIndex.get(storeName);
 	}
 
-	// Return ULID for store if it exists, otherwise create a new one
+	/**
+	 * Return ULID for store if it exists, otherwise create a new one
+	 * @param storeName {string} - Name of the store
+	 * @returns ulid
+	 */
 	private getMonotonicFactory(storeName: string): ULID {
 		if (!monotonicFactoriesMap.has(storeName)) {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());
@@ -141,13 +148,13 @@ class AsyncStorageDatabase {
 
 			// If id is in the store, retrieve, otherwise generate new ULID
 			const ulid =
-				collection.get(keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR)) ||
+				collection.get(keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)) ||
 				this.getMonotonicFactory(storeName)();
 
 			// Generate the "longer key" for the item
 			const key = this.getKeyForItem(
 				storeName,
-				keyValues.join(DEFAULT_PRIMARY_KEY_SEPARATOR),
+				keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
 				ulid
 			);
 
@@ -182,7 +189,7 @@ class AsyncStorageDatabase {
 				// keys: PK and/or SK keys
 				const primaryKeyValues: string = keys
 					.map(field => itemsMap[key].model[field])
-					.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+					.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 				collection.delete(primaryKeyValues);
 			});
@@ -214,7 +221,7 @@ class AsyncStorageDatabase {
 				// Retrieve values from model, use as key for collection index
 				const keyValues: string = keys
 					.map(field => model[field])
-					.join(DEFAULT_PRIMARY_KEY_SEPARATOR);
+					.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 
 				collection.set(keyValues, ulid);
 			});

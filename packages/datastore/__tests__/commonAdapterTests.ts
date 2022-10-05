@@ -420,6 +420,13 @@ export function addCommonQueryTests({
 			await DataStore.clear();
 		});
 
+		if (expect.getState().testPath.includes('SQLiteAdapter')) {
+			console.warn(
+				'SQLiteAdapter does not support CPK yet! Skipping related LazyLoading + Predidicate tests!'
+			);
+			return;
+		}
+
 		test('SANITY TEST - basic model', async () => {
 			const whatever = new classes.BasicModel({
 				id: 'asdfadfasdf',

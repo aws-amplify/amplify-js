@@ -73,7 +73,7 @@ describe('Managed Identifier', () => {
 		);
 		expectType<ManagedDefaultRO>(
 			await DataStore.save(dummyInstance<ManagedDefaultRO>(), c =>
-				c.createdAt('ge', '2019')
+				c.createdAt.ge('2019')
 			)
 		);
 
@@ -86,14 +86,14 @@ describe('Managed Identifier', () => {
 		);
 		expectType<ManagedDefaultRO>(
 			await DataStore.delete(dummyInstance<ManagedDefaultRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<ManagedDefaultRO[]>(
 			await DataStore.delete(ManagedDefaultRO, Predicates.ALL)
 		);
 		expectType<ManagedDefaultRO[]>(
-			await DataStore.delete(ManagedDefaultRO, c => c.createdAt('le', '2019'))
+			await DataStore.delete(ManagedDefaultRO, c => c.createdAt.le('2019'))
 		);
 
 		// Observe
@@ -189,7 +189,7 @@ describe('Managed Identifier', () => {
 		);
 		expectType<ManagedCustomRO>(
 			await DataStore.save(dummyInstance<ManagedCustomRO>(), c =>
-				c.createdOn('ge', '2019')
+				c.createdOn.ge('2019')
 			)
 		);
 
@@ -200,14 +200,14 @@ describe('Managed Identifier', () => {
 		);
 		expectType<ManagedCustomRO>(
 			await DataStore.delete(dummyInstance<ManagedCustomRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<ManagedCustomRO[]>(
 			await DataStore.delete(ManagedCustomRO, Predicates.ALL)
 		);
 		expectType<ManagedCustomRO[]>(
-			await DataStore.delete(ManagedCustomRO, c => c.createdOn('le', '2019'))
+			await DataStore.delete(ManagedCustomRO, c => c.createdOn.le('2019'))
 		);
 
 		// Observe

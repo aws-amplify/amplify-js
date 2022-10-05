@@ -103,8 +103,8 @@ export class AmplifyRequireNewPassword {
 			this.currentUser.challengeParam &&
 			this.currentUser.challengeParam.requiredAttributes
 		) {
-			const userRequiredAttributes = this.currentUser.challengeParam
-				.requiredAttributes;
+			const userRequiredAttributes =
+				this.currentUser.challengeParam.requiredAttributes;
 			const requiredAttributesMap = getRequiredAttributesMap();
 			userRequiredAttributes.forEach((attribute: string) => {
 				const formField = {
@@ -124,6 +124,10 @@ export class AmplifyRequireNewPassword {
 	}
 
 	componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+
 		return this.setCurrentUser();
 	}
 
