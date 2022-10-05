@@ -230,6 +230,8 @@ const initSchema = (userSchema: Schema) => {
 
 	logger.log('validating schema', { schema: userSchema });
 
+	checkSchemaCodegenVersion(userSchema.codegenVersion);
+
 	const internalUserNamespace: SchemaNamespace = {
 		name: USER,
 		...userSchema,
@@ -255,6 +257,7 @@ const initSchema = (userSchema: Schema) => {
 			[syncNamespace.name]: syncNamespace,
 		},
 		version: userSchema.version,
+		codegenVersion: userSchema.codegenVersion,
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
@@ -355,6 +358,42 @@ const checkSchemaInitialized = () => {
 	if (schema === undefined) {
 		const message =
 			'Schema is not initialized. DataStore will not function as expected. This could happen if you have multiple versions of DataStore installed. Please see https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js/#check-for-duplicate-versions';
+		logger.error(message);
+		throw new Error(message);
+	}
+};
+
+/**
+ * Throws an excpetion if the schema is using a codegenVersion that is not supported.
+ *
+ * Set the supported version by setting majorVersion and minorVersion
+ * This functions similar to ^ version range.
+ * The tested codegenVersion major version must exactly match the set majorVersion
+ * The tested codegenVersion minor version must be gt or equal to the set minorVersion
+ * Example: For a min supported version of 5.4.0 set majorVersion = 5 and minorVersion = 4
+ *
+ * This regex will not work when setting a supported range with minor version
+ * of 2 or more digits.
+ * i.e. minorVersion = 10 will not work
+ * The regex will work for testing a codegenVersion with multi digit minor
+ * versions as long as the minimum minorVersion is single digit.
+ * i.e. codegenVersion = 5.30.1, majorVersion = 5, minorVersion = 4 PASSES
+ *
+ * @param codegenVersion schema codegenVersion
+ */
+const checkSchemaCodegenVersion = (codegenVersion: string) => {
+	// TODO: set to correct version when released in codegen
+	const majorVersion = 3;
+	const minorVersion = 2;
+	const supportedRange = new RegExp(
+		`(?<=^v?|\\sv?)(?:(?:${majorVersion})\\.)(?:(?:${minorVersion}|[1-9]{2,9}?|[${
+			minorVersion + 1
+		}-9]{1,9}?)\\.)(?:0|[1-9]\\d{0,9})(?:-(?:--+)?(?:0|[1-9]\\d*|\\d*[a-z]+\\d*)){0,100}(?=$| |\\+|\\.)(?:(?<=-\\S+)(?:\\.(?:--?|[\\da-z-]*[a-z-]\\d*|0|[1-9]\\d*)){1,100}?)?(?!\\.)(?:\\+(?:[\\da-z]\\.?-?){1,100}?(?!\\w))?(?!\\+)`
+	);
+	if (!supportedRange.test(codegenVersion)) {
+		const message = `Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
+			codegenVersion || 'an unknown version'
+		}, whereas ^${majorVersion}.${minorVersion}.0 is required. Update to the latest CLI and rerun codegen.`;
 		logger.error(message);
 		throw new Error(message);
 	}

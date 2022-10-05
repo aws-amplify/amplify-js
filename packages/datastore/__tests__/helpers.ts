@@ -2103,6 +2103,7 @@ export function testSchema(): Schema {
 			},
 		},
 		version: '1',
+		pragma: '3.2.0',
 	};
 }
 
@@ -2403,6 +2404,7 @@ export function internalTestSchema(): InternalSchema {
 			},
 		},
 		version: '1',
+		pragma: '3.2.0',
 	};
 }
 
