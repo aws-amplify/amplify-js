@@ -4,6 +4,7 @@ export {
 	initSchema,
 	ModelInstanceCreator,
 	AsyncCollection,
+	AsyncItem,
 } from './datastore/datastore';
 
 export {
