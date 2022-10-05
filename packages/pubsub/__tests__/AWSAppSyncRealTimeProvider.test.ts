@@ -364,7 +364,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_DATA,
-						payload: { data: { test: expect.getState().currentTestName } },
+						payload: { data: {} },
 					});
 
 					expect(mockNext).toBeCalled();
