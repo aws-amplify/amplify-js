@@ -51,19 +51,16 @@ describe('Util', () => {
 		});
 	});
 
-	test('jitteredExponential retry happy case', done => {
+	test('jitteredExponential retry happy case', async () => {
 		const resolveAt = 3;
-		expect.assertions(3);
+		let attempts = 0;
 		function createRetryableFunction() {
-			let attempt = 1;
 			return async () => {
-				expect(true).toBe(true);
-				if (attempt >= resolveAt) {
-					done();
+				if (attempts >= resolveAt) {
 					return 'done';
 				} else {
-					attempt++;
-					throw new Error('fail');
+					attempts++;
+					throw new Error('Expected failure');
 				}
 			};
 		}
@@ -71,8 +68,11 @@ describe('Util', () => {
 		const retryableFunction = createRetryableFunction();
 
 		try {
-			jitteredExponentialRetry(retryableFunction, []).then(done);
-		} catch (err) {}
+			await jitteredExponentialRetry(retryableFunction, []);
+			expect(attempts).toEqual(3);
+		} catch (err) {
+			expect(true).toBe(false);
+		}
 	});
 	test('Fail with NonRetryableError', async () => {
 		const nonRetryableError = new NonRetryableError('fatal');

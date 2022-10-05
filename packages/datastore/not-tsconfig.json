@@ -10,16 +10,23 @@
 			"dom",
 			"esnext.asynciterable",
 			"es2017.object",
-			"es2020.promise"
+			"es2018.asynciterable",
+			"es2018.asyncgenerator",
+			"es2020.promise",
+			"es2019.object"
 		],
 		"sourceMap": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"allowJs": false,
 		"declaration": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"strictNullChecks": true,
+		"downlevelIteration": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		// temporary fix
-		"types": ["node", "lodash"]
+		"types": ["node", "lodash", "jest"]
 	},
 	"include": ["src/**/*"]
 }
