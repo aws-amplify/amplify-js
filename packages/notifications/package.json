@@ -44,7 +44,7 @@
 	"dependencies": {
 		"@aws-amplify/cache": "4.0.53",
 		"@aws-amplify/core": "4.7.2",
-		"@aws-sdk/client-pinpoint": "^3.33.0",
+		"@aws-sdk/client-pinpoint": "3.171.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},

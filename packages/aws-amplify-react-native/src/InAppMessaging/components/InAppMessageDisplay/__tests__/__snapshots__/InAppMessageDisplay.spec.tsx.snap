@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`InAppMessageDisplay renders the expected component in the happy path 1`] = `
-<View>
-  <Text>
-    TEST_COMPONENT
-  </Text>
-</View>
-`;

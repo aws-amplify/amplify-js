@@ -1,8 +1,5 @@
-import { ImageSourcePropType } from 'react-native';
-
 const icons = {
-	close: require('./close.png') as ImageSourcePropType,
-	warning: require('./warning.png') as ImageSourcePropType,
+	warning: require('./warning.png'),
 };
 
 export default icons;
