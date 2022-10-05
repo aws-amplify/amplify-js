@@ -29,6 +29,7 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
+	isSchemaModelWithAttributes,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -57,10 +58,16 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
+	ManagedIdentifier,
+	PersistentModelMetaData,
+	IdentifierFieldOrIdentifierObject,
+	__modelMeta__,
+	isIdentifierObject,
 	AmplifyContext,
 } from '../types';
 import {
 	DATASTORE,
+	errorMessages,
 	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
@@ -73,9 +80,14 @@ import {
 	registerNonModelClass,
 	sortCompareFunction,
 	DeferredCallbackResolver,
+	extractPrimaryKeyFieldNames,
+	extractPrimaryKeysAndValues,
+	isIdManaged,
+	isIdOptionallyManaged,
 	validatePredicate,
 	mergePatches,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -85,11 +97,16 @@ const logger = new Logger('DataStore');
 const ulid = monotonicUlidFactory(Date.now());
 const { isNode } = JS.browserOrNode();
 
+type SettingMetaData = {
+	identifier: ManagedIdentifier<Setting, 'id'>;
+	readOnlyFields: never;
+};
 declare class Setting {
-	constructor(init: ModelInit<Setting>);
+	public readonly [__modelMeta__]: SettingMetaData;
+	constructor(init: ModelInit<Setting, SettingMetaData>);
 	static copyOf(
 		src: Setting,
-		mutator: (draft: MutableModel<Setting>) => void | Setting
+		mutator: (draft: MutableModel<Setting, SettingMetaData>) => void | Setting
 	): Setting;
 	public readonly id: string;
 	public readonly key: string;
@@ -266,16 +283,15 @@ const createTypeClasses: (
 
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
-const instancesMetadata = new WeakSet<
-	ModelInit<PersistentModel & Partial<ModelInstanceMetadata>>
->();
-function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
+const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
+
+function modelInstanceCreator<T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	init: ModelInit<T> & Partial<ModelInstanceMetadata>
+	init: Partial<T>
 ): T {
 	instancesMetadata.add(init);
 
-	return <T>new modelConstructor(init);
+	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
 }
 
 const validateModelFields =
@@ -291,6 +307,14 @@ const validateModelFields =
 				(v === null || v === undefined)
 			) {
 				throw new Error(`Field ${name} is required`);
+			}
+
+			if (isSchemaModelWithAttributes(modelDefinition) && !isIdManaged(modelDefinition)) {
+				const keys = extractPrimaryKeyFieldNames(modelDefinition);
+				if (keys.includes(k) && v === '') {
+					logger.error(errorMessages.idEmptyString, { k, value: v });
+					throw new Error(errorMessages.idEmptyString);
+				}
 			}
 
 			if (isGraphQLScalarType(type)) {
@@ -403,7 +427,7 @@ const castInstanceType = (
 	return v;
 };
 
-const initializeInstance = <T>(
+const initializeInstance = <T extends PersistentModel>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
@@ -427,31 +451,39 @@ const createModelClass = <T extends PersistentModel>(
 				(draft: Draft<T & ModelInstanceMetadata>) => {
 					initializeInstance(init, modelDefinition, draft);
 
+					// model is initialized inside a DataStore component (e.g. by Sync Engine, Storage Engine, etc.)
+					const isInternallyInitialized = instancesMetadata.has(init);
+
 					const modelInstanceMetadata: ModelInstanceMetadata =
-						instancesMetadata.has(init)
+						isInternallyInitialized
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
-					const {
-						id: _id,
-						_version,
-						_lastChangedAt,
-						_deleted,
-					} = modelInstanceMetadata;
 
-					// instancesIds are set by modelInstanceCreator, it is accessible only internally
-					const isInternal = _id !== null && _id !== undefined;
+					type ModelWithIDIdentifier = { id: string };
 
-					const id = isInternal
-						? _id
-						: modelDefinition.syncable
-						? uuid4()
-						: ulid();
+					const { id: _id } =
+						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
 
-					if (!isInternal) {
+					if (isIdManaged(modelDefinition)) {
+						const isInternalModel = _id !== null && _id !== undefined;
+
+						const id = isInternalModel
+							? _id
+							: modelDefinition.syncable
+							? uuid4()
+							: ulid();
+
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
+					} else if (isIdOptionallyManaged(modelDefinition)) {
+						// only auto-populate if the id was not provided
+						(<ModelWithIDIdentifier>(<unknown>draft)).id = draft.id || uuid4();
+					}
+
+					if (!isInternallyInitialized) {
 						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
 					}
 
-					draft.id = id;
+					const { _version, _lastChangedAt, _deleted } = modelInstanceMetadata;
 
 					if (modelDefinition.syncable) {
 						draft._version = _version;
@@ -476,8 +508,12 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T>>(draft as unknown));
-					draft.id = source.id;
+					fn(<MutableModel<T>>draft);
+
+					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
+					// Keys are immutable
+					keyNames.forEach(key => ((draft as Object)[key] = source[key]));
+
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
 						const parsedValue = castInstanceType(modelDefinition, k, v);
@@ -489,6 +525,7 @@ const createModelClass = <T extends PersistentModel>(
 			);
 
 			const hasExistingPatches = modelPatchesMap.has(source);
+
 			if (patches.length || hasExistingPatches) {
 				if (hasExistingPatches) {
 					const [existingPatches, existingSource] = modelPatchesMap.get(source);
@@ -516,6 +553,7 @@ const createModelClass = <T extends PersistentModel>(
 			}
 
 			const instance = modelInstanceCreator(clazz, json);
+
 			const modelValidator = validateModelFields(modelDefinition);
 
 			Object.entries(instance).forEach(([k, v]) => {
@@ -563,7 +601,9 @@ const checkReadOnlyPropertyOnUpdate = (
 	});
 };
 
-const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
+const createNonModelClass = <T extends PersistentModel>(
+	typeDefinition: SchemaNonModel
+) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
@@ -647,7 +687,6 @@ async function checkSchemaVersion(
 		const [schemaVersionSetting] = await s.query(
 			Setting,
 			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				// @ts-ignore Argument of type '"eq"' is not assignable to parameter of type 'never'.
 				c.key('eq', SETTING_SCHEMA_VERSION)
 			),
 			{ page: 0, limit: 1 }
@@ -724,12 +763,12 @@ class DataStore {
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval: number;
-	private initialized: Promise<void>;
+	private initialized?: Promise<void>;
 	private initReject: Function;
 	private initResolve: Function;
 	private maxRecordsToSync: number;
-	private storage: Storage;
-	private sync: SyncEngine;
+	private storage?: Storage;
+	private sync?: SyncEngine;
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
@@ -839,7 +878,10 @@ class DataStore {
 	query: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			id: string
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
@@ -848,7 +890,10 @@ class DataStore {
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
+		identifierOrCriteria?:
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
@@ -862,28 +907,44 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (typeof idOrCriteria === 'string') {
+		if (typeof identifierOrCriteria === 'string') {
 			if (paginationProducer !== undefined) {
 				logger.warn('Pagination is ignored when querying by id');
 			}
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
+		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 		let predicate: ModelPredicate<T>;
 
-		if (isQueryOne(idOrCriteria)) {
-			predicate = ModelPredicateCreator.createForId<T>(
+		if (isQueryOne(identifierOrCriteria)) {
+			if (keyFields.length > 1) {
+				const msg = errorMessages.queryByPkWithCompositeKeyPresent;
+				logger.error(msg, { keyFields });
+
+				throw new Error(msg);
+			}
+
+			predicate = ModelPredicateCreator.createForSingleField<T>(
 				modelDefinition,
-				idOrCriteria
+				keyFields[0],
+				identifierOrCriteria
 			);
 		} else {
-			if (isPredicatesAll(idOrCriteria)) {
+			// Object is being queried using object literal syntax
+			if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
+				predicate = ModelPredicateCreator.createForPk<T>(
+					modelDefinition,
+					<T>identifierOrCriteria
+				);
+			} else if (isPredicatesAll(identifierOrCriteria)) {
 				// Predicates.ALL means "all records", so no predicate (undefined)
 				predicate = undefined;
 			} else {
 				predicate = ModelPredicateCreator.createFromExisting(
 					modelDefinition,
-					idOrCriteria
+					<any>identifierOrCriteria
 				);
 			}
 		}
@@ -913,7 +974,11 @@ class DataStore {
 			pagination
 		);
 
-		return isQueryOne(idOrCriteria) ? result[0] : result;
+		const returnOne =
+			isQueryOne(identifierOrCriteria) ||
+			isIdentifierObject(identifierOrCriteria, modelDefinition);
+
+		return returnOne ? result[0] : result;
 	};
 
 	save = async <T extends PersistentModel>(
@@ -926,7 +991,7 @@ class DataStore {
 		// Allows us to only include changed fields for updates
 		const patchesTuple = modelPatchesMap.get(model);
 
-		const modelConstructor: PersistentModelConstructor<T> = model
+		const modelConstructor: PersistentModelConstructor<T> | undefined = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
 
@@ -941,15 +1006,15 @@ class DataStore {
 
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
-			condition
+			condition!
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
-			return s.query(
+			return s.query<T>(
 				modelConstructor,
-				ModelPredicateCreator.createForId(modelDefinition, model.id)
+				ModelPredicateCreator.createForPk(modelDefinition, model)
 			);
 		});
 
@@ -990,21 +1055,27 @@ class DataStore {
 
 	delete: {
 		<T extends PersistentModel>(
-			model: T,
-			condition?: ProducerModelPredicate<T>
-		): Promise<T>;
-		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			id: string
+			identifier: IdentifierFieldOrIdentifierObject<
+				T,
+				PersistentModelMetaData<T>
+			>
 		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll
 		): Promise<T[]>;
+		<T extends PersistentModel>(
+			model: T,
+			condition?: ProducerModelPredicate<T>
+		): Promise<T>;
 	} = async <T extends PersistentModel>(
 		modelOrConstructor: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
-	) => {
+		identifierOrCriteria?:
+			| IdentifierFieldOrIdentifierObject<T, PersistentModelMetaData<T>>
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
+	): Promise<T | T[]> => {
 		await this.start();
 
 		let condition: ModelPredicate<T>;
@@ -1016,31 +1087,50 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (isValidModelConstructor(modelOrConstructor)) {
+		if (isValidModelConstructor<T>(modelOrConstructor)) {
 			const modelConstructor = modelOrConstructor;
 
-			if (!idOrCriteria) {
+			if (!identifierOrCriteria) {
 				const msg =
 					'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL';
-				logger.error(msg, { idOrCriteria });
+				logger.error(msg, { identifierOrCriteria });
 
 				throw new Error(msg);
 			}
 
-			if (typeof idOrCriteria === 'string') {
-				condition = ModelPredicateCreator.createForId<T>(
+			const modelDefinition = getModelDefinition(modelConstructor);
+
+			if (typeof identifierOrCriteria === 'string') {
+				const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
+				if (keyFields.length > 1) {
+					const msg = errorMessages.deleteByPkWithCompositeKeyPresent;
+					logger.error(msg, { keyFields });
+
+					throw new Error(msg);
+				}
+
+				condition = ModelPredicateCreator.createForSingleField<T>(
 					getModelDefinition(modelConstructor),
-					idOrCriteria
+					keyFields[0],
+					identifierOrCriteria
 				);
 			} else {
-				condition = ModelPredicateCreator.createFromExisting(
-					getModelDefinition(modelConstructor),
-					/**
-					 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-					 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-					 */
-					idOrCriteria as ProducerModelPredicate<T>
-				);
+				if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+					condition = ModelPredicateCreator.createForPk<T>(
+						modelDefinition,
+						<T>identifierOrCriteria
+					);
+				} else {
+					condition = ModelPredicateCreator.createFromExisting(
+						modelDefinition,
+						/**
+						 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+						 */
+						identifierOrCriteria as ProducerModelPredicate<T>
+					);
+				}
 
 				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
 					const msg =
@@ -1068,22 +1158,24 @@ class DataStore {
 
 			const modelDefinition = getModelDefinition(modelConstructor);
 
-			const idPredicate = ModelPredicateCreator.createForId<T>(
+			const pkPredicate = ModelPredicateCreator.createForPk<T>(
 				modelDefinition,
-				model.id
+				model
 			);
 
-			if (idOrCriteria) {
-				if (typeof idOrCriteria !== 'function') {
+			if (identifierOrCriteria) {
+				if (typeof identifierOrCriteria !== 'function') {
 					const msg = 'Invalid criteria';
-					logger.error(msg, { idOrCriteria });
+					logger.error(msg, { identifierOrCriteria });
 
 					throw new Error(msg);
 				}
 
-				condition = idOrCriteria(idPredicate);
+				condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
+					pkPredicate
+				);
 			} else {
-				condition = idPredicate;
+				condition = pkPredicate;
 			}
 
 			const [[deleted]] = await this.storage.delete(model, condition);
@@ -1095,20 +1187,28 @@ class DataStore {
 	observe: {
 		(): Observable<SubscriptionMessage<PersistentModel>>;
 
-		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			identifier: string
+		): Observable<SubscriptionMessage<T>>;
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | ProducerModelPredicate<T>
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll
 		): Observable<SubscriptionMessage<T>>;
-	} = <T extends PersistentModel = PersistentModel>(
+
+		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+	} = <T extends PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T>
+		identifierOrCriteria?:
+			| string
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 
-		const modelConstructor: PersistentModelConstructor<T> =
-			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
+		const modelConstructor: PersistentModelConstructor<T> | undefined =
+			modelOrConstructor && isValidModelConstructor<T>(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
 
@@ -1118,10 +1218,10 @@ class DataStore {
 				model && (<Object>Object.getPrototypeOf(model)).constructor;
 
 			if (isValidModelConstructor<T>(modelConstructor)) {
-				if (idOrCriteria) {
+				if (identifierOrCriteria) {
 					logger.warn('idOrCriteria is ignored when using a model instance', {
 						model,
-						idOrCriteria,
+						identifierOrCriteria,
 					});
 				}
 
@@ -1135,9 +1235,24 @@ class DataStore {
 			}
 		}
 
-		if (idOrCriteria !== undefined && modelConstructor === undefined) {
+		// observe should not accept object literal syntax
+		if (
+			identifierOrCriteria &&
+			modelConstructor &&
+			isIdentifierObject(
+				identifierOrCriteria,
+				getModelDefinition(modelConstructor)
+			)
+		) {
+			const msg = errorMessages.observeWithObjectLiteral;
+			logger.error(msg, { objectLiteral: identifierOrCriteria });
+
+			throw new Error(msg);
+		}
+
+		if (identifierOrCriteria !== undefined && modelConstructor === undefined) {
 			const msg = 'Cannot provide criteria without a modelConstructor';
-			logger.error(msg, idOrCriteria);
+			logger.error(msg, identifierOrCriteria);
 			throw new Error(msg);
 		}
 
@@ -1148,18 +1263,26 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (typeof idOrCriteria === 'string') {
-			predicate = ModelPredicateCreator.createForId<T>(
+		if (typeof identifierOrCriteria === 'string') {
+			const modelDefinition = getModelDefinition(modelConstructor);
+			const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
+
+			predicate = ModelPredicateCreator.createForSingleField<T>(
 				getModelDefinition(modelConstructor),
-				idOrCriteria
+				keyField,
+				identifierOrCriteria
 			);
 		} else {
-			predicate =
-				modelConstructor &&
-				ModelPredicateCreator.createFromExisting<T>(
-					getModelDefinition(modelConstructor),
-					idOrCriteria
-				);
+			if (isPredicatesAll(identifierOrCriteria)) {
+				predicate = undefined;
+			} else {
+				predicate =
+					modelConstructor &&
+					ModelPredicateCreator.createFromExisting<T>(
+						getModelDefinition(modelConstructor),
+						identifierOrCriteria
+					);
+			}
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
@@ -1181,12 +1304,18 @@ class DataStore {
 
 							let message = item;
 
-							// as lnog as we're not dealing with a DELETE, we need to fetch a fresh
+							// as long as we're not dealing with a DELETE, we need to fetch a fresh
 							// item from storage to ensure it's fully populated.
 							if (item.opType !== 'DELETE') {
+								const modelDefinition = getModelDefinition(item.model);
+								const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+								const primaryKeysAndValues = extractPrimaryKeysAndValues(
+									item.element,
+									keyFields
+								);
 								const freshElement = await this.query(
 									item.model,
-									item.element.id
+									primaryKeysAndValues
 								);
 								message = {
 									...message,
@@ -1215,7 +1344,7 @@ class DataStore {
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
-	} = <T extends PersistentModel = PersistentModel>(
+	} = <T extends PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>
@@ -1254,9 +1383,12 @@ class DataStore {
 			const sortOptions = sort ? { sort } : undefined;
 
 			const modelDefinition = getModelDefinition(model);
+			const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 			if (isQueryOne(criteria)) {
-				predicate = ModelPredicateCreator.createForId<T>(
+				predicate = ModelPredicateCreator.createForSingleField<T>(
 					modelDefinition,
+					keyFields[0],
 					criteria
 				);
 			} else {
@@ -1278,9 +1410,11 @@ class DataStore {
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, sortOptions)).forEach(item =>
-						items.set(item.id, item)
-					);
+					(await this.query(model, criteria, sortOptions)).forEach(item => {
+						const itemModelDefinition = getModelDefinition(model);
+						const idOrPk = getIdentifierValue(itemModelDefinition, item);
+						items.set(idOrPk, item);
+					});
 
 					// Observe the model and send a stream of updates (debounced).
 					// We need to post-filter results instead of passing criteria through
@@ -1288,19 +1422,21 @@ class DataStore {
 					// We need to explicitly remove those items from the existing snapshot.
 					handle = this.observe(model).subscribe(
 						({ element, model, opType }) => {
+							const itemModelDefinition = getModelDefinition(model);
+							const idOrPk = getIdentifierValue(itemModelDefinition, element);
 							if (
 								hasPredicate &&
 								!validatePredicate(element, predicateGroupType, predicates)
 							) {
 								if (
 									opType === 'UPDATE' &&
-									(items.has(element.id) || itemsChanged.has(element.id))
+									(items.has(idOrPk) || itemsChanged.has(idOrPk))
 								) {
 									// tracking as a "deleted item" will include the item in
 									// page limit calculations and ensure it is removed from the
 									// final items collection, regardless of which collection(s)
 									// it is currently in. (I mean, it could be in both, right!?)
-									deletedItemIds.push(element.id);
+									deletedItemIds.push(idOrPk);
 								} else {
 									// ignore updates for irrelevant/filtered items.
 									return;
@@ -1312,9 +1448,9 @@ class DataStore {
 							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
 							// depends on the LATEST record (for a given id).
 							if (opType === 'DELETE') {
-								deletedItemIds.push(element.id);
+								deletedItemIds.push(idOrPk);
 							} else {
-								itemsChanged.set(element.id, element);
+								itemsChanged.set(idOrPk, element);
 							}
 
 							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
@@ -1356,10 +1492,14 @@ class DataStore {
 				}
 
 				items.clear();
-				itemsArray.forEach(item => items.set(item.id, item));
+				itemsArray.forEach(item => {
+					const itemModelDefinition = getModelDefinition(model);
+					const idOrPk = getIdentifierValue(itemModelDefinition, item);
+					items.set(idOrPk, item);
+				});
 
 				// remove deleted items from the final result set
-				deletedItemIds.forEach(id => items.delete(id));
+				deletedItemIds.forEach(idOrPk => items.delete(idOrPk));
 
 				return {
 					items: Array.from(items.values()),
@@ -1515,7 +1655,7 @@ class DataStore {
 			this.storageAdapter ||
 			undefined;
 
-		this.sessionId = this.retrieveSessionId();
+		this.sessionId = this.retrieveSessionId()!;
 	};
 
 	clear = async function clear() {
@@ -1549,7 +1689,7 @@ class DataStore {
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	};
 
-	stop = async function stop() {
+	stop = async function stop(this: InstanceType<typeof DataStore>) {
 		if (this.initialized !== undefined) {
 			await this.start();
 		}
@@ -1713,9 +1853,9 @@ class DataStore {
 
 				return `${sessionId}-${appSyncId}`;
 			}
-		} catch {
-			return undefined;
-		}
+		} catch {}
+
+		return undefined;
 	}
 }
 
