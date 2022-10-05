@@ -379,6 +379,24 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	): T;
 };
 
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoadingDisabled {
+	disabled: true;
+}
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoading {}
+
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
