@@ -28,7 +28,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'",
+    "test-module-size": "yarn run bundlewatch"
   },
   "repository": {
     "type": "git",
@@ -94,5 +95,13 @@
       "lib-esm"
     ],
     "testSequencer": "./testSequencer.js"
-  }
+  },
+  "bundlewatch": {
+		"files": [
+			{
+				"path": "./dist/*.min.js",
+				"maxSize": "40.66kB"
+			}
+		]
+	}
 }
