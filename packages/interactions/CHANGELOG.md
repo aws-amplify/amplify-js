@@ -3,34 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.1...@aws-amplify/interactions@4.1.3) (2022-09-30)
-
-### Bug Fixes
-
-- **@aws-amplify/interactions:** Upgrade client lex runtime v2 ([#10328](https://github.com/aws-amplify/amplify-js/issues/10328)) ([41ab57a](https://github.com/aws-amplify/amplify-js/commit/41ab57a854676813c3f9d89d647a8ac8f7b2c65f))
-
-## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.1...@aws-amplify/interactions@4.1.2) (2022-09-20)
-
-### Bug Fixes
-
-- **@aws-amplify/interactions:** Upgrade client lex runtime v2 ([#10328](https://github.com/aws-amplify/amplify-js/issues/10328)) ([171b0c0](https://github.com/aws-amplify/amplify-js/commit/171b0c0d3523a7082d490e20c503027e306d953f))
-
-## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.0...@aws-amplify/interactions@4.1.1) (2022-09-08)
-
-**Note:** Version bump only for package @aws-amplify/interactions
-
-# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.51...@aws-amplify/interactions@4.1.0) (2022-09-01)
-
-### Bug Fixes
-
-- **@aws-amplify/interactions:** add audio type Uint8Array to lexV1 ([#10273](https://github.com/aws-amplify/amplify-js/issues/10273)) ([840086d](https://github.com/aws-amplify/amplify-js/commit/840086d6b58276c06128141cd04434e23d26e3a5))
-- **@aws-amplify/interactions:** use pako instead of fflate in RN ([#10278](https://github.com/aws-amplify/amplify-js/issues/10278)) ([0c804e4](https://github.com/aws-amplify/amplify-js/commit/0c804e402da30ed3bfdd25f5c16fd2e0dfd5a07b))
-
-### Features
-
-- **@aws-amplify/interactions:** Add LexV2 support to interactions ([#10217](https://github.com/aws-amplify/amplify-js/issues/10217)) ([91fdcd9](https://github.com/aws-amplify/amplify-js/commit/91fdcd919ee59f4e92b4abbbc18b33e3e38ed17e)), closes [#10167](https://github.com/aws-amplify/amplify-js/issues/10167)
-- **@aws-amplify/interactions:** call onComplete callback with entire response ([#10248](https://github.com/aws-amplify/amplify-js/issues/10248)) ([7f2534d](https://github.com/aws-amplify/amplify-js/commit/7f2534d5dc2c936eadc12b5d49c86a3704051f4a))
-
 ## [4.0.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.50...@aws-amplify/interactions@4.0.51) (2022-08-23)
 
 ### Bug Fixes

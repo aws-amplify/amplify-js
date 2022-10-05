@@ -170,7 +170,6 @@ describe('jitteredExponentialRetry', () => {
 			throw new NonRetryableError('bwahahahahaha');
 		}
 
-		// TODO: how the devil do you get expect().rejects.toThrow to work here?
 		await expect(
 			jitteredExponentialRetry(throwsNonRetryableError, [])
 		).rejects.toThrow('bwahahahahaha');

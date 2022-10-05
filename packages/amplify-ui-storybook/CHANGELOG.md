@@ -3,22 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.0.55](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@2.0.53...@aws-amplify/ui-storybook@2.0.55) (2022-09-30)
-
-**Note:** Version bump only for package @aws-amplify/ui-storybook
-
-## [2.0.54](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@2.0.53...@aws-amplify/ui-storybook@2.0.54) (2022-09-20)
-
-**Note:** Version bump only for package @aws-amplify/ui-storybook
-
-## [2.0.53](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@2.0.52...@aws-amplify/ui-storybook@2.0.53) (2022-09-08)
-
-**Note:** Version bump only for package @aws-amplify/ui-storybook
-
-## [2.0.52](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@2.0.51...@aws-amplify/ui-storybook@2.0.52) (2022-09-01)
-
-**Note:** Version bump only for package @aws-amplify/ui-storybook
-
 ## [2.0.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@2.0.50...@aws-amplify/ui-storybook@2.0.51) (2022-08-23)
 
 **Note:** Version bump only for package @aws-amplify/ui-storybook
