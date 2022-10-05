@@ -256,7 +256,7 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				this.isInstanceCreated();
+				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql<T>(
@@ -281,7 +281,7 @@ export class GraphQLAPIClass {
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
-		this.isInstanceCreated();
+		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -357,7 +357,7 @@ export class GraphQLAPIClass {
 		return response;
 	}
 
-	async isInstanceCreated() {
+	async createInstanceIfNotCreated() {
 		if (!this._api) {
 			await this.createInstance();
 		}

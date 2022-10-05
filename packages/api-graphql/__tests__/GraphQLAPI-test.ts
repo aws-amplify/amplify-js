@@ -1304,8 +1304,16 @@ describe('API test', () => {
 		test('call isInstanceCreated', () => {
 			const createInstanceMock = spyOn(API.prototype, 'createInstance');
 			const api = new API(config);
-			api.isInstanceCreated();
+			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).toHaveBeenCalled();
+		});
+
+		test('should not call createInstance when there is already an instance', () => {
+			const api = new API(config);
+			api.createInstance();
+			const createInstanceMock = spyOn(API.prototype, 'createInstance');
+			api.createInstanceIfNotCreated();
+			expect(createInstanceMock).not.toHaveBeenCalled();
 		});
 	});
 
