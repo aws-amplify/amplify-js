@@ -19,12 +19,6 @@ import {
 	Comment,
 	Metadata,
 	Model,
-	Post as PostModel,
-	PostCustomPK as PostCustomPKType,
-	Profile,
-	User,
-	pause,
-	testSchema,
 	getDataStore,
 	logDate,
 	expectIsolation,
@@ -33,6 +27,12 @@ import {
 	pretendModelsAreSynced,
 	warpTime,
 	unwarpTime,
+	pause,
+	Post,
+	PostCustomPK as PostCustomPKType,
+	Profile,
+	testSchema,
+	User,
 } from './helpers';
 
 type T = ModelInit<Model>;
@@ -537,7 +537,7 @@ describe('DataStore sanity testing checks', () => {
 describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
-	let Post: PersistentModelConstructor<PostModel>;
+	let Post: PersistentModelConstructor<Post>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -545,7 +545,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		({ Comment, Model, Post } = classes as {
 			Comment: PersistentModelConstructor<Comment>;
 			Model: PersistentModelConstructor<Model>;
-			Post: PersistentModelConstructor<PostModel>;
+			Post: PersistentModelConstructor<Post>;
 		});
 		warpTime();
 	});
@@ -860,7 +860,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	//
 
 	let Comment: PersistentModelConstructor<Comment>;
-	let Post: PersistentModelConstructor<PostModel>;
+	let Post: PersistentModelConstructor<Post>;
 	let User: PersistentModelConstructor<User>;
 	let Profile: PersistentModelConstructor<Profile>;
 
@@ -893,7 +893,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		const classes = initSchema(testSchema());
 		({ Comment, Post, User, Profile } = classes as {
 			Comment: PersistentModelConstructor<Comment>;
-			Post: PersistentModelConstructor<PostModel>;
+			Post: PersistentModelConstructor<Post>;
 			User: PersistentModelConstructor<User>;
 			Profile: PersistentModelConstructor<Profile>;
 		});
@@ -3248,8 +3248,6 @@ describe('DataStore tests', () => {
 					save.mock.calls
 				);
 
-				console.log('saves', JSON.stringify(save.mock.calls, null, 2));
-
 				const [_model, _condition, _mutator, [patches]] = modelUpdate;
 				const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
 
@@ -3473,7 +3471,7 @@ describe('DataStore tests', () => {
 
 				jest.resetModules();
 				jest.doMock('../src/storage/storage', () => {
-					const mock = jest.fn().mockImplementation(() => {
+					const mock: jest.Mock<Storage> = jest.fn().mockImplementation(() => {
 						const _mock = {
 							init: jest.fn(),
 							save,

@@ -36,7 +36,7 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
-	isSchemaModel2,
+	isSchemaModelWithAttributes,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -424,7 +424,10 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModel2(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (
+				isSchemaModelWithAttributes(modelDefinition) &&
+				!isIdManaged(modelDefinition)
+			) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
@@ -627,8 +630,7 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					// @ts-ignore TODO: fix type
-					keyNames.forEach(key => (draft[key] = source[key]));
+					keyNames.forEach(key => ((draft as Object)[key] = source[key]));
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
@@ -1882,21 +1884,14 @@ class DataStore {
 							({ element, model, opType }) =>
 								this.runningProcesses.isOpen &&
 								this.runningProcesses.add(async () => {
-									let record = element;
-
-									// TODO: fix query
-									if (Array.isArray(element)) {
-										record = element[0];
-									}
 									const itemModelDefinition = getModelDefinition(model)!;
 									const idOrPk = getIdentifierValue(
 										itemModelDefinition,
-										record
+										element
 									);
-
 									if (
 										executivePredicate &&
-										!(await executivePredicate.matches(record))
+										!(await executivePredicate.matches(element))
 									) {
 										if (
 											opType === 'UPDATE' &&
@@ -1920,7 +1915,7 @@ class DataStore {
 									if (opType === 'DELETE') {
 										deletedItemIds.push(idOrPk);
 									} else {
-										itemsChanged.set(idOrPk, record);
+										itemsChanged.set(idOrPk, element);
 									}
 
 									const isSynced =

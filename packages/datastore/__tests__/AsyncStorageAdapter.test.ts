@@ -101,16 +101,14 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getById for query by key', async () => {
-			const result = await DataStore.query(Model, model1Id);
-			expect.assertions(4);
-			expect(result!.field1).toEqual('Some value');
+			const result = (await DataStore.query(Model, model1Id))!;
+			expect(result.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
 		});
 
 		it('Should call getAll for query with a predicate', async () => {
-			expect.assertions(3);
 			const results = await DataStore.query(Model, c =>
 				c.field1.contains('value')
 			);
@@ -121,7 +119,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with a predicate and sort', async () => {
-			expect.assertions(4);
 			const results = await DataStore.query(
 				Model,
 				c => c.field1.contains('value'),
@@ -137,7 +134,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with sort', async () => {
-			expect.assertions(4);
 			const results = await DataStore.query(Model, Predicates.ALL, {
 				sort: s => s.dateCreated(SortDirection.DESCENDING),
 			});
@@ -149,7 +145,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with pagination but no sort or predicate', async () => {
-			expect.assertions(3);
 			const results = await DataStore.query(Model, Predicates.ALL, {
 				limit: 1,
 			});
@@ -160,7 +155,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll for query without predicate and pagination', async () => {
-			expect.assertions(3);
 			const results = await DataStore.query(Model);
 
 			expect(results.length).toEqual(3);
@@ -220,9 +214,7 @@ describe('AsyncStorageAdapter tests', () => {
 			));
 		});
 
-		// This is a bug in CPK, I believe. To avoid *more* merge conflicts, awaiting upstream resolution.
-		it.skip('Should perform a cascading delete on a record with a Has One relationship', async () => {
-			expect.assertions(4);
+		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
 
@@ -241,8 +233,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
-			expect.assertions(4);
-
 			let post = (await DataStore.query(Post, post1Id))!;
 			let comment = (await DataStore.query(Comment, comment1Id))!;
 
@@ -285,7 +275,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via model field', async () => {
-			expect.assertions(2);
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profile })
 			);
@@ -297,7 +286,6 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
-			expect.assertions(2);
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profileID: profile.id })
 			);

@@ -418,7 +418,7 @@ class SubscriptionProcessor {
 
 									let subscriptionReadyCallback: () => void;
 
-									// TODO: onTerminate.then(() => API.cancel(...))
+									// TODO: consider onTerminate.then(() => API.cancel(...))
 
 									subscriptions[modelDefinition.name][
 										transformerMutationType

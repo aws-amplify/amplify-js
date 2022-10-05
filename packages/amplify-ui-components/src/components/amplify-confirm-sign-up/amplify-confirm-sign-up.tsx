@@ -82,6 +82,10 @@ export class AmplifyConfirmSignUp {
 	};
 
 	componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+
 		this.setup();
 	}
 
@@ -192,7 +196,9 @@ export class AmplifyConfirmSignUp {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+					this.phoneNumber.countryDialCodeValue = (
+						field as PhoneFormFieldType
+					).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;

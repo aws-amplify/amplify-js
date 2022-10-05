@@ -33,6 +33,7 @@ import {
 	extractTargetNamesFromSrc,
 	USER,
 	USER_AGENT_SUFFIX_DATASTORE,
+	ID,
 } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
@@ -188,7 +189,7 @@ class MutationProcessor {
 								operation,
 								data,
 								condition,
-								modelConstructor,
+								modelConstructor as any,
 								this.MutationEvent,
 								head,
 								operationAuthModes[authModeAttempts],
@@ -268,7 +269,7 @@ class MutationProcessor {
 		operation: TransformerMutationType,
 		data: string,
 		condition: string,
-		modelConstructor: PersistentModelConstructor<any>,
+		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE,
@@ -496,9 +497,7 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			// CPK TODO:
-			// Previous comment from Manuel: what if it was renamed ?
-			deleteInput['id'] = (<any>parsedData).id;
+			deleteInput[ID] = (<any>parsedData).id;
 		}
 
 		let mutationInput;
@@ -527,16 +526,6 @@ class MutationProcessor {
 							for (const targetName of targetNames) {
 								mutationInput[targetName] = parsedData[targetName];
 							}
-							// if (association?.targetNames?.length) {
-							// 	// instead of including the connected model itself, we add its key(s) to the mutation input
-							// 	for (const targetName of association.targetNames) {
-							// 		mutationInput[targetName] = parsedData[targetName];
-							// 	}
-							// } else if (association.targetName) {
-							// 	// backwards-compatability for schema generated prior to custom primary key support
-							// 	mutationInput[association.targetName] =
-							// 		parsedData[association.targetName];
-							// }
 						}
 					}
 					continue;

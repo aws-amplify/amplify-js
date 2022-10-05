@@ -95,7 +95,7 @@ export class BackgroundProcessManager {
 			description = optionalDescription;
 		}
 
-		const error = this.closedFailure(job, description);
+		const error = this.closedFailure(description);
 		if (error) return error;
 
 		if (job === undefined) {
@@ -159,7 +159,7 @@ export class BackgroundProcessManager {
 
 		// depending on what the job gives back, register the result
 		// so we can monitor for completion.
-		if (jobResult instanceof Promise) {
+		if (typeof jobResult?.then === 'function') {
 			this.registerPromise(jobResult, terminate, description);
 		}
 
@@ -237,6 +237,12 @@ export class BackgroundProcessManager {
 		// to hook into the promise we already have, and when it's done
 		// (successfully or not), we no longer need to wait for it upon close.
 
+		//
+		// sorry this is a bit hand-wavy:
+		//
+		// i believe we use `.then` and `.catch` instead of `.finally` because
+		// `.finally` is invoked in a different order in the sequence, and this
+		// breaks assumptions throughout and causes failures.
 		promise
 			.then(() => {
 				this.jobs.delete(jobEntry);
@@ -301,7 +307,7 @@ export class BackgroundProcessManager {
 		return this._state === BackgroundProcessManagerState.Closed;
 	}
 
-	private closedFailure(job, description: string) {
+	private closedFailure(description: string) {
 		if (!this.isOpen) {
 			return Promise.reject(
 				new Error(

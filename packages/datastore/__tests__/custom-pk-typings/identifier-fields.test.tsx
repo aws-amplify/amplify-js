@@ -1,29 +1,13 @@
 // TODO: Look at ts-expect-error once we move to TypeScript 3.9 or above
+import { IdentifierFields, __modelMeta__ } from '../../src';
 import {
-	IdentifierFields,
-	// ModelInit,
-	// PersistentModel,
-	// PersistentModelConstructor,
-	// Predicates,
-	__modelMeta__,
-} from '../../src';
-import {
-	// DataStore,
-	// dummyInstance,
 	expectType,
-	// LegacyCustomROMETA,
-	// LegacyDefaultRO,
 	LegacyCustomRO,
 	LegacyNoMetadata,
 	ManagedCustomRO,
-	// ManagedDefaultRO,
 	OptionallyManagedCustomRO,
-	// OptionallyManagedDefaultRO,
 	CompositeCustomRO,
-	// CompositeDefaultRO,
 	CustomIdentifierCustomRO,
-	// CustomIdentifierDefaultRO,
-	// CustomIdentifierNoRO,
 } from '../helpers';
 
 describe('IdentifierFields', () => {
