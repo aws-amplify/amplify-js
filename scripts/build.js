@@ -166,6 +166,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
+		importHelpers: true,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
@@ -217,6 +218,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
+		importHelpers: true,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix

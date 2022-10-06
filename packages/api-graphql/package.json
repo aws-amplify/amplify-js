@@ -51,7 +51,8 @@
     "@aws-amplify/pubsub": "4.5.5",
     "graphql": "15.8.0",
     "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19"
+    "zen-observable-ts": "0.8.19",
+    "tslib": "^2.0.0"
   },
   "jest": {
     "globals": {
