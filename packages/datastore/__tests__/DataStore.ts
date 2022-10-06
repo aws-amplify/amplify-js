@@ -1627,8 +1627,8 @@ describe('DataStore tests', () => {
 			expect(metadata).not.toHaveProperty('id');
 		});
 
-		describe('Check Pragma', () => {
-			const invalidPragmas = [
+		describe('Check codegenVersion', () => {
+			const invalidcodegenVersion = [
 				'1.2.0',
 				'4.0.0',
 				'3.0',
@@ -1638,7 +1638,7 @@ describe('DataStore tests', () => {
 				'3.4.0.1',
 				'unknown',
 			];
-			const validPragmas = [
+			const validcodegenVersion = [
 				'3.2.0',
 				'3.2.4',
 				'3.4.0',
@@ -1650,11 +1650,11 @@ describe('DataStore tests', () => {
 				'3.9.4+alpha',
 			];
 
-			describe('Invalid Pragma', () => {
-				invalidPragmas.forEach(pragma => {
-					test.only(`fails on pragma = ${pragma}`, () => {
+			describe('Invalid PracodegenVersiongma', () => {
+				invalidcodegenVersion.forEach(codegenVersion => {
+					test.only(`fails on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
-							initSchema({ ...testSchema(), pragma });
+							initSchema({ ...testSchema(), codegenVersion });
 						}).toThrow(
 							'Models were generated with an unsupported version of codegen.'
 						);
@@ -1662,11 +1662,11 @@ describe('DataStore tests', () => {
 				});
 			});
 
-			describe('Valid Pragma', () => {
-				validPragmas.forEach(pragma => {
-					test.only(`passes on pragma = ${pragma}`, () => {
+			describe('Valid codegenVersion', () => {
+				validcodegenVersion.forEach(codegenVersion => {
+					test.only(`passes on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
-							initSchema({ ...testSchema(), pragma });
+							initSchema({ ...testSchema(), codegenVersion });
 						}).not.toThrow(
 							'Models were generated with an unsupported version of codegen.'
 						);

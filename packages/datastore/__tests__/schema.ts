@@ -734,6 +734,7 @@ export const newSchema: Schema = {
 		},
 	},
 	version: 'a66372d29356c40e7cd29e41527cead7',
+	codegenVersion: '3.2.0',
 };
 
 export const implicitOwnerSchema = {
@@ -783,6 +784,7 @@ export const implicitOwnerSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };
 
 export const explicitOwnerSchema = {
@@ -839,6 +841,7 @@ export const explicitOwnerSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };
 
 export const groupSchema = {
@@ -888,4 +891,5 @@ export const groupSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };
