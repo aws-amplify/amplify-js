@@ -217,7 +217,15 @@ export class AnalyticsClass {
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async startSession(provider?: string) {
-		const params = { event: { name: '_session.start' }, provider };
+		const event = { name: '_session.start' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session start event'
+		);
+
 		return this._sendEvent(params);
 	}
 
@@ -227,7 +235,15 @@ export class AnalyticsClass {
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async stopSession(provider?: string) {
-		const params = { event: { name: '_session.stop' }, provider };
+		const event = { name: '_session.stop' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session stop event'
+		);
+
 		return this._sendEvent(params);
 	}
 
@@ -276,6 +292,9 @@ export class AnalyticsClass {
 		} else {
 			params = { event, provider: providerOrAttributes };
 		}
+
+		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
+
 		return this._sendEvent(params);
 	}
 
