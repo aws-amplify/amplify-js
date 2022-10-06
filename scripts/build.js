@@ -148,11 +148,6 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 }
 
 async function buildES5(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
 		esModuleInterop: true,
@@ -165,7 +160,6 @@ async function buildES5(typeScriptCompiler, watchMode) {
 			'es2019',
 		],
 		downlevelIteration: true,
-		jsx: jsx,
 		target: 'es5',
 		module: 'commonjs',
 		moduleResolution: 'node',
@@ -205,11 +199,6 @@ async function buildES5(typeScriptCompiler, watchMode) {
 }
 
 function buildES6(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
 	// tsconfig for ESM generating
 	let compilerOptions = {
 		esModuleInterop: true,
@@ -222,7 +211,6 @@ function buildES6(typeScriptCompiler, watchMode) {
 			'es2019',
 		],
 		downlevelIteration: true,
-		jsx: jsx,
 		target: 'es5',
 		module: 'es2015',
 		moduleResolution: 'node',
