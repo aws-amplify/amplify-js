@@ -369,6 +369,7 @@ jobs:
           command: |
             cd packages/datastore-storage-adapter
             npm install --build-from-source
+            rm -rf node_modules/@aws-amplify node_modules/@aws-sdk
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
@@ -1208,7 +1209,7 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:main
+            git push --force-with-lease origin release:main
 
 releasable_branches: &releasable_branches
   branches:
@@ -1218,6 +1219,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - ds-custom-pk
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
