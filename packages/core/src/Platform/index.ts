@@ -38,8 +38,3 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 export const getAmplifyUserAgent = (content?: string) => {
 	return `${Platform.userAgent}${content ? content : ''}`;
 };
-
-/**
- * @deprecated use named import
- */
-export default Platform;

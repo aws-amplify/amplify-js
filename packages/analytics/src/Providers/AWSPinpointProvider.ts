@@ -27,7 +27,7 @@ import {
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 
 import {
 	AnalyticsProvider,
@@ -40,10 +40,11 @@ import {
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event, data) => {
 	Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
@@ -735,8 +736,3 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSPinpointProvider;

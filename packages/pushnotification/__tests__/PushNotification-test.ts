@@ -1,5 +1,5 @@
 import { DeviceEventEmitter, Platform, NativeModules } from 'react-native';
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import RegisteredPushNotification from '../src';
 import PushNotification from '../src/PushNotification';

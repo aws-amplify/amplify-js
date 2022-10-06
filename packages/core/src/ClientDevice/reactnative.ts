@@ -26,8 +26,3 @@ export class ClientDevice {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default ClientDevice;

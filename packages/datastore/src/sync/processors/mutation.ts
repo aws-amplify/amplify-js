@@ -1,4 +1,4 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
 	ConsoleLogger as Logger,
 	jitteredBackoff,

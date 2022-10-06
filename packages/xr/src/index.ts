@@ -10,15 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { XR } from './XR';
 
-export { XR };
-
-/**
- * @deprecated use named import
- */
-export default XR;
-
+export { XR } from './XR';
 export * from './Providers/SumerianProvider';
-
 export * from './Errors';

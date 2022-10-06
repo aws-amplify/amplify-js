@@ -1,4 +1,4 @@
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
 import { graphqlOperation } from '../src/GraphQLAPI';
 import { GRAPHQL_AUTH_MODE, GraphQLAuthError } from '../src/types';
@@ -11,8 +11,8 @@ import {
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import PubSub from '@aws-amplify/pubsub';
-import Cache from '@aws-amplify/cache';
+import { PubSub } from '@aws-amplify/pubsub';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 

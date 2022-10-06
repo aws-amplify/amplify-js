@@ -13,11 +13,6 @@
 
 import { Storage, StorageInstance } from './Storage';
 
-/**
- * @deprecated use named import
- */
-export default StorageInstance;
-
 export { Storage as StorageClass, StorageInstance as Storage };
 export * from './providers';
 export * from './types';

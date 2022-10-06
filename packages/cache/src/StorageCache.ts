@@ -152,8 +152,3 @@ export class StorageCache {
 		return this.config;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default StorageCache;

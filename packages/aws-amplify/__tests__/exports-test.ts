@@ -38,7 +38,6 @@ describe('aws-amplify', () => {
 			  "AWSCloudWatchProvider",
 			  "withSSRContext",
 			  "Geo",
-			  "default",
 			]
 		`);
 		});

@@ -122,8 +122,3 @@ export class I18n {
 }
 
 Amplify.register(I18n);
-
-/**
- * @deprecated use named import
- */
-export default I18n;

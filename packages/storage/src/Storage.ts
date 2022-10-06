@@ -440,8 +440,3 @@ const getInstance = () => {
 
 export const StorageInstance: Storage = getInstance();
 Amplify.register(StorageInstance);
-
-/**
- * @deprecated use named import
- */
-export default Storage;

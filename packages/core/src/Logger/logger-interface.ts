@@ -20,8 +20,3 @@ export interface Logger {
 	error(msg: string): void;
 	addPluggable(pluggable: LoggingProvider): void;
 }
-
-/**
- * @deprecated use named import
- */
-export default Logger;

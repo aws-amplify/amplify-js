@@ -91,8 +91,3 @@ export class FacebookOAuth {
 		});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default FacebookOAuth;

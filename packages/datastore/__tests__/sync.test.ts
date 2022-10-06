@@ -457,10 +457,18 @@ function jitteredRetrySyncProcessorSetup({
 				}
 			})
 	);
-	jest.mock('@aws-amplify/api', () => ({
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: mockGraphQl,
-	}));
+	jest.mock('@aws-amplify/api', () => {
+		const actualAPIModule = jest.requireActual('@aws-amplify/api');
+		const actualAPIInstance = actualAPIModule.API;
+
+		return {
+			...actualAPIModule,
+			API: {
+				...actualAPIInstance,
+				graphql: mockGraphQl,
+			},
+		};
+	});
 
 	jest.mock('@aws-amplify/core', () => ({
 		...jest.requireActual('@aws-amplify/core'),

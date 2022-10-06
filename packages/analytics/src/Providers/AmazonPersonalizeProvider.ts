@@ -260,10 +260,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			const events: RecordEventPayload[] = [];
 			for (let i = 0; i < groupLen; i += 1) {
 				const params: RequestParams = group.shift();
-				const eventPayload: RecordEventPayload = this._generateSingleRecordPayload(
-					params,
-					sessionInfo
-				);
+				const eventPayload: RecordEventPayload =
+					this._generateSingleRecordPayload(params, sessionInfo);
 				events.push(eventPayload);
 			}
 			const payload = <PutEventsCommandInput>{};
@@ -407,8 +405,3 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonPersonalizeProvider;

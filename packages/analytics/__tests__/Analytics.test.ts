@@ -18,7 +18,7 @@ jest.mock('../src/vendor/dom-utils', () => {
 
 import { ClientDevice, Parser, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
-import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
+import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/Providers/AWSPinpointProvider';
 
 jest.useFakeTimers();
 

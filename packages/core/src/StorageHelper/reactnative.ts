@@ -110,8 +110,3 @@ export class StorageHelper {
 		return this.storageWindow;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default StorageHelper;

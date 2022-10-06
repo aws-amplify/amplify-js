@@ -59,10 +59,4 @@ export {
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';
-
 export { Amplify };
-
-/**
- * @deprecated use named import
- */
-export default Amplify;
