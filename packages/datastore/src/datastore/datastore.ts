@@ -219,7 +219,77 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
+/**
+ * Maps a model to its related models for memoization/immutability.
+ */
 const modelInstanceAssociationsMap = new WeakMap<PersistentModel, object>();
+
+/**
+ * Describes whether and to what a model is attached for lazy loading purposes.
+ */
+enum ModelAttachment {
+	/**
+	 * Model doesn't lazy load from any data source.
+	 *
+	 * Related entity properties provided at instantiation are returned
+	 * via the respective lazy interfaces when their properties are invoked.
+	 */
+	Detached,
+
+	/**
+	 * Model lazy loads from the global DataStore.
+	 */
+	DataStore,
+
+	/**
+	 * Demonstrative. Not yet implemented.
+	 */
+	API,
+}
+
+/**
+ * Tells us which data source a model is attached to (lazy loads from).
+ *
+ * If `Deatched`, the model's lazy properties will only ever return properties
+ * from memory provided at construction time.
+ */
+const attachedModelInstances = new WeakMap<PersistentModel, ModelAttachment>();
+
+/**
+ * Registers a model instance against a data source (DataStore, API, or
+ * Detached/None).
+ *
+ * The API option is demonstrative. Lazy loading against API is not yet
+ * implemented.
+ *
+ * @param result A model instance or array of instances
+ * @param attachment A ModelAttachment data source
+ * @returns passes the `result` back through after attachment
+ */
+function attached<T extends PersistentModel | PersistentModel[]>(
+	result: T,
+	attachment: ModelAttachment
+): T {
+	if (Array.isArray(result)) {
+		return result.map(record => attached(record, attachment)) as T;
+	} else {
+		attachedModelInstances.set(result, attachment);
+	}
+	return result;
+}
+
+/**
+ * Determines what source a model instance should lazy load from.
+ *
+ * If the instace was never explicitly registered, it is detached by default.
+ *
+ * @param instance A model instance
+ */
+function getAttachment(instance: PersistentModel) {
+	return attachedModelInstances.has(instance)
+		? attachedModelInstances.get(instance)
+		: ModelAttachment.Detached;
+}
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -758,6 +828,7 @@ const createModelClass = <T extends PersistentModel>(
 				// 	model
 				// );
 				if (!model || !(typeof model === 'object')) return;
+
 				// Avoid validation error when processing AppSync response with nested
 				// selection set. Nested entitites lack version field and can not be validated
 				// TODO: explore a more reliable method to solve this
@@ -783,17 +854,33 @@ const createModelClass = <T extends PersistentModel>(
 					}
 				}
 
-				// TODO: Consider moving this logic into the relationship.
 				if (relationship.isComplete) {
-					// assumes targetNames is in same-order as relatedModelPKFields
-					for (let i = 0; i < relationship.localJoinFields.length; i++) {
-						// console.log(
-						// 	`setting ${relationship.localJoinFields[i]} = ${
-						// 		relationship.remoteJoinFields[i]
-						// 	} (${model[relationship.remoteJoinFields[i]]})`
-						// );
-						this[relationship.localJoinFields[i]] =
-							model[relationship.remoteJoinFields[i]];
+					// If this instance is detached, we just need to memoize the field so
+					// we can regurgitate it from memory later.
+					switch (getAttachment(this)) {
+						case ModelAttachment.DataStore:
+							// TODO: Consider moving this logic into the relationship.
+							// assumes targetNames is in same-order as relatedModelPKFields
+							for (let i = 0; i < relationship.localJoinFields.length; i++) {
+								// console.log(
+								// 	`setting ${relationship.localJoinFields[i]} = ${
+								// 		relationship.remoteJoinFields[i]
+								// 	} (${model[relationship.remoteJoinFields[i]]})`
+								// );
+								this[relationship.localJoinFields[i]] =
+									model[relationship.remoteJoinFields[i]];
+							}
+							break;
+						case ModelAttachment.API:
+							throw new Error(
+								"You're attempting to set property on API attached model. This should be possible yet. Please report this as a bug!"
+							);
+							break;
+						default:
+							const instanceMemos = modelInstanceAssociationsMap.has(this)
+								? modelInstanceAssociationsMap.get(this)!
+								: modelInstanceAssociationsMap.set(this, {}).get(this)!;
+							instanceMemos[field] = model;
 					}
 				}
 			},
@@ -810,7 +897,10 @@ const createModelClass = <T extends PersistentModel>(
 					? modelInstanceAssociationsMap.get(this)!
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
 
-				if (!instanceMemos.hasOwnProperty(field)) {
+				if (
+					!instanceMemos.hasOwnProperty(field) &&
+					getAttachment(this) === ModelAttachment.DataStore
+				) {
 					// console.log(
 					// 	'remote constructor',
 					// 	relationship.remoteModelConstructor
@@ -1389,7 +1479,10 @@ class DataStore {
 				isQueryOne(identifierOrCriteria) ||
 				isIdentifierObject(identifierOrCriteria, modelDefinition);
 
-			return returnOne ? result[0] : result;
+			return attached(
+				returnOne ? result[0] : result,
+				ModelAttachment.DataStore
+			);
 		}, 'datastore query');
 	};
 
@@ -1447,7 +1540,7 @@ class DataStore {
 				);
 			});
 
-			return savedModel;
+			return attached(savedModel, ModelAttachment.DataStore);
 		}, 'datastore save');
 	};
 
@@ -1522,6 +1615,8 @@ class DataStore {
 				throw new Error(msg);
 			}
 
+			console.log('isValidModelConstructor', modelOrConstructor);
+
 			if (isValidModelConstructor<T>(modelOrConstructor)) {
 				const modelConstructor = modelOrConstructor;
 
@@ -1563,13 +1658,14 @@ class DataStore {
 							<T>identifierOrCriteria
 						);
 					} else {
-						condition = (identifierOrCriteria as ModelPredicateExtender<T>)(
+						const potentialCondition = (identifierOrCriteria as (p) => any)(
 							predicateFor({
 								builder: modelConstructor as PersistentModelConstructor<T>,
 								schema: modelDefinition,
 								pkField: extractPrimaryKeyFieldNames(modelDefinition),
 							})
-						).__query.toStoragePredicate<T>();
+						);
+						condition = potentialCondition?.__query?.toStoragePredicate();
 					}
 
 					if (
@@ -1589,7 +1685,8 @@ class DataStore {
 					condition
 				);
 
-				return deleted;
+				// TODO: models are deleted and no longer expected to be DataStore-attached.
+				return attached(deleted, ModelAttachment.DataStore);
 			} else {
 				const model = modelOrConstructor;
 				const modelConstructor = Object.getPrototypeOf(model || {})
@@ -1636,7 +1733,8 @@ class DataStore {
 
 				const [[deleted]] = await this.storage.delete(model, condition);
 
-				return deleted;
+				// TODO: models are deleted and no longer expected to be DataStore-attached.
+				return attached(deleted, ModelAttachment.DataStore);
 			}
 		}, 'datastore delete');
 	};

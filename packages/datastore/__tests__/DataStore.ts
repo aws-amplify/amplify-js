@@ -773,7 +773,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		);
 	});
 
-	test.only('subscribe with hasMany criteria', async done => {
+	test('subscribe with hasMany criteria', async done => {
 		// want to set up a few posts and a few "non-target" comments
 		// to ensure we can observe post based on a single comment that's
 		// somewhat "buried" alongside other comments.
@@ -1209,7 +1209,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		})();
 	});
 
-	test('attaches related belongsTo properties consistently with query() on INSERT', async done => {
+	test.only('attaches related belongsTo properties consistently with query() on INSERT', async done => {
 		try {
 			const expecteds = [5, 15];
 
@@ -1455,6 +1455,29 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	});
 });
 
+describe('Model behavior', () => {
+	test('newly instantiated models do not lazy load belongsTo', async () => {
+		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
+
+		const decoy = await DataStore.save(
+			new DefaultPKParent({
+				content: 'this is a decoy!',
+			})
+		);
+
+		console.log({ decoy });
+		expect(decoy).toBeDefined();
+
+		const comment = new DefaultPKChild({
+			id: "not such a random id, but it's ok",
+			content: 'here is some content',
+			defaultPKParentChildrenId: decoy.id,
+		});
+
+		expect(comment.parent).toBeUndefined();
+	});
+});
+
 describe('DataStore tests', () => {
 	beforeEach(() => {
 		jest.resetModules();
@@ -1652,7 +1675,7 @@ describe('DataStore tests', () => {
 
 			describe('Invalid PracodegenVersiongma', () => {
 				invalidcodegenVersion.forEach(codegenVersion => {
-					test.only(`fails on codegenVersion = ${codegenVersion}`, () => {
+					test(`fails on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).toThrow(
@@ -1664,7 +1687,7 @@ describe('DataStore tests', () => {
 
 			describe('Valid codegenVersion', () => {
 				validcodegenVersion.forEach(codegenVersion => {
-					test.only(`passes on codegenVersion = ${codegenVersion}`, () => {
+					test(`passes on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).not.toThrow(
@@ -2510,10 +2533,6 @@ describe('DataStore tests', () => {
 
 			await expect(DataStore.delete(<any>Model)).rejects.toThrow(
 				'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
-			);
-
-			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
 			);
 
 			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
