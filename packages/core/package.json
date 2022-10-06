@@ -62,7 +62,8 @@
 		"@aws-sdk/types": "3.6.1",
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"universal-cookie": "^4.0.4",
-		"zen-observable-ts": "0.8.19"
+		"zen-observable-ts": "0.8.19",
+		"tslib": "^2.0.0"
 	},
 	"jest": {
 		"globals": {

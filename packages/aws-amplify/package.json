@@ -47,7 +47,8 @@
     "@aws-amplify/pubsub": "4.5.5",
     "@aws-amplify/storage": "4.5.8",
     "@aws-amplify/ui": "2.0.5",
-    "@aws-amplify/xr": "3.0.55"
+    "@aws-amplify/xr": "3.0.55",
+    "tslib": "^2.0.0"
   },
   "jest": {
     "globals": {
