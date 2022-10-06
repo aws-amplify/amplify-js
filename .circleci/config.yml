@@ -410,13 +410,6 @@ jobs:
           test_name: 'React Authenticator'
           framework: react
           category: auth
-          sample_name: with-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'React Authenticator'
-          framework: react
-          category: auth
           sample_name: amplify-authenticator
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
