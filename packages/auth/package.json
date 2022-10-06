@@ -19,16 +19,17 @@
     "access": "public"
   },
   "scripts": {
-    "test": "yarn lint --fix && jest -w 1 --coverage",
+    "test": "yarn lint --fix && jest -w 1 --coverage && npm run test-module-size",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs" ,
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'",
+    "test-module-size": "yarn run bundlewatch"
   },
   "repository": {
     "type": "git",
@@ -94,5 +95,13 @@
       "lib-esm"
     ],
     "testSequencer": "./testSequencer.js"
-  }
+  },
+  "bundlewatch": {
+		"files": [
+			{
+				"path": "./dist/*.min.js",
+				"maxSize": "40.66kB"
+			}
+		]
+	}
 }
