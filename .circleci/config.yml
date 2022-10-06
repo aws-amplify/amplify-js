@@ -1220,6 +1220,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - next-major-version/5
+      - remove-legacy-ui-packages
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
