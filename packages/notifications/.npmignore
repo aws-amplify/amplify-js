@@ -1,0 +1,10 @@
+__mocks__/**
+__tests__/**
+Authenticator_Architecture.png
+docs/**
+jsDoc.config.json
+node_modules/**
+README.md
+.vscode/**
+.DS_Store
+*.log
