@@ -44,7 +44,8 @@
 		"@aws-amplify/core": "4.7.6",
 		"@aws-sdk/client-location": "3.48.0",
 		"@turf/boolean-clockwise": "6.5.0",
-		"camelcase-keys": "6.2.2"
+		"camelcase-keys": "6.2.2",
+		"tslib": "^2.0.0"
 	},
 	"jest": {
 		"globals": {

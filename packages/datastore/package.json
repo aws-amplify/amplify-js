@@ -58,7 +58,8 @@
 		"ulid": "2.3.0",
 		"uuid": "3.3.2",
 		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
+		"zen-push": "0.2.1",
+		"tslib": "^2.0.0"
 	},
 	"jest": {
 		"globals": {

@@ -42,7 +42,8 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "4.7.6",
-    "axios": "0.26.0"
+    "axios": "0.26.0",
+    "tslib": "^2.0.0"
   },
   "jest": {
     "globals": {
