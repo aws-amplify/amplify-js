@@ -23,11 +23,13 @@
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact --no-verify-access",
 		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact --no-verify-access",
-		"publish:release": "lerna publish --conventional-commits --create-release github --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
+		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access"
+		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access",
+		"publish:ds-custom-pk": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=custom-pk --preid=custom-pk --exact --no-verify-access",
+		"temp-ds-safe-push": "yarn build --scope @aws-amplify/datastore && yarn test --scope @aws-amplify/datastore && git push origin"
 	},
 	"husky": {
 		"hooks": {
@@ -58,6 +60,7 @@
 	"devDependencies": {
 		"@babel/cli": "7.17.0",
 		"@babel/core": "7.17.2",
+		"@types/lodash": "4.14.182",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
 		"@types/jest": "^24.0.18",
@@ -103,7 +106,8 @@
 		"@types/react": "16.9.10",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12",
-		"error-stack-parser": "2.0.6"
+		"error-stack-parser": "2.0.6",
+		"@types/minimatch": "3.0.5"
 	},
 	"bundlewatch": {
 		"files": [

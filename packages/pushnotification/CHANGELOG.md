@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.32...@aws-amplify/pushnotification@4.3.34) (2022-09-30)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.32...@aws-amplify/pushnotification@4.3.33) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.31...@aws-amplify/pushnotification@4.3.32) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.30...@aws-amplify/pushnotification@4.3.31) (2022-09-01)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.29...@aws-amplify/pushnotification@4.3.30) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.28...@aws-amplify/pushnotification@4.3.29) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.3.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.27...@aws-amplify/pushnotification@4.3.28) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 ## [4.3.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.26...@aws-amplify/pushnotification@4.3.27) (2022-08-01)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

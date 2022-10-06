@@ -25,6 +25,12 @@ export class AmplifyGoogleButton {
 	/** App-specific client ID from Google */
 	@Prop() clientId: FederatedConfig['googleClientId'];
 
+	componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+	}
+
 	private getAuthInstance() {
 		if (window['gapi'] && window['gapi'].auth2) {
 			return (

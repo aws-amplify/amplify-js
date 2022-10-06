@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.17...@aws-amplify/api-graphql@2.3.19) (2022-09-30)
+
+
+### Bug Fixes
+
+* **api-graphql:** use named PubSub export ([#10344](https://github.com/aws-amplify/amplify-js/issues/10344)) ([3798cea](https://github.com/aws-amplify/amplify-js/commit/3798cea4d015f245e3b1a8008feb42d35850b860))
+
+
+
+
+
+## [2.3.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.17...@aws-amplify/api-graphql@2.3.18) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.16...@aws-amplify/api-graphql@2.3.17) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.15...@aws-amplify/api-graphql@2.3.16) (2022-09-01)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.14...@aws-amplify/api-graphql@2.3.15) (2022-08-23)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.13...@aws-amplify/api-graphql@2.3.14) (2022-08-18)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.12...@aws-amplify/api-graphql@2.3.13) (2022-08-16)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
 ## [2.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.11...@aws-amplify/api-graphql@2.3.12) (2022-08-01)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

@@ -19,9 +19,19 @@ import {
 // import Amplify from '../../src/';
 import {
 	Credentials,
+	Hub,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+	Logger,
+	Reachability,
 } from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
+import {
+	ConnectionState,
+	ConnectionState,
+	CONNECTION_STATE_CHANGE,
+} from '../src';
+import { HubConnectionListener } from './helpers';
+import Observable from 'zen-observable-ts';
 
 const pahoClientMockCache = {};
 
@@ -305,6 +315,123 @@ describe('PubSub', () => {
 
 			expect(originalProvider.publish).not.toHaveBeenCalled();
 			expect(newProvider.publish).toHaveBeenCalled();
+		});
+
+		describe('Hub connection state changes', () => {
+			let hubConnectionListener: HubConnectionListener;
+
+			let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
+
+			beforeEach(() => {
+				// Maintain the Hub connection listener, used to monitor the connection messages sent through Hub
+				hubConnectionListener?.teardown();
+				hubConnectionListener = new HubConnectionListener('pubsub');
+
+				// Setup a mock of the reachability monitor where the initial value is online.
+				const spyon = jest
+					.spyOn(Reachability.prototype, 'networkMonitor')
+					.mockImplementationOnce(
+						() =>
+							new Observable(observer => {
+								reachabilityObserver = observer;
+							})
+					);
+				reachabilityObserver?.next?.({ online: true });
+			});
+
+			test('test happy case connect -> disconnect cycle', async () => {
+				const pubsub = new PubSub();
+
+				const awsIotProvider = new AWSIoTProvider({
+					aws_pubsub_region: 'region',
+					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				});
+				pubsub.addPluggable(awsIotProvider);
+
+				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
+					error: () => {},
+				});
+
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+				sub.unsubscribe();
+				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					'Disconnected',
+				]);
+				expect(hubConnectionListener.observedConnectionStates).toEqual([
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingDisconnect',
+					'Disconnected',
+				]);
+			});
+
+			test('test network disconnection and recovery', async () => {
+				const pubsub = new PubSub();
+
+				const awsIotProvider = new AWSIoTProvider({
+					aws_pubsub_region: 'region',
+					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				});
+				pubsub.addPluggable(awsIotProvider);
+
+				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
+					error: () => {},
+				});
+
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+
+				reachabilityObserver?.next?.({ online: false });
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					'ConnectedPendingNetwork',
+				]);
+
+				reachabilityObserver?.next?.({ online: true });
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+
+				expect(hubConnectionListener.observedConnectionStates).toEqual([
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingNetwork',
+					'Connected',
+				]);
+			});
+
+			test('test network disconnection followed by connection disruption', async () => {
+				const pubsub = new PubSub();
+
+				const awsIotProvider = new AWSIoTProvider({
+					aws_pubsub_region: 'region',
+					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				});
+				pubsub.addPluggable(awsIotProvider);
+
+				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
+					error: () => {},
+				});
+
+				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+
+				reachabilityObserver?.next?.({ online: false });
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					'ConnectedPendingNetwork',
+				]);
+
+				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					'Disconnected',
+				]);
+
+				expect(hubConnectionListener.observedConnectionStates).toEqual([
+					'Disconnected',
+					'Connecting',
+					'Connected',
+					'ConnectedPendingNetwork',
+					'Disconnected',
+				]);
+			});
 		});
 	});
 

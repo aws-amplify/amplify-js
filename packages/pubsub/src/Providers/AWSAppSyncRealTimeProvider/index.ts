@@ -15,7 +15,7 @@ import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
 import { Buffer } from 'buffer';
-import { ProviderOptions } from '../../types';
+import { ProviderOptions } from '../../types/Provider';
 import {
 	Logger,
 	Credentials,
@@ -30,7 +30,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONNECTION_STATE_CHANGE, CONTROL_MSG } from '../../index';
+import { CONTROL_MSG } from '../../types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,
@@ -44,7 +44,8 @@ import {
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
-} from './constants';
+	CONNECTION_STATE_CHANGE,
+} from '../constants';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
@@ -747,20 +748,20 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						};
 						this.awsRealTimeSocket.send(JSON.stringify(gqlInit));
 
-						setTimeout(checkAckOk.bind(this, ackOk), CONNECTION_INIT_TIMEOUT);
-					}
+						const checkAckOk = (ackOk: boolean) => {
+							if (!ackOk) {
+								this.connectionStateMonitor.record(
+									CONNECTION_CHANGE.CONNECTION_FAILED
+								);
+								rej(
+									new Error(
+										`Connection timeout: ack from AWSAppSyncRealTime was not received after ${CONNECTION_INIT_TIMEOUT} ms`
+									)
+								);
+							}
+						};
 
-					function checkAckOk(ackOk: boolean) {
-						if (!ackOk) {
-							this.connectionStateMonitor.record(
-								CONNECTION_CHANGE.CONNECTION_FAILED
-							);
-							rej(
-								new Error(
-									`Connection timeout: ack from AWSRealTime was not received on ${CONNECTION_INIT_TIMEOUT} ms`
-								)
-							);
-						}
+						setTimeout(() => checkAckOk(ackOk), CONNECTION_INIT_TIMEOUT);
 					}
 				});
 			})();
