@@ -471,6 +471,7 @@ export declare class Model {
 	public readonly emails?: string[];
 	public readonly ips?: (string | null)[];
 	public readonly metadata?: Metadata;
+	public readonly logins?: Login[];
 	public readonly createdAt?: string;
 	public readonly updatedAt?: string;
 
@@ -488,7 +489,13 @@ export declare class Metadata {
 	readonly penNames: string[];
 	readonly nominations?: string[];
 	readonly misc?: (string | null)[];
+	readonly login?: Login;
 	constructor(init: Metadata);
+}
+
+export declare class Login {
+	readonly username: string;
+	constructor(init: Login);
 }
 
 export declare class Post {
@@ -673,6 +680,16 @@ export function testSchema(): Schema {
 						},
 						isRequired: false,
 						attributes: [],
+					},
+					logins: {
+						name: 'logins',
+						isArray: true,
+						type: {
+							nonModel: 'Login',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
 					},
 					createdAt: {
 						name: 'createdAt',
@@ -1158,6 +1175,27 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						attributes: [],
 					},
+					login: {
+						name: 'login',
+						isArray: false,
+						type: {
+							nonModel: 'Login',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+				},
+			},
+			Login: {
+				name: 'Login',
+				fields: {
+					username: {
+						name: 'username',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
 				},
 			},
 		},
@@ -1265,6 +1303,15 @@ export function internalTestSchema(): InternalSchema {
 								isRequired: false,
 								attributes: [],
 							},
+							logins: {
+								name: 'logins',
+								isArray: true,
+								type: {
+									nonModel: 'Login',
+								},
+								isRequired: false,
+								attributes: [],
+							},
 						},
 					},
 					LocalModel: {
@@ -1334,6 +1381,27 @@ export function internalTestSchema(): InternalSchema {
 								type: 'String',
 								isRequired: false,
 								isArrayNullable: true,
+								attributes: [],
+							},
+							login: {
+								name: 'login',
+								isArray: false,
+								type: {
+									nonModel: 'Login',
+								},
+								isRequired: false,
+								attributes: [],
+							},
+						},
+					},
+					Login: {
+						name: 'Login',
+						fields: {
+							username: {
+								name: 'username',
+								isArray: false,
+								type: 'String',
+								isRequired: true,
 								attributes: [],
 							},
 						},
