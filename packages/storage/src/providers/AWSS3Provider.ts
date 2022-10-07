@@ -13,10 +13,10 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	Parser,
 	ICredentials,
 	StorageHelper,
 	Hub,
+	parseMobileHubConfig,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -137,7 +137,7 @@ export class AWSS3Provider implements StorageProvider {
 	public configure(config?): object {
 		logger.debug('configure Storage', config);
 		if (!config) return this._config;
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseMobileHubConfig(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');

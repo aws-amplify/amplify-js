@@ -16,9 +16,11 @@ jest.mock('../src/vendor/dom-utils', () => {
 	};
 });
 
-import { ClientDevice, Parser, Hub } from '@aws-amplify/core';
+import { ClientDevice, parseMobileHubConfig, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
+
+jest.mock('@aws-amplify/core');
 
 jest.useFakeTimers();
 
@@ -28,32 +30,27 @@ const record_spyon = jest
 		return handlers.resolve();
 	});
 
-const hubSpy = jest.spyOn(Hub, 'dispatch');
-
 describe('Analytics test', () => {
 	beforeEach(() => {
+		(parseMobileHubConfig as jest.Mock).mockReturnValueOnce({
+			Analytics: {
+				AWSPinpoint: {
+					appId: 'appId',
+				},
+			},
+		});
+	});
+
+	afterEach(() => {
 		jest.clearAllMocks();
 	});
+
 	describe('configure test', () => {
 		test('happy case with default parser', () => {
 			const analytics = new Analytics();
-			const spyon = jest
-				.spyOn(ClientDevice, 'clientInfo')
-				.mockImplementationOnce(() => {
-					return 'clientInfo';
-				});
-			const spyon2 = jest
-				.spyOn(Parser, 'parseMobilehubConfig')
-				.mockImplementationOnce(() => {
-					return {
-						Analytics: {
-							AWSPinpoint: {
-								appId: 'appId',
-							},
-						},
-					};
-				});
-			const spyon3 = jest
+			ClientDevice.clientInfo = jest.fn().mockReturnValueOnce('clientInfo');
+
+			const mockAWSAnalyticsProviderConfigure = jest
 				.spyOn(AWSAnalyticsProvider.prototype, 'configure')
 				.mockImplementationOnce(() => {
 					return;
@@ -65,9 +62,7 @@ describe('Analytics test', () => {
 				autoSessionRecord: true,
 			});
 
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
+			mockAWSAnalyticsProviderConfigure.mockClear();
 		});
 	});
 
@@ -79,7 +74,7 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.startSession();
-			expect(hubSpy).toBeCalledWith(
+			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
@@ -101,7 +96,7 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.stopSession();
-			expect(hubSpy).toBeCalledWith(
+			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
@@ -128,7 +123,7 @@ describe('Analytics test', () => {
 			};
 
 			await analytics.record(event);
-			expect(hubSpy).toBeCalledWith(
+			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
