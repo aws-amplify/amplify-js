@@ -17,7 +17,7 @@ import {
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { AuthProvider } from './AuthProvider';
+import { AuthProvider } from '../types/AuthProvider';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
