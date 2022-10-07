@@ -325,18 +325,8 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		if (this.runningProcesses) {
-			throw new Error(
-				[
-					'The sync processor is already started!',
-					'Wait until it completes or `await stop()` it first!',
-					'(This is an Amplify bug; please open a Github Issue:',
-					'https://github.com/aws-amplify/amplify-js/issues)',
-				].join('\n')
-			);
-		}
-
-		this.runningProcesses = new BackgroundProcessManager();
+		this.runningProcesses =
+			this.runningProcesses || new BackgroundProcessManager();
 
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
