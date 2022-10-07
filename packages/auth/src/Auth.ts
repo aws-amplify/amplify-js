@@ -40,8 +40,8 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
-	Parser,
 	browserOrNode,
+	parseMobileHubConfig,
 	UniversalStorage,
 	urlSafeDecode,
 	HubCallback,
@@ -150,7 +150,7 @@ export class AuthClass {
 		const conf = Object.assign(
 			{},
 			this._config,
-			Parser.parseMobilehubConfig(config).Auth,
+			parseMobileHubConfig(config).Auth,
 			config
 		);
 		this._config = conf;

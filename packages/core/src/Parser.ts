@@ -80,15 +80,3 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
 	return amplifyConfig;
 };
-
-/**
- * @deprecated use per-function export
- */
-export class Parser {
-	static parseMobilehubConfig = parseMobileHubConfig;
-}
-
-/**
- * @deprecated use per-function export
- */
-export default Parser;
