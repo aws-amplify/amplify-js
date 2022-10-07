@@ -11,4 +11,10 @@
  * and limitations under the License.
  */
 
-export { AuthProvider } from './AuthProvider';
+export enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
+}

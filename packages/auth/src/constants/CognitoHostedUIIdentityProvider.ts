@@ -11,4 +11,10 @@
  * and limitations under the License.
  */
 
-export { AuthProvider } from './AuthProvider';
+export enum CognitoHostedUIIdentityProvider {
+	Cognito = 'COGNITO',
+	Google = 'Google',
+	Facebook = 'Facebook',
+	Amazon = 'LoginWithAmazon',
+	Apple = 'SignInWithApple',
+}

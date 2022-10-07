@@ -12,17 +12,15 @@
  */
 
 import { Auth } from './Auth';
-import {
-	CognitoHostedUIIdentityProvider,
-	SignUpParams,
-	GRAPHQL_AUTH_MODE,
-} from './types/Auth';
+
 import {
 	CognitoUser,
 	CookieStorage,
 	appendToCognitoUserAgent,
 } from 'amazon-cognito-identity-js';
-import { AuthErrorStrings } from './common/AuthErrorStrings';
+import { AuthErrorStrings } from './constants/AuthErrorStrings';
+import { GRAPHQL_AUTH_MODE } from './constants/GraphQLAuthMode';
+import { CognitoHostedUIIdentityProvider } from './constants/CognitoHostedUIIdentityProvider';
 
 /**
  * @deprecated use named import
@@ -33,7 +31,6 @@ export {
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
-	SignUpParams,
 	appendToCognitoUserAgent,
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,

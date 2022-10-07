@@ -11,6 +11,20 @@
  * and limitations under the License.
  */
 
-import { Linking } from 'react-native';
-
-export const launchUri = url => Linking.openURL(url);
+export enum AuthErrorTypes {
+	NoConfig = 'noConfig',
+	MissingAuthConfig = 'missingAuthConfig',
+	EmptyUsername = 'emptyUsername',
+	InvalidUsername = 'invalidUsername',
+	EmptyPassword = 'emptyPassword',
+	EmptyCode = 'emptyCode',
+	SignUpError = 'signUpError',
+	NoMFA = 'noMFA',
+	InvalidMFA = 'invalidMFA',
+	EmptyChallengeResponse = 'emptyChallengeResponse',
+	NoUserSession = 'noUserSession',
+	Default = 'default',
+	DeviceConfig = 'deviceConfig',
+	NetworkError = 'networkError',
+	AutoSignInError = 'autoSignInError',
+}
