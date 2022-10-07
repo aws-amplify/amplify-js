@@ -74,7 +74,7 @@ interface IAuthenticatorState {
 
 export default class Authenticator extends React.Component<IAuthenticatorProps, IAuthenticatorState> {
 	_initialAuthState: string;
-	_isMounted: boolean;
+	_isMounted!: boolean;
 
 	constructor(props: IAuthenticatorProps) {
 		super(props);
@@ -130,7 +130,7 @@ export default class Authenticator extends React.Component<IAuthenticatorProps, 
 			this.setState({
 				authState: nextAuthState,
 				authData: nextAuthData,
-				error: null,
+				error: null as never,
 			});
 			logger.log('Auth Data was set:', nextAuthData);
 			logger.info(`authState has been updated to ${nextAuthState}`);

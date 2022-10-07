@@ -1,14 +1,16 @@
 import 'regenerator-runtime/runtime';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { parse } from 'graphql/language/parser';
 
 import { API } from 'aws-amplify';
 
-const getOperationType = operation => {
-	const doc = parse(operation);
+const getOperationType = (operation) => {
+	const doc = parse(operation) as never;
 	const {
 		definitions: [{ operation: operationType }],
-	} = doc;
+	} = doc as {
+		definitions: [{ operation: string }];
+	};
 
 	return operationType;
 };
@@ -62,18 +64,16 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 
 		const {
 			query: { query, variables = {} } = {},
-			mutation: { query: mutation, mutationVariables = {} } = {},
+			mutation: { query: mutation } = {},
 			subscription,
-			onSubscriptionMsg = prevData => prevData,
+			onSubscriptionMsg = (prevData) => prevData,
 		} = this.props;
 
 		let { data, mutation: mutationProp, errors } = this.getDefaultState();
 
 		const hasValidQuery = query && getOperationType(query) === 'query';
-		const hasValidMutation =
-			mutation && getOperationType(mutation) === 'mutation';
-		const hasValidSubscription =
-			subscription && getOperationType(subscription.query) === 'subscription';
+		const hasValidMutation = mutation && getOperationType(mutation) === 'mutation';
+		const hasValidSubscription = subscription && getOperationType(subscription.query) === 'subscription';
 
 		if (!hasValidQuery && !hasValidMutation && !hasValidSubscription) {
 			console.warn('No query, mutation or subscription was specified');
@@ -97,7 +97,7 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 		}
 
 		if (hasValidMutation) {
-			mutationProp = async variables => {
+			mutationProp = async (variables) => {
 				const result = await API.graphql({
 					query: mutation,
 					variables,
@@ -124,7 +124,7 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 						const newData = onSubscriptionMsg(prevData, data);
 						this.setState({ data: newData });
 					},
-					error: err => console.error(err),
+					error: (err) => console.error(err),
 				});
 			} catch (err) {
 				errors = err.errors;
@@ -161,21 +161,15 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 
 		// query
 		const { query: newQuery, variables: newQueryVariables } = newQueryObj || {};
-		const { query: prevQuery, variables: prevQueryVariables } =
-			prevQueryObj || {};
+		const { query: prevQuery, variables: prevQueryVariables } = prevQueryObj || {};
 		const queryChanged =
-			prevQuery !== newQuery ||
-			JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
+			prevQuery !== newQuery || JSON.stringify(prevQueryVariables) !== JSON.stringify(newQueryVariables);
 
 		// mutation
-		const { query: newMutation, variables: newMutationVariables } =
-			newMutationObj || {};
-		const { query: prevMutation, variables: prevMutationVariables } =
-			prevMutationObj || {};
+		const { query: newMutation, variables: newMutationVariables } = newMutationObj || {};
+		const { query: prevMutation, variables: prevMutationVariables } = prevMutationObj || {};
 		const mutationChanged =
-			prevMutation !== newMutation ||
-			JSON.stringify(prevMutationVariables) !==
-				JSON.stringify(newMutationVariables);
+			prevMutation !== newMutation || JSON.stringify(prevMutationVariables) !== JSON.stringify(newMutationVariables);
 
 		if (!loading && (queryChanged || mutationChanged)) {
 			this._fetchData();

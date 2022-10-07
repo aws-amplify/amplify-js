@@ -14,19 +14,11 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
-import {
-	FormField,
-	AmplifyButton,
-	LinkCell,
-	Header,
-	ErrorRow,
-	SignedOutMessage,
-	Wrapper,
-} from '../AmplifyUI';
+import { FormField, AmplifyButton, LinkCell, Header, ErrorRow, SignedOutMessage, Wrapper } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -38,16 +30,13 @@ interface IRequireNewPasswordState extends IAuthPieceState {
 	requiredAttributes: Record<string, any>;
 }
 
-export default class RequireNewPassword extends AuthPiece<
-	IRequireNewPasswordProps,
-	IRequireNewPasswordState
-> {
+export default class RequireNewPassword extends AuthPiece<IRequireNewPasswordProps, IRequireNewPasswordState> {
 	constructor(props: IRequireNewPasswordProps) {
 		super(props);
 
 		this._validAuthStates = ['requireNewPassword'];
 		this.state = {
-			password: null,
+			password: null as never,
 			error: null,
 			requiredAttributes: {},
 		};
@@ -59,22 +48,22 @@ export default class RequireNewPassword extends AuthPiece<
 		const user = this.props.authData;
 		const { password, requiredAttributes } = this.state;
 		logger.debug('Require new password for ' + user.username);
-		Auth.completeNewPassword(user, password, requiredAttributes)
-			.then(user => {
+		Auth.completeNewPassword(user, password!, requiredAttributes)
+			.then((user) => {
 				if (user.challengeName === 'SMS_MFA') {
 					this.changeState('confirmSignIn', user);
 				} else {
 					this.checkContact(user);
 				}
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	generateForm(attribute: string, theme: AmplifyThemeType) {
 		return (
 			<FormField
 				theme={theme}
-				onChangeText={text => {
+				onChangeText={(text) => {
 					const attributes = this.state.requiredAttributes;
 					if (text !== '') attributes[attribute] = text;
 					else delete attributes[attribute];
@@ -100,14 +89,14 @@ export default class RequireNewPassword extends AuthPiece<
 					<View style={theme.sectionBody}>
 						<FormField
 							theme={theme}
-							onChangeText={text => this.setState({ password: text })}
+							onChangeText={(text) => this.setState({ password: text })}
 							label={I18n.get('Password')}
 							placeholder={I18n.get('Enter your password')}
 							secureTextEntry={true}
 							required={true}
 							{...setTestId(TEST_ID.AUTH.PASSWORD_INPUT)}
 						/>
-						{requiredAttributes.map(attribute => {
+						{requiredAttributes.map((attribute) => {
 							logger.debug('attributes', attribute);
 							return this.generateForm(attribute, theme);
 						})}
@@ -118,8 +107,7 @@ export default class RequireNewPassword extends AuthPiece<
 							disabled={
 								!(
 									this.state.password &&
-									Object.keys(this.state.requiredAttributes).length ===
-										Object.keys(requiredAttributes).length
+									Object.keys(this.state.requiredAttributes).length === Object.keys(requiredAttributes).length
 								)
 							}
 							{...setTestId(TEST_ID.AUTH.CHANGE_PASSWORD_BUTTON)}
@@ -145,6 +133,6 @@ export default class RequireNewPassword extends AuthPiece<
 function convertToPlaceholder(str: string) {
 	return str
 		.split('_')
-		.map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase())
+		.map((part) => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase())
 		.join(' ');
 }

@@ -40,15 +40,15 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 	componentDidMount() {
 		const { path, level, filter } = this.props;
 		logger.debug(path);
-		Storage.list(path, { level: level ? level : 'public' })
-			.then(data => {
+		Storage.list(path!, { level: level ? (level as never) : 'public' })
+			.then((data) => {
 				logger.debug(data);
 				if (filter) {
 					data = filter(data);
 				}
 				this.setState({ images: data });
 			})
-			.catch(err => logger.warn(err));
+			.catch((err) => logger.warn(err));
 	}
 
 	render() {
@@ -63,7 +63,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 			width: '100%',
 			height: height,
 		});
-		const list = this.state.images.map(image => {
+		const list = this.state.images.map((image) => {
 			return (
 				<S3Image
 					key={image.key}

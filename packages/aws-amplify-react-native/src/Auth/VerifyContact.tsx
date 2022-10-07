@@ -37,7 +37,7 @@ export default class VerifyContact extends AuthPiece<IVerifyContactProps, IVerif
 
 		this._validAuthStates = ['verifyContact'];
 		this.state = {
-			verifyAttr: null,
+			verifyAttr: null as never,
 			error: null,
 		};
 
@@ -71,7 +71,6 @@ export default class VerifyContact extends AuthPiece<IVerifyContactProps, IVerif
 	}
 
 	verify() {
-		const user = this.props.authData;
 		const attr = this.state.pickAttr;
 		if (!attr) {
 			this.error('Neither Email nor Phone Number selected');
@@ -90,7 +89,7 @@ export default class VerifyContact extends AuthPiece<IVerifyContactProps, IVerif
 	submit() {
 		const attr = this.state.verifyAttr;
 		const { code } = this.state;
-		Auth.verifyCurrentUserAttributeSubmit(attr, code)
+		Auth.verifyCurrentUserAttributeSubmit(attr!, code!)
 			.then((data) => {
 				logger.debug(data);
 				this.changeState('signedIn', this.props.authData);
@@ -148,7 +147,6 @@ export default class VerifyContact extends AuthPiece<IVerifyContactProps, IVerif
 			return null;
 		}
 
-		const { email, phone_number } = unverified;
 		return (
 			<View style={theme.sectionBody}>
 				{this.createPicker(unverified)}

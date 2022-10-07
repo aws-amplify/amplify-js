@@ -81,8 +81,6 @@ interface IPhoneState {
 	phone: string;
 }
 
-const minWidth = { minWidth: Platform.OS === 'android' ? 16 : 0 };
-
 export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 	constructor(props: IPhoneProps) {
 		super(props);
@@ -161,7 +159,7 @@ export const LinkCell: FC<ILinkCellProps> = (props) => {
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={theme.linkUnderlay.color}
-				{...setTestId(props.testID)}
+				{...setTestId(props.testID!)}
 				disabled={disabled}
 			>
 				<Text style={disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink}>{props.children}</Text>
@@ -179,7 +177,7 @@ export const Header: FC<IHeaderProps> = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText} {...setTestId(props.testID)}>
+			<Text style={theme.sectionHeaderText} {...setTestId(props.testID!)}>
 				{props.children}
 			</Text>
 		</View>

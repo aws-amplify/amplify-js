@@ -61,7 +61,7 @@ export function withAuthenticator<Props extends object>(
 	includeGreetings: boolean | { [index: string]: any } = false,
 	authenticatorComponents = [],
 	federated = null,
-	theme: AmplifyThemeType = null,
+	theme: AmplifyThemeType = null as never,
 	signUpConfig: ISignUpConfig = {}
 ) {
 	class Wrapper extends React.Component<Props & IWithAuthenticatorProps, IWithAuthenticatorState> {
@@ -72,7 +72,7 @@ export function withAuthenticator<Props extends object>(
 
 			this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
 
-			this.state = { authState: props.authState };
+			this.state = { authState: props.authState! };
 
 			this.authConfig = {};
 

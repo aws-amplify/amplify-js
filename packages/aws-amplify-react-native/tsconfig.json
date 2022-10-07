@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
-		"strict": false,
+		"strict": true,
+		"skipLibCheck": true,
 		"outDir": "./dist/",
 		"sourceMap": true,
 		"noImplicitAny": false,

@@ -33,7 +33,7 @@ export default class ConfirmSignUp extends AuthPiece<IConfirmSignUpProps, IConfi
 
 		this._validAuthStates = ['confirmSignUp'];
 		this.state = {
-			username: null,
+			username: null as never,
 			code: null,
 			error: null,
 		};
@@ -46,7 +46,7 @@ export default class ConfirmSignUp extends AuthPiece<IConfirmSignUpProps, IConfi
 		const { code } = this.state;
 		const username = this.getUsernameFromInput();
 		logger.debug('Confirm Sign Up for ' + username);
-		Auth.confirmSignUp(username, code)
+		Auth.confirmSignUp(username!, code!)
 			.then((data) => this.changeState('signedUp'))
 			.catch((err) => this.error(err));
 	}
@@ -54,7 +54,7 @@ export default class ConfirmSignUp extends AuthPiece<IConfirmSignUpProps, IConfi
 	resend() {
 		const username = this.getUsernameFromInput();
 		logger.debug('Resend Sign Up for ' + username);
-		Auth.resendSignUp(username)
+		Auth.resendSignUp(username!)
 			.then(() => logger.debug('code sent'))
 			.catch((err) => this.error(err));
 	}

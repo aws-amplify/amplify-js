@@ -32,7 +32,7 @@ import signUpWithUsernameFields, {
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
 import { ISignUpField } from '../../types';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('SignUp');
 
@@ -55,7 +55,7 @@ interface ISignUpState extends IAuthPieceState {
 export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 	header: string;
 	defaultSignUpFields: ISignUpField[];
-	signUpFields: ISignUpField[];
+	signUpFields!: ISignUpField[];
 
 	constructor(props: ISignUpProps) {
 		super(props);
@@ -95,19 +95,16 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 			this.props.signUpConfig.hiddenDefaults &&
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
-			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
-				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
+			this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
+				return !this.props.signUpConfig!.hiddenDefaults!.includes(d.key);
 			});
 		}
 
 		if (this.checkCustomSignUpFields()) {
-			if (
-				!this.props.signUpConfig ||
-				!this.props.signUpConfig.hideAllDefaults
-			) {
+			if (!this.props.signUpConfig || !this.props.signUpConfig.hideAllDefaults) {
 				// see if fields passed to component should override defaults
 				this.defaultSignUpFields.forEach((f, i) => {
-					const matchKey = this.signUpFields.findIndex(d => {
+					const matchKey = this.signUpFields.findIndex((d) => {
 						return d.key === f.key;
 					});
 					if (matchKey === -1) {
@@ -116,7 +113,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 				});
 			}
 
-			/* 
+			/*
             sort fields based on following rules:
             1. Fields with displayOrder are sorted before those without displayOrder
             2. Fields with conflicting displayOrder are sorted alphabetically by key
@@ -146,6 +143,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 						return 1;
 					}
 				}
+				return undefined as never;
 			});
 		} else {
 			this.signUpFields = this.defaultSignUpFields;
@@ -153,13 +151,11 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 	}
 
 	needPrefix(key) {
-		const field = this.signUpFields.find(e => e.key === key);
+		const field = this.signUpFields.find((e) => e.key === key);
 		if (key.indexOf('custom:') !== 0) {
-			return field.custom;
-		} else if (key.indexOf('custom:') === 0 && field.custom === false) {
-			logger.warn(
-				'Custom prefix prepended to key but custom field flag is set to false'
-			);
+			return field!.custom;
+		} else if (key.indexOf('custom:') === 0 && field!.custom === false) {
+			logger.warn('Custom prefix prepended to key but custom field flag is set to false');
 		}
 		return null;
 	}
@@ -167,26 +163,20 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 	getDefaultDialCode() {
 		return this.props.signUpConfig &&
 			this.props.signUpConfig.defaultCountryCode &&
-			countryDialCodes.indexOf(
-				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== -1
+			countryDialCodes.indexOf(`+${this.props.signUpConfig.defaultCountryCode}`) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
 
 	checkCustomSignUpFields() {
 		return (
-			this.props.signUpConfig &&
-			this.props.signUpConfig.signUpFields &&
-			this.props.signUpConfig.signUpFields.length > 0
+			this.props.signUpConfig && this.props.signUpConfig.signUpFields && this.props.signUpConfig.signUpFields.length > 0
 		);
 	}
 
 	signUp() {
 		if (!Auth || typeof Auth.signUp !== 'function') {
-			throw new Error(
-				'No Auth module found, please ensure @aws-amplify/auth is imported'
-			);
+			throw new Error('No Auth module found, please ensure @aws-amplify/auth is imported');
 		}
 
 		const signup_info = {
@@ -200,11 +190,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 
 		inputKeys.forEach((key, index) => {
 			if (!['username', 'password', 'checkedValue'].includes(key)) {
-				if (
-					key !== 'phone_line_number' &&
-					key !== 'dial_code' &&
-					key !== 'error'
-				) {
+				if (key !== 'phone_line_number' && key !== 'dial_code' && key !== 'error') {
 					const newKey = `${this.needPrefix(key) ? 'custom:' : ''}${key}`;
 					signup_info.attributes[newKey] = inputVals[index];
 				}
@@ -212,11 +198,10 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 		});
 
 		let labelCheck = false;
-		this.signUpFields.forEach(field => {
+		this.signUpFields.forEach((field) => {
 			if (field.label === this.getUsernameLabel()) {
 				logger.debug(`Changing the username to the value of ${field.label}`);
-				signup_info.username =
-					signup_info.attributes[field.key] || signup_info.username;
+				signup_info.username = signup_info.attributes[field.key] || signup_info.username;
 				labelCheck = true;
 			}
 		});
@@ -230,30 +215,27 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 		}
 
 		logger.debug('Signing up with', signup_info);
-		Auth.signUp(signup_info)
-			.then(data => {
+		Auth.signUp(signup_info as never)
+			.then((data) => {
 				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	showComponent(theme) {
 		if (this.checkCustomSignUpFields()) {
-			this.signUpFields = this.props.signUpConfig.signUpFields;
+			this.signUpFields = this.props.signUpConfig!.signUpFields!;
 		}
 		this.sortFields();
 		return (
 			<Wrapper>
-				<ScrollView 
-					style={theme.sectionScroll}
-					keyboardShouldPersistTaps='handled'
-					>
+				<ScrollView style={theme.sectionScroll} keyboardShouldPersistTaps="handled">
 					<Header theme={theme} testID={TEST_ID.AUTH.SIGN_UP_TEXT}>
 						{I18n.get(this.header)}
 					</Header>
 					<View style={theme.sectionBody}>
-						{this.signUpFields.map(field => {
+						{this.signUpFields.map((field) => {
 							return field.key !== 'phone_number' ? (
 								<FormField
 									key={field.key}
@@ -261,7 +243,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									// @ts-ignore
 									type={field.type}
 									secureTextEntry={field.type === 'password'}
-									onChangeText={text => {
+									onChangeText={(text) => {
 										const stateObj = this.state;
 										stateObj[field.key] = text;
 										this.setState(stateObj);
@@ -269,19 +251,19 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
 									required={field.required}
-									{...setTestId(field.testID)}
+									{...setTestId(field.testID!)}
 								/>
 							) : (
 								<PhoneField
 									theme={theme}
 									key={field.key}
-									onChangeText={text => this.setState({ phone_number: text })}
+									onChangeText={(text) => this.setState({ phone_number: text })}
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
 									keyboardType="phone-pad"
 									required={field.required}
 									defaultDialCode={this.getDefaultDialCode()}
-									{...setTestId(field.testID)}
+									{...setTestId(field.testID!)}
 								/>
 							);
 						})}
@@ -301,11 +283,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 						>
 							{I18n.get('Confirm a Code')}
 						</LinkCell>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('signIn')}
-							testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
-						>
+						<LinkCell theme={theme} onPress={() => this.changeState('signIn')} testID={TEST_ID.AUTH.SIGN_IN_BUTTON}>
 							{I18n.get('Sign In')}
 						</LinkCell>
 					</View>
