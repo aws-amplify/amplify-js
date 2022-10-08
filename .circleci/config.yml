@@ -1173,6 +1173,23 @@ jobs:
           spec: next-owner-based-default
           browser: << parameters.browser >>
 
+  integ_react_datastore_custom_pk:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk
+          spec: custom-pk
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1627,6 +1644,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_custom_pk:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1675,6 +1701,7 @@ workflows:
             - integ_react_graphql_api
             - integ_react_geo
             - integ_next_datastore_owner_auth
+            - integ_react_datastore_custom_pk
       - post_release:
           filters:
             branches:
