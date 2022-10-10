@@ -11,7 +11,7 @@
 		"test": "jest -w 1 --maxWorkers 2",
 		"transpile": "ngc",
 		"package": "rollup -c rollup.config.js",
-		"minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
+		"minify": "uglifyjs dist/bundles/aws-amplify-angular.umd.js --compress --mangle --comments --output dist/bundles/aws-amplify-angular.umd.min.js",
 		"build": "npm run transpile && npm run package && npm run minify && npm run declarations",
 		"build:esm:watch": "ngc --watch",
 		"build:cjs:watch": "echo \"CommonJS modules are not exported in angular. Use target build:esm:watch\"",
@@ -62,7 +62,7 @@
 		"rxjs": "^6.2.1",
 		"source-map-explorer": "^1.3.3",
 		"to-string-loader": "^1.1.5",
-		"uglify-js": "3.9.4",
+		"uglify-js": "^3.9.4",
 		"zone.js": "^0.8.26"
 	},
 	"dependencies": {
