@@ -4,4 +4,3 @@ export { default as Reachability } from './Reachability';
 export * from './DateUtils';
 export * from './StringUtils';
 export * from './Constants';
-export * from './BackgroundProcessManager';

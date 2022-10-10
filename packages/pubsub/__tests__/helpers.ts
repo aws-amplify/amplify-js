@@ -229,7 +229,7 @@ export class FakeWebSocketInterface {
 	 * Run a gicommand and resolve to allow internal behavior to execute
 	 */
 	async runAndResolve(fn) {
-		await fn();
+		fn();
 		await Promise.resolve();
 	}
 
@@ -283,6 +283,7 @@ class FakeWebSocket implements WebSocket {
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
+
 		this.subscriptionId = parsedInput.id;
 	}
 	CLOSED: number;
