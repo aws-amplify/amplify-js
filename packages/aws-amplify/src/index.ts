@@ -44,7 +44,7 @@ export {
 export { PubSub } from '@aws-amplify/pubsub';
 export { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
-export * from '@aws-amplify/ui';
+export { Notifications } from '@aws-amplify/notifications';
 export { XR } from '@aws-amplify/xr';
 export { Predictions } from '@aws-amplify/predictions';
 export {

@@ -593,6 +593,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
 				);
 
+				observer.error({
+					errors: [
+						{
+							...new GraphQLError(
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
+							),
+						},
+					],
+				});
+
 				if (startAckTimeoutId) clearTimeout(startAckTimeoutId);
 
 				if (typeof subscriptionFailedCallback === 'function') {

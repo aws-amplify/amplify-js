@@ -42,11 +42,12 @@
     "@aws-amplify/datastore": "3.12.12",
     "@aws-amplify/geo": "1.3.18",
     "@aws-amplify/interactions": "4.1.3",
+    "@aws-amplify/notifications": "1.0.0",
     "@aws-amplify/predictions": "4.0.55",
     "@aws-amplify/pubsub": "4.5.5",
     "@aws-amplify/storage": "4.5.8",
-    "@aws-amplify/ui": "2.0.5",
-    "@aws-amplify/xr": "3.0.55"
+    "@aws-amplify/xr": "3.0.55",
+    "tslib": "^2.0.0"
   },
   "jest": {
     "globals": {

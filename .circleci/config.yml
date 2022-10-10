@@ -386,6 +386,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout next-major-version/5
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -405,13 +406,6 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - prepare_test_env
-      - integ_test_js:
-          test_name: 'React Authenticator'
-          framework: react
-          category: auth
-          sample_name: with-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
@@ -1218,6 +1212,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - in-app-messaging/main
       - next-major-version/5
 
 test_browsers: &test_browsers
