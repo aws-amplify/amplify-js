@@ -4,7 +4,13 @@
 		"allowUnreachableCode": false,
 		"declaration": false,
 		"experimentalDecorators": true,
-		"lib": ["dom", "es2017", "ES2018.AsyncIterable", "ES2018.AsyncGenerator"],
+		"lib": [
+			"dom",
+			"es2017",
+			"ES2018.AsyncIterable",
+			"ES2018.AsyncGenerator",
+			"ES2020.Promise"
+		],
 		"moduleResolution": "node",
 		"module": "esnext",
 		"target": "es2017",
