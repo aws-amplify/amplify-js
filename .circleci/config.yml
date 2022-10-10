@@ -1209,7 +1209,7 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:main
+            git push --force-with-lease origin release:main
 
 releasable_branches: &releasable_branches
   branches:

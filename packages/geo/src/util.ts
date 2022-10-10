@@ -178,3 +178,26 @@ export function validateGeofencesInput(geofences: GeofenceInput[]) {
 		validateLinearRing(linearRing, geofenceId);
 	});
 }
+
+export function mapSearchOptions(options, locationServiceInput) {
+	const locationServiceModifiedInput = { ...locationServiceInput };
+	locationServiceModifiedInput.FilterCountries = options.countries;
+	locationServiceModifiedInput.MaxResults = options.maxResults;
+
+	if (options.searchIndexName) {
+		locationServiceModifiedInput.IndexName = options.searchIndexName;
+	}
+
+	if (options['biasPosition'] && options['searchAreaConstraints']) {
+		throw new Error(
+			'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+		);
+	}
+	if (options['biasPosition']) {
+		locationServiceModifiedInput.BiasPosition = options['biasPosition'];
+	}
+	if (options['searchAreaConstraints']) {
+		locationServiceModifiedInput.FilterBBox = options['searchAreaConstraints'];
+	}
+	return locationServiceModifiedInput;
+}
