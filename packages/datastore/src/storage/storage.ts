@@ -407,7 +407,7 @@ class StorageClass implements StorageFacade {
 			}
 		});
 
-		// Exit early when there are no changes introduced in the update mutation
+        // Exit early when there are no changes introduced in the update mutation 
 		if (Object.keys(updatedElement).length === 0) {
 			return null;
 		}
@@ -532,7 +532,7 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	async clear() {
-		await this.runExclusive(storage => storage.clear());
+		await this.storage.clear();
 	}
 
 	batchSave<T extends PersistentModel>(
