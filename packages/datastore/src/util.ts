@@ -39,13 +39,13 @@ export const ID = 'id';
  * Used by the Async Storage Adapter to concatenate key values
  * for a record. For instance, if a model has the following keys:
  * `customId: ID! @primaryKey(sortKeyFields: ["createdAt"])`,
- * we concatenate the `customId` and `createdAt` as:
+ * we concatenate the `customId` and `createdAt` as: 
  * `12-234-5#2022-09-28T00:00:00.000Z`
  */
 export const DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR = '#';
 
 /**
- * Used for generating spinal-cased index name from an array of
+ * Used for generating spinal-cased index name from an array of 
  * key field names.
  * E.g. for keys `[id, title]` => 'id-title'
  */

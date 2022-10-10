@@ -52,12 +52,6 @@ export default class DataStoreConnectivity {
 		}
 	}
 
-	// for consistency with other background processors.
-	async stop() {
-		this.unsubscribe();
-		return;
-	}
-
 	socketDisconnected() {
 		if (this.observer && typeof this.observer.next === 'function') {
 			this.observer.next({ online: false }); // Notify network issue from the socket
