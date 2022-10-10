@@ -94,6 +94,7 @@ import {
 	mergePatches,
 } from '../util';
 import { getIdentifierValue } from '../sync/utils';
+import DataStoreConnectivity from '../sync/datastoreConnectivity';
 
 setAutoFreeze(true);
 enablePatches();
@@ -870,6 +871,7 @@ class DataStore {
 		API: this.API,
 		Cache: this.Cache,
 	};
+	private connectivityMonitor?: DataStoreConnectivity;
 
 	/**
 	 * **IMPORTANT!**
@@ -925,7 +927,6 @@ class DataStore {
 				});
 			} else {
 				await this.initialized;
-
 				return;
 			}
 
@@ -962,7 +963,8 @@ class DataStore {
 					this.syncPredicates,
 					this.amplifyConfig,
 					this.authModeStrategy,
-					this.amplifyContext
+					this.amplifyContext,
+					this.connectivityMonitor
 				);
 
 				const fullSyncIntervalInMilliseconds =
@@ -971,6 +973,8 @@ class DataStore {
 					.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 					.subscribe({
 						next: ({ type, data }) => {
+							// console.log('sync sub message', { type, data });
+
 							// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
 							// In the Browser, we can begin returning data once subscriptions are in place.
 							const readyType = isNode

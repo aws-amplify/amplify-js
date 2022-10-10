@@ -124,6 +124,7 @@ class MutationProcessor {
 			this.observer = observer;
 
 			try {
+				console.log('resuming mutations from start()');
 				this.resume();
 			} catch (error) {
 				logger.error('mutations processor start error', error);
@@ -143,9 +144,16 @@ class MutationProcessor {
 	}
 
 	public async resume(): Promise<void> {
+		console.log('resume mutations', {
+			processing: this.processing,
+			isReady: this.isReady(),
+			isOpen: this.runningProcesses.isOpen,
+			head: await this.outbox.peek(this.storage),
+		});
 		return (
 			this.runningProcesses.isOpen &&
 			this.runningProcesses.add(async onTerminate => {
+				onTerminate.then(() => console.log('terminating mutation processing'));
 				if (
 					this.processing ||
 					!this.isReady() ||
@@ -164,6 +172,7 @@ class MutationProcessor {
 					this.runningProcesses.isOpen &&
 					(head = await this.outbox.peek(this.storage)) !== undefined
 				) {
+					console.log({ head });
 					const { model, operation, data, condition } = head;
 					const modelConstructor = this.userClasses[
 						model
@@ -202,12 +211,15 @@ class MutationProcessor {
 									onTerminate
 								);
 
+								console.log('mutation sent', { response, head });
+
 								logger.debug(
 									`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
 								);
 
 								return response;
 							} catch (error) {
+								console.error('mutation error 2', error);
 								authModeAttempts++;
 								if (authModeAttempts >= operationAuthModes.length) {
 									logger.debug(
@@ -230,6 +242,7 @@ class MutationProcessor {
 
 						[result, opName, modelDefinition] = await authModeRetry();
 					} catch (error) {
+						console.error('mutation error', error);
 						if (
 							error.message === 'Offline' ||
 							error.message === 'RetryMutation'
@@ -254,6 +267,13 @@ class MutationProcessor {
 						// when another record gets enqueued between dequeue and peek
 						await this.outbox.dequeue(storage, record, operation);
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
+					});
+
+					console.log('mustation observer.next', {
+						operation,
+						modelDefinition,
+						record,
+						hasMore,
 					});
 
 					this.observer.next({

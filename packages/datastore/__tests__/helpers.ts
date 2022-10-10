@@ -1,4 +1,5 @@
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
+import { parse } from 'graphql';
 import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
 import {
 	DataStore as DS,
@@ -392,12 +393,356 @@ export async function expectIsolation(
 	}
 }
 
+type ConnectionStatus = {
+	online: boolean;
+};
+
+/**
+ * Used to simulate connectivity changes, which are handled by the sync processors.
+ */
+class FakeDataStoreConnectivity {
+	private connectionStatus: ConnectionStatus;
+	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+
+	constructor() {
+		this.connectionStatus = {
+			online: true,
+		};
+	}
+
+	status(): Observable<ConnectionStatus> {
+		if (this.observer) {
+			throw new Error('Subscriber already exists');
+		}
+		return new Observable(observer => {
+			// the real connectivity monitor subscribes to reachability events here and
+			// basically just forwards them through.
+			this.observer = observer;
+			this.observer?.next(this.connectionStatus);
+			return () => {
+				this.unsubscribe();
+			};
+		});
+	}
+
+	/**
+	 * Signal to datastore (especially sync processors) that we're ONLINE.
+	 *
+	 * The real connectivity monitor sends this signal when the platform reachability
+	 * monitor says we have GAINED basic connectivity.
+	 */
+	simulateConnect() {
+		this.connectionStatus = { online: true };
+		this.observer?.next(this.connectionStatus);
+	}
+
+	/**
+	 * Signal to datastore (especially sync processors) that we're OFFLINE.
+	 *
+	 * The real connectivity monitor sends this signal when the platform reachability
+	 * monitor says we have LOST basic connectivity.
+	 */
+	simulateDisconnect() {
+		this.connectionStatus = { online: false };
+		this.observer?.next(this.connectionStatus);
+	}
+
+	unsubscribe() {}
+	async stop() {}
+
+	socketDisconnected() {
+		if (this.observer && typeof this.observer.next === 'function') {
+			this.observer.next({ online: false }); // Notify network issue from the socket
+		}
+	}
+}
+
+/**
+ * Statefully pretends to be AppSync, with minimal built-in asertions with
+ * error callbacks and settings to help simulate various conditions.
+ */
+class FakeGraphQLService {
+	public requests = [] as any[];
+	public tables = new Map<string, Map<string, any[]>>();
+	public PKFields = new Map<string, string[]>();
+	public observers = new Map<
+		string,
+		ZenObservable.SubscriptionObserver<any>[]
+	>();
+
+	constructor(public schema: Schema) {
+		for (const model of Object.values(schema.models)) {
+			this.tables.set(model.name, new Map<string, any[]>());
+			let CPKFound = false;
+			for (const attribute of model.attributes || []) {
+				// Pretty sure the first key is the PK.
+				if (attribute.type === 'key') {
+					this.PKFields.set(model.name, attribute!.properties!.fields);
+					CPKFound = true;
+					break;
+				}
+			}
+			if (!CPKFound) {
+				this.PKFields.set(model.name, ['id']);
+			}
+		}
+		// console.log('initialized FakeGraphQLServier', {
+		// 	tables: this.tables,
+		// 	PKFields: this.PKFields,
+		// });
+	}
+
+	public parseQuery(query) {
+		const q = (parse(query) as any).definitions[0];
+
+		const operation = q.operation;
+		const name = q.name.value;
+		const selections = q.selectionSet.selections[0];
+		const selection = selections.name.value;
+		const type = selection.match(
+			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+		)[1];
+
+		let table;
+		if (type === 'sync' || type === 'list') {
+			table = selection.match(/^(create|sync|get|list)(\w+)s$/)[2];
+		} else {
+			table = selection.match(
+				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+			)[2];
+		}
+
+		const items =
+			operation === 'query'
+				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(
+						i => i.name.value
+				  )
+				: selections?.selectionSet?.selections?.map(i => i.name.value);
+
+		return { operation, name, selection, type, table, items };
+	}
+
+	public subscribe(tableName, type, observer) {
+		this.getObservers(tableName, type.substring(2))!.push(observer);
+	}
+
+	public getObservers(tableName, type) {
+		const triggerName = `${tableName}.${type.toLowerCase()}`;
+		if (!this.observers.has(triggerName)) this.observers.set(triggerName, []);
+		return this.observers.get(triggerName) || [];
+	}
+
+	public getTable(name): Map<string, any> {
+		if (!this.tables.has(name)) this.tables.set(name, new Map<string, any[]>());
+		return this.tables.get(name)!;
+	}
+
+	public getPK(table, instance): string {
+		const pkfields = this.PKFields.get(table)!;
+		const values = pkfields.map(k => instance[k]);
+		return JSON.stringify(values);
+	}
+
+	public makeConditionalUpateFailedError(selection) {
+		// Reponse taken from AppSync console trying to create already existing model.
+		return {
+			path: [selection],
+			data: null,
+			errorType: 'ConditionalCheckFailedException',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message:
+				'The conditional request failed (Service: DynamoDb, Status Code: 400, Request ID: 123456789123456789012345678901234567890)',
+		};
+	}
+
+	public makeMissingUpdateTarget(selection) {
+		// Response from AppSync console on non-existent model.
+		return {
+			path: [selection],
+			data: null,
+			errorType: 'Unauthorized',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: `Not Authorized to access ${selection} on type Mutation`,
+		};
+	}
+
+	/**
+	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
+	 *
+	 * @param param0
+	 */
+	public graphql({ query, variables, authMode, authToken }) {
+		return this.request({ query, variables, authMode, authToken });
+	}
+
+	public request({ query, variables, authMode, authToken }) {
+		// console.log('API request', { query, variables, authMode, authToken });
+
+		const {
+			operation,
+			selection,
+			table: tableName,
+			type,
+		} = this.parseQuery(query);
+
+		this.requests.push({ query, variables, authMode, authToken });
+		let data;
+		let errors = [] as any;
+
+		const table = this.getTable(tableName);
+
+		if (operation === 'query') {
+			if (type === 'get') {
+				const record = table.get(this.getPK(tableName, variables.input));
+				data = { [selection]: record };
+			} else if (type === 'list' || type === 'sync') {
+				data = {
+					[selection]: {
+						items: [...table.values()],
+						nextToken: null,
+						startedAt: new Date().getTime(),
+					},
+				};
+			}
+		} else if (operation === 'mutation') {
+			const record = variables.input;
+			if (type === 'create') {
+				const existing = table.get(this.getPK(tableName, record));
+				if (existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else {
+					data = {
+						[selection]: {
+							...record,
+							_deleted: false,
+							_version: 1,
+							_lastChangedAt: new Date().getTime(),
+						},
+					};
+					table.set(this.getPK(tableName, record), data[selection]);
+				}
+			} else if (type === 'update') {
+				// Simluate update using the default (AUTO_MERGE) for now.
+				// NOTE: We're not doing list/set merging. :o
+				const existing = table.get(this.getPK(tableName, record));
+				if (!existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingUpdateTarget(selection)];
+				} else {
+					data = {
+						[selection]: {
+							...existing,
+							...record,
+							_version: existing._version + 1,
+							_lastChangedAt: new Date().getTime(),
+						},
+					};
+					table.set(this.getPK(tableName, record), data[selection]);
+				}
+			} else if (type === 'delete') {
+				const existing = table.get(this.getPK(tableName, record));
+				if (!existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingUpdateTarget(selection)];
+				} else if (existing._version !== record._version) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else {
+					data = {
+						[selection]: {
+							...existing,
+							...record,
+							_deleted: true,
+							_version: existing._version + 1,
+							_lastChangedAt: new Date().getTime(),
+						},
+					};
+					table.set(this.getPK(tableName, record), data[selection]);
+				}
+			}
+
+			const observers = this.getObservers(tableName, type);
+			// console.log('observers', { observers, all: this.observers });
+			const typeName = {
+				create: 'Create',
+				update: 'Update',
+				delete: 'Delete',
+			}[type];
+			const observerMessageName = `on${typeName}${tableName}`;
+			observers.forEach(observer => {
+				const message = {
+					value: {
+						data: {
+							[observerMessageName]: data[selection],
+						},
+					},
+				};
+				// console.log('sending mutation', observerMessageName, message);
+				observer.next(message);
+			});
+		} else if (operation === 'subscription') {
+			return new Observable(observer => {
+				this.subscribe(tableName, type, observer);
+				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
+			});
+		}
+
+		return Promise.resolve({
+			data,
+			errors,
+			extensions: {},
+		});
+	}
+}
+
 /**
  * Re-requries DataStore, initializes the test schema.
  *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore() {
+export function getDataStore({ online = false, isNode = true } = {}) {
+	jest.clearAllMocks();
+	jest.resetModules();
+
+	const connectivityMonitor = new FakeDataStoreConnectivity();
+	const graphqlService = new FakeGraphQLService(testSchema());
+
+	if (!isNode) {
+		jest.mock('@aws-amplify/core', () => {
+			const actual = jest.requireActual('@aws-amplify/core');
+			return {
+				...actual,
+				browserOrNode: () => ({
+					isBrowser: true,
+					isNode: false,
+				}),
+			};
+		});
+	}
+
 	const {
 		initSchema,
 		DataStore,
@@ -405,6 +750,14 @@ export function getDataStore() {
 		initSchema: initSchemaType;
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
+
+	// private, test-only DI's.
+	if (online) {
+		(DataStore as any).amplifyContext.API = graphqlService;
+		(DataStore as any).connectivityMonitor = connectivityMonitor;
+		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
+			'https://0.0.0.0/graphql';
+	}
 
 	const classes = initSchema(testSchema());
 	const {
@@ -429,6 +782,8 @@ export function getDataStore() {
 
 	return {
 		DataStore,
+		connectivityMonitor,
+		graphqlService,
 		Post,
 		Comment,
 		User,

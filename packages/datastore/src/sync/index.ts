@@ -135,7 +135,8 @@ export class SyncEngine {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
+		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
 
@@ -184,7 +185,8 @@ export class SyncEngine {
 			this.amplifyContext
 		);
 
-		this.datastoreConnectivity = new DataStoreConnectivity();
+		this.datastoreConnectivity =
+			this.connectivityMonitor || new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -310,6 +312,11 @@ export class SyncEngine {
 										.start()
 										.subscribe(({ modelDefinition, model: item, hasMore }) =>
 											this.runningProcesses.add(async () => {
+												console.log('mutation processor message received', {
+													modelDefinition,
+													item,
+													hasMore,
+												});
 												const modelConstructor = this.userModelClasses[
 													modelDefinition.name
 												] as PersistentModelConstructor<any>;
@@ -425,6 +432,8 @@ export class SyncEngine {
 
 								await this.outbox.enqueue(this.storage, mutationEvent);
 
+								console.log('done enqueueing', mutationEvent, observer);
+
 								observer.next({
 									type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED,
 									data: {
@@ -443,6 +452,12 @@ export class SyncEngine {
 								await startPromise;
 
 								if (this.online) {
+									console.log('resuming mutations from storage event', {
+										opType,
+										model,
+										element,
+										condition,
+									});
 									this.mutationsProcessor.resume();
 								}
 							}, 'storage event'),
@@ -519,10 +534,14 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 
+			console.log('syncQueriesObservable new subscribe');
+
 			this.runningProcesses.add(async () => {
 				let terminated = false;
 
 				while (!observer.closed && !terminated) {
+					console.log('syncQueriesObservable new subscribe - stage 2');
+
 					const count: WeakMap<
 						PersistentModelConstructor<any>,
 						{
@@ -761,6 +780,7 @@ export class SyncEngine {
 			}, 'syncQueriesObservable main');
 
 			return this.runningProcesses.addCleaner(async () => {
+				console.log('cleaning syncQueriesObservable');
 				logger.debug('cleaning syncQueriesObservable');
 
 				if (syncQueriesSubscription) {
@@ -791,6 +811,8 @@ export class SyncEngine {
 	 * that they're disconnected, done retrying, etc..
 	 */
 	public async stop() {
+		console.error(new Error("what's stopping the engine"));
+		console.log('stopping sync engine');
 		logger.debug('stopping sync engine');
 
 		/**
