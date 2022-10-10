@@ -18,74 +18,41 @@ const isNonRetryableError = (obj: any): obj is NonRetryableError => {
  * @private
  * Internal use of Amplify only
  */
-export async function retry<T>(
-	functionToRetry: (...args: any[]) => T,
+export async function retry(
+	functionToRetry: Function,
 	args: any[],
 	delayFn: DelayFunction,
-	onTerminate?: Promise<void>
-): Promise<T> {
+	attempt: number = 1
+) {
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
+	logger.debug(
+		`${
+			functionToRetry.name
+		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
+	);
 
-	return new Promise(async (resolve, reject) => {
-		let attempt = 0;
-		let terminated = false;
-		let timeout: any;
-		let wakeUp: any = () => {}; // will be replaced with a resolver()
+	try {
+		return await functionToRetry(...args);
+	} catch (err) {
+		logger.debug(`error on ${functionToRetry.name}`, err);
 
-		// used after the loop if terminated while waiting for a timer.
-		let lastError: Error;
-
-		onTerminate &&
-			onTerminate.then(() => {
-				// signal not to try anymore.
-				terminated = true;
-
-				// stop sleeping if we're sleeping.
-				clearTimeout(timeout);
-				wakeUp();
-			});
-
-		while (!terminated) {
-			attempt++;
-
-			logger.debug(
-				`${
-					functionToRetry.name
-				} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
-			);
-
-			try {
-				return resolve(await functionToRetry(...args));
-			} catch (err) {
-				lastError = err;
-				logger.debug(`error on ${functionToRetry.name}`, err);
-
-				if (isNonRetryableError(err)) {
-					logger.debug(`${functionToRetry.name} non retryable error`, err);
-					return reject(err);
-				}
-
-				const retryIn = delayFn(attempt, args, err);
-				logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
-
-				// we check `terminated` again here because it could have flipped
-				// in the time it took `functionToRetry` to return.
-				if (retryIn === false || terminated) {
-					return reject(err);
-				} else {
-					await new Promise(r => {
-						wakeUp = r; // export wakeUp for onTerminate handling
-						timeout = setTimeout(wakeUp, retryIn);
-					});
-				}
-			}
+		if (isNonRetryableError(err)) {
+			logger.debug(`${functionToRetry.name} non retryable error`, err);
+			throw err;
 		}
 
-		// reached if terminated while waiting for a timer.
-		reject(lastError);
-	});
+		const retryIn = delayFn(attempt, args, err);
+		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
+
+		if (retryIn !== false) {
+			await new Promise(res => setTimeout(res, retryIn));
+			return await retry(functionToRetry, args, delayFn, attempt + 1);
+		} else {
+			throw err;
+		}
+	}
 }
 
 const MAX_DELAY_MS = 5 * 60 * 1000;
@@ -110,10 +77,8 @@ export function jitteredBackoff(
  * @private
  * Internal use of Amplify only
  */
-export const jitteredExponentialRetry = <T>(
-	functionToRetry: (...args: any[]) => T,
+export const jitteredExponentialRetry = (
+	functionToRetry: Function,
 	args: any[],
-	maxDelayMs: number = MAX_DELAY_MS,
-	onTerminate?: Promise<void>
-): Promise<T> =>
-	retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);
+	maxDelayMs: number = MAX_DELAY_MS
+) => retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
