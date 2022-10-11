@@ -2023,7 +2023,7 @@ export class AuthClass {
 							}
 							return rej(err);
 						}
-						user.globalSignOut({
+						await user.globalSignOut({
 							onSuccess: data => {
 								logger.debug('global sign out success');
 								if (isSignedInHostedUI) {
