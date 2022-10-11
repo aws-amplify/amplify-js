@@ -30,6 +30,7 @@
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts'"
   },
+  "files": ["lib", "lib-esm", "src"],
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
@@ -40,6 +41,7 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": ["lib", "lib-esm", "src"],
   "dependencies": {
     "@aws-amplify/cache": "4.0.59",
     "@aws-amplify/core": "4.7.8",

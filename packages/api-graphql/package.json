@@ -43,6 +43,7 @@
   "devDependencies": {
     "@types/zen-observable": "^0.8.0"
   },
+  "files": ["lib", "lib-esm", "src"],
   "dependencies": {
     "@aws-amplify/api-rest": "2.0.57",
     "@aws-amplify/auth": "4.6.10",

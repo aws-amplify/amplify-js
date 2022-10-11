@@ -47,7 +47,8 @@
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
-	"dependencies": {
+	"files": ["lib", "lib-esm", "src", "ssr", "docs"],
+  "dependencies": {
 		"@aws-amplify/api": "4.0.57",
 		"@aws-amplify/auth": "4.6.10",
 		"@aws-amplify/core": "4.7.8",

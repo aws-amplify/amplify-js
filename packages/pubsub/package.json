@@ -44,6 +44,7 @@
     "@types/zen-observable": "^0.8.0",
     "cpx": "^1.5.0"
   },
+  "files": ["lib", "lib-esm", "src"],
   "dependencies": {
     "@aws-amplify/auth": "4.6.10",
     "@aws-amplify/cache": "4.0.59",
