@@ -86,6 +86,39 @@ describe('Sync', () => {
 			expect(data).toMatchSnapshot();
 		});
 
+		it('custom pk: should return all data', async () => {
+			window.sessionStorage.setItem('datastorePartialData', 'true');
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								postId: '1',
+								title: 'Item 1',
+							},
+							{
+								postId: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			const data = await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(data).toMatchSnapshot();
+		});
+
 		it('should return partial data and send Hub event when datastorePartialData is set', async () => {
 			window.sessionStorage.setItem('datastorePartialData', 'true');
 			const rejectResponse = {
