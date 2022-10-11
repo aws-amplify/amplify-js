@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib-esm/index.js",
+    "./dist/aws-amplify.min.js",
+    "./dist/aws-amplify.js"
+  ],
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
