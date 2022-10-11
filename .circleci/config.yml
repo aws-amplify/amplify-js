@@ -387,6 +387,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout test-cpk-sample
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -1205,7 +1206,6 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1237,6 +1237,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - ds-custom-pk
+      - test-cpk-sample
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
