@@ -433,8 +433,6 @@ class SyncProcessor {
 	}
 
 	async stop() {
-		console.error(new Error("what's stopping the sync?"));
-		console.log('stopping sync');
 		logger.debug('stopping sync processor');
 		this.runningProcesses && (await this.runningProcesses.close());
 		this.runningProcesses = undefined;

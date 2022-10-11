@@ -811,8 +811,6 @@ export class SyncEngine {
 	 * that they're disconnected, done retrying, etc..
 	 */
 	public async stop() {
-		console.error(new Error("what's stopping the engine"));
-		console.log('stopping sync engine');
 		logger.debug('stopping sync engine');
 
 		/**

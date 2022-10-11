@@ -393,12 +393,35 @@ export async function expectIsolation(
 	}
 }
 
+/**
+ * Watches Hub events until an outBoxStatus with isEmpty is received.
+ *
+ * @param verbose Whether to log hub events until empty
+ */
+export async function waitForEmptyOutbox(verbose = false) {
+	return new Promise(resolve => {
+		const { Hub } = require('@aws-amplify/core');
+		const hubCallback = message => {
+			if (verbose) console.log('hub event', message);
+			if (
+				message.payload.event === 'outboxStatus' &&
+				message.payload.data.isEmpty
+			) {
+				Hub.remove('datastore', hubCallback);
+				resolve();
+			}
+		};
+		Hub.listen('datastore', hubCallback);
+	});
+}
+
 type ConnectionStatus = {
 	online: boolean;
 };
 
 /**
- * Used to simulate connectivity changes, which are handled by the sync processors.
+ * Used to simulate connectivity changes, which are handled by the sync
+ * processors. This does not disconnect any other mocked services.
  */
 class FakeDataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
@@ -447,8 +470,12 @@ class FakeDataStoreConnectivity {
 		this.observer?.next(this.connectionStatus);
 	}
 
-	unsubscribe() {}
-	async stop() {}
+	unsubscribe() {
+		this.observer = undefined;
+	}
+	async stop() {
+		this.unsubscribe();
+	}
 
 	socketDisconnected() {
 		if (this.observer && typeof this.observer.next === 'function') {
@@ -580,6 +607,32 @@ class FakeGraphQLService {
 		};
 	}
 
+	private populatedFields(record) {
+		return Object.fromEntries(
+			Object.entries(record).filter(([key, value]) => value)
+		);
+	}
+
+	private autoMerge(existing, updated) {
+		let merged;
+		if (updated._version >= existing._version) {
+			merged = {
+				...this.populatedFields(existing),
+				...this.populatedFields(updated),
+				_version: updated._version + 1,
+				_lastChangedAt: new Date().getTime(),
+			};
+		} else {
+			merged = {
+				...this.populatedFields(updated),
+				...this.populatedFields(existing),
+				_version: existing._version + 1,
+				_lastChangedAt: new Date().getTime(),
+			};
+		}
+		return merged;
+	}
+
 	/**
 	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
 	 *
@@ -648,15 +701,11 @@ class FakeGraphQLService {
 					};
 					errors = [this.makeMissingUpdateTarget(selection)];
 				} else {
+					const updated = this.autoMerge(existing, record);
 					data = {
-						[selection]: {
-							...existing,
-							...record,
-							_version: existing._version + 1,
-							_lastChangedAt: new Date().getTime(),
-						},
+						[selection]: updated,
 					};
-					table.set(this.getPK(tableName, record), data[selection]);
+					table.set(this.getPK(tableName, record), updated);
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
