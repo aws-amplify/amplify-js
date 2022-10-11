@@ -1652,7 +1652,9 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              # TODO: restore this after CPK flakiness on Chrome is resolved
+              # <<: *test_browsers
+              browser: [firefox]
       - deploy:
           filters:
             <<: *releasable_branches
