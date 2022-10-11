@@ -15,13 +15,14 @@ import {
 } from '../src/types';
 import {
 	Comment,
-	Model,
-	Post,
-	Profile,
 	Metadata,
-	User,
-	testSchema,
+	Model,
 	pause,
+	Post,
+	PostCustomPK as PostCustomPKType,
+	Profile,
+	testSchema,
+	User,
 } from './helpers';
 
 let initSchema: typeof initSchemaType;
@@ -898,7 +899,9 @@ describe('DataStore tests', () => {
 
 			expect(classes).toHaveProperty('Model');
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			expect(Model).toHaveProperty(
 				nameOf<PersistentModelConstructor<any>>('copyOf')
@@ -1214,7 +1217,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			const promises = [
 				DataStore.query(Model),
@@ -1234,7 +1239,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			DataStore.observe(Model).subscribe(jest.fn());
 
@@ -1297,7 +1304,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'Some value',
@@ -1340,7 +1349,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'something',
@@ -1393,7 +1404,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			model = new Model({
 				field1: 'something',
@@ -1473,7 +1486,9 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
 
 			expect(() => {
 				new Model({
@@ -1501,295 +1516,596 @@ describe('DataStore tests', () => {
 			}).toThrow('updatedAt is read-only.');
 		});
 
-		test('Instantiation validations', async () => {
-			expect(() => {
-				new Model({
-					field1: undefined,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+		describe('Instantiation validations', () => {
+			test('required field (undefined)', () => {
+				expect(() => {
+					new Model({
+						field1: undefined,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: null,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+			test('required field (null)', () => {
+				expect(() => {
+					new Model({
+						field1: null,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: <any>1234,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('wrong type (number -> string)', () => {
+				expect(() => {
+					new Model({
+						field1: <any>1234,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: 'not-a-date',
-				});
-			}).toThrowError(
-				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
-			);
+			test('wrong type (string -> date)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: 'not-a-date',
+					});
+				}).toThrowError(
+					'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				);
+			});
 
-			expect(
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				}).metadata.tags
-			).toBeUndefined();
+			test('set nested non model field as undefined', () => {
+				expect(
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					}).metadata.tags
+				).toBeUndefined();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [null],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the rewards array should be of type string, [null] received. '
-			);
+			test('pass null to nested non model array field (constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: null,
-					ips: null,
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('pass null to nested non model non nullable array field (no constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [null],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type string, [null] received. '
-			);
+			test('valid model with nulls', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: null,
+						ips: null,
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: [null],
-				});
-			}).not.toThrow();
+			test('pass null to non nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [null],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1'],
-				});
-			}).not.toThrow();
+			test('pass null to nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: [null],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
-			);
+			test('valid model array of AWSIPAdress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1'],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1', 'not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
-			);
+			test('invalid AWSIPAddress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['test@example.com'],
-				});
-			}).not.toThrow();
+			test('invalid AWSIPAddress in one index', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1', 'not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [],
-					ips: [],
-				});
-			}).not.toThrow();
+			test('valid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['test@example.com'],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['not-an-email'],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
-			);
+			test('valid empty array of AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [],
+						ips: [],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not-an-ip'],
-				});
-			}).toThrowError(
-				'All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not-an-ip'
-			);
+			test('invalid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['not-an-email'],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: null,
-					}),
-				});
-			}).toThrowError('Field nominations is required');
+			test('required sub non model field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null,
+						}),
+					});
+				}).toThrowError('Field nominations is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [undefined],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the penNames array should be of type string, [undefined] received. '
-			);
+			test('required sub non model field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null,
+						},
+					});
+				}).toThrowError('Field nominations is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: [<any>1234],
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
-			);
+			test('sub non model non nullable array field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null],
-					}),
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('sub non model non nullable array field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined],
-					}),
-				});
-			}).not.toThrow();
+			test('sub non model array field invalid type with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined, null],
-					}),
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('sub non model array field invalid type without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, 'ok'],
-					}),
-				});
-			}).not.toThrow();
+			test('valid sub non model nullable array field (null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						}),
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, <any>123],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
-			);
+			test('valid sub non model nullable array field (null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						},
+					});
+				}).not.toThrow();
+			});
 
-			expect(
-				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
-			).toHaveProperty('extraAttribute');
+			test('valid sub non model nullable array field (undefined) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined],
+						}),
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				Model.copyOf(<any>undefined, d => d);
-			}).toThrow('The source object is not a valid model');
-			expect(() => {
-				const source = new Model({
-					field1: 'something',
-					dateCreated: new Date().toISOString(),
-				});
-				Model.copyOf(source, d => (d.field1 = <any>1234));
-			}).toThrow(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('valid sub non model nullable array field (undefined) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined, null],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined, null],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('wrong type sub non model nullable array field (null and number) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('wrong type sub non model nullable array field (null and number) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						},
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('allow extra attribute', () => {
+				expect(
+					new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
+				).toHaveProperty('extraAttribute');
+			});
+
+			test('throw on invalid constructor', () => {
+				expect(() => {
+					Model.copyOf(<any>undefined, d => d);
+				}).toThrow('The source object is not a valid model');
+			});
+
+			test('invalid type on copyOf', () => {
+				expect(() => {
+					const source = new Model({
+						field1: 'something',
+						dateCreated: new Date().toISOString(),
+					});
+					Model.copyOf(source, d => (d.field1 = <any>1234));
+				}).toThrow(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
+
+			test('invalid sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						metadata: 'invalid',
+					});
+				}).toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
+			test('sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: null,
+					});
+				}).not.toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
+			test('invalid nested sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							// @ts-ignore
+							login: 'login',
+						},
+					});
+				}).toThrowError(
+					'Field login should be of type Login, string recieved. login'
+				);
+			});
+
+			test('invalid array sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: ['bad type', 'another bad type'],
+					});
+				}).toThrowError(
+					'All elements in the logins array should be of type Login, [string] received. bad type'
+				);
+			});
+
+			test('invalid array sub non model field type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: [{ username: 4 }],
+					});
+				}).toThrowError(
+					'Field username should be of type string, number received. 4'
+				);
+			});
+
+			test('nullable array sub non model', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: [null, { username: 'user' }],
+					});
+				}).not.toThrowError();
+			});
+
+			test('array sub non model wrong type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: 'my login',
+					});
+				}).toThrowError(
+					'Field logins should be of type [Login | null | undefined], string received. my login'
+				);
+			});
+
+			test('array sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: null,
+					});
+				}).not.toThrowError();
+			});
 		});
 
 		test('Delete params', async () => {
@@ -1959,7 +2275,10 @@ describe('DataStore tests', () => {
 			).rejects.toThrow("Page can't be negative");
 
 			await expect(
-				DataStore.query(Model, <any>'someid', { page: 0, limit: <any>'avalue' })
+				DataStore.query(Model, <any>'someid', {
+					page: 0,
+					limit: <any>'avalue',
+				})
 			).rejects.toThrow('Limit should be a number');
 
 			await expect(
@@ -2161,6 +2480,968 @@ describe('DataStore tests', () => {
 				).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
+				});
+			});
+		});
+	});
+	describe('DataStore Custom PK tests', () => {
+		describe('initSchema tests', () => {
+			test('PostCustomPK class is created', () => {
+				const classes = initSchema(testSchema());
+
+				expect(classes).toHaveProperty('PostCustomPK');
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				expect(PostCustomPK).toHaveProperty(
+					nameOf<PersistentModelConstructor<any>>('copyOf')
+				);
+
+				expect(typeof PostCustomPK.copyOf).toBe('function');
+			});
+
+			test('PostCustomPK class can be instantiated', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(model).toBeInstanceOf(PostCustomPK);
+
+				expect(model.postId).toBeDefined();
+			});
+		});
+
+		describe('Immutability', () => {
+			test('Title cannot be changed', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(() => {
+					(<any>model).title = 'edit';
+				}).toThrowError(
+					"Cannot assign to read only property 'title' of object"
+				);
+			});
+
+			test('PostCustomPK can be copied+edited by creating an edited copy', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					draft.title = 'edited';
+				});
+
+				expect(model1).not.toBe(model2);
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.title).toBe('something');
+				expect(model2.title).toBe('edited');
+			});
+
+			test('postId cannot be changed inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).postId = 'a-new-postId';
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+			});
+
+			test('Optional field can be initialized with undefined', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					description: undefined,
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(model1.description).toBeUndefined();
+			});
+
+			test('Optional field can be initialized with null', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					description: null,
+				});
+
+				expect(model1.description).toBeNull();
+			});
+
+			test('Optional field can be changed to undefined inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					description: 'something-else',
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).description = undefined;
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.description).toBe('something-else');
+				expect(model2.description).toBeUndefined();
+			});
+
+			test('Optional field can be set to null inside copyOf', () => {
+				const { PostCustomPK } = initSchema(testSchema()) as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const model1 = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const model2 = PostCustomPK.copyOf(model1, draft => {
+					(<any>draft).description = null;
+				});
+
+				// postId should be kept the same
+				expect(model1.postId).toBe(model2.postId);
+
+				expect(model1.description).toBeUndefined();
+				expect(model2.description).toBeNull();
+			});
+
+			test('Non @model - Field cannot be changed', () => {
+				const { Metadata } = initSchema(testSchema()) as {
+					Metadata: NonModelTypeConstructor<Metadata>;
+				};
+
+				const nonPostCustomPK = new Metadata({
+					author: 'something',
+					rewards: [],
+					penNames: [],
+					nominations: [],
+				});
+
+				expect(() => {
+					(<any>nonPostCustomPK).author = 'edit';
+				}).toThrowError(
+					"Cannot assign to read only property 'author' of object"
+				);
+			});
+		});
+
+		describe('Initialization', () => {
+			let PostCustomPK;
+			test('start is called only once', async () => {
+				const storage: StorageType =
+					require('../src/storage/storage').ExclusiveStorage;
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				});
+
+				const promises = [
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+					DataStore.query(PostCustomPK),
+				];
+
+				await Promise.all(promises);
+
+				expect(storage).toHaveBeenCalledTimes(1);
+			});
+
+			test('It is initialized when observing (no query)', async () => {
+				const storage: StorageType =
+					require('../src/storage/storage').ExclusiveStorage;
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				});
+
+				DataStore.observe(PostCustomPK).subscribe(jest.fn());
+
+				expect(storage).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('Basic operations', () => {
+			let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+
+			beforeEach(() => {
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => ({
+						init: jest.fn(),
+						runExclusive: jest.fn(() => []),
+						query: jest.fn(() => []),
+						observe: jest.fn(() => Observable.from([])),
+					}));
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				({ PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				});
+			});
+
+			test('Save returns the saved model', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'Some value',
+					dateCreated: new Date().toISOString(),
+				});
+
+				const result = await DataStore.save(model);
+
+				const [settingsSave, modelCall] = <any>save.mock.calls;
+				const [_model, _condition, _mutator, patches] = modelCall;
+
+				expect(result).toMatchObject(model);
+				expect(patches).toBeUndefined();
+			});
+
+			test('Save returns the updated model and patches', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				await DataStore.save(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.title = 'edited';
+				});
+
+				const result = await DataStore.save(model);
+
+				const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
+				const [_model, _condition, _mutator, [patches]] = modelUpdate;
+
+				const expectedPatches = [
+					{ op: 'replace', path: ['title'], value: 'edited' },
+				];
+
+				expect(result).toMatchObject(model);
+				expect(patches).toMatchObject(expectedPatches);
+			});
+
+			test('Save returns the updated model and patches - list field', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+					emails: ['john@doe.com', 'jane@doe.com'],
+				});
+
+				await DataStore.save(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.emails = [...draft.emails, 'joe@doe.com'];
+				});
+
+				let result = await DataStore.save(model);
+
+				expect(result).toMatchObject(model);
+
+				model = PostCustomPK.copyOf(model, draft => {
+					draft.emails.push('joe@doe.com');
+				});
+
+				result = await DataStore.save(model);
+
+				expect(result).toMatchObject(model);
+
+				const [settingsSave, modelSave, modelUpdate, modelUpdate2] = <any>(
+					save.mock.calls
+				);
+
+				const [_model, _condition, _mutator, [patches]] = modelUpdate;
+				const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
+
+				const expectedPatches = [
+					{
+						op: 'replace',
+						path: ['emails'],
+						value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com'],
+					},
+				];
+
+				const expectedPatches2 = [
+					{
+						op: 'replace',
+						path: ['emails'],
+						value: [
+							'john@doe.com',
+							'jane@doe.com',
+							'joe@doe.com',
+							'joe@doe.com',
+						],
+					},
+				];
+
+				expect(patches).toMatchObject(expectedPatches);
+				expect(patches2).toMatchObject(expectedPatches2);
+			});
+
+			test('Read-only fields cannot be overwritten', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(() => [model]);
+				const query = jest.fn(() => [model]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'something',
+						dateCreated: new Date().toISOString(),
+						createdAt: '2021-06-03T20:56:23.201Z',
+					}) as any;
+				}).toThrow('createdAt is read-only.');
+
+				model = new PostCustomPK({
+					postId: '12345',
+					title: 'something',
+					dateCreated: new Date().toISOString(),
+				});
+
+				expect(() => {
+					PostCustomPK.copyOf(model, draft => {
+						(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
+					});
+				}).toThrow('createdAt is read-only.');
+
+				expect(() => {
+					PostCustomPK.copyOf(model, draft => {
+						(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
+					});
+				}).toThrow('updatedAt is read-only.');
+			});
+
+			test('Instantiation validations custom pk', async () => {
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: undefined,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field title is required');
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: null,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field title is required');
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: <any>1234,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError(
+					'Field title should be of type string, number received. 1234'
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: 'not-a-date',
+					});
+				}).toThrowError(
+					'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [null],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type string, [null] received. '
+				);
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['test@example.com'],
+					});
+				}).not.toThrow();
+
+				expect(() => {
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['not-an-email'],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				);
+
+				expect(<any>{
+					extraAttribute: 'some value',
+					title: 'some value',
+				}).toHaveProperty('extraAttribute');
+
+				expect(() => {
+					PostCustomPK.copyOf(<any>undefined, d => d);
+				}).toThrow('The source object is not a valid model');
+				expect(() => {
+					const source = new PostCustomPK({
+						postId: '12345',
+						title: 'something',
+						dateCreated: new Date().toISOString(),
+					});
+					PostCustomPK.copyOf(source, d => (d.title = <any>1234));
+				}).toThrow(
+					'Field title should be of type string, number received. 1234'
+				);
+			});
+
+			test('Delete params', async () => {
+				await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
+					'Model or Model Constructor required'
+				);
+
+				await expect(DataStore.delete(<any>PostCustomPK)).rejects.toThrow(
+					'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(
+					DataStore.delete(PostCustomPK, <any>(() => {}))
+				).rejects.toThrow(
+					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(
+					DataStore.delete(PostCustomPK, <any>(() => {}))
+				).rejects.toThrow(
+					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				);
+
+				await expect(DataStore.delete(<any>{})).rejects.toThrow(
+					'Object is not an instance of a valid model'
+				);
+
+				await expect(
+					DataStore.delete(
+						new PostCustomPK({
+							postId: '12345',
+							title: 'somevalue',
+							dateCreated: new Date().toISOString(),
+						}),
+						<any>{}
+					)
+				).rejects.toThrow('Invalid criteria');
+			});
+
+			test('Delete many returns many', async () => {
+				const models: PostCustomPKType[] = [];
+				const save = jest.fn(model => {
+					model instanceof PostCustomPK && models.push(model);
+				});
+				const query = jest.fn(() => models);
+				const _delete = jest.fn(() => [models, models]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock: jest.Mock<Storage> = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				Promise.all(
+					[...Array(10).keys()].map(async i => {
+						await DataStore.save(
+							new PostCustomPK({
+								postId: `${i}`,
+								title: 'someField',
+								dateCreated: new Date().toISOString(),
+							})
+						);
+					})
+				);
+
+				const deleted = await DataStore.delete(PostCustomPK, m =>
+					m.title('eq', 'someField')
+				);
+
+				const sortedRecords = deleted.sort((a, b) =>
+					a.postId < b.postId ? -1 : 1
+				);
+
+				expect(sortedRecords.length).toEqual(10);
+				sortedRecords.forEach((deletedItem, idx) => {
+					expect(deletedItem.postId).toEqual(`${idx}`);
+					expect(deletedItem.title).toEqual('someField');
+				});
+			});
+
+			test('Delete one by Custom PK returns one', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(saved => (model = saved));
+				const query = jest.fn(() => [model]);
+				const _delete = jest.fn(() => [[model], [model]]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const saved = await DataStore.save(
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				const deleted: PostCustomPKType[] = await DataStore.delete(
+					PostCustomPK,
+					saved.postId
+				);
+
+				expect(deleted.length).toEqual(1);
+				expect(deleted[0]).toEqual(model);
+			});
+
+			test('Delete one by Custom PK with predicate returns one', async () => {
+				let model: PostCustomPKType;
+				const save = jest.fn(saved => (model = saved));
+				const query = jest.fn(() => [model]);
+				const _delete = jest.fn(() => [[model], [model]]);
+
+				jest.resetModules();
+				jest.doMock('../src/storage/storage', () => {
+					const mock = jest.fn().mockImplementation(() => {
+						const _mock = {
+							init: jest.fn(),
+							save,
+							query,
+							delete: _delete,
+							runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						};
+						return _mock;
+					});
+
+					(<any>mock).getNamespace = () => ({ models: {} });
+
+					return { ExclusiveStorage: mock };
+				});
+
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+				const classes = initSchema(testSchema());
+
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+				};
+
+				const saved = await DataStore.save(
+					new PostCustomPK({
+						postId: '12345',
+						title: 'someField',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				const deleted: PostCustomPKType[] = await DataStore.delete(
+					PostCustomPK,
+
+					m => m.postId('eq', saved.postId)
+				);
+
+				expect(deleted.length).toEqual(1);
+				expect(deleted[0]).toEqual(model);
+			});
+
+			test('Query params', async () => {
+				await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+					'Constructor is not for a valid model'
+				);
+
+				await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+					'Constructor is not for a valid model'
+				);
+
+				await expect(
+					DataStore.query(PostCustomPK, <any>'someid', { page: 0 })
+				).rejects.toThrow('Limit is required when requesting a page');
+
+				await expect(
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: <any>'a',
+						limit: 10,
+					})
+				).rejects.toThrow('Page should be a number');
+
+				await expect(
+					DataStore.query(PostCustomPK, <any>'someid', { page: -1, limit: 10 })
+				).rejects.toThrow("Page can't be negative");
+
+				await expect(
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: 0,
+						limit: <any>'avalue',
+					})
+				).rejects.toThrow('Limit should be a number');
+
+				await expect(
+					DataStore.query(PostCustomPK, <any>'someid', {
+						page: 0,
+						limit: -1,
+					})
+				).rejects.toThrow("Limit can't be negative");
+			});
+
+			describe('Type definitions', () => {
+				let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+
+				beforeEach(() => {
+					let model: PostCustomPKType;
+
+					jest.resetModules();
+					jest.doMock('../src/storage/storage', () => {
+						const mock = jest.fn().mockImplementation(() => ({
+							init: jest.fn(),
+							runExclusive: jest.fn(() => [model]),
+							query: jest.fn(() => [model]),
+							observe: jest.fn(() => Observable.from([])),
+						}));
+
+						(<any>mock).getNamespace = () => ({ models: {} });
+
+						return { ExclusiveStorage: mock };
+					});
+					({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+					const classes = initSchema(testSchema());
+
+					({ PostCustomPK } = classes as {
+						PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+					});
+
+					model = new PostCustomPK({
+						postId: '12345',
+						title: 'Some value',
+						dateCreated: new Date().toISOString(),
+					});
+				});
+
+				describe('Query', () => {
+					test('all', async () => {
+						const allPostCustomPKs = await DataStore.query(PostCustomPK);
+
+						expectType<PostCustomPKType[]>(allPostCustomPKs);
+
+						const [one] = allPostCustomPKs;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('one by custom PK', async () => {
+						const onePostCustomPKById = await DataStore.query(
+							PostCustomPK,
+							'someid'
+						);
+
+						expectType<PostCustomPKType>(onePostCustomPKById);
+						expect(onePostCustomPKById.title).toBeDefined();
+						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
+					});
+					test('with criteria', async () => {
+						const multiPostCustomPKWithCriteria = await DataStore.query(
+							PostCustomPK,
+							c => c.title('contains', 'something')
+						);
+
+						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
+
+						const [one] = multiPostCustomPKWithCriteria;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('with pagination', async () => {
+						const allPostCustomPKsPaginated = await DataStore.query(
+							PostCustomPK,
+							Predicates.ALL,
+							{ page: 0, limit: 20 }
+						);
+
+						expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);
+						const [one] = allPostCustomPKsPaginated;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+				});
+
+				describe('Query with generic type', () => {
+					test('all', async () => {
+						const allPostCustomPKs = await DataStore.query<PostCustomPKType>(
+							PostCustomPK
+						);
+
+						expectType<PostCustomPKType[]>(allPostCustomPKs);
+
+						const [one] = allPostCustomPKs;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('one by postId', async () => {
+						const onePostCustomPKById = await DataStore.query<PostCustomPKType>(
+							PostCustomPK,
+							'someid'
+						);
+						expectType<PostCustomPKType>(onePostCustomPKById);
+						expect(onePostCustomPKById.title).toBeDefined();
+						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
+					});
+					test('with criteria', async () => {
+						const multiPostCustomPKWithCriteria =
+							await DataStore.query<PostCustomPKType>(PostCustomPK, c =>
+								c.title('contains', 'something')
+							);
+
+						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
+
+						const [one] = multiPostCustomPKWithCriteria;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
+					test('with pagination', async () => {
+						const allPostCustomPKsPaginated =
+							await DataStore.query<PostCustomPKType>(
+								PostCustomPK,
+								Predicates.ALL,
+								{ page: 0, limit: 20 }
+							);
+
+						expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);
+						const [one] = allPostCustomPKsPaginated;
+						expect(one.title).toBeDefined();
+						expect(one).toBeInstanceOf(PostCustomPK);
+					});
 				});
 			});
 		});
