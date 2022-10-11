@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 
+import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
 export { Amplify } from './Amplify';
@@ -40,3 +41,8 @@ export const Constants = {
 
 export * from './constants';
 export * from './Util';
+
+/**
+ * @deprecated use named import
+ */
+export default Amplify;
