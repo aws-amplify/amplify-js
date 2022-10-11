@@ -14,7 +14,7 @@
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	parseMobileHubConfig,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
@@ -134,7 +134,7 @@ export class Storage {
 		logger.debug('configure Storage');
 		if (!config) return this._config;
 
-		const amplifyConfig = parseMobileHubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 
 		const storageConfig = amplifyConfig.Storage ?? {};
 

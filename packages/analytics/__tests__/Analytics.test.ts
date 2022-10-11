@@ -16,7 +16,7 @@ jest.mock('../src/vendor/dom-utils', () => {
 	};
 });
 
-import { ClientDevice, parseMobileHubConfig, Hub } from '@aws-amplify/core';
+import { ClientDevice, parseAWSExports, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
 
@@ -32,7 +32,7 @@ const record_spyon = jest
 
 describe('Analytics test', () => {
 	beforeEach(() => {
-		(parseMobileHubConfig as jest.Mock).mockReturnValueOnce({
+		(parseAWSExports as jest.Mock).mockReturnValueOnce({
 			Analytics: {
 				AWSPinpoint: {
 					appId: 'appId',

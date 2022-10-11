@@ -43,7 +43,7 @@ import {
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
 import { getAmplifyUserAgent } from '../Platform';
-import { parseMobileHubConfig } from '../Parser';
+import { parseAWSExports } from '../Parser';
 import {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
 	AWS_CLOUDWATCH_CATEGORY,
@@ -96,7 +96,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		const conf = Object.assign(
 			{},
 			this._config,
-			parseMobileHubConfig(config).Logging,
+			parseAWSExports(config).Logging,
 			config
 		);
 		this._config = conf;
