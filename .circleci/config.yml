@@ -922,18 +922,6 @@ jobs:
           sample_name: graphql
           spec: graphql
           browser: << parameters.browser >>
-  integ_react_storage_ui:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageComp
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'React Storage UI Components'
-          framework: react
-          category: storage
-          sample_name: storageComp
-          spec: storage-comp
   integ_react_amazon_cognito_identity_js_cookie_storage:
     parameters:
       browser:
@@ -1493,12 +1481,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_storage_ui:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
       - integ_react_amazon_cognito_identity_js_cookie_storage:
           requires:
             - integ_setup
@@ -1647,7 +1629,6 @@ workflows:
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
-            - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
