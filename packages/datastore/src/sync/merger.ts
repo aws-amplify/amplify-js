@@ -15,12 +15,6 @@ class ModelMerger {
 		private readonly ownSymbol: Symbol
 	) {}
 
-	/**
-	 *
-	 * @param storage Storage adapter that contains the data.
-	 * @param model The model from an outbox mutation.
-	 * @returns The type of operation (INSERT/UPDATE/DELETE)
-	 */
 	public async merge<T extends ModelInstanceMetadata>(
 		storage: Storage,
 		model: T,
