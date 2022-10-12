@@ -11,7 +11,19 @@
  * and limitations under the License.
  */
 import Observable from 'zen-observable-ts';
-import { ProviderOptions } from './PubSub';
+
+export interface PubSubOptions {
+	[key: string]: any;
+}
+
+export interface ProviderOptions {
+	[key: string]: any;
+}
+
+/**
+ * @deprecated Migrated to ProviderOptions
+ */
+export type ProvidertOptions = ProviderOptions;
 
 export interface PubSubProvider {
 	// configure your provider
