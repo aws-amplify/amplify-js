@@ -1223,7 +1223,7 @@ jobs:
           framework: react
           category: datastore
           sample_name: v2/custom-pk-has-many-many-to-many
-          spec: custom-pk
+          spec: custom-pk-has-many-many-to-many
           browser: << parameters.browser >>
 
   deploy:
