@@ -1206,7 +1206,7 @@ jobs:
           framework: react
           category: datastore
           sample_name: v2/custom-pk-has-one
-          spec: custom-pk
+          spec: custom-pk-has-one
           browser: << parameters.browser >>
 
   integ_react_datastore_custom_pk_has_many_many_to_many:
