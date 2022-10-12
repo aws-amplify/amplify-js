@@ -1189,7 +1189,7 @@ jobs:
           framework: react
           category: datastore
           sample_name: v2/custom-pk-unconnected-models
-          spec: custom-pk
+          spec: custom-pk-unconnected-models
           browser: << parameters.browser >>
 
   integ_react_datastore_custom_pk_has_one:
