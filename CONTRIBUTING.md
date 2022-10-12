@@ -120,7 +120,7 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
-These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
+Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
 
 **Using the setup-dev:react-native script to work with React-Native apps**
 
@@ -128,27 +128,18 @@ These tests are only necessary if you’re looking to contribute a Pull Request.
 
 To develop locally alongside a React-Native app, make sure to,
 
-1. Finish the build steps mentioned in the section: `Setting up for local development`
+1. Finish the build steps mentioned in the section: `Setting up for local development` to set up your local `amplify-js` repository for development.
 
-2. Install the dev dependency package : `wml`
+   > Note: To set up a sample React-Native app -- configure your [development environment](https://reactnative.dev/docs/environment-setup) and [create an app](https://reactnative.dev/docs/environment-setup#creating-a-new-application). Note the path to the app as it is required in the next step.
 
-```
-npm install wml --save-dev
-```
-
-3. Add the wml src folder to watchman.
-
-```
-watchman watch node_modules/wml/src
-```
-
-4. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+   > Make sure to have [watchman](https://facebook.github.io/watchman/docs/install.html) installed before running the command below
 
 ```
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 ```
 
-> Note: This script runs a continious job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
+> Note: This script runs a continuous job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
 
 The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
 Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
@@ -166,7 +157,7 @@ npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 
 **Debugging problems with the `setup-dev:react-native` script**
 
-- If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
+- If the WML command does not do anything after adding the links, watch its src file using watchman. Run the below from the root of this repository:
 
   ```
   watchman watch node_modules/wml/src

@@ -1,10 +1,21 @@
-/packages/auth @elorzafe
-/packages/analytics @iartemiev
-/packages/pubsub @manueliglesias
-/packages/xr @jordanranz
-/packages/amplify-ui @jordanranz
-/packages/aws-amplify-react-native @Ashish-Nanda
-/packages/pushnotification @Ashish-Nanda
-/packages/datastore @manueliglesias
-/.github/ @sammartinez
-/.circleci/ @iartemiev
+* @aws-amplify/amplify-js
+/packages/amplify-ui @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/amplify-ui-angular @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/amplify-ui-components  @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/amplify-ui-react  @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/amplify-ui-storybook  @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/amplify-ui-vue  @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/api @aws-amplify/amplify-js @aws-amplify/amplify-data
+/packages/api-graphql @aws-amplify/amplify-data
+/packages/api-rest @aws-amplify/amplify-js @aws-amplify/amplify-data
+/packages/aws-amplify-angular @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/aws-amplify-react @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/aws-amplify-react-native @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/aws-amplify-vue @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/core @aws-amplify/amplify-js @aws-amplify/amplify-data
+/packages/datastore @aws-amplify/amplify-data
+/packages/datastore-storage-adapter @aws-amplify/amplify-data
+/packages/geo @aws-amplify/amplify-js @aws-amplify/amplify-ui
+/packages/pubsub @aws-amplify/amplify-js @aws-amplify/amplify-data
+/.circleci/ @aws-amplify/amplify-js @aws-amplify/amplify-devops
+/.github/ @aws-amplify/amplify-js-admins

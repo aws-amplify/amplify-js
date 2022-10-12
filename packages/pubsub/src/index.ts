@@ -14,15 +14,11 @@ import { PubSub } from './PubSub';
 
 export * from './Providers';
 
-enum CONTROL_MSG {
-	CONNECTION_CLOSED = 'Connection closed',
-	CONNECTION_FAILED = 'Connection failed',
-	REALTIME_SUBSCRIPTION_INIT_ERROR = 'AppSync Realtime subscription init error',
-	SUBSCRIPTION_ACK = 'Subscription ack',
-	TIMEOUT_DISCONNECT = 'Timeout disconnect',
-}
+export { CONNECTION_STATE_CHANGE } from './Providers/constants';
 
-export { PubSub, CONTROL_MSG };
+export { ConnectionState, CONTROL_MSG } from './types';
+
+export { PubSub };
 
 /**
  * @deprecated use named import

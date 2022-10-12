@@ -16,19 +16,25 @@ import {
 	print,
 	parse,
 	GraphQLError,
+	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Constants,
 	Credentials,
+	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import PubSub from '@aws-amplify/pubsub';
+import { PubSub } from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
+import {
+	GraphQLAuthError,
+	GraphQLOptions,
+	GraphQLResult,
+	GraphQLOperation,
+} from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -37,11 +43,13 @@ const logger = new Logger('GraphQLAPI');
 export const graphqlOperation = (
 	query,
 	variables = {},
-	authToken?: string
+	authToken?: string,
+	userAgentSuffix?: string
 ) => ({
 	query,
 	variables,
 	authToken,
+	userAgentSuffix,
 });
 
 /**
@@ -124,10 +132,8 @@ export class GraphQLAPIClass {
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const {
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-		} = this._options;
+		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
+			this._options;
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 		let headers = {};
@@ -203,11 +209,10 @@ export class GraphQLAPIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation) {
+	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions = doc.definitions as ReadonlyArray<
-			OperationDefinitionNode
-		>;
+		const definitions =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -216,14 +221,20 @@ export class GraphQLAPIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
-	 * @param {GraphQLOptions} GraphQL Options
-	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
-	 * @returns {Promise<GraphQLResult> | Observable<object>}
+	 * @param options - GraphQL Options
+	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
-	graphql(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+	graphql<T = any>(
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+			userAgentSuffix,
+		}: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	) {
+	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -232,9 +243,8 @@ export class GraphQLAPIClass {
 		const [operationDef = {}] = query.definitions.filter(
 			def => def.kind === 'OperationDefinition'
 		);
-		const {
-			operation: operationType,
-		} = operationDef as OperationDefinitionNode;
+		const { operation: operationType } =
+			operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
 
@@ -246,10 +256,11 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
-				const responsePromise = this._graphql(
-					{ query, variables, authMode },
+				const responsePromise = this._graphql<T>(
+					{ query, variables, authMode, userAgentSuffix },
 					headers,
 					initParams
 				);
@@ -260,20 +271,17 @@ export class GraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe({ query, variables, authMode }, headers);
+			default:
+				throw new Error(`invalid operation type: ${operationType}`);
 		}
-
-		throw new Error(`invalid operation type: ${operationType}`);
 	}
 
-	private async _graphql(
-		{ query, variables, authMode }: GraphQLOptions,
+	private async _graphql<T = any>(
+		{ query, variables, authMode, userAgentSuffix }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
-	): Promise<GraphQLResult> {
-		if (!this._api) {
-			await this.createInstance();
-		}
-
+	): Promise<GraphQLResult<T>> {
+		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -292,7 +300,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: Constants.userAgent,
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentSuffix),
 			}),
 		};
 
@@ -349,6 +357,12 @@ export class GraphQLAPIClass {
 		return response;
 	}
 
+	async createInstanceIfNotCreated() {
+		if (!this._api) {
+			await this.createInstance();
+		}
+	}
+
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation
 	 * @param {any} error - Any error
@@ -365,6 +379,15 @@ export class GraphQLAPIClass {
 	 */
 	cancel(request: Promise<any>, message?: string) {
 		return this._api.cancel(request, message);
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._api.hasCancelToken(request);
 	}
 
 	private _graphqlSubscribe(

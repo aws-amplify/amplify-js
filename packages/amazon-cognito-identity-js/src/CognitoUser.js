@@ -1,18 +1,6 @@
 /*!
- * Copyright 2016 Amazon.com,
- * Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Amazon Software License (the "License").
- * You may not use this file except in compliance with the
- * License. A copy of the License is located at
- *
- *     http://aws.amazon.com/asl/
- *
- * or in the "license" file accompanying this file. This file is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, express or implied. See the License
- * for the specific language governing permissions and
- * limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 import { Buffer } from 'buffer';
@@ -239,7 +227,7 @@ export default class CognitoUser {
 	 */
 	authenticateUserDefaultAuth(authDetails, callback) {
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		const dateHelper = new DateHelper();
 
@@ -307,7 +295,7 @@ export default class CognitoUser {
 
 						const message = CryptoJS.lib.WordArray.create(
 							Buffer.concat([
-								Buffer.from(this.pool.getUserPoolId().split('_')[1], 'utf8'),
+								Buffer.from(this.pool.getUserPoolName(), 'utf8'),
 								Buffer.from(this.username, 'utf8'),
 								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
 								Buffer.from(dateNow, 'utf8'),
@@ -403,7 +391,7 @@ export default class CognitoUser {
 			return;
 		}
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
@@ -481,7 +469,8 @@ export default class CognitoUser {
 			let userAttributes = null;
 			let rawRequiredAttributes = null;
 			const requiredAttributes = [];
-			const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+			const userAttributesPrefix =
+				authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 			if (challengeParameters) {
 				userAttributes = JSON.parse(
@@ -599,9 +588,10 @@ export default class CognitoUser {
 			return callback.onFailure(new Error('New password is required.'));
 		}
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
-		const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+		const userAttributesPrefix =
+			authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 		const finalUserAttributes = {};
 		if (requiredAttributeData) {
@@ -806,7 +796,7 @@ export default class CognitoUser {
 		challengeResponses.ANSWER = answerChallenge;
 
 		const authenticationHelper = new AuthenticationHelper(
-			this.pool.getUserPoolId().split('_')[1]
+			this.pool.getUserPoolName()
 		);
 		this.getCachedDeviceKeyAndPassword();
 		if (this.deviceKey != null) {
@@ -895,7 +885,7 @@ export default class CognitoUser {
 				}
 
 				const authenticationHelper = new AuthenticationHelper(
-					this.pool.getUserPoolId().split('_')[1]
+					this.pool.getUserPoolName()
 				);
 				authenticationHelper.generateHashDevice(
 					dataAuthenticate.AuthenticationResult.NewDeviceMetadata
@@ -1497,9 +1487,8 @@ export default class CognitoUser {
 				) {
 					authenticationResult.RefreshToken = refreshToken.getToken();
 				}
-				this.signInUserSession = this.getCognitoUserSession(
-					authenticationResult
-				);
+				this.signInUserSession =
+					this.getCognitoUserSession(authenticationResult);
 				this.cacheTokens();
 				return wrappedCallback(null, this.signInUserSession);
 			}

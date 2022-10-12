@@ -21,6 +21,10 @@ import {
 	TypeConstructorMap,
 	ModelPredicate,
 	AuthModeStrategy,
+	ManagedIdentifier,
+	OptionallyManagedIdentifier,
+	__modelMeta__,
+	AmplifyContext,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -31,6 +35,7 @@ import { CONTROL_MSG, SubscriptionProcessor } from './processors/subscription';
 import { SyncProcessor } from './processors/sync';
 import {
 	createMutationInstanceFromModelOperation,
+	getIdentifierValue,
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
@@ -45,25 +50,26 @@ type StartParams = {
 };
 
 export declare class MutationEvent {
-	constructor(init: ModelInit<MutationEvent>);
-	static copyOf(
-		src: MutationEvent,
-		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
-	): MutationEvent;
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
+	};
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
 	public readonly modelId: string;
 	public readonly condition: string;
-	public data: string;
+	public readonly data: string;
+	constructor(init: ModelInit<MutationEvent>);
+	static copyOf(
+		src: MutationEvent,
+		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
+	): MutationEvent;
 }
 
-declare class ModelMetadata {
-	constructor(init: ModelInit<ModelMetadata>);
-	static copyOf(
-		src: ModelMetadata,
-		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
-	): ModelMetadata;
+export declare class ModelMetadata {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<ModelMetadata, 'id'>;
+	};
 	public readonly id: string;
 	public readonly namespace: string;
 	public readonly model: string;
@@ -71,6 +77,11 @@ declare class ModelMetadata {
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
 	public readonly lastSyncPredicate?: null | string;
+	constructor(init: ModelInit<ModelMetadata>);
+	static copyOf(
+		src: ModelMetadata,
+		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
+	): ModelMetadata;
 }
 
 export enum ControlMessage {
@@ -113,17 +124,16 @@ export class SyncEngine {
 		private readonly userModelClasses: TypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly maxRecordsToSync: number,
-		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly amplifyContext: AmplifyContext
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
-		] as PersistentModelConstructor<any>;
+		] as PersistentModelConstructor<MutationEvent>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -138,14 +148,20 @@ export class SyncEngine {
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
-			this.authModeStrategy
+			this.authModeStrategy,
+			errorHandler,
+			this.amplifyContext
 		);
+
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,
@@ -155,9 +171,11 @@ export class SyncEngine {
 			MutationEvent,
 			this.amplifyConfig,
 			this.authModeStrategy,
+			errorHandler,
 			conflictHandler,
-			errorHandler
+			this.amplifyContext
 		);
+
 		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
@@ -189,11 +207,9 @@ export class SyncEngine {
 							});
 
 							let ctlSubsObservable: Observable<CONTROL_MSG>;
-							let dataSubsObservable: Observable<[
-								TransformerMutationType,
-								SchemaModel,
-								PersistentModel
-							]>;
+							let dataSubsObservable: Observable<
+								[TransformerMutationType, SchemaModel, PersistentModel]
+							>;
 
 							if (isNode) {
 								logger.warn(
@@ -244,8 +260,8 @@ export class SyncEngine {
 							//#region Base & Sync queries
 							try {
 								await new Promise((resolve, reject) => {
-									const syncQuerySubscription = this.syncQueriesObservable().subscribe(
-										{
+									const syncQuerySubscription =
+										this.syncQueriesObservable().subscribe({
 											next: message => {
 												const { type } = message;
 
@@ -263,8 +279,7 @@ export class SyncEngine {
 											error: error => {
 												reject(error);
 											},
-										}
-									);
+										});
 
 									if (syncQuerySubscription) {
 										subscriptions.push(syncQuerySubscription);
@@ -291,12 +306,11 @@ export class SyncEngine {
 										);
 
 										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
+											this.modelMerger.merge(storage, model, modelDefinition)
 										);
 
 										observer.next({
-											type:
-												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+											type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
 											data: {
 												model: modelConstructor,
 												element: model,
@@ -329,7 +343,7 @@ export class SyncEngine {
 											);
 
 											this.storage.runExclusive(storage =>
-												this.modelMerger.merge(storage, model)
+												this.modelMerger.merge(storage, model, modelDefinition)
 											);
 										}
 									)
@@ -358,18 +372,20 @@ export class SyncEngine {
 					.observe(null, null, ownSymbol)
 					.filter(({ model }) => {
 						const modelDefinition = this.getModelDefinition(model);
-
 						return modelDefinition.syncable === true;
 					})
 					.subscribe({
 						next: async ({ opType, model, element, condition }) => {
-							const namespace = this.schema.namespaces[
-								this.namespaceResolver(model)
-							];
+							const namespace =
+								this.schema.namespaces[this.namespaceResolver(model)];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
-							const graphQLCondition = predicateToGraphQLCondition(condition);
+							const modelDefinition = this.getModelDefinition(model);
+							const graphQLCondition = predicateToGraphQLCondition(
+								condition,
+								modelDefinition
+							);
 							const mutationEvent = createMutationInstanceFromModelOperation(
 								namespace.relationships,
 								this.getModelDefinition(model),
@@ -534,7 +550,9 @@ export class SyncEngine {
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
-											if (!idsInOutbox.has(item.id)) {
+											const itemId = getIdentifierValue(modelDefinition, item);
+
+											if (!idsInOutbox.has(itemId)) {
 												return true;
 											}
 
@@ -547,7 +565,8 @@ export class SyncEngine {
 										for (const item of oneByOne) {
 											const opType = await this.modelMerger.merge(
 												storage,
-												item
+												item,
+												modelDefinition
 											);
 
 											if (opType !== undefined) {
@@ -559,7 +578,8 @@ export class SyncEngine {
 											...(await this.modelMerger.mergePage(
 												storage,
 												modelConstructor,
-												page
+												page,
+												modelDefinition
 											))
 										);
 
@@ -603,16 +623,15 @@ export class SyncEngine {
 														isFullSync ? startedAt : lastFullSync
 												  );
 
-										modelMetadata = (this.modelClasses
-											.ModelMetadata as PersistentModelConstructor<any>).copyOf(
-											modelMetadata,
-											draft => {
-												draft.lastSync = startedAt;
-												draft.lastFullSync = isFullSync
-													? startedAt
-													: modelMetadata.lastFullSync;
-											}
-										);
+										modelMetadata = (
+											this.modelClasses
+												.ModelMetadata as PersistentModelConstructor<ModelMetadata>
+										).copyOf(modelMetadata, draft => {
+											draft.lastSync = startedAt;
+											draft.lastFullSync = isFullSync
+												? startedAt
+												: modelMetadata.lastFullSync;
+										});
 
 										await this.storage.save(
 											modelMetadata,
@@ -707,7 +726,7 @@ export class SyncEngine {
 
 	private async setupModels(params: StartParams) {
 		const { fullSyncInterval } = params;
-		const ModelMetadata = this.modelClasses
+		const ModelMetadataConstructor = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const models: [string, SchemaModel][] = [];
@@ -739,7 +758,7 @@ export class SyncEngine {
 
 			if (modelMetadata === undefined) {
 				[[savedModel]] = await this.storage.save(
-					this.modelInstanceCreator(ModelMetadata, {
+					this.modelInstanceCreator(ModelMetadataConstructor, {
 						model: model.name,
 						namespace,
 						lastSync: null,
@@ -757,9 +776,7 @@ export class SyncEngine {
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
-					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
-						any
-					>).copyOf(modelMetadata, draft => {
+					ModelMetadataConstructor.copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
@@ -819,9 +836,8 @@ export class SyncEngine {
 	): SchemaModel {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const modelDefinition = this.schema.namespaces[namespaceName].models[
-			modelConstructor.name
-		];
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
 
 		return modelDefinition;
 	}

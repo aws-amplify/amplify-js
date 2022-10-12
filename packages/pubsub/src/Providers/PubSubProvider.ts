@@ -11,19 +11,19 @@
  * and limitations under the License.
  */
 import Observable from 'zen-observable-ts';
-import { PubSubProvider, ProvidertOptions } from '../types';
+import { PubSubProvider, ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSubProvider implements PubSubProvider {
-	private _config: ProvidertOptions;
+	private _config: ProviderOptions;
 
-	constructor(options: ProvidertOptions = {}) {
+	constructor(options: ProviderOptions = {}) {
 		this._config = options;
 	}
 
-	configure(config: ProvidertOptions = {}): ProvidertOptions {
+	configure(config: ProviderOptions = {}): ProviderOptions {
 		this._config = { ...config, ...this._config };
 
 		logger.debug(`configure ${this.getProviderName()}`, this._config);
@@ -37,20 +37,20 @@ export abstract class AbstractPubSubProvider implements PubSubProvider {
 
 	abstract getProviderName(): string;
 
-	protected get options(): ProvidertOptions {
+	protected get options(): ProviderOptions {
 		return { ...this._config };
 	}
 
-	public abstract newClient(clientOptions: ProvidertOptions): Promise<any>;
+	public abstract newClient(clientOptions: ProviderOptions): Promise<any>;
 
 	public abstract publish(
 		topics: string[] | string,
 		msg: any,
-		options?: ProvidertOptions
+		options?: ProviderOptions
 	): void;
 
 	public abstract subscribe(
 		topics: string[] | string,
-		options?: ProvidertOptions
+		options?: ProviderOptions
 	): Observable<any>;
 }

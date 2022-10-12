@@ -24,11 +24,20 @@ declare module 'amazon-cognito-identity-js' {
 			userAttributes: any,
 			requiredAttributes: any
 		) => void;
-		mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-		totpRequired?: (challengeName: any, challengeParameters: any) => void;
+		mfaRequired?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
+		totpRequired?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
 		customChallenge?: (challengeParameters: any) => void;
-		mfaSetup?: (challengeName: any, challengeParameters: any) => void;
-		selectMFAType?: (challengeName: any, challengeParameters: any) => void;
+		mfaSetup?: (challengeName: ChallengeName, challengeParameters: any) => void;
+		selectMFAType?: (
+			challengeName: ChallengeName,
+			challengeParameters: any
+		) => void;
 	}
 
 	export interface IMfaSettings {
@@ -67,8 +76,18 @@ declare module 'amazon-cognito-identity-js' {
 		clientMetadata: Record<string, string>;
 	}
 
+	export type ChallengeName =
+		| 'CUSTOM_CHALLENGE'
+		| 'MFA_SETUP'
+		| 'NEW_PASSWORD_REQUIRED'
+		| 'SELECT_MFA_TYPE'
+		| 'SMS_MFA'
+		| 'SOFTWARE_TOKEN_MFA';
+
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
+
+		challengeName?: ChallengeName;
 
 		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
 		public getSignInUserSession(): CognitoUserSession | null;
@@ -246,8 +265,14 @@ declare module 'amazon-cognito-identity-js' {
 			callbacks: {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
-				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-				totpRequired?: (challengeName: any, challengeParameters: any) => void;
+				mfaRequired?: (
+					challengeName: ChallengeName,
+					challengeParameters: any
+				) => void;
+				totpRequired?: (
+					challengeName: ChallengeName,
+					challengeParameters: any
+				) => void;
 			}
 		): void;
 	}
@@ -308,6 +333,7 @@ declare module 'amazon-cognito-identity-js' {
 		);
 
 		public getUserPoolId(): string;
+		public getUserPoolName(): string;
 		public getClientId(): string;
 
 		public signUp(
