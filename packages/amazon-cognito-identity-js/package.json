@@ -61,7 +61,6 @@
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
-  "files": ["android", "es", "ios", "lib", "src", "enhance-rn.js", "index.d.ts", "RNAWSCognito.podspec"],
   "dependencies": {
     "buffer": "4.9.2",
     "crypto-js": "^4.1.1",
