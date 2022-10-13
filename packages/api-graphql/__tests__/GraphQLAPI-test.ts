@@ -749,7 +749,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -773,7 +773,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -796,7 +796,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -829,7 +829,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -855,7 +855,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
