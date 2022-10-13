@@ -17,8 +17,6 @@ export class BackgroundProcessManager {
 	private _state = BackgroundProcessManagerState.Open;
 
 	private _closingPromise: Promise<PromiseSettledResult<any>[]> | undefined;
-	private _onClosedHandlers: (() => any)[] = [];
-	private _activeOnClosedHandlerDone: Promise<void> | undefined;
 
 	/**
 	 * The list of outstanding jobs we'll need to wait for upon `close()`
@@ -339,15 +337,20 @@ export class BackgroundProcessManager {
 	 *
 	 * If the manager is already closing or closed, `finalCleaup` is not executed.
 	 *
-	 * @param onClosed A function to run after jobs complete, but before
-	 * `close()` returns.
+	 * @param onClosed
 	 * @returns The settled results of each still-running job's promise. If the
 	 * manager is already closed, this will contain the results as of when the
 	 * manager's `close()` was called in an `Open` state.
 	 */
-	async close(onClosed?: () => any) {
-		if (typeof onClosed === 'function') this._onClosedHandlers.push(onClosed);
-
+	async close({
+		onAddError,
+	}: {
+		/**
+		 * If a job is rejected while the manager is closing or closed, throw
+		 * the error provided by this function instead of the default error.
+		 */
+		onAddError?: () => any;
+	} = {}) {
 		if (this.isOpen) {
 			this._state = BackgroundProcessManagerState.Closing;
 			for (const job of Array.from(this.jobs)) {
@@ -369,24 +372,10 @@ export class BackgroundProcessManager {
 			this._closingPromise = Promise.allSettled(
 				Array.from(this.jobs).map(j => j.promise)
 			);
-		} else if (this.isClosed) {
-			this._state = BackgroundProcessManagerState.Closing;
+
+			await this._closingPromise;
+			this._state = BackgroundProcessManagerState.Closed;
 		}
-
-		await this._closingPromise;
-
-		while (
-			this._activeOnClosedHandlerDone ||
-			this._onClosedHandlers.length > 0
-		) {
-			if (!this._activeOnClosedHandlerDone) {
-				this._activeOnClosedHandlerDone = this._onClosedHandlers.shift()?.();
-			}
-			await this._activeOnClosedHandlerDone;
-			this._activeOnClosedHandlerDone = undefined;
-		}
-
-		this._state = BackgroundProcessManagerState.Closed;
 
 		return this._closingPromise;
 	}
