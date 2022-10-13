@@ -918,7 +918,11 @@ class DataStore {
 	 * attaches a sync engine, starts it, and subscribes.
 	 */
 	start = async (): Promise<void> => {
+		console.log('start waiting for procs to open');
+		await this.runningProcesses.open();
+		console.log('procs open');
 		return this.runningProcesses.add(async () => {
+			console.log('really actually starting now');
 			if (this.initialized === undefined) {
 				logger.debug('Starting DataStore');
 				this.initialized = new Promise((res, rej) => {
@@ -1831,37 +1835,39 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
-		await this.runningProcesses.close();
+		console.log('starting to clear');
+		await this.runningProcesses.close(async () => {
+			console.log('clear cleanup inside close');
+			if (this.storage === undefined) {
+				// connect to storage so that it can be cleared without fully starting DataStore
+				this.storage = new Storage(
+					schema,
+					namespaceResolver,
+					getModelConstructorByModelName,
+					modelInstanceCreator,
+					this.storageAdapter,
+					this.sessionId
+				);
+				await this.storage.init();
+			}
 
-		if (this.storage === undefined) {
-			// connect to storage so that it can be cleared without fully starting DataStore
-			this.storage = new Storage(
-				schema,
-				namespaceResolver,
-				getModelConstructorByModelName,
-				modelInstanceCreator,
-				this.storageAdapter,
-				this.sessionId
-			);
-			await this.storage.init();
-		}
+			if (syncSubscription && !syncSubscription.closed) {
+				syncSubscription.unsubscribe();
+			}
 
-		if (syncSubscription && !syncSubscription.closed) {
-			syncSubscription.unsubscribe();
-		}
+			if (this.sync) {
+				await this.sync.stop();
+			}
 
-		if (this.sync) {
-			await this.sync.stop();
-		}
+			await this.storage!.clear();
 
-		await this.storage.clear();
-
-		this.initialized = undefined; // Should re-initialize when start() is called.
-		this.storage = undefined;
-		this.sync = undefined;
-		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
-
-		this.runningProcesses = new BackgroundProcessManager();
+			this.initialized = undefined; // Should re-initialize when start() is called.
+			this.storage = undefined;
+			this.sync = undefined;
+			this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
+			console.log('end of clear() cleanup');
+		});
+		console.log('end of clear');
 	}
 
 	/**
@@ -1871,20 +1877,18 @@ class DataStore {
 	 * running queries and terminates subscriptions."
 	 */
 	async stop(this: InstanceType<typeof DataStore>) {
-		await this.runningProcesses.close();
+		await this.runningProcesses.close(async () => {
+			if (syncSubscription && !syncSubscription.closed) {
+				syncSubscription.unsubscribe();
+			}
 
-		if (syncSubscription && !syncSubscription.closed) {
-			syncSubscription.unsubscribe();
-		}
+			if (this.sync) {
+				await this.sync.stop();
+			}
 
-		if (this.sync) {
-			await this.sync.stop();
-		}
-
-		this.initialized = undefined; // Should re-initialize when start() is called.
-		this.sync = undefined;
-
-		this.runningProcesses = new BackgroundProcessManager();
+			this.initialized = undefined; // Should re-initialize when start() is called.
+			this.sync = undefined;
+		});
 	}
 
 	/**

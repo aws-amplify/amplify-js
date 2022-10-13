@@ -55,17 +55,6 @@ process.on('unhandledRejection', reason => {
 });
 
 describe('DataStore sanity testing checks', () => {
-	// TODO: This is present day behavior.
-	test('multiple DataStore imports are identical', async () => {
-		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
-		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
-
-		expect(DataStoreA).toBe(DataStoreB);
-		expect(PostA).toBe(PostB);
-
-		await DataStoreA.clear();
-	});
-
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
@@ -137,6 +126,151 @@ describe('DataStore sanity testing checks', () => {
 			}, numberOfCycles);
 
 			expect(lastCycle).toBe(numberOfCycles);
+		});
+
+		describe('during lifecycle events', () => {
+			let { DataStore, Post } = getDataStore();
+
+			afterEach(async () => {
+				await DataStore.clear();
+			});
+
+			describe('simple cases', () => {
+				for (const online of [true, false]) {
+					for (const isNode of [true, false]) {
+						const connectedState = online ? 'online' : 'offline';
+						const environment = isNode ? 'node' : 'browser';
+
+						test(`clearing after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.clear();
+						});
+
+						test(`clearing after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.clear();
+						});
+
+						test(`clearing after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.clear();
+						});
+
+						test(`stopping after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.stop();
+						});
+
+						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.stop();
+						});
+
+						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.stop();
+						});
+					}
+				}
+			});
+
+			describe('edges discovered by fuzz', () => {
+				test('unawaited clear, awaited start, unawaited clear (online, node)', async () => {
+					({ DataStore, Post } = getDataStore({ online: true, isNode: true }));
+					DataStore.clear();
+					await DataStore.start();
+					DataStore.clear();
+				});
+
+				test('unawaited clear, awaited start, unawaited clear (online, browser)', async () => {
+					({ DataStore, Post } = getDataStore({ online: true, isNode: false }));
+					DataStore.clear();
+					await DataStore.start();
+					DataStore.clear();
+				});
+
+				test('unawaited clear, awaited start, unawaited clear (offline, node)', async () => {
+					({ DataStore, Post } = getDataStore({ online: false, isNode: true }));
+					DataStore.clear();
+					await DataStore.start();
+					DataStore.clear();
+				});
+
+				test('unawaited clear, awaited start, unawaited clear (offline, browser)', async () => {
+					({ DataStore, Post } = getDataStore({
+						online: false,
+						isNode: false,
+					}));
+					DataStore.clear();
+					await DataStore.start();
+					DataStore.clear();
+				});
+			});
+
+			describe.skip('fuzz', () => {
+				function fuzz() {
+					const steps = [] as any[];
+					const stepsToProduce = 3; //  + Math.random() * 10;
+					for (let i = 0; i < stepsToProduce; i++) {
+						let awaited = true;
+						if (Math.random() > 0.5) {
+							awaited = false;
+						}
+						const methods = ['start', 'stop', 'clear', 'query', 'save'];
+						const action = {
+							method: methods.sort(() => Math.random() - 0.5)[0],
+							awaited,
+						};
+						steps.push(action);
+					}
+					return steps;
+				}
+
+				for (let i = 0; i < 3; i++) {
+					const steps = fuzz();
+					const name = steps
+						.map(s => `${s.awaited ? 'awaited' : 'unawaited'} ${s.method}`)
+						.join(', ');
+
+					for (const online of [true, false]) {
+						for (const isNode of [true, false]) {
+							const connectedState = online ? 'online' : 'offline';
+							const environment = isNode ? 'node' : 'browser';
+							const testName = `${name} (${connectedState}, ${environment})`;
+
+							test(testName, async () => {
+								({ DataStore, Post } = getDataStore({ online, isNode }));
+								for (const step of steps) {
+									const f = {
+										start: () => DataStore.start(),
+										stop: () => DataStore.stop(),
+										clear: () => DataStore.clear(),
+										save: () => DataStore.save(new Post({ title: testName })),
+										query: () => DataStore.query(Post),
+									}[step.method];
+
+									if (step.awaited) {
+										await f();
+									} else {
+										f();
+									}
+
+									// no explicit assertions for now. at this point, we just
+									// want things NOT to blow up. :)
+								}
+							});
+						}
+					}
+				}
+			});
 		});
 
 		test('awaited save', async () => {

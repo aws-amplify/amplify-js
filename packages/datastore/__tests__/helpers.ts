@@ -355,10 +355,10 @@ export async function expectIsolation(
 
 		log(`STARTING:      "${expect.getState().currentTestName}"`);
 
-		for (let cycle = 1; cycle <= cycles; cycle++) {
-			// basic initialization
-			const { DataStore, Post } = getDataStore();
+		// basic initialization
+		const { DataStore, Post } = getDataStore();
 
+		for (let cycle = 1; cycle <= cycles; cycle++) {
 			// act
 			try {
 				log(
@@ -489,6 +489,7 @@ class FakeDataStoreConnectivity {
  * error callbacks and settings to help simulate various conditions.
  */
 class FakeGraphQLService {
+	public isConnected = true;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -570,7 +571,7 @@ class FakeGraphQLService {
 		return JSON.stringify(values);
 	}
 
-	public makeConditionalUpateFailedError(selection) {
+	private makeConditionalUpateFailedError(selection) {
 		// Reponse taken from AppSync console trying to create already existing model.
 		return {
 			path: [selection],
@@ -589,7 +590,7 @@ class FakeGraphQLService {
 		};
 	}
 
-	public makeMissingUpdateTarget(selection) {
+	private makeMissingUpdateTarget(selection) {
 		// Response from AppSync console on non-existent model.
 		return {
 			path: [selection],
@@ -604,6 +605,17 @@ class FakeGraphQLService {
 				},
 			],
 			message: `Not Authorized to access ${selection} on type Mutation`,
+		};
+	}
+
+	private disconnectedError() {
+		return {
+			data: {},
+			errors: [
+				{
+					message: 'Network Error',
+				},
+			],
 		};
 	}
 
@@ -633,6 +645,14 @@ class FakeGraphQLService {
 		return merged;
 	}
 
+	public simulateDisconnect() {
+		this.isConnected = false;
+	}
+
+	public simulateConnect() {
+		this.isConnected = true;
+	}
+
 	/**
 	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
 	 *
@@ -644,6 +664,10 @@ class FakeGraphQLService {
 
 	public request({ query, variables, authMode, authToken }) {
 		// console.log('API request', { query, variables, authMode, authToken });
+
+		if (!this.isConnected) {
+			return this.disconnectedError();
+		}
 
 		const {
 			operation,
@@ -779,6 +803,50 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	const connectivityMonitor = new FakeDataStoreConnectivity();
 	const graphqlService = new FakeGraphQLService(testSchema());
 
+	/**
+	 * Simulates the (re)connection of all returned fakes/mocks that
+	 * support disconnect/reconnect faking.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateConnect(log = false) {
+		if (log) console.log('starting simulated connect.');
+
+		// signal first, as the local interfaces would normally report
+		// online status before services are available.
+		await connectivityMonitor.simulateConnect();
+		if (log) console.log('signaled reconnect in connectivity monitor');
+
+		await graphqlService.simulateConnect();
+		if (log) console.log('simulated graphql service reconnection');
+
+		if (log) console.log('done simulated connect.');
+	}
+
+	/**
+	 * Simulates the disconnection of all returned fakes/mocks that
+	 * support disconnect/reconnect faking.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateDisconnect(log = false) {
+		if (log) console.log('starting simulated disconnect.');
+
+		await graphqlService.simulateDisconnect();
+		if (log) console.log('disconnected graphql service');
+
+		await connectivityMonitor.simulateDisconnect();
+		if (log) console.log('signaled disconnect in connectivity monitor');
+
+		if (log) console.log('done simulated disconnect.');
+	}
+
 	if (!isNode) {
 		jest.mock('@aws-amplify/core', () => {
 			const actual = jest.requireActual('@aws-amplify/core');
@@ -833,6 +901,8 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore,
 		connectivityMonitor,
 		graphqlService,
+		simulateConnect,
+		simulateDisconnect,
 		Post,
 		Comment,
 		User,

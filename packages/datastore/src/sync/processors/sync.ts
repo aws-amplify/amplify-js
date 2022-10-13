@@ -326,12 +326,8 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		console.log('attempting to start 1');
-
 		this.runningProcesses =
 			this.runningProcesses || new BackgroundProcessManager();
-
-		console.log('attempting to start 2', this.runningProcesses);
 
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();

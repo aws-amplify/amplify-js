@@ -132,6 +132,213 @@ describe('BackgroundProcessManager', () => {
 		).rejects.toThrow('closed');
 	});
 
+	test('can accept a closing cleanup job', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep => {
+					setTimeout(() => {
+						results.push('first');
+						unsleep();
+					}, 10);
+				})
+		);
+
+		await manager.close(async () => {
+			results.push('second');
+		});
+
+		// added jobs should complete first.
+		expect(results).toEqual(['first', 'second']);
+	});
+
+	test('waits for the provided closing cleanup job', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep => {
+					setTimeout(() => {
+						results.push('first');
+						unsleep();
+					}, 10);
+				})
+		);
+
+		await manager.close(async () => {
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+			results.push('second');
+		});
+
+		// added jobs should complete first.
+		expect(results).toEqual(['first', 'second']);
+	});
+
+	test('runs all closing cleanup jobs in the order they arrive', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep => {
+					setTimeout(() => {
+						results.push('first');
+						unsleep();
+					}, 10);
+				})
+		);
+
+		manager.close(async () => {
+			results.push('second');
+		});
+		manager.close(async () => {
+			results.push('third');
+		});
+		manager.close(async () => {
+			results.push('fourth');
+		});
+		await manager.close();
+
+		// added jobs should complete first.
+		expect(results).toEqual(['first', 'second', 'third', 'fourth']);
+	});
+
+	test('runs closing cleanup if the manager is already closing', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep => {
+					setTimeout(() => {
+						results.push('first');
+						unsleep();
+					}, 10);
+				})
+		);
+
+		manager.close();
+		expect(manager.isClosing).toBe(true);
+
+		manager.close(async () => {
+			results.push('second');
+		});
+		await manager.close();
+
+		// added jobs should complete first.
+		expect(results).toEqual(['first', 'second']);
+	});
+
+	test('runs cleanup if the manager is already closed', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep => {
+					setTimeout(() => {
+						results.push('first');
+						unsleep();
+					}, 10);
+				})
+		);
+
+		await manager.close();
+		expect(manager.isClosed).toBe(true);
+
+		manager.close(async () => {
+			results.push('second');
+		});
+		await manager.close();
+
+		// added jobs should complete first.
+		expect(results).toEqual(['first', 'second']);
+	});
+
+	test('accepts new cleaner after reopen', async () => {
+		const manager = new BackgroundProcessManager();
+
+		const results: string[] = [];
+
+		await manager.close(async () => {
+			results.push('first');
+		});
+		await manager.open();
+		await manager.close(async () => {
+			results.push('second');
+		});
+
+		expect(results).toEqual(['first', 'second']);
+	});
+
+	test('can be explicitly re-opened to accept new work after close()', async () => {
+		const manager = new BackgroundProcessManager();
+		await manager.close();
+		await manager.open();
+
+		const value = await manager.add(async () => Promise.resolve('VALUE'));
+		expect(value).toEqual('VALUE');
+	});
+
+	test('can be explicitly re-opened while isClosing to accept new work after close', async () => {
+		const manager = new BackgroundProcessManager();
+
+		// add a job that will not have completed by the time we open() again
+		manager.add(async () => new Promise(unsleep => setTimeout(unsleep, 10)));
+
+		// close, but don't want, because we want to prove that open() will wait
+		// internally for close to resolve before re-opening.
+		manager.close();
+
+		// should not fail:
+		await manager.open();
+		const value = await manager.add(async () => Promise.resolve('VALUE'));
+
+		// and per usual, return value from the op should be passed through.
+		expect(value).toEqual('VALUE');
+	});
+
+	test('can be safely "opened" while already opened (open is behaviorally idempotent)', async () => {
+		const manager = new BackgroundProcessManager();
+		manager.open();
+		await manager.open();
+		const value = await manager.add(async () => Promise.resolve('VALUE'));
+		expect(value).toEqual('VALUE');
+	});
+
+	test('open blocks while unawaited close completes cleaner function', async () => {
+		const manager = new BackgroundProcessManager();
+		const results: string[] = [];
+
+		manager.add(
+			async () =>
+				new Promise(unsleep =>
+					setTimeout(() => {
+						unsleep();
+						results.push('first');
+					}, 30)
+				)
+		);
+
+		manager.close(async () => {
+			await new Promise(unsleep => setTimeout(unsleep, 1));
+			results.push('second');
+		});
+
+		await manager.open();
+		await manager.add(async () => results.push('third'));
+
+		expect(results).toEqual(['first', 'second', 'third']);
+	});
+
 	test('tracks state throughout lifecycle', async () => {
 		const manager = new BackgroundProcessManager();
 
@@ -155,12 +362,11 @@ describe('BackgroundProcessManager', () => {
 		expect(manager.isClosing).toBe(true);
 		expect(manager.isClosed).toBe(false);
 
-		// "unblock" returns immediately ...
+		// "unblock" returns immediately, so we need to give control back to
+		// promise layers handling by awaiting another promise before the
+		// manager can register completion.
+
 		unblock();
-
-		// ... so, we need to give control back to a few layers of promise
-		// handling before the manager registers the completion.
-
 		await new Promise(resume => setImmediate(resume));
 
 		expect(manager.state).toEqual(BackgroundProcessManagerState.Closed);
@@ -192,7 +398,7 @@ describe('BackgroundProcessManager', () => {
 	test('waits for multiple promises', async () => {
 		const manager = new BackgroundProcessManager();
 
-		const results = [];
+		const results: boolean[] = [];
 
 		for (let i = 0; i < 10; i++) {
 			const _i = i;
@@ -301,7 +507,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		let terminationAttemptCount = 0;
-		const results = [];
+		const results: boolean[] = [];
 
 		for (let i = 0; i < 10; i++) {
 			const _i = i;
@@ -453,7 +659,7 @@ describe('BackgroundProcessManager', () => {
 					// once if it is implemented wrong.
 					onTerminate.then(() => {
 						terminateSignalCount++;
-						setTimeout(resolve, 10);
+						setTimeout(resolve, 150);
 					});
 				})
 		);

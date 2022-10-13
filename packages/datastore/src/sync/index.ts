@@ -312,11 +312,6 @@ export class SyncEngine {
 										.start()
 										.subscribe(({ modelDefinition, model: item, hasMore }) =>
 											this.runningProcesses.add(async () => {
-												console.log('mutation processor message received', {
-													modelDefinition,
-													item,
-													hasMore,
-												});
 												const modelConstructor = this.userModelClasses[
 													modelDefinition.name
 												] as PersistentModelConstructor<any>;
@@ -432,8 +427,6 @@ export class SyncEngine {
 
 								await this.outbox.enqueue(this.storage, mutationEvent);
 
-								console.log('done enqueueing', mutationEvent, observer);
-
 								observer.next({
 									type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED,
 									data: {
@@ -452,12 +445,6 @@ export class SyncEngine {
 								await startPromise;
 
 								if (this.online) {
-									console.log('resuming mutations from storage event', {
-										opType,
-										model,
-										element,
-										condition,
-									});
 									this.mutationsProcessor.resume();
 								}
 							}, 'storage event'),
@@ -534,14 +521,10 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 
-			console.log('syncQueriesObservable new subscribe');
-
 			this.runningProcesses.add(async () => {
 				let terminated = false;
 
 				while (!observer.closed && !terminated) {
-					console.log('syncQueriesObservable new subscribe - stage 2');
-
 					const count: WeakMap<
 						PersistentModelConstructor<any>,
 						{
@@ -780,7 +763,6 @@ export class SyncEngine {
 			}, 'syncQueriesObservable main');
 
 			return this.runningProcesses.addCleaner(async () => {
-				console.log('cleaning syncQueriesObservable');
 				logger.debug('cleaning syncQueriesObservable');
 
 				if (syncQueriesSubscription) {
@@ -837,14 +819,7 @@ export class SyncEngine {
 		 * passing this context through to child processes.
 		 */
 		await this.runningProcesses.close();
-
-		/**
-		 * Not 100% sure this is necessary. In most cases, we would expect the
-		 * sync engine to be replaced with a new instance after stopping.
-		 *
-		 * TODO: Remove this and see if everything still works.
-		 */
-		this.runningProcesses = new BackgroundProcessManager();
+		await this.runningProcesses.open();
 
 		logger.debug('sync engine stopped and ready to restart');
 	}

@@ -3,13 +3,28 @@ import { parse } from 'graphql';
 import { pause, getDataStore, waitForEmptyOutbox } from './helpers';
 
 describe('DataStore sync engine', () => {
-	let { DataStore, connectivityMonitor, Post, Comment, graphqlService } =
-		getDataStore({ online: true, isNode: false });
+	// establish types :)
+	let {
+		DataStore,
+		connectivityMonitor,
+		Post,
+		Comment,
+		graphqlService,
+		simulateConnect,
+		simulateDisconnect,
+	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
 		console.log('BEFORE EACH');
-		({ DataStore, connectivityMonitor, Post, Comment, graphqlService } =
-			getDataStore({ online: true, isNode: false }));
+		({
+			DataStore,
+			connectivityMonitor,
+			Post,
+			Comment,
+			graphqlService,
+			simulateConnect,
+			simulateDisconnect,
+		} = getDataStore({ online: true, isNode: false }));
 		await DataStore.start();
 	});
 
@@ -32,7 +47,7 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.title).toEqual(post.title);
 		});
 
-		test('uses model create subscription event to populate metadata', async () => {
+		test('uses model create subscription event to populate sync protocol metadata', async () => {
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 			await waitForEmptyOutbox();
 
@@ -90,14 +105,8 @@ describe('DataStore sync engine', () => {
 			);
 
 			await waitForEmptyOutbox();
-			console.log('disconnecting');
-			connectivityMonitor.simulateDisconnect();
-			await pause(1);
-			console.log('reconnecting');
-			connectivityMonitor.simulateConnect();
-			await pause(1);
-
-			console.log('reconnected?');
+			await simulateDisconnect();
+			await simulateConnect();
 
 			const anotherPost = await DataStore.save(
 				new Post({
@@ -105,8 +114,6 @@ describe('DataStore sync engine', () => {
 				})
 			);
 			await waitForEmptyOutbox();
-
-			console.log('outbox empty');
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(2);
@@ -128,20 +135,20 @@ describe('DataStore sync engine', () => {
 			);
 
 			await waitForEmptyOutbox();
-			connectivityMonitor.simulateDisconnect();
-			await pause(1);
+			await simulateDisconnect();
+			const outboxEmpty = waitForEmptyOutbox();
 
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
 				})
 			);
-			const outboxEmpty = waitForEmptyOutbox();
 
+			// In this scenario, we want to test the case where the offline
+			// save is NOT in a race with reconnection.
 			await pause(1);
 
-			connectivityMonitor.simulateConnect();
-
+			await simulateConnect();
 			await outboxEmpty;
 
 			const table = graphqlService.tables.get('Post')!;
@@ -161,6 +168,9 @@ describe('DataStore sync engine', () => {
 		 *
 		 * Outbox mutations are processed, but the hub events are not sent, so
 		 * the test hangs and times out. :shrug:
+		 *
+		 * It is notable that the data is correct in this case, we just don't
+		 * receive all of the expected Hub events.
 		 */
 		test.skip('survives online -> offline -> save/online race', async () => {
 			const post = await DataStore.save(
@@ -170,9 +180,7 @@ describe('DataStore sync engine', () => {
 			);
 
 			await waitForEmptyOutbox();
-			console.log('disconnecting');
-			connectivityMonitor.simulateDisconnect();
-			// await pause(1);
+			await simulateDisconnect();
 
 			const outboxEmpty = waitForEmptyOutbox();
 
@@ -182,13 +190,11 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			// NO PAUSE: Simulate reconnect immediately, which causes a race
+			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
 			// between the save and the sync engine reconnection operations.
 
-			connectivityMonitor.simulateConnect();
-
+			await simulateConnect();
 			await outboxEmpty;
-			console.log('outbox empty');
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(2);
