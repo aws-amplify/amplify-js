@@ -112,7 +112,7 @@ export class AuthClass {
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 	private autoSignInInitiated: boolean = false;
-	private inflightSessionPromise: Promise<CognitoUserSession> = null;
+	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
 	Credentials = Credentials;
 
 	/**
@@ -1799,17 +1799,15 @@ export class AuthClass {
 
 	private async _userSession({
 		user,
-		bypassCache = false,
+	}: {
+		user?: CognitoUser;
 	}): Promise<CognitoUserSession> {
 		if (!user) {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
-		if (this.inflightSessionPromise) {
-			return await this.inflightSessionPromise;
-		} else {
+		if (!this.inflightSessionPromise) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {
 					user.getSession(
@@ -1836,19 +1834,16 @@ export class AuthClass {
 								return;
 							}
 						},
-						{ clientMetadata, bypassCache }
+						{ clientMetadata }
 					);
 				}
-			)
-				.then(session => {
-					this.inflightSessionPromise = null;
-					return session;
-				})
-				.catch(err => {
-					this.inflightSessionPromise = null;
-					throw err;
-				});
-			return this.inflightSessionPromise;
+			);
+		}
+
+		try {
+			return await this.inflightSessionPromise;
+		} finally {
+			this.inflightSessionPromise = null;
 		}
 	}
 
@@ -1858,7 +1853,7 @@ export class AuthClass {
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		return this._userSession({ user, bypassCache: false });
+		return this._userSession({ user });
 	}
 
 	/**
