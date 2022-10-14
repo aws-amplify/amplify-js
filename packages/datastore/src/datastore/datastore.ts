@@ -61,10 +61,12 @@ import {
 	ManagedIdentifier,
 	PersistentModelMetaData,
 	IdentifierFieldOrIdentifierObject,
-	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
 } from '../types';
+// tslint:disable:no-duplicate-imports
+import type { __modelMeta__ } from '../types';
+
 import {
 	DATASTORE,
 	errorMessages,
@@ -309,7 +311,10 @@ const validateModelFields =
 				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isSchemaModelWithAttributes(modelDefinition) && !isIdManaged(modelDefinition)) {
+			if (
+				isSchemaModelWithAttributes(modelDefinition) &&
+				!isIdManaged(modelDefinition)
+			) {
 				const keys = extractPrimaryKeyFieldNames(modelDefinition);
 				if (keys.includes(k) && v === '') {
 					logger.error(errorMessages.idEmptyString, { k, value: v });
