@@ -1685,9 +1685,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              # TODO: restore this after CPK flakiness on Chrome is resolved
-              # <<: *test_browsers
-              browser: [firefox]
+              <<: *test_browsers
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
@@ -1696,9 +1694,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              # TODO: restore this after CPK flakiness on Chrome is resolved
-              # <<: *test_browsers
-              browser: [firefox]
+              <<: *test_browsers
       - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
@@ -1707,9 +1703,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              # TODO: restore this after CPK flakiness on Chrome is resolved
-              # <<: *test_browsers
-              browser: [firefox]
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
