@@ -64,6 +64,7 @@ import {
 	isIdentifierObject,
 	AmplifyContext,
 } from '../types';
+// tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
 
 import {
