@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.13.0...@aws-amplify/datastore@3.14.0) (2022-10-14)
+
+
+### Bug Fixes
+
+* **datastore:** unblock vite build after CPK changes ([#10478](https://github.com/aws-amplify/amplify-js/issues/10478)) ([42ae8de](https://github.com/aws-amplify/amplify-js/commit/42ae8de62f53e7d81363c0dd676967454271259a))
+
+
+### Features
+
+* **datastore:** allow sync query to complete when non-applicable data present ([#10471](https://github.com/aws-amplify/amplify-js/issues/10471)) ([f8e8ff4](https://github.com/aws-amplify/amplify-js/commit/f8e8ff4c1a59d600b96944e5963dfa56a44af035))
+
+
+
+
+
 # [3.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.12...@aws-amplify/datastore@3.13.0) (2022-10-14)
 
 
