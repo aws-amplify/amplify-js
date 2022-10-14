@@ -1173,21 +1173,55 @@ jobs:
           spec: next-owner-based-default
           browser: << parameters.browser >>
 
-  integ_react_datastore_custom_pk:
+  integ_react_datastore_custom_pk_unconnected_models:
     parameters:
       browser:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'DataStore - Custom Primary Key'
+          test_name: 'DataStore - Custom Primary Key (Connected Models)'
           framework: react
           category: datastore
-          sample_name: v2/custom-pk
-          spec: custom-pk
+          sample_name: v2/custom-pk-unconnected-models
+          spec: custom-pk-unconnected-models
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_one:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-one
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has One)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-one
+          spec: custom-pk-has-one
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_many_many_to_many:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-many-many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-many-many-to-many
+          spec: custom-pk-has-many-many-to-many
           browser: << parameters.browser >>
 
   deploy:
@@ -1236,7 +1270,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - ds-custom-pk
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1644,7 +1677,29 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_custom_pk:
+      - integ_react_datastore_custom_pk_unconnected_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              # TODO: restore this after CPK flakiness on Chrome is resolved
+              # <<: *test_browsers
+              browser: [firefox]
+      - integ_react_datastore_custom_pk_has_one:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              # TODO: restore this after CPK flakiness on Chrome is resolved
+              # <<: *test_browsers
+              browser: [firefox]
+      - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
             - build
@@ -1703,7 +1758,9 @@ workflows:
             - integ_react_graphql_api
             - integ_react_geo
             - integ_next_datastore_owner_auth
-            - integ_react_datastore_custom_pk
+            - integ_react_datastore_custom_pk_unconnected_models
+            - integ_react_datastore_custom_pk_has_one
+            - integ_react_datastore_custom_pk_has_many_many_to_many
       - post_release:
           filters:
             branches:
