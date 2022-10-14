@@ -266,9 +266,7 @@ export class AmplifySignIn {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (
-						field as PhoneFormFieldType
-					).dialCode;
+					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;

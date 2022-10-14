@@ -39,8 +39,9 @@ export class AmplifyTOTPSetup {
 	/** Used for customizing the issuer string in the qr code image */
 	@Prop() issuer: string = Translations.TOTP_ISSUER;
 	/** This is run after totp setup is complete. Useful if using this as standalone. */
-	@Prop() handleComplete: (user: CognitoUserInterface) => void | Promise<void> =
-		this.onTOTPEvent;
+	@Prop() handleComplete: (
+		user: CognitoUserInterface
+	) => void | Promise<void> = this.onTOTPEvent;
 	/** Set this to true if this component is running outside the default `amplify-authenticator` usage */
 	@Prop() standalone: boolean = false;
 

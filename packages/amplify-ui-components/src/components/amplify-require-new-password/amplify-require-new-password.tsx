@@ -103,8 +103,8 @@ export class AmplifyRequireNewPassword {
 			this.currentUser.challengeParam &&
 			this.currentUser.challengeParam.requiredAttributes
 		) {
-			const userRequiredAttributes =
-				this.currentUser.challengeParam.requiredAttributes;
+			const userRequiredAttributes = this.currentUser.challengeParam
+				.requiredAttributes;
 			const requiredAttributesMap = getRequiredAttributesMap();
 			userRequiredAttributes.forEach((attribute: string) => {
 				const formField = {
