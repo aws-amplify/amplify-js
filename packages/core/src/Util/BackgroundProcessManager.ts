@@ -312,10 +312,10 @@ export class BackgroundProcessManager {
 	private closedFailure(description: string) {
 		if (!this.isOpen) {
 			return Promise.reject(
-				new Error(
+				new BackgroundManagerNotOpenError(
 					[
-						'The manager is closing or closed, which occurs after `close()` has been called.',
-						`This error occurred trying to add "${description}".`,
+						`The manager is ${this.state}.`,
+						`You tried to add "${description}".`,
 						`Pending jobs: [\n${this.pending
 							.map(t => '    ' + t)
 							.join(',\n')}\n]`,
@@ -342,15 +342,7 @@ export class BackgroundProcessManager {
 	 * manager is already closed, this will contain the results as of when the
 	 * manager's `close()` was called in an `Open` state.
 	 */
-	async close({
-		onAddError,
-	}: {
-		/**
-		 * If a job is rejected while the manager is closing or closed, throw
-		 * the error provided by this function instead of the default error.
-		 */
-		onAddError?: () => any;
-	} = {}) {
+	async close() {
 		if (this.isOpen) {
 			this._state = BackgroundProcessManagerState.Closing;
 			for (const job of Array.from(this.jobs)) {
@@ -397,6 +389,15 @@ export class BackgroundProcessManager {
 		}
 
 		this._state = BackgroundProcessManagerState.Open;
+	}
+}
+
+/**
+ *
+ */
+export class BackgroundManagerNotOpenError extends Error {
+	constructor(message: string) {
+		super(`BackgroundManagerNotOpenError: ${message}`);
 	}
 }
 

@@ -107,12 +107,14 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 			await simulateDisconnect();
 			await simulateConnect();
+			await pause(1);
 
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
 				})
 			);
+
 			await waitForEmptyOutbox();
 
 			const table = graphqlService.tables.get('Post')!;

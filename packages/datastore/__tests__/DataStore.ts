@@ -178,46 +178,54 @@ describe('DataStore sanity testing checks', () => {
 							await pause(1);
 							await DataStore.stop();
 						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							DataStore.clear();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
+							);
+						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							DataStore.stop();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
+							);
+						});
 					}
 				}
 			});
 
+			/**
+			 * When fuzzing discovers issues, recreate them here to prevent regressions.
+			 */
 			describe('edges discovered by fuzz', () => {
-				test('unawaited clear, awaited start, unawaited clear (online, node)', async () => {
-					({ DataStore, Post } = getDataStore({ online: true, isNode: true }));
-					DataStore.clear();
-					await DataStore.start();
-					DataStore.clear();
-				});
-
-				test('unawaited clear, awaited start, unawaited clear (online, browser)', async () => {
-					({ DataStore, Post } = getDataStore({ online: true, isNode: false }));
-					DataStore.clear();
-					await DataStore.start();
-					DataStore.clear();
-				});
-
-				test('unawaited clear, awaited start, unawaited clear (offline, node)', async () => {
-					({ DataStore, Post } = getDataStore({ online: false, isNode: true }));
-					DataStore.clear();
-					await DataStore.start();
-					DataStore.clear();
-				});
-
-				test('unawaited clear, awaited start, unawaited clear (offline, browser)', async () => {
-					({ DataStore, Post } = getDataStore({
-						online: false,
-						isNode: false,
-					}));
-					DataStore.clear();
-					await DataStore.start();
-					DataStore.clear();
-				});
+				/**
+				 * As explained below, DataStore can't actually handle the fuzz yet. :(
+				 */
 			});
 
+			/**
+			 * We're not fuzzable yet ... also, these fuzz tests may need to accumulate
+			 * assertions along the way as well, because some of the behavior will
+			 * likely change from "everything is happy, DataStore figures it out" to
+			 * predictable error cases.
+			 */
 			describe.skip('fuzz', () => {
 				function fuzz() {
 					const steps = [] as any[];
+
+					// increase when we can actually deal with the fuzz.
 					const stepsToProduce = 3; //  + Math.random() * 10;
 					for (let i = 0; i < stepsToProduce; i++) {
 						let awaited = true;
@@ -234,6 +242,7 @@ describe('DataStore sanity testing checks', () => {
 					return steps;
 				}
 
+				// increase when we can actually deal efficiently with the fuzz
 				for (let i = 0; i < 3; i++) {
 					const steps = fuzz();
 					const name = steps
@@ -306,7 +315,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.query(Post))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.query\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -334,7 +344,8 @@ describe('DataStore sanity testing checks', () => {
 			await expect(
 				DataStore.save(new Post({ title: 'title that should fail' }))
 			)
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.save\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -360,7 +371,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.delete(Post, Predicates.ALL))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.delete\(\).+Clearing/)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -390,7 +402,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observe()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});
@@ -421,7 +435,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observeQuery()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});

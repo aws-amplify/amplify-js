@@ -129,7 +129,7 @@ describe('BackgroundProcessManager', () => {
 
 		expect(
 			manager.add(async () => Promise.resolve('This should never be returned.'))
-		).rejects.toThrow('closed');
+		).rejects.toThrow('BackgroundManagerNotOpenError');
 	});
 
 	test('can be explicitly re-opened to accept new work after close()', async () => {
@@ -219,7 +219,7 @@ describe('BackgroundProcessManager', () => {
 				expect(true).toBe(false);
 			})
 			.catch(error => {
-				expect(error.message).toContain('closed');
+				expect(error.message).toContain('BackgroundManagerNotOpenError');
 			});
 	});
 
