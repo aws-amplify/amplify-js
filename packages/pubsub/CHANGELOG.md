@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.5.5...@aws-amplify/pubsub@4.5.6) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [4.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.5.3...@aws-amplify/pubsub@4.5.5) (2022-09-30)
 
 
