@@ -27,10 +27,12 @@ import {
 	AuthModeStrategy,
 	ManagedIdentifier,
 	OptionallyManagedIdentifier,
-	__modelMeta__,
 	AmplifyContext,
 } from '../types';
-import { getNow, SYNC, USER } from '../util';
+// tslint:disable:no-duplicate-imports
+import type { __modelMeta__ } from '../types';
+
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';

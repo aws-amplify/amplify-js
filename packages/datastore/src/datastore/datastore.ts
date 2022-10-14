@@ -69,13 +69,15 @@ import {
 	ManagedIdentifier,
 	PersistentModelMetaData,
 	IdentifierFieldOrIdentifierObject,
-	__modelMeta__,
 	isIdentifierObject,
 	AmplifyContext,
 	isFieldAssociation,
 	isModelAttributePrimaryKey,
 	ModelMeta,
 } from '../types';
+// tslint:disable:no-duplicate-imports
+import type { __modelMeta__ } from '../types';
+
 import {
 	DATASTORE,
 	errorMessages,
