@@ -7,7 +7,6 @@ import {
 	Hub,
 	JS,
 	BackgroundProcessManager,
-	Mutex,
 } from '@aws-amplify/core';
 import {
 	Draft,
