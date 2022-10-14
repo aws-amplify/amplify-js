@@ -325,18 +325,8 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		if (this.runningProcesses) {
-			throw new Error(
-				[
-					'The sync processor is already started!',
-					'Wait until it completes or `await stop()` it first!',
-					'(This is an Amplify bug; please open a Github Issue:',
-					'https://github.com/aws-amplify/amplify-js/issues)',
-				].join('\n')
-			);
-		}
-
-		this.runningProcesses = new BackgroundProcessManager();
+		this.runningProcesses =
+			this.runningProcesses || new BackgroundProcessManager();
 
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
@@ -356,76 +346,82 @@ class SyncProcessor {
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
-				.map(([modelDefinition, [namespace, lastSync]]) =>
-					this.runningProcesses!.add(async onTerminate => {
-						let done = false;
-						let nextToken: string = null!;
-						let startedAt: number = null!;
-						let items: ModelInstanceMetadata[] = null!;
+				.map(
+					([modelDefinition, [namespace, lastSync]]) =>
+						this.runningProcesses!.isOpen &&
+						this.runningProcesses!.add(async onTerminate => {
+							let done = false;
+							let nextToken: string = null!;
+							let startedAt: number = null!;
+							let items: ModelInstanceMetadata[] = null!;
 
-						let recordsReceived = 0;
-						const filter = this.graphqlFilterFromPredicate(modelDefinition);
+							let recordsReceived = 0;
+							const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
-						const parents = this.schema.namespaces[
-							namespace
-						].modelTopologicalOrdering!.get(modelDefinition.name);
-						const promises = parents!.map(parent =>
-							parentPromises.get(`${namespace}_${parent}`)
-						);
+							const parents = this.schema.namespaces[
+								namespace
+							].modelTopologicalOrdering!.get(modelDefinition.name);
+							const promises = parents!.map(parent =>
+								parentPromises.get(`${namespace}_${parent}`)
+							);
 
-						const promise = new Promise<void>(async res => {
-							await Promise.all(promises);
+							const promise = new Promise<void>(async res => {
+								await Promise.all(promises);
 
-							do {
-								if (!this.runningProcesses) {
-									return;
-								}
+								do {
+									if (!this.runningProcesses) {
+										return;
+									}
 
-								const limit = Math.min(
-									maxRecordsToSync - recordsReceived,
-									syncPageSize
-								);
+									const limit = Math.min(
+										maxRecordsToSync - recordsReceived,
+										syncPageSize
+									);
 
-								({ items, nextToken, startedAt } = await this.retrievePage(
-									modelDefinition,
-									lastSync,
-									nextToken,
-									limit,
-									filter,
-									onTerminate
-								));
+									({ items, nextToken, startedAt } = await this.retrievePage(
+										modelDefinition,
+										lastSync,
+										nextToken,
+										limit,
+										filter,
+										onTerminate
+									));
 
-								recordsReceived += items.length;
+									recordsReceived += items.length;
 
-								done =
-									nextToken === null || recordsReceived >= maxRecordsToSync;
+									done =
+										nextToken === null || recordsReceived >= maxRecordsToSync;
 
-								observer.next({
-									namespace,
-									modelDefinition,
-									items,
-									done,
-									startedAt,
-									isFullSync: !lastSync,
-								});
-							} while (!done);
+									observer.next({
+										namespace,
+										modelDefinition,
+										items,
+										done,
+										startedAt,
+										isFullSync: !lastSync,
+									});
+								} while (!done);
 
-							res();
-						});
+								res();
+							});
 
-						parentPromises.set(`${namespace}_${modelDefinition.name}`, promise);
+							parentPromises.set(
+								`${namespace}_${modelDefinition.name}`,
+								promise
+							);
 
-						await promise;
-					})
+							await promise;
+						}, `adding model ${modelDefinition.name}`)
 				);
 
-			Promise.all(allModelsReady).then(() => {
+			Promise.all(allModelsReady as Promise<any>[]).then(() => {
 				observer.complete();
 			});
 
-			return this.runningProcesses!.addCleaner(async () => {
-				this.runningProcesses = undefined;
-			});
+			// return this.runningProcesses.addCleaner(async () => {
+			// await this.runningProcesses.close();
+			// this.runningProcesses = undefined;
+			// });
 		});
 
 		return observable;
@@ -434,6 +430,7 @@ class SyncProcessor {
 	async stop() {
 		logger.debug('stopping sync processor');
 		this.runningProcesses && (await this.runningProcesses.close());
+		this.runningProcesses = undefined;
 		logger.debug('sync processor stopped');
 	}
 }

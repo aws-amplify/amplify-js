@@ -71,6 +71,13 @@ export default class CognitoUserPool {
 	}
 
 	/**
+	 * @returns {string} the user pool name
+	 */
+	getUserPoolName() {
+		return this.getUserPoolId().split('_')[1];
+	}
+
+	/**
 	 * @returns {string} the client id
 	 */
 	getClientId() {

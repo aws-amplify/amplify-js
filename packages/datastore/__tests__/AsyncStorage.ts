@@ -167,6 +167,10 @@ describe('AsyncStorage tests', () => {
 		await DataStore.start();
 	});
 
+	afterEach(async () => {
+		await DataStore.clear();
+	});
+
 	test('setup function', async () => {
 		const allKeys = await AsyncStorage.getAllKeys();
 		expect(allKeys).not.toHaveLength(0); // At leaset the settings entry should be present
@@ -271,20 +275,21 @@ describe('AsyncStorage tests', () => {
 	});
 
 	test('query function 1:1', async () => {
-		const res = await DataStore.save(blog);
+		const savedBlog = await DataStore.save(blog);
 		await DataStore.save(owner);
-		const query = await DataStore.query(Blog, blog.id);
 
-		expect(query).toEqual(res);
+		const retrievedBlog = await DataStore.query(Blog, blog.id);
+		expect(retrievedBlog).toEqual(savedBlog);
 
-		await DataStore.save(blog3);
-		const query1 = await DataStore.query(Blog);
-		query1.forEach(async item => {
-			if (item.owner) {
-				const resolvedOwner = await item.owner;
-				expect(resolvedOwner).toHaveProperty('name');
-			}
-		});
+		const allBlogs = await DataStore.query(Blog);
+
+		await Promise.all(
+			allBlogs.map(async item => {
+				if (item.owner) {
+					expect(await item.owner).toHaveProperty('name');
+				}
+			})
+		);
 	});
 
 	test('query M:1 lazy load', async () => {
@@ -292,35 +297,22 @@ describe('AsyncStorage tests', () => {
 			title: 'Avatar',
 			blog,
 		});
-		console.log('here 1');
 
 		const c1 = new Comment({
 			content: 'comment 1',
 			post: p,
 		});
-		console.log('here 2');
 
 		const c2 = new Comment({
 			content: 'comment 2',
 			post: p,
 		});
-		console.log('here 3');
 
 		await DataStore.save(p);
-		console.log('here 4');
-
 		await DataStore.save(c1);
-		console.log('here 5');
-
 		await DataStore.save(c2);
-		console.log('here 6');
-
 		const q1 = await DataStore.query(Comment, c1.id);
-		console.log('here 7', q1);
-
 		const resolvedPost = await q1!.post;
-		console.log('here 8');
-
 		expect(resolvedPost!.id).toEqual(p.id);
 	});
 

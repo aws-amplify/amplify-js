@@ -19,15 +19,20 @@ import {
 } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
-	SearchPlaceIndexForTextCommandInput,
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForTextCommandInput,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForSuggestionsCommandInput,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForPositionCommandInput,
 	BatchPutGeofenceCommand,
 	BatchPutGeofenceCommandInput,
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
+	GetPlaceCommand,
+	GetPlaceCommandInput,
+	GetPlaceCommandOutput,
 	GetGeofenceCommand,
 	GetGeofenceCommandInput,
 	GetGeofenceCommandOutput,
@@ -39,7 +44,11 @@ import {
 	BatchDeleteGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
 
-import { validateGeofenceId, validateGeofencesInput } from '../util';
+import {
+	mapSearchOptions,
+	validateGeofenceId,
+	validateGeofencesInput,
+} from '../util';
 
 import {
 	GeoConfig,
@@ -49,6 +58,7 @@ import {
 	Place,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
+	SearchForSuggestionsResults,
 	GeofenceId,
 	GeofenceInput,
 	AmazonLocationServiceGeofenceOptions,
@@ -59,6 +69,7 @@ import {
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
+	searchByPlaceIdOptions,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -162,7 +173,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		/**
 		 * Setup the searchInput
 		 */
-		const locationServiceInput: SearchPlaceIndexForTextCommandInput = {
+		let locationServiceInput: SearchPlaceIndexForTextCommandInput = {
 			Text: text,
 			IndexName: this._config.search_indices.default,
 		};
@@ -171,24 +182,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Map search options to Amazon Location Service input object
 		 */
 		if (options) {
-			locationServiceInput.FilterCountries = options.countries;
-			locationServiceInput.MaxResults = options.maxResults;
-
-			if (options.searchIndexName) {
-				locationServiceInput.IndexName = options.searchIndexName;
-			}
-
-			if (options['biasPosition'] && options['searchAreaConstraints']) {
-				throw new Error(
-					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
-				);
-			}
-			if (options['biasPosition']) {
-				locationServiceInput.BiasPosition = options['biasPosition'];
-			}
-			if (options['searchAreaConstraints']) {
-				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
-			}
+			locationServiceInput = {
+				...locationServiceInput,
+				...mapSearchOptions(options, locationServiceInput),
+			};
 		}
 
 		const client = new LocationClient({
@@ -219,6 +216,119 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}) as undefined as Place[];
 
 		return results;
+	}
+
+	/**
+	 * Search for suggestions based on the input text
+	 * @param  {string} text - The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
+	 */
+
+	public async searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<SearchForSuggestionsResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifySearchIndex(options?.searchIndexName);
+
+		/**
+		 * Setup the searchInput
+		 */
+		let locationServiceInput: SearchPlaceIndexForSuggestionsCommandInput = {
+			Text: text,
+			IndexName: this._config.search_indices.default,
+		};
+
+		/**
+		 * Map search options to Amazon Location Service input object
+		 */
+		if (options) {
+			locationServiceInput = {
+				...locationServiceInput,
+				...mapSearchOptions(options, locationServiceInput),
+			};
+		}
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		const command = new SearchPlaceIndexForSuggestionsCommand(
+			locationServiceInput
+		);
+
+		let response;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		/**
+		 * The response from Amazon Location Service is a "Results" array of objects with `Text` and `PlaceId`.
+		 */
+		const results = response.Results.map(result => ({
+			text: result.Text,
+			placeId: result.PlaceId,
+		}));
+
+		return results;
+	}
+
+	private _verifyPlaceId(placeId: string) {
+		if (placeId.length === 0) {
+			const errorString = 'PlaceId cannot be an empty string.';
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+	}
+
+	public async searchByPlaceId(
+		placeId: string,
+		options?: searchByPlaceIdOptions
+	): Promise<Place | undefined> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifySearchIndex(options?.searchIndexName);
+		this._verifyPlaceId(placeId);
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		const searchByPlaceIdInput: GetPlaceCommandInput = {
+			PlaceId: placeId,
+			IndexName:
+				options?.searchIndexName || this._config.search_indices.default,
+		};
+		const command = new GetPlaceCommand(searchByPlaceIdInput);
+
+		let response: GetPlaceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		const place: PlaceResult | undefined = response.Place;
+
+		if (place) {
+			return camelcaseKeys(place, { deep: true }) as unknown as Place;
+		}
+		return;
 	}
 
 	/**

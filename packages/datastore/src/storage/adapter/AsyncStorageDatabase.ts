@@ -294,8 +294,6 @@ class AsyncStorageDatabase {
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName)!;
 
-		console.log('get collection index collection', collection);
-
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
 		const end = limit > 0 ? start + limit : undefined;

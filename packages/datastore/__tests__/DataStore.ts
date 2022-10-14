@@ -58,17 +58,6 @@ process.on('unhandledRejection', reason => {
 });
 
 describe('DataStore sanity testing checks', () => {
-	// TODO: This is present day behavior.
-	test('multiple DataStore imports are identical', async () => {
-		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
-		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
-
-		expect(DataStoreA).toBe(DataStoreB);
-		expect(PostA).toBe(PostB);
-
-		await DataStoreA.clear();
-	});
-
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
@@ -142,6 +131,160 @@ describe('DataStore sanity testing checks', () => {
 			expect(lastCycle).toBe(numberOfCycles);
 		});
 
+		describe('during lifecycle events', () => {
+			let { DataStore, Post } = getDataStore();
+
+			afterEach(async () => {
+				await DataStore.clear();
+			});
+
+			describe('simple cases', () => {
+				for (const online of [true, false]) {
+					for (const isNode of [true, false]) {
+						const connectedState = online ? 'online' : 'offline';
+						const environment = isNode ? 'node' : 'browser';
+
+						test(`clearing after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.clear();
+						});
+
+						test(`clearing after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.clear();
+						});
+
+						test(`clearing after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.clear();
+						});
+
+						test(`stopping after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.stop();
+						});
+
+						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.stop();
+						});
+
+						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.stop();
+						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							DataStore.clear();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
+							);
+						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							DataStore.stop();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
+							);
+						});
+					}
+				}
+			});
+
+			/**
+			 * When fuzzing discovers issues, recreate them here to prevent regressions.
+			 */
+			describe('edges discovered by fuzz', () => {
+				/**
+				 * As explained below, DataStore can't actually handle the fuzz yet. :(
+				 */
+			});
+
+			/**
+			 * We're not fuzzable yet ... also, these fuzz tests may need to accumulate
+			 * assertions along the way as well, because some of the behavior will
+			 * likely change from "everything is happy, DataStore figures it out" to
+			 * predictable error cases.
+			 */
+			describe.skip('fuzz', () => {
+				function fuzz() {
+					const steps = [] as any[];
+
+					// increase when we can actually deal with the fuzz.
+					const stepsToProduce = 3; //  + Math.random() * 10;
+					for (let i = 0; i < stepsToProduce; i++) {
+						let awaited = true;
+						if (Math.random() > 0.5) {
+							awaited = false;
+						}
+						const methods = ['start', 'stop', 'clear', 'query', 'save'];
+						const action = {
+							method: methods.sort(() => Math.random() - 0.5)[0],
+							awaited,
+						};
+						steps.push(action);
+					}
+					return steps;
+				}
+
+				// increase when we can actually deal efficiently with the fuzz
+				for (let i = 0; i < 3; i++) {
+					const steps = fuzz();
+					const name = steps
+						.map(s => `${s.awaited ? 'awaited' : 'unawaited'} ${s.method}`)
+						.join(', ');
+
+					for (const online of [true, false]) {
+						for (const isNode of [true, false]) {
+							const connectedState = online ? 'online' : 'offline';
+							const environment = isNode ? 'node' : 'browser';
+							const testName = `${name} (${connectedState}, ${environment})`;
+
+							test(testName, async () => {
+								({ DataStore, Post } = getDataStore({ online, isNode }));
+								for (const step of steps) {
+									const f = {
+										start: () => DataStore.start(),
+										stop: () => DataStore.stop(),
+										clear: () => DataStore.clear(),
+										save: () => DataStore.save(new Post({ title: testName })),
+										query: () => DataStore.query(Post),
+									}[step.method];
+
+									if (step.awaited) {
+										await f();
+									} else {
+										f();
+									}
+
+									// no explicit assertions for now. at this point, we just
+									// want things NOT to blow up. :)
+								}
+							});
+						}
+					}
+				}
+			});
+		});
+
 		test('awaited save', async () => {
 			await expectIsolation(
 				async ({ DataStore, Post }) =>
@@ -175,7 +318,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.query(Post))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.query\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -203,7 +347,8 @@ describe('DataStore sanity testing checks', () => {
 			await expect(
 				DataStore.save(new Post({ title: 'title that should fail' }))
 			)
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.save\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -229,7 +374,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.delete(Post, Predicates.ALL))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.delete\(\).+Clearing/)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -259,7 +405,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observe()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});
@@ -290,7 +438,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observeQuery()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});
@@ -696,7 +846,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		// decoy
 		await DataStore.save(
 			new Model({
-				field1: "This one's a decoy!",
+				field1: "This one's a decoy! (sfqpjzja)",
 				dateCreated: new Date().toISOString(),
 			})
 		);
@@ -729,7 +879,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		// decoy
 		await DataStore.save(
 			new Model({
-				field1: "This one's a decoy!",
+				field1: "This one's a decoy! (xgxbubyd)",
 				dateCreated: new Date().toISOString(),
 			})
 		);
@@ -773,7 +923,7 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		);
 	});
 
-	test.only('subscribe with hasMany criteria', async done => {
+	test('subscribe with hasMany criteria', async done => {
 		// want to set up a few posts and a few "non-target" comments
 		// to ensure we can observe post based on a single comment that's
 		// somewhat "buried" alongside other comments.
@@ -1652,7 +1802,7 @@ describe('DataStore tests', () => {
 
 			describe('Invalid PracodegenVersiongma', () => {
 				invalidcodegenVersion.forEach(codegenVersion => {
-					test.only(`fails on codegenVersion = ${codegenVersion}`, () => {
+					test(`fails on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).toThrow(
@@ -1664,7 +1814,7 @@ describe('DataStore tests', () => {
 
 			describe('Valid codegenVersion', () => {
 				validcodegenVersion.forEach(codegenVersion => {
-					test.only(`passes on codegenVersion = ${codegenVersion}`, () => {
+					test(`passes on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).not.toThrow(
@@ -2212,295 +2362,597 @@ describe('DataStore tests', () => {
 			}).toThrow('updatedAt is read-only.');
 		});
 
-		test('Instantiation validations', async () => {
-			expect(() => {
-				new Model({
-					field1: undefined as unknown as string,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+		describe('Instantiation validations', () => {
+			test('required field (undefined)', () => {
+				expect(() => {
+					new Model({
+						field1: undefined!,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: null as unknown as string,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError('Field field1 is required');
+			test('required field (null)', () => {
+				expect(() => {
+					new Model({
+						field1: null!,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError('Field field1 is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: <any>1234,
-					dateCreated: new Date().toISOString(),
-				});
-			}).toThrowError(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('wrong type (number -> string)', () => {
+				expect(() => {
+					new Model({
+						field1: <any>1234,
+						dateCreated: new Date().toISOString(),
+					});
+				}).toThrowError(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: 'not-a-date',
-				});
-			}).toThrowError(
-				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
-			);
+			test('wrong type (string -> date)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: 'not-a-date',
+					});
+				}).toThrowError(
+					'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				);
+			});
 
-			expect(
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				}).metadata?.tags
-			).toBeUndefined();
+			test('set nested non model field as undefined', () => {
+				expect(
+					// @ts-ignore
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					}).metadata.tags
+				).toBeUndefined();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [null as unknown as string],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the rewards array should be of type string, [null] received. '
-			);
+			test('pass null to nested non model array field (constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null!],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: null as unknown as string[],
-					ips: null as unknown as string[],
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('pass null to nested non model non nullable array field (no constructor)', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [null!],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the rewards array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [null as unknown as string],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type string, [null] received. '
-			);
+			test('valid model with nulls', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: null,
+						ips: null,
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: [null],
-				});
-			}).not.toThrow();
+			test('pass null to non nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [null!],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type string, [null] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1'],
-				});
-			}).not.toThrow();
+			test('pass null to nullable array field', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: [null],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
-			);
+			test('valid model array of AWSIPAdress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1'],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['1.1.1.1', 'not.an.ip'],
-				});
-			}).toThrowError(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
-			);
+			test('invalid AWSIPAddress', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['test@example.com'],
-				});
-			}).not.toThrow();
+			test('invalid AWSIPAddress in one index', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						ips: ['1.1.1.1', 'not.an.ip'],
+					});
+				}).toThrowError(
+					`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: [],
-					ips: [],
-				});
-			}).not.toThrow();
+			test('valid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['test@example.com'],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					emails: ['not-an-email'],
-				});
-			}).toThrowError(
-				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
-			);
+			test('valid empty array of AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: [],
+						ips: [],
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					ips: ['not-an-ip'],
-				});
-			}).toThrowError(
-				'All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not-an-ip'
-			);
+			test('invalid AWSEmail', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						emails: ['not-an-email'],
+					});
+				}).toThrowError(
+					'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [],
-						nominations: null as unknown as undefined,
-					}),
-				});
-			}).toThrowError('Field nominations is required');
+			test('required sub non model field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null!,
+						}),
+					});
+				}).toThrowError('Field nominations is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: undefined,
-						rewards: [],
-						penNames: [undefined as unknown as string],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the penNames array should be of type string, [undefined] received. '
-			);
+			test('required sub non model field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [],
+							nominations: null!,
+						},
+					});
+				}).toThrowError('Field nominations is required');
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						tags: [<any>1234],
-						rewards: [],
-						penNames: [],
-						nominations: [],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
-			);
+			test('sub non model non nullable array field with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined!],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null],
-					}),
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('sub non model non nullable array field without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: undefined,
+							rewards: [],
+							penNames: [undefined!],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the penNames array should be of type string, [undefined] received. '
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined as unknown as string],
-					}),
-				});
-			}).not.toThrow();
+			test('sub non model array field invalid type with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [undefined as unknown as string, null],
-					}),
-				});
-			}).not.toThrow();
+			// without non model constructor
+			test('sub non model array field invalid type without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							tags: [<any>1234],
+							rewards: [],
+							penNames: [],
+							nominations: [],
+						},
+					});
+				}).toThrowError(
+					'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				);
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, 'ok'],
-					}),
-				});
-			}).not.toThrow();
+			test('valid sub non model nullable array field (null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						}),
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				new Model({
-					field1: 'someField',
-					dateCreated: new Date().toISOString(),
-					metadata: new Metadata({
-						author: 'Some author',
-						rewards: [],
-						penNames: [],
-						nominations: [],
-						misc: [null, <any>123],
-					}),
-				});
-			}).toThrowError(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
-			);
+			test('valid sub non model nullable array field (null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null],
+						},
+					});
+				}).not.toThrow();
+			});
 
-			expect(
-				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
-			).toHaveProperty('extraAttribute');
+			test('valid sub non model nullable array field (undefined) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined!],
+						}),
+					});
+				}).not.toThrow();
+			});
 
-			expect(() => {
-				Model.copyOf(<any>undefined, d => d);
-			}).toThrow('The source object is not a valid model');
-			expect(() => {
-				const source = new Model({
-					field1: 'something',
-					dateCreated: new Date().toISOString(),
-				});
-				Model.copyOf(source, d => (d.field1 = <any>1234));
-			}).toThrow(
-				'Field field1 should be of type string, number received. 1234'
-			);
+			test('valid sub non model nullable array field (undefined) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined!],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined!, null],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (undefined and null) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [undefined!, null],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						}),
+					});
+				}).not.toThrow();
+			});
+
+			test('valid sub non model nullable array field (null and string) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						},
+					});
+				}).not.toThrow();
+			});
+
+			test('wrong type sub non model nullable array field (null and number) with constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						}),
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('wrong type sub non model nullable array field (null and number) without constructor', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, <any>123],
+						},
+					});
+				}).toThrowError(
+					'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				);
+			});
+
+			test('allow extra attribute', () => {
+				expect(
+					new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
+				).toHaveProperty('extraAttribute');
+			});
+
+			test('throw on invalid constructor', () => {
+				expect(() => {
+					Model.copyOf(<any>undefined, d => d);
+				}).toThrow('The source object is not a valid model');
+			});
+
+			test('invalid type on copyOf', () => {
+				expect(() => {
+					const source = new Model({
+						field1: 'something',
+						dateCreated: new Date().toISOString(),
+					});
+					Model.copyOf(source, d => (d.field1 = <any>1234));
+				}).toThrow(
+					'Field field1 should be of type string, number received. 1234'
+				);
+			});
+
+			test('invalid sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						metadata: 'invalid',
+					});
+				}).toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
+			test('sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: null,
+					});
+				}).not.toThrowError(
+					'Field metadata should be of type Metadata, string recieved. invalid'
+				);
+			});
+
+			test('invalid nested sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'Some author',
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							// @ts-ignore
+							login: 'login',
+						},
+					});
+				}).toThrowError(
+					'Field login should be of type Login, string recieved. login'
+				);
+			});
+
+			test('invalid array sub non model type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: ['bad type', 'another bad type'],
+					});
+				}).toThrowError(
+					'All elements in the logins array should be of type Login, [string] received. bad type'
+				);
+			});
+
+			test('invalid array sub non model field type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: [{ username: 4 }],
+					});
+				}).toThrowError(
+					'Field username should be of type string, number received. 4'
+				);
+			});
+
+			test('nullable array sub non model', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: [null!, { username: 'user' }],
+					});
+				}).not.toThrowError();
+			});
+
+			test('array sub non model wrong type', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						// @ts-ignore
+						logins: 'my login',
+					});
+				}).toThrowError(
+					'Field logins should be of type [Login | null | undefined], string received. my login'
+				);
+			});
+
+			test('array sub non model null', () => {
+				expect(() => {
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						logins: null,
+					});
+				}).not.toThrowError();
+			});
 		});
 
 		test('Delete params', async () => {
@@ -3384,7 +3836,7 @@ describe('DataStore tests', () => {
 				}).toThrow('updatedAt is read-only.');
 			});
 
-			test('Instantiation validations', async () => {
+			test('Instantiation validations custom pk', async () => {
 				expect(() => {
 					new PostCustomPK({
 						postId: '12345',

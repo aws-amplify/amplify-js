@@ -244,18 +244,8 @@ class SubscriptionProcessor {
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
-		if (this.runningProcesses) {
-			throw new Error(
-				[
-					'Subscription processor is already started!',
-					'It must be stopped before it can be restarted.',
-					'Please report this error in a GitHub issue.',
-					'https://github.com/aws-amplify/amplify-js/issues',
-				].join('\n')
-			);
-		}
-
-		this.runningProcesses = new BackgroundProcessManager();
+		this.runningProcesses =
+			this.runningProcesses || new BackgroundProcessManager();
 
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];

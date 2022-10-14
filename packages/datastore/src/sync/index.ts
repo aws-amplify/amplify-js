@@ -135,7 +135,8 @@ export class SyncEngine {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
+		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
 
@@ -184,7 +185,8 @@ export class SyncEngine {
 			this.amplifyContext
 		);
 
-		this.datastoreConnectivity = new DataStoreConnectivity();
+		this.datastoreConnectivity =
+			this.connectivityMonitor || new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -817,14 +819,7 @@ export class SyncEngine {
 		 * passing this context through to child processes.
 		 */
 		await this.runningProcesses.close();
-
-		/**
-		 * Not 100% sure this is necessary. In most cases, we would expect the
-		 * sync engine to be replaced with a new instance after stopping.
-		 *
-		 * TODO: Remove this and see if everything still works.
-		 */
-		this.runningProcesses = new BackgroundProcessManager();
+		await this.runningProcesses.open();
 
 		logger.debug('sync engine stopped and ready to restart');
 	}

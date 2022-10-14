@@ -16,6 +16,8 @@ export class BackgroundProcessManager {
 	 */
 	private _state = BackgroundProcessManagerState.Open;
 
+	private _closingPromise: Promise<PromiseSettledResult<any>[]> | undefined;
+
 	/**
 	 * The list of outstanding jobs we'll need to wait for upon `close()`
 	 */
@@ -186,8 +188,8 @@ export class BackgroundProcessManager {
 	private addHook(description?: string) {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
-		let resolve: (value?: unknown) => void;
-		let reject: (reason?: any) => void;
+		let resolve!: (value?: unknown) => void;
+		let reject!: (reason?: any) => void;
 
 		// the underlying promise we'll use to manage it, pretty much like
 		// any other promise.
@@ -310,10 +312,10 @@ export class BackgroundProcessManager {
 	private closedFailure(description: string) {
 		if (!this.isOpen) {
 			return Promise.reject(
-				new Error(
+				new BackgroundManagerNotOpenError(
 					[
-						'The manager is closing or closed, which occurs after `close()` has been called.',
-						`This error occurred trying to add "${description}".`,
+						`The manager is ${this.state}.`,
+						`You tried to add "${description}".`,
 						`Pending jobs: [\n${this.pending
 							.map(t => '    ' + t)
 							.join(',\n')}\n]`,
@@ -331,39 +333,71 @@ export class BackgroundProcessManager {
 	 * to reject new work. After all work in the manager is complete, the
 	 * manager goes into a `Completed` state and `close()` returns.
 	 *
-	 * @returns The settled results of each job's promise.
+	 * This call is idempotent.
+	 *
+	 * If the manager is already closing or closed, `finalCleaup` is not executed.
+	 *
+	 * @param onClosed
+	 * @returns The settled results of each still-running job's promise. If the
+	 * manager is already closed, this will contain the results as of when the
+	 * manager's `close()` was called in an `Open` state.
 	 */
 	async close() {
-		// prevents more jobs from being added
-		this._state = BackgroundProcessManagerState.Closing;
-
-		for (const job of Array.from(this.jobs)) {
-			try {
-				job.terminate();
-			} catch (error) {
-				// Due to potential races with a job's natural completion, it's
-				// reasonable to expect the termination call to fail. Hence,
-				// not logging as an error.
-				console.warn(
-					`Failed to send termination signal to job. Error: ${error.message}`,
-					job
-				);
+		if (this.isOpen) {
+			this._state = BackgroundProcessManagerState.Closing;
+			for (const job of Array.from(this.jobs)) {
+				try {
+					job.terminate();
+				} catch (error) {
+					// Due to potential races with a job's natural completion, it's
+					// reasonable to expect the termination call to fail. Hence,
+					// not logging as an error.
+					console.warn(
+						`Failed to send termination signal to job. Error: ${error.message}`,
+						job
+					);
+				}
 			}
+
+			// Use `allSettled()` because we want to wait for all to finish. We do
+			// not want to stop waiting if there is a failure.
+			this._closingPromise = Promise.allSettled(
+				Array.from(this.jobs).map(j => j.promise)
+			);
+
+			await this._closingPromise;
+			this._state = BackgroundProcessManagerState.Closed;
 		}
 
-		// Use `allSettled()` because we want to wait for all to finish. We do
-		// not want to stop waiting if there is a failure.
-		const results = await Promise.allSettled(
-			Array.from(this.jobs).map(j => j.promise)
-		);
+		return this._closingPromise;
+	}
 
-		// At this point, we're already *not* accepting new work, and all
-		// pending work is done. It's safe to set state to `Closed`. Any
-		// process that's checking this property will be able to safely operate
-		// on this value at this point.
-		this._state = BackgroundProcessManagerState.Closed;
+	/**
+	 * Signals the manager to start accepting work (again) and returns once
+	 * the manager is ready to do so.
+	 *
+	 * If the state is already `Open`, this call is a no-op.
+	 *
+	 * If the state is `Closed`, this call simply updates state and returns.
+	 *
+	 * If the state is `Closing`, this call waits for completion before it
+	 * updates the state and returns.
+	 */
+	async open() {
+		if (this.isClosing) {
+			await this.close();
+		}
 
-		return results;
+		this._state = BackgroundProcessManagerState.Open;
+	}
+}
+
+/**
+ *
+ */
+export class BackgroundManagerNotOpenError extends Error {
+	constructor(message: string) {
+		super(`BackgroundManagerNotOpenError: ${message}`);
 	}
 }
 

@@ -695,7 +695,7 @@ export const newSchema: Schema = {
 		PostMetadata: {
 			name: 'PostMetadata',
 			fields: {
-				author: {
+				rating: {
 					name: 'rating',
 					isArray: false,
 					type: 'Int',
