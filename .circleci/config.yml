@@ -376,6 +376,7 @@ jobs:
             yarn test
             yarn coverage
 
+  # Testing only - remove branch checkout before merging PR
   integ_setup:
     executor: build-executor
     working_directory: ~/
@@ -387,6 +388,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout datastore-vite-tests
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -1224,6 +1226,23 @@ jobs:
           spec: custom-pk-has-many-many-to-many
           browser: << parameters.browser >>
 
+  integ_vite_datastore_basic_crud:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/vite/datastore/v2/basic-crud
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vite + DataStore - Basic CRUD'
+          framework: vite
+          category: datastore
+          sample_name: v2/basic-crud
+          spec: vite-basic-crud
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1239,7 +1258,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH # Testing only - remove before merging PR
 
   post_release:
     executor: build-executor
@@ -1270,6 +1289,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - datastore-vite-tests # Testing only - remove before merging PR
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1704,6 +1724,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_vite_datastore_basic_crud:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1755,6 +1784,7 @@ workflows:
             - integ_react_datastore_custom_pk_unconnected_models
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
+            - integ_vite_datastore_basic_crud
       - post_release:
           filters:
             branches:
