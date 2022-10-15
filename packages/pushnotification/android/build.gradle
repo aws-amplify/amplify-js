@@ -47,10 +47,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
-    compile 'com.google.firebase:firebase-messaging:12.0.1'
-    compile 'com.google.firebase:firebase-core:12.0.1'
-    compile 'com.firebase:firebase-jobdispatcher:0.6.0'
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.android.support:appcompat-v7:23.0.1"
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.google.firebase:firebase-messaging:12.0.1'
+    implementation 'com.google.firebase:firebase-core:12.0.1'
+    implementation 'com.firebase:firebase-jobdispatcher:0.6.0'
 }
