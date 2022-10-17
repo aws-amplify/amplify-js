@@ -222,7 +222,77 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
+/**
+ * Maps a model to its related models for memoization/immutability.
+ */
 const modelInstanceAssociationsMap = new WeakMap<PersistentModel, object>();
+
+/**
+ * Describes whether and to what a model is attached for lazy loading purposes.
+ */
+enum ModelAttachment {
+	/**
+	 * Model doesn't lazy load from any data source.
+	 *
+	 * Related entity properties provided at instantiation are returned
+	 * via the respective lazy interfaces when their properties are invoked.
+	 */
+	Detached = 'Detached',
+
+	/**
+	 * Model lazy loads from the global DataStore.
+	 */
+	DataStore = 'DataStore',
+
+	/**
+	 * Demonstrative. Not yet implemented.
+	 */
+	API = 'API',
+}
+
+/**
+ * Tells us which data source a model is attached to (lazy loads from).
+ *
+ * If `Deatched`, the model's lazy properties will only ever return properties
+ * from memory provided at construction time.
+ */
+const attachedModelInstances = new WeakMap<PersistentModel, ModelAttachment>();
+
+/**
+ * Registers a model instance against a data source (DataStore, API, or
+ * Detached/None).
+ *
+ * The API option is demonstrative. Lazy loading against API is not yet
+ * implemented.
+ *
+ * @param result A model instance or array of instances
+ * @param attachment A ModelAttachment data source
+ * @returns passes the `result` back through after attachment
+ */
+export function attached<T extends PersistentModel | PersistentModel[]>(
+	result: T,
+	attachment: ModelAttachment
+): T {
+	if (Array.isArray(result)) {
+		result.map(record => attached(record, attachment)) as T;
+	} else {
+		result && attachedModelInstances.set(result, attachment);
+	}
+	return result;
+}
+
+/**
+ * Determines what source a model instance should lazy load from.
+ *
+ * If the instace was never explicitly registered, it is detached by default.
+ *
+ * @param instance A model instance
+ */
+export const getAttachment = (instance: PersistentModel) => {
+	return attachedModelInstances.has(instance)
+		? attachedModelInstances.get(instance)
+		: ModelAttachment.Detached;
+};
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -753,7 +823,7 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			}
 
-			return model;
+			return attached(model, ModelAttachment.DataStore);
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -771,7 +841,7 @@ const createModelClass = <T extends PersistentModel>(
 				modelValidator(k, v);
 			});
 
-			return instance;
+			return attached(instance, ModelAttachment.DataStore);
 		}
 	});
 
@@ -811,6 +881,7 @@ const createModelClass = <T extends PersistentModel>(
 				// 	model
 				// );
 				if (!model || !(typeof model === 'object')) return;
+
 				// Avoid validation error when processing AppSync response with nested
 				// selection set. Nested entitites lack version field and can not be validated
 				// TODO: explore a more reliable method to solve this
@@ -836,9 +907,7 @@ const createModelClass = <T extends PersistentModel>(
 					}
 				}
 
-				// TODO: Consider moving this logic into the relationship.
 				if (relationship.isComplete) {
-					// assumes targetNames is in same-order as relatedModelPKFields
 					for (let i = 0; i < relationship.localJoinFields.length; i++) {
 						// console.log(
 						// 	`setting ${relationship.localJoinFields[i]} = ${
@@ -848,60 +917,56 @@ const createModelClass = <T extends PersistentModel>(
 						this[relationship.localJoinFields[i]] =
 							model[relationship.remoteJoinFields[i]];
 					}
+					const instanceMemos = modelInstanceAssociationsMap.has(this)
+						? modelInstanceAssociationsMap.get(this)!
+						: modelInstanceAssociationsMap.set(this, {}).get(this)!;
+					instanceMemos[field] = model;
 				}
 			},
 			get() {
-				// console.log(
-				// 	'get',
-				// 	field,
-				// 	relationship.localJoinFields,
-				// 	relationship.remoteJoinFields,
-				// 	this
-				// );
-
 				const instanceMemos = modelInstanceAssociationsMap.has(this)
 					? modelInstanceAssociationsMap.get(this)!
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
 
 				if (!instanceMemos.hasOwnProperty(field)) {
-					// console.log(
-					// 	'remote constructor',
-					// 	relationship.remoteModelConstructor
-					// );
-					const resultPromise = instance.query(
-						relationship.remoteModelConstructor as PersistentModelConstructor<T>,
-						base =>
-							base.and(q => {
-								// console.log('querying property', relationship);
-								return relationship.remoteJoinFields.map((field, index) => {
-									// console.log(
-									// 	'relating',
-									// 	field,
-									// 	relationship.localJoinFields[index]
-									// );
-									return (q[field] as any).eq(
-										this[relationship.localJoinFields[index]]
-									);
-								});
-							})
-					);
+					if (getAttachment(this) === ModelAttachment.DataStore) {
+						const resultPromise = instance.query(
+							relationship.remoteModelConstructor as PersistentModelConstructor<T>,
+							base =>
+								base.and(q => {
+									return relationship.remoteJoinFields.map((field, index) => {
+										return (q[field] as any).eq(
+											this[relationship.localJoinFields[index]]
+										);
+									});
+								})
+						);
 
-					if (relationship.relationship === 'HAS_MANY') {
-						instanceMemos[field] = new AsyncCollection(resultPromise);
-					} else {
-						instanceMemos[field] = resultPromise.then(rows => {
-							if (rows.length > 1) {
-								// should never happen for a HAS_ONE or BELONGS_TO.
-								const err = new Error(`
+						if (relationship.relationship === 'HAS_MANY') {
+							instanceMemos[field] = new AsyncCollection(resultPromise);
+						} else {
+							instanceMemos[field] = resultPromise.then(rows => {
+								if (rows.length > 1) {
+									// should never happen for a HAS_ONE or BELONGS_TO.
+									const err = new Error(`
 									Data integrity error.
 									Too many records found for a HAS_ONE/BELONGS_TO field '${modelDefinition.name}.${field}'
 								`);
-								console.error(err);
-								throw err;
-							} else {
-								return rows[0];
-							}
-						});
+									console.error(err);
+									throw err;
+								} else {
+									return rows[0];
+								}
+							});
+						}
+					} else if (getAttachment(this) === ModelAttachment.API) {
+						throw new Error('Lazy loading from API is not yet supported!');
+					} else {
+						if (relationship.relationship === 'HAS_MANY') {
+							return new AsyncCollection([]);
+						} else {
+							return Promise.resolve(undefined);
+						}
 					}
 				}
 
@@ -1497,7 +1562,10 @@ class DataStore {
 					isQueryOne(identifierOrCriteria) ||
 					isIdentifierObject(identifierOrCriteria, modelDefinition);
 
-				return returnOne ? result[0] : result;
+				return attached(
+					returnOne ? result[0] : result,
+					ModelAttachment.DataStore
+				);
 			}, 'datastore query')
 			.catch(this.handleAddProcError('DataStore.query()'));
 	};
@@ -1556,7 +1624,7 @@ class DataStore {
 					);
 				});
 
-				return savedModel;
+				return attached(savedModel, ModelAttachment.DataStore);
 			}, 'datastore save')
 			.catch(this.handleAddProcError('DataStore.save()'));
 	};
@@ -1700,7 +1768,7 @@ class DataStore {
 						condition
 					);
 
-					return deleted;
+					return attached(deleted, ModelAttachment.DataStore);
 				} else {
 					const model = modelOrConstructor;
 					const modelConstructor = Object.getPrototypeOf(model || {})
@@ -1747,7 +1815,7 @@ class DataStore {
 
 					const [[deleted]] = await this.storage.delete(model, condition);
 
-					return deleted;
+					return attached(deleted, ModelAttachment.DataStore);
 				}
 			}, 'datastore delete')
 			.catch(this.handleAddProcError('DataStore.delete()'));
@@ -2144,6 +2212,7 @@ class DataStore {
 			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
 				// send the generated snapshot to the primary subscription.
 				// NOTE: This observer's handler *could* be async ...
+
 				observer.next(snapshot);
 
 				// reset the changed items sets

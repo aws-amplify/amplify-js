@@ -890,6 +890,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK,
 		PostCustomPKSort,
 		PostCustomPKComposite,
+		DefaultPKParent,
+		DefaultPKChild,
+		HasOneParent,
+		HasOneChild,
 	} = classes as {
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
@@ -899,6 +903,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK: PersistentModelConstructor<PostCustomPK>;
 		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
 		PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
+		DefaultPKParent: PersistentModelConstructor<DefaultPKParent>;
+		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
+		HasOneParent: PersistentModelConstructor<HasOneParent>;
+		HasOneChild: PersistentModelConstructor<HasOneChild>;
 	};
 
 	return {
@@ -915,6 +923,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK,
 		PostCustomPKSort,
 		PostCustomPKComposite,
+		DefaultPKParent,
+		DefaultPKChild,
+		HasOneParent,
+		HasOneChild,
 	};
 }
 

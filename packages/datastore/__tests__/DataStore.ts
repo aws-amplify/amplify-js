@@ -1605,6 +1605,83 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	});
 });
 
+describe('Model behavior', () => {
+	test('newly instantiated models do not lazy load belongsTo', async () => {
+		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
+
+		const parent = await DataStore.save(
+			new DefaultPKParent({
+				content: 'this is a decoy!',
+			})
+		);
+
+		const comment = await DataStore.save(
+			new DefaultPKChild({
+				id: "not such a random id, but it's ok",
+				content: 'here is some content',
+				parent,
+			})
+		);
+
+		const detachedComment = new DefaultPKChild({
+			id: "not such a random id, but it's ok",
+			content: 'here is some content',
+			defaultPKParentChildrenId: parent.id,
+		});
+
+		expect(detachedComment.defaultPKParentChildrenId).toEqual(
+			comment.defaultPKParentChildrenId
+		);
+		expect(await detachedComment.parent).toBeUndefined();
+	});
+
+	test('newly instantiated models do not lazy load hasMany', async () => {
+		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
+
+		const parent = await DataStore.save(
+			new DefaultPKParent({
+				content: 'this is a decoy!',
+			})
+		);
+
+		const comment = await DataStore.save(
+			new DefaultPKChild({
+				id: "not such a random id, but it's ok",
+				content: 'here is some content',
+				parent,
+			})
+		);
+
+		const detachedParent = new DefaultPKParent({
+			id: parent.id,
+			content: parent.content,
+		});
+
+		expect(detachedParent.id).toEqual(parent.id);
+		expect(await detachedParent.children.toArray()).toEqual([]);
+	});
+
+	test('newly instantiated models do not lazy load hasOne', async () => {
+		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
+
+		const child = await DataStore.save(new HasOneChild({}));
+		const parent = await DataStore.save(
+			new HasOneParent({
+				child,
+			})
+		);
+
+		const disconnectedParent = new HasOneParent({
+			id: parent.id,
+			hasOneParentChildId: child.id,
+		});
+
+		expect(disconnectedParent.id).toEqual(parent.id);
+		expect(disconnectedParent.hasOneParentChildId).toEqual(child.id);
+		expect(await disconnectedParent.child).toBeUndefined();
+	});
+});
+
 describe('DataStore tests', () => {
 	beforeEach(() => {
 		jest.resetModules();
@@ -2962,10 +3039,6 @@ describe('DataStore tests', () => {
 
 			await expect(DataStore.delete(<any>Model)).rejects.toThrow(
 				'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
-			);
-
-			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
 			);
 
 			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
