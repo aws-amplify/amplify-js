@@ -369,6 +369,7 @@ jobs:
           command: |
             cd packages/datastore-storage-adapter
             npm install --build-from-source
+            rm -rf node_modules/@aws-amplify node_modules/@aws-sdk
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
@@ -1154,6 +1155,57 @@ jobs:
           spec: next-owner-based-default
           browser: << parameters.browser >>
 
+  integ_react_datastore_custom_pk_unconnected_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Connected Models)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-unconnected-models
+          spec: custom-pk-unconnected-models
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_one:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-one
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has One)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-one
+          spec: custom-pk-has-one
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_many_many_to_many:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-many-many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-many-many-to-many
+          spec: custom-pk-has-many-many-to-many
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1190,7 +1242,7 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:main
+            git push --force-with-lease origin release:main
 
 releasable_branches: &releasable_branches
   branches:
@@ -1603,6 +1655,33 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_custom_pk_unconnected_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_custom_pk_has_one:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_custom_pk_has_many_many_to_many:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1650,6 +1729,9 @@ workflows:
             - integ_react_graphql_api
             - integ_react_geo
             - integ_next_datastore_owner_auth
+            - integ_react_datastore_custom_pk_unconnected_models
+            - integ_react_datastore_custom_pk_has_one
+            - integ_react_datastore_custom_pk_has_many_many_to_many
       - post_release:
           filters:
             branches:

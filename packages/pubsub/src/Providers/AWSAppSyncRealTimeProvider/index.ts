@@ -31,7 +31,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth, { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONTROL_MSG, ConnectionState } from '../../types/PubSub';
+import { CONTROL_MSG } from '../../types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,

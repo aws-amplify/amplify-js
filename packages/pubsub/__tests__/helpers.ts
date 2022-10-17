@@ -86,7 +86,7 @@ export class HubConnectionListener {
 }
 
 export class FakeWebSocketInterface {
-	webSocket: FakeWebSocket;
+	readonly webSocket: FakeWebSocket;
 	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
 	hubConnectionListener: HubConnectionListener;
@@ -95,10 +95,6 @@ export class FakeWebSocketInterface {
 
 	constructor() {
 		this.hubConnectionListener = new HubConnectionListener('api');
-		this.resetWebsocket();
-	}
-
-	resetWebsocket() {
 		this.readyForUse = new Promise((res, rej) => {
 			this.readyResolve = res;
 		});
@@ -164,9 +160,13 @@ export class FakeWebSocketInterface {
 	 */
 	async closeInterface() {
 		await this.triggerClose();
-
-		// Wait for the connection to be Disconnected
-		await this.waitUntilConnectionStateIn([CS.Disconnected]);
+		// Wait for either hasClosed or a half second has passed
+		await new Promise(async res => {
+			// The interface is closed when the socket "hasClosed"
+			this.hasClosed.then(() => res(undefined));
+			await this.waitUntilConnectionStateIn([CS.Disconnected]);
+			res(undefined);
+		});
 	}
 
 	/**
