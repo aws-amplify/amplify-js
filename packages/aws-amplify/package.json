@@ -22,7 +22,7 @@
     "lint": "tslint 'src/**/*.ts'",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src",
-    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
+    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 0"
   },
   "repository": {
     "type": "git",

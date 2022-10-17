@@ -29,7 +29,7 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'",
-    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
+    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 0"
   },
   "repository": {
     "type": "git",
