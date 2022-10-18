@@ -847,25 +847,23 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		if (log) console.log('done simulated disconnect.');
 	}
 
-	if (!isNode) {
-		jest.mock('@aws-amplify/core', () => {
-			const actual = jest.requireActual('@aws-amplify/core');
-			return {
-				...actual,
+	jest.mock('@aws-amplify/core', () => {
+		const actual = jest.requireActual('@aws-amplify/core');
+		return {
+			...actual,
+			browserOrNode: () => ({
+				isBrowser: !isNode,
+				isNode,
+			}),
+			JS: {
+				...actual.JS,
 				browserOrNode: () => ({
-					isBrowser: true,
-					isNode: false,
+					isBrowser: !isNode,
+					isNode,
 				}),
-				JS: {
-					...actual.JS,
-					browserOrNode: () => ({
-						isBrowser: true,
-						isNode: false,
-					}),
-				},
-			};
-		});
-	}
+			},
+		};
+	});
 
 	const {
 		initSchema,

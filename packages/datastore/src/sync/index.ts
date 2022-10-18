@@ -779,13 +779,6 @@ export class SyncEngine {
 						}, 'syncQueriesObservable sleep');
 					}
 				}, 'syncQueriesObservable main');
-
-			// return this.runningProcesses.addCleaner(async () => {
-			// 	logger.debug('cleaning syncQueriesObservable');
-			// 	if (syncQueriesSubscription) {
-			// 		syncQueriesSubscription.unsubscribe();
-			// 	}
-			// }, 'syncQueriesObservable cleaner');
 		});
 	}
 

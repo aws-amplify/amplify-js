@@ -1895,6 +1895,7 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
+		checkSchemaInitialized();
 		this.state = DataStoreState.Clearing;
 		await this.runningProcesses.close();
 		if (this.storage === undefined) {

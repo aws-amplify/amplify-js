@@ -55,6 +55,11 @@ process.on('unhandledRejection', reason => {
 });
 
 describe('DataStore sanity testing checks', () => {
+	beforeEach(async () => {
+		jest.resetAllMocks();
+		jest.resetModules();
+	});
+
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
@@ -210,24 +215,28 @@ describe('DataStore sanity testing checks', () => {
 						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
-							DataStore.clear();
+							const clearing = DataStore.clear();
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
 								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
 							);
+
+							await clearing;
 						});
 
 						// tslint:disable-next-line: max-line-length
 						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
-							DataStore.stop();
+							const stopping = DataStore.stop();
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
 								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
 							);
+
+							await stopping;
 						});
 					}
 				}
