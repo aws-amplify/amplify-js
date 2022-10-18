@@ -1319,6 +1319,64 @@ export declare class ChildSansBelongsTo {
 	): ChildSansBelongsTo;
 }
 
+type LegacyJSONBlogMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+type LegacyJSONPostMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+type LegacyJSONCommentMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+export declare class LegacyJSONBlog {
+	readonly id: string;
+	readonly name?: string | null;
+	readonly posts?: AsyncCollection<LegacyJSONPost>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONBlog, LegacyJSONBlogMetaData>);
+	static copyOf(
+		source: LegacyJSONBlog,
+		mutator: (
+			draft: MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData>
+		) => MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData> | void
+	): LegacyJSONBlog;
+}
+
+export declare class LegacyJSONPost {
+	readonly id: string;
+	readonly title: string;
+	readonly blog?: Promise<LegacyJSONBlog | undefined>;
+	readonly comments?: AsyncCollection<LegacyJSONComment>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONPost, LegacyJSONPostMetaData>);
+	static copyOf(
+		source: LegacyJSONPost,
+		mutator: (
+			draft: MutableModel<LegacyJSONPost, LegacyJSONPostMetaData>
+		) => MutableModel<LegacyJSONPost, LegacyJSONPostMetaData> | void
+	): LegacyJSONPost;
+}
+
+export declare class LegacyJSONComment {
+	readonly id: string;
+	readonly post?: Promise<LegacyJSONPost | undefined>;
+	readonly content: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONComment, LegacyJSONCommentMetaData>);
+	static copyOf(
+		source: LegacyJSONComment,
+		mutator: (
+			draft: MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData>
+		) => MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData> | void
+	): LegacyJSONComment;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -2549,6 +2607,189 @@ export function testSchema(): Schema {
 								'compositePKParentChildrenSansBelongsToContent',
 							],
 						},
+					},
+				],
+			},
+			LegacyJSONBlog: {
+				name: 'LegacyJSONBlog',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					posts: {
+						name: 'posts',
+						isArray: true,
+						type: {
+							model: 'LegacyJSONPost',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'legacyJSONBlogPostsId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONBlogs',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			LegacyJSONPost: {
+				name: 'LegacyJSONPost',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					blog: {
+						name: 'blog',
+						isArray: false,
+						type: {
+							model: 'LegacyJSONBlog',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'legacyJSONBlogPostsId',
+						},
+					},
+					comments: {
+						name: 'comments',
+						isArray: true,
+						type: {
+							model: 'LegacyJSONComment',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'legacyJSONPostCommentsId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONPosts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			LegacyJSONComment: {
+				name: 'LegacyJSONComment',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					post: {
+						name: 'post',
+						isArray: false,
+						type: {
+							model: 'LegacyJSONPost',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'legacyJSONPostCommentsId',
+						},
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONComments',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
 					},
 				],
 			},

@@ -152,10 +152,32 @@ const modelPatchesMap = new WeakMap<
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => {
-	const namespace = modelNamespaceMap.get(modelConstructor);
-	return namespace
+	const namespace = modelNamespaceMap.get(modelConstructor)!;
+	const definition = namespace
 		? schema.namespaces[namespace].models[modelConstructor.name]
 		: undefined;
+
+	// compatibility with legacy/pre-PK codegen for lazy loading to inject
+	// index fields into the model definition.
+	if (definition) {
+		definition.fields = {
+			...definition.fields,
+			...Object.fromEntries(
+				schema.namespaces[namespace].relationships![
+					modelConstructor.name
+				].indexes.map(idx => [
+					idx[0],
+					{
+						name: idx[0],
+						type: 'ID',
+						isArray: false,
+					},
+				])
+			),
+		};
+	}
+
+	return definition;
 };
 
 const getModelPKFieldName = (
@@ -414,6 +436,10 @@ const initSchema = (userSchema: Schema) => {
 
 		schema.namespaces[namespace].modelTopologicalOrdering = result;
 	});
+
+	// console.log({
+	// 	schema: schema.namespaces.user.relationships!.LegacyJSONPost.indexes,
+	// });
 
 	return userClasses;
 };
@@ -924,6 +950,14 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			},
 			get() {
+				// console.log(
+				// 	'get',
+				// 	field,
+				// 	relationship.localJoinFields,
+				// 	relationship.remoteJoinFields,
+				// 	this
+				// );
+
 				const instanceMemos = modelInstanceAssociationsMap.has(this)
 					? modelInstanceAssociationsMap.get(this)!
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
@@ -935,6 +969,12 @@ const createModelClass = <T extends PersistentModel>(
 							base =>
 								base.and(q => {
 									return relationship.remoteJoinFields.map((field, index) => {
+										// console.log({
+										// 	q,
+										// 	field,
+										// 	eq: this[relationship.localJoinFields[index]],
+										// 	relationship,
+										// });
 										return (q[field] as any).eq(
 											this[relationship.localJoinFields[index]]
 										);

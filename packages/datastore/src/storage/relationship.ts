@@ -166,7 +166,7 @@ export class ModelRelationship<T> {
 		if (this.localAssociatedWith) {
 			if (this.localAssociatedWith.length === 1) {
 				return this.remoteDefinition!.fields[this.localAssociatedWith[0]]
-					.association;
+					?.association;
 			} else {
 				return undefined;
 			}
