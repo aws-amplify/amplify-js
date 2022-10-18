@@ -171,7 +171,7 @@ commands:
           name: 'Run cypress test << parameters.spec >>'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
