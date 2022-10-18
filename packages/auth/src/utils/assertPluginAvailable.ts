@@ -11,20 +11,13 @@
  * and limitations under the License.
  */
 
-import { Auth } from './Auth';
+import { AuthErrorStrings } from '../constants/AuthErrorStrings';
+import { AuthProvider } from '../types/AuthProvider';
 
-// TODO: replace imports for appendToCognitoUserAgent, CookieStorage
-import { AuthErrorStrings } from './constants/AuthErrorStrings';
-import { GRAPHQL_AUTH_MODE } from './constants/GraphQLAuthMode';
-import { CognitoHostedUIIdentityProvider } from './constants/CognitoHostedUIIdentityProvider';
-
-/**
- * @deprecated use named import
- */
-export default Auth;
-export {
-	Auth,
-	CognitoHostedUIIdentityProvider,
-	AuthErrorStrings,
-	GRAPHQL_AUTH_MODE,
-};
+export function assertPluginAvailable(
+	plugin: AuthProvider | null
+): asserts plugin is AuthProvider {
+	if (!plugin) {
+		throw new Error(AuthErrorStrings.NO_PLUGIN);
+	}
+}

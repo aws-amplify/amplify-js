@@ -18,7 +18,8 @@ import {
 	Parser,
 } from '@aws-amplify/core';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
-import { AuthProvider } from './Providers/AuthProvider';
+import { AuthProvider } from './types/AuthProvider';
+import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
 const logger = new Logger('AuthClass');
 
@@ -55,28 +56,30 @@ export class AuthClass {
 	private _storage;
 
 	/**
-	 * Initialize Auth
-	 * @param config - Configuration of Auth category
+	 * Instantiates the Auth category
 	 */
 	constructor() {
 		this._config = {};
 		this._pluggable;
 	}
 
+	/**
+	 * Returns the category name
+	 */
 	public getModuleName() {
 		return 'Auth';
 	}
 	/**
-	 * configure Auth
-	 * @param {Object} config - Configuration of Auth
+	 * Configures the Auth category
+	 * @param {Object} config - The Auth configuration object
 	 */
 	public configure(config?) {
 		return this._config;
 	}
 
 	/**
-	 * add plugin into Auth category
-	 * @param pluggable - an instance of the plugin
+	 * Adds a plugin to the Auth category
+	 * @param {AuthProvider} pluggable - an instance of the plugin
 	 */
 	public addPluggable(pluggable: AuthProvider) {
 		// TODO: Align on whether we need to allow multiple plugins for Auth in single instance
@@ -84,115 +87,95 @@ export class AuthClass {
 	}
 
 	/**
-	 * Get the plugin object
-	 * @param providerName - the name of the provider to be removed
+	 * Returns the plugin object
+	 * @returns {AuthProvider} The pluggable that has been added to the category
 	 */
 	public getPluggable() {
 		return this._pluggable;
 	}
 
 	/**
-	 * Remove the plugin object
-	 * @param providerName - the name of the provider to be removed
+	 * Removes the plugin object
 	 */
 	public removePluggable(): void {
 		this._pluggable = null;
 	}
 
 	signUp(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.signUp()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.signUp();
 	}
 	confirmSignUp(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.confirmSignUp()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.confirmSignUp();
 	}
 	resendSignUpCode(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.resendSignUpCode()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.resendSignUpCode();
 	}
 	signIn(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.signIn()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.signIn();
 	}
 	confirmSignIn(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.confirmSignIn()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.confirmSignIn();
 	}
 	signInWithWebUI(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.signInWithWebUI()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.signInWithWebUI();
 	}
 	fetchSession(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.fetchSession()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.fetchSession();
 	}
 	signOut(): Promise<void> {
-		return this._pluggable
-			? this._pluggable.signOut()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.signOut();
 	}
 	resetPassword(): Promise<void> {
-		return this._pluggable
-			? this._pluggable.resetPassword()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.resetPassword();
 	}
 	confirmResetPassword(): Promise<void> {
-		return this._pluggable
-			? this._pluggable.confirmResetPassword()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.confirmResetPassword();
 	}
 	updatePassword(): Promise<void> {
-		return this._pluggable
-			? this._pluggable.updatePassword()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.updatePassword();
 	}
 	fetchUserAttributes(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.fetchUserAttributes()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.fetchUserAttributes();
 	}
 	updateUserAttribute(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.updateUserAttribute()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.updateUserAttribute();
 	}
 	updateUserAttributes(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.updateUserAttributes()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.updateUserAttributes();
 	}
 	resendUserAttributeConfirmationCode(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.resendUserAttributeConfirmationCode()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.resendUserAttributeConfirmationCode();
 	}
 	rememberDevice(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.rememberDevice()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.rememberDevice();
 	}
 	forgetDevice(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.forgetDevice()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.forgetDevice();
 	}
 	fetchDevices(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.fetchDevices()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.fetchDevices();
 	}
 	deleteUser(): Promise<any> {
-		return this._pluggable
-			? this._pluggable.deleteUser()
-			: Promise.reject(AuthErrorStrings.NO_PLUGIN);
+		assertPluginAvailable(this._pluggable);
+		return this._pluggable.deleteUser();
 	}
 }
 
