@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.37](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.36...@aws-amplify/ui-components@1.9.37) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.36](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.35...@aws-amplify/ui-components@1.9.36) (2022-10-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10055](https://github.com/aws-amplify/amplify-js/issues/10055)) ([c64d7d6](https://github.com/aws-amplify/amplify-js/commit/c64d7d6284bc7b41a5a65b4b47d35ea274aed6b3))
+
+
+### Reverts
+
+* "fix(@aws-amplify/datastore): introduce "settlement" guarantees to stop() and clear()" ([#10449](https://github.com/aws-amplify/amplify-js/issues/10449)) ([d726bcc](https://github.com/aws-amplify/amplify-js/commit/d726bccca9712b8f43bc273052f970f8f931dd8c)), closes [aws-amplify/amplify-js#10055](https://github.com/aws-amplify/amplify-js/issues/10055)
+
+
+
+
+
+## [1.9.35](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.33...@aws-amplify/ui-components@1.9.35) (2022-09-30)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.33...@aws-amplify/ui-components@1.9.34) (2022-09-20)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.32...@aws-amplify/ui-components@1.9.33) (2022-09-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.9.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.31...@aws-amplify/ui-components@1.9.32) (2022-09-01)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

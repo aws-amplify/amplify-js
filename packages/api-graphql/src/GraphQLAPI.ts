@@ -26,7 +26,7 @@ import {
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import PubSub from '@aws-amplify/pubsub';
+import { PubSub } from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import {
@@ -256,6 +256,7 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql<T>(
@@ -280,10 +281,7 @@ export class GraphQLAPIClass {
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
-		if (!this._api) {
-			await this.createInstance();
-		}
-
+		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -357,6 +355,12 @@ export class GraphQLAPIClass {
 		}
 
 		return response;
+	}
+
+	async createInstanceIfNotCreated() {
+		if (!this._api) {
+			await this.createInstance();
+		}
 	}
 
 	/**
