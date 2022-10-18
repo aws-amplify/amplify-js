@@ -60,6 +60,22 @@ describe('DataStore sanity testing checks', () => {
 		await unconfigureSync(DataStore);
 	});
 
+	test('getDataStore() returns fully fresh instances of DataStore and models', async () => {
+		/**
+		 * Simulating connect/disconnect and/or `isNode` required the `getDataStore()`
+		 * to reset modules. Hence, the returned DataStore instances should be different.
+		 */
+
+		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
+		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
+
+		expect(DataStoreA).not.toBe(DataStoreB);
+		expect(PostA).not.toBe(PostB);
+
+		await DataStoreA.clear();
+		await DataStoreB.clear();
+	});
+
 	describe('cleans up after itself', () => {
 		/**
 		 * basically, if we spin up our test contexts repeatedly, put some
@@ -132,6 +148,7 @@ describe('DataStore sanity testing checks', () => {
 			let { DataStore, Post } = getDataStore();
 
 			afterEach(async () => {
+				console.log('AFTER EACH?');
 				await DataStore.clear();
 			});
 
@@ -145,12 +162,14 @@ describe('DataStore sanity testing checks', () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`clearing after unawaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							DataStore.start();
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`clearing after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
@@ -158,18 +177,25 @@ describe('DataStore sanity testing checks', () => {
 							DataStore.start();
 							await pause(1);
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`stopping after awaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
 							await DataStore.stop();
+							await DataStore.start();
 						});
 
 						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
+							console.log('A', new Date());
 							DataStore.start();
+							console.log('B', new Date());
 							await DataStore.stop();
+							console.log('C', new Date());
+							await DataStore.start();
+							console.log('D', new Date());
 						});
 
 						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
@@ -177,6 +203,7 @@ describe('DataStore sanity testing checks', () => {
 							DataStore.start();
 							await pause(1);
 							await DataStore.stop();
+							await DataStore.start();
 						});
 
 						// tslint:disable-next-line: max-line-length

@@ -856,6 +856,13 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 					isBrowser: true,
 					isNode: false,
 				}),
+				JS: {
+					...actual.JS,
+					browserOrNode: () => ({
+						isBrowser: true,
+						isNode: false,
+					}),
+				},
 			};
 		});
 	}

@@ -118,8 +118,6 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
-		this.runningProcesses = new BackgroundProcessManager();
-
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
 
@@ -140,11 +138,11 @@ class MutationProcessor {
 
 	public async stop() {
 		await this.runningProcesses.close();
+		await this.runningProcesses.open();
 	}
 
 	public async resume(): Promise<void> {
-		return (
-			this.runningProcesses.isOpen &&
+		await (this.runningProcesses.isOpen &&
 			this.runningProcesses.add(async onTerminate => {
 				if (
 					this.processing ||
@@ -266,8 +264,7 @@ class MutationProcessor {
 
 				// pauses itself
 				this.pause();
-			}, 'mutation resume loop')
-		);
+			}, 'mutation resume loop'));
 	}
 
 	private async jitteredRetry(
