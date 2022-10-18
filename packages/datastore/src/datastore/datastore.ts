@@ -1034,8 +1034,6 @@ class DataStore {
 									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
 									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
-								console.log({ isNode });
-
 								if (type === readyType) {
 									this.initResolve();
 								}
@@ -1916,9 +1914,7 @@ class DataStore {
 		}
 
 		if (this.sync) {
-			console.log('STARTING TO STOP SYNC FROM CLEAR');
 			await this.sync.stop();
-			console.log('SYNC STOPPED FROM CLEAR');
 		}
 
 		await this.storage!.clear();
@@ -1939,32 +1935,22 @@ class DataStore {
 	 * running queries and terminates subscriptions."
 	 */
 	async stop(this: InstanceType<typeof DataStore>) {
-		console.log('STOPPING');
 		this.state = DataStoreState.Stopping;
 
-		const closing = this.runningProcesses.close();
-		console.log('STARTED CLOSING');
-
-		await closing;
-		console.log('CLOSED');
+		await this.runningProcesses.close();
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
 
 		if (this.sync) {
-			console.log('STARTING TO STOP SYNC FROM STOP');
 			await this.sync.stop();
-			console.log('SYNC STOPPED FROM STOP');
 		}
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 		await this.runningProcesses.open();
-		console.log('REOPENED');
 		this.state = DataStoreState.NotRunning;
-
-		console.log('TOTALLY DONE STOPPING');
 	}
 
 	/**

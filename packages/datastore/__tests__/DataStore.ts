@@ -153,7 +153,6 @@ describe('DataStore sanity testing checks', () => {
 			let { DataStore, Post } = getDataStore();
 
 			afterEach(async () => {
-				console.log('AFTER EACH?');
 				await DataStore.clear();
 			});
 
@@ -194,13 +193,9 @@ describe('DataStore sanity testing checks', () => {
 
 						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
-							console.log('A', new Date());
 							DataStore.start();
-							console.log('B', new Date());
 							await DataStore.stop();
-							console.log('C', new Date());
 							await DataStore.start();
-							console.log('D', new Date());
 						});
 
 						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
@@ -1039,7 +1034,6 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 			const sub = DataStore.observeQuery(Post).subscribe(
 				({ items, isSynced }) => {
-					// console.log('received', items);
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 

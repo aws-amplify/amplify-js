@@ -590,7 +590,6 @@ class SubscriptionProcessor {
 				this.runningProcesses.isOpen &&
 					this.runningProcesses.add(() =>
 						Promise.all(promises).then(() => {
-							console.log('doing a thing');
 							observer.next(CONTROL_MSG.CONNECTED);
 						})
 					);

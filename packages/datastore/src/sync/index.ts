@@ -216,8 +216,6 @@ export class SyncEngine {
 								if (online && !this.online) {
 									this.online = online;
 
-									console.log('online', { isNode });
-
 									observer.next({
 										type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
 										data: {
@@ -236,8 +234,6 @@ export class SyncEngine {
 											'Realtime disabled when in a server-side environment'
 										);
 									} else {
-										console.log('is browser');
-
 										//#region GraphQL Subscriptions
 										[
 											// const ctlObservable: Observable<CONTROL_MSG>
@@ -248,7 +244,6 @@ export class SyncEngine {
 											dataSubsObservable,
 										] = this.subscriptionsProcessor.start();
 
-										console.log('there we are');
 										try {
 											await new Promise((resolve, reject) => {
 												onTerminate.then(reject);
@@ -276,7 +271,6 @@ export class SyncEngine {
 											return;
 										}
 
-										console.log('here we are');
 										logger.log('Realtime ready');
 
 										observer.next({
@@ -479,11 +473,7 @@ export class SyncEngine {
 					},
 				});
 
-				console.log('before await startpromise', new Date());
-
 				await startPromise;
-
-				console.log('after await startpromise', new Date());
 
 				observer.next({
 					type: ControlMessage.SYNC_ENGINE_READY,
@@ -818,30 +808,12 @@ export class SyncEngine {
 		 * (Whereas `stop()` does.)
 		 */
 
-		console.log('sync stop 1', new Date());
 		await this.mutationsProcessor.stop();
-		console.log('sync stop 2');
 		await this.subscriptionsProcessor.stop();
-		console.log('sync stop 3');
 		await this.datastoreConnectivity.stop();
-		console.log('sync stop 4');
 		await this.syncQueriesProcessor.stop();
-		console.log('sync stop 5');
-
-		const closing = this.runningProcesses.close();
-
-		console.log('sync is closing', new Date());
-
-		try {
-			await closing;
-		} catch (err) {
-			console.error('sync closing produced an error');
-			console.log(err);
-		}
-
-		console.log('sync stop 6 sync is closed');
+		await this.runningProcesses.close();
 		await this.runningProcesses.open();
-		console.log('sync stop 7', new Date());
 
 		logger.debug('sync engine stopped and ready to restart');
 	}
