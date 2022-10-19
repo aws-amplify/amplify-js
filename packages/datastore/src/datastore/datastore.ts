@@ -157,25 +157,45 @@ const getModelDefinition = (
 		? schema.namespaces[namespace].models[modelConstructor.name]
 		: undefined;
 
+	// console.log({
+	// 	indexes: JSON.stringify(
+	// 		schema.namespaces[namespace].relationships![modelConstructor.name].indexes
+	// 	),
+	// });
+
 	// compatibility with legacy/pre-PK codegen for lazy loading to inject
 	// index fields into the model definition.
 	if (definition) {
+		const indexes =
+			schema.namespaces[namespace].relationships![modelConstructor.name]
+				.indexes;
+
+		const indexFields = new Set<string>();
+		for (const index of indexes) {
+			for (const indexField of index[1]) {
+				indexFields.add(indexField);
+			}
+		}
+
 		definition.fields = {
-			...definition.fields,
 			...Object.fromEntries(
-				schema.namespaces[namespace].relationships![
-					modelConstructor.name
-				].indexes.map(idx => [
-					idx[0],
-					{
-						name: idx[0],
-						type: 'ID',
-						isArray: false,
-					},
-				])
+				[...indexFields.values()].map(
+					name => [
+						name,
+						{
+							name,
+							type: 'ID',
+							isArray: false,
+						},
+					],
+					[]
+				)
 			),
+			...definition.fields,
 		};
 	}
+
+	// console.log({ definition });
 
 	return definition;
 };
