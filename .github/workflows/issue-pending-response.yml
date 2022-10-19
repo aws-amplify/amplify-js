@@ -2,7 +2,8 @@ name: issue-pending-response
 on:
   issue_comment:
     types: [created]
-
+permissions:
+  issues: write
 jobs:
   issue_commented:
     if: ${{ !github.event.issue.pull_request  && contains(github.event.issue.labels.*.name, 'pending-response') }}
