@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.20...@aws-amplify/api-graphql@2.3.21) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.19...@aws-amplify/api-graphql@2.3.20) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.3.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.17...@aws-amplify/api-graphql@2.3.19) (2022-09-30)
+
+
+### Bug Fixes
+
+* **api-graphql:** use named PubSub export ([#10344](https://github.com/aws-amplify/amplify-js/issues/10344)) ([3798cea](https://github.com/aws-amplify/amplify-js/commit/3798cea4d015f245e3b1a8008feb42d35850b860))
+
+
+
+
+
 ## [2.3.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.17...@aws-amplify/api-graphql@2.3.18) (2022-09-20)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

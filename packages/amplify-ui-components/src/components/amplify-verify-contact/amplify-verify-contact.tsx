@@ -31,6 +31,12 @@ export class AmplifyVerifyContact {
 	@State() code: string;
 	@State() contact: 'email' | 'phone_number';
 
+	componentWillLoad() {
+		console.warn(
+			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
+		);
+	}
+
 	private handleSubmit(event) {
 		event.preventDefault();
 
