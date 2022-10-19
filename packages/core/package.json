@@ -19,7 +19,7 @@
 		"./dist/aws-amplify-core.js"
 	],
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage && npm run ts-coverage",
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "rimraf lib-esm && node ./build es6",

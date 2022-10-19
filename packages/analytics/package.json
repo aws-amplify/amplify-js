@@ -16,7 +16,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage && npm run ts-coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
