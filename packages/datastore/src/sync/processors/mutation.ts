@@ -322,9 +322,6 @@ class MutationProcessor {
 							await this.amplifyContext.API.graphql(tryWith)
 						);
 
-						// onTerminate.then(() => {
-						// 	// API.cancel()
-						// });
 
 						// `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params???

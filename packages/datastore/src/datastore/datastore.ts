@@ -886,7 +886,7 @@ class DataStore {
 	/**
 	 * **IMPORTANT!**
 	 *
-	 * Accumulator for backgrouns things that can **and MUST** be called when
+	 * Accumulator for background things that can **and MUST** be called when
 	 * DataStore stops.
 	 *
 	 * These jobs **MUST** be *idempotent promises* that resolve ONLY
