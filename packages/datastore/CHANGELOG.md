@@ -3,44 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.13.0...@aws-amplify/datastore@3.14.0) (2022-10-14)
-
-
-### Bug Fixes
-
-* **datastore:** unblock vite build after CPK changes ([#10478](https://github.com/aws-amplify/amplify-js/issues/10478)) ([42ae8de](https://github.com/aws-amplify/amplify-js/commit/42ae8de62f53e7d81363c0dd676967454271259a))
-
-
-### Features
-
-* **datastore:** allow sync query to complete when non-applicable data present ([#10471](https://github.com/aws-amplify/amplify-js/issues/10471)) ([f8e8ff4](https://github.com/aws-amplify/amplify-js/commit/f8e8ff4c1a59d600b96944e5963dfa56a44af035))
-
-
-
-
-
-# [3.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.12...@aws-amplify/datastore@3.13.0) (2022-10-14)
-
-
-### Bug Fixes
-
-* validate non models when using object literal ([#10417](https://github.com/aws-amplify/amplify-js/issues/10417)) ([b6f6c81](https://github.com/aws-amplify/amplify-js/commit/b6f6c813f80f951f21f986411928c0ddbd1c6b6c))
-* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10055](https://github.com/aws-amplify/amplify-js/issues/10055)) ([c64d7d6](https://github.com/aws-amplify/amplify-js/commit/c64d7d6284bc7b41a5a65b4b47d35ea274aed6b3))
-
-
-### Features
-
-* **datastore:** custom pk support ([66bfe31](https://github.com/aws-amplify/amplify-js/commit/66bfe312f300fd6ca1bc756ab01690d36f337af9))
-
-
-### Reverts
-
-* "fix(@aws-amplify/datastore): introduce "settlement" guarantees to stop() and clear()" ([#10449](https://github.com/aws-amplify/amplify-js/issues/10449)) ([d726bcc](https://github.com/aws-amplify/amplify-js/commit/d726bccca9712b8f43bc273052f970f8f931dd8c)), closes [aws-amplify/amplify-js#10055](https://github.com/aws-amplify/amplify-js/issues/10055)
-
-
-
-
-
 ## [3.12.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.10...@aws-amplify/datastore@3.12.12) (2022-09-30)
 
 **Note:** Version bump only for package @aws-amplify/datastore
