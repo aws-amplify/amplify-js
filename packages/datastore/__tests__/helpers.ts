@@ -514,10 +514,6 @@ class FakeGraphQLService {
 				this.PKFields.set(model.name, ['id']);
 			}
 		}
-		// console.log('initialized FakeGraphQLServier', {
-		// 	tables: this.tables,
-		// 	PKFields: this.PKFields,
-		// });
 	}
 
 	public parseQuery(query) {
@@ -663,8 +659,6 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		// console.log('API request', { query, variables, authMode, authToken });
-
 		if (!this.isConnected) {
 			return this.disconnectedError();
 		}
@@ -716,7 +710,7 @@ class FakeGraphQLService {
 					table.set(this.getPK(tableName, record), data[selection]);
 				}
 			} else if (type === 'update') {
-				// Simluate update using the default (AUTO_MERGE) for now.
+				// Simulate update using the default (AUTO_MERGE) for now.
 				// NOTE: We're not doing list/set merging. :o
 				const existing = table.get(this.getPK(tableName, record));
 				if (!existing) {
@@ -758,7 +752,6 @@ class FakeGraphQLService {
 			}
 
 			const observers = this.getObservers(tableName, type);
-			// console.log('observers', { observers, all: this.observers });
 			const typeName = {
 				create: 'Create',
 				update: 'Update',
@@ -773,7 +766,6 @@ class FakeGraphQLService {
 						},
 					},
 				};
-				// console.log('sending mutation', observerMessageName, message);
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
