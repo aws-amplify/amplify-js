@@ -73,6 +73,7 @@ import {
 	AuthErrorTypes,
 	AutoSignInOptions,
 	CognitoHostedUIIdentityProvider,
+	hasIdpIdentifier,
 	IAuthDevice,
 } from './types/Auth';
 
@@ -219,7 +220,6 @@ export class AuthClass {
 				? oauth
 				: (<any>oauth).awsCognito
 			: undefined;
-
 		if (cognitoHostedUIConfig) {
 			const cognitoAuthParams = Object.assign(
 				{
@@ -2339,6 +2339,7 @@ export class AuthClass {
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
 			hasCustomState(providerOrOptions) ||
+			hasIdpIdentifier(providerOrOptions) ||
 			typeof providerOrOptions === 'undefined'
 		) {
 			const options = providerOrOptions || {
@@ -2351,6 +2352,10 @@ export class AuthClass {
 			const customState = isFederatedSignInOptions(options)
 				? options.customState
 				: (options as FederatedSignInOptionsCustom).customState;
+
+			const idpIdentifier = isFederatedSignInOptions(options)
+				? options.idpIdentifier
+				: (options as FederatedSignInOptionsCustom).idpIdentifier;
 
 			if (this._config.userPoolId) {
 				const client_id = isCognitoHostedOpts(this._config.oauth)
@@ -2367,7 +2372,8 @@ export class AuthClass {
 					redirect_uri,
 					client_id,
 					provider,
-					customState
+					customState,
+					idpIdentifier
 				);
 			}
 		} else {

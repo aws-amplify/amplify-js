@@ -70,13 +70,15 @@ export type LegacyProvider =
 	| string;
 
 export type FederatedSignInOptions = {
-	provider: CognitoHostedUIIdentityProvider;
+	provider?: CognitoHostedUIIdentityProvider;
 	customState?: string;
+	idpIdentifier?: string;
 };
 
 export type FederatedSignInOptionsCustom = {
-	customProvider: string;
+	customProvider?: string;
 	customState?: string;
+	idpIdentifier?: string;
 };
 
 export function isFederatedSignInOptions(
@@ -98,6 +100,13 @@ export function hasCustomState(obj: any): boolean {
 		| FederatedSignInOptions
 		| FederatedSignInOptionsCustom
 	))[] = ['customState'];
+	return obj && !!keys.find(k => obj.hasOwnProperty(k));
+}
+export function hasIdpIdentifier(obj: any): boolean {
+	const keys: (keyof (
+		| FederatedSignInOptions
+		| FederatedSignInOptionsCustom
+	))[] = ['idpIdentifier'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 

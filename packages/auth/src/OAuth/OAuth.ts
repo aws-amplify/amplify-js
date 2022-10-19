@@ -26,10 +26,11 @@ import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -72,19 +73,18 @@ export default class OAuth {
 		domain: string,
 		redirectSignIn: string,
 		clientId: string,
-		provider:
-			| CognitoHostedUIIdentityProvider
-			| string = CognitoHostedUIIdentityProvider.Cognito,
-		customState?: string
+		provider?: CognitoHostedUIIdentityProvider | string,
+		customState?: string,
+		idpIdentifier?: string
 	) {
 		const generatedState = this._generateState(32);
 
-		/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
-		single-encodes/decodes url on first sign in and double-encodes/decodes url
-		when user already signed in. Using encodeURIComponent, Base32, Base64 add 
-		characters % or = which on further encoding becomes unsafe. '=' create issue 
-		for parsing query params. 
-		Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
+		/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
+    single-encodes/decodes url on first sign in and double-encodes/decodes url
+    when user already signed in. Using encodeURIComponent, Base32, Base64 add
+    characters % or = which on further encoding becomes unsafe. '=' create issue
+    for parsing query params.
+    Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
 		const state = customState
 			? `${generatedState}-${urlSafeEncode(customState)}`
 			: generatedState;
@@ -99,18 +99,32 @@ export default class OAuth {
 
 		const scopesString = this._scopes.join(' ');
 
-		const queryString = Object.entries({
-			redirect_uri: redirectSignIn,
-			response_type: responseType,
-			client_id: clientId,
-			identity_provider: provider,
-			scope: scopesString,
-			state,
-			...(responseType === 'code' ? { code_challenge } : {}),
-			...(responseType === 'code' ? { code_challenge_method } : {}),
-		})
-			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-			.join('&');
+		const queryString = provider
+			? Object.entries({
+					redirect_uri: redirectSignIn,
+					response_type: responseType,
+					client_id: clientId,
+					identity_provider: provider,
+					scope: scopesString,
+					state,
+
+					...(responseType === 'code' ? { code_challenge } : {}),
+					...(responseType === 'code' ? { code_challenge_method } : {}),
+			  })
+					.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+					.join('&')
+			: Object.entries({
+					redirect_uri: redirectSignIn,
+					response_type: responseType,
+					idp_identifier: idpIdentifier,
+					client_id: clientId,
+					scope: scopesString,
+					state,
+					...(responseType === 'code' ? { code_challenge } : {}),
+					...(responseType === 'code' ? { code_challenge_method } : {}),
+			  })
+					.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+					.join('&');
 
 		const URL = `https://${domain}/oauth2/authorize?${queryString}`;
 		logger.debug(`Redirecting to ${URL}`);
@@ -169,18 +183,15 @@ export default class OAuth {
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 			.join('&');
 
-		const {
-			access_token,
-			refresh_token,
-			id_token,
-			error,
-		} = await ((await fetch(oAuthTokenEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body,
-		})) as any).json();
+		const { access_token, refresh_token, id_token, error } = await (
+			(await fetch(oAuthTokenEndpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body,
+			})) as any
+		).json();
 
 		if (error) {
 			throw new Error(error);
