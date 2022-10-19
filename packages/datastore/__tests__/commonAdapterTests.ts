@@ -410,6 +410,34 @@ export function addCommonQueryTests({
 			return initializer;
 		};
 
+		/**
+		 * Picks a field on a model for us to use in nested predicates tests.
+		 * @param constructor
+		 */
+		const pickField = constructor => {
+			const meta = buildModelMeta(constructor.name);
+			/**
+			 * Sampling of fields present on the models.
+			 * We'll just use the first one we find on a model.
+			 */
+			const fieldNamesToSelectFrom = [
+				'content',
+				'name',
+				'title',
+				'firstName',
+				'lastName',
+				'description',
+			];
+
+			for (const [field, def] of Object.entries(meta.schema.fields)) {
+				if (fieldNamesToSelectFrom.includes(field)) {
+					return field;
+				}
+			}
+
+			return undefined;
+		};
+
 		beforeEach(async () => {
 			DataStore.configure({ storageAdapter });
 			classes = initSchema(schema);
@@ -433,7 +461,6 @@ export function addCommonQueryTests({
 				body: 'some absurdly awesome content',
 			});
 
-			console.log('whatever', whatever);
 			const saved = await DataStore.save(whatever);
 
 			expect(saved.id).toEqual('asdfadfasdf');
@@ -446,7 +473,6 @@ export function addCommonQueryTests({
 				content: 'some absurdly awesome content',
 			});
 
-			console.log('whatever', whatever);
 			const saved = await DataStore.save(whatever);
 
 			expect(saved.customId).toEqual('asdfadfasdf');
@@ -483,6 +509,119 @@ export function addCommonQueryTests({
 
 								expect(lazyLoaded).toEqual(remote);
 							});
+							test(`lazy load does load aimlessly ${testname}`, async () => {
+								/**
+								 * Basically, we want to ensure lazy loading never regresses and starts
+								 * loading related instances that are not actually related by FK.
+								 */
+
+								// Create the "remote" instance first, because the "local" one will point to it.
+								const remoteInit = new R.remoteModelConstructor(
+									randomInitializer(R.remoteModelConstructor)
+								);
+								const remote = await DataStore.save(remoteInit);
+
+								const localInit = new R.localConstructor({
+									...randomInitializer(R.localConstructor),
+
+									// HERE'S THE DIFFERENCE! we're not tying the model instances together.
+									/* [field]: remote,*/
+								});
+								const local = await DataStore.save(localInit);
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									extractPrimaryKeysAndValues(local, R.localPKFields)
+								);
+								const lazyLoaded = await fetched[field];
+
+								// HERE'S THE DIFFERENCE IN ASSERTION.
+								expect(lazyLoaded).toBeUndefined();
+							});
+							test(`can query ${testname}`, async () => {
+								const remoteInit = new R.remoteModelConstructor(
+									randomInitializer(R.remoteModelConstructor)
+								);
+								const remote = await DataStore.save(remoteInit);
+
+								const localInit = new R.localConstructor({
+									...randomInitializer(R.localConstructor),
+									[field]: remote,
+								});
+								const local = await DataStore.save(localInit);
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									local =>
+										local[field][remoteField!].eq(remoteInit[remoteField!])
+								);
+
+								expect(fetched.length).toBe(1);
+								expect(fetched[0]).toEqual(local);
+							});
+							test(`finds empty sets when target related instance field misatches ${testname}`, async () => {
+								const remoteInit = new R.remoteModelConstructor(
+									randomInitializer(R.remoteModelConstructor)
+								);
+								const remote = await DataStore.save(remoteInit);
+
+								const localInit = new R.localConstructor({
+									...randomInitializer(R.localConstructor),
+									[field]: remote,
+								});
+								const local = await DataStore.save(localInit);
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									local =>
+										// HERE'S THE DIFFERENCE!
+										local[field][remoteField!].eq(
+											remoteInit[remoteField! + ' MISMATCHED!']
+										)
+								);
+
+								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
+								expect(fetched.length).toBe(0);
+							});
+							test(`finds empty sets when target instance isn't related ${testname}`, async () => {
+								const remoteInit = new R.remoteModelConstructor(
+									randomInitializer(R.remoteModelConstructor)
+								);
+								const remote = await DataStore.save(remoteInit);
+
+								const localInit = new R.localConstructor({
+									...randomInitializer(R.localConstructor),
+
+									// HERE'S THE DIFFERENCE!
+									// [field]: remote,
+								});
+								const local = await DataStore.save(localInit);
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									local =>
+										// HERE'S THE DIFFERENCE!
+										local[field][remoteField!].eq(remoteInit[remoteField!])
+								);
+
+								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
+								expect(fetched.length).toBe(0);
+							});
 							break;
 						case 'HAS_MANY':
 							test(`can lazy load ${testname}`, async () => {
@@ -517,6 +656,165 @@ export function addCommonQueryTests({
 								const lazyLoaded = await fetched[field].toArray();
 
 								expect(lazyLoaded).toEqual(remotes);
+							});
+							test(`lazy load does not load aimlessly ${testname}`, async () => {
+								/**
+								 * Basically, we want to ensure lazy loading never regresses and starts
+								 * loading related instances that are not actually related by FK.
+								 */
+								const local = await DataStore.save(
+									new R.localConstructor(randomInitializer(R.localConstructor))
+								);
+
+								const remotes = [1, 2, 3];
+								for (const [index, value] of remotes.entries()) {
+									remotes[index] = await DataStore.save(
+										new R.remoteModelConstructor({
+											...randomInitializer(R.remoteModelConstructor),
+
+											// HERE'S THE DIFFERENCE! we're not tying the model instances together.
+											// ...FK,
+										})
+									);
+								}
+
+								const fetched = await DataStore.query(
+									R.localConstructor,
+									extractPrimaryKeysAndValues(local, R.localPKFields)
+								);
+								const lazyLoaded = await fetched[field].toArray();
+
+								// HERE'S THE DIFFERENCE IN ASSERTION.
+								expect(lazyLoaded).toEqual([]);
+							});
+							test(`can query ${testname}`, async () => {
+								const local = await DataStore.save(
+									new R.localConstructor({
+										...randomInitializer(R.localConstructor),
+									})
+								);
+
+								const FK = {};
+								for (
+									let fieldIndex = 0;
+									fieldIndex < R.remoteJoinFields.length;
+									fieldIndex++
+								) {
+									FK[R.remoteJoinFields[fieldIndex]] =
+										local[R.localJoinFields[fieldIndex]];
+								}
+
+								const remotes = [1, 2, 3];
+								for (const [index, value] of remotes.entries()) {
+									remotes[index] = await DataStore.save(
+										new R.remoteModelConstructor({
+											...randomInitializer(R.remoteModelConstructor),
+											...FK,
+										})
+									);
+								}
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								// any one of the children should be able to serve as the target
+								// of a nested predicate.
+								for (const remote of remotes) {
+									const fetched = await DataStore.query(
+										R.localConstructor,
+										local => local[field][remoteField!].eq(remote[remoteField!])
+									);
+									expect(fetched.length).toBe(1);
+									expect(fetched[0]).toEqual(local);
+								}
+							});
+							test(`finds empty sets when target related instance field misatches ${testname}`, async () => {
+								const local = await DataStore.save(
+									new R.localConstructor({
+										...randomInitializer(R.localConstructor),
+									})
+								);
+
+								const FK = {};
+								for (
+									let fieldIndex = 0;
+									fieldIndex < R.remoteJoinFields.length;
+									fieldIndex++
+								) {
+									FK[R.remoteJoinFields[fieldIndex]] =
+										local[R.localJoinFields[fieldIndex]];
+								}
+
+								const remotes = [1, 2, 3];
+								for (const [index, value] of remotes.entries()) {
+									remotes[index] = await DataStore.save(
+										new R.remoteModelConstructor({
+											...randomInitializer(R.remoteModelConstructor),
+											...FK,
+										})
+									);
+								}
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								// any one of the children should be able to serve as the target
+								// of a nested predicate.
+								for (const remote of remotes) {
+									const fetched = await DataStore.query(
+										R.localConstructor,
+										local =>
+											// HERE'S THE DIFFERENCE!
+											local[field][remoteField!].eq(
+												remote[remoteField! + ' MISMATCHED!']
+											)
+									);
+
+									// DIFFERENCE IN ASSERTION
+									expect(fetched.length).toBe(0);
+								}
+							});
+							test(`finds empty sets when target instance isn't related ${testname}`, async () => {
+								const local = await DataStore.save(
+									new R.localConstructor({
+										...randomInitializer(R.localConstructor),
+									})
+								);
+
+								const remotes = [1, 2, 3];
+								for (const [index, value] of remotes.entries()) {
+									remotes[index] = await DataStore.save(
+										new R.remoteModelConstructor({
+											...randomInitializer(R.remoteModelConstructor),
+
+											// HERE'S THE DIFFERENCE
+											// ...FK,
+										})
+									);
+								}
+
+								// just pick a rando field on remote model to query against.
+								// they should all be randomized and unique.
+								const remoteField = pickField(R.remoteModelConstructor);
+								expect(remoteField).toBeDefined();
+
+								// any one of the children should be able to serve as the target
+								// of a nested predicate.
+								for (const remote of remotes) {
+									const fetched = await DataStore.query(
+										R.localConstructor,
+										local =>
+											// HERE'S THE DIFFERENCE!
+											local[field][remoteField!].eq(remote[remoteField!])
+									);
+
+									// DIFFERENCE IN ASSERTION
+									expect(fetched.length).toBe(0);
+								}
 							});
 							break;
 						default:
