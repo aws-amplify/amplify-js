@@ -1582,6 +1582,12 @@ describe('DataStore tests', () => {
 		}
 	});
 
+	/**
+	 * The following two "error on schema not initialized" tests enforce that
+	 * DataStore starts and clears alert customers that they may have multiple
+	 * versions of DataStore installed.
+	 */
+
 	test('error on schema not initialized on start', async () => {
 		const errorLog = jest.spyOn(console, 'error');
 		const errorRegex = /Schema is not initialized/;
@@ -1590,13 +1596,7 @@ describe('DataStore tests', () => {
 		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
 	});
 
-	/**
-	 * I can't figure out why this is a requirement. Everything gets
-	 * easier and more stable without this. Can we not?
-	 *
-	 * TODO: Investigate.
-	 */
-	test.skip('error on schema not initialized on clear', async () => {
+	test('error on schema not initialized on clear', async () => {
 		const errorLog = jest.spyOn(console, 'error');
 		const errorRegex = /Schema is not initialized/;
 		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
