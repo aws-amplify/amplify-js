@@ -2659,7 +2659,7 @@ export class AuthClass {
 		});
 	}
 
-	public async forgetDevice(): Promise<void> {
+	public async forgetDevice(device?: IAuthDevice): Promise<void> {
 		let currUser;
 
 		try {
@@ -2670,6 +2670,26 @@ export class AuthClass {
 		}
 
 		currUser.getCachedDeviceKeyAndPassword();
+
+		if (device) {
+			return new Promise((res, rej) => {
+				currUser.forgetSpecificDevice(device.id, {
+					onSuccess: data => {
+						res(data);
+					},
+					onFailure: err => {
+						if (err.code === 'InvalidParameterException') {
+							rej(new AuthError(AuthErrorTypes.DeviceConfig));
+						} else if (err.code === 'NetworkError') {
+							rej(new AuthError(AuthErrorTypes.NetworkError));
+						} else {
+							rej(err);
+						}
+					},
+				});
+			});
+		}
+
 		return new Promise((res, rej) => {
 			currUser.forgetDevice({
 				onSuccess: data => {
