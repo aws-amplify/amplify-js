@@ -43,6 +43,7 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": ["lib", "lib-esm", "src"],
   "dependencies": {
     "@aws-amplify/core": "4.7.8",
     "tslib": "^2.0.0"

@@ -33,7 +33,8 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"dependencies": {
+	"files": ["lib", "lib-esm", "src", "SQLiteAdapter", "ExpoSQLiteAdapter"],
+  "dependencies": {
 		"tslib": "^2.0.0"
 	},
 	"devDependencies": {
