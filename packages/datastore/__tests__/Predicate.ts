@@ -1,4 +1,4 @@
-import { recursivePredicateFor } from '../src/predicates/next';
+import { predicateFor, recursivePredicateFor } from '../src/predicates/next';
 import {
 	PersistentModel,
 	PersistentModelConstructor,
@@ -13,6 +13,10 @@ import {
 	Predicates as V1Predicates,
 } from '../src/predicates';
 import { validatePredicate as flatPredicateMatches } from '../src/util';
+import {
+	predicateToGraphQLCondition,
+	predicateToGraphQLFilter,
+} from '../src/sync/utils';
 import { schema, Author, Post, Blog, BlogOwner } from './model';
 import { AsyncCollection } from '../src';
 
@@ -937,5 +941,126 @@ describe('Predicates', () => {
 				});
 			});
 		});
+	});
+
+	describe('non-recursive predicate to storage predicate generation', () => {
+		const ASTTransalationTestCases = [
+			{
+				gql: { and: { name: { eq: 'abc' } } },
+				expectedRegeneration: {
+					and: [{ name: { eq: 'abc' } }],
+				},
+				matches: [{ name: 'abc' }],
+				mismatches: [{ name: 'abc_' }, { name: '_abc' }],
+			},
+			{
+				gql: { and: [{ name: { eq: 'abc' } }] },
+				expectedRegeneration: {
+					and: [{ name: { eq: 'abc' } }],
+				},
+				matches: [{ name: 'abc' }],
+				mismatches: [{ name: 'abc_' }, { name: '_abc' }],
+			},
+			{
+				gql: {
+					and: [{ name: { eq: 'abc' } }, { name: { gt: 'a' } }],
+				},
+				expectedRegeneration: {
+					and: [{ name: { eq: 'abc' } }, { name: { gt: 'a' } }],
+				},
+				matches: [{ name: 'abc' }],
+				mismatches: [{ name: 'abc_' }, { name: '_abc' }],
+			},
+			{
+				gql: {
+					and: [{ name: { gt: 'j' } }],
+				},
+				expectedRegeneration: {
+					and: [{ name: { gt: 'j' } }],
+				},
+				matches: [{ name: 'tim' }, { name: 'sam' }],
+				mismatches: [{ name: 'al' }, { name: 'fran' }],
+			},
+		];
+
+		for (const testCase of ASTTransalationTestCases) {
+			test(`can create storage predicate from conditions AST (${JSON.stringify(
+				testCase.gql
+			)})`, () => {
+				const condition = testCase.gql;
+				const builder = ModelPredicateCreator.createFromAST(
+					BlogMeta.schema,
+					condition
+				);
+				const predicate = ModelPredicateCreator.getPredicates(builder)!;
+
+				const regeneratedCondition = predicateToGraphQLCondition(
+					predicate,
+					BlogMeta.schema
+				);
+				const regeneratedFilter = predicateToGraphQLFilter(predicate);
+
+				// console.log(
+				// 	JSON.stringify(
+				// 		{ condition, predicate, regeneratedCondition, regeneratedFilter },
+				// 		null,
+				// 		2
+				// 	)
+				// );
+
+				for (const expectedMatch of testCase.matches) {
+					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
+						true
+					);
+				}
+
+				for (const expectedMismatch of testCase.mismatches) {
+					expect(
+						flatPredicateMatches(expectedMismatch, 'and', [predicate])
+					).toBe(false);
+				}
+
+				expect(regeneratedCondition).toEqual(testCase.expectedRegeneration);
+				expect(regeneratedFilter).toEqual(testCase.expectedRegeneration);
+			});
+		}
+		const predicateTestCases = [
+			{
+				predicate: p => p.name.eq('abc'),
+				matches: [{ name: 'abc' }],
+				mismatches: [{ name: 'abc_' }, { name: '_abc' }],
+			},
+			{
+				predicate: p => p.name.ne('abc'),
+				matches: [{ name: 'abc_' }, { name: '_abc' }],
+				mismatches: [{ name: 'abc' }],
+			},
+			{
+				predicate: p => p.name.gt('j'),
+				matches: [{ name: 'tim' }, { name: 'sam' }],
+				mismatches: [{ name: 'al' }, { name: 'fran' }],
+			},
+		];
+		for (const testCase of predicateTestCases) {
+			test(`nested predicate builder can produce storage predicate (${testCase.predicate})`, () => {
+				const builder = testCase
+					.predicate(predicateFor(BlogMeta))
+					.__query.toStoragePredicate();
+
+				const predicate = ModelPredicateCreator.getPredicates(builder)!;
+
+				for (const expectedMatch of testCase.matches) {
+					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
+						true
+					);
+				}
+
+				for (const expectedMismatch of testCase.mismatches) {
+					expect(
+						flatPredicateMatches(expectedMismatch, 'and', [predicate])
+					).toBe(false);
+				}
+			});
+		}
 	});
 });

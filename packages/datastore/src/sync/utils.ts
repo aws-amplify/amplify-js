@@ -466,35 +466,22 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
+	// This is compatible with how the GQL Transform currently generates the Condition Input,
+	// i.e. any PK and SK fields are omitted and can't be used as conditions.
+	// However, I think this limits usability.
+	// What if we want to delete all records where SK > some value
+	// Or all records where PK = some value but SKs are different values
+
+	// TODO: if the Transform gets updated we'll need to modify this logic to only omit
+	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
+
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-
-	predicate.predicates.forEach(p => {
-		if (isPredicateObj(p)) {
-			const { field, operator, operand } = p;
-
-			// This is compatible with how the GQL Transform currently generates the Condition Input,
-			// i.e. any PK and SK fields are omitted and can't be used as conditions.
-			// However, I think this limits usability.
-			// What if we want to delete all records where SK > some value
-			// Or all records where PK = some value but SKs are different values
-
-			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
-			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
-			if (keyFields.includes(field as string)) {
-				return;
-			}
-
-			result[field] = { [operator]: operand };
-		} else {
-			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
-		}
-	});
-
-	return result;
+	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
 
 export function predicateToGraphQLFilter(
-	predicatesGroup: PredicatesGroup<any>
+	predicatesGroup: PredicatesGroup<any>,
+	fieldsToOmit: string[] = []
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -514,6 +501,8 @@ export function predicateToGraphQLFilter(
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
+			if (fieldsToOmit.includes(field as string)) return;
+
 			const gqlField: GraphQLField = {
 				[field]: { [operator]: operand },
 			};
@@ -522,8 +511,10 @@ export function predicateToGraphQLFilter(
 			return;
 		}
 
-		appendToFilter(predicateToGraphQLFilter(predicate));
+		appendToFilter(predicateToGraphQLFilter(predicate, fieldsToOmit));
 	});
+
+	// TODO: prune empty groups from the predicate here?
 
 	return result;
 }

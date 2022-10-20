@@ -12,7 +12,7 @@ import {
 	OptionallyManagedIdentifier,
 	PersistentModelConstructor,
 } from '../src';
-
+import { validatePredicate } from '../src/util';
 import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
@@ -494,6 +494,8 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
+	public logRequests = false;
+	public logAST = false;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -527,6 +529,8 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
+		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+
 		const operation = q.operation;
 		const name = q.name.value;
 		const selections = q.selectionSet.selections[0];
@@ -552,6 +556,15 @@ class FakeGraphQLService {
 				: selections?.selectionSet?.selections?.map(i => i.name.value);
 
 		return { operation, name, selection, type, table, items };
+	}
+
+	public parseCondition(condition) {
+		console.log('parsing condition', condition);
+	}
+
+	public satisfiesCondition(item, condition) {
+		const parsed = this.parseCondition(condition);
+		return true;
 	}
 
 	public subscribe(tableName, type, observer) {
@@ -612,6 +625,23 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeMissingVersion(data, selection) {
+		return {
+			path: [selection],
+			data,
+			errorType: 'ConflictUnhandled',
+			errorInfo: null,
+			locations: [
+				{
+					line: 20,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: 'Conflict resolver rejects mutation.',
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -667,18 +697,25 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		// console.log('API request', { query, variables, authMode, authToken });
+		if (this.logRequests) {
+			console.log('API request', {
+				query,
+				variables: JSON.stringify(variables, null, 2),
+				authMode,
+				authToken,
+			});
+		}
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
 		}
 
-		const {
-			operation,
-			selection,
-			table: tableName,
-			type,
-		} = this.parseQuery(query);
+		const parsed = this.parseQuery(query);
+		const { operation, selection, table: tableName, type } = parsed;
+
+		if (this.logRequests) {
+			console.log('Parsed request components', parsed);
+		}
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -737,12 +774,23 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
+				if (this.logRequests) console.log({ existing });
 				if (!existing) {
 					data = {
 						[selection]: null,
 					};
 					errors = [this.makeMissingUpdateTarget(selection)];
+				} else if (record._version === undefined) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingVersion(existing, selection)];
 				} else if (existing._version !== record._version) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else if (!this.satisfiesCondition(existing, variables.condition)) {
 					data = {
 						[selection]: null,
 					};
@@ -758,8 +806,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
+					if (this.logRequests) console.log({ data });
 				}
 			}
+
+			if (this.logRequests) console.log('response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			// console.log('observers', { observers, all: this.observers });

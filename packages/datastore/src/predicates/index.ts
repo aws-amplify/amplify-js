@@ -7,6 +7,8 @@ import {
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
+	GraphQLCondition,
+	GraphQLFilter,
 } from '../types';
 import {
 	exhaustiveCheck,
@@ -23,6 +25,37 @@ export function isPredicatesAll(
 ): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
+
+const groupKeys = new Set(['and', 'or', 'not']);
+const isGroup = o => {
+	const keys = [...Object.keys(o)];
+	return keys.length === 1 && groupKeys.has(keys[0]);
+};
+
+const comparisonKeys = new Set([
+	'eq',
+	'ne',
+	'gt',
+	'lt',
+	'ge',
+	'le',
+	'contains',
+	'notContains',
+	'beginsWith',
+	'between',
+]);
+const isComparison = o => {
+	const keys = [...Object.keys(o)];
+	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
+};
+
+const isValid = o => {
+	if (Array.isArray(o)) {
+		return o.every(v => isValid(v));
+	} else {
+		return Object.keys(o).length === 1;
+	}
+};
 
 // This symbol is not used at runtime, only its type (unique symbol)
 export const PredicateAll = Symbol('A predicate that matches all records');
@@ -241,5 +274,51 @@ export class ModelPredicateCreator {
 		});
 
 		return outer;
+	}
+
+	static transformGraphQLtoPredicateAST(gql: any) {
+		if (!isValid(gql)) {
+			throw new Error('Invalid QGL AST: ' + gql);
+		}
+
+		if (isGroup(gql)) {
+			const groupkey = Object.keys(gql)[0];
+			const children = this.transformGraphQLtoPredicateAST(gql[groupkey]);
+			return {
+				type: groupkey,
+				predicates: Array.isArray(children) ? children : [children],
+			};
+		} else if (isComparison(gql)) {
+			const operatorKey = Object.keys(gql)[0];
+			return {
+				operator: operatorKey,
+				operand: gql[operatorKey],
+			};
+		} else {
+			if (Array.isArray(gql)) {
+				return gql.map(o => this.transformGraphQLtoPredicateAST(o));
+			} else {
+				const fieldKey = Object.keys(gql)[0];
+				return {
+					field: fieldKey,
+					...this.transformGraphQLtoPredicateAST(gql[fieldKey]),
+				};
+			}
+		}
+	}
+
+	static createFromAST(
+		modelDefinition: SchemaModel,
+		ast: any
+	): ModelPredicate<any> {
+		const predicate =
+			ModelPredicateCreator.createPredicateBuilder(modelDefinition);
+
+		ModelPredicateCreator.predicateGroupsMap.set(
+			predicate,
+			this.transformGraphQLtoPredicateAST(ast)
+		);
+
+		return predicate;
 	}
 }

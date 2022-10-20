@@ -690,7 +690,6 @@ export class GroupCondition {
 			baseCondition,
 			...this.operands.map(condition => {
 				if (condition instanceof GroupCondition) {
-					// TODO: what does this need to return!!??
 					return condition.toStoragePredicate();
 				} else if (condition instanceof FieldCondition) {
 					return seedPredicate =>
@@ -702,6 +701,8 @@ export class GroupCondition {
 				}
 			}),
 		].filter(v => v); // remove undefined
+
+		// console.log({ baseCondition, self: this, childPredicates });
 
 		return FlatModelPredicateCreator.createGroupFromExisting(
 			this.model.schema,

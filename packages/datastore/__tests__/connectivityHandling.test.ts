@@ -94,6 +94,28 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.title).toEqual(deleted.title);
 			expect(savedItem._deleted).toEqual(true);
 		});
+
+		test('sends conditional model deletes to the cloud with valid conditions', async () => {
+			graphqlService.logRequests = true;
+			const post = await DataStore.save(new Post({ title: 'post title' }));
+			await waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+
+			const deleted = await DataStore.delete(retrieved!, p =>
+				p.title.eq('post title')
+			);
+			console.log('delete returns though?');
+			await waitForEmptyOutbox();
+			console.log('not here though, eh?');
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([post.id])) as any;
+			expect(savedItem.title).toEqual(deleted.title);
+			expect(savedItem._deleted).toEqual(true);
+		});
 	});
 
 	describe('connection state change handling', () => {
