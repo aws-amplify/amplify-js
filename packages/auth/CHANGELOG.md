@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.6.9...@aws-amplify/auth@4.6.10) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.6.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.6.8...@aws-amplify/auth@4.6.9) (2022-10-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10055](https://github.com/aws-amplify/amplify-js/issues/10055)) ([c64d7d6](https://github.com/aws-amplify/amplify-js/commit/c64d7d6284bc7b41a5a65b4b47d35ea274aed6b3))
+
+
+### Reverts
+
+* "fix(@aws-amplify/datastore): introduce "settlement" guarantees to stop() and clear()" ([#10449](https://github.com/aws-amplify/amplify-js/issues/10449)) ([d726bcc](https://github.com/aws-amplify/amplify-js/commit/d726bccca9712b8f43bc273052f970f8f931dd8c)), closes [aws-amplify/amplify-js#10055](https://github.com/aws-amplify/amplify-js/issues/10055)
+
+
+
+
+
 ## [4.6.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.6.6...@aws-amplify/auth@4.6.8) (2022-09-30)
 
 **Note:** Version bump only for package @aws-amplify/auth
