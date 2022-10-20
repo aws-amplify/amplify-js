@@ -11,9 +11,10 @@
  * and limitations under the License.
  */
 
-import { AuthErrorMessages, AuthErrorTypes } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AuthErrorStrings } from './common/AuthErrorStrings';
+import { AuthErrorStrings } from './constants/AuthErrorStrings';
+import { AuthErrorTypes } from './constants/AuthErrorTypes';
+import { AuthErrorMessages } from './types/AuthErrorMessages';
 
 const logger = new Logger('AuthError');
 

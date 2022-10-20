@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 
-const SELF = '_self';
+import { AuthErrorStrings } from '../constants/AuthErrorStrings';
+import { AuthProvider } from '../types/AuthProvider';
 
-export const launchUri = (url: string) => {
-	const windowProxy = window.open(url, SELF);
-	if (windowProxy) {
-		return Promise.resolve(windowProxy);
-	} else {
-		return Promise.reject();
+export function assertPluginAvailable(
+	plugin: AuthProvider | null
+): asserts plugin is AuthProvider {
+	if (!plugin) {
+		throw new Error(AuthErrorStrings.NO_PLUGIN);
 	}
-};
+}

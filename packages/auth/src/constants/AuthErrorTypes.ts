@@ -11,20 +11,20 @@
  * and limitations under the License.
  */
 
-import { Auth } from './Auth';
-
-// TODO: replace imports for appendToCognitoUserAgent, CookieStorage
-import { AuthErrorStrings } from './constants/AuthErrorStrings';
-import { GRAPHQL_AUTH_MODE } from './constants/GraphQLAuthMode';
-import { CognitoHostedUIIdentityProvider } from './constants/CognitoHostedUIIdentityProvider';
-
-/**
- * @deprecated use named import
- */
-export default Auth;
-export {
-	Auth,
-	CognitoHostedUIIdentityProvider,
-	AuthErrorStrings,
-	GRAPHQL_AUTH_MODE,
-};
+export enum AuthErrorTypes {
+	NoConfig = 'noConfig',
+	MissingAuthConfig = 'missingAuthConfig',
+	EmptyUsername = 'emptyUsername',
+	InvalidUsername = 'invalidUsername',
+	EmptyPassword = 'emptyPassword',
+	EmptyCode = 'emptyCode',
+	SignUpError = 'signUpError',
+	NoMFA = 'noMFA',
+	InvalidMFA = 'invalidMFA',
+	EmptyChallengeResponse = 'emptyChallengeResponse',
+	NoUserSession = 'noUserSession',
+	Default = 'default',
+	DeviceConfig = 'deviceConfig',
+	NetworkError = 'networkError',
+	AutoSignInError = 'autoSignInError',
+}
