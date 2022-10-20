@@ -42,9 +42,9 @@
 	},
 	"homepage": "https://docs.amplify.aws/",
 	"dependencies": {
-		"@aws-amplify/cache": "4.0.57",
-		"@aws-amplify/core": "4.7.6",
-		"@aws-sdk/client-pinpoint": "3.171.0",
+		"@aws-amplify/cache": "4.0.59",
+		"@aws-amplify/core": "4.7.8",
+		"@aws-sdk/client-pinpoint": "3.186.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},
