@@ -43,7 +43,7 @@ import {
 import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
 import { getAmplifyUserAgent } from '../Platform';
-import { parseAWSExports } from '../Parser';
+import { parseAWSExports } from '../parseAWSExports';
 import {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
 	AWS_CLOUDWATCH_CATEGORY,
