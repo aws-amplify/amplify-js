@@ -1911,7 +1911,7 @@ describe('auth unit test', () => {
 			const spyon2 = jest
 				.spyOn(Credentials, 'refreshFederatedToken')
 				.mockImplementationOnce(() => {
-					return Promise.resolve('cred');
+					return Promise.resolve('cred' as any);
 				});
 
 			expect.assertions(1);
