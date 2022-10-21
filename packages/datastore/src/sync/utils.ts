@@ -459,7 +459,7 @@ export function createMutationInstanceFromModelOperation<
 export function predicateToGraphQLCondition(
 	predicate: PredicatesGroup<any>,
 	modelDefinition: SchemaModel
-): GraphQLCondition | null {
+): GraphQLCondition {
 	const result = {};
 
 	if (!predicate || !Array.isArray(predicate.predicates)) {
