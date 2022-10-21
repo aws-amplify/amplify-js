@@ -21,6 +21,7 @@ import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
 
 jest.mock('@aws-amplify/core');
+const mockHubDispatch = Hub.dispatch as jest.Mock;
 
 jest.useFakeTimers();
 
@@ -74,7 +75,7 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.startSession();
-			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
+			expect(mockHubDispatch).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
@@ -96,7 +97,7 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.stopSession();
-			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
+			expect(mockHubDispatch).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
@@ -123,7 +124,7 @@ describe('Analytics test', () => {
 			};
 
 			await analytics.record(event);
-			expect(Hub.dispatch as jest.Mock).toBeCalledWith(
+			expect(mockHubDispatch).toBeCalledWith(
 				'analytics',
 				{
 					event: 'record',
