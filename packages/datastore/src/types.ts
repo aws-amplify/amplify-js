@@ -10,7 +10,6 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
-	extractPrimaryKeyFieldNames,
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
@@ -47,17 +46,9 @@ export type SchemaModel = {
 	fields: ModelFields;
 	syncable?: boolean;
 };
-
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }
-
-export function isSchemaModelWithAttributes(
-	m: SchemaModel | SchemaNonModel
-): m is SchemaModel {
-	return isSchemaModel(m) && (m as SchemaModel).attributes !== undefined;
-}
-
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaNonModel = {
 	name: string;
@@ -72,29 +63,25 @@ type SchemaEnum = {
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
-	associatedWith: string | string[];
+	associatedWith: string;
 	targetName?: string;
-	targetNames?: string[];
 };
-
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
 }
 
 type TargetNameAssociation = {
 	connectionType: 'BELONGS_TO';
-	targetName?: string;
-	targetNames?: string[];
+	targetName: string;
 };
-
 export function isTargetNameAssociation(
 	obj: any
 ): obj is TargetNameAssociation {
-	return obj?.targetName || obj?.targetNames;
+	return obj && obj.targetName;
 }
 
 export type ModelAttributes = ModelAttribute[];
-export type ModelAttribute = { type: string; properties?: Record<string, any> };
+type ModelAttribute = { type: string; properties?: Record<string, any> };
 
 export type ModelAuthRule = {
 	allow: string;
@@ -136,7 +123,6 @@ type ModelAttributeKey = {
 type ModelAttributePrimaryKey = {
 	type: 'key';
 	properties: {
-		name: never;
 		fields: string[];
 	};
 };
@@ -350,138 +336,33 @@ export type NonModelTypeConstructor<T> = {
 };
 
 // Class for model
-export type PersistentModelConstructor<T extends PersistentModel> = {
-	new (init: ModelInit<T, PersistentModelMetaData<T>>): T;
-	copyOf(
-		src: T,
-		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void
-	): T;
+export type PersistentModelConstructor<
+	T extends PersistentModel,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = {
+	new (init: ModelInit<T, K>): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
 };
 
 export type TypeConstructorMap = Record<
 	string,
-	PersistentModelConstructor<any> | NonModelTypeConstructor<unknown>
+	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
-
-/**
- * Each identifier type is represented using nominal types, see:
- * https://basarat.gitbook.io/typescript/main-1/nominaltyping
- */
-export declare const __identifierBrand__: unique symbol;
-export type IdentifierBrand<T, K> = T & { [__identifierBrand__]: K };
-
-// datastore generates a uuid for you
-export type ManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
-	{ field: F extends string ? F : never; type: T },
-	'ManagedIdentifier'
->;
-
-// you can provide a value, if not, datastore generates a uuid for you
-export type OptionallyManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
-	{ field: F extends string ? F : never; type: T },
-	'OptionallyManagedIdentifier'
->;
-
-// You provide the values
-export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
-	{ fields: K; type: T },
-	'CompositeIdentifier'
->;
-
-// You provide the value
-export type CustomIdentifier<T, K extends keyof T> = CompositeIdentifier<
-	T,
-	[K]
->;
-
-export type Identifier<T> =
-	| ManagedIdentifier<T, any>
-	| OptionallyManagedIdentifier<T, any>
-	| CompositeIdentifier<T, any>
-	| CustomIdentifier<T, any>;
-
-export type IdentifierFields<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
-> = (MetadataOrDefault<T, M>['identifier'] extends
-	| ManagedIdentifier<any, any>
-	| OptionallyManagedIdentifier<any, any>
-	? MetadataOrDefault<T, M>['identifier']['field']
-	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
-			T,
-			infer B
-	  >
-	? B[number] // B[number]
-	: MetadataOrDefault<T, M>['identifier']['field']) &
-	string;
-
-export type IdentifierFieldsForInit<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
-> = MetadataOrDefault<T, M>['identifier'] extends
-	| DefaultPersistentModelMetaData
-	| ManagedIdentifier<T, any>
-	? never
-	: MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
-			T,
-			any
-	  >
-	? IdentifierFields<T, M>
-	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	? IdentifierFields<T, M>
-	: never;
 
 // Instance of model
-export declare const __modelMeta__: unique symbol;
-
-export type PersistentModelMetaData<T> = {
-	identifier?: Identifier<T>;
-	readOnlyFields?: string;
+export type PersistentModelMetaData = {
+	readOnlyFields: string;
 };
 
-export type DefaultPersistentModelMetaData = {
-	identifier: ManagedIdentifier<{ id: string }, 'id'>;
-	readOnlyFields: never;
-};
-
-export type MetadataOrDefault<
-	T extends PersistentModel,
-	_ extends PersistentModelMetaData<T> = never
-> = T extends {
-	[__modelMeta__]: PersistentModelMetaData<T>;
-}
-	? T[typeof __modelMeta__]
-	: DefaultPersistentModelMetaData;
-
-export type PersistentModel = Readonly<Record<string, any>>;
-
-export type MetadataReadOnlyFields<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
-> = Extract<
-	MetadataOrDefault<T, M>['readOnlyFields'] | M['readOnlyFields'],
-	keyof T
->;
-
-// This type omits the metadata field in the constructor init object
-// This type omits identifier fields in the constructor init object
-// This type omits readOnlyFields in the constructor init object
-// This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
-// This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
+export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
-> = Omit<
 	T,
-	typeof __modelMeta__ | IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>
-> &
-	(MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
-		T,
-		any
-	>
-		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
-		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
-
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = Omit<T, 'id' | K['readOnlyFields']>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
@@ -489,45 +370,22 @@ type DeepWritable<T> = {
 };
 
 export type MutableModel<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	T extends Record<string, any>,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = DeepWritable<
-	Omit<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>
-> &
-	Readonly<Pick<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>>;
+> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
+	id: string;
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;
 };
 
-export type IdentifierFieldValue<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
-> = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
-		? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
-		: never
-	: T[MetadataOrDefault<T, M>['identifier']['field']];
-
-export type IdentifierFieldOrIdentifierObject<
-	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
-> = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
-
-export function isIdentifierObject<T extends PersistentModel>(
-	obj: any,
-	modelDefinition: SchemaModel
-): obj is IdentifierFields<T extends PersistentModel ? T : never, any> {
-	const keys = extractPrimaryKeyFieldNames(modelDefinition);
-
-	return (
-		typeof obj === 'object' && obj && keys.every(k => obj[k] !== undefined)
-	);
-}
 //#endregion
 
 //#region Subscription messages
@@ -777,21 +635,11 @@ export type RelationType = {
 	modelName: string;
 	relationType: 'HAS_ONE' | 'HAS_MANY' | 'BELONGS_TO';
 	targetName?: string;
-	targetNames?: string[];
-	associatedWith?: string | string[];
+	associatedWith?: string;
 };
-
-type IndexOptions = {
-	unique?: boolean;
-};
-
-export type IndexesType = Array<[string, string[], IndexOptions?]>;
 
 export type RelationshipType = {
-	[modelName: string]: {
-		indexes: IndexesType;
-		relationTypes: RelationType[];
-	};
+	[modelName: string]: { indexes: string[]; relationTypes: RelationType[] };
 };
 
 //#endregion

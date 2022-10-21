@@ -5,15 +5,7 @@ import {
 	syncClasses,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import {
-	Model,
-	User,
-	Profile,
-	Post,
-	Comment,
-	testSchema,
-	pause,
-} from './helpers';
+import { pause, Model, User, Profile, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
 import { addCommonQueryTests } from './commonAdapterTests';
 
@@ -49,7 +41,7 @@ describe('AsyncStorageAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGetOne = jest.spyOn(ASAdapter, 'getByKey');
+		const spyOnGetOne = jest.spyOn(ASAdapter, 'getById');
 		const spyOnGetAll = jest.spyOn(ASAdapter, 'getAll');
 		const spyOnMemory = jest.spyOn(ASAdapter, 'inMemoryPagination');
 
@@ -100,8 +92,9 @@ describe('AsyncStorageAdapter tests', () => {
 			await DataStore.clear();
 		});
 
-		it('Should call getById for query by key', async () => {
+		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
+
 			expect(result.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
@@ -162,16 +155,11 @@ describe('AsyncStorageAdapter tests', () => {
 			expect(spyOnMemory).not.toHaveBeenCalled();
 		});
 	});
-
 	describe('Delete', () => {
 		let User: PersistentModelConstructor<User>;
 		let Profile: PersistentModelConstructor<Profile>;
 		let profile1Id: string;
 		let user1Id: string;
-		let Post: PersistentModelConstructor<Post>;
-		let Comment: PersistentModelConstructor<Comment>;
-		let post1Id: string;
-		let comment1Id: string;
 
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -195,25 +183,6 @@ describe('AsyncStorageAdapter tests', () => {
 			));
 		});
 
-		beforeEach(async () => {
-			const classes = initSchema(testSchema());
-
-			({ Post } = classes as {
-				Post: PersistentModelConstructor<Post>;
-			});
-
-			({ Comment } = classes as {
-				Comment: PersistentModelConstructor<Comment>;
-			});
-
-			const post = await DataStore.save(new Post({ title: 'Test' }));
-			({ id: post1Id } = post);
-
-			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post })
-			));
-		});
-
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
@@ -228,26 +197,8 @@ describe('AsyncStorageAdapter tests', () => {
 			profile = await DataStore.query(Profile, profile1Id);
 
 			// both should be undefined, even though we only explicitly deleted the user
-			expect(user).toBeUndefined();
-			expect(profile).toBeUndefined();
-		});
-
-		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
-			let post = await DataStore.query(Post, post1Id);
-			let comment = await DataStore.query(Comment, comment1Id);
-
-			// double-checking that both of the records exist at first
-			expect(post.id).toEqual(post1Id);
-			expect(comment.id).toEqual(comment1Id);
-
-			await DataStore.delete(Post, post.id);
-
-			post = await DataStore.query(Post, post1Id);
-			comment = await DataStore.query(Comment, comment1Id);
-
-			// both should be undefined, even though we only explicitly deleted the post
-			expect(post).toBeUndefined();
-			expect(comment).toBeUndefined();
+			expect(user).toBeUndefined;
+			expect(profile).toBeUndefined;
 		});
 	});
 

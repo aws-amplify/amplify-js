@@ -13,7 +13,6 @@
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
 	Place,
 	MapStyle,
@@ -25,7 +24,6 @@ import {
 	ListGeofenceResults,
 	SaveGeofencesResults,
 	DeleteGeofencesResults,
-	searchByPlaceIdOptions,
 } from './Geo';
 
 export interface GeoProvider {
@@ -52,16 +50,6 @@ export interface GeoProvider {
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
-
-	searchForSuggestions(
-		text: string,
-		options?: SearchByTextOptions
-	): Promise<SearchForSuggestionsResults>;
-
-	searchByPlaceId(
-		placeId: string,
-		options?: searchByPlaceIdOptions
-	): Promise<Place | undefined>;
 
 	// create geofences
 	saveGeofences(

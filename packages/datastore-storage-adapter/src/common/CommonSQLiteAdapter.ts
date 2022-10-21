@@ -17,6 +17,7 @@ import {
 	ModelSortPredicateCreator,
 	InternalSchema,
 	isPredicateObj,
+	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
@@ -28,7 +29,7 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase, ParameterizedStatement, ModelInstanceMetadataWithId } from './types';
+import { CommonSQLiteDatabase, ParameterizedStatement } from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -406,7 +407,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadataWithId[]
+		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
 		const result: [T, OpType][] = [];

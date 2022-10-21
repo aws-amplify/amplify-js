@@ -25,12 +25,6 @@ export class AmplifyAuth0Button {
 
 	private _auth0: any;
 
-	componentWillLoad() {
-		console.warn(
-			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
-		);
-	}
-
 	private handleLoad = () => {
 		// @ts-ignore Property 'auth0' does not exist on type '{}'.
 		const { oauth = {} } = Auth.configure();

@@ -8,11 +8,7 @@ import {
 	ProducerModelPredicate,
 	SchemaModel,
 } from '../types';
-import {
-	exhaustiveCheck,
-	extractPrimaryKeyFieldNames,
-	extractPrimaryKeyValues,
-} from '../util';
+import { exhaustiveCheck } from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 
@@ -89,7 +85,7 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver)!
+									.get(receiver)
 									.predicates.push(group);
 
 								return receiver;
@@ -113,7 +109,7 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver)!
+							.get(receiver)
 							.predicates.push({ field, operator, operand });
 						return receiver;
 					};
@@ -151,7 +147,7 @@ export class ModelPredicateCreator {
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		existing?: ProducerModelPredicate<T>
+		existing: ProducerModelPredicate<T>
 	) {
 		if (!existing || !modelDefinition) {
 			return undefined;
@@ -162,31 +158,13 @@ export class ModelPredicateCreator {
 		);
 	}
 
-	static createForSingleField<T extends PersistentModel>(
+	static createForId<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		fieldName: string,
-		value: string
+		id: string
 	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
-			fieldName
-		](<any>'eq', <any>value);
-	}
-
-	static createForPk<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		model: T
-	) {
-		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-		const keyValues = extractPrimaryKeyValues(model, keyFields);
-
-		let modelPredicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		keyFields.forEach((field, idx) => {
-			const operand = keyValues[idx];
-			modelPredicate = modelPredicate[field](<any>'eq', <any>operand);
-		});
-
-		return modelPredicate;
+		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition).id(
+			'eq',
+			<any>id
+		);
 	}
 }

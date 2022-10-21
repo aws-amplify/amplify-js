@@ -3,10 +3,8 @@ import {
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModelConstructor,
-	SchemaModel,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
-import { getIdentifierValue } from './utils';
 
 // https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#merger
 class ModelMerger {
@@ -17,15 +15,10 @@ class ModelMerger {
 
 	public async merge<T extends ModelInstanceMetadata>(
 		storage: Storage,
-		model: T,
-		modelDefinition: SchemaModel
+		model: T
 	): Promise<OpType> {
 		let result: OpType;
-		const mutationsForModel = await this.outbox.getForModel(
-			storage,
-			model,
-			modelDefinition
-		);
+		const mutationsForModel = await this.outbox.getForModel(storage, model);
 
 		const isDelete = model._deleted;
 
@@ -44,16 +37,13 @@ class ModelMerger {
 	public async mergePage(
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadata[],
-		modelDefinition: SchemaModel
+		items: ModelInstanceMetadata[]
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
-			const modelId = getIdentifierValue(modelDefinition, item);
-
-			itemsMap.set(modelId, item);
+			itemsMap.set(item.id, item);
 		}
 
 		const page = [...itemsMap.values()];

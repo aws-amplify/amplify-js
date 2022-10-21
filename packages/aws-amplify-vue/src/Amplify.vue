@@ -4,10 +4,6 @@
 
 <script>
 // TODO: FIX SPREAD OPERATOR ERROR IN CIRCLECI TO ELIMINATE EXPLICIT IMPORTS AND USE BARRELS
-console.warn(
-	'`aws-amplify-vue` has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for more info on Amplify UI.'
-);
-
 import { 
   Authenticator,
   SignIn,

@@ -28,7 +28,3 @@ export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
 export { transparent1X1, white1X1 } from './AmplifyUI';
 
 I18n.putVocabularies(dict);
-
-console.warn(
-	'`aws-amplify-react` has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for more info on Amplify UI.'
-);

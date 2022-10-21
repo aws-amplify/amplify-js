@@ -317,7 +317,9 @@ describe('authenticateUserInternal()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 
 	// same approach as used in CognitoUser.js
-	const authHelper = new AuthenticationHelper(user.pool.getUserPoolName());
+	const authHelper = new AuthenticationHelper(
+		user.pool.getUserPoolId().split('_')[1]
+	);
 
 	const authData = Object.assign(vCognitoUserSession, {
 		ChallengeParameters: {

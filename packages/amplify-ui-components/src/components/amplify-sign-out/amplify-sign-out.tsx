@@ -23,12 +23,6 @@ export class AmplifySignOut {
 	/** Text inside of the Sign Out button */
 	@Prop() buttonText: string = Translations.SIGN_OUT;
 
-	componentWillLoad() {
-		console.warn(
-			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
-		);
-	}
-
 	private async signOut(event) {
 		if (event) event.preventDefault();
 

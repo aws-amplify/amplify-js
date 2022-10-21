@@ -24,12 +24,6 @@ export class AmplifyRadioButton {
 	/** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
 	@Prop() inputProps?: object;
 
-	componentWillLoad() {
-		console.warn(
-			'Version `1.x` of Amplify UI has been deprecated and will be removed in a future major version of `aws-amplify`. Please visit https://ui.docs.amplify.aws/ for the current version of Amplify UI.'
-		);
-	}
-
 	render() {
 		return (
 			<span class="radio-button">
