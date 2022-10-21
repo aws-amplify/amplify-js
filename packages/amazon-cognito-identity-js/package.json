@@ -88,6 +88,7 @@
     "jsdoc": "3.4.0",
     "react": "^16.0.0",
     "rimraf": "^2.5.4",
-    "webpack": "^3.5.5"
+    "webpack": "^3.5.5",
+    "uglifyjs-webpack-plugin": "^1.0.0"
   }
 }
