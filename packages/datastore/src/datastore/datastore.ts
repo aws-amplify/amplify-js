@@ -217,11 +217,6 @@ const isValidModelConstructor = <T extends PersistentModel>(
 	if (isModelConstructor(obj) && modelNamespaceMap.has(obj)) {
 		return true;
 	} else {
-		console.error('isValidModelConstructor', {
-			obj,
-			isModelConstructor: isModelConstructor(obj),
-			'modelNamespaceMap.has': modelNamespaceMap.has(obj),
-		});
 		return false;
 	}
 };

@@ -166,6 +166,7 @@ type UntypedCondition = {
 	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
 	matches: (item: Record<string, any>) => Promise<boolean>;
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
+	toAST(): any;
 };
 
 /**
@@ -253,6 +254,17 @@ export class FieldCondition {
 			new FieldCondition(this.field, this.operator, [...this.operands]),
 			undefined,
 		];
+	}
+
+	toAST() {
+		return {
+			[this.field]: {
+				[this.operator]:
+					this.operator === 'between'
+						? [this.operands[0], this.operands[1]]
+						: this.operands[0],
+			},
+		};
 	}
 
 	/**
@@ -683,32 +695,50 @@ export class GroupCondition {
 		}
 	}
 
+	/**
+	 * Tranfsorm to a AppSync GraphQL compatible AST.
+	 * (Does not support filtering in nested types.)
+	 */
+	toAST() {
+		if (this.field)
+			throw new Error('Nested type conditions are not supported!');
+
+		return {
+			[this.operator]: this.operands.map(operand => operand.toAST()),
+		};
+	}
+
 	toStoragePredicate<T>(
 		baseCondition?: StoragePredicate<T>
 	): StoragePredicate<T> {
-		const childPredicates = [
-			baseCondition,
-			...this.operands.map(condition => {
-				if (condition instanceof GroupCondition) {
-					return condition.toStoragePredicate();
-				} else if (condition instanceof FieldCondition) {
-					return seedPredicate =>
-						applyConditionsToV1Predicate(seedPredicate, [condition], false);
-				} else {
-					throw new Error(
-						'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
-					);
-				}
-			}),
-		].filter(v => v); // remove undefined
+		// const childPredicates = [
+		// 	baseCondition,
+		// 	...this.operands.map(condition => {
+		// 		if (condition instanceof GroupCondition) {
+		// 			return condition.toStoragePredicate();
+		// 		} else if (condition instanceof FieldCondition) {
+		// 			return seedPredicate =>
+		// 				applyConditionsToV1Predicate(seedPredicate, [condition], false);
+		// 		} else {
+		// 			throw new Error(
+		// 				'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
+		// 			);
+		// 		}
+		// 	}),
+		// ].filter(v => v); // remove undefined
 
-		// console.log({ baseCondition, self: this, childPredicates });
+		// // console.log({ baseCondition, self: this, childPredicates });
 
-		return FlatModelPredicateCreator.createGroupFromExisting(
+		// return FlatModelPredicateCreator.createGroupFromExisting(
+		// 	this.model.schema,
+		// 	this.operator,
+		// 	childPredicates as any
+		// ) as StoragePredicate<T>;
+
+		return FlatModelPredicateCreator.createFromAST(
 			this.model.schema,
-			this.operator,
-			childPredicates as any
-		) as StoragePredicate<T>;
+			this.toAST()
+		) as unknown as StoragePredicate<T>;
 	}
 }
 

@@ -79,6 +79,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('sends model deletes to the cloud', async () => {
+			graphqlService.logRequests = true;
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 			await waitForEmptyOutbox();
 

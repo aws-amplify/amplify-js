@@ -459,7 +459,7 @@ export function createMutationInstanceFromModelOperation<
 export function predicateToGraphQLCondition(
 	predicate: PredicatesGroup<any>,
 	modelDefinition: SchemaModel
-): GraphQLCondition {
+): GraphQLCondition | null {
 	const result = {};
 
 	if (!predicate || !Array.isArray(predicate.predicates)) {
@@ -511,10 +511,15 @@ export function predicateToGraphQLFilter(
 			return;
 		}
 
-		appendToFilter(predicateToGraphQLFilter(predicate, fieldsToOmit));
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit);
+		Object.keys(child).length > 0 && appendToFilter(child);
 	});
 
-	// TODO: prune empty groups from the predicate here?
+	if (isList) {
+		if (result[type].length === 0) return {};
+	} else {
+		if (Object.keys(result[type]).length === 0) return {};
+	}
 
 	return result;
 }
