@@ -947,7 +947,7 @@ describe('Predicates', () => {
 		const ASTTransalationTestCases = [
 			{
 				gql: { and: [] },
-				expectedRegeneration: null,
+				expectedRegeneration: {},
 				matches: [{ name: 'abc' }],
 				mismatches: [],
 			},
@@ -997,10 +997,10 @@ describe('Predicates', () => {
 			},
 		];
 
-		for (const testCase of ASTTransalationTestCases) {
-			test(`can create storage predicate from conditions AST (${JSON.stringify(
+		for (const [i, testCase] of ASTTransalationTestCases.entries()) {
+			test(`can create storage predicate from conditions AST ${i} : ${JSON.stringify(
 				testCase.gql
-			)})`, () => {
+			)}`, () => {
 				const condition = testCase.gql;
 				const builder = ModelPredicateCreator.createFromAST(
 					BlogMeta.schema,
@@ -1055,8 +1055,8 @@ describe('Predicates', () => {
 				mismatches: [{ name: 'al' }, { name: 'fran' }],
 			},
 		];
-		for (const testCase of predicateTestCases) {
-			test(`nested predicate builder can produce storage predicate (${testCase.predicate})`, () => {
+		for (const [i, testCase] of predicateTestCases.entries()) {
+			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
 				const builder = testCase
 					.predicate(predicateFor(BlogMeta))
 					.__query.toStoragePredicate();
