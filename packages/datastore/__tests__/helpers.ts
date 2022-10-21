@@ -1,4 +1,5 @@
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
+import { parse } from 'graphql';
 import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
 import {
 	DataStore as DS,
@@ -8,7 +9,16 @@ import {
 	MutableModel,
 	PersistentModel,
 	OptionallyManagedIdentifier,
+	PersistentModelConstructor,
 } from '../src';
+
+import {
+	initSchema as _initSchema,
+	DataStore as DataStoreInstance,
+} from '../src/datastore/datastore';
+
+type initSchemaType = typeof _initSchema;
+type DataStoreType = typeof DataStoreInstance;
 
 /**
  * Convenience function to wait for a number of ms.
@@ -103,6 +113,805 @@ export function extraFieldsFrom(data, template) {
 	return fields.filter(name => !expectedFields.has(name));
 }
 
+/**
+ * Left-pads or truncates a string to a desired width.
+ *
+ * The defaults of `{ width: 2, fillter: '0' }` are intended for padding date
+ * and time components, but could also be used for log line fields.
+ *
+ * For example:
+ *
+ * ```
+ * padLeft("123", 4, '0') === '0123'
+ * padLeft("123", 2, '0') === '23'
+ * ```
+ *
+ * @param str String to pad.
+ * @param width Width the final string will be.
+ * @param filler The string to pad with.
+ * @returns A left-padded or truncated string.
+ */
+export function padLeft(str, width: number = 2, filler = '0') {
+	const pad = [...new Array(width)].map(entry => filler).join('');
+	const buffer = pad + String(str);
+	return buffer.substring(buffer.length - width, buffer.length);
+}
+
+/**
+ * Right-pads or truncates a string to a desired width.
+ *
+ * Intended for padding fields in log lines.
+ *
+ * For example:
+ *
+ * ```
+ * padRight("abcd", 3, ' ') === 'abc'
+ * padRight("ab",   3, ' ') === 'ab '
+ * ```
+ *
+ * @param str String to pad.
+ * @param width Width the final string will be.
+ * @param filler The string to pad with.
+ * @returns A right-padded or truncated string.
+ */
+export function padRight(str, width: number, filler = ' ') {
+	const pad = [...new Array(width)].map(entry => filler).join('');
+	const buffer = String(str) + pad;
+	return buffer.substring(0, width);
+}
+
+/**
+ * Time format to use in debug logging for consistency and readability.
+ *
+ * Format:
+ *
+ * ```
+ * HH:MM:SS.μμμ
+ * ```
+ *
+ * Examples:
+ *
+ * ```
+ * 12:34:45.678
+ * 01:02:03.004
+ * ```
+ */
+export function logDate() {
+	const d = new Date();
+	return [
+		padLeft(d.getHours()),
+		':',
+		padLeft(d.getMinutes()),
+		':',
+		padLeft(d.getSeconds()),
+		'.',
+		padLeft(d.getMilliseconds(), 3),
+	].join('');
+}
+
+/**
+ * Private.
+ *
+ * Interval used by `warpTime`. Lives in this scope so that `unwarpTime` can
+ * find it during cleanup.
+ */
+let warpTimeTick;
+
+/**
+ * Injects fake `setInterval`, `setTimeout`, and other time-related functions
+ * to allow us to make "time" happen faster during testing. Time will happen
+ * faster according to a given `multiplier`.
+ *
+ * Time warping is accomplished with a combination of jest's `useFakeTimers`
+ * and invoking `jest.advanceTimersByTime()` using a *real* interval created
+ * prior to injecting the fakes.
+ *
+ * Once time warping is on, you can advance time in your tests *beyond* what
+ * time warping already does by calling any of jest's time manipulation
+ * functions: https://archive.jestjs.io/docs/en/24.x/timer-mocks
+ *
+ * **IMPORTANT:** Remember to return back to normal at the end of your test
+ * by calling `unwarpTime()`, Doctor.
+ *
+ * > *Tinkering with time can weaken the very fabric of the universe.*
+ *
+ * Be careful.
+ *
+ * @param multiplier How much faster than regular time should we run?
+ */
+export function warpTime(multiplier = 20) {
+	warpTimeTick = setInterval(() => {
+		jest.advanceTimersByTime(25 * multiplier);
+	}, 25);
+	jest.useFakeTimers();
+}
+
+/**
+ * Stops warping time and returns time-related functions to their builtin
+ * implementations.
+ */
+export function unwarpTime() {
+	jest.useRealTimers();
+	clearInterval(warpTimeTick);
+}
+
+/**
+ * Tricks DataStore into performing sync operation by:
+ *
+ * 1. setting a fake AppSync endpoint (localhost)
+ * 1. starting DataStore
+ * 1. telling the mutations processor that it's "ready"
+ * 1. setting model sync'd status to `false` across the board.
+ *
+ * Remember to `unconfigureSync()` after the tests are done.
+ *
+ * ```
+ * beforeEach(async () => {
+ *  ({ DataStore } = getDataStore());
+ * 	await configureSync(DataStore);
+ * });
+ *
+ * afterEach(async () => {
+ * 	await unconfigureSync(DataStore);
+ * });
+ * ```
+ *
+ * @param DataStore The DataStore instance to operate against.
+ * @param isReady Whether to pretend DataStore mutatinos processor is
+ * ready, where readiness tells DataStore to attempt to push mutations
+ * at the AppSync endpoint.
+ */
+export async function configureSync(DataStore, isReady = () => false) {
+	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
+		'https://0.0.0.0/does/not/exist/graphql';
+
+	// WARNING: When DataStore starts, it immediately start the sync
+	// engine, which won't have our isReady mock in place yet. This
+	// should trigger a *single*
+	await DataStore.start();
+
+	const syncEngine = (DataStore as any).sync;
+
+	// my jest spy-fu wasn't up to snuff here. but, this succesfully
+	// prevents the mutation process from clearing the mutation queue, which
+	// allows us to observe the state of mutations.
+	(syncEngine as any).mutationsProcessor.isReady = isReady;
+	DataStore.sync.getModelSyncedStatus = (model: any) => false;
+}
+
+/**
+ * Removes the appsync endpoint, so that if the instance is restarted, it will
+ * not try to talk to AppSync or spin up the sync engine.
+ *
+ * @param DataStore The DataStore instance to operate against.
+ */
+export async function unconfigureSync(DataStore) {
+	(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = undefined;
+}
+
+/**
+ * Configures sync and instructs DataStore to operate as though all models
+ * are synced from AppSync.
+ */
+export async function pretendModelsAreSynced(DataStore: any) {
+	await configureSync(DataStore);
+	DataStore.sync.getModelSyncedStatus = (model: any) => true;
+}
+
+/**
+ * Executes a given test script at warp speed against a fresh DataStore
+ * instance `cycle` times, clearing between cycles.
+ *
+ * The intended use is for tests that intentionally try to leak background
+ * work between test contexts, as was possible prior the introduction of
+ * `BackgroundProcessManager`'s and clean `stop()` methods on DataStore
+ * and its processors.
+ *
+ * @see warpTime
+ *
+ * @param script A test script to execute.
+ * @param cycles The number of cyclcles to run.
+ * @param focusedLogging Whether to timestamp and filter all error, warn, and
+ * debug logging and include additional logging around each test cycle.
+ */
+export async function expectIsolation(
+	script: (ctx: {
+		DataStore: any;
+		Post: PersistentModelConstructor<Post>;
+		cycle: number;
+	}) => Promise<any>,
+	cycles = 5,
+	focusedLogging = false
+) {
+	try {
+		warpTime();
+
+		if (focusedLogging) {
+			(console as any)._warn = console.warn;
+			console.warn = (...args) => {
+				if (!args[0].match(/ensure credentials|User is unauthorized/)) {
+					(console as any)._warn(logDate(), ...args);
+				}
+			};
+
+			(console as any)._error = console.error;
+			console.error = (...args) => {
+				if (!args[0].match(/AuthError/)) {
+					(console as any)._error(logDate(), ...args);
+				}
+			};
+
+			(console as any)._debug = console.debug;
+			console.debug = (...args) => {
+				(console as any)._debug(logDate(), ...args);
+			};
+		}
+
+		const log = line => {
+			if (focusedLogging) {
+				console.debug(line);
+			}
+		};
+
+		log(`STARTING:      "${expect.getState().currentTestName}"`);
+
+		// basic initialization
+		const { DataStore, Post } = getDataStore();
+
+		for (let cycle = 1; cycle <= cycles; cycle++) {
+			// act
+			try {
+				log(
+					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`
+				);
+				await script({ DataStore, Post, cycle });
+				log(
+					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`
+				);
+			} finally {
+				// clean up
+				log(
+					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`
+				);
+				await DataStore.clear();
+				log(
+					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`
+				);
+			}
+
+			// expect no errors
+			// TODO: upgrade jest and assert no pending timers!
+		}
+		log(`ENDING:        "${expect.getState().currentTestName}"`);
+	} finally {
+		if (focusedLogging) {
+			console.warn = (console as any)._warn;
+			console.error = (console as any)._error;
+			console.debug = (console as any)._debug;
+		}
+		unwarpTime();
+	}
+}
+
+/**
+ * Watches Hub events until an outBoxStatus with isEmpty is received.
+ *
+ * @param verbose Whether to log hub events until empty
+ */
+export async function waitForEmptyOutbox(verbose = false) {
+	return new Promise(resolve => {
+		const { Hub } = require('@aws-amplify/core');
+		const hubCallback = message => {
+			if (verbose) console.log('hub event', message);
+			if (
+				message.payload.event === 'outboxStatus' &&
+				message.payload.data.isEmpty
+			) {
+				Hub.remove('datastore', hubCallback);
+				resolve();
+			}
+		};
+		Hub.listen('datastore', hubCallback);
+	});
+}
+
+type ConnectionStatus = {
+	online: boolean;
+};
+
+/**
+ * Used to simulate connectivity changes, which are handled by the sync
+ * processors. This does not disconnect any other mocked services.
+ */
+class FakeDataStoreConnectivity {
+	private connectionStatus: ConnectionStatus;
+	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+
+	constructor() {
+		this.connectionStatus = {
+			online: true,
+		};
+	}
+
+	status(): Observable<ConnectionStatus> {
+		if (this.observer) {
+			throw new Error('Subscriber already exists');
+		}
+		return new Observable(observer => {
+			// the real connectivity monitor subscribes to reachability events here and
+			// basically just forwards them through.
+			this.observer = observer;
+			this.observer?.next(this.connectionStatus);
+			return () => {
+				this.unsubscribe();
+			};
+		});
+	}
+
+	/**
+	 * Signal to datastore (especially sync processors) that we're ONLINE.
+	 *
+	 * The real connectivity monitor sends this signal when the platform reachability
+	 * monitor says we have GAINED basic connectivity.
+	 */
+	simulateConnect() {
+		this.connectionStatus = { online: true };
+		this.observer?.next(this.connectionStatus);
+	}
+
+	/**
+	 * Signal to datastore (especially sync processors) that we're OFFLINE.
+	 *
+	 * The real connectivity monitor sends this signal when the platform reachability
+	 * monitor says we have LOST basic connectivity.
+	 */
+	simulateDisconnect() {
+		this.connectionStatus = { online: false };
+		this.observer?.next(this.connectionStatus);
+	}
+
+	unsubscribe() {
+		this.observer = undefined;
+	}
+	async stop() {
+		this.unsubscribe();
+	}
+
+	socketDisconnected() {
+		if (this.observer && typeof this.observer.next === 'function') {
+			this.observer.next({ online: false }); // Notify network issue from the socket
+		}
+	}
+}
+
+/**
+ * Statefully pretends to be AppSync, with minimal built-in asertions with
+ * error callbacks and settings to help simulate various conditions.
+ */
+class FakeGraphQLService {
+	public isConnected = true;
+	public requests = [] as any[];
+	public tables = new Map<string, Map<string, any[]>>();
+	public PKFields = new Map<string, string[]>();
+	public observers = new Map<
+		string,
+		ZenObservable.SubscriptionObserver<any>[]
+	>();
+
+	constructor(public schema: Schema) {
+		for (const model of Object.values(schema.models)) {
+			this.tables.set(model.name, new Map<string, any[]>());
+			let CPKFound = false;
+			for (const attribute of model.attributes || []) {
+				// Pretty sure the first key is the PK.
+				if (attribute.type === 'key') {
+					this.PKFields.set(model.name, attribute!.properties!.fields);
+					CPKFound = true;
+					break;
+				}
+			}
+			if (!CPKFound) {
+				this.PKFields.set(model.name, ['id']);
+			}
+		}
+	}
+
+	public parseQuery(query) {
+		const q = (parse(query) as any).definitions[0];
+
+		const operation = q.operation;
+		const name = q.name.value;
+		const selections = q.selectionSet.selections[0];
+		const selection = selections.name.value;
+		const type = selection.match(
+			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+		)[1];
+
+		let table;
+		if (type === 'sync' || type === 'list') {
+			table = selection.match(/^(create|sync|get|list)(\w+)s$/)[2];
+		} else {
+			table = selection.match(
+				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+			)[2];
+		}
+
+		const items =
+			operation === 'query'
+				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(
+						i => i.name.value
+				  )
+				: selections?.selectionSet?.selections?.map(i => i.name.value);
+
+		return { operation, name, selection, type, table, items };
+	}
+
+	public subscribe(tableName, type, observer) {
+		this.getObservers(tableName, type.substring(2))!.push(observer);
+	}
+
+	public getObservers(tableName, type) {
+		const triggerName = `${tableName}.${type.toLowerCase()}`;
+		if (!this.observers.has(triggerName)) this.observers.set(triggerName, []);
+		return this.observers.get(triggerName) || [];
+	}
+
+	public getTable(name): Map<string, any> {
+		if (!this.tables.has(name)) this.tables.set(name, new Map<string, any[]>());
+		return this.tables.get(name)!;
+	}
+
+	public getPK(table, instance): string {
+		const pkfields = this.PKFields.get(table)!;
+		const values = pkfields.map(k => instance[k]);
+		return JSON.stringify(values);
+	}
+
+	private makeConditionalUpateFailedError(selection) {
+		// Reponse taken from AppSync console trying to create already existing model.
+		return {
+			path: [selection],
+			data: null,
+			errorType: 'ConditionalCheckFailedException',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message:
+				'The conditional request failed (Service: DynamoDb, Status Code: 400, Request ID: 123456789123456789012345678901234567890)',
+		};
+	}
+
+	private makeMissingUpdateTarget(selection) {
+		// Response from AppSync console on non-existent model.
+		return {
+			path: [selection],
+			data: null,
+			errorType: 'Unauthorized',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: `Not Authorized to access ${selection} on type Mutation`,
+		};
+	}
+
+	private disconnectedError() {
+		return {
+			data: {},
+			errors: [
+				{
+					message: 'Network Error',
+				},
+			],
+		};
+	}
+
+	private populatedFields(record) {
+		return Object.fromEntries(
+			Object.entries(record).filter(([key, value]) => value)
+		);
+	}
+
+	private autoMerge(existing, updated) {
+		let merged;
+		if (updated._version >= existing._version) {
+			merged = {
+				...this.populatedFields(existing),
+				...this.populatedFields(updated),
+				_version: updated._version + 1,
+				_lastChangedAt: new Date().getTime(),
+			};
+		} else {
+			merged = {
+				...this.populatedFields(updated),
+				...this.populatedFields(existing),
+				_version: existing._version + 1,
+				_lastChangedAt: new Date().getTime(),
+			};
+		}
+		return merged;
+	}
+
+	public simulateDisconnect() {
+		this.isConnected = false;
+	}
+
+	public simulateConnect() {
+		this.isConnected = true;
+	}
+
+	/**
+	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
+	 *
+	 * @param param0
+	 */
+	public graphql({ query, variables, authMode, authToken }) {
+		return this.request({ query, variables, authMode, authToken });
+	}
+
+	public request({ query, variables, authMode, authToken }) {
+		if (!this.isConnected) {
+			return this.disconnectedError();
+		}
+
+		const {
+			operation,
+			selection,
+			table: tableName,
+			type,
+		} = this.parseQuery(query);
+
+		this.requests.push({ query, variables, authMode, authToken });
+		let data;
+		let errors = [] as any;
+
+		const table = this.getTable(tableName);
+
+		if (operation === 'query') {
+			if (type === 'get') {
+				const record = table.get(this.getPK(tableName, variables.input));
+				data = { [selection]: record };
+			} else if (type === 'list' || type === 'sync') {
+				data = {
+					[selection]: {
+						items: [...table.values()],
+						nextToken: null,
+						startedAt: new Date().getTime(),
+					},
+				};
+			}
+		} else if (operation === 'mutation') {
+			const record = variables.input;
+			if (type === 'create') {
+				const existing = table.get(this.getPK(tableName, record));
+				if (existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else {
+					data = {
+						[selection]: {
+							...record,
+							_deleted: false,
+							_version: 1,
+							_lastChangedAt: new Date().getTime(),
+						},
+					};
+					table.set(this.getPK(tableName, record), data[selection]);
+				}
+			} else if (type === 'update') {
+				// Simulate update using the default (AUTO_MERGE) for now.
+				// NOTE: We're not doing list/set merging. :o
+				const existing = table.get(this.getPK(tableName, record));
+				if (!existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingUpdateTarget(selection)];
+				} else {
+					const updated = this.autoMerge(existing, record);
+					data = {
+						[selection]: updated,
+					};
+					table.set(this.getPK(tableName, record), updated);
+				}
+			} else if (type === 'delete') {
+				const existing = table.get(this.getPK(tableName, record));
+				if (!existing) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingUpdateTarget(selection)];
+				} else if (existing._version !== record._version) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else {
+					data = {
+						[selection]: {
+							...existing,
+							...record,
+							_deleted: true,
+							_version: existing._version + 1,
+							_lastChangedAt: new Date().getTime(),
+						},
+					};
+					table.set(this.getPK(tableName, record), data[selection]);
+				}
+			}
+
+			const observers = this.getObservers(tableName, type);
+			const typeName = {
+				create: 'Create',
+				update: 'Update',
+				delete: 'Delete',
+			}[type];
+			const observerMessageName = `on${typeName}${tableName}`;
+			observers.forEach(observer => {
+				const message = {
+					value: {
+						data: {
+							[observerMessageName]: data[selection],
+						},
+					},
+				};
+				observer.next(message);
+			});
+		} else if (operation === 'subscription') {
+			return new Observable(observer => {
+				this.subscribe(tableName, type, observer);
+				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
+			});
+		}
+
+		return Promise.resolve({
+			data,
+			errors,
+			extensions: {},
+		});
+	}
+}
+
+/**
+ * Re-requries DataStore, initializes the test schema.
+ *
+ * @returns The DataStore instance and models from `testSchema`.
+ */
+export function getDataStore({ online = false, isNode = true } = {}) {
+	jest.clearAllMocks();
+	jest.resetModules();
+
+	const connectivityMonitor = new FakeDataStoreConnectivity();
+	const graphqlService = new FakeGraphQLService(testSchema());
+
+	/**
+	 * Simulates the (re)connection of all returned fakes/mocks that
+	 * support disconnect/reconnect faking.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateConnect(log = false) {
+		if (log) console.log('starting simulated connect.');
+
+		// signal first, as the local interfaces would normally report
+		// online status before services are available.
+		await connectivityMonitor.simulateConnect();
+		if (log) console.log('signaled reconnect in connectivity monitor');
+
+		await graphqlService.simulateConnect();
+		if (log) console.log('simulated graphql service reconnection');
+
+		if (log) console.log('done simulated connect.');
+	}
+
+	/**
+	 * Simulates the disconnection of all returned fakes/mocks that
+	 * support disconnect/reconnect faking.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateDisconnect(log = false) {
+		if (log) console.log('starting simulated disconnect.');
+
+		await graphqlService.simulateDisconnect();
+		if (log) console.log('disconnected graphql service');
+
+		await connectivityMonitor.simulateDisconnect();
+		if (log) console.log('signaled disconnect in connectivity monitor');
+
+		if (log) console.log('done simulated disconnect.');
+	}
+
+	jest.mock('@aws-amplify/core', () => {
+		const actual = jest.requireActual('@aws-amplify/core');
+		return {
+			...actual,
+			browserOrNode: () => ({
+				isBrowser: !isNode,
+				isNode,
+			}),
+			JS: {
+				...actual.JS,
+				browserOrNode: () => ({
+					isBrowser: !isNode,
+					isNode,
+				}),
+			},
+		};
+	});
+
+	const {
+		initSchema,
+		DataStore,
+	}: {
+		initSchema: initSchemaType;
+		DataStore: DataStoreType;
+	} = require('../src/datastore/datastore');
+
+	// private, test-only DI's.
+	if (online) {
+		(DataStore as any).amplifyContext.API = graphqlService;
+		(DataStore as any).connectivityMonitor = connectivityMonitor;
+		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
+			'https://0.0.0.0/graphql';
+	}
+
+	const classes = initSchema(testSchema());
+	const {
+		Post,
+		Comment,
+		User,
+		Profile,
+		PostComposite,
+		PostCustomPK,
+		PostCustomPKSort,
+		PostCustomPKComposite,
+	} = classes as {
+		Post: PersistentModelConstructor<Post>;
+		Comment: PersistentModelConstructor<Comment>;
+		User: PersistentModelConstructor<User>;
+		Profile: PersistentModelConstructor<Profile>;
+		PostComposite: PersistentModelConstructor<PostComposite>;
+		PostCustomPK: PersistentModelConstructor<PostCustomPK>;
+		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
+		PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
+	};
+
+	return {
+		DataStore,
+		connectivityMonitor,
+		graphqlService,
+		simulateConnect,
+		simulateDisconnect,
+		Post,
+		Comment,
+		User,
+		Profile,
+		PostComposite,
+		PostCustomPK,
+		PostCustomPKSort,
+		PostCustomPKComposite,
+	};
+}
+
+// #region schemas
 export const DataStore: typeof DS = (() => {
 	class clazz {}
 
@@ -1204,6 +2013,8 @@ export function smallTestSchema(): Schema {
 		},
 	};
 }
+
+// #endregion schemas
 
 //#region Types
 

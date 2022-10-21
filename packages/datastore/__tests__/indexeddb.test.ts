@@ -602,8 +602,6 @@ describe('DB versions migration', () => {
 		const exportedJSON = await readBlob(exportedBlob);
 		const exported = JSON.parse(exportedJSON);
 
-		console.log(exported.data.tables);
-
 		for (const { schema } of exported.data.tables) {
 			expect(schema.split(',')).toContain('&[id]');
 		}

@@ -661,9 +661,7 @@ export function getIdentifierValue(
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const idOrPk = pkFieldNames
-		.map(f => model[f])
-		.join(IDENTIFIER_KEY_SEPARATOR);
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
 }
