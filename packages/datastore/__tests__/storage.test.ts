@@ -9,77 +9,14 @@ import {
 	Post,
 	Comment,
 	PostComposite,
-	PostCustomPK as PostCustomPKType,
-	PostCustomPKSort as PostCustomPKSortType,
-	PostCustomPKComposite as PostCustomPKCompositeType,
+	PostCustomPK,
+	PostCustomPKSort,
+	PostCustomPKComposite,
 	testSchema,
 } from './helpers';
 
-function getDataStore() {
-	const {
-		initSchema,
-		DataStore,
-	}: {
-		initSchema: typeof initSchemaType;
-		DataStore: typeof DataStoreType;
-	} = require('../src/datastore/datastore');
-
-	const classes = initSchema(testSchema());
-	const {
-		Model,
-		Post,
-		Comment,
-		PostComposite,
-		PostCustomPK,
-		PostCustomPKSort,
-		PostCustomPKComposite,
-	} = classes as {
-		Model: PersistentModelConstructor<Model>;
-		Post: PersistentModelConstructor<Post>;
-		Comment: PersistentModelConstructor<Comment>;
-		PostComposite: PersistentModelConstructor<PostComposite>;
-		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
-		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
-		PostCustomPKComposite: PersistentModelConstructor<PostCustomPKCompositeType>;
-	};
-
-	return {
-		DataStore,
-		Model,
-		Post,
-		Comment,
-		PostComposite,
-		PostCustomPK,
-		PostCustomPKSort,
-		PostCustomPKComposite,
-	};
-}
-
-/**
- * Strip out schemaVersion save call that DS performs when starting.
- * Allows us to run any of the tests in isolation (i.e., .only on any test will work)
- *
- * @returns A flattened array of mock function calls
- */
-function processZenPushCalls(zenNext): Array<any> {
-	const {
-		mock: { calls },
-	} = zenNext;
-
-	if (!Array.isArray(calls)) {
-		return [];
-	}
-
-	if (calls.length) {
-		const [[first]] = calls;
-
-		if (first?.element?.key === 'schemaVersion') {
-			return calls.slice(1).flat();
-		}
-	}
-
-	return calls.flat();
-}
+let initSchema: typeof initSchemaType;
+let DataStore: typeof DataStoreType;
 
 describe('Storage tests', () => {
 	describe('Update', () => {
@@ -87,6 +24,9 @@ describe('Storage tests', () => {
 			let zenNext;
 
 			beforeEach(() => {
+				jest.resetModules();
+				jest.resetAllMocks();
+
 				zenNext = jest.fn();
 
 				jest.doMock('zen-push', () => {
@@ -97,15 +37,17 @@ describe('Storage tests', () => {
 
 					return zenPush;
 				});
-			});
 
-			afterEach(() => {
-				jest.resetModules();
-				jest.resetAllMocks();
+				({ initSchema, DataStore } = require('../src/datastore/datastore'));
 			});
 
 			test('scalar', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
 				const dateCreated = new Date().toISOString();
 
 				const model = await DataStore.save(
@@ -121,7 +63,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [_settingsSave, [modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				// Save should include
 				expect(modelSave.element.dateCreated).toEqual(dateCreated);
@@ -133,7 +75,12 @@ describe('Storage tests', () => {
 			});
 
 			test('scalar - unchanged', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
 				const dateCreated = new Date().toISOString();
 
 				const model = await DataStore.save(
@@ -149,15 +96,20 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
 
+				expect(modelUpdate).toBeUndefined();
 				expect(modelUpdate).toBeUndefined();
 
 				expect(true).toBeTruthy();
 			});
 
 			test('update by nulling previous value', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -173,13 +125,18 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				expect(modelUpdate.element.optionalField1).toBeNull();
 			});
 
 			test('updating value with undefined gets saved as null', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
 				const model = await DataStore.save(
 					new Model({
 						field1: 'Some value',
@@ -194,13 +151,17 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				expect(modelUpdate.element.optionalField1).toBeNull();
 			});
 
 			test('list (destructured)', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -216,7 +177,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueEmails = [
 					'john@doe.com',
@@ -230,7 +191,11 @@ describe('Storage tests', () => {
 			});
 
 			test('list (push)', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -246,7 +211,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueEmails = [
 					'john@doe.com',
@@ -260,7 +225,11 @@ describe('Storage tests', () => {
 			});
 
 			test('update with changed field and list unchanged', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -278,7 +247,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toEqual('Updated value');
@@ -286,8 +255,11 @@ describe('Storage tests', () => {
 			});
 
 			test('update with list unchanged', async () => {
-				expect.assertions(1);
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -304,13 +276,17 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
 
 				expect(modelUpdate).toBeUndefined();
 			});
 
 			test('update by nulling list', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -326,13 +302,17 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				expect(modelUpdate.element.emails).toBeNull();
 			});
 
 			test('custom type (destructured)', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -342,7 +322,6 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
-							nominations: [],
 						},
 					})
 				);
@@ -356,13 +335,12 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueMetadata = {
 					author: 'some author',
 					rewards: [],
 					penNames: ['bob'],
-					nominations: [],
 				};
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
@@ -373,7 +351,11 @@ describe('Storage tests', () => {
 			});
 
 			test('custom type (accessor)', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -383,7 +365,6 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
-							nominations: [],
 						},
 					})
 				);
@@ -394,7 +375,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueMetadata = {
 					author: 'some author',
@@ -410,7 +391,11 @@ describe('Storage tests', () => {
 			});
 
 			test('custom type unchanged', async () => {
-				const { DataStore, Model } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
 
 				const model = await DataStore.save(
 					new Model({
@@ -420,7 +405,6 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
-							nominations: [],
 						},
 					})
 				);
@@ -432,12 +416,11 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
-							nominations: [],
 						};
 					})
 				);
 
-				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toEqual('Updated value');
@@ -445,7 +428,12 @@ describe('Storage tests', () => {
 			});
 
 			test('relation', async () => {
-				const { DataStore, Post, Comment } = getDataStore();
+				const classes = initSchema(testSchema());
+
+				const { Post, Comment } = classes as {
+					Post: PersistentModelConstructor<Post>;
+					Comment: PersistentModelConstructor<Comment>;
+				};
 
 				const post = await DataStore.save(
 					new Post({
@@ -472,14 +460,14 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, commentSave, _anotherPostSave, commentUpdate] =
-					processZenPushCalls(zenNext);
+				const [, [commentSave], , [commentUpdate]] = zenNext.mock.calls;
 
 				expect(commentSave.element.postId).toEqual(post.id);
 				expect(commentUpdate.element.postId).toEqual(anotherPost.id);
 			});
 
 			test('composite key', async () => {
+				const classes = initSchema(testSchema());
 				// model has a GSI with a composite key defined:
 				// @key(name: "titleSort", fields: ["title", "created", "sort"])
 
@@ -488,7 +476,9 @@ describe('Storage tests', () => {
 
 				// updating the hash key [0] should NOT include the other fields in that key
 
-				const { DataStore, PostComposite } = getDataStore();
+				const { PostComposite } = classes as {
+					PostComposite: PersistentModelConstructor<PostComposite>;
+				};
 
 				const createdTimestamp = String(Date.now());
 
@@ -523,8 +513,8 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, postUpdate1, postUpdate2, postUpdate3] =
-					processZenPushCalls(zenNext);
+				const [, [postUpdate1], [postUpdate2], [postUpdate3]] =
+					zenNext.mock.calls;
 
 				expect(postUpdate1.element.title).toBeUndefined();
 				expect(postUpdate1.element.created).toEqual(createdTimestamp);
@@ -543,16 +533,19 @@ describe('Storage tests', () => {
 			});
 
 			test('custom pk', async () => {
+				const classes = initSchema(testSchema());
+
 				// model has a custom pk defined via @key(fields: ["postId"])
 				// the PK should always be included in the mutation input
-				const { DataStore, PostCustomPK } = getDataStore();
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPK>;
+				};
 
 				const post = await DataStore.save(
 					new PostCustomPK({
-						postId: '100',
+						postId: 100,
 						title: 'New Post',
 						description: 'Desc',
-						dateCreated: new Date().toISOString(),
 					})
 				);
 
@@ -562,23 +555,27 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, postUpdate] = processZenPushCalls(zenNext);
+				const [, [postUpdate]] = zenNext.mock.calls;
 
-				expect(postUpdate.element.postId).toEqual('100');
+				expect(postUpdate.element.postId).toEqual(100);
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();
 			});
 
 			test('custom pk - with sort', async () => {
+				const classes = initSchema(testSchema());
+
 				// model has a custom pk (hk + sort key) defined via @key(fields: ["id", "postId"])
 				// all of the fields in the PK should always be included in the mutation input
-				const { DataStore, PostCustomPKSort } = getDataStore();
+				const { PostCustomPKSort } = classes as {
+					PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
+				};
 
 				const post = await DataStore.save(
 					new PostCustomPKSort({
-						id: 'abcdef',
-						postId: '100',
+						postId: 100,
 						title: 'New Post',
+						description: 'Desc',
 					})
 				);
 
@@ -588,23 +585,25 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, postUpdate] = processZenPushCalls(zenNext);
+				const [, [postUpdate]] = zenNext.mock.calls;
 
-				expect(postUpdate.element.id).toEqual('abcdef');
-				expect(postUpdate.element.postId).toEqual('100');
+				expect(postUpdate.element.postId).toEqual(100);
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();
 			});
 
 			test('custom pk - with composite', async () => {
+				const classes = initSchema(testSchema());
+
 				// model has a custom pk (hk + composite key) defined via @key(fields: ["id", "postId", "sort"])
 				// all of the fields in the PK should always be included in the mutation input
-				const { DataStore, PostCustomPKComposite } = getDataStore();
+				const { PostCustomPKComposite } = classes as {
+					PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
+				};
 
 				const post = await DataStore.save(
 					new PostCustomPKComposite({
-						id: 'abcdef',
-						postId: '100',
+						postId: 100,
 						title: 'New Post',
 						description: 'Desc',
 						sort: 1,
@@ -617,10 +616,9 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [_postSave, postUpdate] = processZenPushCalls(zenNext);
+				const [, [postUpdate]] = zenNext.mock.calls;
 
-				expect(postUpdate.element.id).toEqual('abcdef');
-				expect(postUpdate.element.postId).toEqual('100');
+				expect(postUpdate.element.postId).toEqual(100);
 				expect(postUpdate.element.sort).toEqual(1);
 				expect(postUpdate.element.title).toEqual('Updated');
 				expect(postUpdate.element.description).toBeUndefined();

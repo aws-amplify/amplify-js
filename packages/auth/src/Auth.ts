@@ -621,8 +621,7 @@ export class AuthClass {
 	/**
 	 * Sign in
 	 * @param {String | SignInOpts} usernameOrSignInOpts - The username to be signed in or the sign in options
-	 * @param {String} pw - The password of the username
-	 * @param {ClientMetaData} clientMetadata - Client metadata for custom workflows
+	 * @param {String} password - The password of the username
 	 * @return - A promise resolves the CognitoUser
 	 */
 	public signIn(

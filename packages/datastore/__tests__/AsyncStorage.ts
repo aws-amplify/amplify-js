@@ -168,7 +168,6 @@ describe('AsyncStorage tests', () => {
 
 	test('save function 1:1 insert', async () => {
 		await DataStore.save(blog);
-
 		await DataStore.save(owner);
 
 		const get1 = JSON.parse(

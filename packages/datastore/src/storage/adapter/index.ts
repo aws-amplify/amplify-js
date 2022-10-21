@@ -29,7 +29,7 @@ export interface Adapter extends SystemComponent {
 		firstOrLast: QueryOne
 	): Promise<T | undefined>;
 	batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
+		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]>;
 }

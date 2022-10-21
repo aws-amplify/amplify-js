@@ -84,10 +84,6 @@ export type SearchByCoordinatesOptions = {
 	providerName?: string;
 };
 
-export type searchByPlaceIdOptions = {
-	searchIndexName?: string;
-};
-
 // Geometry object for Place points
 export type PlaceGeometry = {
 	point: Coordinates;
@@ -172,12 +168,4 @@ export type ListGeofenceResults = {
 export type DeleteGeofencesResults = {
 	successes: GeofenceId[];
 	errors: GeofenceError[];
-};
-
-// Return type for searchForSuggestions
-export type SearchForSuggestionsResults = SearchForSuggestionsResult[];
-
-export type SearchForSuggestionsResult = {
-	text: string;
-	placeId?: string;
 };

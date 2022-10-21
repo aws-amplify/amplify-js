@@ -26,40 +26,8 @@ import {
 	NonModelTypeConstructor,
 	DeferredCallbackResolverOptions,
 	LimitTimerRaceResolvedValues,
-	SchemaModel,
-	ModelAttribute,
-	IndexesType,
-	ModelAssociation,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
-
-export const ID = 'id';
-
-/**
- * Used by the Async Storage Adapter to concatenate key values
- * for a record. For instance, if a model has the following keys:
- * `customId: ID! @primaryKey(sortKeyFields: ["createdAt"])`,
- * we concatenate the `customId` and `createdAt` as: 
- * `12-234-5#2022-09-28T00:00:00.000Z`
- */
-export const DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR = '#';
-
-/**
- * Used for generating spinal-cased index name from an array of 
- * key field names.
- * E.g. for keys `[id, title]` => 'id-title'
- */
-export const IDENTIFIER_KEY_SEPARATOR = '-';
-
-export const errorMessages = {
-	idEmptyString: 'An index field cannot contain an empty string value',
-	queryByPkWithCompositeKeyPresent:
-		'Models with composite primary keys cannot be queried by a single key value. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
-	deleteByPkWithCompositeKeyPresent:
-		'Models with composite primary keys cannot be deleted by a single key value, unless using a predicate. Use object literal syntax for composite keys instead: https://docs.amplify.aws/lib/datastore/advanced-workflows/q/platform/js/#querying-records-with-custom-primary-keys',
-	observeWithObjectLiteral:
-		'Object literal syntax cannot be used with observe. Use a predicate instead: https://docs.amplify.aws/lib/datastore/data-access/q/platform/js/#predicates',
-};
 
 export enum NAMESPACES {
 	DATASTORE = 'datastore',
@@ -194,6 +162,154 @@ export const isNonModelConstructor = (
 	return nonModelClasses.has(obj);
 };
 
+/*
+  When we have GSI(s) with composite sort keys defined on a model
+	There are some very particular rules regarding which fields must be included in the update mutation input
+	The field selection becomes more complex as the number of GSIs with composite sort keys grows
+
+	To summarize: any time we update a field that is part of the composite sort key of a GSI, we must include:
+	 1. all of the other fields in that composite sort key
+	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
+
+	 E.g.,
+	 Model @model
+		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
+		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
+		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
+
+	Model.a is updated => include ['a', 'b', 'c', 'd']
+	Model.c is updated => include ['a', 'b', 'c', 'd']
+	Model.d is updated => include ['a', 'b', 'c', 'd']
+	Model.x is updated => include ['x', 'y', 'z']
+
+	This function accepts a model's attributes and returns grouped sets of composite key fields
+	Using our example Model above, the function will return:
+	[
+		Set('a', 'b', 'c', 'd'),
+		Set('x', 'y', 'z'),
+	]
+
+	This gives us the opportunity to correctly include the required fields for composite keys
+	When crafting the mutation input in Storage.getUpdateMutationInput
+
+	See 'processCompositeKeys' test in util.test.ts for more examples
+*/
+export const processCompositeKeys = (
+	attributes: ModelAttributes
+): Set<string>[] => {
+	const extractCompositeSortKey = ({
+		properties: {
+			// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
+			fields: [, ...sortKeyFields],
+		},
+	}) => sortKeyFields;
+
+	const compositeKeyFields = attributes
+		.filter(isModelAttributeCompositeKey)
+		.map(extractCompositeSortKey);
+
+	/*
+		if 2 sets of fields have any intersecting fields => combine them into 1 union set
+		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
+	*/
+	const combineIntersecting = (fields): Set<string>[] =>
+		fields.reduce((combined, sortKeyFields) => {
+			const sortKeyFieldsSet = new Set(sortKeyFields);
+
+			if (combined.length === 0) {
+				combined.push(sortKeyFieldsSet);
+				return combined;
+			}
+
+			// does the current set share values with another set we've already added to `combined`?
+			const intersectingSetIdx = combined.findIndex(existingSet => {
+				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
+			});
+
+			if (intersectingSetIdx > -1) {
+				const union = new Set([
+					...combined[intersectingSetIdx],
+					...sortKeyFieldsSet,
+				]);
+				// combine the current set with the intersecting set we found above
+				combined[intersectingSetIdx] = union;
+			} else {
+				// none of the sets in `combined` have intersecting values with the current set
+				combined.push(sortKeyFieldsSet);
+			}
+
+			return combined;
+		}, []);
+
+	const initial = combineIntersecting(compositeKeyFields);
+	// a single pass pay not be enough to correctly combine all the fields
+	// call the function once more to get a final merged list of sets
+	const combined = combineIntersecting(initial);
+
+	return combined;
+};
+
+export const establishRelationAndKeys = (
+	namespace: SchemaNamespace
+): [RelationshipType, ModelKeys] => {
+	const relationship: RelationshipType = {};
+	const keys: ModelKeys = {};
+
+	Object.keys(namespace.models).forEach((mKey: string) => {
+		relationship[mKey] = { indexes: [], relationTypes: [] };
+		keys[mKey] = {};
+
+		const model = namespace.models[mKey];
+		Object.keys(model.fields).forEach((attr: string) => {
+			const fieldAttribute = model.fields[attr];
+			if (
+				typeof fieldAttribute.type === 'object' &&
+				'model' in fieldAttribute.type
+			) {
+				const connectionType = fieldAttribute.association.connectionType;
+				relationship[mKey].relationTypes.push({
+					fieldName: fieldAttribute.name,
+					modelName: fieldAttribute.type.model,
+					relationType: connectionType,
+					targetName: fieldAttribute.association['targetName'],
+					associatedWith: fieldAttribute.association['associatedWith'],
+				});
+
+				if (connectionType === 'BELONGS_TO') {
+					relationship[mKey].indexes.push(
+						fieldAttribute.association['targetName']
+					);
+				}
+			}
+		});
+
+		if (model.attributes) {
+			keys[mKey].compositeKeys = processCompositeKeys(model.attributes);
+
+			for (const attribute of model.attributes) {
+				if (!isModelAttributeKey(attribute)) {
+					continue;
+				}
+
+				if (isModelAttributePrimaryKey(attribute)) {
+					keys[mKey].primaryKey = attribute.properties.fields;
+				}
+
+				const { fields } = attribute.properties;
+				for (const field of fields) {
+					// only add index if it hasn't already been added
+					const exists = relationship[mKey].indexes.includes(field);
+					if (!exists) {
+						relationship[mKey].indexes.push(field);
+					}
+				}
+			}
+		}
+	});
+
+	return [relationship, keys];
+};
+
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 
 export const traverseModel = <T extends PersistentModel>(
@@ -207,14 +323,12 @@ export const traverseModel = <T extends PersistentModel>(
 	) => PersistentModelConstructor<any>
 ) => {
 	const relationships = namespace.relationships;
-
 	const modelConstructor = getModelConstructorByModelName(
 		namespace.name,
 		srcModelName
 	);
 
 	const relation = relationships[srcModelName];
-
 	const result: {
 		modelName: string;
 		item: T;
@@ -248,36 +362,15 @@ export const traverseModel = <T extends PersistentModel>(
 							instance: modelInstance,
 						});
 
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
-
-						// `targetName` will be defined for Has One if feature flag
+						// targetName will be defined for Has One if feature flag
 						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
 						// is true (default as of 5/7/21)
 						// Making this conditional for backward-compatibility
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
-
-								// Previously, we used the hardcoded 'id' as they key,
-								// now we need the value of the key to get the PK (and SK)
-								// values from the related record
-
-								const { primaryKey } = namespace.keys[modelConstructor.name];
-								const keyField = primaryKey && primaryKey[idx];
-
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
-
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
+						if (rItem.targetName) {
+							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+								draftInstance[rItem.fieldName]
+							)).id;
+							delete draftInstance[rItem.fieldName];
 						} else {
 							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
 								draftInstance[rItem.fieldName]
@@ -312,33 +405,10 @@ export const traverseModel = <T extends PersistentModel>(
 					}
 
 					if (draftInstance[rItem.fieldName]) {
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
-
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
-								// Previously, we used the hardcoded `id` for the key.
-								// Now, we need the value of the key to get the PK (and SK)
-								// values from the related record
-								const { primaryKey } = namespace.keys[modelConstructor.name];
-
-								// fall back to ID if
-								const keyField = primaryKey && primaryKey[idx];
-
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
-
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
-						}
+						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+							draftInstance[rItem.fieldName]
+						)).id;
+						delete draftInstance[rItem.fieldName];
 					}
 
 					break;
@@ -374,6 +444,24 @@ export const traverseModel = <T extends PersistentModel>(
 	});
 
 	return result;
+};
+
+export const getIndex = (rel: RelationType[], src: string): string => {
+	let index = '';
+	rel.some((relItem: RelationType) => {
+		if (relItem.modelName === src) {
+			index = relItem.targetName;
+		}
+	});
+	return index;
+};
+
+export const getIndexFromAssociation = (
+	indexes: string[],
+	src: string
+): string => {
+	const index = indexes.find(idx => idx === src);
+	return index;
 };
 
 let privateModeCheckResult;
@@ -723,330 +811,3 @@ export function mergePatches<T>(
 	);
 	return patches;
 }
-
-export const getStorename = (namespace: string, modelName: string) => {
-	const storeName = `${namespace}_${modelName}`;
-
-	return storeName;
-};
-
-//#region Key Utils
-
-/*
-  When we have GSI(s) with composite sort keys defined on a model
-	There are some very particular rules regarding which fields must be included in the update mutation input
-	The field selection becomes more complex as the number of GSIs with composite sort keys grows
-
-	To summarize: any time we update a field that is part of the composite sort key of a GSI, we must include:
-	 1. all of the other fields in that composite sort key
-	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
-
-	 E.g.,
-	 Model @model
-		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
-		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
-		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
-
-	Model.a is updated => include ['a', 'b', 'c', 'd']
-	Model.c is updated => include ['a', 'b', 'c', 'd']
-	Model.d is updated => include ['a', 'b', 'c', 'd']
-	Model.x is updated => include ['x', 'y', 'z']
-
-	This function accepts a model's attributes and returns grouped sets of composite key fields
-	Using our example Model above, the function will return:
-	[
-		Set('a', 'b', 'c', 'd'),
-		Set('x', 'y', 'z'),
-	]
-
-	This gives us the opportunity to correctly include the required fields for composite keys
-	When crafting the mutation input in Storage.getUpdateMutationInput
-
-	See 'processCompositeKeys' test in util.test.ts for more examples
-*/
-export const processCompositeKeys = (
-	attributes: ModelAttributes
-): Set<string>[] => {
-	const extractCompositeSortKey = ({
-		properties: {
-			// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
-			fields: [, ...sortKeyFields],
-		},
-	}) => sortKeyFields;
-
-	const compositeKeyFields = attributes
-		.filter(isModelAttributeCompositeKey)
-		.map(extractCompositeSortKey);
-
-	/*
-		if 2 sets of fields have any intersecting fields => combine them into 1 union set
-		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
-	*/
-	const combineIntersecting = (fields): Set<string>[] =>
-		fields.reduce((combined, sortKeyFields) => {
-			const sortKeyFieldsSet = new Set(sortKeyFields);
-
-			if (combined.length === 0) {
-				combined.push(sortKeyFieldsSet);
-				return combined;
-			}
-
-			// does the current set share values with another set we've already added to `combined`?
-			const intersectingSetIdx = combined.findIndex(existingSet => {
-				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
-			});
-
-			if (intersectingSetIdx > -1) {
-				const union = new Set([
-					...combined[intersectingSetIdx],
-					...sortKeyFieldsSet,
-				]);
-				// combine the current set with the intersecting set we found above
-				combined[intersectingSetIdx] = union;
-			} else {
-				// none of the sets in `combined` have intersecting values with the current set
-				combined.push(sortKeyFieldsSet);
-			}
-
-			return combined;
-		}, []);
-
-	const initial = combineIntersecting(compositeKeyFields);
-	// a single pass pay not be enough to correctly combine all the fields
-	// call the function once more to get a final merged list of sets
-	const combined = combineIntersecting(initial);
-
-	return combined;
-};
-
-export const extractKeyIfExists = (
-	modelDefinition: SchemaModel
-): ModelAttribute | undefined => {
-	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
-
-	return keyAttribute;
-};
-
-export const extractPrimaryKeyFieldNames = (
-	modelDefinition: SchemaModel
-): string[] => {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return keyAttribute.properties.fields;
-	}
-
-	return [ID];
-};
-
-export const extractPrimaryKeyValues = <T extends PersistentModel>(
-	model: T,
-	keyFields: string[]
-): string[] => {
-	return keyFields.map(key => model[key]);
-};
-
-export const extractPrimaryKeysAndValues = <T extends PersistentModel>(
-	model: T,
-	keyFields: string[]
-): any => {
-	const primaryKeysAndValues = {};
-	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
-	return primaryKeysAndValues;
-};
-
-// IdentifierFields<ManagedIdentifier>
-// Default behavior without explicit @primaryKey defined
-export const isIdManaged = (modelDefinition: SchemaModel): boolean => {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return false;
-	}
-
-	return true;
-};
-
-// IdentifierFields<OptionallyManagedIdentifier>
-// @primaryKey with explicit `id` in the PK. Single key or composite
-export const isIdOptionallyManaged = (
-	modelDefinition: SchemaModel
-): boolean => {
-	const keyAttribute = extractKeyIfExists(modelDefinition);
-
-	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
-		return keyAttribute.properties.fields[0] === ID;
-	}
-
-	return false;
-};
-
-export const establishRelationAndKeys = (
-	namespace: SchemaNamespace
-): [RelationshipType, ModelKeys] => {
-	const relationship: RelationshipType = {};
-	const keys: ModelKeys = {};
-
-	Object.keys(namespace.models).forEach((mKey: string) => {
-		relationship[mKey] = { indexes: [], relationTypes: [] };
-		keys[mKey] = {};
-
-		const model = namespace.models[mKey];
-		Object.keys(model.fields).forEach((attr: string) => {
-			const fieldAttribute = model.fields[attr];
-			if (
-				typeof fieldAttribute.type === 'object' &&
-				'model' in fieldAttribute.type
-			) {
-				const connectionType = fieldAttribute.association.connectionType;
-				relationship[mKey].relationTypes.push({
-					fieldName: fieldAttribute.name,
-					modelName: fieldAttribute.type.model,
-					relationType: connectionType,
-					targetName: fieldAttribute.association['targetName'],
-					targetNames: fieldAttribute.association['targetNames'],
-					associatedWith: fieldAttribute.association['associatedWith'],
-				});
-
-				if (connectionType === 'BELONGS_TO') {
-					const targetNames = extractTargetNamesFromSrc(
-						fieldAttribute.association
-					);
-
-					if (targetNames) {
-						const idxName = indexNameFromKeys(targetNames);
-						relationship[mKey].indexes.push([idxName, targetNames]);
-					}
-				}
-			}
-		});
-
-		if (model.attributes) {
-			keys[mKey].compositeKeys = processCompositeKeys(model.attributes);
-
-			for (const attribute of model.attributes) {
-				if (!isModelAttributeKey(attribute)) {
-					continue;
-				}
-
-				const { fields } = attribute.properties;
-
-				if (isModelAttributePrimaryKey(attribute)) {
-					keys[mKey].primaryKey = fields;
-					continue;
-				}
-
-				// create indexes for all other keys
-				const idxName = indexNameFromKeys(fields);
-				const idxExists = relationship[mKey].indexes.find(
-					([index]) => index === idxName
-				);
-
-				if (!idxExists) {
-					relationship[mKey].indexes.push([idxName, fields]);
-				}
-			}
-		}
-
-		// set 'id' as the PK for models without a custom PK explicitly defined
-		if (!keys[mKey].primaryKey) {
-			keys[mKey].primaryKey = [ID];
-		}
-
-		// create primary index
-		relationship[mKey].indexes.push([
-			'byPk',
-			keys[mKey].primaryKey as string[],
-			{ unique: true },
-		]);
-	});
-
-	return [relationship, keys];
-};
-
-export const getIndex = (
-	rel: RelationType[],
-	src: string
-): string | undefined => {
-	let indexName;
-	rel.some((relItem: RelationType) => {
-		if (relItem.modelName === src) {
-			const targetNames = extractTargetNamesFromSrc(relItem);
-			indexName = targetNames && indexNameFromKeys(targetNames);
-			return true;
-		}
-	});
-	return indexName;
-};
-
-export const getIndexFromAssociation = (
-	indexes: IndexesType,
-	src: string | string[]
-): string | undefined => {
-	let indexName: string;
-
-	if (Array.isArray(src)) {
-		indexName = indexNameFromKeys(src);
-	} else {
-		indexName = src;
-	}
-
-	const associationIndex = indexes.find(([idxName]) => idxName === indexName);
-	return associationIndex && associationIndex[0];
-};
-
-/**
- * Backwards-compatability for schema generated prior to custom primary key support:
-the single field `targetName` has been replaced with an array of `targetNames`.
-`targetName` and `targetNames` are exclusive (will never exist on the same schema)
- * @param src {RelationType | ModelAssociation | undefined}
- * @returns array of targetNames, or `undefined`
- */
-export const extractTargetNamesFromSrc = (
-	src: RelationType | ModelAssociation | undefined
-): string[] | undefined => {
-	const targetName = src?.targetName;
-	const targetNames = src?.targetNames;
-
-	if (Array.isArray(targetNames)) {
-		return targetNames;
-	} else if (typeof targetName === 'string') {
-		return [targetName];
-	} else {
-		return undefined;
-	}
-};
-
-// Generates spinal-cased index name from an array of key field names
-// E.g. for keys `[id, title]` => 'id-title'
-export const indexNameFromKeys = (keys: string[]): string => {
-	return keys.reduce((prev: string, cur: string, idx: number) => {
-		if (idx === 0) {
-			return cur;
-		}
-		return `${prev}${IDENTIFIER_KEY_SEPARATOR}${cur}`;
-	}, '');
-};
-
-export const keysEqual = (keysA, keysB): boolean => {
-	if (keysA.length !== keysB.length) {
-		return false;
-	}
-
-	return keysA.every((key, idx) => key === keysB[idx]);
-};
-
-// Returns primary keys for a model
-export const getIndexKeys = (
-	namespace: SchemaNamespace,
-	modelName: string
-): string[] => {
-	const keyPath = namespace?.keys[modelName]?.primaryKey;
-
-	if (keyPath) {
-		return keyPath;
-	}
-
-	return [ID];
-};
-
-//#endregion

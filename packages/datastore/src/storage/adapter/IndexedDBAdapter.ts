@@ -29,16 +29,13 @@ import {
 	traverseModel,
 	validatePredicate,
 	sortCompareFunction,
-	keysEqual,
-	getStorename,
-	getIndexKeys,
-	extractPrimaryKeyValues,
 } from '../../util';
 import { Adapter } from './index';
 
 const logger = new Logger('DataStore');
 
 const DB_NAME = 'amplify-datastore';
+
 class IndexedDBAdapter implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
@@ -52,31 +49,6 @@ class IndexedDBAdapter implements Adapter {
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
 	private dbName: string = DB_NAME;
-
-	private getStorenameForModel(
-		modelConstructor: PersistentModelConstructor<any>
-	) {
-		const namespace = this.namespaceResolver(modelConstructor);
-		const { name: modelName } = modelConstructor;
-
-		return getStorename(namespace, modelName);
-	}
-
-	// Retrieves primary key values from a model
-	private getIndexKeyValuesFromModel<T extends PersistentModel>(
-		model: T
-	): string[] {
-		const modelConstructor = Object.getPrototypeOf(model)
-			.constructor as PersistentModelConstructor<T>;
-		const namespaceName = this.namespaceResolver(modelConstructor);
-
-		const keys = getIndexKeys(
-			this.schema.namespaces[namespaceName],
-			modelConstructor.name
-		);
-
-		return extractPrimaryKeyValues(model, keys);
-	}
 
 	private async checkPrivate() {
 		const isPrivate = await isPrivateMode().then(isPrivate => {
@@ -92,12 +64,19 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
-	private getNamespaceAndModelFromStorename(storeName: string) {
-		const [namespaceName, ...modelNameArr] = storeName.split('_');
-		return {
-			namespaceName,
-			modelName: modelNameArr.join('_'),
-		};
+	private getStorenameForModel(
+		modelConstructor: PersistentModelConstructor<any>
+	) {
+		const namespace = this.namespaceResolver(modelConstructor);
+		const { name: modelName } = modelConstructor;
+
+		return this.getStorename(namespace, modelName);
+	}
+
+	private getStorename(namespace: string, modelName: string) {
+		const storeName = `${namespace}_${modelName}`;
+
+		return storeName;
 	}
 
 	async setUp(
@@ -111,7 +90,6 @@ class IndexedDBAdapter implements Adapter {
 		sessionId?: string
 	) {
 		await this.checkPrivate();
-
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -130,7 +108,7 @@ class IndexedDBAdapter implements Adapter {
 
 		try {
 			if (!this.db) {
-				const VERSION = 3;
+				const VERSION = 2;
 				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
@@ -138,7 +116,7 @@ class IndexedDBAdapter implements Adapter {
 								const namespace = theSchema.namespaces[namespaceName];
 
 								Object.keys(namespace.models).forEach(modelName => {
-									const storeName = getStorename(namespaceName, modelName);
+									const storeName = this.getStorename(namespaceName, modelName);
 									this.createObjectStoreForModel(
 										db,
 										namespaceName,
@@ -151,7 +129,7 @@ class IndexedDBAdapter implements Adapter {
 							return;
 						}
 
-						if ((oldVersion === 1 || oldVersion === 2) && newVersion === 3) {
+						if (oldVersion === 1 && newVersion === 2) {
 							try {
 								for (const storeName of txn.objectStoreNames) {
 									const origStore = txn.objectStore(storeName);
@@ -160,15 +138,13 @@ class IndexedDBAdapter implements Adapter {
 									const tmpName = `tmp_${storeName}`;
 									origStore.name = tmpName;
 
-									const { namespaceName, modelName } =
-										this.getNamespaceAndModelFromStorename(storeName);
+									// create new store with original name
+									const newStore = db.createObjectStore(storeName, {
+										keyPath: undefined,
+										autoIncrement: true,
+									});
 
-									const newStore = this.createObjectStoreForModel(
-										db,
-										namespaceName,
-										storeName,
-										modelName
-									);
+									newStore.createIndex('byId', 'id', { unique: true });
 
 									let cursor = await origStore.openCursor();
 									let count = 0;
@@ -199,7 +175,7 @@ class IndexedDBAdapter implements Adapter {
 										.map(modelName => {
 											return [
 												modelName,
-												getStorename(namespaceName, modelName),
+												this.getStorename(namespaceName, modelName),
 											];
 										})
 										.filter(([, storeName]) => !objectStoreNames.has(storeName))
@@ -232,19 +208,19 @@ class IndexedDBAdapter implements Adapter {
 
 	private async _get<T>(
 		storeOrStoreName: idb.IDBPObjectStore | string,
-		keyArr: string[]
+		id: string
 	): Promise<T> {
 		let index: idb.IDBPIndex;
 
 		if (typeof storeOrStoreName === 'string') {
 			const storeName = storeOrStoreName;
-			index = this.db.transaction(storeName, 'readonly').store.index('byPk');
+			index = this.db.transaction(storeName, 'readonly').store.index('byId');
 		} else {
 			const store = storeOrStoreName;
-			index = store.index('byPk');
+			index = store.index('byId');
 		}
 
-		const result = await index.get(keyArr);
+		const result = await index.get(id);
 
 		return result;
 	}
@@ -257,26 +233,21 @@ class IndexedDBAdapter implements Adapter {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const namespaceName = this.namespaceResolver(modelConstructor);
-
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			this.schema.namespaces[namespaceName],
+			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
+		const namespaceName = this.namespaceResolver(modelConstructor);
 
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
-				const storeName = getStorename(namespaceName, modelName);
+				const storeName = this.getStorename(namespaceName, modelName);
 				set.add(storeName);
-				const keys = getIndexKeys(
-					this.schema.namespaces[namespaceName],
-					modelName
-				);
-				return { storeName, item, instance, keys };
+				return { storeName, item, instance };
 			}
 		);
 
@@ -286,9 +257,7 @@ class IndexedDBAdapter implements Adapter {
 		);
 		const store = tx.objectStore(storeName);
 
-		const keyValues = this.getIndexKeyValuesFromModel(model);
-
-		const fromDB = await this._get(store, keyValues);
+		const fromDB = await this._get(store, model.id);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -307,26 +276,17 @@ class IndexedDBAdapter implements Adapter {
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance, keys } = resItem;
+			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
+			const { id } = item;
 
-			const itemKeyValues = keys.map(key => {
-				const value = item[key];
-				return value;
-			});
-
-			const fromDB = <T>await this._get(store, itemKeyValues);
+			const fromDB = <T>await this._get(store, id);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			const modelKeyValues = this.getIndexKeyValuesFromModel(model);
-
 			// Even if the parent is an INSERT, the child might not be, so we need to get its key
-			if (
-				keysEqual(itemKeyValues, modelKeyValues) ||
-				opType === OpType.INSERT
-			) {
-				const key = await store.index('byPk').getKey(itemKeyValues);
+			if (id === model.id || opType === OpType.INSERT) {
+				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -346,7 +306,7 @@ class IndexedDBAdapter implements Adapter {
 		const namespace = this.schema.namespaces[namespaceName];
 		const relations = namespace.relationships[srcModelName].relationTypes;
 		const connectionStoreNames = relations.map(({ modelName }) => {
-			return getStorename(namespaceName, modelName);
+			return this.getStorename(namespaceName, modelName);
 		});
 		const modelConstructor = this.getModelConstructorByModelName(
 			namespaceName,
@@ -362,9 +322,8 @@ class IndexedDBAdapter implements Adapter {
 		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
 
 		for await (const relation of relations) {
-			// target name, metadata, set by init
-			const { fieldName, modelName, targetName, targetNames } = relation;
-			const storeName = getStorename(namespaceName, modelName);
+			const { fieldName, modelName, targetName } = relation;
+			const storeName = this.getStorename(namespaceName, modelName);
 			const store = tx.objectStore(storeName);
 			const modelConstructor = this.getModelConstructorByModelName(
 				namespaceName,
@@ -374,84 +333,27 @@ class IndexedDBAdapter implements Adapter {
 			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						// POST CPK codegen changes:
-						if (targetNames?.length) {
-							let getByFields = [];
-							let allPresent;
-							// iterate through all targetnames to make sure they are all present in the recordItem
-							allPresent = targetNames.every(targetName => {
-								return recordItem[targetName] != null;
-							});
+						const getByfield = recordItem[targetName] ? targetName : fieldName;
+						if (!recordItem[getByfield]) break;
 
-							if (!allPresent) {
-								break;
-							}
+						const connectionRecord = await this._get(
+							store,
+							recordItem[getByfield]
+						);
 
-							getByFields = targetNames as any;
-
-							// keys are the key values
-							const keys = getByFields.map(
-								getByField => recordItem[getByField]
-							);
-
-							const connectionRecord = await this._get(store, keys);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						} else {
-							// If single target name, using old codegen
-							const getByfield = recordItem[targetName]
-								? targetName
-								: fieldName;
-
-							// We break here, because the recordItem does not have 'team', the `getByField`
-							// extract the keys on the related model.
-							if (!recordItem[getByfield]) break;
-
-							const key = [recordItem[getByfield]];
-
-							const connectionRecord = await this._get(store, key);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
+						recordItem[fieldName] =
+							connectionRecord &&
+							this.modelInstanceCreator(modelConstructor, connectionRecord);
 					}
+
 					break;
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
-						// POST CPK codegen changes:
-						if (targetNames?.length) {
-							let allPresent;
-							// iterate through all targetnames to make sure they are all present in the recordItem
-							allPresent = targetNames.every(targetName => {
-								return recordItem[targetName] != null;
-							});
-
-							// If not present, there is not yet a connected record
-							if (!allPresent) {
-								break;
-							}
-
-							const keys = targetNames.map(
-								targetName => recordItem[targetName]
+						if (recordItem[targetName]) {
+							const connectionRecord = await this._get(
+								store,
+								recordItem[targetName]
 							);
-
-							// Retrieve the connected record
-							const connectionRecord = await this._get(store, keys);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-
-							targetNames?.map(targetName => {
-								delete recordItem[targetName];
-							});
-						} else if (recordItem[targetName]) {
-							const key = [recordItem[targetName]];
-
-							const connectionRecord = await this._get(store, key);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -459,6 +361,7 @@ class IndexedDBAdapter implements Adapter {
 							delete recordItem[targetName];
 						}
 					}
+
 					break;
 				case 'HAS_MANY':
 					// TODO: Lazy loading
@@ -485,19 +388,13 @@ class IndexedDBAdapter implements Adapter {
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
-		const keyPath = getIndexKeys(
-			this.schema.namespaces[namespaceName],
-			modelConstructor.name
-		);
-		const queryByKey =
-			predicates && this.keyValueFromPredicate(predicates, keyPath);
-
+		const queryById = predicates && this.idFromPredicate(predicates);
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
 		const records: T[] = await (async () => {
-			if (queryByKey) {
-				const record = await this.getByKey(storeName, queryByKey);
+			if (queryById) {
+				const record = await this.getById(storeName, queryById);
 				return record ? [record] : [];
 			}
 
@@ -521,11 +418,11 @@ class IndexedDBAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getByKey<T extends PersistentModel>(
+	private async getById<T extends PersistentModel>(
 		storeName: string,
-		keyValue: string[]
+		id: string
 	): Promise<T> {
-		const record = <T>await this._get(storeName, keyValue);
+		const record = <T>await this._get(storeName, id);
 		return record;
 	}
 
@@ -535,27 +432,17 @@ class IndexedDBAdapter implements Adapter {
 		return await this.db.getAll(storeName);
 	}
 
-	private keyValueFromPredicate<T extends PersistentModel>(
-		predicates: PredicatesGroup<T>,
-		keyPath: string[]
-	): string[] | undefined {
+	private idFromPredicate<T extends PersistentModel>(
+		predicates: PredicatesGroup<T>
+	) {
 		const { predicates: predicateObjs } = predicates;
+		const idPredicate =
+			predicateObjs.length === 1 &&
+			(predicateObjs.find(
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+			) as PredicateObject<T>);
 
-		if (predicateObjs.length !== keyPath.length) {
-			return;
-		}
-
-		const keyValues = [];
-
-		for (const key of keyPath) {
-			const predicateObj = predicateObjs.find(
-				p => isPredicateObj(p) && p.field === key && p.operator === 'eq'
-			) as PredicateObject<T>;
-
-			predicateObj && keyValues.push(predicateObj.operand);
-		}
-
-		return keyValues.length === keyPath.length ? keyValues : undefined;
+		return idPredicate && idPredicate.operand;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
@@ -718,16 +605,15 @@ class IndexedDBAdapter implements Adapter {
 
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;
-			const namespaceName = this.namespaceResolver(modelConstructor);
+			const nameSpace = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
 
 			if (condition) {
 				const tx = this.db.transaction([storeName], 'readwrite');
 				const store = tx.objectStore(storeName);
-				const keyValues = this.getIndexKeyValuesFromModel(model);
 
-				const fromDB = await this._get(store, keyValues);
+				const fromDB = await this._get(store, model.id);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -750,28 +636,26 @@ class IndexedDBAdapter implements Adapter {
 				await tx.done;
 
 				const relations =
-					this.schema.namespaces[namespaceName].relationships[
-						modelConstructor.name
-					].relationTypes;
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
 					[model],
 					modelConstructor.name,
-					namespaceName,
+					nameSpace,
 					deleteQueue
 				);
 			} else {
 				const relations =
-					this.schema.namespaces[namespaceName].relationships[
-						modelConstructor.name
-					].relationTypes;
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
 					[model],
 					modelConstructor.name,
-					namespaceName,
+					nameSpace,
 					deleteQueue
 				);
 			}
@@ -788,10 +672,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private async deleteItem<T extends PersistentModel>(
-		deleteQueue?: {
-			storeName: string;
-			items: T[] | IDBValidKey[];
-		}[]
+		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
 		const connectionStoreNames = deleteQueue.map(({ storeName }) => {
 			return storeName;
@@ -807,11 +688,9 @@ class IndexedDBAdapter implements Adapter {
 					let key: IDBValidKey;
 
 					if (typeof item === 'object') {
-						const keyValues = this.getIndexKeyValuesFromModel(item as T);
-						key = await store.index('byPk').getKey(keyValues);
+						key = await store.index('byId').getKey(item['id']);
 					} else {
-						const itemKey = [item.toString()];
-						key = await store.index('byPk').getKey([itemKey]);
+						key = await store.index('byId').getKey(item.toString());
 					}
 
 					if (key !== undefined) {
@@ -830,109 +709,57 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const {
-				relationType,
-				modelName,
-				targetName,
-				targetNames,
-				associatedWith,
-			} = rel;
+			const { relationType, fieldName, modelName, targetName } = rel;
+			const storeName = this.getStorename(nameSpace, modelName);
 
-			const storeName = getStorename(nameSpace, modelName);
+			const index: string =
+				getIndex(
+					this.schema.namespaces[nameSpace].relationships[modelName]
+						.relationTypes,
+					srcModel
+				) ||
+				// if we were unable to find an index via relationTypes
+				// i.e. for keyName connections, attempt to find one by the
+				// associatedWith property
+				getIndexFromAssociation(
+					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
+					rel.associatedWith
+				);
 
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const hasOneIndex = 'byPk';
+						const hasOneIndex = index || 'byId';
 
-						if (targetNames?.length) {
-							// CPK codegen
-							const values = targetNames.map(targetName => model[targetName]);
+						const hasOneCustomField = targetName in model;
+						const value = hasOneCustomField ? model[targetName] : model.id;
+						if (!value) break;
 
-							if (values.length === 0) break;
+						const recordToDelete = <T>(
+							await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex)
+								.get(value)
+						);
 
-							const recordToDelete = <T>(
-								await this.db
-									.transaction(storeName, 'readwrite')
-									.objectStore(storeName)
-									.index(hasOneIndex)
-									.get(values)
-							);
-
-							await this.deleteTraverse(
-								this.schema.namespaces[nameSpace].relationships[modelName]
-									.relationTypes,
-								recordToDelete ? [recordToDelete] : [],
-								modelName,
-								nameSpace,
-								deleteQueue
-							);
-							break;
-						} else {
-							// PRE-CPK codegen
-							let index;
-							let values: string[];
-
-							if (targetName && targetName in model) {
-								index = hasOneIndex;
-								const value = model[targetName];
-								values = [value];
-							} else {
-								// backwards compatability for older versions of codegen that did not emit targetName for HAS_ONE relations
-								// TODO: can we deprecate this? it's been ~2 years since codegen started including targetName for HAS_ONE
-								// If we deprecate, we'll need to re-gen the MIPR in __tests__/schema.ts > newSchema
-								// otherwise some unit tests will fail
-								index = getIndex(
-									this.schema.namespaces[nameSpace].relationships[modelName]
-										.relationTypes,
-									srcModel
-								);
-								values = this.getIndexKeyValuesFromModel(model);
-							}
-
-							if (!values || !index) break;
-
-							const recordToDelete = <T>(
-								await this.db
-									.transaction(storeName, 'readwrite')
-									.objectStore(storeName)
-									.index(index)
-									.get(values)
-							);
-
-							await this.deleteTraverse(
-								this.schema.namespaces[nameSpace].relationships[modelName]
-									.relationTypes,
-								recordToDelete ? [recordToDelete] : [],
-								modelName,
-								nameSpace,
-								deleteQueue
-							);
-						}
+						await this.deleteTraverse(
+							this.schema.namespaces[nameSpace].relationships[modelName]
+								.relationTypes,
+							recordToDelete ? [recordToDelete] : [],
+							modelName,
+							nameSpace,
+							deleteQueue
+						);
 					}
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const index =
-							// explicit bi-directional @hasMany and @manyToMany
-							getIndex(
-								this.schema.namespaces[nameSpace].relationships[modelName]
-									.relationTypes,
-								srcModel
-							) ||
-							// uni and/or implicit @hasMany
-							getIndexFromAssociation(
-								this.schema.namespaces[nameSpace].relationships[modelName]
-									.indexes,
-								associatedWith
-							);
-						const keyValues = this.getIndexKeyValuesFromModel(model);
-
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(index as string)
-							.getAll(keyValues);
+							.index(index)
+							.getAll(model['id']);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -954,7 +781,7 @@ class IndexedDBAdapter implements Adapter {
 		}
 
 		deleteQueue.push({
-			storeName: getStorename(nameSpace, srcModel),
+			storeName: this.getStorename(nameSpace, srcModel),
 			items: models.map(record =>
 				this.modelInstanceCreator(
 					this.getModelConstructorByModelName(nameSpace, srcModel),
@@ -993,29 +820,22 @@ class IndexedDBAdapter implements Adapter {
 		const store = txn.store;
 
 		for (const item of items) {
-			const namespaceName = this.namespaceResolver(modelConstructor);
-			const modelName = modelConstructor.name;
-			const model = this.modelInstanceCreator(modelConstructor, item);
-
 			const connectedModels = traverseModel(
-				modelName,
-				model,
-				this.schema.namespaces[namespaceName],
+				modelConstructor.name,
+				this.modelInstanceCreator(modelConstructor, item),
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 				this.modelInstanceCreator,
 				this.getModelConstructorByModelName
 			);
 
-			const keyValues = this.getIndexKeyValuesFromModel(model);
-			const { _deleted } = item;
-
-			const index = store.index('byPk');
-			const key = await index.getKey(keyValues);
+			const { id, _deleted } = item;
+			const index = store.index('byId');
+			const key = await index.getKey(id);
 
 			if (!_deleted) {
-				const { instance } = connectedModels.find(({ instance }) => {
-					const instanceKeyValues = this.getIndexKeyValuesFromModel(instance);
-					return keysEqual(instanceKeyValues, keyValues);
-				});
+				const { instance } = connectedModels.find(
+					({ instance }) => instance.id === id
+				);
 
 				result.push([
 					<T>(<unknown>instance),
@@ -1036,7 +856,7 @@ class IndexedDBAdapter implements Adapter {
 		return result;
 	}
 
-	private createObjectStoreForModel(
+	private async createObjectStoreForModel(
 		db: idb.IDBPDatabase,
 		namespaceName: string,
 		storeName: string,
@@ -1046,14 +866,11 @@ class IndexedDBAdapter implements Adapter {
 			autoIncrement: true,
 		});
 
-		const { indexes } =
-			this.schema.namespaces[namespaceName].relationships[modelName];
+		const indexes =
+			this.schema.namespaces[namespaceName].relationships[modelName].indexes;
+		indexes.forEach(index => store.createIndex(index, index));
 
-		indexes.forEach(([idxName, keyPath, options]) => {
-			store.createIndex(idxName, keyPath, options);
-		});
-
-		return store;
+		store.createIndex('byId', 'id', { unique: true });
 	}
 }
 

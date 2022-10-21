@@ -85,7 +85,9 @@ class SyncProcessor {
 		return predicateToGraphQLFilter(predicatesGroup);
 	}
 
-	private async retrievePage<T extends ModelInstanceMetadata>(
+	private async retrievePage<
+		T extends ModelInstanceMetadata = ModelInstanceMetadata
+	>(
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
@@ -169,6 +171,16 @@ class SyncProcessor {
 		};
 	}
 
+	// Partial data private feature flag. Not a public API. This will be removed in a future release.
+	private partialDataFeatureFlagEnabled() {
+		try {
+			const flag = sessionStorage.getItem('datastorePartialData');
+			return Boolean(flag);
+		} catch (e) {
+			return false;
+		}
+	}
+
 	private async jitteredRetry<T>({
 		query,
 		variables,
@@ -213,79 +225,82 @@ class SyncProcessor {
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
-					const hasItems = Boolean(error?.data?.[opName]?.items);
+					const hasItems = Boolean(
+						error &&
+							error.data &&
+							error.data[opName] &&
+							error.data[opName].items
+					);
+					if (this.partialDataFeatureFlagEnabled()) {
+						if (hasItems) {
+							const result = error;
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+							if (error.errors) {
+								await Promise.all(
+									error.errors.map(async err => {
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null,
+												message: err.message,
+												model: modelDefinition.name,
+												operation: opName,
+												errorType: getSyncErrorType(err),
+												process: ProcessName.sync,
+												remoteModel: null,
+												cause: err,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+									})
+								);
+								Hub.dispatch('datastore', {
+									event: 'syncQueriesPartialSyncError',
+									data: {
+										errors: error.errors,
+										modelName: modelDefinition.name,
+									},
+								});
+							}
 
+							return result;
+						} else {
+							throw error;
+						}
+					}
+
+					// If the error is unauthorized, filter out unauthorized items and return accessible items
 					const unauthorized =
-						error?.errors &&
+						error &&
+						error.errors &&
 						(error.errors as [any]).some(
 							err => err.errorType === 'Unauthorized'
 						);
-
-					const otherErrors =
-						error?.errors &&
-						(error.errors as [any]).filter(
-							err => err.errorType !== 'Unauthorized'
-						);
-
-					const result = error;
-
-					if (hasItems) {
-						result.data[opName].items = result.data[opName].items.filter(
-							item => item !== null
-						);
-					}
-
-					if (hasItems && otherErrors?.length) {
-						await Promise.all(
-							otherErrors.map(async err => {
-								try {
-									await this.errorHandler({
-										recoverySuggestion:
-											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-										localModel: null,
-										message: err.message,
-										model: modelDefinition.name,
-										operation: opName,
-										errorType: getSyncErrorType(err),
-										process: ProcessName.sync,
-										remoteModel: null,
-										cause: err,
-									});
-								} catch (e) {
-									logger.error('Sync error handler failed with:', e);
-								}
-							})
-						);
-						Hub.dispatch('datastore', {
-							event: 'nonApplicableDataReceived',
-							data: {
-								errors: otherErrors,
-								modelName: modelDefinition.name,
-							},
-						});
-					}
-
 					if (unauthorized) {
+						const result = error;
+
+						if (hasItems) {
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+						} else {
+							result.data[opName] = {
+								...opResultDefaults,
+								...result.data[opName],
+							};
+						}
 						logger.warn(
 							'queryError',
 							`User is unauthorized to query ${opName}, some items could not be returned.`
 						);
-
-						result.data = result.data || {};
-
-						result.data[opName] = {
-							...opResultDefaults,
-							...result.data[opName],
-						};
-
 						return result;
+					} else {
+						throw error;
 					}
-
-					if (result.data?.[opName].items?.length) {
-						return result;
-					}
-
-					throw error;
 				}
 			},
 			[query, variables]

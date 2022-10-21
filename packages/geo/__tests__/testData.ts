@@ -252,21 +252,3 @@ export const batchGeofencesCamelcaseResults = {
 	}),
 	errors: [],
 };
-
-export const searchOptions = {
-	countries: ['USA'],
-	maxResults: 40,
-	searchIndexName: 'geoJSSearchCustomExample',
-};
-
-export const locationServiceInput = {
-	Text: 'Amazon Go',
-	IndexName: 'geoJSMapSearchOptionsExample',
-};
-
-export const searchOptionsMappedToInput = {
-	...locationServiceInput,
-	FilterCountries: ['USA'],
-	MaxResults: 40,
-	IndexName: 'geoJSSearchCustomExample',
-};

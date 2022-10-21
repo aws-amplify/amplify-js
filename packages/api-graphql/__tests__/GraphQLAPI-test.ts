@@ -971,13 +971,11 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			(
-				api.graphql({
-					query,
-					variables,
-					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-				}) as any
-			).subscribe();
+			(api.graphql({
+				query,
+				variables,
+				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+			}) as any).subscribe();
 
 			expect(spyon_pubsub).toBeCalledWith(
 				'',
@@ -1024,9 +1022,9 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			const observable = (
-				api.graphql(graphqlOperation(query, variables)) as Observable<object>
-			).subscribe({
+			const observable = (api.graphql(
+				graphqlOperation(query, variables)
+			) as Observable<object>).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
@@ -1081,12 +1079,10 @@ describe('API test', () => {
 				'x-custom-header': 'value',
 			};
 
-			const observable = (
-				api.graphql(
-					graphqlOperation(query, variables),
-					additionalHeaders
-				) as Observable<object>
-			).subscribe({
+			const observable = (api.graphql(
+				graphqlOperation(query, variables),
+				additionalHeaders
+			) as Observable<object>).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
@@ -1294,28 +1290,10 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken, userAgentSuffix));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
-
-		test('call isInstanceCreated', () => {
-			const createInstanceMock = spyOn(API.prototype, 'createInstance');
-			const api = new API(config);
-			api.createInstanceIfNotCreated();
-			expect(createInstanceMock).toHaveBeenCalled();
-		});
-
-		test('should not call createInstance when there is already an instance', () => {
-			const api = new API(config);
-			api.createInstance();
-			const createInstanceMock = spyOn(API.prototype, 'createInstance');
-			api.createInstanceIfNotCreated();
-			expect(createInstanceMock).not.toHaveBeenCalled();
-		});
-	});
 
 	describe('configure test', () => {
 		test('without aws_project_region', () => {

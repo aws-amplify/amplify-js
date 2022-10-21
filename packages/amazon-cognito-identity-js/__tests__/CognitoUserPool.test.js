@@ -1,12 +1,6 @@
 import CognitoUserPool from '../src/CognitoUserPool';
 import Client from '../src/Client';
-import {
-	clientId,
-	userPoolId,
-	userPoolName,
-	userName,
-	password,
-} from './constants';
+import { clientId, userPoolId, userName, password } from './constants';
 
 describe('Constructor and accessor methods', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
@@ -29,10 +23,6 @@ describe('Constructor and accessor methods', () => {
 
 	test('Getting userPoolId from CognitoUserPool', () => {
 		expect(cognitoUserPool.getUserPoolId()).toBe(userPoolId);
-	});
-
-	test('Getting userPoolName from CognitoUserPool', () => {
-		expect(cognitoUserPool.getUserPoolName()).toBe(userPoolName);
 	});
 
 	test('Getting user context data without advancedSecurityData', () => {

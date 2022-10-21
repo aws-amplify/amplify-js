@@ -47,7 +47,8 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getByKey');
+
+		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getById');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
 		const spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
@@ -96,7 +97,7 @@ describe('IndexedDBAdapter tests', () => {
 			jest.clearAllMocks();
 		});
 
-		it('Should call getByKey for query by id', async () => {
+		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('field1 value 0');
@@ -155,10 +156,6 @@ describe('IndexedDBAdapter tests', () => {
 		let Profile: PersistentModelConstructor<Profile>;
 		let profile1Id: string;
 		let user1Id: string;
-		let Post: PersistentModelConstructor<Post>;
-		let Comment: PersistentModelConstructor<Comment>;
-		let post1Id: string;
-		let comment1Id: string;
 
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -182,27 +179,7 @@ describe('IndexedDBAdapter tests', () => {
 			));
 		});
 
-		beforeEach(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-			const classes = initSchema(testSchema());
-			({ Post } = classes as {
-				Post: PersistentModelConstructor<Post>;
-			});
-
-			({ Comment } = classes as {
-				Comment: PersistentModelConstructor<Comment>;
-			});
-
-			const post = await DataStore.save(new Post({ title: 'Test' }));
-			({ id: post1Id } = post);
-
-			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post })
-			));
-		});
-
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
-			expect.assertions(4);
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
 
@@ -216,27 +193,8 @@ describe('IndexedDBAdapter tests', () => {
 			profile = await DataStore.query(Profile, profile1Id);
 
 			// both should be undefined, even though we only explicitly deleted the user
-			expect(user).toBeUndefined();
-			expect(profile).toBeUndefined();
-		});
-
-		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
-			expect.assertions(4);
-			let post = await DataStore.query(Post, post1Id);
-			let comment = await DataStore.query(Comment, comment1Id);
-
-			// double-checking that both of the records exist at first
-			expect(post.id).toEqual(post1Id);
-			expect(comment.id).toEqual(comment1Id);
-
-			await DataStore.delete(Post, post.id);
-
-			post = await DataStore.query(Post, post1Id);
-			comment = await DataStore.query(Comment, comment1Id);
-
-			// both should be undefined, even though we only explicitly deleted the post
-			expect(post).toBeUndefined();
-			expect(comment).toBeUndefined();
+			expect(user).toBeUndefined;
+			expect(profile).toBeUndefined;
 		});
 	});
 });

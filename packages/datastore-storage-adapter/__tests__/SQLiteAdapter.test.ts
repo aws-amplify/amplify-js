@@ -76,10 +76,6 @@ class InnerSQLiteDatabase {
 					statement,
 					params,
 					async (err, row) => {
-						if (err) {
-							console.error('SQLite ERROR', new Error(err));
-							console.warn(statement, params);
-						}
 						rows.push(row);
 					},
 					() => {
@@ -90,14 +86,7 @@ class InnerSQLiteDatabase {
 				if (callback) await callback(this, resultSet);
 			});
 		} else {
-			return await this.innerDB.run(statement, params, err => {
-				if (typeof callback === 'function') {
-					callback(err);
-				} else if (err) {
-					console.error('calback', err);
-					throw err;
-				}
-			});
+			return await this.innerDB.run(statement, params, callback);
 		}
 	}
 

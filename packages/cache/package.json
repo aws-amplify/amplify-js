@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "4.0.59",
+  "version": "4.0.56",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -45,7 +45,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "4.7.8"
+    "@aws-amplify/core": "4.7.5"
   },
   "jest": {
     "globals": {
