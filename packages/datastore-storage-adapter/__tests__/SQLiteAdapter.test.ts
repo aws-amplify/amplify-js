@@ -11,7 +11,7 @@ import {
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
 import { Model, Post, Comment, testSchema } from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
+import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
 import Observable from 'zen-observable';
 import {
 	pause,
