@@ -111,7 +111,12 @@ export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 }[];
 
 type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
-	[K in AllFieldOperators]: (...operands: Scalar<MT>[]) => ModelPredicateLeaf;
+	[K in AllFieldOperators]: K extends 'between'
+		? (
+				inclusiveLowerBound: Scalar<MT>,
+				inclusiveUpperBound: Scalar<MT>
+		  ) => ModelPredicateLeaf
+		: (operand: Scalar<MT>) => ModelPredicateLeaf;
 };
 
 type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
