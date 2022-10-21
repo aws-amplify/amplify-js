@@ -19,7 +19,7 @@
 		"./dist/aws-amplify-core.js"
 	],
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage && npm run ts-coverage",
+		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "rimraf lib-esm && node ./build es6",
@@ -29,7 +29,7 @@
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 0 "
 	},
 	"react-native": {

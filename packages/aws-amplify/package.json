@@ -10,7 +10,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2 && npm run ts-coverage",
+    "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2 ",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
@@ -19,7 +19,7 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "generate-docs-local": "typedoc --out docs src",
     "generate-docs-root": "typedoc --out ../../docs src",
     "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 0"
