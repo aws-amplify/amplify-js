@@ -27,7 +27,7 @@
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "yarn clean && yarn build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
-		"format": "echo \"Not implemented\"",
+		"format": "echo \"Not implemented\"  && npm run ts-coverage",
 		"lint": "tslint '{__tests__,src}/**/*.ts'",
 		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
 	},
