@@ -27,7 +27,7 @@
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 0"
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 69.26"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
