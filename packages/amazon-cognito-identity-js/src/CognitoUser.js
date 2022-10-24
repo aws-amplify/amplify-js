@@ -298,8 +298,8 @@ export default class CognitoUser {
 						]);
 
 						const awsCryptoHash = new jsSha256(hkdf);
-
 						awsCryptoHash.update(concatBuffer);
+
 						const resultFromAWSCrypto = awsCryptoHash.digestSync();
 						const signatureString =
 							Buffer.from(resultFromAWSCrypto).toString('base64');
@@ -699,8 +699,8 @@ export default class CognitoUser {
 						]);
 
 						const awsCryptoHash = new jsSha256(hkdf);
-
 						awsCryptoHash.update(concatBuffer);
+
 						const resultFromAWSCrypto = awsCryptoHash.digestSync();
 						const signatureString =
 							Buffer.from(resultFromAWSCrypto).toString('base64');

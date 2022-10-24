@@ -304,9 +304,9 @@ export default class OAuth {
 	private _generateChallenge(code: string) {
 		const awsCryptoHash = new jsSha256();
 		awsCryptoHash.update(code);
+
 		const resultFromAWSCrypto = awsCryptoHash.digestSync();
 		const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
-
 		const base64URLFromAWSCrypto = this._base64URL(b64);
 
 		return base64URLFromAWSCrypto;

@@ -7,7 +7,6 @@ import { Buffer } from 'buffer';
 import WordArray from './utils/WordArray';
 import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
 
-
 /**
  * Returns a Buffer with a sequence of random nBytes
  *
@@ -61,7 +60,7 @@ export default class AuthenticationHelper {
 		);
 
 		this.smallAValue = this.generateRandomSmallA();
-		this.getLargeAValue(() => { });
+		this.getLargeAValue(() => {});
 
 		this.infoBits = Buffer.from('Caldera Derived Key', 'utf8');
 
@@ -250,13 +249,11 @@ export default class AuthenticationHelper {
 		awsCryptoHash.update(ikm);
 
 		const resultFromAWSCryptoPrk = awsCryptoHash.digestSync();
-
 		const awsCryptoHashHmac = new jsSha256(resultFromAWSCryptoPrk);
 		awsCryptoHashHmac.update(infoBitsBuffer);
+
 		const resultFromAWSCryptoHmac = awsCryptoHashHmac.digestSync();
-
 		const hashHexFromAWSCrypto = resultFromAWSCryptoHmac;
-
 		const currentHex = hashHexFromAWSCrypto.slice(0, 16);
 
 		return currentHex;
