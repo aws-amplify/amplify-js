@@ -9,9 +9,9 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib-esm/index.js",
+    "./src/amplifySingleton.ts",
+    "./lib/amplifySingleton.js",
+    "./lib-esm/amplifySingleton.js",
     "./dist/aws-amplify.min.js",
     "./dist/aws-amplify.js"
   ],

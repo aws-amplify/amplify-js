@@ -11,17 +11,6 @@
  * and limitations under the License.
  */
 
-import { Amplify, ServiceWorker } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
-import { BrowserStorageCache } from '@aws-amplify/cache';
-
-/** Always importing Auth when users import Amplify such that
-	for unauthenticated access (no sign in and sign up),
-	users don't have to import Auth explicitly **/
-Amplify.Auth = Auth;
-Amplify.Cache = BrowserStorageCache;
-Amplify.ServiceWorker = ServiceWorker;
-
 export {
 	Analytics,
 	AnalyticsProvider,
@@ -30,7 +19,6 @@ export {
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
-
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
@@ -59,4 +47,4 @@ export {
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';
-export { Amplify };
+export { Amplify } from './amplifySingleton';
