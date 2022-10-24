@@ -362,7 +362,7 @@ export class SyncEngine {
 									// TODO: extract to function
 									if (!isNode) {
 										subscriptions.push(
-											dataSubsObservable.subscribe(
+											dataSubsObservable!.subscribe(
 												([_transformerMutationType, modelDefinition, item]) =>
 													this.runningProcesses.add(async () => {
 														const modelConstructor = this.userModelClasses[
@@ -713,63 +713,62 @@ export class SyncEngine {
 												syncQueriesSubscription.unsubscribe();
 											}
 										}
-									}, 'syncQueriesObservable syncQueriesSubscription event'),
-								error: error => {
-									observer.error(error);
+									},
+									error: error => {
+										observer.error(error);
+									},
+								});
+
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_STARTED,
+								data: {
+									models: Array.from(paginatingModels).map(({ name }) => name),
 								},
 							});
-
-						observer.next({
-							type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_STARTED,
-							data: {
-								models: Array.from(paginatingModels).map(({ name }) => name),
-							},
-						});
-					});
-
-
-					const msNextFullSync =
-						newestFullSyncStartedAt! +
-						theInterval! -
-						(newestStartedAt! + duration!);
-
-					logger.debug(
-						`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
-							Date.now() + msNextFullSync
-						)})`
-					);
-
-					// TODO: create `BackgroundProcessManager.sleep()` ... but, need to put
-					// a lot of thought into what that contract looks like to
-					//  support possible use-cases:
-					//
-					//  1. non-cancelable
-					//  2. cancelable, unsleep on exit()
-					//  3. cancelable, throw Error on exit()
-					//  4. cancelable, callback first on exit()?
-					//  5. ... etc. ? ...
-					//
-					// TLDR; this is a lot of complexity here for a sleep(),
-					// but, it's not clear to me yet how to support an
-					// extensible, centralized cancelable `sleep()` elegantly.
-					await this.runningProcesses.add(async onTerminate => {
-						let sleepTimer;
-						let unsleep;
-
-						const sleep = new Promise(_unsleep => {
-							unsleep = _unsleep;
-							sleepTimer = setTimeout(unsleep, msNextFullSync);
 						});
 
-						onTerminate.then(() => {
-							terminated = true;
-							unsleep();
-						});
+						const msNextFullSync =
+							newestFullSyncStartedAt! +
+							theInterval! -
+							(newestStartedAt! + duration!);
 
-						return sleep;
-					}, 'syncQueriesObservable sleep');
-				}
-			}, 'syncQueriesObservable main');
+						logger.debug(
+							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
+								Date.now() + msNextFullSync
+							)})`
+						);
+
+						// TODO: create `BackgroundProcessManager.sleep()` ... but, need to put
+						// a lot of thought into what that contract looks like to
+						//  support possible use-cases:
+						//
+						//  1. non-cancelable
+						//  2. cancelable, unsleep on exit()
+						//  3. cancelable, throw Error on exit()
+						//  4. cancelable, callback first on exit()?
+						//  5. ... etc. ? ...
+						//
+						// TLDR; this is a lot of complexity here for a sleep(),
+						// but, it's not clear to me yet how to support an
+						// extensible, centralized cancelable `sleep()` elegantly.
+						await this.runningProcesses.add(async onTerminate => {
+							let sleepTimer;
+							let unsleep;
+
+							const sleep = new Promise(_unsleep => {
+								unsleep = _unsleep;
+								sleepTimer = setTimeout(unsleep, msNextFullSync);
+							});
+
+							onTerminate.then(() => {
+								terminated = true;
+								unsleep();
+							});
+
+							return sleep;
+						}, 'syncQueriesObservable sleep');
+					}
+				}, 'syncQueriesObservable main');
 		});
 	}
 

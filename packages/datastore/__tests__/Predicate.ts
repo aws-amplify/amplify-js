@@ -113,6 +113,7 @@ describe('Predicates', () => {
 		describe('`between` when', () => {
 			test('no bounds are given', async () => {
 				expect(() => {
+					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between();
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
@@ -121,6 +122,7 @@ describe('Predicates', () => {
 
 			test('only one bound is given', async () => {
 				expect(() => {
+					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('z');
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
@@ -137,6 +139,7 @@ describe('Predicates', () => {
 
 			test('more than 2 arguments are given', async () => {
 				expect(() => {
+					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('a', 'b', 'c');
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'

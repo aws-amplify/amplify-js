@@ -1977,8 +1977,7 @@ class DataStore {
 
 					// Filter the events returned by Storage according to namespace,
 					// append original element data, and subscribe to the observable
-					handle = this.storage
-						.observe(modelConstructor, predicate)
+					source = this.storage!.observe(modelConstructor)
 						.filter(({ model }) => namespaceResolver(model) === USER)
 						.subscribe({
 							next: item =>

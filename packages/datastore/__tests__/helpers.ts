@@ -21,14 +21,6 @@ import {
 type initSchemaType = typeof _initSchema;
 type DataStoreType = typeof DataStoreInstance;
 
-import {
-	initSchema as _initSchema,
-	DataStore as DataStoreInstance,
-} from '../src/datastore/datastore';
-
-type initSchemaType = typeof _initSchema;
-type DataStoreType = typeof DataStoreInstance;
-
 /**
  * Convenience function to wait for a number of ms.
  *
