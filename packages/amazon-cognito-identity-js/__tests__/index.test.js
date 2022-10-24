@@ -6,6 +6,7 @@ describe('import * keys', () => {
 		Array [
 		  "AuthenticationDetails",
 		  "AuthenticationHelper",
+		  "BigInteger",
 		  "CognitoAccessToken",
 		  "CognitoIdToken",
 		  "CognitoRefreshToken",

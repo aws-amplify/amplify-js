@@ -5,6 +5,7 @@
 
 export { default as AuthenticationDetails } from './AuthenticationDetails';
 export { default as AuthenticationHelper } from './AuthenticationHelper';
+export { default as BigInteger } from './BigInteger';
 export { default as CognitoAccessToken } from './CognitoAccessToken';
 export { default as CognitoIdToken } from './CognitoIdToken';
 export { default as CognitoRefreshToken } from './CognitoRefreshToken';
