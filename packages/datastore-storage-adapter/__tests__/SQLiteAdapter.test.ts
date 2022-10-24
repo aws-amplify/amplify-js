@@ -186,9 +186,7 @@ describe('SQLiteAdapter', () => {
 			});
 
 			it('is logging SQL statements during normal operation', async () => {
-				// `start()`, which is called during `beforeEach`, should perform
-				// a number of queries to create tables. the test adapter should
-				// log these all to `sqlog`.
+				await DataStore.query(Post);
 				expect(sqlog.length).toBeGreaterThan(0);
 			});
 
