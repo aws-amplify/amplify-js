@@ -161,7 +161,7 @@ export class Storage {
 			storageConfig[DEFAULT_PROVIDER] = {};
 		}
 
-		Object.entries(storageConfig).map(([key, value]) => {
+		Object.entries(storageConfig).forEach(([key, value]) => {
 			if (
 				key &&
 				defaultProviderConfigKeys.includes(key) &&

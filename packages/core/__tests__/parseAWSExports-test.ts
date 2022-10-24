@@ -1,4 +1,4 @@
-import { parseAWSExports } from '../src/Parser';
+import { parseAWSExports } from '../src/parseAWSExports';
 
 describe('Parser', () => {
 	test('aws_mobile_analytics_app_id', () => {
