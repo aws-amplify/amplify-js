@@ -4,7 +4,7 @@
  */
 
 import { Buffer } from 'buffer';
-import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { Sha256 } from '@aws-crypto/sha256-js';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -297,7 +297,7 @@ export default class CognitoUser {
 							Buffer.from(dateNow, 'utf8'),
 						]);
 
-						const awsCryptoHash = new jsSha256(hkdf);
+						const awsCryptoHash = new Sha256(hkdf);
 						awsCryptoHash.update(concatBuffer);
 
 						const resultFromAWSCrypto = awsCryptoHash.digestSync();
@@ -698,7 +698,7 @@ export default class CognitoUser {
 							Buffer.from(dateNow, 'utf8'),
 						]);
 
-						const awsCryptoHash = new jsSha256(hkdf);
+						const awsCryptoHash = new Sha256(hkdf);
 						awsCryptoHash.update(concatBuffer);
 
 						const resultFromAWSCrypto = awsCryptoHash.digestSync();

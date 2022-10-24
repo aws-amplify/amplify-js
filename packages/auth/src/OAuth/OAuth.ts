@@ -24,7 +24,7 @@ import {
 
 import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 
-import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { Sha256 } from '@aws-crypto/sha256-js';
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
 		? Symbol.for('amplify_default')
@@ -302,7 +302,7 @@ export default class OAuth {
 	}
 
 	private _generateChallenge(code: string) {
-		const awsCryptoHash = new jsSha256();
+		const awsCryptoHash = new Sha256();
 		awsCryptoHash.update(code);
 
 		const resultFromAWSCrypto = awsCryptoHash.digestSync();

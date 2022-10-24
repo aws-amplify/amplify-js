@@ -5,7 +5,7 @@
 
 import { Buffer } from 'buffer';
 import WordArray from './utils/WordArray';
-import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { Sha256 } from '@aws-crypto/sha256-js';
 
 /**
  * Returns a Buffer with a sequence of random nBytes
@@ -213,7 +213,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	hash(buf) {
-		const awsCryptoHash = new jsSha256();
+		const awsCryptoHash = new Sha256();
 		awsCryptoHash.update(buf);
 
 		const resultFromAWSCrypto = awsCryptoHash.digestSync();
@@ -245,11 +245,11 @@ export default class AuthenticationHelper {
 			Buffer.from(String.fromCharCode(1), 'utf8'),
 		]);
 
-		const awsCryptoHash = new jsSha256(salt);
+		const awsCryptoHash = new Sha256(salt);
 		awsCryptoHash.update(ikm);
 
 		const resultFromAWSCryptoPrk = awsCryptoHash.digestSync();
-		const awsCryptoHashHmac = new jsSha256(resultFromAWSCryptoPrk);
+		const awsCryptoHashHmac = new Sha256(resultFromAWSCryptoPrk);
 		awsCryptoHashHmac.update(infoBitsBuffer);
 
 		const resultFromAWSCryptoHmac = awsCryptoHashHmac.digestSync();
