@@ -39,7 +39,15 @@ import { Adapter } from './index';
 const logger = new Logger('DataStore');
 
 const DB_NAME = 'amplify-datastore';
-class IndexedDBAdapter implements Adapter {
+
+const keyArrOrSingleKey = (keyArr: string[]) => {
+	return keyArr.length > 1 ? keyArr : keyArr[0];
+};
+
+// IndexedDB on Safari has a bug where an array key composed of a single field
+// Has to be treated like a scalar key
+// issue for reference: https://github.com/aws-amplify/amplify-js/issues/10514
+class IndexedDBAdapterSafari implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;
@@ -244,7 +252,7 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byPk');
 		}
 
-		const result = await index.get(keyArr);
+		const result = await index.get(keyArrOrSingleKey(keyArr));
 
 		return result;
 	}
@@ -326,7 +334,9 @@ class IndexedDBAdapter implements Adapter {
 				keysEqual(itemKeyValues, modelKeyValues) ||
 				opType === OpType.INSERT
 			) {
-				const key = await store.index('byPk').getKey(itemKeyValues);
+				const key = await store
+					.index('byPk')
+					.getKey(keyArrOrSingleKey(itemKeyValues));
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -808,10 +818,12 @@ class IndexedDBAdapter implements Adapter {
 
 					if (typeof item === 'object') {
 						const keyValues = this.getIndexKeyValuesFromModel(item as T);
-						key = await store.index('byPk').getKey(keyValues);
+						key = await store
+							.index('byPk')
+							.getKey(keyArrOrSingleKey(keyValues));
 					} else {
-						const itemKey = [item.toString()];
-						key = await store.index('byPk').getKey([itemKey]);
+						const itemKey = item.toString();
+						key = await store.index('byPk').getKey(itemKey);
 					}
 
 					if (key !== undefined) {
@@ -1009,7 +1021,8 @@ class IndexedDBAdapter implements Adapter {
 			const { _deleted } = item;
 
 			const index = store.index('byPk');
-			const key = await index.getKey(keyValues);
+
+			const key = await index.getKey(keyArrOrSingleKey(keyValues));
 
 			if (!_deleted) {
 				const { instance } = connectedModels.find(({ instance }) => {
@@ -1057,4 +1070,4 @@ class IndexedDBAdapter implements Adapter {
 	}
 }
 
-export default new IndexedDBAdapter();
+export default new IndexedDBAdapterSafari();
