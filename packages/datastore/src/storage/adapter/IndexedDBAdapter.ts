@@ -244,7 +244,11 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byPk');
 		}
 
-		const result = await index.get(keyArr);
+		// IndexedDB on Safari has a bug where an array key composed of a single field
+		// Has to be treated like a scalar key
+		// issue for reference: https://github.com/aws-amplify/amplify-js/issues/10514
+		const key = keyArr.length > 1 ? keyArr : keyArr[0];
+		const result = await index.get(key);
 
 		return result;
 	}
@@ -326,7 +330,11 @@ class IndexedDBAdapter implements Adapter {
 				keysEqual(itemKeyValues, modelKeyValues) ||
 				opType === OpType.INSERT
 			) {
-				const key = await store.index('byPk').getKey(itemKeyValues);
+				// Same as above - workaround for Safari IDB array key bug
+				const normalizedKeyValues =
+					itemKeyValues.length > 1 ? itemKeyValues : itemKeyValues[0];
+
+				const key = await store.index('byPk').getKey(normalizedKeyValues);
 				await store.put(item, key);
 
 				result.push([instance, opType]);
