@@ -45,6 +45,7 @@
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
+  "files": ["lib", "lib-esm", "src", "android"],
   "dependencies": {
     "@aws-amplify/core": "4.7.8",
     "@react-native-community/push-notification-ios": "1.0.3"

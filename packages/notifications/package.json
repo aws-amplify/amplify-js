@@ -41,7 +41,8 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://docs.amplify.aws/",
-	"dependencies": {
+	"files": ["lib", "lib-esm", "src"],
+  "dependencies": {
 		"@aws-amplify/cache": "4.0.59",
 		"@aws-amplify/core": "4.7.8",
 		"@aws-sdk/client-pinpoint": "3.186.0",
