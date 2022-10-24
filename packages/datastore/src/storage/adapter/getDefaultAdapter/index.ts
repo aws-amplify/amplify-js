@@ -5,7 +5,7 @@ import IndexedDBSafariAdapter from '../IndexedDBSafariAdapter';
 import AsyncStorageAdapter from '../AsyncStorageAdapter';
 
 function isSafari() {
-	return (navigator.vendor.match(/apple/i) || '').length > 0;
+	return (navigator?.vendor?.match(/apple/i) || '').length > 0;
 }
 
 const getDefaultAdapter: () => Adapter = () => {

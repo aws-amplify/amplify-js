@@ -868,7 +868,7 @@ class IndexedDBAdapterSafari implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(hasOneIndex)
-									.get(values)
+									.get(keyArrOrSingleKey(values))
 							);
 
 							await this.deleteTraverse(
@@ -909,7 +909,7 @@ class IndexedDBAdapterSafari implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(index)
-									.get(values)
+									.get(keyArrOrSingleKey(values))
 							);
 
 							await this.deleteTraverse(
@@ -944,7 +944,7 @@ class IndexedDBAdapterSafari implements Adapter {
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
 							.index(index as string)
-							.getAll(keyValues);
+							.getAll(keyArrOrSingleKey(keyValues));
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
