@@ -1402,6 +1402,7 @@ class DataStore {
 	start = async (): Promise<void> => {
 		return this.runningProcesses
 			.add(async () => {
+				this.state = DataStoreState.Starting;
 				if (this.initialized === undefined) {
 					logger.debug('Starting DataStore');
 					this.initialized = new Promise((res, rej) => {
@@ -1410,7 +1411,6 @@ class DataStore {
 					});
 				} else {
 					await this.initialized;
-
 					return;
 				}
 
@@ -1450,7 +1450,8 @@ class DataStore {
 						this.syncPredicates,
 						this.amplifyConfig,
 						this.authModeStrategy,
-						this.amplifyContext
+						this.amplifyContext,
+						this.connectivityMonitor
 					);
 
 					const fullSyncIntervalInMilliseconds =
@@ -1491,6 +1492,7 @@ class DataStore {
 				}
 
 				await this.initialized;
+				this.state = DataStoreState.Running;
 			}, 'datastore start')
 			.catch(this.handleAddProcError('DataStore.start()'));
 	};
@@ -1973,14 +1975,10 @@ class DataStore {
 				.add(async () => {
 					await this.start();
 
-					if (!this.storage) {
-						throw new Error('No storage to query');
-					}
-
 					// Filter the events returned by Storage according to namespace,
 					// append original element data, and subscribe to the observable
-					source = this.storage
-						.observe(modelConstructor)
+					handle = this.storage
+						.observe(modelConstructor, predicate)
 						.filter(({ model }) => namespaceResolver(model) === USER)
 						.subscribe({
 							next: item =>
@@ -2418,6 +2416,7 @@ class DataStore {
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
 	async clear() {
+		checkSchemaInitialized();
 		this.state = DataStoreState.Clearing;
 		await this.runningProcesses.close();
 		if (this.storage === undefined) {
@@ -2460,6 +2459,7 @@ class DataStore {
 	 */
 	async stop(this: InstanceType<typeof DataStore>) {
 		this.state = DataStoreState.Stopping;
+
 		await this.runningProcesses.close();
 
 		if (syncSubscription && !syncSubscription.closed) {

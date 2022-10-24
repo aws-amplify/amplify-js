@@ -41,7 +41,7 @@ const logger = new Logger('DataStore');
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
-	private runningProcesses: BackgroundProcessManager | undefined;
+	private runningProcesses = new BackgroundProcessManager();
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -117,7 +117,7 @@ class SyncProcessor {
 
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
-			if (!this.runningProcesses!.isOpen) {
+			if (!this.runningProcesses.isOpen) {
 				throw new Error(
 					'sync.retreievePage termination was requested. Exiting.'
 				);
@@ -312,9 +312,6 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		this.runningProcesses =
-			this.runningProcesses || new BackgroundProcessManager();
-
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
@@ -335,8 +332,8 @@ class SyncProcessor {
 				.filter(([{ syncable }]) => syncable)
 				.map(
 					([modelDefinition, [namespace, lastSync]]) =>
-						this.runningProcesses!.isOpen &&
-						this.runningProcesses!.add(async onTerminate => {
+						this.runningProcesses.isOpen &&
+						this.runningProcesses.add(async onTerminate => {
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -356,7 +353,7 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
-									if (!this.runningProcesses) {
+									if (!this.runningProcesses.isOpen) {
 										return;
 									}
 
@@ -404,11 +401,6 @@ class SyncProcessor {
 			Promise.all(allModelsReady as Promise<any>[]).then(() => {
 				observer.complete();
 			});
-
-			// return this.runningProcesses.addCleaner(async () => {
-			// await this.runningProcesses.close();
-			// this.runningProcesses = undefined;
-			// });
 		});
 
 		return observable;
@@ -416,8 +408,8 @@ class SyncProcessor {
 
 	async stop() {
 		logger.debug('stopping sync processor');
-		this.runningProcesses && (await this.runningProcesses.close());
-		this.runningProcesses = undefined;
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
 		logger.debug('sync processor stopped');
 	}
 }

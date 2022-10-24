@@ -58,9 +58,30 @@ process.on('unhandledRejection', reason => {
 });
 
 describe('DataStore sanity testing checks', () => {
+	beforeEach(async () => {
+		jest.resetAllMocks();
+		jest.resetModules();
+	});
+
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
+	});
+
+	test('getDataStore() returns fully fresh instances of DataStore and models', async () => {
+		/**
+		 * Simulating connect/disconnect and/or `isNode` required the `getDataStore()`
+		 * to reset modules. Hence, the returned DataStore instances should be different.
+		 */
+
+		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
+		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
+
+		expect(DataStoreA).not.toBe(DataStoreB);
+		expect(PostA).not.toBe(PostB);
+
+		await DataStoreA.clear();
+		await DataStoreB.clear();
 	});
 
 	describe('cleans up after itself', () => {
@@ -148,12 +169,14 @@ describe('DataStore sanity testing checks', () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`clearing after unawaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							DataStore.start();
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`clearing after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
@@ -161,18 +184,21 @@ describe('DataStore sanity testing checks', () => {
 							DataStore.start();
 							await pause(1);
 							await DataStore.clear();
+							await DataStore.start();
 						});
 
 						test(`stopping after awaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
 							await DataStore.stop();
+							await DataStore.start();
 						});
 
 						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							DataStore.start();
 							await DataStore.stop();
+							await DataStore.start();
 						});
 
 						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
@@ -180,30 +206,35 @@ describe('DataStore sanity testing checks', () => {
 							DataStore.start();
 							await pause(1);
 							await DataStore.stop();
+							await DataStore.start();
 						});
 
 						// tslint:disable-next-line: max-line-length
 						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
-							DataStore.clear();
+							const clearing = DataStore.clear();
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
 								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
 							);
+
+							await clearing;
 						});
 
 						// tslint:disable-next-line: max-line-length
 						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
-							DataStore.stop();
+							const stopping = DataStore.stop();
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
 								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
 							);
+
+							await stopping;
 						});
 					}
 				}
@@ -1087,7 +1118,6 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 			const sub = DataStore.observeQuery(Post).subscribe(
 				({ items, isSynced }) => {
-					// console.log('received', items);
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
@@ -1231,6 +1261,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			const itemToEdit = (
 				await DataStore.query(Post, p => p.title.contains('include'))
 			).pop()!;
+
 			await fullSave(
 				Post.copyOf(itemToEdit, draft => {
 					draft.title = 'first edited post - omit';
@@ -1714,6 +1745,12 @@ describe('DataStore tests', () => {
 			}
 		}
 	});
+
+	/**
+	 * The following two "error on schema not initialized" tests enforce that
+	 * DataStore starts and clears alert customers that they may have multiple
+	 * versions of DataStore installed.
+	 */
 
 	test('error on schema not initialized on start', async () => {
 		const errorLog = jest.spyOn(console, 'error');

@@ -1225,6 +1225,23 @@ jobs:
           spec: custom-pk-has-many-many-to-many
           browser: << parameters.browser >>
 
+  integ_react_datastore_background_process_manager:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/background-process-manager
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Background Process Manager'
+          framework: react
+          category: datastore
+          sample_name: v2/background-process-manager
+          spec: background-process-manager
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1698,9 +1715,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              # TODO: restore this after CPK flakiness on Chrome is resolved
-              # <<: *test_browsers
-              browser: [firefox]
+              <<: *test_browsers
       - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
@@ -1709,9 +1724,16 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              # TODO: restore this after CPK flakiness on Chrome is resolved
-              # <<: *test_browsers
-              browser: [firefox]
+              <<: *test_browsers
+      - integ_react_datastore_background_process_manager:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1763,6 +1785,7 @@ workflows:
             # - integ_react_datastore_custom_pk_unconnected_models
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
+            - integ_react_datastore_background_process_manager
       - post_release:
           filters:
             branches:

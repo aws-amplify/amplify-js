@@ -15,7 +15,6 @@ describe('DataStore sync engine', () => {
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
-		console.log('BEFORE EACH');
 		({
 			DataStore,
 			connectivityMonitor,
@@ -29,7 +28,6 @@ describe('DataStore sync engine', () => {
 	});
 
 	afterEach(async () => {
-		console.log('AFTER EACH');
 		await DataStore.clear();
 	});
 
@@ -185,6 +183,7 @@ describe('DataStore sync engine', () => {
 			await simulateConnect(true);
 
 			console.log('waiting for outbox');
+
 			await outboxEmpty;
 
 			const table = graphqlService.tables.get('Post')!;

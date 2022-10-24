@@ -170,7 +170,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		target: 'es5',
 		module: 'commonjs',
 		moduleResolution: 'node',
-		declaration: true,
+		declaration: false,
 		noEmitOnError: true,
 		incremental: true,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,

@@ -21,6 +21,14 @@ import {
 type initSchemaType = typeof _initSchema;
 type DataStoreType = typeof DataStoreInstance;
 
+import {
+	initSchema as _initSchema,
+	DataStore as DataStoreInstance,
+} from '../src/datastore/datastore';
+
+type initSchemaType = typeof _initSchema;
+type DataStoreType = typeof DataStoreInstance;
+
 /**
  * Convenience function to wait for a number of ms.
  *
@@ -520,10 +528,6 @@ class FakeGraphQLService {
 				this.PKFields.set(model.name, ['id']);
 			}
 		}
-		// console.log('initialized FakeGraphQLServier', {
-		// 	tables: this.tables,
-		// 	PKFields: this.PKFields,
-		// });
 	}
 
 	public parseQuery(query) {
@@ -757,7 +761,7 @@ class FakeGraphQLService {
 					table.set(this.getPK(tableName, record), data[selection]);
 				}
 			} else if (type === 'update') {
-				// Simluate update using the default (AUTO_MERGE) for now.
+				// Simulate update using the default (AUTO_MERGE) for now.
 				// NOTE: We're not doing list/set merging. :o
 				const existing = table.get(this.getPK(tableName, record));
 				if (!existing) {
@@ -813,7 +817,6 @@ class FakeGraphQLService {
 			if (this.logRequests) console.log('response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
-			// console.log('observers', { observers, all: this.observers });
 			const typeName = {
 				create: 'Create',
 				update: 'Update',
@@ -828,7 +831,6 @@ class FakeGraphQLService {
 						},
 					},
 				};
-				// console.log('sending mutation', observerMessageName, message);
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
@@ -902,18 +904,23 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		if (log) console.log('done simulated disconnect.');
 	}
 
-	if (!isNode) {
-		jest.mock('@aws-amplify/core', () => {
-			const actual = jest.requireActual('@aws-amplify/core');
-			return {
-				...actual,
+	jest.mock('@aws-amplify/core', () => {
+		const actual = jest.requireActual('@aws-amplify/core');
+		return {
+			...actual,
+			browserOrNode: () => ({
+				isBrowser: !isNode,
+				isNode,
+			}),
+			JS: {
+				...actual.JS,
 				browserOrNode: () => ({
-					isBrowser: true,
-					isNode: false,
+					isBrowser: !isNode,
+					isNode,
 				}),
-			};
-		});
-	}
+			},
+		};
+	});
 
 	const {
 		initSchema,

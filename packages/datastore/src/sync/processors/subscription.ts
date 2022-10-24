@@ -63,6 +63,8 @@ class SubscriptionProcessor {
 
 	private runningProcesses: BackgroundProcessManager;
 
+	private runningProcesses = new BackgroundProcessManager();
+
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
@@ -321,6 +323,7 @@ class SubscriptionProcessor {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
 						.forEach(modelDefinition =>
+							this.runningProcesses.isOpen &&
 							this.runningProcesses.add(async () => {
 								const modelAuthModes = await getModelAuthModes({
 									authModeStrategy: this.authModeStrategy,
@@ -579,9 +582,12 @@ class SubscriptionProcessor {
 						);
 				});
 
-				this.runningProcesses.add(() =>
-					Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED))
-				);
+				this.runningProcesses.isOpen &&
+					this.runningProcesses.add(() =>
+						Promise.all(promises).then(() => {
+							observer.next(CONTROL_MSG.CONNECTED);
+						})
+					);
 			}, 'subscription processor new subscriber');
 
 			return this.runningProcesses.addCleaner(async () => {
@@ -614,7 +620,8 @@ class SubscriptionProcessor {
 	}
 
 	public async stop() {
-		this.runningProcesses && (await this.runningProcesses.close());
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
 	}
 
 	private passesPredicateValidation(
