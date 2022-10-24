@@ -1,4 +1,8 @@
-import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	browserOrNode,
+	ConsoleLogger as Logger,
+	BackgroundProcessManager,
+} from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
@@ -113,6 +117,8 @@ export class SyncEngine {
 		boolean
 	> = new WeakMap();
 
+	private runningProcesses: BackgroundProcessManager;
+
 	public getModelSyncedStatus(
 		modelConstructor: PersistentModelConstructor<any>
 	): boolean {
@@ -131,8 +137,11 @@ export class SyncEngine {
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
+		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
+		this.runningProcesses = new BackgroundProcessManager();
+
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
 		] as PersistentModelConstructor<MutationEvent>;
@@ -178,7 +187,8 @@ export class SyncEngine {
 			this.amplifyContext
 		);
 
-		this.datastoreConnectivity = new DataStoreConnectivity();
+		this.datastoreConnectivity =
+			this.connectivityMonitor || new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -187,7 +197,7 @@ export class SyncEngine {
 
 			let subscriptions: ZenObservable.Subscription[] = [];
 
-			(async () => {
+			this.runningProcesses.add(async () => {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
@@ -195,179 +205,204 @@ export class SyncEngine {
 					return;
 				}
 
-				const startPromise = new Promise(resolve => {
-					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
-						// From offline to online
-						if (online && !this.online) {
-							this.online = online;
+				// this is awaited at the bottom. so, we don't need to register
+				// this explicitly with the context. it's already contained.
+				const startPromise = new Promise((doneStarting, failedStarting) => {
+					this.datastoreConnectivity.status().subscribe(
+						async ({ online }) =>
+							this.runningProcesses.isOpen &&
+							this.runningProcesses.add(async onTerminate => {
+								// From offline to online
+								if (online && !this.online) {
+									this.online = online;
 
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
-								data: {
-									active: this.online,
-								},
-							});
+									observer.next({
+										type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+										data: {
+											active: this.online,
+										},
+									});
 
-							let ctlSubsObservable: Observable<CONTROL_MSG>;
-							let dataSubsObservable: Observable<
-								[TransformerMutationType, SchemaModel, PersistentModel]
-							>;
+									let ctlSubsObservable: Observable<CONTROL_MSG>;
+									let dataSubsObservable: Observable<
+										[TransformerMutationType, SchemaModel, PersistentModel]
+									>;
 
-							if (isNode) {
-								logger.warn(
-									'Realtime disabled when in a server-side environment'
-								);
-							} else {
-								//#region GraphQL Subscriptions
-								[
-									// const ctlObservable: Observable<CONTROL_MSG>
-									ctlSubsObservable,
-									// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
-									// id: string;
-									// } & Record<string, any>>]>
-									dataSubsObservable,
-								] = this.subscriptionsProcessor.start();
+									// NOTE: need a way to override this conditional for testing.
+									if (isNode) {
+										logger.warn(
+											'Realtime disabled when in a server-side environment'
+										);
+									} else {
+										//#region GraphQL Subscriptions
+										[
+											// const ctlObservable: Observable<CONTROL_MSG>
+											ctlSubsObservable,
+											// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
+											// id: string;
+											// } & Record<string, any>>]>
+											dataSubsObservable,
+										] = this.subscriptionsProcessor.start();
 
-								try {
-									await new Promise((resolve, reject) => {
-										const ctlSubsSubscription = ctlSubsObservable.subscribe({
-											next: msg => {
-												if (msg === CONTROL_MSG.CONNECTED) {
-													resolve();
-												}
-											},
-											error: err => {
-												reject(err);
-												const handleDisconnect = this.disconnectionHandler();
-												handleDisconnect(err);
-											},
+										try {
+											await new Promise((resolve, reject) => {
+												onTerminate.then(reject);
+												const ctlSubsSubscription = ctlSubsObservable.subscribe(
+													{
+														next: msg => {
+															if (msg === CONTROL_MSG.CONNECTED) {
+																resolve();
+															}
+														},
+														error: err => {
+															reject(err);
+															const handleDisconnect =
+																this.disconnectionHandler();
+															handleDisconnect(err);
+														},
+													}
+												);
+
+												subscriptions.push(ctlSubsSubscription);
+											});
+										} catch (err) {
+											observer.error(err);
+											failedStarting();
+											return;
+										}
+
+										logger.log('Realtime ready');
+
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
 										});
 
-										subscriptions.push(ctlSubsSubscription);
+										//#endregion
+									}
+
+									//#region Base & Sync queries
+									try {
+										await new Promise((resolve, reject) => {
+											const syncQuerySubscription =
+												this.syncQueriesObservable().subscribe({
+													next: message => {
+														const { type } = message;
+
+														if (
+															type ===
+															ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+														) {
+															resolve();
+														}
+
+														observer.next(message);
+													},
+													complete: () => {
+														resolve();
+													},
+													error: error => {
+														reject(error);
+													},
+												});
+
+											if (syncQuerySubscription) {
+												subscriptions.push(syncQuerySubscription);
+											}
+										});
+									} catch (error) {
+										observer.error(error);
+										failedStarting();
+										return;
+									}
+									//#endregion
+
+									//#region process mutations (outbox)
+									subscriptions.push(
+										this.mutationsProcessor
+											.start()
+											.subscribe(({ modelDefinition, model: item, hasMore }) =>
+												this.runningProcesses.add(async () => {
+													const modelConstructor = this.userModelClasses[
+														modelDefinition.name
+													] as PersistentModelConstructor<any>;
+
+													const model = this.modelInstanceCreator(
+														modelConstructor,
+														item
+													);
+
+													await this.storage.runExclusive(storage =>
+														this.modelMerger.merge(
+															storage,
+															model,
+															modelDefinition
+														)
+													);
+
+													observer.next({
+														type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+														data: {
+															model: modelConstructor,
+															element: model,
+														},
+													});
+
+													observer.next({
+														type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+														data: {
+															isEmpty: !hasMore,
+														},
+													});
+												}, 'mutation processor event')
+											)
+									);
+									//#endregion
+
+									//#region Merge subscriptions buffer
+									// TODO: extract to function
+									if (!isNode) {
+										subscriptions.push(
+											dataSubsObservable.subscribe(
+												([_transformerMutationType, modelDefinition, item]) =>
+													this.runningProcesses.add(async () => {
+														const modelConstructor = this.userModelClasses[
+															modelDefinition.name
+														] as PersistentModelConstructor<any>;
+
+														const model = this.modelInstanceCreator(
+															modelConstructor,
+															item
+														);
+
+														await this.storage.runExclusive(storage =>
+															this.modelMerger.merge(
+																storage,
+																model,
+																modelDefinition
+															)
+														);
+													}, 'subscription dataSubsObservable event')
+											)
+										);
+									}
+									//#endregion
+								} else if (!online) {
+									this.online = online;
+
+									observer.next({
+										type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+										data: {
+											active: this.online,
+										},
 									});
-								} catch (err) {
-									observer.error(err);
-									return;
+
+									subscriptions.forEach(sub => sub.unsubscribe());
+									subscriptions = [];
 								}
 
-								logger.log('Realtime ready');
-
-								observer.next({
-									type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
-								});
-
-								//#endregion
-							}
-
-							//#region Base & Sync queries
-							try {
-								await new Promise((resolve, reject) => {
-									const syncQuerySubscription =
-										this.syncQueriesObservable().subscribe({
-											next: message => {
-												const { type } = message;
-
-												if (
-													type === ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-												) {
-													resolve();
-												}
-
-												observer.next(message);
-											},
-											complete: () => {
-												resolve();
-											},
-											error: error => {
-												reject(error);
-											},
-										});
-
-									if (syncQuerySubscription) {
-										subscriptions.push(syncQuerySubscription);
-									}
-								});
-							} catch (error) {
-								observer.error(error);
-								return;
-							}
-							//#endregion
-
-							//#region process mutations
-							subscriptions.push(
-								this.mutationsProcessor
-									.start()
-									.subscribe(({ modelDefinition, model: item, hasMore }) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
-
-										const model = this.modelInstanceCreator(
-											modelConstructor,
-											item
-										);
-
-										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model, modelDefinition)
-										);
-
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
-											data: {
-												model: modelConstructor,
-												element: model,
-											},
-										});
-
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
-											data: {
-												isEmpty: !hasMore,
-											},
-										});
-									})
-							);
-							//#endregion
-
-							//#region Merge subscriptions buffer
-							// TODO: extract to function
-							if (!isNode) {
-								subscriptions.push(
-									dataSubsObservable.subscribe(
-										([_transformerMutationType, modelDefinition, item]) => {
-											const modelConstructor = this.userModelClasses[
-												modelDefinition.name
-											] as PersistentModelConstructor<any>;
-
-											const model = this.modelInstanceCreator(
-												modelConstructor,
-												item
-											);
-
-											this.storage.runExclusive(storage =>
-												this.modelMerger.merge(storage, model, modelDefinition)
-											);
-										}
-									)
-								);
-							}
-							//#endregion
-						} else if (!online) {
-							this.online = online;
-
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
-								data: {
-									active: this.online,
-								},
-							});
-
-							subscriptions.forEach(sub => sub.unsubscribe());
-							subscriptions = [];
-						}
-
-						resolve();
-					});
+								doneStarting();
+							}, 'datastore connectivity event')
+					);
 				});
 
 				this.storage
@@ -377,51 +412,52 @@ export class SyncEngine {
 						return modelDefinition.syncable === true;
 					})
 					.subscribe({
-						next: async ({ opType, model, element, condition }) => {
-							const namespace =
-								this.schema.namespaces[this.namespaceResolver(model)];
-							const MutationEventConstructor = this.modelClasses[
-								'MutationEvent'
-							] as PersistentModelConstructor<MutationEvent>;
-							const modelDefinition = this.getModelDefinition(model);
-							const graphQLCondition = predicateToGraphQLCondition(
-								condition,
-								modelDefinition
-							);
-							const mutationEvent = createMutationInstanceFromModelOperation(
-								namespace.relationships,
-								this.getModelDefinition(model),
-								opType,
-								model,
-								element,
-								graphQLCondition,
-								MutationEventConstructor,
-								this.modelInstanceCreator
-							);
-
-							await this.outbox.enqueue(this.storage, mutationEvent);
-
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED,
-								data: {
+						next: async ({ opType, model, element, condition }) =>
+							this.runningProcesses.add(async () => {
+								const namespace =
+									this.schema.namespaces[this.namespaceResolver(model)];
+								const MutationEventConstructor = this.modelClasses[
+									'MutationEvent'
+								] as PersistentModelConstructor<MutationEvent>;
+								const modelDefinition = this.getModelDefinition(model);
+								const graphQLCondition = predicateToGraphQLCondition(
+									condition,
+									modelDefinition
+								);
+								const mutationEvent = createMutationInstanceFromModelOperation(
+									namespace.relationships,
+									this.getModelDefinition(model),
+									opType,
 									model,
 									element,
-								},
-							});
+									graphQLCondition,
+									MutationEventConstructor,
+									this.modelInstanceCreator
+								);
 
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
-								data: {
-									isEmpty: false,
-								},
-							});
+								await this.outbox.enqueue(this.storage, mutationEvent);
 
-							await startPromise;
+								observer.next({
+									type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED,
+									data: {
+										model,
+										element,
+									},
+								});
 
-							if (this.online) {
-								this.mutationsProcessor.resume();
-							}
-						},
+								observer.next({
+									type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+									data: {
+										isEmpty: false,
+									},
+								});
+
+								await startPromise;
+
+								if (this.online) {
+									this.mutationsProcessor.resume();
+								}
+							}, 'storage event'),
 					});
 
 				observer.next({
@@ -442,11 +478,7 @@ export class SyncEngine {
 				observer.next({
 					type: ControlMessage.SYNC_ENGINE_READY,
 				});
-			})();
-
-			return () => {
-				subscriptions.forEach(sub => sub.unsubscribe());
-			};
+			}, 'sync start');
 		});
 	}
 
@@ -454,7 +486,12 @@ export class SyncEngine {
 		currentTimeStamp: number
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
-			(await this.getModelsMetadata()).map(
+			(
+				await this.runningProcesses.add(
+					() => this.getModelsMetadata(),
+					'sync/index getModelsMetadataWithNextFullSync'
+				)
+			).map(
 				({
 					namespace,
 					model,
@@ -489,224 +526,249 @@ export class SyncEngine {
 
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
-			let waitTimeoutId: ReturnType<typeof setTimeout>;
 
-			(async () => {
-				while (!observer.closed) {
-					const count: WeakMap<
-						PersistentModelConstructor<any>,
-						{
-							new: number;
-							updated: number;
-							deleted: number;
-						}
-					> = new WeakMap();
+			this.runningProcesses.isOpen &&
+				this.runningProcesses.add(async onTerminate => {
+					let terminated = false;
 
-					const modelLastSync = await this.getModelsMetadataWithNextFullSync(
-						Date.now()
-					);
-					const paginatingModels = new Set(modelLastSync.keys());
+					while (!observer.closed && !terminated) {
+						const count: WeakMap<
+							PersistentModelConstructor<any>,
+							{
+								new: number;
+								updated: number;
+								deleted: number;
+							}
+						> = new WeakMap();
 
-					let newestFullSyncStartedAt: number;
-					let theInterval: number;
+						const modelLastSync = await this.getModelsMetadataWithNextFullSync(
+							Date.now()
+						);
+						const paginatingModels = new Set(modelLastSync.keys());
 
-					let start: number;
-					let duration: number;
-					let newestStartedAt: number;
-					await new Promise(resolve => {
-						syncQueriesSubscription = this.syncQueriesProcessor
-							.start(modelLastSync)
-							.subscribe({
-								next: async ({
-									namespace,
-									modelDefinition,
-									items,
-									done,
-									startedAt,
-									isFullSync,
-								}) => {
-									const modelConstructor = this.userModelClasses[
-										modelDefinition.name
-									] as PersistentModelConstructor<any>;
+						let newestFullSyncStartedAt: number;
+						let theInterval: number;
 
-									if (!count.has(modelConstructor)) {
-										count.set(modelConstructor, {
-											new: 0,
-											updated: 0,
-											deleted: 0,
-										});
+						let start: number;
+						let duration: number;
+						let newestStartedAt: number;
+						await new Promise((resolve, reject) => {
+							if (!this.runningProcesses.isOpen) resolve();
+							onTerminate.then(() => resolve());
+							syncQueriesSubscription = this.syncQueriesProcessor
+								.start(modelLastSync)
+								.subscribe({
+									next: async ({
+										namespace,
+										modelDefinition,
+										items,
+										done,
+										startedAt,
+										isFullSync,
+									}) => {
+										const modelConstructor = this.userModelClasses[
+											modelDefinition.name
+										] as PersistentModelConstructor<any>;
 
-										start = getNow();
-										newestStartedAt =
-											newestStartedAt === undefined
-												? startedAt
-												: Math.max(newestStartedAt, startedAt);
-									}
+										if (!count.has(modelConstructor)) {
+											count.set(modelConstructor, {
+												new: 0,
+												updated: 0,
+												deleted: 0,
+											});
 
-									/**
-									 * If there are mutations in the outbox for a given id, those need to be
-									 * merged individually. Otherwise, we can merge them in batches.
-									 */
-									await this.storage.runExclusive(async storage => {
-										const idsInOutbox = await this.outbox.getModelIds(storage);
+											start = getNow();
+											newestStartedAt =
+												newestStartedAt === undefined
+													? startedAt
+													: Math.max(newestStartedAt, startedAt);
+										}
 
-										const oneByOne: ModelInstanceMetadata[] = [];
-										const page = items.filter(item => {
-											const itemId = getIdentifierValue(modelDefinition, item);
-
-											if (!idsInOutbox.has(itemId)) {
-												return true;
-											}
-
-											oneByOne.push(item);
-											return false;
-										});
-
-										const opTypeCount: [any, OpType][] = [];
-
-										for (const item of oneByOne) {
-											const opType = await this.modelMerger.merge(
-												storage,
-												item,
-												modelDefinition
+										/**
+										 * If there are mutations in the outbox for a given id, those need to be
+										 * merged individually. Otherwise, we can merge them in batches.
+										 */
+										await this.storage.runExclusive(async storage => {
+											const idsInOutbox = await this.outbox.getModelIds(
+												storage
 											);
 
-											if (opType !== undefined) {
-												opTypeCount.push([item, opType]);
-											}
-										}
+											const oneByOne: ModelInstanceMetadata[] = [];
+											const page = items.filter(item => {
+												const itemId = getIdentifierValue(
+													modelDefinition,
+													item
+												);
 
-										opTypeCount.push(
-											...(await this.modelMerger.mergePage(
-												storage,
-												modelConstructor,
-												page,
-												modelDefinition
-											))
-										);
+												if (!idsInOutbox.has(itemId)) {
+													return true;
+												}
 
-										const counts = count.get(modelConstructor);
-
-										opTypeCount.forEach(([, opType]) => {
-											switch (opType) {
-												case OpType.INSERT:
-													counts.new++;
-													break;
-												case OpType.UPDATE:
-													counts.updated++;
-													break;
-												case OpType.DELETE:
-													counts.deleted++;
-													break;
-												default:
-													exhaustiveCheck(opType);
-											}
-										});
-									});
-
-									if (done) {
-										const { name: modelName } = modelDefinition;
-
-										//#region update last sync for type
-										let modelMetadata = await this.getModelMetadata(
-											namespace,
-											modelName
-										);
-
-										const { lastFullSync, fullSyncInterval } = modelMetadata;
-
-										theInterval = fullSyncInterval;
-
-										newestFullSyncStartedAt =
-											newestFullSyncStartedAt === undefined
-												? lastFullSync
-												: Math.max(
-														newestFullSyncStartedAt,
-														isFullSync ? startedAt : lastFullSync
-												  );
-
-										modelMetadata = (
-											this.modelClasses
-												.ModelMetadata as PersistentModelConstructor<ModelMetadata>
-										).copyOf(modelMetadata, draft => {
-											draft.lastSync = startedAt;
-											draft.lastFullSync = isFullSync
-												? startedAt
-												: modelMetadata.lastFullSync;
-										});
-
-										await this.storage.save(
-											modelMetadata,
-											undefined,
-											ownSymbol
-										);
-										//#endregion
-
-										const counts = count.get(modelConstructor);
-
-										this.modelSyncedStatus.set(modelConstructor, true);
-
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
-											data: {
-												model: modelConstructor,
-												isFullSync,
-												isDeltaSync: !isFullSync,
-												counts,
-											},
-										});
-
-										paginatingModels.delete(modelDefinition);
-
-										if (paginatingModels.size === 0) {
-											duration = getNow() - start;
-											resolve();
-											observer.next({
-												type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+												oneByOne.push(item);
+												return false;
 											});
-											syncQueriesSubscription.unsubscribe();
+
+											const opTypeCount: [any, OpType][] = [];
+
+											for (const item of oneByOne) {
+												const opType = await this.modelMerger.merge(
+													storage,
+													item,
+													modelDefinition
+												);
+
+												if (opType !== undefined) {
+													opTypeCount.push([item, opType]);
+												}
+											}
+
+											opTypeCount.push(
+												...(await this.modelMerger.mergePage(
+													storage,
+													modelConstructor,
+													page,
+													modelDefinition
+												))
+											);
+
+											const counts = count.get(modelConstructor);
+
+											opTypeCount.forEach(([, opType]) => {
+												switch (opType) {
+													case OpType.INSERT:
+														counts.new++;
+														break;
+													case OpType.UPDATE:
+														counts.updated++;
+														break;
+													case OpType.DELETE:
+														counts.deleted++;
+														break;
+													default:
+														exhaustiveCheck(opType);
+												}
+											});
+										});
+
+										if (done) {
+											const { name: modelName } = modelDefinition;
+
+											//#region update last sync for type
+											let modelMetadata = await this.getModelMetadata(
+												namespace,
+												modelName
+											);
+
+											const { lastFullSync, fullSyncInterval } = modelMetadata;
+
+											theInterval = fullSyncInterval;
+
+											newestFullSyncStartedAt =
+												newestFullSyncStartedAt === undefined
+													? lastFullSync
+													: Math.max(
+															newestFullSyncStartedAt,
+															isFullSync ? startedAt : lastFullSync
+													  );
+
+											modelMetadata = (
+												this.modelClasses
+													.ModelMetadata as PersistentModelConstructor<ModelMetadata>
+											).copyOf(modelMetadata, draft => {
+												draft.lastSync = startedAt;
+												draft.lastFullSync = isFullSync
+													? startedAt
+													: modelMetadata.lastFullSync;
+											});
+
+											await this.storage.save(
+												modelMetadata,
+												undefined,
+												ownSymbol
+											);
+											//#endregion
+
+											const counts = count.get(modelConstructor);
+
+											this.modelSyncedStatus.set(modelConstructor, true);
+
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
+												data: {
+													model: modelConstructor,
+													isFullSync,
+													isDeltaSync: !isFullSync,
+													counts,
+												},
+											});
+
+											paginatingModels.delete(modelDefinition);
+
+											if (paginatingModels.size === 0) {
+												duration = getNow() - start;
+												resolve();
+												observer.next({
+													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+												});
+												syncQueriesSubscription.unsubscribe();
+											}
 										}
-									}
-								},
-								error: error => {
-									observer.error(error);
+									},
+									error: error => {
+										observer.error(error);
+									},
+								});
+
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_STARTED,
+								data: {
+									models: Array.from(paginatingModels).map(({ name }) => name),
 								},
 							});
-
-						observer.next({
-							type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_STARTED,
-							data: {
-								models: Array.from(paginatingModels).map(({ name }) => name),
-							},
 						});
-					});
 
-					const msNextFullSync =
-						newestFullSyncStartedAt +
-						theInterval -
-						(newestStartedAt + duration);
+						const msNextFullSync =
+							newestFullSyncStartedAt +
+							theInterval -
+							(newestStartedAt + duration);
 
-					logger.debug(
-						`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
-							Date.now() + msNextFullSync
-						)})`
-					);
+						logger.debug(
+							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
+								Date.now() + msNextFullSync
+							)})`
+						);
 
-					await new Promise(res => {
-						waitTimeoutId = setTimeout(res, msNextFullSync);
-					});
-				}
-			})();
+						// TODO: create `BackgroundProcessManager.sleep()` ... but, need to put
+						// a lot of thought into what that contract looks like to
+						//  support possible use-cases:
+						//
+						//  1. non-cancelable
+						//  2. cancelable, unsleep on exit()
+						//  3. cancelable, throw Error on exit()
+						//  4. cancelable, callback first on exit()?
+						//  5. ... etc. ? ...
+						//
+						// TLDR; this is a lot of complexity here for a sleep(),
+						// but, it's not clear to me yet how to support an
+						// extensible, centralized cancelable `sleep()` elegantly.
+						await this.runningProcesses.add(async onTerminate => {
+							let sleepTimer;
+							let unsleep;
 
-			return () => {
-				if (syncQueriesSubscription) {
-					syncQueriesSubscription.unsubscribe();
-				}
+							const sleep = new Promise(_unsleep => {
+								unsleep = _unsleep;
+								sleepTimer = setTimeout(unsleep, msNextFullSync);
+							});
 
-				if (waitTimeoutId) {
-					clearTimeout(waitTimeoutId);
-				}
-			};
+							onTerminate.then(() => {
+								terminated = true;
+								unsleep();
+							});
+
+							return sleep;
+						}, 'syncQueriesObservable sleep');
+					}
+				}, 'syncQueriesObservable main');
 		});
 	}
 
@@ -724,6 +786,36 @@ export class SyncEngine {
 
 	public unsubscribeConnectivity() {
 		this.datastoreConnectivity.unsubscribe();
+	}
+
+	/**
+	 * Stops all subscription activities and resolves when all activies report
+	 * that they're disconnected, done retrying, etc..
+	 */
+	public async stop() {
+		logger.debug('stopping sync engine');
+
+		/**
+		 * Gracefully disconnecting subscribers first just prevents *more* work
+		 * from entering the pipelines.
+		 */
+		this.unsubscribeConnectivity();
+
+		/**
+		 * aggressively shut down any lingering background processes.
+		 * some of this might be semi-redundant with unsubscribing. however,
+		 * unsubscribing doesn't allow us to wait for settling.
+		 * (Whereas `stop()` does.)
+		 */
+
+		await this.mutationsProcessor.stop();
+		await this.subscriptionsProcessor.stop();
+		await this.datastoreConnectivity.stop();
+		await this.syncQueriesProcessor.stop();
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
+
+		logger.debug('sync engine stopped and ready to restart');
 	}
 
 	private async setupModels(params: StartParams) {
