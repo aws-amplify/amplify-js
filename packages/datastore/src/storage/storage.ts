@@ -255,7 +255,17 @@ class StorageClass implements StorageFacade {
 			throw new Error('Storage adapter is missing');
 		}
 
-		return await this.adapter.query(modelConstructor, predicate, pagination);
+		// console.log('s.query', modelConstructor.name);
+
+		const result = await this.adapter.query(
+			modelConstructor,
+			predicate,
+			pagination
+		);
+
+		// console.log({ result });
+
+		return result;
 	}
 
 	async queryOne<T extends PersistentModel>(

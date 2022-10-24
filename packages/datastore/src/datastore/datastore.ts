@@ -1204,33 +1204,49 @@ async function checkSchemaVersion(
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
+	// console.log('checkScehamVersion 1');
+
 	await storage.runExclusive(async s => {
-		const [schemaVersionSetting] = await s.query(
-			Setting,
-			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				c.key('eq', SETTING_SCHEMA_VERSION)
-			),
-			{ page: 0, limit: 1 }
-		);
+		// console.log('checkScehamVersion 2');
 
-		if (
-			schemaVersionSetting !== undefined &&
-			schemaVersionSetting.value !== undefined
-		) {
-			const storedValue = JSON.parse(schemaVersionSetting.value);
+		// console.log(await s.query(Setting));
 
-			if (storedValue !== version) {
-				await s.clear(false);
-			}
-		} else {
-			await s.save(
-				modelInstanceCreator(Setting, {
-					key: SETTING_SCHEMA_VERSION,
-					value: JSON.stringify(version),
-				})
+		try {
+			const [schemaVersionSetting] = await s.query(
+				Setting,
+				ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+					c.key('eq', SETTING_SCHEMA_VERSION)
+				),
+				{ page: 0, limit: 1 }
 			);
+
+			// console.log('checkScehamVersion 3', { schemaVersionSetting });
+
+			if (
+				schemaVersionSetting !== undefined &&
+				schemaVersionSetting.value !== undefined
+			) {
+				const storedValue = JSON.parse(schemaVersionSetting.value);
+
+				if (storedValue !== version) {
+					await s.clear(false);
+				}
+			} else {
+				await s.save(
+					modelInstanceCreator(Setting, {
+						key: SETTING_SCHEMA_VERSION,
+						value: JSON.stringify(version),
+					})
+				);
+			}
+		} catch (err) {
+			console.log('err instead', { err });
 		}
+
+		// console.log('checkScehamVersion 4');
 	});
+
+	// console.log('checkScehamVersion 5');
 }
 
 let syncSubscription: ZenObservable.Subscription;
@@ -1400,19 +1416,26 @@ class DataStore {
 	 * attaches a sync engine, starts it, and subscribes.
 	 */
 	start = async (): Promise<void> => {
+		// console.log('start 0');
 		return this.runningProcesses
 			.add(async () => {
+				// console.log('start 1');
 				this.state = DataStoreState.Starting;
 				if (this.initialized === undefined) {
+					// console.log('starting datastore');
 					logger.debug('Starting DataStore');
 					this.initialized = new Promise((res, rej) => {
 						this.initResolve = res;
 						this.initReject = rej;
 					});
 				} else {
+					// console.log('already startd, awaiting');
 					await this.initialized;
+					// console.log('start done awaiting');
 					return;
 				}
+
+				// console.log('start 2');
 
 				this.storage = new Storage(
 					schema,
@@ -1423,10 +1446,19 @@ class DataStore {
 					this.sessionId
 				);
 
+				// console.log('start 3');
+
 				await this.storage.init();
 
+				// console.log('start 4');
+
 				checkSchemaInitialized();
+
+				// console.log('start 5');
+
 				await checkSchemaVersion(this.storage, schema.version);
+
+				// console.log('start 6');
 
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
@@ -1537,7 +1569,6 @@ class DataStore {
 				if (!isValidModelConstructor(modelConstructor)) {
 					const msg = 'Constructor is not for a valid model';
 					logger.error(msg, { modelConstructor });
-					console.error(new Error('ahhhh'), modelConstructor);
 					throw new Error(msg);
 				}
 
@@ -2459,20 +2490,27 @@ class DataStore {
 	async stop(this: InstanceType<typeof DataStore>) {
 		this.state = DataStoreState.Stopping;
 
+		// console.log('stop 1');
 		await this.runningProcesses.close();
+		// console.log('stop 1');
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
+		// console.log('stop 3');
 
 		if (this.sync) {
+			// console.log('stop 3.1');
 			await this.sync.stop();
+			// console.log('stop 3.2');
 		}
+		// console.log('stop 4');
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 		await this.runningProcesses.open();
 		this.state = DataStoreState.NotRunning;
+		// console.log('stop 5');
 	}
 
 	/**
