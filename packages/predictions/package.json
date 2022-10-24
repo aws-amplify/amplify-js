@@ -16,7 +16,7 @@
 		"./dist/aws-amplify-predictions.js"
 	],
 	"scripts": {
-		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2 ",
+		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
