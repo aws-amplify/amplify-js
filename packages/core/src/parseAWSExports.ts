@@ -3,7 +3,7 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Parser');
 
-export const parseMobileHubConfig = (config): AmplifyConfig => {
+export const parseAWSExports = (config): AmplifyConfig => {
 	const amplifyConfig: AmplifyConfig = {};
 	// Analytics
 	if (config['aws_mobile_analytics_app_id']) {
@@ -80,15 +80,3 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
 	return amplifyConfig;
 };
-
-/**
- * @deprecated use per-function export
- */
-export class Parser {
-	static parseMobilehubConfig = parseMobileHubConfig;
-}
-
-/**
- * @deprecated use per-function export
- */
-export default Parser;

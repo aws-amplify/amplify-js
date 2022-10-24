@@ -110,8 +110,9 @@ describe('MutationProcessor', () => {
 		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
 			// custom PK @key(fields: ["postId"])
 			const deletePost = new PostCustomPK({
-				postId: 100,
+				postId: '100',
 				title: 'Title',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
@@ -124,14 +125,15 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.postId).toEqual(100);
+			expect(input.postId).toEqual('100');
 			expect(input.id).toBeUndefined();
 		});
 
 		it('Should correctly generate delete mutation input for models with a custom PK - multi-field', async () => {
 			// multi-key PK @key(fields: ["id", "postId"])
 			const deletePost = new PostCustomPKSort({
-				postId: 100,
+				id: 'abcdef',
+				postId: '100',
 				title: 'Title',
 			});
 
@@ -145,8 +147,23 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).toEqual(deletePost.id);
-			expect(input.postId).toEqual(100);
+			expect(input.id).toEqual('abcdef');
+			expect(input.postId).toEqual('100');
+		});
+	});
+	describe('Call to rest api', () => {
+		it('Should send a user agent with the datastore suffix the rest api request', async () => {
+			jest.spyOn(mutationProcessor, 'resume');
+			await mutationProcessor.resume();
+
+			expect(mockRestPost).toBeCalledWith(
+				expect.anything(),
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+					}),
+				})
+			);
 		});
 	});
 	describe('Call to rest api', () => {

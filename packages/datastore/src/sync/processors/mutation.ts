@@ -27,7 +27,13 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import { exhaustiveCheck, USER, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
+import {
+	exhaustiveCheck,
+	extractTargetNamesFromSrc,
+	USER,
+	USER_AGENT_SUFFIX_DATASTORE,
+	ID,
+} from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -452,63 +458,61 @@ class MutationProcessor {
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
-		if (primaryKey && primaryKey.length) {
+		if (primaryKey?.length) {
 			for (const pkField of primaryKey) {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			deleteInput['id'] = parsedData.id;
+			deleteInput[ID] = (<any>parsedData).id;
 		}
 
-		const filteredData =
-			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>deleteInput // For DELETE mutations, only PK is sent
-				: Object.values(modelDefinition.fields)
-						.filter(({ name, type, association }) => {
-							// connections
-							if (isModelFieldType(type)) {
-								// BELONGS_TO
-								if (
-									isTargetNameAssociation(association) &&
-									association.connectionType === 'BELONGS_TO'
-								) {
-									return true;
-								}
+		let mutationInput;
 
-								// All other connections
-								return false;
+		if (operation === TransformerMutationType.DELETE) {
+			// For DELETE mutations, only the key(s) are included in the input
+			mutationInput = <ModelInstanceMetadata>deleteInput;
+		} else {
+			// Otherwise, we construct the mutation input with the following logic
+			mutationInput = {};
+			const modelFields = Object.values(modelDefinition.fields);
+
+			for (const { name, type, association } of modelFields) {
+				// model fields should be stripped out from the input
+				if (isModelFieldType(type)) {
+					// except for belongs to relations - we need to replace them with the correct foreign key(s)
+					if (
+						isTargetNameAssociation(association) &&
+						association.connectionType === 'BELONGS_TO'
+					) {
+						const targetNames: string[] | undefined =
+							extractTargetNamesFromSrc(association);
+
+						if (targetNames) {
+							// instead of including the connected model itself, we add its key(s) to the mutation input
+							for (const targetName of targetNames) {
+								mutationInput[targetName] = parsedData[targetName];
 							}
+						}
+					}
+					continue;
+				}
+				// scalar fields / non-model types
 
-							if (operation === TransformerMutationType.UPDATE) {
-								// this limits the update mutation input to changed fields only
-								return parsedData.hasOwnProperty(name);
-							}
+				if (operation === TransformerMutationType.UPDATE) {
+					if (!parsedData.hasOwnProperty(name)) {
+						// for update mutations - strip out a field if it's unchanged
+						continue;
+					}
+				}
 
-							// scalars and non-model types
-							return true;
-						})
-						.map(({ name, type, association }) => {
-							let fieldName = name;
-							let val = parsedData[name];
-
-							if (
-								isModelFieldType(type) &&
-								isTargetNameAssociation(association)
-							) {
-								fieldName = association.targetName;
-								val = parsedData[fieldName];
-							}
-
-							return [fieldName, val];
-						})
-						.reduce((acc, [k, v]) => {
-							acc[k] = v;
-							return acc;
-						}, <typeof parsedData>{});
+				// all other fields are added to the input object
+				mutationInput[name] = parsedData[name];
+			}
+		}
 
 		// Build mutation variables input object
 		const input: ModelInstanceMetadata = {
-			...filteredData,
+			...mutationInput,
 			_version,
 		};
 

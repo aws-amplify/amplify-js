@@ -15,7 +15,7 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	Parser,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
@@ -95,7 +95,7 @@ export class AnalyticsClass {
 	public configure(config?) {
 		if (!config) return this._config;
 		logger.debug('configure Analytics', config);
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign(
 			{},
 			this._config,

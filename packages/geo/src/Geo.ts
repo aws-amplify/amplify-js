@@ -13,7 +13,7 @@
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	parseMobileHubConfig,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
@@ -35,6 +35,7 @@ import {
 	ListGeofenceOptions,
 	ListGeofenceResults,
 	DeleteGeofencesResults,
+	searchByPlaceIdOptions,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -112,7 +113,7 @@ export class GeoClass {
 
 		if (!config) return this._config;
 
-		const amplifyConfig = parseMobileHubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
 
 		this._pluggables.forEach(pluggable => {
@@ -162,6 +163,48 @@ export class GeoClass {
 
 		try {
 			return await prov.searchByText(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for search term suggestions based on input text
+	 * @param  {string} text - The text string that is to be search for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
+	 */
+	public async searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	) {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchForSuggestions(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for location by unique ID
+	 * @param  {string} placeId - Unique ID of the location that is to be searched for
+	 * @param  {searchByPlaceIdOptions} options? - Optional parameters to the search
+	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
+	 */
+	public async searchByPlaceId(
+		placeId: string,
+		options?: searchByPlaceIdOptions
+	) {
+		const providerName = DEFAULT_PROVIDER;
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchByPlaceId(placeId, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

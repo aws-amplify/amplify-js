@@ -1,9 +1,9 @@
-import { parseMobileHubConfig } from '../src/Parser';
+import { parseAWSExports } from '../src/parseAWSExports';
 
 describe('Parser', () => {
 	test('aws_mobile_analytics_app_id', () => {
 		expect(
-			parseMobileHubConfig({
+			parseAWSExports({
 				aws_cognito_identity_pool_id: 'a',
 				aws_user_pools_id: 'b',
 				aws_mobile_analytics_app_id: 'c',

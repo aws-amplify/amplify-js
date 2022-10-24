@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 
-import { Amplify, ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	parseAWSExports,
+} from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
 	StorageCopySource,
@@ -130,11 +134,11 @@ export class Storage {
 		logger.debug('configure Storage');
 		if (!config) return this._config;
 
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 
-		const storageKeysFromConfig = Object.keys(amplifyConfig.Storage);
+		const storageConfig = amplifyConfig.Storage ?? {};
 
-		const storageArrayKeys = [
+		const defaultProviderConfigKeys = [
 			'bucket',
 			'region',
 			'level',
@@ -147,32 +151,33 @@ export class Storage {
 			'SSEKMSKeyId',
 		];
 
-		const isInStorageArrayKeys = (k: string) =>
-			storageArrayKeys.some(x => x === k);
-		const checkConfigKeysFromArray = (k: string[]) =>
-			k.find(k => isInStorageArrayKeys(k));
+		const hasDefaultProviderConfigKeys = (config: object) =>
+			Object.keys(config).find(key => defaultProviderConfigKeys.includes(key));
 
 		if (
-			storageKeysFromConfig &&
-			checkConfigKeysFromArray(storageKeysFromConfig) &&
-			!amplifyConfig.Storage[DEFAULT_PROVIDER]
+			hasDefaultProviderConfigKeys(storageConfig) &&
+			!storageConfig[DEFAULT_PROVIDER]
 		) {
-			amplifyConfig.Storage[DEFAULT_PROVIDER] = {};
+			storageConfig[DEFAULT_PROVIDER] = {};
 		}
 
-		Object.entries(amplifyConfig.Storage).map(([key, value]) => {
-			if (key && isInStorageArrayKeys(key) && value !== undefined) {
-				amplifyConfig.Storage[DEFAULT_PROVIDER][key] = value;
-				delete amplifyConfig.Storage[key];
+		Object.entries(storageConfig).forEach(([key, value]) => {
+			if (
+				key &&
+				defaultProviderConfigKeys.includes(key) &&
+				value !== undefined
+			) {
+				storageConfig[DEFAULT_PROVIDER][key] = value;
+				delete storageConfig[key];
 			}
 		});
 
 		// only update new values for each provider
-		Object.keys(amplifyConfig.Storage).forEach(providerName => {
-			if (typeof amplifyConfig.Storage[providerName] !== 'string') {
+		Object.keys(storageConfig).forEach(providerName => {
+			if (typeof storageConfig[providerName] !== 'string') {
 				this._config[providerName] = {
 					...this._config[providerName],
-					...amplifyConfig.Storage[providerName],
+					...storageConfig[providerName],
 				};
 			}
 		});

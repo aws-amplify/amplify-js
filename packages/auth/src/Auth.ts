@@ -40,8 +40,8 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
-	Parser,
 	browserOrNode,
+	parseAWSExports,
 	UniversalStorage,
 	urlSafeDecode,
 	HubCallback,
@@ -150,7 +150,7 @@ export class AuthClass {
 		const conf = Object.assign(
 			{},
 			this._config,
-			Parser.parseMobilehubConfig(config).Auth,
+			parseAWSExports(config).Auth,
 			config
 		);
 		this._config = conf;
@@ -621,7 +621,8 @@ export class AuthClass {
 	/**
 	 * Sign in
 	 * @param {String | SignInOpts} usernameOrSignInOpts - The username to be signed in or the sign in options
-	 * @param {String} password - The password of the username
+	 * @param {String} pw - The password of the username
+	 * @param {ClientMetaData} clientMetadata - Client metadata for custom workflows
 	 * @return - A promise resolves the CognitoUser
 	 */
 	public signIn(
