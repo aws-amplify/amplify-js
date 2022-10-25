@@ -5,7 +5,13 @@ import IndexedDBSafariAdapter from '../IndexedDBSafariAdapter';
 import AsyncStorageAdapter from '../AsyncStorageAdapter';
 
 function isSafari() {
-	return (navigator?.vendor?.match(/apple/i) || '').length > 0;
+	const chromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
+	const safariAgent = navigator.userAgent.indexOf('Safari') > -1;
+
+	// if both are true => we're running in Chrome
+	if (chromeAgent && safariAgent) return false;
+
+	return safariAgent;
 }
 
 const getDefaultAdapter: () => Adapter = () => {
