@@ -419,6 +419,16 @@ export const isPrivateMode = () => {
 
 let safariCompatabilityModeResult;
 
+/**
+ * Whether the browser's implementation of IndexedDB breaks on array lookups
+ * against composite indexes whose keypath contains a single column.
+ *
+ * E.g., Whether `store.createIndex(indexName, ['id'])` followed by 
+ * `store.index(indexName).get([1])` will *ever* return records.
+ *
+ * In all known, modern Safari browsers as of Q4 2022, the query against an index like
+ * this will *always* return `undefined`. So, the index needs to be created as a scalar.
+ */
 export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	try {
 		const dbName = uuid();

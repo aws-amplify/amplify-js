@@ -94,10 +94,16 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
-	// IndexedDB on Safari has a bug where an index array keyPath composed
-	// of a single field gets coerced to a scalar key
-	// see PR description for reference:
-	// https://github.com/aws-amplify/amplify-js/pull/10527
+	/**
+	 * Whether the browser's implementation of IndexedDB is coercing single-field
+	 * indexes to a scalar key.
+	 *
+	 * If this returns `true`, we need to treat indexes containing a single field
+	 * as scalars.
+	 * 
+	 * See PR description for reference:
+	 * https://github.com/aws-amplify/amplify-js/pull/10527
+	 */
 	private async setSafariCompatabilityMode() {
 		this.safariCompatabilityMode = await isSafariCompatabilityMode();
 
@@ -1076,6 +1082,14 @@ class IndexedDBAdapter implements Adapter {
 		return store;
 	}
 
+	/**
+	 * Checks the given path against the browser's IndexedDB implementation for
+	 * necessary compatibility transformations, applying those transforms if needed.
+	 * 
+	 * @param `keyArr` strings to compatibilize for browser-indexeddb index operations
+	 * @returns An array or string, depending on and given key,
+	 * that is ensured to be compatible with the IndexedDB implementation's nuances.
+	 */
 	private keyArrOrSingleKey = (keyArr: string[]) => {
 		if (this.safariCompatabilityMode) {
 			return keyArr.length > 1 ? keyArr : keyArr[0];
