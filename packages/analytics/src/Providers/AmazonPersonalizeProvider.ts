@@ -14,8 +14,8 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	JS,
 	getAmplifyUserAgent,
+	browserOrNode,
 } from '@aws-amplify/core';
 import {
 	PersonalizeEventsClient,
@@ -67,7 +67,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				this._config.trackingId
 			);
 		}
-		this._isBrowser = JS.browserOrNode().isBrowser;
+		this._isBrowser = browserOrNode().isBrowser;
 
 		// flush event buffer
 		this._setupTimer();
