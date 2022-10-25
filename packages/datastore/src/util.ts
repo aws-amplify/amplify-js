@@ -417,6 +417,82 @@ export const isPrivateMode = () => {
 	});
 };
 
+let safariCompatabilityModeResult;
+
+export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
+	const dbName = uuid();
+	const storeName = 'store';
+	const indexName = 'idx';
+
+	if (indexedDB === null) return false;
+
+	if (safariCompatabilityModeResult !== undefined) {
+		return safariCompatabilityModeResult;
+	}
+
+	const db: IDBDatabase | false = await new Promise(resolve => {
+		const dbOpenRequest = indexedDB.open(dbName);
+		dbOpenRequest.onerror = () => resolve(false);
+
+		dbOpenRequest.onsuccess = () => {
+			const db = dbOpenRequest.result;
+			resolve(db);
+		};
+
+		dbOpenRequest.onupgradeneeded = (event: any) => {
+			const db = event?.target?.result;
+
+			db.onerror = () => resolve(false);
+
+			const store = db.createObjectStore(storeName, {
+				autoIncrement: true,
+			});
+
+			store.createIndex(indexName, ['id']);
+		};
+	});
+
+	if (!db) return false;
+
+	(function writeToIndex() {
+		const rwTx = db.transaction(storeName, 'readwrite');
+		const store = rwTx.objectStore(storeName);
+		store.add({
+			id: 1,
+		});
+
+		(rwTx as any).commit();
+	})();
+
+	const result = await new Promise(resolve => {
+		const tx = db.transaction(storeName, 'readonly');
+		const store = tx.objectStore(storeName);
+		const index = store.index(indexName);
+
+		const getRequest = index.get([1]);
+
+		getRequest.onerror = () => resolve(false);
+
+		getRequest.onsuccess = (event: any) => {
+			resolve(event?.target?.result);
+		};
+	});
+
+	if (db && typeof db.close === 'function') {
+		await db.close();
+	}
+
+	await indexedDB.deleteDatabase(dbName);
+
+	if (result === undefined) {
+		safariCompatabilityModeResult = true;
+		return true;
+	}
+
+	safariCompatabilityModeResult = false;
+	return false;
+};
+
 const randomBytes = (nBytes: number): Buffer => {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
