@@ -7,14 +7,8 @@ import {
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
-	GraphQLCondition,
-	GraphQLFilter,
 } from '../types';
-import {
-	exhaustiveCheck,
-	extractPrimaryKeyFieldNames,
-	extractPrimaryKeyValues,
-} from '../util';
+import { extractPrimaryKeyFieldNames, extractPrimaryKeyValues } from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 

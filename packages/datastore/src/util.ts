@@ -7,7 +7,6 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
-	// ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
@@ -30,7 +29,6 @@ import {
 	SchemaModel,
 	ModelAttribute,
 	IndexesType,
-	ModelInstanceMetadata,
 	ModelAssociation,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
@@ -208,14 +206,10 @@ export const traverseModel = <T extends PersistentModel>(
 		modelName: string
 	) => PersistentModelConstructor<any>
 ) => {
-	const relationships = namespace.relationships;
-
 	const modelConstructor = getModelConstructorByModelName(
 		namespace.name as NAMESPACES,
 		srcModelName
 	);
-
-	const relation = relationships![srcModelName];
 
 	const result: {
 		modelName: string;
@@ -223,14 +217,7 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
-		relation.relationTypes.forEach((rItem: RelationType) => {
-			const modelConstructor = getModelConstructorByModelName(
-				namespace.name as NAMESPACES,
-				rItem.modelName
-			);
-		});
-	});
+	const newInstance = modelConstructor.copyOf(instance, () => {});
 
 	result.unshift({
 		modelName: srcModelName,

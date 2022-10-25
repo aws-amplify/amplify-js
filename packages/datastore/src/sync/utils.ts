@@ -30,7 +30,6 @@ import {
 	ModelAttributes,
 } from '../types';
 import {
-	exhaustiveCheck,
 	extractPrimaryKeyFieldNames,
 	establishRelationAndKeys,
 	IDENTIFIER_KEY_SEPARATOR,
