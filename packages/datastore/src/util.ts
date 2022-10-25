@@ -423,7 +423,7 @@ let safariCompatabilityModeResult;
  * Whether the browser's implementation of IndexedDB breaks on array lookups
  * against composite indexes whose keypath contains a single column.
  *
- * E.g., Whether `store.createIndex(indexName, ['id'])` followed by 
+ * E.g., Whether `store.createIndex(indexName, ['id'])` followed by
  * `store.index(indexName).get([1])` will *ever* return records.
  *
  * In all known, modern Safari browsers as of Q4 2022, the query against an index like
@@ -432,7 +432,7 @@ let safariCompatabilityModeResult;
 export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	try {
 		const dbName = uuid();
-		const storeName = 'store';
+		const storeName = 'indexedDBFeatureProbeStore';
 		const indexName = 'idx';
 
 		if (indexedDB === null) return false;
@@ -463,17 +463,17 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 			};
 		});
 
-		if (!db) return false;
+		if (!db) {
+			throw new Error('Could not open prob DB');
+		}
 
-		(function writeToIndex() {
-			const rwTx = db.transaction(storeName, 'readwrite');
-			const store = rwTx.objectStore(storeName);
-			store.add({
-				id: 1,
-			});
+		const rwTx = db.transaction(storeName, 'readwrite');
+		const rwStore = rwTx.objectStore(storeName);
+		rwStore.add({
+			id: 1,
+		});
 
-			(rwTx as any).commit();
-		})();
+		(rwTx as any).commit();
 
 		const result = await new Promise(resolve => {
 			const tx = db.transaction(storeName, 'readonly');
@@ -497,15 +497,14 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 		if (result === undefined) {
 			safariCompatabilityModeResult = true;
-			return true;
 		}
 
 		safariCompatabilityModeResult = false;
-		return false;
 	} catch (error) {
 		safariCompatabilityModeResult = false;
-		return false;
 	}
+
+	return safariCompatabilityModeResult;
 };
 
 const randomBytes = (nBytes: number): Buffer => {
