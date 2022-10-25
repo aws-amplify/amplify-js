@@ -251,8 +251,3 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSKinesisProvider;

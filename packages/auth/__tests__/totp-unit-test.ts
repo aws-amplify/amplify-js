@@ -182,7 +182,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 import { AuthOptions, SignUpParams } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
 	CognitoUserPool,
 	CognitoUser,
@@ -397,7 +397,7 @@ describe('auth unit test', () => {
 			spyon2.mockClear();
 		});
 
-		'User has not verified software token mfa';
+		('User has not verified software token mfa');
 
 		test('totp not setup but TOTP chosed', async () => {
 			const auth = new Auth(authOptions);

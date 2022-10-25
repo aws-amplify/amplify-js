@@ -165,8 +165,3 @@ export class PageViewTracker {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default PageViewTracker;

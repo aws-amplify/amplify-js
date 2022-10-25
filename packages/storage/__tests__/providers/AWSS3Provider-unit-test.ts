@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import StorageProvider from '../../src/providers/AWSS3Provider';
+import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
 import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import {

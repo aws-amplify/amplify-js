@@ -256,7 +256,7 @@ export class CredentialsClass {
 			);
 		}
 
-		const identityId = this._identityId = await this._getGuestIdentityId();
+		const identityId = (this._identityId = await this._getGuestIdentityId());
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
@@ -446,19 +446,14 @@ export class CredentialsClass {
 			}
 
 			const {
-				Credentials: {
-					AccessKeyId,
-					Expiration,
-					SecretKey,
-					SessionToken,
-				},
+				Credentials: { AccessKeyId, Expiration, SecretKey, SessionToken },
 				// single source of truth for the primary identity associated with the logins
 				// only if a guest identity is used for a first-time user, that guest identity will become its primary identity
 				IdentityId: primaryIdentityId,
 			} = await cognitoClient.send(
 				new GetCredentialsForIdentityCommand({
-				  IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
-				  Logins: logins,
+					IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
+					Logins: logins,
 				})
 			);
 
@@ -466,9 +461,13 @@ export class CredentialsClass {
 			if (guestIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
 				// it will be linked to the logins provided, and disqualified as an unauth identity
-				logger.debug(`The guest identity ${guestIdentityId} has been successfully linked to the logins`);
+				logger.debug(
+					`The guest identity ${guestIdentityId} has been successfully linked to the logins`
+				);
 				if (guestIdentityId === primaryIdentityId) {
-					logger.debug(`The guest identity ${guestIdentityId} has become the primary identity`);
+					logger.debug(
+						`The guest identity ${guestIdentityId} has become the primary identity`
+					);
 				}
 				// remove it from local storage to avoid being used as a guest Identity by _setCredentialsForGuest
 				await this._removeGuestIdentityId();
@@ -481,7 +480,7 @@ export class CredentialsClass {
 				sessionToken: SessionToken,
 				expiration: Expiration,
 				identityId: primaryIdentityId,
-			  };
+			};
 		};
 
 		const credentials = credentialsProvider().catch(async err => {
@@ -587,7 +586,7 @@ export class CredentialsClass {
 			await this._storageSync;
 			this._storage.setItem(
 				this._getCognitoIdentityIdStorageKey(identityPoolId),
-				identityId,
+				identityId
 			);
 		} catch (e) {
 			logger.debug('Failed to cache guest identityId', e);
@@ -625,8 +624,3 @@ export class CredentialsClass {
 export const Credentials = new CredentialsClass(null);
 
 Amplify.register(Credentials);
-
-/**
- * @deprecated use named import
- */
-export default Credentials;

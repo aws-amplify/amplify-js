@@ -498,8 +498,3 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 }
 
 export const BrowserStorageCache: ICache = new BrowserStorageCacheClass();
-
-/**
- * @deprecated use named import
- */
-export default BrowserStorageCache;

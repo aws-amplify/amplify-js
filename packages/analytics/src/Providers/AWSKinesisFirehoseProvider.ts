@@ -111,8 +111,3 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		return true;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSKinesisFirehoseProvider;

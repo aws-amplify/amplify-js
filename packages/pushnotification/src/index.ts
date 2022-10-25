@@ -14,7 +14,5 @@ import { Amplify } from '@aws-amplify/core';
 import NotificationClass from './PushNotification';
 
 const _instance = new NotificationClass(null);
-const PushNotification = _instance;
+export const PushNotification = _instance;
 Amplify.register(PushNotification);
-
-export default PushNotification;

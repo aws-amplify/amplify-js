@@ -1,4 +1,4 @@
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	AuthModeStrategy,

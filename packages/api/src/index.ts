@@ -11,8 +11,6 @@
  * and limitations under the License.
  */
 
-import { API } from './API';
-
 export { GraphQLQuery, GraphQLSubscription } from './types';
 export { API, APIClass } from './API';
 export {
@@ -22,8 +20,3 @@ export {
 } from '@aws-amplify/api-graphql';
 
 export type { GraphQLResult } from '@aws-amplify/api-graphql';
-
-/*
- * @deprecated use named import
- */
-export default API;

@@ -1,5 +1,5 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
-import Amplify from '../src/Amplify';
+import { Amplify } from '../src/Amplify';
 
 const session = {};
 

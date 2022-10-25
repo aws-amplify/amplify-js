@@ -14,6 +14,7 @@
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
+export { Amplify } from './Amplify';
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
@@ -41,7 +42,6 @@ export const Constants = {
 export * from './constants';
 export * from './Util';
 
-export { Amplify };
 /**
  * @deprecated use named import
  */
