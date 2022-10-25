@@ -86,8 +86,7 @@
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
 			"__tests__/helpers.ts",
-			"__tests__/commonAdapterTests.ts",
-			"/__tests__/__mocks__/navigator.ts"
+			"__tests__/commonAdapterTests.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",
@@ -95,9 +94,6 @@
 			"js",
 			"json",
 			"jsx"
-		],
-		"setupFiles": [
-			"./__tests__/__mocks__/navigator.ts"
 		],
 		"testEnvironment": "jsdom",
 		"testURL": "http://localhost/",
