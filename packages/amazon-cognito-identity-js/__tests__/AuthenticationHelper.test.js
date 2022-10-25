@@ -1,7 +1,7 @@
 import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
-import { SHA256 } from 'crypto-js';
+import { Sha256 } from '@aws-crypto/sha256-js';
 import { promisifyCallback } from './util';
 import { bigIntError } from './constants';
 const instance = new AuthenticationHelper('TestPoolName');
@@ -738,8 +738,12 @@ describe('calculateU()', () => {
 describe('hexhash() and hash()', () => {
 	test('Test hexHash function produces a valid hex string with regex', () => {
 		const regEx = /[0-9a-f]/g;
-		const hexStr = SHA256('testString').toString();
-		expect(regEx.test(instance.hexHash(hexStr))).toBe(true);
+		const awsCryptoHash = new Sha256();
+		awsCryptoHash.update('testString');
+		const resultFromAWSCrypto = awsCryptoHash.digestSync();
+		const hashHex = Buffer.from(resultFromAWSCrypto).toString('hex');
+
+		expect(regEx.test(instance.hexHash(hashHex))).toBe(true);
 	});
 
 	test('Hashing a buffer returns a string', () => {
