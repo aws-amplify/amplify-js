@@ -256,19 +256,6 @@ export class AnalyticsClass {
 		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
 		provider?: string
 	);
-	/**
-	 * Record one analytic event and send it to Pinpoint
-	 * @deprecated Use the new syntax and pass in the event as an object instead.
-	 * @param eventName - The name of the event
-	 * @param [attributes] - Attributes of the event
-	 * @param [metrics] - Event metrics
-	 * @return - A promise which resolves if buffer doesn't overflow
-	 */
-	public async record(
-		eventName: string,
-		attributes?: EventAttributes,
-		metrics?: EventMetrics
-	);
 	public async record(
 		event:
 			| string

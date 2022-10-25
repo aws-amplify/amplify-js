@@ -30,7 +30,6 @@ describe('aws-amplify', () => {
 			  "Predictions",
 			  "Logger",
 			  "Hub",
-			  "JS",
 			  "ClientDevice",
 			  "Signer",
 			  "I18n",

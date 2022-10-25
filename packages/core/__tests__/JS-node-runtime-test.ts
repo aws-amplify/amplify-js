@@ -10,7 +10,7 @@ import * as core from '../lib';
 
 describe('JS build test', () => {
 	test('when its node ', () => {
-		expect(core.JS.browserOrNode()).toStrictEqual({
+		expect(core.browserOrNode()).toStrictEqual({
 			isBrowser: false,
 			isNode: true,
 		});

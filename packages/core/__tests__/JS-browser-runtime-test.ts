@@ -10,7 +10,7 @@ import * as core from '../dist/aws-amplify-core.js';
 
 describe('JS browserOrNode build test', () => {
 	test('when its browser ', () => {
-		expect(core.JS.browserOrNode()).toStrictEqual({
+		expect(core.browserOrNode()).toStrictEqual({
 			isBrowser: true,
 			isNode: false,
 		});

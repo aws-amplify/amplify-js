@@ -63,7 +63,7 @@ export const sortByField = (list, field, dir) => {
 	}
 
 	const dirX = dir && dir === 'desc' ? -1 : 1;
-	list.sort(function(a, b) {
+	list.sort(function (a, b) {
 		const a_val = a[field];
 		const b_val = b[field];
 
@@ -167,8 +167,10 @@ export const isWebWorker = () => {
 		return false;
 	}
 	const selfContext = self as { WorkerGlobalScope? };
-	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
-		self instanceof selfContext.WorkerGlobalScope;
+	return (
+		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope
+	);
 };
 
 export const browserOrNode = () => {
@@ -265,26 +267,3 @@ export const isStrictObject = obj => {
 		!(obj instanceof Boolean)
 	);
 };
-
-/**
- * @deprecated use per-function imports
- */
-export class JS {
-	static isEmpty = isEmpty;
-	static sortByField = sortByField;
-	static objectLessAttributes = objectLessAttributes;
-	static filenameToContentType = filenameToContentType;
-	static isTextFile = isTextFile;
-	static generateRandomString = generateRandomString;
-	static makeQuerablePromise = makeQuerablePromise;
-	static isWebWorker = isWebWorker;
-	static browserOrNode = browserOrNode;
-	static transferKeyToLowerCase = transferKeyToLowerCase;
-	static transferKeyToUpperCase = transferKeyToUpperCase;
-	static isStrictObject = isStrictObject;
-}
-
-/**
- * @deprecated use per-function imports
- */
-export default JS;

@@ -1,5 +1,10 @@
 import { API } from '@aws-amplify/api';
-import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	browserOrNode,
+} from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
@@ -97,7 +102,7 @@ enablePatches();
 const logger = new Logger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
-const { isNode } = JS.browserOrNode();
+const { isNode } = browserOrNode();
 
 type SettingMetaData = {
 	identifier: ManagedIdentifier<Setting, 'id'>;
