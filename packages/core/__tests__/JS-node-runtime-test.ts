@@ -6,11 +6,11 @@
  * Since this is allowed per test file and not per test or describe, we have
  * two tests, one for node and other for browser
  */
-import * as core from '../lib';
+import { browserOrNode } from '../lib';
 
 describe('JS build test', () => {
 	test('when its node ', () => {
-		expect(core.browserOrNode()).toStrictEqual({
+		expect(browserOrNode()).toStrictEqual({
 			isBrowser: false,
 			isNode: true,
 		});

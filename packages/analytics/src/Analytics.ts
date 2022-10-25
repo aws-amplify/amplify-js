@@ -255,30 +255,8 @@ export class AnalyticsClass {
 	public async record(
 		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
 		provider?: string
-	);
-	public async record(
-		event:
-			| string
-			| AnalyticsEvent
-			| PersonalizeAnalyticsEvent
-			| KinesisAnalyticsEvent,
-		providerOrAttributes?: string | EventAttributes,
-		metrics?: EventMetrics
 	) {
-		let params = null;
-		// this is just for compatibility, going to be deprecated
-		if (typeof event === 'string') {
-			params = {
-				event: {
-					name: event,
-					attributes: providerOrAttributes,
-					metrics,
-				},
-				provider: 'AWSPinpoint',
-			};
-		} else {
-			params = { event, provider: providerOrAttributes };
-		}
+		const params = { event, provider };
 
 		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
 
