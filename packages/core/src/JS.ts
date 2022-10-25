@@ -63,7 +63,7 @@ export const sortByField = (list, field, dir) => {
 	}
 
 	const dirX = dir && dir === 'desc' ? -1 : 1;
-	list.sort(function (a, b) {
+	list.sort(function(a, b) {
 		const a_val = a[field];
 		const b_val = b[field];
 
