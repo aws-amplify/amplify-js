@@ -9,11 +9,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/Predictions.ts",
 		"./lib/Predictions.js",
-		"./lib-esm/Predictions.js",
-		"./dist/aws-amplify-predictions.min.js",
-		"./dist/aws-amplify-predictions.js"
+		"./lib-esm/Predictions.js"
 	],
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",

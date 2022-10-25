@@ -6,11 +6,8 @@
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"sideEffects": [
-		"./src/Notifications.ts",
 		"./lib/Notifications.js",
-		"./lib-esm/Notifications.js",
-		"./dist/aws-amplify-notifications.js",
-		"./dist/aws-amplify-notifications.min.js"
+		"./lib-esm/Notifications.js"
 	],
 	"publishConfig": {
 		"access": "public"
