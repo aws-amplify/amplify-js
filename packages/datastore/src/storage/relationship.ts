@@ -2,15 +2,13 @@ import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
 
 /**
  * Defines a relationship from a LOCAL model.field to a REMOTE model.field and helps
- * navigate the relationship, providing a simplified peek at the pertinent relationship
- * details.
+ * navigate the relationship, providing a simplified peek at the relationship details
+ * pertinent to setting FK's and constructing join conditions.
  *
- * Cuz I mean, relationships are tough, man.
+ * Because I mean, relationships are tough.
  *
- * I know, I know ... https://xkcd.com/927/ ...
  */
 export class ModelRelationship<T> {
-	// private localDefinition: SchemaModel;
 	private localModel: ModelMeta<T>;
 	private field: string;
 
@@ -23,12 +21,6 @@ export class ModelRelationship<T> {
 			throw new Error(`${model.schema.name}.${field} is not a relationship.`);
 		}
 		this.localModel = model;
-		// if (!isFieldAssociation(modelDefinition, field)) {
-		// 	throw new Error(
-		// 		`${modelDefinition.name}.${field} is not a relationship.`
-		// 	);
-		// }
-		// this.localDefinition = modelDefinition;
 		this.field = field;
 	}
 
@@ -50,21 +42,22 @@ export class ModelRelationship<T> {
 	 */
 	get localConstructor() {
 		return this.localModel.builder;
-		// return getModelConstructorByModelName(
-		// 	NAMESPACES.USER,
-		// 	this.localDefinition.name
-		// );
 	}
 
 	/**
-	 * The relationship the local model has with the remote model via the defined field.
+	 * The name/type of the relationship the local model has with the remote model
+	 * via the defined local model field.
 	 */
-	get relationship() {
+	get type() {
 		return this.localAssocation.connectionType;
 	}
 
 	/**
+	 * Raw details about the local FK as-is from the local model's field definition in
+	 * the schema. This field requires interpretation.
 	 *
+	 * @see localJoinFields
+	 * @see localAssociatedWith
 	 */
 	private get localAssocation() {
 		return this.localDefinition.fields[this.field].association!;
@@ -103,12 +96,10 @@ export class ModelRelationship<T> {
 	 */
 	get localPKFields() {
 		return this.localModel.pkField;
-		// return extractPrimaryKeyFieldNames(this.localDefinition);
 	}
 
 	private get remoteDefinition() {
 		return this.remoteModelType.modelConstructor?.schema;
-		// return getModelDefinition(this.remoteModelConstructor)!;
 	}
 
 	private get remoteModelType() {
@@ -121,10 +112,6 @@ export class ModelRelationship<T> {
 	 */
 	get remoteModelConstructor() {
 		return this.remoteModelType.modelConstructor!.builder!;
-		// return getModelConstructorByModelName(
-		// 	NAMESPACES.USER,
-		// 	this.remoteModelType.model
-		// );
 	}
 
 	/**
@@ -134,12 +121,7 @@ export class ModelRelationship<T> {
 	 */
 	get remotePKFields() {
 		return this.remoteModelType.modelConstructor?.pkField || ['id'];
-		// return extractPrimaryKeyFieldNames(this.remoteDefinition);
 	}
-
-	// get remoteModelTypeName() {
-	// 	return this.remoteModelType.model;
-	// }
 
 	/**
 	 * The `associatedWith` fields from the local perspective.
@@ -185,12 +167,6 @@ export class ModelRelationship<T> {
 		 * need to see if this points direction to a reciprocating assocation. If it
 		 * does, the remote assocation indicates what fields to use.
 		 */
-
-		// console.log(
-		// 	'enumerating join fields',
-		// 	this.field,
-		// 	this.explicitRemoteAssociation
-		// );
 
 		if (this.explicitRemoteAssociation?.targetName) {
 			// This case is theoretically unnecessary going forward.

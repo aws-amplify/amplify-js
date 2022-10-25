@@ -150,12 +150,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
-		/**
-		 * The expected Hub events aren't consistently fired here when coming back online.
-		 *
-		 * Disabled in LL branch. Investigating upstream.
-		 */
-		test.skip('survives online -> offline -> save -> online cycle', async () => {
+		test('survives online -> offline -> save -> online cycle (non-racing)', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -172,18 +167,11 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			console.log({ anotherPost });
-
 			// In this scenario, we want to test the case where the offline
-			// save is NOT in a race with reconnection.
-			// await pause(100);
-
-			console.log('after pause');
+			// save is NOT in a race with reconnection. So, we pause *briefly*.
+			await pause(1);
 
 			await simulateConnect(true);
-
-			console.log('waiting for outbox');
-
 			await outboxEmpty;
 
 			const table = graphqlService.tables.get('Post')!;

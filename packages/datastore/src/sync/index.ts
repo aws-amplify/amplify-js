@@ -235,14 +235,8 @@ export class SyncEngine {
 										);
 									} else {
 										//#region GraphQL Subscriptions
-										[
-											// const ctlObservable: Observable<CONTROL_MSG>
-											ctlSubsObservable,
-											// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
-											// id: string;
-											// } & Record<string, any>>]>
-											dataSubsObservable,
-										] = this.subscriptionsProcessor.start();
+										[ctlSubsObservable, dataSubsObservable] =
+											this.subscriptionsProcessor.start();
 
 										try {
 											await new Promise((resolve, reject) => {

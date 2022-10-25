@@ -27,7 +27,6 @@ import {
 	validatePredicate,
 	inMemoryPagination,
 	NAMESPACES,
-	sortCompareFunction,
 	keysEqual,
 	getStorename,
 	getIndexKeys,
@@ -370,9 +369,7 @@ class IndexedDBAdapter implements Adapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		// console.log('indexeddbadapter.query 1');
 		await this.checkPrivate();
-		// console.log('indexeddbadapter.query 2');
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(
 			modelConstructor
@@ -390,67 +387,43 @@ class IndexedDBAdapter implements Adapter {
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
-		// console.log('indexeddbadapter.query 3');
-
 		const records: T[] = (await (async () => {
 			if (queryByKey) {
 				const record = await this.getByKey(storeName, queryByKey);
 				return record ? [record] : [];
 			}
 
-			// console.log('indexeddbadapter.query 3.1');
-
 			if (predicates) {
 				const filtered = await this.filterOnPredicate(storeName, predicates);
 				return this.inMemoryPagination(filtered, pagination);
 			}
-
-			// console.log('indexeddbadapter.query 3.2');
 
 			if (hasSort) {
 				const all = await this.getAll(storeName);
 				return this.inMemoryPagination(all, pagination);
 			}
 
-			// console.log('indexeddbadapter.query 3.3');
-
 			if (hasPagination) {
 				return this.enginePagination(storeName, pagination);
 			}
 
-			// console.log('indexeddbadapter.query 3.4');
-
 			return this.getAll(storeName);
 		})()) as T[];
 
-		// console.log('indexeddbadapter.query 4');
-
-		const results = await this.load(
-			namespaceName,
-			modelConstructor.name,
-			records
-		);
-
-		// console.log('indexeddbadapter.query 5');
-
-		return results;
+		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
 	private async getByKey<T extends PersistentModel>(
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
-		const record = <T>await this._get(storeName, keyValue);
-		return record;
+		return <T>await this._get(storeName, keyValue);
 	}
 
 	private async getAll<T extends PersistentModel>(
 		storeName: string
 	): Promise<T[]> {
-		// console.log('getAll 1');
-		const results = await this.db.getAll(storeName);
-		// console.log('getAll 2');
-		return results;
+		return await this.db.getAll(storeName);
 	}
 
 	private keyValueFromPredicate<T extends PersistentModel>(
@@ -481,7 +454,6 @@ class IndexedDBAdapter implements Adapter {
 		fieldName: string,
 		transaction: idb.IDBPTransaction<unknown, [string]>
 	) {
-		// return undefined;
 		const store = transaction.objectStore(storeName);
 		for (const name of store.indexNames) {
 			const idx = store.index(name);
@@ -497,8 +469,6 @@ class IndexedDBAdapter implements Adapter {
 	) {
 		let { predicates: predicateObjs, type } = predicates;
 
-		// console.log('filterOnPredicate 1', new Date());
-
 		// the predicate objects we care about tend to be nested at least
 		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
 		// so, we unpack and/or groups until we find a group with more than 1
@@ -507,8 +477,6 @@ class IndexedDBAdapter implements Adapter {
 			type = (predicateObjs[0] as PredicatesGroup<T>).type;
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
-
-		// console.log('filterOnPredicate 2', new Date());
 
 		// where we'll accumulate candidate results, which will be filtered at the end.
 		let candidateResults: T[];
@@ -520,13 +488,9 @@ class IndexedDBAdapter implements Adapter {
 			isPredicateObj(p)
 		) as PredicateObject<T>[];
 
-		// console.log('filterOnPredicate 3', new Date());
-
 		// several sub-queries could occur here. explicitly start a txn here to avoid
 		// opening/closing multiple txns.
 		const txn = this.db.transaction(storeName);
-
-		// console.log('filterOnPredicate 4', new Date());
 
 		// our potential indexes or lacks thereof.
 		const predicateIndexes = fieldPredicates.map(p => {
@@ -536,11 +500,10 @@ class IndexedDBAdapter implements Adapter {
 			};
 		});
 
+		// Explicitly wait for txns from index queries to complete before proceding.
+		// This helps ensure IndexedDB is in a stable, ready state. Else, subseqeuent
+		// qeuries can sometimes appear to deadlock (at least in FakeIndexedDB).
 		await txn.done;
-
-		// const predicateIndexes = [] as any[];
-
-		// console.log('filterOnPredicate 5', new Date());
 
 		// semi-naive implementation:
 		if (type === 'and') {
@@ -550,10 +513,6 @@ class IndexedDBAdapter implements Adapter {
 				i => i.index && i.predicate.operator === 'eq'
 			);
 
-			// console.log('filterOnPredicate 5.1', {
-			// 	actualPredicateIndexes,
-			// });
-
 			if (actualPredicateIndexes.length > 0) {
 				const predicateIndex = actualPredicateIndexes[0];
 				candidateResults = <T[]>(
@@ -561,9 +520,7 @@ class IndexedDBAdapter implements Adapter {
 				);
 			} else {
 				// no usable indexes
-				// console.log('filterOnPredicate 5.1 else branch 1', new Date());
 				candidateResults = <T[]>await this.getAll(storeName);
-				// console.log('filterOnPredicate 5.1 else branch 2', new Date());
 			}
 		} else if (type === 'or') {
 			// NOTE: each condition implies a potentially distinct set. we only benefit
@@ -599,13 +556,9 @@ class IndexedDBAdapter implements Adapter {
 			candidateResults = <T[]>await this.getAll(storeName);
 		}
 
-		// console.log('filterOnPredicate 6');
-
 		const filtered = predicateObjs
 			? candidateResults.filter(m => validatePredicate(m, type, predicateObjs))
 			: candidateResults;
-
-		// console.log('filterOnPredicate 7');
 
 		return filtered;
 	}

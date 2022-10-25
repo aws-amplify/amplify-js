@@ -29,7 +29,6 @@ import {
 	AmplifyContext,
 } from '../../types';
 import {
-	exhaustiveCheck,
 	extractTargetNamesFromSrc,
 	USER,
 	USER_AGENT_SUFFIX_DATASTORE,
@@ -325,8 +324,8 @@ class MutationProcessor {
 							await this.amplifyContext.API.graphql(tryWith)
 						);
 
-						// `as any` because TypeScript doesn't seem to like passing tuples
-						// through generic params???
+						// Use `as any` because TypeScript doesn't seem to like passing tuples
+						// through generic params.
 						return [result, opName, modelDefinition] as any;
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
@@ -585,7 +584,7 @@ class MutationProcessor {
 				throw new Error(`Invalid operation ${operation}`);
 		}
 
-		// make TS happy ...
+		// because it makes TS happy ...
 		return undefined!;
 	}
 

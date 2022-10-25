@@ -484,8 +484,8 @@ export function addCommonQueryTests({
 			for (const field of Object.keys(meta.schema.fields)) {
 				const R = ModelRelationship.from(meta, field);
 				if (R) {
-					const testname = `${R.localConstructor.name}.${field} -> ${R.remoteModelConstructor.name} (${R.relationship})`;
-					switch (R.relationship) {
+					const testname = `${R.localConstructor.name}.${field} -> ${R.remoteModelConstructor.name} (${R.type})`;
+					switch (R.type) {
 						case 'BELONGS_TO':
 						case 'HAS_ONE':
 							test(`can lazy load ${testname}`, async () => {
@@ -818,7 +818,7 @@ export function addCommonQueryTests({
 							});
 							break;
 						default:
-							throw new Error(`Invalid relationship: ${R.relationship}`);
+							throw new Error(`Invalid relationship: ${R.type}`);
 					}
 				}
 			}

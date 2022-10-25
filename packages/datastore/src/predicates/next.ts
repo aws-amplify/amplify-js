@@ -68,12 +68,22 @@ type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
 export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: RecursiveModelPredicate<RT>
 ) => {
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__query: GroupCondition;
 };
 
 export type RecursiveModelPredicateAggregateExtender<
 	RT extends PersistentModel
 > = (lambda: RecursiveModelPredicate<RT>) => {
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__query: GroupCondition;
 }[];
 
@@ -101,12 +111,22 @@ export type RecursiveModelPredicateAggregateExtender<
 export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__query: GroupCondition;
 };
 
 export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__query: GroupCondition;
 }[];
 
@@ -145,6 +165,11 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	or: RecursiveModelPredicateOperator<RT>;
 	and: RecursiveModelPredicateOperator<RT>;
 	not: RecursiveModelPredicateNegation<RT>;
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__copy: () => RecursiveModelPredicate<RT>;
 } & ModelPredicateLeaf;
 
@@ -156,12 +181,35 @@ export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
+
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__copy: () => ModelPredicate<RT>;
 } & ModelPredicateLeaf;
 
 export type ModelPredicateLeaf = {
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__query: GroupCondition;
+
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	__tail: GroupCondition;
+
+	/**
+	 * @private
+	 *
+	 * DataStore internal
+	 */
 	filter: <T>(items: T[]) => Promise<T[]>;
 };
 
@@ -493,8 +541,6 @@ export class GroupCondition {
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
 
-		// TODO: fetch Predicate.ALL return early here?
-		// TODO: parallize. (some storage engines may optimize parallel requests)
 		for (const g of groups) {
 			const relatives = await g.fetch(
 				storage,
@@ -661,8 +707,6 @@ export class GroupCondition {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
 
-		// console.log('v2 checking', itemToCheck, this);
-
 		// if there is no item to check, we can stop recursing immediately.
 		// a condition cannot match against an item that does not exist. this
 		// can occur when `item.field` is optional in the schema.
@@ -674,8 +718,6 @@ export class GroupCondition {
 			this.relationshipType === 'HAS_MANY' &&
 			typeof itemToCheck[Symbol.asyncIterator] === 'function'
 		) {
-			// console.log(await itemToCheck.toArray());
-			// console.log('checking has many');
 			for await (const singleItem of itemToCheck) {
 				if (await this.matches(singleItem, true)) {
 					return true;
@@ -716,38 +758,12 @@ export class GroupCondition {
 	toStoragePredicate<T>(
 		baseCondition?: StoragePredicate<T>
 	): StoragePredicate<T> {
-		// const childPredicates = [
-		// 	baseCondition,
-		// 	...this.operands.map(condition => {
-		// 		if (condition instanceof GroupCondition) {
-		// 			return condition.toStoragePredicate();
-		// 		} else if (condition instanceof FieldCondition) {
-		// 			return seedPredicate =>
-		// 				applyConditionsToV1Predicate(seedPredicate, [condition], false);
-		// 		} else {
-		// 			throw new Error(
-		// 				'Invalid condition! This is a bug. Please report it: https://github.com/aws-amplify/amplify-js/issues'
-		// 			);
-		// 		}
-		// 	}),
-		// ].filter(v => v); // remove undefined
-
-		// // console.log({ baseCondition, self: this, childPredicates });
-
-		// return FlatModelPredicateCreator.createGroupFromExisting(
-		// 	this.model.schema,
-		// 	this.operator,
-		// 	childPredicates as any
-		// ) as StoragePredicate<T>;
-
 		return FlatModelPredicateCreator.createFromAST(
 			this.model.schema,
 			this.toAST()
 		) as unknown as StoragePredicate<T>;
 	}
 }
-
-// TODO: `predicateFor` is potentially too long, too complicatd. DECOMPOSE?
 
 /**
  * Creates a "seed" predicate that can be used to build an executable condition.
@@ -816,8 +832,8 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		},
 	} as RecursiveModelPredicate<T>;
 
-	// TODO: consider a proxy
-	// adds .or() and .and() methods to the link.
+	// Adds .or() and .and() methods to the link.
+	// TODO: If revisiting this code, consider writing a Proxy instead.
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
@@ -857,7 +873,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		};
 	});
 
-	// TODO: consider proxy
+	// TODO: If revisiting this code, consider proxy.
 	link.not = (
 		builderOrPredicate: RecursiveModelPredicateExtender<T> | ModelPredicateLeaf
 	): ModelPredicateLeaf => {
@@ -898,9 +914,9 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		};
 	};
 
-	// TODO: consider a proxy
-	// for each field on the model schema, we want to add a getter
+	// For each field on the model schema, we want to add a getter
 	// that creates the appropriate new `link` in the query chain.
+	// TODO: If revisiting, consider a proxy.
 	for (const fieldName in ModelType.schema.fields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,

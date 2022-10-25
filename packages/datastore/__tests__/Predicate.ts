@@ -148,11 +148,13 @@ describe('Predicates', () => {
 		});
 	});
 
-	// TODO: NOTICE!
-	// All test cases should be able to successfully execute both as filter()
-	// and query() tests. When at all possible and relevant, add test cases HERE
-	// to cover both cases with fidelity. (HERE == inside `defineTests(f)`)
-	// function defineTests(f) {
+	/**
+	 *
+	 * ~~~ NOTICE ~~~
+	 *
+	 * All new predicate test cases should follow the pattern below to ensure
+	 * they function the same in both query() and filter() contexts.
+	 */
 
 	describe('on local properties ', () => {
 		const getFlatAuthorsArrayFixture = () => {
@@ -270,9 +272,6 @@ describe('Predicates', () => {
 					expect(matches.length).toBe(1);
 					expect(matches[0].name).toBe('Debbie Donut');
 				});
-
-				// GraphQL raises an exception when the given lower > upper.
-				// I assume we're doing the same ...
 
 				test('match between an outer inclusive range', async () => {
 					// `0` is immediately before `A`
@@ -576,16 +575,13 @@ describe('Predicates', () => {
 
 					// NOTE: `DataStore.query(Model)` should not construct a base predicate, and there
 					// is therefore nothing to test on this interface. However, if Predicate.ALL is
-					// explicitly passed, it *sometimes* fails the `isPredicateAll()` check. So, we're
-					// supporting that use-case with V2 predicates.
+					// explicitly passed, it *sometimes* fails the `isPredicateAll()` check. So, we need
+					// to test for Predicates.ALL handling a little strangely here -- which basically
+					// amounts to ensuring the Predicates.ALL operates like a customer-provided predicate
+					// builder.
 
 					test('can fetch ALL with Predicates.ALL', async () => {
-						// REMEMBER: When `DataStore.query(Model, Predicates.ALL)` is invoked,
-						// `Predicates.ALL` is a symbol, but it also expected to be the identity
-						// function. So, we need to ensure it operates as the identify function,
-						// returns our base predicate as-is, AND that our base predicate operates
-						// like a "get all" from the target table/set.
-
+						// Predicates.ALL is expected to return our base match-all predicate as-is.
 						const query = (V1Predicates.ALL as any)(
 							recursivePredicateFor(AuthorMeta)
 						);
@@ -1016,14 +1012,6 @@ describe('Predicates', () => {
 					BlogMeta.schema
 				);
 				const regeneratedFilter = predicateToGraphQLFilter(predicate);
-
-				// console.log(
-				// 	JSON.stringify(
-				// 		{ condition, predicate, regeneratedCondition, regeneratedFilter },
-				// 		null,
-				// 		2
-				// 	)
-				// );
 
 				for (const expectedMatch of testCase.matches) {
 					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(

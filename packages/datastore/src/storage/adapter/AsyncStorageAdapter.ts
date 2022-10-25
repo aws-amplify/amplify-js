@@ -20,7 +20,6 @@ import {
 } from '../../types';
 import {
 	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
-	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
 	isModelConstructor,
@@ -28,7 +27,6 @@ import {
 	validatePredicate,
 	inMemoryPagination,
 	NAMESPACES,
-	sortCompareFunction,
 	keysEqual,
 	getStorename,
 	getIndexKeys,

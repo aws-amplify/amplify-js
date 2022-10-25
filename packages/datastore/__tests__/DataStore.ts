@@ -1013,8 +1013,6 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 		await DataStore.save(
 			Post.copyOf(targetPost, p => (p.title = 'expected update'))
 		);
-
-		console.log('items written');
 	});
 });
 

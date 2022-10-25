@@ -72,8 +72,6 @@ import {
 	isIdentifierObject,
 	AmplifyContext,
 	isFieldAssociation,
-	isModelAttributePrimaryKey,
-	ModelMeta,
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
@@ -97,7 +95,6 @@ import {
 	extractPrimaryKeysAndValues,
 	isIdManaged,
 	isIdOptionallyManaged,
-	validatePredicate,
 	mergePatches,
 } from '../util';
 import {
@@ -157,12 +154,6 @@ const getModelDefinition = (
 		? schema.namespaces[namespace].models[modelConstructor.name]
 		: undefined;
 
-	// console.log({
-	// 	indexes: JSON.stringify(
-	// 		schema.namespaces[namespace].relationships![modelConstructor.name].indexes
-	// 	),
-	// });
-
 	// compatibility with legacy/pre-PK codegen for lazy loading to inject
 	// index fields into the model definition.
 	if (definition) {
@@ -194,8 +185,6 @@ const getModelDefinition = (
 			...definition.fields,
 		};
 	}
-
-	// console.log({ definition });
 
 	return definition;
 };
@@ -451,10 +440,6 @@ const initSchema = (userSchema: Schema) => {
 
 		schema.namespaces[namespace].modelTopologicalOrdering = result;
 	});
-
-	// console.log({
-	// 	schema: schema.namespaces.user.relationships!.LegacyJSONPost.indexes,
-	// });
 
 	return userClasses;
 };
@@ -901,7 +886,6 @@ const createModelClass = <T extends PersistentModel>(
 			association: { targetName, targetNames },
 		} = modelDefinition.fields[field] as Required<ModelField>;
 
-		// const relationship = new ModelRelationship(modelDefinition, field);
 		const relationship = new ModelRelationship(
 			{
 				builder: clazz,
@@ -913,14 +897,6 @@ const createModelClass = <T extends PersistentModel>(
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
-				// console.log(
-				// 	'set',
-				// 	field,
-				// 	relationship.localJoinFields,
-				// 	relationship.remoteJoinFields,
-				// 	this,
-				// 	model
-				// );
 				if (!model || !(typeof model === 'object')) return;
 
 				// Avoid validation error when processing AppSync response with nested
@@ -950,11 +926,6 @@ const createModelClass = <T extends PersistentModel>(
 
 				if (relationship.isComplete) {
 					for (let i = 0; i < relationship.localJoinFields.length; i++) {
-						// console.log(
-						// 	`setting ${relationship.localJoinFields[i]} = ${
-						// 		relationship.remoteJoinFields[i]
-						// 	} (${model[relationship.remoteJoinFields[i]]})`
-						// );
 						this[relationship.localJoinFields[i]] =
 							model[relationship.remoteJoinFields[i]];
 					}
@@ -965,14 +936,6 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			},
 			get() {
-				// console.log(
-				// 	'get',
-				// 	field,
-				// 	relationship.localJoinFields,
-				// 	relationship.remoteJoinFields,
-				// 	this
-				// );
-
 				const instanceMemos = modelInstanceAssociationsMap.has(this)
 					? modelInstanceAssociationsMap.get(this)!
 					: modelInstanceAssociationsMap.set(this, {}).get(this)!;
@@ -984,12 +947,6 @@ const createModelClass = <T extends PersistentModel>(
 							base =>
 								base.and(q => {
 									return relationship.remoteJoinFields.map((field, index) => {
-										// console.log({
-										// 	q,
-										// 	field,
-										// 	eq: this[relationship.localJoinFields[index]],
-										// 	relationship,
-										// });
 										return (q[field] as any).eq(
 											this[relationship.localJoinFields[index]]
 										);
@@ -997,7 +954,7 @@ const createModelClass = <T extends PersistentModel>(
 								})
 						);
 
-						if (relationship.relationship === 'HAS_MANY') {
+						if (relationship.type === 'HAS_MANY') {
 							instanceMemos[field] = new AsyncCollection(resultPromise);
 						} else {
 							instanceMemos[field] = resultPromise.then(rows => {
@@ -1017,7 +974,7 @@ const createModelClass = <T extends PersistentModel>(
 					} else if (getAttachment(this) === ModelAttachment.API) {
 						throw new Error('Lazy loading from API is not yet supported!');
 					} else {
-						if (relationship.relationship === 'HAS_MANY') {
+						if (relationship.type === 'HAS_MANY') {
 							return new AsyncCollection([]);
 						} else {
 							return Promise.resolve(undefined);
@@ -1204,49 +1161,33 @@ async function checkSchemaVersion(
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
-	// console.log('checkScehamVersion 1');
-
 	await storage.runExclusive(async s => {
-		// console.log('checkScehamVersion 2');
+		const [schemaVersionSetting] = await s.query(
+			Setting,
+			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+				c.key('eq', SETTING_SCHEMA_VERSION)
+			),
+			{ page: 0, limit: 1 }
+		);
 
-		// console.log(await s.query(Setting));
+		if (
+			schemaVersionSetting !== undefined &&
+			schemaVersionSetting.value !== undefined
+		) {
+			const storedValue = JSON.parse(schemaVersionSetting.value);
 
-		try {
-			const [schemaVersionSetting] = await s.query(
-				Setting,
-				ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-					c.key('eq', SETTING_SCHEMA_VERSION)
-				),
-				{ page: 0, limit: 1 }
-			);
-
-			// console.log('checkScehamVersion 3', { schemaVersionSetting });
-
-			if (
-				schemaVersionSetting !== undefined &&
-				schemaVersionSetting.value !== undefined
-			) {
-				const storedValue = JSON.parse(schemaVersionSetting.value);
-
-				if (storedValue !== version) {
-					await s.clear(false);
-				}
-			} else {
-				await s.save(
-					modelInstanceCreator(Setting, {
-						key: SETTING_SCHEMA_VERSION,
-						value: JSON.stringify(version),
-					})
-				);
+			if (storedValue !== version) {
+				await s.clear(false);
 			}
-		} catch (err) {
-			console.log('err instead', { err });
+		} else {
+			await s.save(
+				modelInstanceCreator(Setting, {
+					key: SETTING_SCHEMA_VERSION,
+					value: JSON.stringify(version),
+				})
+			);
 		}
-
-		// console.log('checkScehamVersion 4');
 	});
-
-	// console.log('checkScehamVersion 5');
 }
 
 let syncSubscription: ZenObservable.Subscription;
@@ -1416,26 +1357,19 @@ class DataStore {
 	 * attaches a sync engine, starts it, and subscribes.
 	 */
 	start = async (): Promise<void> => {
-		// console.log('start 0');
 		return this.runningProcesses
 			.add(async () => {
-				// console.log('start 1');
 				this.state = DataStoreState.Starting;
 				if (this.initialized === undefined) {
-					// console.log('starting datastore');
 					logger.debug('Starting DataStore');
 					this.initialized = new Promise((res, rej) => {
 						this.initResolve = res;
 						this.initReject = rej;
 					});
 				} else {
-					// console.log('already startd, awaiting');
 					await this.initialized;
-					// console.log('start done awaiting');
 					return;
 				}
-
-				// console.log('start 2');
 
 				this.storage = new Storage(
 					schema,
@@ -1446,20 +1380,9 @@ class DataStore {
 					this.sessionId
 				);
 
-				// console.log('start 3');
-
 				await this.storage.init();
-
-				// console.log('start 4');
-
 				checkSchemaInitialized();
-
-				// console.log('start 5');
-
 				await checkSchemaVersion(this.storage, schema.version);
-
-				// console.log('start 6');
-
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				if (aws_appsync_graphqlEndpoint) {
@@ -2041,9 +1964,6 @@ class DataStore {
 										};
 									}
 
-									// if (executivePredicate)
-									// 	console.log('checking item', message.element);
-
 									if (
 										!executivePredicate ||
 										(await executivePredicate.matches(message.element))
@@ -2121,12 +2041,6 @@ class DataStore {
 				throw new Error('Could not find model definition.');
 			}
 
-			// = buildSeedPredicate(model).__query;
-
-			// if (typeof identifierOrCriteria === 'string') {
-			// 	const buildIdPredicate = seed => seed.id.eq(identifierOrCriteria);
-			// 	executivePredicate = buildIdPredicate(buildSeedPredicate(model)).__query;
-			// } else
 			if (model && typeof criteria === 'function') {
 				executivePredicate = (criteria as RecursiveModelPredicateExtender<T>)(
 					buildSeedPredicate(model)
@@ -2134,42 +2048,6 @@ class DataStore {
 			} else if (isPredicatesAll(criteria)) {
 				executivePredicate = undefined;
 			}
-
-			const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-
-			/**
-			 * TODO: do we need this isQueryOne() stuff? I think svidgen introduced it to replicate
-			 * what observe() was doing. but, observe() can take a PK, whereas observeQuery() only
-			 * accepts a predicate builder.
-			 *
-			 * See: https://github.com/aws-amplify/amplify-js/pull/9879/files
-			 *
-			 * I *think* we can safely omit this... I don't think we need to handle isQueryOne case
-			 * at all..
-			 *
-			 */
-
-			// if (isQueryOne(criteria)) {
-			// 	predicate = ModelPredicateCreator.createForSingleField<T>(
-			// 		modelDefinition,
-			// 		keyFields[0],
-			// 		criteria
-			// 	);
-			// } else {
-			// 	if (isPredicatesAll(criteria)) {
-			// 		// Predicates.ALL means "all records", so no predicate (undefined)
-			// 		predicate = undefined;
-			// 	} else {
-			// 		predicate = ModelPredicateCreator.createFromExisting(
-			// 			modelDefinition,
-			// 			criteria
-			// 		);
-			// 	}
-			// }
-
-			// const { predicates, type: predicateGroupType } =
-			// 	ModelPredicateCreator.getPredicates(predicate, false) || {};
-			// const hasPredicate = !!predicates;
 
 			this.runningProcesses
 				.add(async () => {
@@ -2231,7 +2109,6 @@ class DataStore {
 										this.syncPageSize;
 
 									if (limit || isSynced) {
-										// console.log('emitting here on element received', element);
 										limitTimerRace.resolve();
 									}
 
@@ -2490,27 +2367,20 @@ class DataStore {
 	async stop(this: InstanceType<typeof DataStore>) {
 		this.state = DataStoreState.Stopping;
 
-		// console.log('stop 1');
 		await this.runningProcesses.close();
-		// console.log('stop 1');
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
-		// console.log('stop 3');
 
 		if (this.sync) {
-			// console.log('stop 3.1');
 			await this.sync.stop();
-			// console.log('stop 3.2');
 		}
-		// console.log('stop 4');
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 		await this.runningProcesses.open();
 		this.state = DataStoreState.NotRunning;
-		// console.log('stop 5');
 	}
 
 	/**
