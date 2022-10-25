@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 
+export { Amplify } from './amplifySingleton';
 export {
 	Analytics,
 	AnalyticsProvider,
@@ -47,4 +48,3 @@ export {
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 export { Geo } from '@aws-amplify/geo';
-export { Amplify } from './amplifySingleton';
