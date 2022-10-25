@@ -18,7 +18,7 @@ import {
 	StorageHelper,
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
 	ChannelType,
 	GetInAppMessagesCommand,

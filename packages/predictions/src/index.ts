@@ -28,8 +28,3 @@ export {
 	AmazonAIPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
 };
-
-/**
- * @deprecated use named import
- */
-export default Predictions;

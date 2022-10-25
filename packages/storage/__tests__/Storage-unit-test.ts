@@ -1,4 +1,4 @@
-import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import {
 	S3ProviderListOutputWithToken,

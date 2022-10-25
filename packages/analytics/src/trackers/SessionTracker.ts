@@ -182,8 +182,3 @@ export class SessionTracker {
 		return this._config;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default SessionTracker;

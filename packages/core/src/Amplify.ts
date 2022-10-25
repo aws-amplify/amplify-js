@@ -96,8 +96,3 @@ export class AmplifyClass {
 }
 
 export const Amplify = new AmplifyClass();
-
-/**
- * @deprecated use named import
- */
-export default Amplify;

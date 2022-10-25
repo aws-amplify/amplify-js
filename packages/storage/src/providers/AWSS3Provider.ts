@@ -857,8 +857,3 @@ export class AWSS3Provider implements StorageProvider {
 		return s3client;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSS3Provider;

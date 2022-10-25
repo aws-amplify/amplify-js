@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { Auth } from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import {

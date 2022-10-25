@@ -102,8 +102,3 @@ export class GoogleOAuth {
 		});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default GoogleOAuth;

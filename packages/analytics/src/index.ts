@@ -11,12 +11,6 @@
  * and limitations under the License.
  */
 
-import { Analytics } from './Analytics';
-import { AnalyticsProvider } from './types';
-
-/**
- * @deprecated use named import
- */
-export default Analytics;
-export { AnalyticsProvider, Analytics };
+export { Analytics } from './Analytics';
+export { AnalyticsProvider } from './types';
 export * from './Providers';

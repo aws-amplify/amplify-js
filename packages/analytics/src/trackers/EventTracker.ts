@@ -123,8 +123,3 @@ export class EventTracker {
 		});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default EventTracker;

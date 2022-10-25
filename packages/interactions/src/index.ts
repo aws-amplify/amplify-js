@@ -10,16 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Interactions } from './Interactions';
 
-/**
- * @deprecated use named import
- */
-export default Interactions;
-
+export { Interactions } from './Interactions';
 export * from './types';
 export * from './Providers/InteractionsProvider';
 export * from './Providers/AWSLexProvider';
 export * from './Providers/AWSLexV2Provider';
-
-export { Interactions };

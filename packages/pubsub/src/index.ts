@@ -10,17 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { PubSub } from './PubSub';
 
+export { PubSub } from './PubSub';
 export * from './Providers';
-
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';
-
 export { ConnectionState, CONTROL_MSG } from './types';
-
-export { PubSub };
-
-/**
- * @deprecated use named import
- */
-export default PubSub;
