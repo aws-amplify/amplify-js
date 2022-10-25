@@ -100,7 +100,7 @@ class IndexedDBAdapter implements Adapter {
 	 *
 	 * If this returns `true`, we need to treat indexes containing a single field
 	 * as scalars.
-	 * 
+	 *
 	 * See PR description for reference:
 	 * https://github.com/aws-amplify/amplify-js/pull/10527
 	 */
@@ -265,7 +265,7 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byPk');
 		}
 
-		const result = await index.get(this.keyArrOrSingleKey(keyArr));
+		const result = await index.get(this.canonicalKeyPath(keyArr));
 
 		return result;
 	}
@@ -349,7 +349,7 @@ class IndexedDBAdapter implements Adapter {
 			) {
 				const key = await store
 					.index('byPk')
-					.getKey(this.keyArrOrSingleKey(itemKeyValues));
+					.getKey(this.canonicalKeyPath(itemKeyValues));
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -833,7 +833,7 @@ class IndexedDBAdapter implements Adapter {
 						const keyValues = this.getIndexKeyValuesFromModel(item as T);
 						key = await store
 							.index('byPk')
-							.getKey(this.keyArrOrSingleKey(keyValues));
+							.getKey(this.canonicalKeyPath(keyValues));
 					} else {
 						const itemKey = item.toString();
 						key = await store.index('byPk').getKey(itemKey);
@@ -881,7 +881,7 @@ class IndexedDBAdapter implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(hasOneIndex)
-									.get(this.keyArrOrSingleKey(values))
+									.get(this.canonicalKeyPath(values))
 							);
 
 							await this.deleteTraverse(
@@ -922,7 +922,7 @@ class IndexedDBAdapter implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(index)
-									.get(this.keyArrOrSingleKey(values))
+									.get(this.canonicalKeyPath(values))
 							);
 
 							await this.deleteTraverse(
@@ -957,7 +957,7 @@ class IndexedDBAdapter implements Adapter {
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
 							.index(index as string)
-							.getAll(this.keyArrOrSingleKey(keyValues));
+							.getAll(this.canonicalKeyPath(keyValues));
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -1035,7 +1035,7 @@ class IndexedDBAdapter implements Adapter {
 
 			const index = store.index('byPk');
 
-			const key = await index.getKey(this.keyArrOrSingleKey(keyValues));
+			const key = await index.getKey(this.canonicalKeyPath(keyValues));
 
 			if (!_deleted) {
 				const { instance } = connectedModels.find(({ instance }) => {
@@ -1085,12 +1085,12 @@ class IndexedDBAdapter implements Adapter {
 	/**
 	 * Checks the given path against the browser's IndexedDB implementation for
 	 * necessary compatibility transformations, applying those transforms if needed.
-	 * 
+	 *
 	 * @param `keyArr` strings to compatibilize for browser-indexeddb index operations
 	 * @returns An array or string, depending on and given key,
 	 * that is ensured to be compatible with the IndexedDB implementation's nuances.
 	 */
-	private keyArrOrSingleKey = (keyArr: string[]) => {
+	private canonicalKeyPath = (keyArr: string[]) => {
 		if (this.safariCompatabilityMode) {
 			return keyArr.length > 1 ? keyArr : keyArr[0];
 		}

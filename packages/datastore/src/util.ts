@@ -464,7 +464,7 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 		});
 
 		if (!db) {
-			throw new Error('Could not open prob DB');
+			throw new Error('Could not open probe DB');
 		}
 
 		const rwTx = db.transaction(storeName, 'readwrite');
@@ -497,9 +497,9 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 		if (result === undefined) {
 			safariCompatabilityModeResult = true;
+		} else {
+			safariCompatabilityModeResult = false;
 		}
-
-		safariCompatabilityModeResult = false;
 	} catch (error) {
 		safariCompatabilityModeResult = false;
 	}
