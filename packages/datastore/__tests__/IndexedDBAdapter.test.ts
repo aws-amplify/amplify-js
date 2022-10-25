@@ -70,7 +70,6 @@ describe('IndexedDBAdapter tests', () => {
 			const baseDate = new Date();
 
 			await DataStore.start();
-			await DataStore.clear();
 
 			({ id: model1Id } = await DataStore.save(
 				new Model({
@@ -96,7 +95,11 @@ describe('IndexedDBAdapter tests', () => {
 			jest.clearAllMocks();
 		});
 
-		it('Should call getByKey for query by id', async () => {
+		afterAll(async () => {
+			await DataStore.clear();
+		});
+
+		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('field1 value 0');
