@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.14.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.0...@aws-amplify/datastore@3.14.1) (2022-10-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10450](https://github.com/aws-amplify/amplify-js/issues/10450)) ([16c535b](https://github.com/aws-amplify/amplify-js/commit/16c535beda9386a027c2805f29a359fbeb8bac15)), closes [#10449](https://github.com/aws-amplify/amplify-js/issues/10449)
+* **datastore:** CPK on Safari ([#10527](https://github.com/aws-amplify/amplify-js/issues/10527)) ([7a2f3ec](https://github.com/aws-amplify/amplify-js/commit/7a2f3ecf0fda83f087b1c2ce650f4b5f00214dbe))
+
+
+
+
+
 # [3.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.13.0...@aws-amplify/datastore@3.14.0) (2022-10-14)
 
 
