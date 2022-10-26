@@ -187,7 +187,7 @@ export class CredentialsClass {
 		const MAX_DELAY_MS = 10 * 1000;
 		// refreshHandler will retry network errors, otherwise it will
 		// return NonRetryableError to break out of jitteredExponentialRetry
-		return jitteredExponentialRetry(refreshHandler, [], MAX_DELAY_MS)
+		return jitteredExponentialRetry<any>(refreshHandler, [], MAX_DELAY_MS)
 			.then(data => {
 				logger.debug('refresh federated token sucessfully', data);
 				return this._setCredentialsFromFederation({

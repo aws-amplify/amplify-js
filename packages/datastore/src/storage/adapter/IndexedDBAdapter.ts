@@ -33,6 +33,7 @@ import {
 	getStorename,
 	getIndexKeys,
 	extractPrimaryKeyValues,
+	isSafariCompatabilityMode,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -52,6 +53,7 @@ class IndexedDBAdapter implements Adapter {
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
 	private dbName: string = DB_NAME;
+	private safariCompatabilityMode: boolean = false;
 
 	private getStorenameForModel(
 		modelConstructor: PersistentModelConstructor<any>
@@ -92,6 +94,24 @@ class IndexedDBAdapter implements Adapter {
 		}
 	}
 
+	/**
+	 * Whether the browser's implementation of IndexedDB is coercing single-field
+	 * indexes to a scalar key.
+	 *
+	 * If this returns `true`, we need to treat indexes containing a single field
+	 * as scalars.
+	 *
+	 * See PR description for reference:
+	 * https://github.com/aws-amplify/amplify-js/pull/10527
+	 */
+	private async setSafariCompatabilityMode() {
+		this.safariCompatabilityMode = await isSafariCompatabilityMode();
+
+		if (this.safariCompatabilityMode === true) {
+			logger.debug('IndexedDB Adapter is running in Safari Compatability Mode');
+		}
+	}
+
 	private getNamespaceAndModelFromStorename(storeName: string) {
 		const [namespaceName, ...modelNameArr] = storeName.split('_');
 		return {
@@ -111,6 +131,7 @@ class IndexedDBAdapter implements Adapter {
 		sessionId?: string
 	) {
 		await this.checkPrivate();
+		await this.setSafariCompatabilityMode();
 
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
@@ -244,7 +265,7 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byPk');
 		}
 
-		const result = await index.get(keyArr);
+		const result = await index.get(this.canonicalKeyPath(keyArr));
 
 		return result;
 	}
@@ -326,7 +347,9 @@ class IndexedDBAdapter implements Adapter {
 				keysEqual(itemKeyValues, modelKeyValues) ||
 				opType === OpType.INSERT
 			) {
-				const key = await store.index('byPk').getKey(itemKeyValues);
+				const key = await store
+					.index('byPk')
+					.getKey(this.canonicalKeyPath(itemKeyValues));
 				await store.put(item, key);
 
 				result.push([instance, opType]);
@@ -808,10 +831,12 @@ class IndexedDBAdapter implements Adapter {
 
 					if (typeof item === 'object') {
 						const keyValues = this.getIndexKeyValuesFromModel(item as T);
-						key = await store.index('byPk').getKey(keyValues);
+						key = await store
+							.index('byPk')
+							.getKey(this.canonicalKeyPath(keyValues));
 					} else {
-						const itemKey = [item.toString()];
-						key = await store.index('byPk').getKey([itemKey]);
+						const itemKey = item.toString();
+						key = await store.index('byPk').getKey(itemKey);
 					}
 
 					if (key !== undefined) {
@@ -856,7 +881,7 @@ class IndexedDBAdapter implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(hasOneIndex)
-									.get(values)
+									.get(this.canonicalKeyPath(values))
 							);
 
 							await this.deleteTraverse(
@@ -897,7 +922,7 @@ class IndexedDBAdapter implements Adapter {
 									.transaction(storeName, 'readwrite')
 									.objectStore(storeName)
 									.index(index)
-									.get(values)
+									.get(this.canonicalKeyPath(values))
 							);
 
 							await this.deleteTraverse(
@@ -932,7 +957,7 @@ class IndexedDBAdapter implements Adapter {
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
 							.index(index as string)
-							.getAll(keyValues);
+							.getAll(this.canonicalKeyPath(keyValues));
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -1009,7 +1034,8 @@ class IndexedDBAdapter implements Adapter {
 			const { _deleted } = item;
 
 			const index = store.index('byPk');
-			const key = await index.getKey(keyValues);
+
+			const key = await index.getKey(this.canonicalKeyPath(keyValues));
 
 			if (!_deleted) {
 				const { instance } = connectedModels.find(({ instance }) => {
@@ -1055,6 +1081,21 @@ class IndexedDBAdapter implements Adapter {
 
 		return store;
 	}
+
+	/**
+	 * Checks the given path against the browser's IndexedDB implementation for
+	 * necessary compatibility transformations, applying those transforms if needed.
+	 *
+	 * @param `keyArr` strings to compatibilize for browser-indexeddb index operations
+	 * @returns An array or string, depending on and given key,
+	 * that is ensured to be compatible with the IndexedDB implementation's nuances.
+	 */
+	private canonicalKeyPath = (keyArr: string[]) => {
+		if (this.safariCompatabilityMode) {
+			return keyArr.length > 1 ? keyArr : keyArr[0];
+		}
+		return keyArr;
+	};
 }
 
 export default new IndexedDBAdapter();

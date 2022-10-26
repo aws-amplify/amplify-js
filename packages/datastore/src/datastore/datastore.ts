@@ -1,12 +1,13 @@
 import { API } from '@aws-amplify/api';
+import { Auth } from '@aws-amplify/auth';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
+	BackgroundProcessManager,
 	browserOrNode,
 } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
 	Draft,
 	immerable,
@@ -95,6 +96,7 @@ import {
 	mergePatches,
 } from '../util';
 import { getIdentifierValue } from '../sync/utils';
+import DataStoreConnectivity from '../sync/datastoreConnectivity';
 
 setAutoFreeze(true);
 enablePatches();
@@ -252,10 +254,14 @@ const initSchema = (userSchema: Schema) => {
 	return userClasses;
 };
 
-/* Checks if the schema has been initialized by initSchema().
+/**
+ * Throws an exception if the schema has *not* been initialized
+ * by `initSchema()`.
  *
- * Call this function before accessing schema.
- * Currently this only needs to be called in start() and clear() because all other functions will call start first.
+ * **To be called before trying to access schema.**
+ *
+ * Currently this only needs to be called in `start()` and `clear()` because
+ * all other functions will call start first.
  */
 const checkSchemaInitialized = () => {
 	if (schema === undefined) {
@@ -288,8 +294,22 @@ const createTypeClasses: (
 	return classes;
 };
 
+/**
+ * Constructs a model and records it with its metadata in a weakset. Allows for
+ * the separate storage of core model fields and Amplify/DataStore metadata
+ * fields that the customer app does not want exposed.
+ *
+ * @param modelConstructor The model constructor.
+ * @param init Init data that would normally be passed to the constructor.
+ * @returns The initialized model.
+ */
 export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 
+/**
+ * Collection of instantiated models to allow storage of metadata apart from
+ * the model visible to the consuming app -- in case the app doesn't have
+ * metadata fields (_version, _deleted, etc.) exposed on the model itself.
+ */
 const instancesMetadata = new WeakSet<ModelInit<unknown, unknown>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
@@ -734,6 +754,18 @@ function getModelConstructorByModelName(
 	}
 }
 
+/**
+ * Queries the DataStore metadata tables to see if they are the expected
+ * version. If not, clobbers the whole DB. If so, leaves them alone.
+ * Otherwise, simply writes the schema version.
+ *
+ * SIDE EFFECT:
+ * 1. Creates a transaction
+ * 1. Updates data.
+ *
+ * @param storage Storage adapter containing the metadata.
+ * @param version The expected schema version.
+ */
 async function checkSchemaVersion(
 	storage: Storage,
 	version: string
@@ -812,6 +844,14 @@ function getNamespace(): SchemaNamespace {
 	return namespace;
 }
 
+enum DataStoreState {
+	NotRunning = 'Not Running',
+	Starting = 'Starting',
+	Running = 'Running',
+	Stopping = 'Stopping',
+	Clearing = 'Clearing',
+}
+
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
 	private Auth = Auth;
@@ -841,98 +881,188 @@ class DataStore {
 		API: this.API,
 		Cache: this.Cache,
 	};
+	private connectivityMonitor?: DataStoreConnectivity;
+
+	/**
+	 * **IMPORTANT!**
+	 *
+	 * Accumulator for background things that can **and MUST** be called when
+	 * DataStore stops.
+	 *
+	 * These jobs **MUST** be *idempotent promises* that resolve ONLY
+	 * once the intended jobs are completely finished and/or otherwise destroyed
+	 * and cleaned up with ZERO outstanding:
+	 *
+	 * 1. side effects (e.g., state changes)
+	 * 1. callbacks
+	 * 1. subscriptions
+	 * 1. calls to storage
+	 * 1. *etc.*
+	 *
+	 * Methods that create pending promises, subscriptions, callbacks, or any
+	 * type of side effect **MUST** be registered with the manager. And, a new
+	 * manager must be created after each `exit()`.
+	 *
+	 * Failure to comply will put DataStore into a highly unpredictable state
+	 * when it needs to stop or clear -- which occurs when restarting with new
+	 * sync expressions, during testing, and potentially during app code
+	 * recovery handling, etc..
+	 *
+	 * It is up to the discretion of each disposer whether to wait for job
+	 * completion or to cancel operations and issue failures *as long as the
+	 * disposer returns in a reasonable amount of time.*
+	 *
+	 * (Reasonable = *seconds*, not minutes.)
+	 */
+	private runningProcesses = new BackgroundProcessManager();
+
+	/**
+	 * Indicates what state DataStore is in.
+	 *
+	 * Not [yet?] used for actual state management; but for messaging
+	 * when errors occur, to help troubleshoot.
+	 */
+	private state: DataStoreState = DataStoreState.NotRunning;
 
 	getModuleName() {
 		return 'DataStore';
 	}
 
+	/**
+	 * Builds a function to capture `BackgroundManagerNotOpenError`'s to produce friendlier,
+	 * more instructive errors for customers.
+	 *
+	 * @param operation The name of the operation (usually a Datastore method) the customer
+	 * tried to call.
+	 */
+	handleAddProcError(operation: string) {
+		/**
+		 * If the tested error is a `BackgroundManagerNotOpenError`, it will be captured
+		 * and replaced with a friendlier message that instructs the App Developer.
+		 *
+		 * @param err An error to test.
+		 */
+		const handler = (err: Error) => {
+			if (err.message.startsWith('BackgroundManagerNotOpenError')) {
+				throw new Error(
+					[
+						`DataStoreStateError: Tried to execute \`${operation}\` while DataStore was "${this.state}".`,
+						`This can only be done while DataStore is "Started" or "Stopped". To remedy:`,
+						'Ensure all calls to `stop()` and `clear()` have completed first.',
+						'If this is not possible, retry the operation until it succeeds.',
+					].join('\n')
+				);
+			} else {
+				throw err;
+			}
+		};
+
+		return handler;
+	}
+
+	/**
+	 * If not already done:
+	 * 1. Attaches and initializes storage.
+	 * 1. Loads the schema and records metadata.
+	 * 1. If `this.amplifyConfig.aws_appsync_graphqlEndpoint` contains a URL,
+	 * attaches a sync engine, starts it, and subscribes.
+	 */
 	start = async (): Promise<void> => {
-		if (this.initialized === undefined) {
-			logger.debug('Starting DataStore');
-			this.initialized = new Promise((res, rej) => {
-				this.initResolve = res;
-				this.initReject = rej;
-			});
-		} else {
-			await this.initialized;
-
-			return;
-		}
-
-		this.storage = new Storage(
-			schema,
-			namespaceResolver,
-			getModelConstructorByModelName,
-			modelInstanceCreator,
-			this.storageAdapter,
-			this.sessionId
-		);
-
-		await this.storage.init();
-
-		checkSchemaInitialized();
-		await checkSchemaVersion(this.storage, schema.version);
-
-		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
-
-		if (aws_appsync_graphqlEndpoint) {
-			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
-
-			this.syncPredicates = await this.processSyncExpressions();
-
-			this.sync = new SyncEngine(
-				schema,
-				namespaceResolver,
-				syncClasses,
-				userClasses,
-				this.storage,
-				modelInstanceCreator,
-				this.conflictHandler,
-				this.errorHandler,
-				this.syncPredicates,
-				this.amplifyConfig,
-				this.authModeStrategy,
-				this.amplifyContext
-			);
-
-			// tslint:disable-next-line:max-line-length
-			const fullSyncIntervalInMilliseconds = this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
-			syncSubscription = this.sync
-				.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
-				.subscribe({
-					next: ({ type, data }) => {
-						// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
-						// In the Browser, we can begin returning data once subscriptions are in place.
-						const readyType = isNode
-							? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-							: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
-
-						if (type === readyType) {
-							this.initResolve();
-						}
-
-						Hub.dispatch('datastore', {
-							event: type,
-							data,
-						});
-					},
-					error: err => {
-						logger.warn('Sync error', err);
-						this.initReject();
-					},
-				});
-		} else {
-			logger.warn(
-				"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
-				{
-					config: this.amplifyConfig,
+		return this.runningProcesses
+			.add(async () => {
+				this.state = DataStoreState.Starting;
+				if (this.initialized === undefined) {
+					logger.debug('Starting DataStore');
+					this.initialized = new Promise((res, rej) => {
+						this.initResolve = res;
+						this.initReject = rej;
+					});
+				} else {
+					await this.initialized;
+					return;
 				}
-			);
 
-			this.initResolve();
-		}
+				this.storage = new Storage(
+					schema,
+					namespaceResolver,
+					getModelConstructorByModelName,
+					modelInstanceCreator,
+					this.storageAdapter,
+					this.sessionId
+				);
 
-		await this.initialized;
+				await this.storage.init();
+
+				checkSchemaInitialized();
+				await checkSchemaVersion(this.storage, schema.version);
+
+				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
+
+				if (aws_appsync_graphqlEndpoint) {
+					logger.debug(
+						'GraphQL endpoint available',
+						aws_appsync_graphqlEndpoint
+					);
+
+					this.syncPredicates = await this.processSyncExpressions();
+
+					this.sync = new SyncEngine(
+						schema,
+						namespaceResolver,
+						syncClasses,
+						userClasses,
+						this.storage,
+						modelInstanceCreator,
+						this.conflictHandler,
+						this.errorHandler,
+						this.syncPredicates,
+						this.amplifyConfig,
+						this.authModeStrategy,
+						this.amplifyContext,
+						this.connectivityMonitor
+					);
+
+					const fullSyncIntervalInMilliseconds =
+						this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
+					syncSubscription = this.sync
+						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
+						.subscribe({
+							next: ({ type, data }) => {
+								// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
+								// In the Browser, we can begin returning data once subscriptions are in place.
+								const readyType = isNode
+									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+
+								if (type === readyType) {
+									this.initResolve();
+								}
+
+								Hub.dispatch('datastore', {
+									event: type,
+									data,
+								});
+							},
+							error: err => {
+								logger.warn('Sync error', err);
+								this.initReject();
+							},
+						});
+				} else {
+					logger.warn(
+						"Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?",
+						{
+							config: this.amplifyConfig,
+						}
+					);
+
+					this.initResolve();
+				}
+
+				await this.initialized;
+				this.state = DataStoreState.Running;
+			}, 'datastore start')
+			.catch(this.handleAddProcError('DataStore.start()'));
 	};
 
 	query: {
@@ -956,129 +1086,136 @@ class DataStore {
 			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
-		await this.start();
+		return this.runningProcesses
+			.add(async () => {
+				await this.start();
 
-		//#region Input validation
+				//#region Input validation
 
-		if (!isValidModelConstructor(modelConstructor)) {
-			const msg = 'Constructor is not for a valid model';
-			logger.error(msg, { modelConstructor });
+				if (!isValidModelConstructor(modelConstructor)) {
+					const msg = 'Constructor is not for a valid model';
+					logger.error(msg, { modelConstructor });
 
-			throw new Error(msg);
-		}
+					throw new Error(msg);
+				}
 
-		if (typeof identifierOrCriteria === 'string') {
-			if (paginationProducer !== undefined) {
-				logger.warn('Pagination is ignored when querying by id');
-			}
-		}
+				if (typeof identifierOrCriteria === 'string') {
+					if (paginationProducer !== undefined) {
+						logger.warn('Pagination is ignored when querying by id');
+					}
+				}
 
-		const modelDefinition = getModelDefinition(modelConstructor);
-		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+				const modelDefinition = getModelDefinition(modelConstructor);
+				const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 
-		let predicate: ModelPredicate<T>;
+				let predicate: ModelPredicate<T>;
 
-		if (isQueryOne(identifierOrCriteria)) {
-			if (keyFields.length > 1) {
-				const msg = errorMessages.queryByPkWithCompositeKeyPresent;
-				logger.error(msg, { keyFields });
+				if (isQueryOne(identifierOrCriteria)) {
+					if (keyFields.length > 1) {
+						const msg = errorMessages.queryByPkWithCompositeKeyPresent;
+						logger.error(msg, { keyFields });
 
-				throw new Error(msg);
-			}
+						throw new Error(msg);
+					}
 
-			predicate = ModelPredicateCreator.createForSingleField<T>(
-				modelDefinition,
-				keyFields[0],
-				identifierOrCriteria
-			);
-		} else {
-			// Object is being queried using object literal syntax
-			if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
-				predicate = ModelPredicateCreator.createForPk<T>(
+					predicate = ModelPredicateCreator.createForSingleField<T>(
+						modelDefinition,
+						keyFields[0],
+						identifierOrCriteria
+					);
+				} else {
+					// Object is being queried using object literal syntax
+					if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
+						predicate = ModelPredicateCreator.createForPk<T>(
+							modelDefinition,
+							<T>identifierOrCriteria
+						);
+					} else if (isPredicatesAll(identifierOrCriteria)) {
+						// Predicates.ALL means "all records", so no predicate (undefined)
+						predicate = undefined;
+					} else {
+						predicate = ModelPredicateCreator.createFromExisting(
+							modelDefinition,
+							<any>identifierOrCriteria
+						);
+					}
+				}
+
+				const pagination = this.processPagination(
 					modelDefinition,
-					<T>identifierOrCriteria
+					paginationProducer
 				);
-			} else if (isPredicatesAll(identifierOrCriteria)) {
-				// Predicates.ALL means "all records", so no predicate (undefined)
-				predicate = undefined;
-			} else {
-				predicate = ModelPredicateCreator.createFromExisting(
-					modelDefinition,
-					<any>identifierOrCriteria
+
+				//#endregion
+
+				logger.debug('params ready', {
+					modelConstructor,
+					predicate: ModelPredicateCreator.getPredicates(predicate, false),
+					pagination: {
+						...pagination,
+						sort: ModelSortPredicateCreator.getPredicates(
+							pagination && pagination.sort,
+							false
+						),
+					},
+				});
+
+				const result = await this.storage.query(
+					modelConstructor,
+					predicate,
+					pagination
 				);
-			}
-		}
 
-		const pagination = this.processPagination(
-			modelDefinition,
-			paginationProducer
-		);
+				const returnOne =
+					isQueryOne(identifierOrCriteria) ||
+					isIdentifierObject(identifierOrCriteria, modelDefinition);
 
-		//#endregion
-
-		logger.debug('params ready', {
-			modelConstructor,
-			predicate: ModelPredicateCreator.getPredicates(predicate, false),
-			pagination: {
-				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(
-					pagination && pagination.sort,
-					false
-				),
-			},
-		});
-
-		const result = await this.storage.query(
-			modelConstructor,
-			predicate,
-			pagination
-		);
-
-		const returnOne =
-			isQueryOne(identifierOrCriteria) ||
-			isIdentifierObject(identifierOrCriteria, modelDefinition);
-
-		return returnOne ? result[0] : result;
+				return returnOne ? result[0] : result;
+			}, 'datastore query')
+			.catch(this.handleAddProcError('DataStore.query()'));
 	};
 
 	save = async <T extends PersistentModel>(
 		model: T,
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
-		await this.start();
+		return this.runningProcesses
+			.add(async () => {
+				await this.start();
 
-		// Immer patches for constructing a correct update mutation input
-		// Allows us to only include changed fields for updates
-		const patchesTuple = modelPatchesMap.get(model);
+				// Immer patches for constructing a correct update mutation input
+				// Allows us to only include changed fields for updates
+				const patchesTuple = modelPatchesMap.get(model);
 
-		const modelConstructor: PersistentModelConstructor<T> | undefined = model
-			? <PersistentModelConstructor<T>>model.constructor
-			: undefined;
+				const modelConstructor: PersistentModelConstructor<T> | undefined =
+					model ? <PersistentModelConstructor<T>>model.constructor : undefined;
 
-		if (!isValidModelConstructor(modelConstructor)) {
-			const msg = 'Object is not an instance of a valid model';
-			logger.error(msg, { model });
+				if (!isValidModelConstructor(modelConstructor)) {
+					const msg = 'Object is not an instance of a valid model';
+					logger.error(msg, { model });
 
-			throw new Error(msg);
-		}
+					throw new Error(msg);
+				}
 
-		const modelDefinition = getModelDefinition(modelConstructor);
+				const modelDefinition = getModelDefinition(modelConstructor);
 
-		const producedCondition = ModelPredicateCreator.createFromExisting(
-			modelDefinition,
-			condition!
-		);
+				const producedCondition = ModelPredicateCreator.createFromExisting(
+					modelDefinition,
+					condition!
+				);
 
-		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition, undefined, patchesTuple);
+				const [savedModel] = await this.storage.runExclusive(async s => {
+					await s.save(model, producedCondition, undefined, patchesTuple);
 
-			return s.query<T>(
-				modelConstructor,
-				ModelPredicateCreator.createForPk(modelDefinition, model)
-			);
-		});
+					return s.query<T>(
+						modelConstructor,
+						ModelPredicateCreator.createForPk(modelDefinition, model)
+					);
+				});
 
-		return savedModel;
+				return savedModel;
+			}, 'datastore save')
+			.catch(this.handleAddProcError('DataStore.save()'));
 	};
 
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
@@ -1136,112 +1273,122 @@ class DataStore {
 			| ProducerModelPredicate<T>
 			| typeof PredicateAll
 	): Promise<T | T[]> => {
-		await this.start();
+		return this.runningProcesses
+			.add(async () => {
+				await this.start();
 
-		let condition: ModelPredicate<T>;
+				let condition: ModelPredicate<T>;
 
-		if (!modelOrConstructor) {
-			const msg = 'Model or Model Constructor required';
-			logger.error(msg, { modelOrConstructor });
-
-			throw new Error(msg);
-		}
-
-		if (isValidModelConstructor<T>(modelOrConstructor)) {
-			const modelConstructor = modelOrConstructor;
-
-			if (!identifierOrCriteria) {
-				const msg =
-					'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL';
-				logger.error(msg, { identifierOrCriteria });
-
-				throw new Error(msg);
-			}
-
-			const modelDefinition = getModelDefinition(modelConstructor);
-
-			if (typeof identifierOrCriteria === 'string') {
-				const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-
-				if (keyFields.length > 1) {
-					const msg = errorMessages.deleteByPkWithCompositeKeyPresent;
-					logger.error(msg, { keyFields });
+				if (!modelOrConstructor) {
+					const msg = 'Model or Model Constructor required';
+					logger.error(msg, { modelOrConstructor });
 
 					throw new Error(msg);
 				}
 
-				condition = ModelPredicateCreator.createForSingleField<T>(
-					getModelDefinition(modelConstructor),
-					keyFields[0],
-					identifierOrCriteria
-				);
-			} else {
-				if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
-					condition = ModelPredicateCreator.createForPk<T>(
-						modelDefinition,
-						<T>identifierOrCriteria
+				if (isValidModelConstructor<T>(modelOrConstructor)) {
+					const modelConstructor = modelOrConstructor;
+
+					if (!identifierOrCriteria) {
+						const msg =
+							'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL';
+						logger.error(msg, { identifierOrCriteria });
+
+						throw new Error(msg);
+					}
+
+					const modelDefinition = getModelDefinition(modelConstructor);
+
+					if (typeof identifierOrCriteria === 'string') {
+						const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
+						if (keyFields.length > 1) {
+							const msg = errorMessages.deleteByPkWithCompositeKeyPresent;
+							logger.error(msg, { keyFields });
+
+							throw new Error(msg);
+						}
+
+						condition = ModelPredicateCreator.createForSingleField<T>(
+							getModelDefinition(modelConstructor),
+							keyFields[0],
+							identifierOrCriteria
+						);
+					} else {
+						if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
+							condition = ModelPredicateCreator.createForPk<T>(
+								modelDefinition,
+								<T>identifierOrCriteria
+							);
+						} else {
+							condition = ModelPredicateCreator.createFromExisting(
+								modelDefinition,
+								/**
+								 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+								 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+								 */
+								identifierOrCriteria as ProducerModelPredicate<T>
+							);
+						}
+
+						if (
+							!condition ||
+							!ModelPredicateCreator.isValidPredicate(condition)
+						) {
+							const msg =
+								'Criteria required. Do you want to delete all? Pass Predicates.ALL';
+							logger.error(msg, { condition });
+
+							throw new Error(msg);
+						}
+					}
+
+					const [deleted] = await this.storage.delete(
+						modelConstructor,
+						condition
 					);
+
+					return deleted;
 				} else {
-					condition = ModelPredicateCreator.createFromExisting(
+					const model = modelOrConstructor;
+					const modelConstructor = Object.getPrototypeOf(model || {})
+						.constructor as PersistentModelConstructor<T>;
+
+					if (!isValidModelConstructor(modelConstructor)) {
+						const msg = 'Object is not an instance of a valid model';
+						logger.error(msg, { model });
+
+						throw new Error(msg);
+					}
+
+					const modelDefinition = getModelDefinition(modelConstructor);
+
+					const pkPredicate = ModelPredicateCreator.createForPk<T>(
 						modelDefinition,
-						/**
-						 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-						 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-						 */
-						identifierOrCriteria as ProducerModelPredicate<T>
+						model
 					);
+
+					if (identifierOrCriteria) {
+						if (typeof identifierOrCriteria !== 'function') {
+							const msg = 'Invalid criteria';
+							logger.error(msg, { identifierOrCriteria });
+
+							throw new Error(msg);
+						}
+
+						condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
+							pkPredicate
+						);
+					} else {
+						condition = pkPredicate;
+					}
+
+					const [[deleted]] = await this.storage.delete(model, condition);
+
+					return deleted;
 				}
-
-				if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
-					const msg =
-						'Criteria required. Do you want to delete all? Pass Predicates.ALL';
-					logger.error(msg, { condition });
-
-					throw new Error(msg);
-				}
-			}
-
-			const [deleted] = await this.storage.delete(modelConstructor, condition);
-
-			return deleted;
-		} else {
-			const model = modelOrConstructor;
-			const modelConstructor = Object.getPrototypeOf(model || {})
-				.constructor as PersistentModelConstructor<T>;
-
-			if (!isValidModelConstructor(modelConstructor)) {
-				const msg = 'Object is not an instance of a valid model';
-				logger.error(msg, { model });
-
-				throw new Error(msg);
-			}
-
-			const modelDefinition = getModelDefinition(modelConstructor);
-
-			const pkPredicate = ModelPredicateCreator.createForPk<T>(
-				modelDefinition,
-				model
-			);
-
-			if (identifierOrCriteria) {
-				if (typeof identifierOrCriteria !== 'function') {
-					const msg = 'Invalid criteria';
-					logger.error(msg, { identifierOrCriteria });
-
-					throw new Error(msg);
-				}
-
-				condition = (<ProducerModelPredicate<T>>identifierOrCriteria)(
-					pkPredicate
-				);
-			} else {
-				condition = pkPredicate;
-			}
-
-			const [[deleted]] = await this.storage.delete(model, condition);
-
-			return deleted;
-		}
+			}, 'datastore delete')
+			.catch(this.handleAddProcError('DataStore.delete()'));
 	};
 
 	observe: {
@@ -1348,53 +1495,64 @@ class DataStore {
 		return new Observable<SubscriptionMessage<T>>(observer => {
 			let handle: ZenObservable.Subscription;
 
-			(async () => {
-				await this.start();
+			this.runningProcesses
+				.add(async () => {
+					await this.start();
 
-				// Filter the events returned by Storage according to namespace,
-				// append original element data, and subscribe to the observable
-				handle = this.storage
-					.observe(modelConstructor, predicate)
-					.filter(({ model }) => namespaceResolver(model) === USER)
-					.subscribe({
-						next: async item => {
-							// the `element` doesn't necessarily contain all item details or
-							// have related records attached consistently with that of a query()
-							// result item. for consistency, we attach them here.
+					// Filter the events returned by Storage according to namespace,
+					// append original element data, and subscribe to the observable
+					handle = this.storage
+						.observe(modelConstructor, predicate)
+						.filter(({ model }) => namespaceResolver(model) === USER)
+						.subscribe({
+							next: item =>
+								this.runningProcesses.isOpen &&
+								this.runningProcesses.add(async () => {
+									// the `element` doesn't necessarily contain all item details or
+									// have related records attached consistently with that of a query()
+									// result item. for consistency, we attach them here.
 
-							let message = item;
+									let message = item;
 
-							// as long as we're not dealing with a DELETE, we need to fetch a fresh
-							// item from storage to ensure it's fully populated.
-							if (item.opType !== 'DELETE') {
-								const modelDefinition = getModelDefinition(item.model);
-								const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-								const primaryKeysAndValues = extractPrimaryKeysAndValues(
-									item.element,
-									keyFields
-								);
-								const freshElement = await this.query(
-									item.model,
-									primaryKeysAndValues
-								);
-								message = {
-									...message,
-									element: freshElement as T,
-								};
-							}
+									// as long as we're not dealing with a DELETE, we need to fetch a fresh
+									// item from storage to ensure it's fully populated.
+									if (item.opType !== 'DELETE') {
+										const modelDefinition = getModelDefinition(item.model);
+										const keyFields =
+											extractPrimaryKeyFieldNames(modelDefinition);
+										const primaryKeysAndValues = extractPrimaryKeysAndValues(
+											item.element,
+											keyFields
+										);
+										const freshElement = await this.query(
+											item.model,
+											primaryKeysAndValues
+										);
+										message = {
+											...message,
+											element: freshElement as T,
+										};
+									}
 
-							observer.next(message as SubscriptionMessage<T>);
-						},
-						error: err => observer.error(err),
-						complete: () => observer.complete(),
-					});
-			})();
+									observer.next(message as SubscriptionMessage<T>);
+								}, 'datastore observe message handler'),
+							error: err => observer.error(err),
+							complete: () => observer.complete(),
+						});
+				}, 'datastore observe observable initialization')
+				.catch(this.handleAddProcError('DataStore.observe()'))
+				.catch(error => {
+					observer.error(error);
+				});
 
-			return () => {
+			// better than no cleaner, but if the subscriber is handling the
+			// complete() message async and not registering with the context,
+			// this will still be problematic.
+			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
 					handle.unsubscribe();
 				}
-			};
+			}, 'DataStore.observe() cleanup');
 		});
 	};
 
@@ -1467,72 +1625,79 @@ class DataStore {
 				ModelPredicateCreator.getPredicates(predicate, false) || {};
 			const hasPredicate = !!predicates;
 
-			(async () => {
-				try {
-					// first, query and return any locally-available records
-					(await this.query(model, criteria, sortOptions)).forEach(item => {
-						const itemModelDefinition = getModelDefinition(model);
-						const idOrPk = getIdentifierValue(itemModelDefinition, item);
-						items.set(idOrPk, item);
-					});
-
-					// Observe the model and send a stream of updates (debounced).
-					// We need to post-filter results instead of passing criteria through
-					// to have visibility into items that move from in-set to out-of-set.
-					// We need to explicitly remove those items from the existing snapshot.
-					handle = this.observe(model).subscribe(
-						({ element, model, opType }) => {
+			this.runningProcesses
+				.add(async () => {
+					try {
+						// first, query and return any locally-available records
+						(await this.query(model, criteria, sortOptions)).forEach(item => {
 							const itemModelDefinition = getModelDefinition(model);
-							const idOrPk = getIdentifierValue(itemModelDefinition, element);
-							if (
-								hasPredicate &&
-								!validatePredicate(element, predicateGroupType, predicates)
-							) {
+							const idOrPk = getIdentifierValue(itemModelDefinition, item);
+							items.set(idOrPk, item);
+						});
+
+						// Observe the model and send a stream of updates (debounced).
+						// We need to post-filter results instead of passing criteria through
+						// to have visibility into items that move from in-set to out-of-set.
+						// We need to explicitly remove those items from the existing snapshot.
+						handle = this.observe(model).subscribe(
+							({ element, model, opType }) => {
+								const itemModelDefinition = getModelDefinition(model);
+								const idOrPk = getIdentifierValue(itemModelDefinition, element);
 								if (
-									opType === 'UPDATE' &&
-									(items.has(idOrPk) || itemsChanged.has(idOrPk))
+									hasPredicate &&
+									!validatePredicate(element, predicateGroupType, predicates)
 								) {
-									// tracking as a "deleted item" will include the item in
-									// page limit calculations and ensure it is removed from the
-									// final items collection, regardless of which collection(s)
-									// it is currently in. (I mean, it could be in both, right!?)
+									if (
+										opType === 'UPDATE' &&
+										(items.has(idOrPk) || itemsChanged.has(idOrPk))
+									) {
+										// tracking as a "deleted item" will include the item in
+										// page limit calculations and ensure it is removed from the
+										// final items collection, regardless of which collection(s)
+										// it is currently in. (I mean, it could be in both, right!?)
+										deletedItemIds.push(idOrPk);
+									} else {
+										// ignore updates for irrelevant/filtered items.
+										return;
+									}
+								}
+
+								// Flag items which have been recently deleted
+								// NOTE: Merging of separate operations to the same model instance is handled upstream
+								// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+								// depends on the LATEST record (for a given id).
+								if (opType === 'DELETE') {
 									deletedItemIds.push(idOrPk);
 								} else {
-									// ignore updates for irrelevant/filtered items.
-									return;
+									itemsChanged.set(idOrPk, element);
 								}
+
+								const isSynced =
+									this.sync?.getModelSyncedStatus(model) ?? false;
+
+								const limit =
+									itemsChanged.size - deletedItemIds.length >=
+									this.syncPageSize;
+
+								if (limit || isSynced) {
+									limitTimerRace.resolve();
+								}
+
+								// kicks off every subsequent race as results sync down
+								limitTimerRace.start();
 							}
+						);
 
-							// Flag items which have been recently deleted
-							// NOTE: Merging of separate operations to the same model instance is handled upstream
-							// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
-							// depends on the LATEST record (for a given id).
-							if (opType === 'DELETE') {
-								deletedItemIds.push(idOrPk);
-							} else {
-								itemsChanged.set(idOrPk, element);
-							}
-
-							const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
-
-							const limit =
-								itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
-
-							if (limit || isSynced) {
-								limitTimerRace.resolve();
-							}
-
-							// kicks off every subsequent race as results sync down
-							limitTimerRace.start();
-						}
-					);
-
-					// returns a set of initial/locally-available results
-					generateAndEmitSnapshot();
-				} catch (err) {
-					observer.error(err);
-				}
-			})();
+						// returns a set of initial/locally-available results
+						generateAndEmitSnapshot();
+					} catch (err) {
+						observer.error(err);
+					}
+				}, 'datastore observequery startup')
+				.catch(this.handleAddProcError('DataStore.observeQuery()'))
+				.catch(error => {
+					observer.error(error);
+				});
 
 			/**
 			 * Combines the `items`, `itemsChanged`, and `deletedItemIds` collections into
@@ -1576,7 +1741,8 @@ class DataStore {
 			 * @param snapshot The generated items data to emit.
 			 */
 			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
-				// send the generated snapshot to the primary subscription
+				// send the generated snapshot to the primary subscription.
+				// NOTE: This observer's handler *could* be async ...
 				observer.next(snapshot);
 
 				// reset the changed items sets
@@ -1619,16 +1785,16 @@ class DataStore {
 					data?.model?.name === model.name
 				) {
 					generateAndEmitSnapshot();
-					Hub.remove('api', hubCallback);
+					Hub.remove('datastore', hubCallback);
 				}
 			};
 			Hub.listen('datastore', hubCallback);
 
-			return () => {
+			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
 					handle.unsubscribe();
 				}
-			};
+			}, 'datastore observequery cleaner');
 		});
 	};
 
@@ -1718,8 +1884,18 @@ class DataStore {
 		this.sessionId = this.retrieveSessionId()!;
 	};
 
-	clear = async function clear() {
+	/**
+	 * Clears all data from storage and removes all data, schema info, other
+	 * initialization details, and then stops DataStore.
+	 *
+	 * That said, reinitialization is required after clearing. This can be done
+	 * by explicitiliy calling `start()` or any method that implicitly starts
+	 * DataStore, such as `query()`, `save()`, or `delete()`.
+	 */
+	async clear() {
 		checkSchemaInitialized();
+		this.state = DataStoreState.Clearing;
+		await this.runningProcesses.close();
 		if (this.storage === undefined) {
 			// connect to storage so that it can be cleared without fully starting DataStore
 			this.storage = new Storage(
@@ -1737,35 +1913,53 @@ class DataStore {
 			syncSubscription.unsubscribe();
 		}
 
-		await this.storage.clear();
-
 		if (this.sync) {
-			this.sync.unsubscribeConnectivity();
+			await this.sync.stop();
 		}
+
+		await this.storage!.clear();
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
-	};
 
-	stop = async function stop(this: InstanceType<typeof DataStore>) {
-		if (this.initialized !== undefined) {
-			await this.start();
-		}
+		await this.runningProcesses.open();
+		this.state = DataStoreState.NotRunning;
+	}
+
+	/**
+	 * Stops all DataStore sync activities.
+	 *
+	 * TODO: "Waits for graceful termination of
+	 * running queries and terminates subscriptions."
+	 */
+	async stop(this: InstanceType<typeof DataStore>) {
+		this.state = DataStoreState.Stopping;
+
+		await this.runningProcesses.close();
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
 
 		if (this.sync) {
-			this.sync.unsubscribeConnectivity();
+			await this.sync.stop();
 		}
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
-	};
+		await this.runningProcesses.open();
+		this.state = DataStoreState.NotRunning;
+	}
 
+	/**
+	 * Validates given pagination input from a query and creates a pagination
+	 * argument for use against the storage layer.
+	 *
+	 * @param modelDefinition
+	 * @param paginationProducer
+	 */
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
@@ -1815,6 +2009,10 @@ class DataStore {
 		};
 	}
 
+	/**
+	 * Examines the configured `syncExpressions` and produces a WeakMap of
+	 * SchemaModel -> predicate to use during sync.
+	 */
 	private async processSyncExpressions(): Promise<
 		WeakMap<SchemaModel, ModelPredicate<any>>
 	> {
@@ -1900,7 +2098,10 @@ class DataStore {
 		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
 	}
 
-	// database separation for Amplify Console. Not a public API
+	/**
+	 * A session ID to allow CMS to open databases against multiple apps.
+	 * This session ID is only expected be set by AWS Amplify Studio.
+	 */
 	private retrieveSessionId(): string | undefined {
 		try {
 			const sessionId = sessionStorage.getItem('datastoreSessionId');

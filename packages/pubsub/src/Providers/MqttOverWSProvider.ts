@@ -239,6 +239,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 		if (client && client.isConnected()) {
 			client.disconnect();
+			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		}
 		this.clientsQueue.remove(clientId);
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -357,6 +358,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					this._clientIdObservers.get(clientId)?.delete(observer);
 					// No more observers per client => client not needed anymore
 					if (this._clientIdObservers.get(clientId)?.size === 0) {
+						this.connectionStateMonitor.record(
+							CONNECTION_CHANGE.CLOSING_CONNECTION
+						);
+
 						this.disconnect(clientId);
 						this.connectionStateMonitor.record(
 							CONNECTION_CHANGE.CLOSING_CONNECTION

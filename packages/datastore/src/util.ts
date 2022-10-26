@@ -39,13 +39,13 @@ export const ID = 'id';
  * Used by the Async Storage Adapter to concatenate key values
  * for a record. For instance, if a model has the following keys:
  * `customId: ID! @primaryKey(sortKeyFields: ["createdAt"])`,
- * we concatenate the `customId` and `createdAt` as: 
+ * we concatenate the `customId` and `createdAt` as:
  * `12-234-5#2022-09-28T00:00:00.000Z`
  */
 export const DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR = '#';
 
 /**
- * Used for generating spinal-cased index name from an array of 
+ * Used for generating spinal-cased index name from an array of
  * key field names.
  * E.g. for keys `[id, title]` => 'id-title'
  */
@@ -415,6 +415,96 @@ export const isPrivateMode = () => {
 		db.onerror = isPrivate;
 		db.onsuccess = isNotPrivate;
 	});
+};
+
+let safariCompatabilityModeResult;
+
+/**
+ * Whether the browser's implementation of IndexedDB breaks on array lookups
+ * against composite indexes whose keypath contains a single column.
+ *
+ * E.g., Whether `store.createIndex(indexName, ['id'])` followed by
+ * `store.index(indexName).get([1])` will *ever* return records.
+ *
+ * In all known, modern Safari browsers as of Q4 2022, the query against an index like
+ * this will *always* return `undefined`. So, the index needs to be created as a scalar.
+ */
+export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
+	try {
+		const dbName = uuid();
+		const storeName = 'indexedDBFeatureProbeStore';
+		const indexName = 'idx';
+
+		if (indexedDB === null) return false;
+
+		if (safariCompatabilityModeResult !== undefined) {
+			return safariCompatabilityModeResult;
+		}
+
+		const db: IDBDatabase | false = await new Promise(resolve => {
+			const dbOpenRequest = indexedDB.open(dbName);
+			dbOpenRequest.onerror = () => resolve(false);
+
+			dbOpenRequest.onsuccess = () => {
+				const db = dbOpenRequest.result;
+				resolve(db);
+			};
+
+			dbOpenRequest.onupgradeneeded = (event: any) => {
+				const db = event?.target?.result;
+
+				db.onerror = () => resolve(false);
+
+				const store = db.createObjectStore(storeName, {
+					autoIncrement: true,
+				});
+
+				store.createIndex(indexName, ['id']);
+			};
+		});
+
+		if (!db) {
+			throw new Error('Could not open probe DB');
+		}
+
+		const rwTx = db.transaction(storeName, 'readwrite');
+		const rwStore = rwTx.objectStore(storeName);
+		rwStore.add({
+			id: 1,
+		});
+
+		(rwTx as any).commit();
+
+		const result = await new Promise(resolve => {
+			const tx = db.transaction(storeName, 'readonly');
+			const store = tx.objectStore(storeName);
+			const index = store.index(indexName);
+
+			const getRequest = index.get([1]);
+
+			getRequest.onerror = () => resolve(false);
+
+			getRequest.onsuccess = (event: any) => {
+				resolve(event?.target?.result);
+			};
+		});
+
+		if (db && typeof db.close === 'function') {
+			await db.close();
+		}
+
+		await indexedDB.deleteDatabase(dbName);
+
+		if (result === undefined) {
+			safariCompatabilityModeResult = true;
+		} else {
+			safariCompatabilityModeResult = false;
+		}
+	} catch (error) {
+		safariCompatabilityModeResult = false;
+	}
+
+	return safariCompatabilityModeResult;
 };
 
 const randomBytes = (nBytes: number): Buffer => {
