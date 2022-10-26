@@ -575,7 +575,6 @@ export type ModelInit<
 	M extends PersistentModelMetaData<T> = {}
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
-		// [P in keyof OmitOptionalFields<ModelInitBase<T, M>>]: SettableFieldType<
 		ModelInitBase<T, M>[P]
 	>;
 } & {

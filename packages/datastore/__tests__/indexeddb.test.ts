@@ -300,7 +300,7 @@ describe('Indexed db storage test', () => {
 		});
 	});
 
-	test('query M:1 lazy load', async () => {
+	test('query 1:M lazy load', async () => {
 		const p = new Post({
 			title: 'Avatar',
 			blog,

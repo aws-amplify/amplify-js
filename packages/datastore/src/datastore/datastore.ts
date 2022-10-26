@@ -463,7 +463,7 @@ const checkSchemaInitialized = () => {
 };
 
 /**
- * Throws an excpetion if the schema is using a codegenVersion that is not supported.
+ * Throws an exception if the schema is using a codegen version that is not supported.
  *
  * Set the supported version by setting majorVersion and minorVersion
  * This functions similar to ^ version range.
@@ -1275,7 +1275,7 @@ class DataStore {
 	/**
 	 * **IMPORTANT!**
 	 *
-	 * Accumulator for backgrouns things that can **and MUST** be called when
+	 * Accumulator for background things that can **and MUST** be called when
 	 * DataStore stops.
 	 *
 	 * These jobs **MUST** be *idempotent promises* that resolve ONLY

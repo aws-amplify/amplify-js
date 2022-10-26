@@ -645,7 +645,7 @@ export class GroupCondition {
 
 		// PK might be a single field, like `id`, or it might be several fields.
 		// so, we'll need to extract the list of PK fields from an object
-		// and stringify the list it for easy comparision / merging.
+		// and stringify the list for easy comparison / merging.
 		const getPKValue = item =>
 			JSON.stringify(this.model.pkField.map(name => item[name]));
 

@@ -184,8 +184,6 @@ describe('DataStore sanity testing checks', () => {
 			describe('simple cases', () => {
 				for (const online of [true, false]) {
 					for (const isNode of [true, false]) {
-						// for (const online of [true]) {
-						// 	for (const isNode of [false]) {
 						const connectedState = online ? 'online' : 'offline';
 						const environment = isNode ? 'node' : 'browser';
 
