@@ -182,69 +182,6 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const {
-				fieldName,
-				modelName: tableName,
-				targetName,
-				relationType,
-			} = relation;
-
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				tableName
-			);
-
-			// TODO: use SQL JOIN instead
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						const getByfield = recordItem[targetName] ? targetName : fieldName;
-						if (!recordItem[getByfield]) break;
-
-						const [queryStatement, params] = queryByIdStatement(
-							recordItem[getByfield],
-							tableName
-						);
-
-						const connectionRecord = await this.db.get(queryStatement, params);
-
-						recordItem[fieldName] =
-							connectionRecord &&
-							this.modelInstanceCreator(modelConstructor, connectionRecord);
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const [queryStatement, params] = queryByIdStatement(
-								recordItem[targetName],
-								tableName
-							);
-							const connectionRecord = await this.db.get(
-								queryStatement,
-								params
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					const _: never = relationType as never;
-					throw new Error(`invalid relation type ${relationType}`);
-					break;
-			}
-		}
-
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);

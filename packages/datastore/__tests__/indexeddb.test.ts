@@ -743,45 +743,6 @@ describe('Indexed db storage test', () => {
 		await DataStore.delete(Author, c => c);
 	});
 
-	// skipping in this PR. will re-enable as part of cascading deletes work
-	test.skip('delete cascade', async () => {
-		const a1 = await DataStore.save(new Author({ name: 'author1' }));
-		const a2 = await DataStore.save(new Author({ name: 'author2' }));
-		await DataStore.save(owner);
-		const blog = new Blog({
-			name: 'The Blog',
-			owner,
-		});
-		const p1 = new Post({
-			title: 'Post 1',
-			blog,
-		});
-		const p2 = new Post({
-			title: 'Post 2',
-			blog,
-		});
-		await DataStore.save(p1);
-		await DataStore.save(p2);
-		const c1 = await DataStore.save(new Comment({ content: 'c1', post: p1 }));
-		const c2 = await DataStore.save(new Comment({ content: 'c2', post: p1 }));
-		await DataStore.save(blog);
-		await DataStore.delete(BlogOwner, owner.id);
-		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
-		expect(await DataStore.query(BlogOwner, owner.id)).toBeUndefined();
-		expect(await DataStore.query(Post, p1.id)).toBeUndefined();
-		expect(await DataStore.query(Post, p2.id)).toBeUndefined();
-		expect(await DataStore.query(Comment, c1.id)).toBeUndefined();
-		expect(await DataStore.query(Comment, c2.id)).toBeUndefined();
-		expect(await DataStore.query(Author, a1.id)).toEqual(a1);
-		expect(await DataStore.query(Author, a2.id)).toEqual(a2);
-		const refResult = await db
-			.transaction(`${USER}_PostAuthorJoin`, 'readonly')
-			.objectStore(`${USER}_PostAuthorJoin`)
-			.index('postId')
-			.getAll([p1.id]);
-		expect(refResult).toHaveLength(0);
-	});
-
 	test('delete non existent', async () => {
 		expect.assertions(2);
 

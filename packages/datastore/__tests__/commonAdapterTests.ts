@@ -26,6 +26,9 @@ import {
 
 export { pause };
 
+const isSQLiteAdapter = () =>
+	expect.getState().testPath.includes('SQLiteAdapter');
+
 /**
  * Adds common query test cases that all adapters should support.
  *
@@ -38,6 +41,12 @@ export function addCommonQueryTests({
 	storageAdapter,
 	getMutations,
 	clearOutbox,
+}: {
+	initSchema: typeof initSchemaType;
+	DataStore: typeof DataStoreType;
+	storageAdapter: any;
+	getMutations: any;
+	clearOutbox: any;
 }) {
 	describe('Common `query()` cases', () => {
 		let Model: PersistentModelConstructor<Model>;
@@ -108,62 +117,74 @@ export function addCommonQueryTests({
 		});
 
 		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.ne(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.ne(undefined!)
+			);
 			expect(results.length).toEqual(3);
 		});
 
 		it('should match fields of any non-empty value for `("ne", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.ne(null));
+			const results = await DataStore.query(Model, m => m.field1.ne(null!));
 			expect(results.length).toEqual(3);
 		});
 
 		it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.eq(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.eq(undefined!)
+			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("eq", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.eq(null));
+			const results = await DataStore.query(Model, m => m.field1.eq(null!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("gt", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.gt(null));
+			const results = await DataStore.query(Model, m => m.field1.gt(null!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT  match fields of any non-empty value for `("ge", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.ge(null));
+			const results = await DataStore.query(Model, m => m.field1.ge(null!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.lt(null));
+			const results = await DataStore.query(Model, m => m.field1.lt(null!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", null)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.le(null));
+			const results = await DataStore.query(Model, m => m.field1.le(null!));
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.gt(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.gt(undefined!)
+			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.ge(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.ge(undefined!)
+			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.lt(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.lt(undefined!)
+			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
-			const results = await DataStore.query(Model, m => m.field1.le(undefined));
+			const results = await DataStore.query(Model, m =>
+				m.field1.le(undefined!)
+			);
 			expect(results.length).toEqual(0);
 		});
 
@@ -264,8 +285,8 @@ export function addCommonQueryTests({
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(await user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -279,8 +300,8 @@ export function addCommonQueryTests({
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(await user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 
 		it('should produce a single mutation for an updated model with a BelongTo (regression test)', async () => {
@@ -342,14 +363,160 @@ export function addCommonQueryTests({
 		});
 	});
 
-	describe('Related models', () => {
-		const schema = testSchema();
-		let classes: Record<string, PersistentModelConstructor<any>> = initSchema(
-			schema
+	describe('common `delete()` cases', () => {
+		let Comment: PersistentModelConstructor<Comment>;
+		let Post: PersistentModelConstructor<Post>;
+
+		beforeEach(async () => {
+			const classes = initSchema(testSchema());
+			({ Comment, Post } = classes as {
+				Comment: PersistentModelConstructor<Comment>;
+				Post: PersistentModelConstructor<Post>;
+			});
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+		});
+
+		test('can delete a single, simple record', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a simple title',
+				})
+			);
+
+			// sanity check. make sure it was created.
+			const retrieved = await DataStore.query(Post, post.id);
+			expect(retrieved).not.toBeUndefined();
+			expect(retrieved!.id).toEqual(post.id);
+
+			await DataStore.delete(post);
+
+			const retrievedAfterDelete = await DataStore.query(Post, post.id);
+			expect(retrievedAfterDelete).toBeUndefined();
+		});
+
+		// see packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts
+		// as long as the comment above `async delete` still says, "Currently does not cascade",
+		// we don't want to try to enforce the requirementon SQLiteAdapter, which appears
+		// to be knowingly in an unfinished state.
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting hasMany side of relationship cascades',
+			async () => {
+				const post = await DataStore.save(
+					new Post({
+						title: 'parent post',
+					})
+				);
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'first!',
+						post,
+					})
+				);
+
+				// sanity check. make sure things were created.
+				const retrievedPost = await DataStore.query(Post, post.id);
+				expect(retrievedPost).not.toBeUndefined();
+				expect(retrievedPost!.id).toEqual(post.id);
+
+				const retrievedComment = await DataStore.query(Comment, comment.id);
+				expect(retrievedComment).not.toBeUndefined();
+				expect(retrievedComment!.id).toEqual(comment.id);
+
+				await DataStore.delete(post);
+
+				const retrievedDeletedPost = await DataStore.query(Post, post.id);
+				expect(retrievedDeletedPost).toBeUndefined();
+
+				const retrievedDeletedComment = await DataStore.query(
+					Comment,
+					comment.id
+				);
+				expect(retrievedDeletedComment).toBeUndefined();
+			}
 		);
 
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting hasMany side of relationship by predicate cascades',
+			async () => {
+				const post = await DataStore.save(
+					new Post({
+						title: 'parent post',
+					})
+				);
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'first!',
+						post,
+					})
+				);
+
+				// sanity check. make sure things were created.
+				const retrievedPost = await DataStore.query(Post, post.id);
+				expect(retrievedPost).not.toBeUndefined();
+				expect(retrievedPost!.id).toEqual(post.id);
+
+				const retrievedComment = await DataStore.query(Comment, comment.id);
+				expect(retrievedComment).not.toBeUndefined();
+				expect(retrievedComment!.id).toEqual(comment.id);
+
+				await DataStore.delete(Post, p => p.title.eq('parent post'));
+
+				const retrievedDeletedPost = await DataStore.query(Post, post.id);
+				expect(retrievedDeletedPost).toBeUndefined();
+
+				const retrievedDeletedComment = await DataStore.query(
+					Comment,
+					comment.id
+				);
+				expect(retrievedDeletedComment).toBeUndefined();
+			}
+		);
+
+		test('deleting belongsTo side of relationship does not cascade', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'parent post',
+				})
+			);
+			const comment = await DataStore.save(
+				new Comment({
+					content: 'first!',
+					post,
+				})
+			);
+
+			// sanity check. make sure things were created.
+			const retrievedPost = await DataStore.query(Post, post.id);
+			expect(retrievedPost).not.toBeUndefined();
+			expect(retrievedPost!.id).toEqual(post.id);
+
+			const retrievedComment = await DataStore.query(Comment, comment.id);
+			expect(retrievedComment).not.toBeUndefined();
+			expect(retrievedComment!.id).toEqual(comment.id);
+
+			await DataStore.delete(comment);
+
+			const retrievedNOTDeletedPost = await DataStore.query(Post, post.id);
+			expect(retrievedNOTDeletedPost).not.toBeUndefined();
+
+			const retrievedDeletedComment = await DataStore.query(
+				Comment,
+				comment.id
+			);
+			expect(retrievedDeletedComment).toBeUndefined();
+		});
+	});
+
+	describe('Related models', () => {
+		const schema = testSchema();
+		let classes = initSchema(schema);
+
 		const buildModelMeta = name => ({
-			builder: classes[name],
+			builder: classes[name] as PersistentModelConstructor<any>,
 			schema: schema.models[name],
 			pkField: extractPrimaryKeyFieldNames(schema.models[name]),
 		});
@@ -429,11 +596,9 @@ export function addCommonQueryTests({
 			await DataStore.clear();
 		});
 
-		if (expect.getState().testPath.includes('SQLiteAdapter')) {
-			console.warn(
-				'SQLiteAdapter does not support CPK yet! Skipping related LazyLoading + Predidicate tests!'
-			);
-			return;
+		let modelNamesToTest = Object.keys(schema.models);
+		if (isSQLiteAdapter()) {
+			modelNamesToTest = modelNamesToTest.filter(n => n.startsWith('Legacy'));
 		}
 
 		test('SANITY TEST - basic model', async () => {
@@ -448,19 +613,21 @@ export function addCommonQueryTests({
 			expect(saved.body).toEqual('some absurdly awesome content');
 		});
 
-		test('SANITY TEST - composite PK parent model', async () => {
-			const whatever = new classes.CompositePKParent({
-				customId: 'asdfadfasdf',
-				content: 'some absurdly awesome content',
+		if (!isSQLiteAdapter()) {
+			test('SANITY TEST - composite PK parent model', async () => {
+				const whatever = new classes.CompositePKParent({
+					customId: 'asdfadfasdf',
+					content: 'some absurdly awesome content',
+				});
+
+				const saved = await DataStore.save(whatever);
+
+				expect(saved.customId).toEqual('asdfadfasdf');
+				expect(saved.content).toEqual('some absurdly awesome content');
 			});
+		}
 
-			const saved = await DataStore.save(whatever);
-
-			expect(saved.customId).toEqual('asdfadfasdf');
-			expect(saved.content).toEqual('some absurdly awesome content');
-		});
-
-		for (const modelName of Object.keys(schema.models)) {
+		for (const modelName of modelNamesToTest) {
 			const meta = buildModelMeta(modelName);
 			for (const field of Object.keys(meta.schema.fields)) {
 				const R = ModelRelationship.from(meta, field);
@@ -623,7 +790,7 @@ export function addCommonQueryTests({
 										local[R.localJoinFields[fieldIndex]];
 								}
 
-								const remotes = [1, 2, 3];
+								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
 									remotes[index] = await DataStore.save(
 										new R.remoteModelConstructor({
@@ -650,7 +817,7 @@ export function addCommonQueryTests({
 									new R.localConstructor(randomInitializer(R.localConstructor))
 								);
 
-								const remotes = [1, 2, 3];
+								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
 									remotes[index] = await DataStore.save(
 										new R.remoteModelConstructor({
@@ -688,7 +855,7 @@ export function addCommonQueryTests({
 										local[R.localJoinFields[fieldIndex]];
 								}
 
-								const remotes = [1, 2, 3];
+								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
 									remotes[index] = await DataStore.save(
 										new R.remoteModelConstructor({
@@ -731,7 +898,7 @@ export function addCommonQueryTests({
 										local[R.localJoinFields[fieldIndex]];
 								}
 
-								const remotes = [1, 2, 3];
+								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
 									remotes[index] = await DataStore.save(
 										new R.remoteModelConstructor({
@@ -769,7 +936,7 @@ export function addCommonQueryTests({
 									})
 								);
 
-								const remotes = [1, 2, 3];
+								const remotes = [1, 2, 3] as any[];
 								for (const [index, value] of remotes.entries()) {
 									remotes[index] = await DataStore.save(
 										new R.remoteModelConstructor({

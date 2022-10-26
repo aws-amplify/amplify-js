@@ -12,7 +12,6 @@
 			"es2017.object",
 			"es2018.asynciterable",
 			"es2018.asyncgenerator",
-			"es2020.promise",
 			"es2019.object"
 		],
 		"sourceMap": true,
