@@ -93,6 +93,11 @@ jest.mock(
  * @param beforeSetUp Executed after reseting modules but before re-requiring the schema initialization
  */
 function setUpSchema(beforeSetUp?: Function) {
+	// Somehow or another, `resetModules()` causes DataStore to "forget"
+	// that the constructors in scope are valid model Constructors. I'm
+	// leaving the deep-dive on this aside for now, beause there's good coverage
+	// for through `AsyncStorageAdapter.test`. Some of tests appear fairly redundant
+	// and less comprehensive.
 	// jest.resetModules();
 
 	if (typeof beforeSetUp === 'function') {
@@ -143,26 +148,38 @@ describe('AsyncStorage tests', () => {
 	beforeEach(async () => {
 		setUpSchema();
 
-		owner = new BlogOwner({
-			name: 'Owner 1',
-		});
-		owner2 = new BlogOwner({
-			name: 'Owner 2',
-		});
-		blog = new Blog({
-			name: 'Avatar: Last Airbender',
-			owner,
-		});
-		blog2 = new Blog({
-			name: 'blog2',
-			owner: owner2,
-		});
-		blog3 = new Blog({
-			name: 'Avatar 101',
-			owner: new BlogOwner({
-				name: 'owner 3',
-			}),
-		});
+		owner = await DataStore.save(
+			new BlogOwner({
+				name: 'Owner 1',
+			})
+		);
+		owner2 = await DataStore.save(
+			new BlogOwner({
+				name: 'Owner 2',
+			})
+		);
+		blog = await DataStore.save(
+			new Blog({
+				name: 'Avatar: Last Airbender',
+				owner,
+			})
+		);
+		blog2 = await DataStore.save(
+			new Blog({
+				name: 'blog2',
+				owner: owner2,
+			})
+		);
+		blog3 = await DataStore.save(
+			new Blog({
+				name: 'Avatar 101',
+				owner: await DataStore.save(
+					new BlogOwner({
+						name: 'owner 3',
+					})
+				),
+			})
+		);
 
 		await DataStore.start();
 	});
@@ -486,21 +503,33 @@ describe('AsyncStorage tests', () => {
 	});
 
 	test('delete M:M function', async () => {
-		const a1 = new Author({
-			name: 'author1',
-		});
-		const a2 = new Author({
-			name: 'author2',
-		});
-		const a3 = new Author({
-			name: 'author3',
-		});
-		const blog = new Blog({
-			name: 'B1',
-			owner: new BlogOwner({
-				name: 'O1',
-			}),
-		});
+		const a1 = await DataStore.save(
+			new Author({
+				name: 'author1',
+			})
+		);
+		const a2 = await DataStore.save(
+			new Author({
+				name: 'author2',
+			})
+		);
+		const a3 = await DataStore.save(
+			new Author({
+				name: 'author3',
+			})
+		);
+		const blog = await DataStore.save(
+			new Blog({
+				name: 'B1',
+				owner: await DataStore.save(
+					new BlogOwner({
+						name: 'O1',
+					})
+				),
+			})
+		);
+
+		await DataStore.save(blog);
 
 		const post = new Post({
 			title: 'Avatar',

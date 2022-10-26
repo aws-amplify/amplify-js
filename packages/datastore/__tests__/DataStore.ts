@@ -84,6 +84,24 @@ describe('DataStore sanity testing checks', () => {
 		await DataStoreB.clear();
 	});
 
+	// HAS_MANY does not contain a FK. no constraint to validate.
+	test('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
+		const { DataStore, Post, Comment } = getDataStore();
+
+		await expect(
+			DataStore.save(
+				new Comment({
+					content: 'newly created comment',
+					post: new Post({
+						title: 'newly created post',
+					}),
+				})
+			)
+		).rejects.toThrow(
+			`Data integrity error. You tried to save a Comment` // instructions specific to the instance follow
+		);
+	});
+
 	describe('cleans up after itself', () => {
 		/**
 		 * basically, if we spin up our test contexts repeatedly, put some
@@ -1764,13 +1782,7 @@ describe('DataStore tests', () => {
 		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
 	});
 
-	/**
-	 * I can't figure out why this is a requirement. Everything gets
-	 * easier and more stable without this. Can we not?
-	 *
-	 * TODO: Investigate.
-	 */
-	test.skip('error on schema not initialized on clear', async () => {
+	test('error on schema not initialized on clear', async () => {
 		const errorLog = jest.spyOn(console, 'error');
 		const errorRegex = /Schema is not initialized/;
 		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
@@ -2032,7 +2044,7 @@ describe('DataStore tests', () => {
 
 			// strictly speaking (pun intended), the signature for optional fields is `type | undefined`.
 			// AFAIK, customers compiling exclusively in strict mode shouldn't ever see a `null` here.
-			// buuut, it looks like we have been allowing `null`s in. and so we must continue ... ?
+			// but, JS customers might explicitly set it to `null`.
 			expect(model1.optionalField1).toBeNull();
 		});
 

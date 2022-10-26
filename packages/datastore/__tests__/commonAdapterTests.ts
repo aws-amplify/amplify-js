@@ -317,33 +317,6 @@ export function addCommonQueryTests({
 			});
 		});
 
-		/**
-		 * TODO: AFAIK, nested saves like this were always undefined behavior. The spec draft
-		 * seems to suggest now that scenario should actually throw an Error.
-		 *
-		 * Update and un-skip this test once we have solid guidance.
-		 */
-		it.skip('should produce a mutation for a nested BELONGS_TO insert', async () => {
-			const comment = await DataStore.save(
-				new Comment({
-					content: 'newly created comment',
-					post: new Post({
-						title: 'newly created post',
-					}),
-				})
-			);
-
-			const mutations = await getMutations(adapter);
-
-			// one for the new comment, one for the new post
-			expect(mutations.length).toBe(2);
-			expectMutation(mutations[0], { title: 'newly created post' });
-			expectMutation(mutations[1], {
-				content: 'newly created comment',
-				postId: mutations[0].modelId,
-			});
-		});
-
 		it('only includes changed fields in mutations', async () => {
 			const profile = await DataStore.save(
 				new Profile({ firstName: 'original first', lastName: 'original last' })
@@ -381,10 +354,25 @@ export function addCommonQueryTests({
 			pkField: extractPrimaryKeyFieldNames(schema.models[name]),
 		});
 
+		const allFKFields = meta => {
+			const fields = new Set<string>();
+			const relationships = ModelRelationship.allFrom(meta).filter(
+				r => r.type === 'BELONGS_TO'
+			);
+			for (const relationship of relationships) {
+				for (const field of relationship.localJoinFields) {
+					fields.add(field);
+				}
+			}
+			return fields;
+		};
+
 		const randomInitializer = constructor => {
 			const meta = buildModelMeta(constructor.name);
 			const initializer = {};
+			const fkFields = allFKFields(meta);
 			for (const [field, def] of Object.entries(meta.schema.fields)) {
+				if (fkFields.has(field)) continue;
 				switch (def.type) {
 					case 'ID':
 						initializer[field] = ulid();
@@ -397,14 +385,7 @@ export function addCommonQueryTests({
 							new Date().getTime() * 100 + Math.floor(Math.random() * 100);
 						break;
 					default:
-					// if (def.isArray === false && depth > 0 && (def.type as any).model) {
-					// 	initializer[field] = randomInstanceOf(
-					// 		(def.type as any).model,
-					// 		depth - 1
-					// 	);
-					// } else {
-					// 	// not supported yet.
-					// }
+						break;
 				}
 			}
 			return initializer;
@@ -486,8 +467,11 @@ export function addCommonQueryTests({
 				if (R) {
 					const testname = `${R.localConstructor.name}.${field} -> ${R.remoteModelConstructor.name} (${R.type})`;
 					switch (R.type) {
-						case 'BELONGS_TO':
 						case 'HAS_ONE':
+							// skip for now. needs to look like BELONGS_TO, but inverted save orders i think.
+							break;
+						case 'BELONGS_TO':
+							// case 'HAS_ONE':
 							test(`can lazy load ${testname}`, async () => {
 								// Create the "remote" instance first, because the "local" one will point to it.
 								const remoteInit = new R.remoteModelConstructor(

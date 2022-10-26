@@ -1612,14 +1612,47 @@ class DataStore {
 					throw new Error('Model Definition could not be found for model');
 				}
 
+				const modelMeta = {
+					builder: modelConstructor as PersistentModelConstructor<T>,
+					schema: modelDefinition,
+					pkField: extractPrimaryKeyFieldNames(modelDefinition),
+				};
+
+				await this.storage.runExclusive(async s => {
+					// no enforcement for HAS_MANY on save, because the ~related~ entities
+					// hold the FK in that case.
+					const nonHasManyRelationships = ModelRelationship.allFrom(
+						modelMeta
+					).filter(r => r.type === 'BELONGS_TO');
+					for (const relationship of nonHasManyRelationships) {
+						const queryObject = relationship.createRemoteQueryObject(model);
+						if (queryObject !== null) {
+							// console.log({ queryObject });
+							const related = await s.query(
+								relationship.remoteModelConstructor,
+								ModelPredicateCreator.createFromFlatEqualities(
+									relationship.remoteDefinition!,
+									queryObject
+								)
+							);
+							if (related.length === 0) {
+								throw new Error(
+									[
+										`Data integrity error. You tried to save a ${
+											modelDefinition.name
+										} (${JSON.stringify(model)})`,
+										`but the instance assigned to the "${relationship.field}" property`,
+										`does not exist in the local database. If you're trying to create the related`,
+										`"${relationship.remoteDefinition?.name}", you must save it independently first.`,
+									].join(' ')
+								);
+							}
+						}
+					}
+				});
+
 				const producedCondition = condition
-					? condition(
-							predicateFor({
-								builder: modelConstructor as PersistentModelConstructor<T>,
-								schema: modelDefinition,
-								pkField: extractPrimaryKeyFieldNames(modelDefinition),
-							})
-					  ).__query.toStoragePredicate<T>()
+					? condition(predicateFor(modelMeta)).__query.toStoragePredicate<T>()
 					: undefined;
 
 				const [savedModel] = await this.storage.runExclusive(async s => {

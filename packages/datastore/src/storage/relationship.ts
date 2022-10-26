@@ -10,7 +10,7 @@ import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
  */
 export class ModelRelationship<T> {
 	private localModel: ModelMeta<T>;
-	private field: string;
+	private _field: string;
 
 	/**
 	 * @param modelDefinition The "local" model.
@@ -21,19 +21,48 @@ export class ModelRelationship<T> {
 			throw new Error(`${model.schema.name}.${field} is not a relationship.`);
 		}
 		this.localModel = model;
-		this.field = field;
+		this._field = field;
 	}
 
+	/**
+	 * Returns a ModelRelationship for the the given model and field if the pair
+	 * indicates a relationship to another model. Else, returns `null`.
+	 *
+	 * @param model The model the relationship field exists in.
+	 * @param field The field that may relates the local model to the remote model.
+	 */
 	static from<T>(model: ModelMeta<T>, field: string) {
-		try {
+		if (isFieldAssociation(model.schema, field)) {
 			return new this(model, field);
-		} catch {
+		} else {
 			return null;
 		}
 	}
 
+	/**
+	 * Enumerates all valid `ModelRelationship`'s on the given model.
+	 *
+	 * @param model The model definition to enumerate relationships of.
+	 */
+	static allFrom<T>(model: ModelMeta<T>) {
+		const relationships: ModelRelationship<T>[] = [];
+		for (const field of Object.keys(model.schema.fields)) {
+			const relationship = ModelRelationship.from(model, field);
+			relationship && relationships.push(relationship);
+		}
+		return relationships;
+	}
+
 	private get localDefinition() {
 		return this.localModel.schema;
+	}
+
+	/**
+	 * The virtual/computed field on the local model that should contain
+	 * the related model.
+	 */
+	get field() {
+		return this._field;
 	}
 
 	/**
@@ -64,7 +93,7 @@ export class ModelRelationship<T> {
 	}
 
 	/**
-	 * The fields on the local model that can be used to query or queried to match
+	 * The field names on the local model that can be used to query or queried to match
 	 * with instances of the remote model.
 	 *
 	 * Fields are returned in-order to match the order of `this.remoteKeyFields`.
@@ -90,7 +119,7 @@ export class ModelRelationship<T> {
 	}
 
 	/**
-	 * The fields on the local model that uniquely identify it.
+	 * The field names on the local model that uniquely identify it.
 	 *
 	 * These fields may or may not be relevant to the join fields.
 	 */
@@ -98,7 +127,7 @@ export class ModelRelationship<T> {
 		return this.localModel.pkField;
 	}
 
-	private get remoteDefinition() {
+	get remoteDefinition() {
 		return this.remoteModelType.modelConstructor?.schema;
 	}
 
@@ -115,7 +144,7 @@ export class ModelRelationship<T> {
 	}
 
 	/**
-	 * The fields on the remote model that uniquely identify it.
+	 * The field names on the remote model that uniquely identify it.
 	 *
 	 * These fields may or may not be relevant to the join fields.
 	 */
@@ -156,7 +185,7 @@ export class ModelRelationship<T> {
 	}
 
 	/**
-	 * The fields on the remote moel that can used to query or queried to match
+	 * The field names on the remote model that can used to query or queried to match
 	 * with instances of the local model.
 	 *
 	 * Fields are returned in-order to match the order of `this.localKeyFields`.
@@ -186,5 +215,58 @@ export class ModelRelationship<T> {
 	 */
 	get isComplete() {
 		return this.localJoinFields.length > 0 && this.remoteJoinFields.length > 0;
+	}
+
+	/**
+	 * Creates an FK mapper object with respect to the given related instance.
+	 *
+	 * E.g., if the local FK fields are `[parentId, parentName]` and point to
+	 * `[customId, name]` on the remote model, `createLocalFKObject(remote)`
+	 * will return:
+	 *
+	 * ```
+	 * {
+	 * 	parentId: remote.customId,
+	 * 	parentName: remote.name
+	 * }
+	 * ```
+	 *
+	 * @param remote The remote related instance.
+	 */
+	createLocalFKObject(remote: any) {
+		const fk = {} as Record<string, string>;
+		for (let i = 0; i < this.localJoinFields.length; i++) {
+			fk[this.localJoinFields[i]] = remote[this.remoteJoinFields[i]];
+		}
+		return fk;
+	}
+
+	/**
+	 * Creates an query mapper object to help fetch the remote instance(s) or
+	 * `null` if any of the necessary local fields are `null` or `undefined`.
+	 *
+	 * E.g., if the local FK fields are `[parentId, parentName]` and point to
+	 * `[customId, name]` on the remote model, `createLocalFKObject(remote)`
+	 * will return:
+	 *
+	 * ```
+	 * {
+	 * 	customId: local.parentId
+	 * 	name: local.parentName
+	 * }
+	 * ```
+	 *
+	 * If the local fields are not populated, returns
+	 *
+	 * @param local The local instance.
+	 */
+	createRemoteQueryObject(local: T) {
+		const query = {} as Record<string, string>;
+		for (let i = 0; i < this.remoteJoinFields.length; i++) {
+			const localValue = local[this.localJoinFields[i]];
+			if (localValue === null || localValue === undefined) return null;
+			query[this.remoteJoinFields[i]] = local[this.localJoinFields[i]];
+		}
+		return query;
 	}
 }

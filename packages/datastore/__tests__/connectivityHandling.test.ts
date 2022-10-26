@@ -77,7 +77,6 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('sends model deletes to the cloud', async () => {
-			graphqlService.logRequests = true;
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 			await waitForEmptyOutbox();
 
@@ -95,7 +94,6 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('sends conditional model deletes to the cloud with valid conditions', async () => {
-			graphqlService.logRequests = true;
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 			await waitForEmptyOutbox();
 
@@ -158,9 +156,9 @@ describe('DataStore sync engine', () => {
 			);
 
 			await waitForEmptyOutbox();
-			await simulateDisconnect(true);
+			await simulateDisconnect();
 
-			const outboxEmpty = waitForEmptyOutbox(true);
+			const outboxEmpty = waitForEmptyOutbox();
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
@@ -171,7 +169,7 @@ describe('DataStore sync engine', () => {
 			// save is NOT in a race with reconnection. So, we pause *briefly*.
 			await pause(1);
 
-			await simulateConnect(true);
+			await simulateConnect();
 			await outboxEmpty;
 
 			const table = graphqlService.tables.get('Post')!;
