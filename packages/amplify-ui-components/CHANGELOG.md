@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.38...@aws-amplify/ui-components@1.9.39) (2022-10-26)
+
+
+### Bug Fixes
+
+* remove dep on es2020.promise lib additions ([#10532](https://github.com/aws-amplify/amplify-js/issues/10532)) ([8ad200e](https://github.com/aws-amplify/amplify-js/commit/8ad200e7b98967d565e7abe29c2dfb971b9f52a1))
+
+
+
+
+
+## [1.9.38](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.37...@aws-amplify/ui-components@1.9.38) (2022-10-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10450](https://github.com/aws-amplify/amplify-js/issues/10450)) ([16c535b](https://github.com/aws-amplify/amplify-js/commit/16c535beda9386a027c2805f29a359fbeb8bac15)), closes [#10449](https://github.com/aws-amplify/amplify-js/issues/10449)
+
+
+
+
+
+## [1.9.37](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.36...@aws-amplify/ui-components@1.9.37) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.9.36](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.35...@aws-amplify/ui-components@1.9.36) (2022-10-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10055](https://github.com/aws-amplify/amplify-js/issues/10055)) ([c64d7d6](https://github.com/aws-amplify/amplify-js/commit/c64d7d6284bc7b41a5a65b4b47d35ea274aed6b3))
+
+
+### Reverts
+
+* "fix(@aws-amplify/datastore): introduce "settlement" guarantees to stop() and clear()" ([#10449](https://github.com/aws-amplify/amplify-js/issues/10449)) ([d726bcc](https://github.com/aws-amplify/amplify-js/commit/d726bccca9712b8f43bc273052f970f8f931dd8c)), closes [aws-amplify/amplify-js#10055](https://github.com/aws-amplify/amplify-js/issues/10055)
+
+
+
+
+
+## [1.9.35](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.33...@aws-amplify/ui-components@1.9.35) (2022-09-30)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.9.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.9.33...@aws-amplify/ui-components@1.9.34) (2022-09-20)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

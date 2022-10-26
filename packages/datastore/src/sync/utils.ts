@@ -11,6 +11,7 @@ import {
 	isGraphQLScalarType,
 	isPredicateObj,
 	isSchemaModel,
+	isSchemaModelWithAttributes,
 	isTargetNameAssociation,
 	isNonModelFieldType,
 	ModelFields,
@@ -27,7 +28,12 @@ import {
 	InternalSchema,
 	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck } from '../util';
+import {
+	exhaustiveCheck,
+	extractPrimaryKeyFieldNames,
+	establishRelationAndKeys,
+	IDENTIFIER_KEY_SEPARATOR,
+} from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -47,7 +53,7 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Omit<ModelInstanceMetadata, 'id'> = {
+const dummyMetadata: ModelInstanceMetadata = {
 	_version: undefined,
 	_lastChangedAt: undefined,
 	_deleted: undefined,
@@ -79,7 +85,7 @@ export function generateSelectionSet(
 	if (isSchemaModel(modelDefinition)) {
 		scalarAndMetadataFields = scalarAndMetadataFields
 			.concat(getMetadataFields())
-			.concat(getConnectionFields(modelDefinition));
+			.concat(getConnectionFields(modelDefinition, namespace));
 	}
 
 	const result = scalarAndMetadataFields.join('\n');
@@ -103,7 +109,7 @@ function getOwnerFields(
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const ownerFields: string[] = [];
-	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
@@ -138,8 +144,12 @@ function getScalarFields(
 	return result;
 }
 
-function getConnectionFields(modelDefinition: SchemaModel): string[] {
-	const result = [];
+// Used for generating the selection set for queries and mutations
+function getConnectionFields(
+	modelDefinition: SchemaModel,
+	namespace: SchemaNamespace
+): string[] {
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
@@ -153,7 +163,26 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					break;
 				case 'BELONGS_TO':
 					if (isTargetNameAssociation(association)) {
-						result.push(`${name} { id _deleted }`);
+						// New codegen (CPK)
+						if (association.targetNames && association.targetNames.length > 0) {
+							// Need to retrieve relations in order to get connected model keys
+							const [relations] = establishRelationAndKeys(namespace);
+
+							const connectedModelName =
+								modelDefinition.fields[name].type['model'];
+
+							const byPkIndex = relations[connectedModelName].indexes.find(
+								([name]) => name === 'byPk'
+							);
+							const keyFields = byPkIndex && byPkIndex[1];
+							const keyFieldSelectionSet = keyFields?.join(' ');
+
+							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
+							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
+						} else {
+							// backwards-compatability for schema generated prior to custom primary key support
+							result.push(`${name} { id _deleted }`);
+						}
 					}
 					break;
 				default:
@@ -412,10 +441,13 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		...(id ? { id } : {}),
+		...optionalId,
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
@@ -425,7 +457,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -433,17 +466,27 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 	predicate.predicates.forEach(p => {
 		if (isPredicateObj(p)) {
 			const { field, operator, operand } = p;
 
-			if (field === 'id') {
+			// This is compatible with how the GQL Transform currently generates the Condition Input,
+			// i.e. any PK and SK fields are omitted and can't be used as conditions.
+			// However, I think this limits usability.
+			// What if we want to delete all records where SK > some value
+			// Or all records where PK = some value but SKs are different values
+
+			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
+			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
+			if (keyFields.includes(field as string)) {
 				return;
 			}
 
 			result[field] = { [operator]: operand };
 		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
+			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
 		}
 	});
 
@@ -609,4 +652,16 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
+export function getIdentifierValue(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata | PersistentModel
+): string {
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
+
+	return idOrPk;
 }
