@@ -369,7 +369,7 @@ export class BackgroundProcessManager {
 			this._state = BackgroundProcessManagerState.Closed;
 		}
 
-		return this._closingPromise;
+		return this._closingPromise as any;
 	}
 
 	/**
