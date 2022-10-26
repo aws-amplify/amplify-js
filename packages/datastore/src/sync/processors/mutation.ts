@@ -322,7 +322,6 @@ class MutationProcessor {
 							await this.amplifyContext.API.graphql(tryWith)
 						);
 
-
 						// `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params???
 						return [result, opName, modelDefinition] as any;

@@ -5,8 +5,8 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	BackgroundProcessManager,
 	browserOrNode,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import {
 	Draft,
