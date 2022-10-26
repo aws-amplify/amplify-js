@@ -28,14 +28,8 @@ metadata {
 _version
 _lastChangedAt
 _deleted
-reference {
-	id
-	_deleted
-}
-blog {
-	id
-	_deleted
-}
+referencePostId
+postBlogId
 `;
 
 const ownerAuthPostSelectionSet = `id

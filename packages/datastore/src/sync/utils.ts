@@ -181,7 +181,7 @@ function getConnectionFields(
 							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
 						} else {
 							// backwards-compatability for schema generated prior to custom primary key support
-							result.push(`${name} { id _deleted }`);
+							result.push(`${association.targetName}`);
 						}
 					}
 					break;
