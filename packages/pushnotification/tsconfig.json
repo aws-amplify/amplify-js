@@ -11,8 +11,7 @@
 			"esnext.asynciterable",
 			"es2017.object",
 			"es2018.asynciterable",
-			"es2018.asyncgenerator",
-			"es2020.promise"
+			"es2018.asyncgenerator"
 		],
 		"sourceMap": true,
 		"module": "commonjs",
