@@ -81,7 +81,6 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			const retrieved = await DataStore.query(Post, post.id);
-
 			const deleted = await DataStore.delete(retrieved!);
 			await waitForEmptyOutbox();
 
@@ -102,9 +101,7 @@ describe('DataStore sync engine', () => {
 			const deleted = await DataStore.delete(retrieved!, p =>
 				p.title.eq('post title')
 			);
-			console.log('delete returns though?');
 			await waitForEmptyOutbox();
-			console.log('not here though, eh?');
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);

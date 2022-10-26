@@ -13,6 +13,7 @@ import {
 	PersistentModelConstructor,
 } from '../src';
 import { validatePredicate } from '../src/util';
+import { ModelPredicateCreator } from '../src/predicates';
 import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
@@ -554,13 +555,39 @@ class FakeGraphQLService {
 		return { operation, name, selection, type, table, items };
 	}
 
-	public parseCondition(condition) {
-		console.log('parsing condition', condition);
-	}
+	public satisfiesCondition(tableName, item, condition) {
+		if (this.logRequests)
+			console.log('checking satisfiesCondition', {
+				tableName,
+				item,
+				condition: JSON.stringify(condition),
+			});
 
-	public satisfiesCondition(item, condition) {
-		const parsed = this.parseCondition(condition);
-		return true;
+		if (!condition) {
+			console.log(
+				'checking satisfiesCondition matches all for `null` conditions'
+			);
+			return true;
+		}
+
+		const modelDefinition = this.schema.models[tableName];
+		const predicate = ModelPredicateCreator.createFromAST(
+			modelDefinition,
+			condition
+		);
+		const isMatch = validatePredicate(item, 'and', [
+			ModelPredicateCreator.getPredicates(predicate)!,
+		]);
+
+		this.logRequests &&
+			console.log('satisfiesCondition result', {
+				effectivePredicate: JSON.stringify(
+					ModelPredicateCreator.getPredicates(predicate)
+				),
+				isMatch,
+			});
+
+		return isMatch;
 	}
 
 	public subscribe(tableName, type, observer) {
@@ -786,7 +813,9 @@ class FakeGraphQLService {
 						[selection]: null,
 					};
 					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else if (!this.satisfiesCondition(existing, variables.condition)) {
+				} else if (
+					!this.satisfiesCondition(tableName, existing, variables.condition)
+				) {
 					data = {
 						[selection]: null,
 					};
