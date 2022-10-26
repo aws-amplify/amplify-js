@@ -433,7 +433,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: () => {},
 					});
+
 					await fakeWebSocketInterface?.standardConnectionHandshake();
+
 					await fakeWebSocketInterface?.sendDataMessage({
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },

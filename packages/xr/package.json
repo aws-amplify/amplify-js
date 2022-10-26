@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "3.0.57",
+  "version": "3.0.59",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -42,7 +42,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "files": ["lib", "lib-esm", "src"],
   "dependencies": {
-    "@aws-amplify/core": "4.7.8",
+    "@aws-amplify/core": "4.7.10",
     "tslib": "^2.0.0"
   },
   "jest": {

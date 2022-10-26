@@ -74,7 +74,6 @@ export function addCommonQueryTests({
 				Model: PersistentModelConstructor<Model>;
 				Post: PersistentModelConstructor<Post>;
 			});
-			await DataStore.clear();
 
 			// start() ensures storageAdapter is set
 			await DataStore.start();
@@ -91,11 +90,11 @@ export function addCommonQueryTests({
 			await addModels(3);
 		});
 
-		afterAll(async () => {
+		afterEach(async () => {
 			await DataStore.clear();
 
-			// prevent cross-contamination with other test suites that are not ~literally~
-			// expecting sync call counts to be ZERO.
+			// prevent cross-contamination with other test suites which are using
+			// the same instance.
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
 		});
 
@@ -238,7 +237,6 @@ export function addCommonQueryTests({
 				Profile: PersistentModelConstructor<Profile>;
 				User: PersistentModelConstructor<User>;
 			});
-			await DataStore.clear();
 
 			// start() ensures storageAdapter is set
 			await DataStore.start();
@@ -253,7 +251,7 @@ export function addCommonQueryTests({
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
 		});
 
-		afterAll(async () => {
+		afterEach(async () => {
 			await DataStore.clear();
 			(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint = '';
 		});
