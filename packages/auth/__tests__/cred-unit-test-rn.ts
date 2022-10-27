@@ -145,7 +145,7 @@ jest.mock('@aws-amplify/core', () => {
 
 import { AuthOptions, SignUpParams } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import {
 	CognitoUserPool,
 	CognitoUser,
