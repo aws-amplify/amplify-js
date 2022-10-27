@@ -1,5 +1,6 @@
 {
 	"name": "@aws-amplify/ui-react",
+	"private": "true",
 	"sideEffects": false,
 	"version": "1.2.59",
 	"description": "React specific wrapper for @aws-amplify/ui-components",
