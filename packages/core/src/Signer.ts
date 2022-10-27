@@ -439,8 +439,3 @@ export class Signer {
 		return result;
 	}
 }
-
-/**
- * @deprecated use per-function import
- */
-export default Signer;

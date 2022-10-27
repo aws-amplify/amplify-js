@@ -39,7 +39,6 @@ export { Predictions } from '@aws-amplify/predictions';
 export {
 	ConsoleLogger as Logger,
 	Hub,
-	JS,
 	ClientDevice,
 	Signer,
 	I18n,

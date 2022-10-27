@@ -434,6 +434,7 @@ function jitteredRetrySyncProcessorSetup({
 				}
 			})
 	);
+	// mock graphql to return a mockable observable
 	jest.mock('@aws-amplify/api', () => {
 		const actualAPIModule = jest.requireActual('@aws-amplify/api');
 		const actualAPIInstance = actualAPIModule.API;
