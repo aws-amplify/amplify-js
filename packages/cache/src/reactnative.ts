@@ -16,4 +16,7 @@ import { Cache, AsyncStorageCache } from './AsyncStorageCache';
 
 export { Cache, AsyncStorageCache };
 
+// Default export to maintain interoperability with React Native
+export default Cache;
+
 Amplify.register(Cache);

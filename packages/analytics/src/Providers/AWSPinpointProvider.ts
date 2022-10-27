@@ -27,7 +27,7 @@ import {
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import Cache from '@aws-amplify/cache';
 
 import {
 	AnalyticsProvider,

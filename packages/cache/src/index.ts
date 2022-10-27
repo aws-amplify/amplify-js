@@ -18,4 +18,7 @@ import { CacheConfig } from './types';
 
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
 
+// Default export to maintain interoperability with React Native
+export default BrowserStorageCache;
+
 Amplify.register(BrowserStorageCache);

@@ -1,7 +1,7 @@
 import { API } from '@aws-amplify/api';
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import Cache from '@aws-amplify/cache';
 import {
 	Draft,
 	immerable,
