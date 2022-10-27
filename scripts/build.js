@@ -152,12 +152,6 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 }
 
 async function buildES5(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
-
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
 	const extendsCompilerOptions = ts.readConfigFile(
@@ -169,7 +163,6 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		...tsconfigInfo.compilerOptions,
 		...extendsCompilerOptions,
 		module: 'commonjs',
-		jsx: jsx,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
 		outDir: pkgTscES5OutDir,
@@ -201,12 +194,6 @@ async function buildES5(typeScriptCompiler, watchMode) {
 }
 
 function buildES6(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
-
 	if (!tsconfigInfo.extends) throw new Error('extends flag no detected');
 
 	const extendsCompilerOptions = ts.readConfigFile(
@@ -218,7 +205,6 @@ function buildES6(typeScriptCompiler, watchMode) {
 		...tsconfigInfo.compilerOptions,
 		...extendsCompilerOptions,
 		module: 'es2015',
-		jsx: jsx,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
 		typeRoots,
 		outDir: pkgTscES6OutDir,
