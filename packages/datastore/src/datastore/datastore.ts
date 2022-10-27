@@ -1,6 +1,6 @@
 import { API } from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
 	ConsoleLogger as Logger,

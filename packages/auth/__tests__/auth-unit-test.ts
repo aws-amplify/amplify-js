@@ -274,7 +274,7 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import Cache from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import {
 	Credentials,
 	GoogleOAuth,
