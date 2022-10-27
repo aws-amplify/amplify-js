@@ -1913,7 +1913,6 @@ describe('DataStore tests', () => {
 				'3.1.9999',
 				'5.4.1',
 				'3',
-				'3.4.0.1',
 				'unknown',
 			];
 			const validcodegenVersion = [
@@ -1928,7 +1927,7 @@ describe('DataStore tests', () => {
 				'3.9.4+alpha',
 			];
 
-			describe('Invalid PracodegenVersiongma', () => {
+			describe('Invalid codegenVersion', () => {
 				invalidcodegenVersion.forEach(codegenVersion => {
 					test(`fails on codegenVersion = ${codegenVersion}`, () => {
 						expect(() => {

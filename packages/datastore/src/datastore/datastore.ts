@@ -484,12 +484,17 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	// TODO: set to correct version when released in codegen
 	const majorVersion = 3;
 	const minorVersion = 2;
-	const supportedRange = new RegExp(
-		`(?<=^v?|\\sv?)(?:(?:${majorVersion})\\.)(?:(?:${minorVersion}|[1-9]{2,9}?|[${
-			minorVersion + 1
-		}-9]{1,9}?)\\.)(?:0|[1-9]\\d{0,9})(?:-(?:--+)?(?:0|[1-9]\\d*|\\d*[a-z]+\\d*)){0,100}(?=$| |\\+|\\.)(?:(?<=-\\S+)(?:\\.(?:--?|[\\da-z-]*[a-z-]\\d*|0|[1-9]\\d*)){1,100}?)?(?!\\.)(?:\\+(?:[\\da-z]\\.?-?){1,100}?(?!\\w))?(?!\\+)`
-	);
-	if (!supportedRange.test(codegenVersion)) {
+	let isValid = false;
+
+	try {
+		const versionParts = codegenVersion.split('.');
+		const [major, minor, patch, patchrevision] = versionParts;
+		isValid = Number(major) === majorVersion && Number(minor) >= minorVersion;
+	} catch (err) {
+		console.log(`Error parsing codegen version: ${codegenVersion}\n${err}`);
+	}
+
+	if (!isValid) {
 		const message = `Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
 			codegenVersion || 'an unknown version'
 		}, whereas ^${majorVersion}.${minorVersion}.0 is required. Update to the latest CLI and rerun codegen.`;
