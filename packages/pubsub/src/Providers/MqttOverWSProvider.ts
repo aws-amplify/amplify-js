@@ -49,11 +49,6 @@ export interface MqttProviderOptions extends ProviderOptions {
 	url?: string;
 }
 
-/**
- * @deprecated Migrated to MqttProviderOptions
- */
-export type MqttProvidertOptions = MqttProviderOptions;
-
 class ClientsQueue {
 	private promises: Map<string, Promise<any>> = new Map();
 

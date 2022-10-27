@@ -31,7 +31,7 @@ export {
 	syncExpression,
 } from '@aws-amplify/datastore';
 export { PubSub } from '@aws-amplify/pubsub';
-export { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+export { Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
 export { Notifications } from '@aws-amplify/notifications';
 export { XR } from '@aws-amplify/xr';

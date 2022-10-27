@@ -13,6 +13,6 @@
 
 export { Interactions } from './Interactions';
 export * from './types';
-export * from './Providers/InteractionsProvider';
-export * from './Providers/AWSLexProvider';
-export * from './Providers/AWSLexV2Provider';
+export { AbstractInteractionsProvider } from './Providers/InteractionsProvider';
+export { AWSLexProvider } from './Providers/AWSLexProvider';
+export { AWSLexV2Provider } from './Providers/AWSLexV2Provider';

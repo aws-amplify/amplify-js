@@ -12,5 +12,13 @@
  */
 
 export { XR } from './XR';
-export * from './Providers/SumerianProvider';
-export * from './Errors';
+export { SumerianProvider } from './Providers/SumerianProvider';
+export {
+	XRError,
+	XRNoDomElement,
+	XRNoSceneConfiguredError,
+	XRProviderNotConfigured,
+	XRSceneLoadFailure,
+	XRSceneNotFoundError,
+	XRSceneNotLoadedError,
+} from './Errors';

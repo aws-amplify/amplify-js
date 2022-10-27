@@ -14,6 +14,9 @@
 import { Amplify } from '@aws-amplify/core';
 import { Cache, AsyncStorageCache } from './AsyncStorageCache';
 
-export { Cache, AsyncStorageCache };
+export { AsyncStorageCache };
+
+// Standard `Cache` export to maintain interoperability with React Native
+export { Cache };
 
 Amplify.register(Cache);

@@ -11,4 +11,4 @@
  * and limitations under the License.
  */
 
-export * from './GraphQL';
+export { Connect } from './GraphQL';
