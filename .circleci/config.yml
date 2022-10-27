@@ -513,7 +513,7 @@ jobs:
           framework: vue
           category: auth
           sample_name: authenticator-vue3
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Vue Custom Authenticator'
