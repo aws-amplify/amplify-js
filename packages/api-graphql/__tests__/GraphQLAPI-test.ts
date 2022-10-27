@@ -12,7 +12,7 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 

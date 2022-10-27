@@ -25,9 +25,10 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "generate-docs-local": "typedoc --out docs src",
-    "generate-docs-root": "typedoc --out ../../docs src"
+    "generate-docs-root": "typedoc --out ../../docs src",
+    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
   },
   "repository": {
     "type": "git",

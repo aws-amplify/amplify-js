@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -10,8 +10,16 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export * from './PubSubProvider';
-export * from './AWSAppSyncProvider';
-export * from './AWSAppSyncRealTimeProvider';
-export * from './AWSIotProvider';
-export * from './MqttOverWSProvider';
+export { AbstractPubSubProvider } from './PubSubProvider';
+export { AWSAppSyncProvider } from './AWSAppSyncProvider';
+export {
+	AWSAppSyncRealTimeProvider,
+	AWSAppSyncRealTimeProviderOptions,
+	ObserverQuery,
+} from './AWSAppSyncRealTimeProvider';
+export { AWSIoTProvider, AWSIoTProviderOptions } from './AWSIotProvider';
+export {
+	MqttProviderOptions,
+	MqttOverWSProvider,
+	mqttTopicMatch,
+} from './MqttOverWSProvider';

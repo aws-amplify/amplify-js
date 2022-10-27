@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"noImplicitAny": false,
+		"lib": [
+			"dom",
+			"es2017",
+			"esnext.asynciterable",
+			"es2018.asyncgenerator",
+			"es2019",
+			"es2020.promise"
+		],
+		"downlevelIteration": true,
+		"target": "es5",
+		"moduleResolution": "node",
+		"declaration": true,
+		"noEmitOnError": true,
+		"incremental": true,
+		"importHelpers": true,
+		"types": ["node"]
+	}
+}

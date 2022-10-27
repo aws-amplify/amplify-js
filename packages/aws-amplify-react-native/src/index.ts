@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -16,13 +16,37 @@ import dict from './AmplifyI18n';
 
 export { default as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
-export * from './AmplifyUI';
-export * from './Auth';
-export * from './API';
-export * from './Storage';
-export * from './Interactions';
+export {
+	AmplifyButton,
+	Container,
+	ErrorRow,
+	FormField,
+	Header,
+	LinkCell,
+	PhoneField,
+	SignedOutMessage,
+	Wrapper,
+} from './AmplifyUI';
+export {
+	AuthPiece,
+	Authenticator,
+	ConfirmSignIn,
+	ConfirmSignUp,
+	ForgotPassword,
+	Greetings,
+	Loading,
+	RequireNewPassword,
+	SignIn,
+	SignUp,
+	VerifyContact,
+	withAuthenticator,
+	withOAuth,
+} from './Auth';
+export { Connect } from './API';
+export { S3Album, S3Image } from './Storage';
+export { ChatBot } from './Interactions';
 
-const configure = function(config) {
+const configure = function (config) {
 	const msg = [
 		'',
 		'\x1b[33mWarning: Amplify.configure() is deprecated from aws-amplify-react-native.',

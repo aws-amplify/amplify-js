@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2019-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -15,8 +15,7 @@ import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { v1 as uuid } from 'uuid';
 import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
-
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 
 const PERSONALIZE_CACHE = '_awsct';
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';

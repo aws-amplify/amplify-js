@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -17,5 +17,8 @@ import { InMemoryCache } from './InMemoryCache';
 import { CacheConfig } from './types';
 
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
+
+// Standard `Cache` export to maintain interoperability with React Native
+export { BrowserStorageCache as Cache };
 
 Amplify.register(BrowserStorageCache);

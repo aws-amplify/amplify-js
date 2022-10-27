@@ -48,7 +48,8 @@
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
     "test": "jest --config ./jest.config.js",
-    "format": "echo \"Not implemented\""
+    "format": "echo \"Not implemented\"",
+    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json"
   },
   "main": "lib/index.js",
   "react-native": {
