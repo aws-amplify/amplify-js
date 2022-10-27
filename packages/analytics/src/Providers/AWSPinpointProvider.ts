@@ -16,9 +16,10 @@ import {
 	ClientDevice,
 	Credentials,
 	Signer,
-	JS,
 	Hub,
 	getAmplifyUserAgent,
+	transferKeyToLowerCase,
+	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import {
 	EventsBatch,
@@ -396,7 +397,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const request = this._endpointRequest(
 			config,
-			JS.transferKeyToLowerCase(
+			transferKeyToLowerCase(
 				event,
 				[],
 				['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
@@ -707,7 +708,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			immediate,
 			...ret
 		} = tmp;
-		return JS.transferKeyToUpperCase(
+		return transferKeyToUpperCase(
 			ret,
 			[],
 			['metrics', 'userAttributes', 'attributes']
