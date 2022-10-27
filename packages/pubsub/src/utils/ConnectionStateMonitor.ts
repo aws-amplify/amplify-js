@@ -63,6 +63,7 @@ export class ConnectionStateMonitor {
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
 	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 	private _networkMonitoringSubscription?: ZenObservable.Subscription;
+	private _initialNetworkStateSubscription?: ZenObservable.Subscription;
 
 	constructor() {
 		this._networkMonitoringSubscription = undefined;
@@ -72,6 +73,16 @@ export class ConnectionStateMonitor {
 			intendedConnectionState: 'disconnected',
 			keepAliveState: 'healthy',
 		};
+
+		// Attempt to update the state with the current actual network state
+		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(
+			({ online }) => {
+				this.record(
+					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+				);
+				this._initialNetworkStateSubscription?.unsubscribe();
+			}
+		);
 
 		this._linkedConnectionStateObservable =
 			new Observable<LinkedConnectionStates>(connectionStateObserver => {
@@ -84,6 +95,9 @@ export class ConnectionStateMonitor {
 	 * Turn network state monitoring on if it isn't on already
 	 */
 	private enableNetworkMonitoring() {
+		// If no initial network state was discovered, stop trying
+		this._initialNetworkStateSubscription?.unsubscribe();
+
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
 			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(

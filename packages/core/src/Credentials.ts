@@ -624,8 +624,3 @@ export class CredentialsClass {
 export const Credentials = new CredentialsClass(null);
 
 Amplify.register(Credentials);
-
-/**
- * @deprecated use named import
- */
-export default Credentials;

@@ -487,7 +487,7 @@ describe('BackgroundProcessManager', () => {
 					// once if it is implemented wrong.
 					onTerminate.then(() => {
 						terminateSignalCount++;
-						setTimeout(resolve, 10);
+						setTimeout(resolve, 150);
 					});
 				})
 		);

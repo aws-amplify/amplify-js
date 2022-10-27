@@ -43,6 +43,12 @@ describe('ConnectionStateMonitor', () => {
 				return new Observable(observer => {
 					reachabilityObserver = observer;
 				});
+			})
+			// Twice because we subscribe to get the initial state then again to monitor reachability
+			.mockImplementationOnce(() => {
+				return new Observable(observer => {
+					reachabilityObserver = observer;
+				});
 			});
 	});
 

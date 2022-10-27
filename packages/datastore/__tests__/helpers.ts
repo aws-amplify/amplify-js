@@ -935,10 +935,11 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 			}),
 			JS: {
 				...actual.JS,
-				browserOrNode: () => ({
-					isBrowser: !isNode,
-					isNode,
-				}),
+				browserOrNode: () => {
+					throw new Error(
+						'amplify/core::JS.browserOrNode() does not exist anymore'
+					);
+				},
 			},
 		};
 	});

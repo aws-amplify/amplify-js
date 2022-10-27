@@ -1,11 +1,11 @@
-import API from '@aws-amplify/api';
+import { API } from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	JS,
+	browserOrNode,
 	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import {
@@ -113,7 +113,7 @@ enablePatches();
 const logger = new Logger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
-const { isNode } = JS.browserOrNode();
+const { isNode } = browserOrNode();
 
 type SettingMetaData = {
 	identifier: ManagedIdentifier<Setting, 'id'>;

@@ -22,8 +22,3 @@ export class ClientDevice {
 		return dimension();
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default ClientDevice;

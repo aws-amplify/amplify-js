@@ -1,5 +1,5 @@
 import { Credentials } from '@aws-amplify/core';
-import KinesisProvider from '../../src/Providers/AWSKinesisProvider';
+import { AWSKinesisProvider as KinesisProvider } from '../../src/Providers/AWSKinesisProvider';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 
 jest.useFakeTimers();

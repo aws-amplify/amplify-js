@@ -14,9 +14,9 @@ import { SessionInfo } from './DataType';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { v1 as uuid } from 'uuid';
-import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
 
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 
 const PERSONALIZE_CACHE = '_awsct';
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';
@@ -34,7 +34,7 @@ export class SessionInfoManager {
 	private _timerKey;
 
 	constructor(prefixKey = '') {
-		this._isBrowser = JS.browserOrNode().isBrowser;
+		this._isBrowser = browserOrNode().isBrowser;
 		this._timerKey = uuid().substr(0, 15);
 		this._refreshTimer();
 	}

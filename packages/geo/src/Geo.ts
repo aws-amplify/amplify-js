@@ -13,7 +13,7 @@
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	parseMobileHubConfig,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
@@ -113,7 +113,7 @@ export class GeoClass {
 
 		if (!config) return this._config;
 
-		const amplifyConfig = parseMobileHubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
 
 		this._pluggables.forEach(pluggable => {

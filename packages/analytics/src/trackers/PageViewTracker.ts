@@ -13,13 +13,13 @@
 
 import { pageViewTrackOpts } from '../types';
 import { MethodEmbed } from '../utils/MethodEmbed';
-import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
 const PREV_URL_KEY = 'aws-amplify-analytics-prevUrl';
 
 const getUrl = () => {
-	if (!JS.browserOrNode().isBrowser) return '';
+	if (!browserOrNode().isBrowser) return '';
 	else return window.location.origin + window.location.pathname;
 };
 
@@ -71,7 +71,7 @@ export class PageViewTracker {
 
 	private async _pageViewTrackDefault() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!window.sessionStorage
 		) {
@@ -106,7 +106,7 @@ export class PageViewTracker {
 
 	private async _trackFunc() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!history.pushState ||
 			!window.sessionStorage
@@ -143,7 +143,7 @@ export class PageViewTracker {
 
 	private _pageViewTrackSPA() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!history.pushState
 		) {
@@ -165,8 +165,3 @@ export class PageViewTracker {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default PageViewTracker;

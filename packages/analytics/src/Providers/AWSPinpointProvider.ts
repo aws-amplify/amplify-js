@@ -16,9 +16,10 @@ import {
 	ClientDevice,
 	Credentials,
 	Signer,
-	JS,
 	Hub,
 	getAmplifyUserAgent,
+	transferKeyToLowerCase,
+	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import {
 	EventsBatch,
@@ -27,7 +28,7 @@ import {
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import Cache from '@aws-amplify/cache';
+import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
 
 import {
 	AnalyticsProvider,
@@ -40,10 +41,11 @@ import {
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event, data) => {
 	Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
@@ -395,7 +397,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const request = this._endpointRequest(
 			config,
-			JS.transferKeyToLowerCase(
+			transferKeyToLowerCase(
 				event,
 				[],
 				['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
@@ -706,7 +708,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			immediate,
 			...ret
 		} = tmp;
-		return JS.transferKeyToUpperCase(
+		return transferKeyToUpperCase(
 			ret,
 			[],
 			['metrics', 'userAttributes', 'attributes']
@@ -735,8 +737,3 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSPinpointProvider;

@@ -356,7 +356,3 @@ export class InMemoryCacheClass extends StorageCache implements ICache {
 }
 
 export const InMemoryCache: ICache = new InMemoryCacheClass();
-/**
- * @deprecated use named import
- */
-export default InMemoryCache;
