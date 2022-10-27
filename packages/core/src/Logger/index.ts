@@ -11,4 +11,4 @@
  * and limitations under the License.
  */
 
-export * from './ConsoleLogger';
+export { ConsoleLogger, LOG_TYPE } from './ConsoleLogger';

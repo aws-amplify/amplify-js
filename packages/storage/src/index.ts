@@ -14,5 +14,5 @@
 import { Storage, StorageInstance } from './Storage';
 
 export { Storage as StorageClass, StorageInstance as Storage };
-export * from './providers';
+export { AWSS3Provider } from './providers';
 export * from './types';

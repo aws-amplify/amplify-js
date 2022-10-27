@@ -28,7 +28,7 @@ import {
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Auth } from '@aws-amplify/auth';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import {
 	GraphQLAuthError,
 	GraphQLOptions,
