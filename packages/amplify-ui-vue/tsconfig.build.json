@@ -1,5 +1,0 @@
-{
-	"extends": "../tsconfig.settings.json",
-	"compilerOptions": {},
-	"include": ["dist/"]
-}
