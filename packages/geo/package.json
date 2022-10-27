@@ -28,7 +28,8 @@
 		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint '{__tests__,src}/**/*.ts'"
+		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
 	},
 	"repository": {
 		"type": "git",
