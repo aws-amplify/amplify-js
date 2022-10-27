@@ -635,10 +635,7 @@ export function addCommonQueryTests({
 					const testname = `${R.localConstructor.name}.${field} -> ${R.remoteModelConstructor.name} (${R.type})`;
 					switch (R.type) {
 						case 'HAS_ONE':
-							// skip for now. needs to look like BELONGS_TO, but inverted save orders i think.
-							break;
 						case 'BELONGS_TO':
-							// case 'HAS_ONE':
 							test(`can lazy load ${testname}`, async () => {
 								// Create the "remote" instance first, because the "local" one will point to it.
 								const remoteInit = new R.remoteModelConstructor(
