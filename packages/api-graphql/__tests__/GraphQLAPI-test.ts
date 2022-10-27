@@ -735,7 +735,7 @@ describe('API test', () => {
 
 			Cache.configure(cache_config);
 
-			jest.spyOn(Cache, 'getItem').mockReturnValue(null);
+			jest.spyOn(Cache, 'getItem').mockReturnValue({});
 
 			const api = new API(config);
 			const url = 'https://appsync.amazonaws.com',
@@ -755,7 +755,7 @@ describe('API test', () => {
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 				})
-			).rejects.toThrowError('No current user');
+			).rejects.toThrowError('No federated jwt');
 		});
 
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {

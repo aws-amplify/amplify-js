@@ -155,8 +155,8 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
+				let token;
 				try {
-					let token;
 					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
 					if (federatedInfo) {
@@ -167,15 +167,15 @@ export class GraphQLAPIClass {
 							token = currentUser.token;
 						}
 					}
-					if (!token) {
-						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
-					}
-					headers = {
-						Authorization: token,
-					};
 				} catch (e) {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
+				if (!token) {
+					throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
+				}
+				headers = {
+					Authorization: token,
+				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
 				try {
