@@ -1252,6 +1252,11 @@ class DataStore {
 	// Non-null assertions (bang operator) have been added to most of these properties
 	// to make TS happy. These properties are all expected to be set immediately after
 	// construction.
+
+	// TODO: Refactor to use proper DI if possible. If not possible, change these to
+	// optionals and implement conditional checks throughout. Rinse/repeat on all
+	// sync engine processors, storage engine, adapters, etc..
+
 	private amplifyConfig: Record<string, any> = {};
 	private authModeStrategy!: AuthModeStrategy;
 	private conflictHandler!: ConflictHandler;

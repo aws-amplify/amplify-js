@@ -608,9 +608,7 @@ describe('Indexed db storage test', () => {
 	/**
 	 * WIP
 	 */
-	test.skip('delete 1:1 function', async () => {
-		expect.assertions(5);
-
+	test('delete 1:1 function', async () => {
 		const owner = await DataStore.save(
 			new BlogOwner({
 				name: "yep. doesn't matter",
@@ -621,43 +619,24 @@ describe('Indexed db storage test', () => {
 			new Blog({ name: 'Avatar, the last whatever', owner })
 		);
 
+		const decoyOwner = await DataStore.save(
+			new BlogOwner({ name: 'another one' })
+		);
+
+		const decoyBlog = await DataStore.save(
+			new Blog({
+				name: 'this one should still exist later',
+				owner: decoyOwner,
+			})
+		);
+
 		await DataStore.delete(Blog, blog.id);
 		await DataStore.delete(BlogOwner, owner.id);
 
 		expect(await DataStore.query(BlogOwner, owner.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
-
-		const newOwner = await DataStore.save(
-			new BlogOwner({ name: 'another one' })
-		);
-
-		const otherOwner = await DataStore.save(
-			new BlogOwner({ name: 'someone else' })
-		);
-
-		const blog1 = await DataStore.save(
-			Blog.copyOf(blog, draft => {
-				draft.owner = newOwner;
-			})
-		);
-		const blog2 = await DataStore.save(
-			new Blog({
-				name: 'something else',
-				owner: newOwner,
-			})
-		);
-		const blog3 = await DataStore.save(
-			new Blog({
-				name: 'Avatar the other thing',
-				owner: otherOwner,
-			})
-		);
-
-		await DataStore.delete(Blog, c => c.name.beginsWith('Avatar'));
-
-		expect(await DataStore.query(Blog, blog1.id)).toBeUndefined();
-		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();
-		expect(await DataStore.query(Blog, blog3.id)).toBeUndefined();
+		expect(await DataStore.query(BlogOwner, decoyOwner.id)).not.toBeUndefined();
+		expect(await DataStore.query(Blog, decoyBlog.id)).not.toBeUndefined();
 	});
 
 	test('delete 1:M function', async () => {

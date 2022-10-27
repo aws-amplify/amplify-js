@@ -26,7 +26,7 @@ const isGroup = o => {
 	return keys.length === 1 && groupKeys.has(keys[0]);
 };
 
-const comparisonKeys = new Set([
+export const comparisonKeys = new Set([
 	'eq',
 	'ne',
 	'gt',

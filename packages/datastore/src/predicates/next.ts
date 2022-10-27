@@ -8,7 +8,10 @@ import {
 	ModelPredicate as StoragePredicate,
 } from '../types';
 
-import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
+import {
+	ModelPredicateCreator as FlatModelPredicateCreator,
+	comparisonKeys,
+} from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
 import { asyncSome, asyncEvery, asyncFilter } from '../util';
@@ -23,18 +26,7 @@ type MatchableTypes =
 
 type AllFieldOperators = keyof AllOperators;
 
-const ops: AllFieldOperators[] = [
-	'eq',
-	'ne',
-	'gt',
-	'ge',
-	'lt',
-	'le',
-	'beginsWith',
-	'between',
-	'contains',
-	'notContains',
-];
+const ops = [...comparisonKeys] as AllFieldOperators[];
 
 type NonNeverKeys<T> = {
 	[K in keyof T]: T[K] extends never ? never : K;

@@ -608,7 +608,7 @@ describe('error handler', () => {
 		});
 	});
 
-	test.only('error handler once after all retires have failed', done => {
+	test('error handler once after all retires have failed', done => {
 		Amplify.Logger.LOG_LEVEL = 'DEBUG';
 		const debugLog = jest.spyOn(console, 'log');
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
