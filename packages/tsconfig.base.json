@@ -16,6 +16,7 @@
 		"declaration": true,
 		"noEmitOnError": true,
 		"incremental": true,
+		"importHelpers": true,
 		"types": ["node"]
 	}
 }
