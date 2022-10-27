@@ -13,4 +13,9 @@
 
 export { Analytics } from './Analytics';
 export { AnalyticsProvider } from './types';
-export * from './Providers';
+export {
+	AWSPinpointProvider,
+	AWSKinesisProvider,
+	AWSKinesisFirehoseProvider,
+	AmazonPersonalizeProvider,
+} from './Providers';

@@ -10,8 +10,16 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export * from './PubSubProvider';
-export * from './AWSAppSyncProvider';
-export * from './AWSAppSyncRealTimeProvider';
-export * from './AWSIotProvider';
-export * from './MqttOverWSProvider';
+export { AbstractPubSubProvider } from './PubSubProvider';
+export { AWSAppSyncProvider } from './AWSAppSyncProvider';
+export {
+	AWSAppSyncRealTimeProvider,
+	AWSAppSyncRealTimeProviderOptions,
+	ObserverQuery,
+} from './AWSAppSyncRealTimeProvider';
+export { AWSIoTProvider, AWSIoTProviderOptions } from './AWSIotProvider';
+export {
+	MqttProviderOptions,
+	MqttOverWSProvider,
+	mqttTopicMatch,
+} from './MqttOverWSProvider';

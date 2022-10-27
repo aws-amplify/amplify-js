@@ -12,6 +12,17 @@
  */
 
 export { PubSub } from './PubSub';
-export * from './Providers';
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';
 export { ConnectionState, CONTROL_MSG } from './types';
+export {
+	AWSAppSyncProvider,
+	AWSAppSyncRealTimeProvider,
+	AWSAppSyncRealTimeProviderOptions,
+	AWSIoTProvider,
+	AWSIoTProviderOptions,
+	AbstractPubSubProvider,
+	MqttOverWSProvider,
+	MqttProviderOptions,
+	ObserverQuery,
+	mqttTopicMatch,
+} from './Providers';
