@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.6...@aws-amplify/ui@2.0.7) (2022-10-26)
+
+
+### Bug Fixes
+
+* remove dep on es2020.promise lib additions ([#10532](https://github.com/aws-amplify/amplify-js/issues/10532)) ([8ad200e](https://github.com/aws-amplify/amplify-js/commit/8ad200e7b98967d565e7abe29c2dfb971b9f52a1))
+
+
+
+
+
 ## [2.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@2.0.5...@aws-amplify/ui@2.0.6) (2022-10-25)
 
 
