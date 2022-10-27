@@ -12,7 +12,7 @@ jest.mock('@aws-amplify/core', () => ({
 import Observable from 'zen-observable-ts';
 import { Reachability, Credentials, Logger, Signer } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { BrowserStorageCache as Cache } from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 
 import { MESSAGE_TYPES } from '../src/Providers/constants';
 import * as constants from '../src/Providers/constants';
