@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2019-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -74,7 +74,7 @@ export class MediaAutoTrack {
 				this.listeners.push(callback);
 
 				if (this.loaded) {
-					setTimeout(function() {
+					setTimeout(function () {
 						_this.done();
 					});
 					return;
@@ -86,7 +86,7 @@ export class MediaAutoTrack {
 
 				this.loading = true;
 
-				window['onYouTubeIframeAPIReady'] = function() {
+				window['onYouTubeIframeAPIReady'] = function () {
 					_this.loaded = true;
 					_this.done();
 				};
@@ -109,12 +109,12 @@ export class MediaAutoTrack {
 
 	private _iframeMediaTracker(): void {
 		const that = this;
-		setInterval(function() {
+		setInterval(function () {
 			if (that._started) {
 				that.recordEvent(MEDIA_TYPE.IFRAME, EVENT_TYPE.TIME_WATCHED);
 			}
 		}, 3 * 1000);
-		this._youTubeIframeLoader.load(function(YT) {
+		this._youTubeIframeLoader.load(function (YT) {
 			that._iframePlayer = new YT.Player(that._mediaElement.id, {
 				events: { onStateChange: that._onPlayerStateChange.bind(that) },
 			});
@@ -135,7 +135,7 @@ export class MediaAutoTrack {
 
 	private _html5MediaTracker(): void {
 		const that = this;
-		setInterval(function() {
+		setInterval(function () {
 			if (that._started) {
 				that.recordEvent(MEDIA_TYPE.VIDEO, EVENT_TYPE.TIME_WATCHED);
 			}

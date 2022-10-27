@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
+ * Copyright (c) 2017-2022, Philip Walton <philip@philipwalton.com>
  */
 
 import { closest } from './closest';
@@ -19,7 +19,7 @@ import { matches } from './matches';
  */
 export function delegate(ancestor, eventType, selector, callback, opts = {}) {
 	// Defines the event listener.
-	const listener = function(event) {
+	const listener = function (event) {
 		let delegateTarget;
 
 		// If opts.composed is true and the event originated from inside a Shadow
