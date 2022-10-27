@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.settings.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {},
 	"include": ["index.d.ts"]
 }
