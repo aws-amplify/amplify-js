@@ -98,6 +98,9 @@
 		"wml": "0.0.83"
 	},
 	"resolutions": {
+		"@babel/generator": "7.19.6",
+		"@babel/helpers": "7.19.4",
+		"@babel/helper-skip-transparent-expression-wrappers": "7.18.9",
 		"@babel/types": "7.12.10",
 		"@types/babel__traverse": "7.0.8",
 		"@babel/traverse": "7.17.9",
