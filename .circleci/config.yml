@@ -462,13 +462,6 @@ jobs:
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
-          sample_name: amplify-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Angular Authenticator'
-          framework: angular
-          category: auth
           sample_name: amplify-authenticator
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
