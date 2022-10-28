@@ -118,7 +118,48 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev << datastore_storage_adapter >>' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on prod'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
+  integ_test_js_datastore:
+    parameters:
+      test_name:
+        type: string
+      framework:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+      spec:
+        # optional - the script will use sample_name by default
+        type: string
+        default: ''
+      browser:
+        type: string
+        default: ''
+      ds_storage_adapter:
+        type: string
+        default: ''
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on dev'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev << datastore_storage_adapter >>' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> sample on prod'
           command: |
@@ -387,6 +428,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout async-adapter-cpk-test
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -1190,6 +1232,24 @@ jobs:
           spec: custom-pk-unconnected-models
           browser: << parameters.browser >>
 
+  integ_react_datastore_custom_pk_unconnected_models_async_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
+    steps:
+      - prepare_test_env
+      - integ_test_js_datastore:
+          test_name: 'DataStore - Custom Primary Key (Connected Models) - Async Storage'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-unconnected-models
+          spec: custom-pk-unconnected-models
+          browser: << parameters.browser >>
+          datastore_storage_adapter: 'AsyncStorageAdapter'
+
   integ_react_datastore_custom_pk_has_one:
     parameters:
       browser:
@@ -1256,7 +1316,6 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1287,6 +1346,7 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
+      - async-adapter-cpk-test
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1703,6 +1763,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_custom_pk_unconnected_models_async_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
@@ -1779,6 +1848,7 @@ workflows:
             - integ_react_geo
             - integ_next_datastore_owner_auth
             - integ_react_datastore_custom_pk_unconnected_models
+            - integ_react_datastore_custom_pk_unconnected_models_async_storage
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
