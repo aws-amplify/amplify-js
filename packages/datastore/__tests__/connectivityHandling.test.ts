@@ -81,8 +81,26 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			const retrieved = await DataStore.query(Post, post.id);
-
 			const deleted = await DataStore.delete(retrieved!);
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([post.id])) as any;
+			expect(savedItem.title).toEqual(deleted.title);
+			expect(savedItem._deleted).toEqual(true);
+		});
+
+		test('sends conditional model deletes to the cloud with valid conditions', async () => {
+			const post = await DataStore.save(new Post({ title: 'post title' }));
+			await waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+
+			const deleted = await DataStore.delete(retrieved!, p =>
+				p.title.eq('post title')
+			);
 			await waitForEmptyOutbox();
 
 			const table = graphqlService.tables.get('Post')!;
@@ -127,7 +145,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
-		test('survives online -> offline -> save -> online cycle', async () => {
+		test('survives online -> offline -> save -> online cycle (non-racing)', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -136,8 +154,8 @@ describe('DataStore sync engine', () => {
 
 			await waitForEmptyOutbox();
 			await simulateDisconnect();
-			const outboxEmpty = waitForEmptyOutbox();
 
+			const outboxEmpty = waitForEmptyOutbox();
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
@@ -145,7 +163,7 @@ describe('DataStore sync engine', () => {
 			);
 
 			// In this scenario, we want to test the case where the offline
-			// save is NOT in a race with reconnection.
+			// save is NOT in a race with reconnection. So, we pause *briefly*.
 			await pause(1);
 
 			await simulateConnect();

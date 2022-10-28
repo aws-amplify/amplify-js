@@ -506,6 +506,7 @@ function getAuthSchema(
 			},
 		},
 		version: 'a77c7728256031f4909aab05bfcaf798',
+		codegenVersion: '3.2.0',
 	};
 
 	return {

@@ -43,7 +43,6 @@
   "homepage": "https://aws-amplify.github.io/",
   "files": ["lib", "lib-esm", "src"],
   "dependencies": {
-    "@aws-amplify/cache": "4.0.61",
     "@aws-amplify/core": "4.7.10",
     "amazon-cognito-identity-js": "5.2.12",
     "crypto-js": "^4.1.1",
