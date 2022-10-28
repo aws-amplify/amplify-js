@@ -180,9 +180,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { AuthOptions, SignUpParams } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import { Cache } from '@aws-amplify/cache';
 import {
 	CognitoUserPool,
 	CognitoUser,
