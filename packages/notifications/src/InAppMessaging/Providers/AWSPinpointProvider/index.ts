@@ -1,5 +1,113 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import {
+	ClientDevice,
+	Credentials,
+	getAmplifyUserAgent,
+	StorageHelper,
+	transferKeyToUpperCase,
+} from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/cache';
+import {
+	ChannelType,
+	GetInAppMessagesCommand,
+	GetInAppMessagesCommandInput,
+	InAppMessageCampaign as PinpointInAppMessage,
+	UpdateEndpointCommand,
+	UpdateEndpointCommandInput,
+	PinpointClient,
+} from '@aws-sdk/client-pinpoint';
+import { v4 as uuid } from 'uuid';
+
+import { addMessageInteractionEventListener } from '../../eventListeners';
+import { NotificationsCategory } from '../../../types';
+import SessionTracker, {
+	SessionState,
+	SessionStateChangeHandler,
+} from '../../SessionTracker';
+import {
+	InAppMessage,
+	InAppMessageInteractionEvent,
+	InAppMessageLayout,
+	InAppMessagingEvent,
+	InAppMessagingProvider,
+	NotificationsSubcategory,
+	UserInfo,
+} from '../../types';
+import {
+	AWSPinpointMessageEvent,
+	AWSPinpointUserInfo,
+	DailyInAppMessageCounter,
+	InAppMessageCountMap,
+	InAppMessageCounts,
+} from './types';
+import {
+	clearMemo,
+	dispatchInAppMessagingEvent,
+	extractContent,
+	extractMetadata,
+	getStartOfDay,
+	interpretLayout,
+	isBeforeEndDate,
+	logger,
+	matchesAttributes,
+	matchesEventType,
+	matchesMetrics,
+	recordAnalyticsEvent,
+} from './utils';
+
+const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
+const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
+
+export default class AWSPinpointProvider implements InAppMessagingProvider {
+	static category: NotificationsCategory = 'Notifications';
+	static subCategory: NotificationsSubcategory = 'InAppMessaging';
+	static providerName = 'AWSPinpoint';
+
+	private clientInfo;
+	private config: Record<string, any> = {};
+	private configured = false;
+	private endpointInitialized = false;
+	private initialized = false;
+	private sessionMessageCountMap: InAppMessageCountMap;
+	private sessionTracker: SessionTracker;
+
+	constructor() {
+		this.sessionMessageCountMap = {};
+		this.config = {
+			storage: new StorageHelper().getStorage(),
+		};
+		this.clientInfo = ClientDevice.clientInfo() ?? {};
+	}
+
+	/**
+	 * get the category of the plugin
+	 */
+	getCategory() {
+		return AWSPinpointProvider.category;
+	}
+
+	/**
+	 * get the sub-category of the plugin
+	 */
+	getSubCategory() {
+		return AWSPinpointProvider.subCategory;
+	}
+
+	/**
+	 * get provider name of the plugin
+	 */
 	getProviderName(): string {
 		return AWSPinpointProvider.providerName;
 	}

@@ -1,5 +1,61 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+import { AWSS3ProviderManagedUpload, Part } from '../../src/providers/AWSS3ProviderManagedUpload';
+import {
+	S3Client,
+	PutObjectCommand,
+	UploadPartCommand,
+	CompleteMultipartUploadCommand,
+	CreateMultipartUploadCommand,
+	AbortMultipartUploadCommand,
+	ListPartsCommand,
+} from '@aws-sdk/client-s3';
+import { Logger } from '@aws-amplify/core';
+import * as events from 'events';
+
+jest.useRealTimers();
+
+const testUploadId = 'testUploadId';
+
+const testParams: any = {
+	Bucket: 'testBucket',
+	Key: 'testKey',
+	Body: 'testDataBody',
+	ContentType: 'testContentType',
+	SSECustomerAlgorithm: 'AES256',
+	SSECustomerKey: '1234567890',
+};
+
+const credentials = {
+	accessKeyId: 'accessKeyId',
+	sessionToken: 'sessionToken',
+	secretAccessKey: 'secretAccessKey',
+	identityId: 'identityId',
+	authenticated: true,
+};
+
+const testOpts: any = {
+	bucket: 'testBucket',
+	region: 'testRegion',
+	credentials,
+	level: 'level',
+};
+
+const testMinPartSize = 10; // Merely 10 Bytes
+
+/** Extend our test class such that minPartSize is reasonable
+ * and we can mock emit the progress events
+ */
 class TestClass extends AWSS3ProviderManagedUpload {
 	protected minPartSize = testMinPartSize;
 	protected async uploadParts(uploadId: string, parts: Part[]) {

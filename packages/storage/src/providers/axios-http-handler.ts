@@ -1,5 +1,37 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import { HttpHandlerOptions } from '@aws-sdk/types';
+import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
+import { buildQueryString } from '@aws-sdk/querystring-builder';
+import axios, {
+	AxiosRequestConfig,
+	Method,
+	CancelTokenSource,
+	AxiosRequestHeaders,
+	AxiosRequestTransformer,
+} from 'axios';
+import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
+import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
+import * as events from 'events';
+import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
+
+/**
+Extending the axios interface here to make headers required, (previously, 
+they were not required on the type we were using, but our implementation
+does not currently account for missing headers. This worked previously, 
+because the previous `headers` type was `any`.
+*/
 interface AxiosTransformer extends Partial<AxiosRequestTransformer> {
 	(data: any, headers: AxiosRequestHeaders): any;
 }

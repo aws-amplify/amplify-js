@@ -1,5 +1,129 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+
+import {
+	ICookieStorageData,
+	ICognitoStorage,
+} from 'amazon-cognito-identity-js';
+
+/**
+ * Parameters for user sign up
+ */
+export interface SignUpParams {
+	username: string;
+	password: string;
+	attributes?: object;
+	validationData?: { [key: string]: any };
+	clientMetadata?: { [key: string]: string };
+	autoSignIn?: AutoSignInOptions;
+}
+
+export interface AuthCache {
+	setItem();
+	getItem();
+	removeItem();
+}
+
+/**
+ * Auth instance options
+ */
+export interface AuthOptions {
+	userPoolId?: string;
+	userPoolWebClientId?: string;
+	identityPoolId?: string;
+	region?: string;
+	mandatorySignIn?: boolean;
+	cookieStorage?: ICookieStorageData;
+	oauth?: OAuthOpts;
+	refreshHandlers?: object;
+	storage?: ICognitoStorage;
+	authenticationFlowType?: string;
+	identityPoolRegion?: string;
+	clientMetadata?: any;
+	endpoint?: string;
+	signUpVerificationMethod?: 'code' | 'link';
+}
+
+export enum CognitoHostedUIIdentityProvider {
+	Cognito = 'COGNITO',
+	Google = 'Google',
+	Facebook = 'Facebook',
+	Amazon = 'LoginWithAmazon',
+	Apple = 'SignInWithApple',
+}
+
+export type LegacyProvider =
+	| 'google'
+	| 'facebook'
+	| 'amazon'
+	| 'developer'
+	| string;
+
+export type FederatedSignInOptions = {
+	provider: CognitoHostedUIIdentityProvider;
+	customState?: string;
+};
+
+export type FederatedSignInOptionsCustom = {
+	customProvider: string;
+	customState?: string;
+};
+
+export function isFederatedSignInOptions(
+	obj: any
+): obj is FederatedSignInOptions {
+	const keys: (keyof FederatedSignInOptions)[] = ['provider'];
+	return obj && !!keys.find(k => obj.hasOwnProperty(k));
+}
+
+export function isFederatedSignInOptionsCustom(
+	obj: any
+): obj is FederatedSignInOptionsCustom {
+	const keys: (keyof FederatedSignInOptionsCustom)[] = ['customProvider'];
+	return obj && !!keys.find(k => obj.hasOwnProperty(k));
+}
+
+export function hasCustomState(obj: any): boolean {
+	const keys: (keyof (
+		| FederatedSignInOptions
+		| FederatedSignInOptionsCustom
+	))[] = ['customState'];
+	return obj && !!keys.find(k => obj.hasOwnProperty(k));
+}
+
+/**
+ * Details for multi-factor authentication
+ */
+export interface MfaRequiredDetails {
+	challengeName: any;
+	challengeParameters: any;
+}
+
+/**
+ * interface for federatedResponse
+ */
+export interface FederatedResponse {
+	// access token
+	token: string;
+	// identity id
+	identity_id?: string;
+	// the universal time when token expired
+	expires_at: number;
+}
+
+/**
+ * interface for federatedUser
+ */
 export interface FederatedUser {
 	name: string;
 	email?: string;

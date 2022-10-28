@@ -1,5 +1,51 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+/*
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+import {
+	InteractionsOptions,
+	InteractionsProviders,
+	InteractionsProvider,
+	InteractionsMessage,
+	InteractionsResponse,
+} from './types';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AWSLexProvider } from './Providers';
+const logger = new Logger('Interactions');
+
+export class InteractionsClass {
+	private _options: InteractionsOptions;
+
+	private _pluggables: InteractionsProviders;
+
+	/**
+	 * Initialize PubSub with AWS configurations
+	 *
+	 * @param {InteractionsOptions} options - Configuration object for Interactions
+	 */
+	constructor(options: InteractionsOptions = {}) {
+		this._options = options;
+		logger.debug('Interactions Options', this._options);
+		this._pluggables = {};
+	}
+
+	public getModuleName() {
+		return 'Interactions';
+	}
+
+	/**
+	 *
+	 * @param {InteractionsOptions} options - Configuration object for Interactions
+	 * @return {InteractionsOptions} - The current configuration
+	 */
 	public configure(options: InteractionsOptions): InteractionsOptions {
 		const opt = options ? options.Interactions || options : {};
 		logger.debug('configure Interactions', { opt });
