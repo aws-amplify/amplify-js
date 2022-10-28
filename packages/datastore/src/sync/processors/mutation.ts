@@ -29,7 +29,6 @@ import {
 	AmplifyContext,
 } from '../../types';
 import {
-	exhaustiveCheck,
 	extractTargetNamesFromSrc,
 	USER,
 	USER_AGENT_SUFFIX_DATASTORE,
@@ -57,7 +56,7 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
-	private observer: ZenObservable.Observer<MutationProcessorEvent>;
+	private observer!: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -118,6 +117,8 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
+		this.runningProcesses = new BackgroundProcessManager();
+
 		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
 
@@ -166,9 +167,10 @@ class MutationProcessor {
 					const modelConstructor = this.userClasses[
 						model
 					] as PersistentModelConstructor<MutationEvent>;
-					let result: GraphQLResult<Record<string, PersistentModel>>;
-					let opName: string;
-					let modelDefinition: SchemaModel;
+					let result: GraphQLResult<Record<string, PersistentModel>> =
+						undefined!;
+					let opName: string = undefined!;
+					let modelDefinition: SchemaModel = undefined!;
 
 					try {
 						const modelAuthModes = await getModelAuthModes({
@@ -193,7 +195,7 @@ class MutationProcessor {
 									operation,
 									data,
 									condition,
-									modelConstructor,
+									modelConstructor as any,
 									this.MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
@@ -244,7 +246,7 @@ class MutationProcessor {
 						continue;
 					}
 
-					const record = result.data[opName];
+					const record = result.data![opName!];
 					let hasMore = false;
 
 					await this.storage.runExclusive(async storage => {
@@ -254,7 +256,7 @@ class MutationProcessor {
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
 
-					this.observer.next({
+					this.observer.next!({
 						operation,
 						modelDefinition,
 						model: record,
@@ -322,8 +324,8 @@ class MutationProcessor {
 							await this.amplifyContext.API.graphql(tryWith)
 						);
 
-						// `as any` because TypeScript doesn't seem to like passing tuples
-						// through generic params???
+						// Use `as any` because TypeScript doesn't seem to like passing tuples
+						// through generic params.
 						return [result, opName, modelDefinition] as any;
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
@@ -354,7 +356,7 @@ class MutationProcessor {
 									retryWith = DISCARD;
 								} else {
 									try {
-										retryWith = await this.conflictHandler({
+										retryWith = await this.conflictHandler!({
 											modelConstructor,
 											localModel: this.modelInstanceCreator(
 												modelConstructor,
@@ -407,7 +409,7 @@ class MutationProcessor {
 								// convert retry with to tryWith
 								const updatedMutation =
 									createMutationInstanceFromModelOperation(
-										namespace.relationships,
+										namespace.relationships!,
 										modelDefinition,
 										opType,
 										modelConstructor,
@@ -435,7 +437,7 @@ class MutationProcessor {
 										cause: error,
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
-											: null,
+											: null!,
 									});
 								} catch (err) {
 									logger.warn('Mutation error handler failed with:', err);
@@ -480,13 +482,13 @@ class MutationProcessor {
 		condition: string
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
-		const { primaryKey } = this.schema.namespaces[namespaceName].keys[model];
+		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
-		const [, opName, query] = queriesTuples.find(
+		const [, opName, query] = queriesTuples!.find(
 			([transformerMutationType]) => transformerMutationType === operation
-		);
+		)!;
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
 
@@ -579,8 +581,11 @@ class MutationProcessor {
 			case TransformerMutationType.GET: // Intentionally blank
 				break;
 			default:
-				exhaustiveCheck(operation);
+				throw new Error(`Invalid operation ${operation}`);
 		}
+
+		// because it makes TS happy ...
+		return undefined!;
 	}
 
 	public pause() {

@@ -73,16 +73,16 @@ class SyncProcessor {
 
 	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
-			return null;
+			return null!;
 		}
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
-			);
+			)!;
 
 		if (!predicatesGroup) {
-			return null;
+			return null!;
 		}
 
 		return predicateToGraphQLFilter(predicatesGroup);
@@ -92,11 +92,11 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null,
+		limit: number = null!,
 		filter: GraphQLFilter,
 		onTerminate: Promise<void>
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
-		const [opName, query] = this.typeQuery.get(modelDefinition);
+		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
 		const variables = {
 			limit,
@@ -257,13 +257,13 @@ class SyncProcessor {
 									await this.errorHandler({
 										recoverySuggestion:
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-										localModel: null,
+										localModel: null!,
 										message: err.message,
 										model: modelDefinition.name,
 										operation: opName,
 										errorType: getSyncErrorType(err),
 										process: ProcessName.sync,
-										remoteModel: null,
+										remoteModel: null!,
 										cause: err,
 									});
 								} catch (e) {
@@ -318,10 +318,10 @@ class SyncProcessor {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering.keys()
+						namespace.modelTopologicalOrdering!.keys()
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync);
+						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
@@ -335,17 +335,17 @@ class SyncProcessor {
 						this.runningProcesses.isOpen &&
 						this.runningProcesses.add(async onTerminate => {
 							let done = false;
-							let nextToken: string = null;
-							let startedAt: number = null;
-							let items: ModelInstanceMetadata[] = null;
+							let nextToken: string = null!;
+							let startedAt: number = null!;
+							let items: ModelInstanceMetadata[] = null!;
 
 							let recordsReceived = 0;
 							const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
 							const parents = this.schema.namespaces[
 								namespace
-							].modelTopologicalOrdering.get(modelDefinition.name);
-							const promises = parents.map(parent =>
+							].modelTopologicalOrdering!.get(modelDefinition.name);
+							const promises = parents!.map(parent =>
 								parentPromises.get(`${namespace}_${parent}`)
 							);
 
@@ -398,7 +398,7 @@ class SyncProcessor {
 						}, `adding model ${modelDefinition.name}`)
 				);
 
-			Promise.all(allModelsReady).then(() => {
+			Promise.all(allModelsReady as Promise<any>[]).then(() => {
 				observer.complete();
 			});
 		});
