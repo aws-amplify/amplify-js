@@ -11,11 +11,10 @@
  * and limitations under the License.
  */
 
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { defaultConfig, getCurrTime } from './Utils';
-
 import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Cache');
 
@@ -498,3 +497,5 @@ export class BrowserStorageCacheClass extends StorageCache implements ICache {
 }
 
 export const BrowserStorageCache: ICache = new BrowserStorageCacheClass();
+
+Amplify.register(BrowserStorageCache);
