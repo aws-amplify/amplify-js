@@ -19,7 +19,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
-	return rule.provider;
+	return rule.provider!;
 }
 
 function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {

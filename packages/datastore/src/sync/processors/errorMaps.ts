@@ -85,7 +85,7 @@ export function mapErrorToType(errorMap: ErrorMap, error: Error): ErrorType {
 	const errorTypes = [...Object.keys(errorMap)] as ErrorType[];
 	for (const errorType of errorTypes) {
 		const matcher = errorMap[errorType];
-		if (matcher(error)) {
+		if (matcher?.(error)) {
 			return errorType;
 		}
 	}

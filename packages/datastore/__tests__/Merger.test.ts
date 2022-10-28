@@ -47,7 +47,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						id: modelId,
@@ -78,7 +78,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						id: modelId,
@@ -86,7 +86,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						id: modelId,
@@ -94,7 +94,7 @@ describe('Merger', () => {
 						optionalField1: 'Optional',
 						_version: 2,
 						_lastChangedAt: 1619627621329,
-						_deleted: null,
+						_deleted: null!,
 					},
 				];
 
@@ -104,8 +104,8 @@ describe('Merger', () => {
 
 				const record = await DataStore.query(Model, modelId);
 
-				expect(record.field1).toEqual('Another Update');
-				expect(record.optionalField1).toEqual('Optional');
+				expect(record!.field1).toEqual('Another Update');
+				expect(record!.optionalField1).toEqual('Optional');
 			});
 
 			test('create > delete > create => create', async () => {
@@ -118,7 +118,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						id: modelId,
@@ -126,7 +126,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
-						_deleted: true,
+						_deleted: true!,
 					},
 					{
 						id: modelId,
@@ -134,7 +134,7 @@ describe('Merger', () => {
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627621329,
-						_deleted: null,
+						_deleted: null!,
 					},
 				];
 
@@ -145,7 +145,7 @@ describe('Merger', () => {
 				const record = await DataStore.query(Model, modelId);
 
 				expect(record).not.toBeUndefined();
-				expect(record.field1).toEqual('New Create with the same id');
+				expect(record!.field1).toEqual('New Create with the same id');
 			});
 		});
 	});
@@ -181,7 +181,7 @@ describe('Merger', () => {
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						postId: customPk,
@@ -217,7 +217,7 @@ describe('Merger', () => {
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						postId: customPk,
@@ -225,7 +225,7 @@ describe('Merger', () => {
 						description: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						postId: customPk,
@@ -233,7 +233,7 @@ describe('Merger', () => {
 						description: 'Optional1',
 						_version: 2,
 						_lastChangedAt: 1619627621329,
-						_deleted: null,
+						_deleted: null!,
 					},
 				];
 
@@ -248,8 +248,8 @@ describe('Merger', () => {
 
 				const record = await DataStore.query(PostCustomPK, customPk);
 
-				expect(record.title).toEqual('Another Update1');
-				expect(record.description).toEqual('Optional1');
+				expect(record!.title).toEqual('Another Update1');
+				expect(record!.description).toEqual('Optional1');
 			});
 
 			test('create > delete > create => create', async () => {
@@ -262,7 +262,7 @@ describe('Merger', () => {
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
-						_deleted: null,
+						_deleted: null!,
 					},
 					{
 						postId: customPk,
@@ -278,7 +278,7 @@ describe('Merger', () => {
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627621329,
-						_deleted: null,
+						_deleted: null!,
 					},
 				];
 
@@ -294,7 +294,7 @@ describe('Merger', () => {
 				const record = await DataStore.query(PostCustomPK, customPk);
 
 				expect(record).not.toBeUndefined();
-				expect(record.title).toEqual('New Create with the same custom pk');
+				expect(record!.title).toEqual('New Create with the same custom pk');
 			});
 		});
 	});

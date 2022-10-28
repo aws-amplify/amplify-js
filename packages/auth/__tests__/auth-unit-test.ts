@@ -274,14 +274,7 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import { Cache } from '@aws-amplify/cache';
-import {
-	Credentials,
-	GoogleOAuth,
-	StorageHelper,
-	ICredentials,
-	Hub,
-} from '@aws-amplify/core';
+import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
