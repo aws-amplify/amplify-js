@@ -489,13 +489,6 @@ jobs:
           spec: authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'Vue 2 Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
           test_name: 'Vue 3 Authenticator'
           framework: vue
           category: auth
