@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -12,6 +12,17 @@
  */
 
 export { PubSub } from './PubSub';
-export * from './Providers';
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';
 export { ConnectionState, CONTROL_MSG } from './types';
+export {
+	AWSAppSyncProvider,
+	AWSAppSyncRealTimeProvider,
+	AWSAppSyncRealTimeProviderOptions,
+	AWSIoTProvider,
+	AWSIoTProviderOptions,
+	AbstractPubSubProvider,
+	MqttOverWSProvider,
+	MqttProviderOptions,
+	ObserverQuery,
+	mqttTopicMatch,
+} from './Providers';

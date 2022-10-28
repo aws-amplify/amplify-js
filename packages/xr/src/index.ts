@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -12,5 +12,13 @@
  */
 
 export { XR } from './XR';
-export * from './Providers/SumerianProvider';
-export * from './Errors';
+export { SumerianProvider } from './Providers/SumerianProvider';
+export {
+	XRError,
+	XRNoDomElement,
+	XRNoSceneConfiguredError,
+	XRProviderNotConfigured,
+	XRSceneLoadFailure,
+	XRSceneNotFoundError,
+	XRSceneNotLoadedError,
+} from './Errors';
