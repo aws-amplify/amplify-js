@@ -1,37 +1,5 @@
-/*
- * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-import { AWSS3Provider as StorageProvider } from '../../src/providers/AWSS3Provider';
-import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
-import * as formatURL from '@aws-sdk/util-format-url';
-import {
-	S3Client,
-	ListObjectsV2Command,
-	CreateMultipartUploadCommand,
-	UploadPartCommand,
-} from '@aws-sdk/client-s3';
-import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-
-import {
-	S3CopySource,
-	S3CopyDestination,
-	StorageOptions,
-	S3ProviderGetConfig,
-} from '../../src/types';
-import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
-/**
- * NOTE - These test cases use Hub.dispatch but they should
- * actually be using dispatchStorageEvent from Storage
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 const mockRemoveAllListeners = jest.fn();
 const mockEventEmitter = {
