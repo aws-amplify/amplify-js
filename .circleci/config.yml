@@ -171,7 +171,7 @@ commands:
           name: 'Run cypress test << parameters.spec >>'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -500,7 +500,7 @@ jobs:
           framework: vue
           category: auth
           sample_name: authenticator-vue3
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Vue Custom Authenticator'
@@ -1692,7 +1692,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup
@@ -1702,7 +1701,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
       - deploy:
           filters:
             <<: *releasable_branches
