@@ -1631,7 +1631,7 @@ export class AuthClass {
 
 					// refresh the session if the session expired.
 					try {
-						const session = await this._userSession({ user });
+						const session = await this._userSession(user);
 
 						// get user data from Cognito
 						const bypassCache = params ? params.bypassCache : false;
@@ -1640,7 +1640,7 @@ export class AuthClass {
 							await this.Credentials.clear();
 						}
 
-						const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+						const clientMetadata = this._config.clientMetadata;
 
 						// validate the token's scope first before calling this function
 						const { scope = '' } = session.getAccessToken().decodePayload();
@@ -1797,18 +1797,14 @@ export class AuthClass {
 		});
 	}
 
-	private async _userSession({
-		user,
-	}: {
-		user?: CognitoUser;
-	}): Promise<CognitoUserSession> {
+	private async _userSession(user?: CognitoUser): Promise<CognitoUserSession> {
 		if (!user) {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
-		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+		const clientMetadata = this._config.clientMetadata;
 		// Debouncing the concurrent userSession calls by caching the promise.
-		// This solution asumes users will always call this function with the same user instance.
+		// This solution asumes users will always call this function with the same CognitoUser instance.
 		if (!this.inflightSessionPromise) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {
@@ -1855,7 +1851,7 @@ export class AuthClass {
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		return this._userSession({ user });
+		return this._userSession(user);
 	}
 
 	/**
