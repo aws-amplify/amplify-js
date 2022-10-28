@@ -493,4 +493,4 @@ const instance: ICache = new AsyncStorageCache();
 export { AsyncStorage, instance as Cache };
 export default instance;
 
-Amplify.register(Cache);
+Amplify.register(instance);
