@@ -1807,6 +1807,8 @@ export class AuthClass {
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+		// Debouncing the concurrent userSession calls by caching the promise.
+		// This solution asumes users will always call this function with the same user instance.
 		if (!this.inflightSessionPromise) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {

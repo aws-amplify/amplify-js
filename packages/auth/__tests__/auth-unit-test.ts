@@ -1817,7 +1817,7 @@ describe('auth unit test', () => {
 		test('debouncer happy case', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
-				.mockImplementationOnce((callback: any) => {
+				.mockImplementation((callback: any) => {
 					callback(null, session);
 				});
 
@@ -1828,12 +1828,11 @@ describe('auth unit test', () => {
 			});
 
 			expect.assertions(1);
-
-			for (let index = 0; index < 10; index++) {
-				auth.userSession(user);
-			}
+			const promiseArr = Array.from({ length: 10 }, () =>
+				auth.userSession(user)
+			);
+			await Promise.all(promiseArr);
 			expect(spyon).toHaveBeenCalledTimes(1);
-
 			spyon.mockClear();
 		});
 
