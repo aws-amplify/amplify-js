@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "4.0.59",
+	"version": "4.0.60",
 	"description": "Api category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -53,8 +53,8 @@
 	},
 	"files": ["lib", "lib-esm", "src", "index.*.d.ts"],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "2.3.23",
-		"@aws-amplify/api-rest": "2.0.59",
+		"@aws-amplify/api-graphql": "2.3.24",
+		"@aws-amplify/api-rest": "2.0.60",
 		"tslib": "^2.0.0"
 	},
 	"jest": {
