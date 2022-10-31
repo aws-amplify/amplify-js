@@ -1274,7 +1274,6 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
-      - remove-vue2-auth-integ
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
