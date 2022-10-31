@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.5...aws-amplify-react-native@6.0.8) (2022-10-27)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
 ## [6.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.4...aws-amplify-react-native@6.0.5) (2022-06-15)
 
 

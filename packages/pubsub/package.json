@@ -1,113 +1,108 @@
 {
-	"name": "@aws-amplify/pubsub",
-	"version": "4.5.9",
-	"description": "Pubsub category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
-	"sideEffects": [
-		"./src/PubSub.ts",
-		"./lib/PubSub.js",
-		"./lib-esm/PubSub.js",
-		"./dist/aws-amplify-pubsub.min.js",
-		"./dist/aws-amplify-pubsub.js"
-	],
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
-		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.63"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/aws-amplify/amplify-js.git"
-	},
-	"author": "Amazon Web Services",
-	"license": "Apache-2.0",
-	"bugs": {
-		"url": "https://github.com/aws/aws-amplify/issues"
-	},
-	"homepage": "https://aws-amplify.github.io/",
-	"devDependencies": {
-		"@types/zen-observable": "^0.8.0",
-		"cpx": "^1.5.0"
-	},
-	"files": [
-		"lib",
-		"lib-esm",
-		"src"
-	],
-	"dependencies": {
-		"@aws-amplify/auth": "4.6.12",
-		"@aws-amplify/cache": "4.0.61",
-		"@aws-amplify/core": "4.7.10",
-		"graphql": "15.8.0",
-		"paho-mqtt": "^1.1.0",
-		"uuid": "^3.2.1",
-		"zen-observable-ts": "0.8.19",
-		"tslib": "^2.0.0"
-	},
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
-				}
-			},
-			"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-			"testPathIgnorePatterns": [
-				"__tests__/helpers.ts"
-			]
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testPathIgnorePatterns": [
-			"__tests__/helpers.ts"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		]
-	}
+  "name": "@aws-amplify/pubsub",
+  "version": "4.5.10",
+  "description": "Pubsub category of aws-amplify",
+  "main": "./lib/index.js",
+  "module": "./lib-esm/index.js",
+  "typings": "./lib-esm/index.d.ts",
+  "react-native": {
+    "./lib/index": "./lib-esm/index.js"
+  },
+  "sideEffects": [
+    "./src/PubSub.ts",
+    "./lib/PubSub.js",
+    "./lib-esm/PubSub.js",
+    "./dist/aws-amplify-pubsub.min.js",
+    "./dist/aws-amplify-pubsub.js"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "build-with-test": "npm run clean && npm test && tsc && webpack",
+    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "clean": "rimraf lib-esm lib dist",
+    "format": "echo \"Not implemented\"",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.63"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws/aws-amplify/issues"
+  },
+  "homepage": "https://aws-amplify.github.io/",
+  "devDependencies": {
+    "@types/zen-observable": "^0.8.0",
+    "cpx": "^1.5.0"
+  },
+  "dependencies": {
+    "@aws-amplify/auth": "4.6.13",
+    "@aws-amplify/cache": "4.0.62",
+    "@aws-amplify/core": "4.7.11",
+    "graphql": "15.8.0",
+    "paho-mqtt": "^1.1.0",
+    "uuid": "^3.2.1",
+    "zen-observable-ts": "0.8.19",
+	  "tslib": "^2.0.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      },
+      "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+      "testPathIgnorePatterns": [
+        "__tests__/helpers.ts"
+      ]
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "testPathIgnorePatterns": [
+      "__tests__/helpers.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
+    ]
+  }
 }
