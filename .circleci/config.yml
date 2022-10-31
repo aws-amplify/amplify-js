@@ -1216,6 +1216,23 @@ jobs:
           spec: background-process-manager
           browser: << parameters.browser >>
 
+  integ_react_datastore_related_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Related Models'
+          framework: react
+          category: datastore
+          sample_name: related-models
+          spec: related-models
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1701,6 +1718,16 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_related_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1752,6 +1779,7 @@ workflows:
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
+            - integ_react_datastore_related_models
       - post_release:
           filters:
             branches:
@@ -1932,7 +1960,7 @@ orbs:
                     exit 1
                   fi
                 }
-                eval << parameters.pre-command >> 
+                eval << parameters.pre-command >>
                 retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 
