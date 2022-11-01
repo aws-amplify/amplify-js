@@ -1883,15 +1883,15 @@ workflows:
           main-file-path: ./App.js
           tag: next
       # Expo
-      - getting-started-smoke-test/expo:
-          name: Expo - latest
-          framework: expo_ios
-          main-file-path: ./App.js
-      - getting-started-smoke-test/expo:
-          name: Expo - next
-          framework: expo_ios
-          main-file-path: ./App.js
-          tag: next
+      # - getting-started-smoke-test/expo:
+      #     name: Expo - latest
+      #     framework: expo_ios
+      #     main-file-path: ./App.js
+      # - getting-started-smoke-test/expo:
+      #     name: Expo - next
+      #     framework: expo_ios
+      #     main-file-path: ./App.js
+      #     tag: next
 
 # Start Canary Orb
 orbs:
