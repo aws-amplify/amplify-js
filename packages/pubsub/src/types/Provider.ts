@@ -10,11 +10,6 @@ export interface ProviderOptions {
 	[key: string]: any;
 }
 
-/**
- * @deprecated Migrated to ProviderOptions
- */
-export type ProvidertOptions = ProviderOptions;
-
 export interface PubSubProvider {
 	// configure your provider
 	configure(config: object): object;
