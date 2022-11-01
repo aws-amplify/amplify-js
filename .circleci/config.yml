@@ -1226,6 +1226,40 @@ jobs:
           spec: related-models
           browser: << parameters.browser >>
 
+  integ_react_iot_reconnect:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for IoT'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-iot
+          spec: reconnection
+          browser: << parameters.browser >>
+
+  integ_react_api_reconnect:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for API'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-api
+          spec: reconnection
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1274,6 +1308,7 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
+      - next-major-version/5-pubsub-reconnect-testing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1720,6 +1755,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_iot_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_api_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
 
       - deploy:
           filters:
@@ -1773,13 +1826,8 @@ workflows:
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
             - integ_react_datastore_related_models
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+            - integ_react_iot_reconnect
+            - integ_react_api_reconnect
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
