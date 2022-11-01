@@ -12,11 +12,8 @@
 		"access": "public"
 	},
 	"sideEffects": [
-		"./src/datastore/datastore.ts",
 		"./lib/datastore/datastore.js",
-		"./lib-esm/datastore/datastore.js",
-		"./dist/aws-amplify-datastore.min.js",
-		"./dist/aws-amplify-datastore.js"
+		"./lib-esm/datastore/datastore.js"
 	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",

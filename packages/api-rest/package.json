@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/RestAPI.ts",
     "./lib/RestAPI.js",
-    "./lib-esm/RestAPI.js",
-    "./dist/aws-amplify-api-rest.js",
-    "./dist/aws-amplify-api-rest.min.js"
+    "./lib-esm/RestAPI.js"
   ],
   "publishConfig": {
     "access": "public"

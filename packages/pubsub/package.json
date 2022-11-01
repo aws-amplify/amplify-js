@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/PubSub.ts",
     "./lib/PubSub.js",
-    "./lib-esm/PubSub.js",
-    "./dist/aws-amplify-pubsub.min.js",
-    "./dist/aws-amplify-pubsub.js"
+    "./lib-esm/PubSub.js"
   ],
   "publishConfig": {
     "access": "public"

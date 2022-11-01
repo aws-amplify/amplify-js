@@ -9,11 +9,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/Interactions.ts",
 		"./lib/Interactions.js",
-		"./lib-esm/Interactions.js",
-		"./dist/aws-amplify-interactions.min.js",
-		"./dist/aws-amplify-interactions.js"
+		"./lib-esm/Interactions.js"
 	],
 	"publishConfig": {
 		"access": "public"
