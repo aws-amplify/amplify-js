@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "4.1.7",
+	"version": "4.1.8",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/Interactions.ts",
 		"./lib/Interactions.js",
-		"./lib-esm/Interactions.js",
-		"./dist/aws-amplify-interactions.min.js",
-		"./dist/aws-amplify-interactions.js"
+		"./lib-esm/Interactions.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -43,7 +40,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"files": ["lib", "lib-esm", "src"],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.10",
+		"@aws-amplify/core": "4.7.11",
 		"@aws-sdk/client-lex-runtime-service": "3.186.0",
 		"@aws-sdk/client-lex-runtime-v2": "3.186.0",
 		"base-64": "1.0.0",

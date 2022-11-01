@@ -171,7 +171,7 @@ commands:
           name: 'Run cypress test << parameters.spec >>'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -489,18 +489,11 @@ jobs:
           spec: authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'Vue 2 Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
           test_name: 'Vue 3 Authenticator'
           framework: vue
           category: auth
           sample_name: authenticator-vue3
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Vue Custom Authenticator'
@@ -1216,6 +1209,23 @@ jobs:
           spec: background-process-manager
           browser: << parameters.browser >>
 
+  integ_react_datastore_related_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Related Models'
+          framework: react
+          category: datastore
+          sample_name: related-models
+          spec: related-models
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1692,8 +1702,16 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
       - integ_react_datastore_background_process_manager:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_related_models:
           requires:
             - integ_setup
             - build
@@ -1754,6 +1772,7 @@ workflows:
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
+            - integ_react_datastore_related_models
       - post_release:
           filters:
             branches:
@@ -1934,7 +1953,7 @@ orbs:
                     exit 1
                   fi
                 }
-                eval << parameters.pre-command >> 
+                eval << parameters.pre-command >>
                 retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 
