@@ -1308,6 +1308,7 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
+      - next-major-version/5-pubsub-reconnect-testing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1827,13 +1828,6 @@ workflows:
             - integ_react_datastore_related_models
             - integ_react_iot_reconnect
             - integ_react_api_reconnect
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
