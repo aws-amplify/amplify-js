@@ -1241,7 +1241,8 @@ jobs:
           category: pubsub
           sample_name: reconnection-iot
           spec: reconnection
-          browser: << parameters.browser >>
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
 
   integ_react_api_reconnect:
     parameters:
@@ -1258,7 +1259,8 @@ jobs:
           category: pubsub
           sample_name: reconnection-api
           spec: reconnection
-          browser: << parameters.browser >>
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
 
   deploy:
     executor: macos-executor
