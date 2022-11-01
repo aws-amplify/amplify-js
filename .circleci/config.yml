@@ -1210,6 +1210,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_datastore_related_models:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
@@ -1239,9 +1242,6 @@ jobs:
           browser: chrome
 
   integ_react_api_reconnect:
-    parameters:
-      browser:
-        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
@@ -1757,18 +1757,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
       - integ_react_api_reconnect:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
 
       - deploy:
           filters:
