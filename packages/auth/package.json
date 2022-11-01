@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/Auth.ts",
     "./lib/Auth.js",
-    "./lib-esm/Auth.js",
-    "./dist/aws-amplify-auth.js",
-    "./dist/aws-amplify-auth.min.js"
+    "./lib-esm/Auth.js"
   ],
   "publishConfig": {
     "access": "public"

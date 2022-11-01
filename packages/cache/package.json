@@ -9,14 +9,10 @@
     "./lib/index": "./lib-esm/reactnative.js"
   },
   "sideEffects": [
-    "./src/AsyncStorageCache.ts",
-    "./src/BrowserStorageCache.ts",
     "./lib/BrowserStorageCache.js",
     "./lib/AsyncStorageCache.js",
     "./lib-esm/BrowserStorageCache.js",
-    "./lib-esm/AsyncStorageCache.js",
-    "./dist/aws-amplify-cache.js",
-    "./dist/aws-amplify-cache.min.js"
+    "./lib-esm/AsyncStorageCache.js"
   ],
   "publishConfig": {
     "access": "public"

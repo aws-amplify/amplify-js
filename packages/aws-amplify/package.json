@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/amplifySingleton.ts",
     "./lib/amplifySingleton.js",
-    "./lib-esm/amplifySingleton.js",
-    "./dist/aws-amplify.min.js",
-    "./dist/aws-amplify.js"
+    "./lib-esm/amplifySingleton.js"
   ],
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",

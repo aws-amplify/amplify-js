@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/Storage.ts",
     "./lib/Storage.js",
-    "./lib-esm/Storage.js",
-    "./dist/aws-amplify-storage.min.js",
-    "./dist/aws-amplify-storage.js"
+    "./lib-esm/Storage.js"
   ],
   "publishConfig": {
     "access": "public"
