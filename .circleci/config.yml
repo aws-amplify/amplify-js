@@ -1756,18 +1756,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
       - integ_react_api_reconnect:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
 
       - deploy:
           filters:
