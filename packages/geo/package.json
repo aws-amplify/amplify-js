@@ -12,11 +12,8 @@
 		"access": "public"
 	},
 	"sideEffects": [
-		"./src/geo/geo.ts",
 		"./lib/geo/geo.js",
-		"./lib-esm/geo/geo.js",
-		"./dist/aws-amplify-geo.min.js",
-		"./dist/aws-amplify-geo.js"
+		"./lib-esm/geo/geo.js"
 	],
 	"scripts": {
 		"test": "yarn run lint && jest -w 1 --coverage",

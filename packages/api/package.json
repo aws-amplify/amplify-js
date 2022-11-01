@@ -16,11 +16,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/API.ts",
 		"./lib/API.js",
-		"./lib-esm/API.js",
-		"./dist/aws-amplify-api.js",
-		"./dist/aws-amplify-api.min.js"
+		"./lib-esm/API.js"
 	],
 	"publishConfig": {
 		"access": "public"

@@ -335,9 +335,10 @@ jobs:
       - run:
           name: yarn install --non-interactive
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           command: |
             mv .yarnrc ._yarnrc
-            yarn
+            yarn --ignore-engines
       - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
