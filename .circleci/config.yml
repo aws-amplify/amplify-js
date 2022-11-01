@@ -1210,9 +1210,6 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_datastore_related_models:
-    parameters:
-      browser:
-        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
@@ -1227,9 +1224,6 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
-    parameters:
-      browser:
-        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
