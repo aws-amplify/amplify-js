@@ -118,7 +118,7 @@ export class CredentialsClass {
 		const { Auth = Amplify.Auth } = this;
 
 		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
-			// If Auth module is not import will do a best effort to get guest credentials
+			// If Auth module is not imported, do a best effort to get guest credentials
 			return this._setCredentialsForGuest();
 		}
 
