@@ -650,7 +650,7 @@ describe('Predicates', () => {
 						postBlogId: blog.id,
 						blog: Promise.resolve(blog),
 					} as unknown as ModelOf<typeof Post>;
-					(blog.posts.values as any).push(post);
+					((blog.posts as any).values as any).push(post);
 					return post;
 				});
 			})
