@@ -52,7 +52,7 @@ describe('Credentials test', () => {
 			expect(credentials.Auth).toBeUndefined();
 
 			expect(credentials.get()).rejects.toMatchInlineSnapshot(
-				`"No Auth module registered in Amplify"`
+				`"No Cognito Identity pool provided for unauthenticated access"`
 			);
 		});
 
