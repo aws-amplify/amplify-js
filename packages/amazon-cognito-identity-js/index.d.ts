@@ -72,6 +72,14 @@ declare module 'amazon-cognito-identity-js' {
 		Storage?: ICognitoStorage;
 	}
 
+	export interface ICognitoUserAttributesUpdateResult {
+		CodeDeliveryDetailsList?: ICodeDeliveryDetails[];
+	}
+
+	export interface ICodeDeliveryDetails extends MFAOption {
+		Destination: string;
+	}
+
 	export interface GetSessionOptions {
 		clientMetadata: Record<string, string>;
 	}
@@ -221,7 +229,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string>,
+			callback: NodeCallback<Error, ICognitoUserAttributesUpdateResult>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(

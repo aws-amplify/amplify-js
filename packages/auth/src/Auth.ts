@@ -1432,11 +1432,11 @@ export class AuthClass {
 				}
 				user.updateAttributes(
 					attributeList,
-					(err, result) => {
+					err => {
 						if (err) {
 							return reject(err);
 						} else {
-							return resolve(result);
+							return resolve('SUCCESS');
 						}
 					},
 					clientMetadata

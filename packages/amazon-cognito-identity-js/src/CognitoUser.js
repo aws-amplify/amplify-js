@@ -1103,10 +1103,23 @@ export default class CognitoUser {
 	/**
 	 * @typedef {CognitoUserAttribute | { Name:string, Value:string }} AttributeArg
 	 */
+
+	/**
+	 * @typedef ICodeDeliveryDetails
+	 * @property {string} Destination  The email address or phone number destination where Amazon Cognito sent the code.
+	 * @property {string} DeliveryMedium  The method that Amazon Cognito used to send the code.
+	 * @property {string} AttributeName  The name of the attribute that Amazon Cognito verifies with the code.
+	 */
+
+	/**
+	 * @typedef ICognitoUserAttributesUpdateResult
+	 * @property {ICodeDeliveryDetails[]} CodeDeliveryDetailsList  The code delivery details list from the server for the request to update user attributes.
+	 */
+
 	/**
 	 * This is used by an authenticated user to change a list of attributes
 	 * @param {AttributeArg[]} attributes A list of the new user attributes.
-	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {nodeCallback<ICognitoUserAttributesUpdateResult>} callback Called on success or error.
 	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
@@ -1122,13 +1135,13 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err, result) => {
 				if (err) {
 					return callback(err, null);
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS'), {
+				return this.getUserData(() => callback(null, result), {
 					bypassCache: true,
 				});
 			}
