@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "2.3.23",
+  "version": "2.3.24",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/GraphQLAPI.ts",
     "./lib/GraphQLAPI.js",
-    "./lib-esm/GraphQLAPI.js",
-    "./dist/aws-amplify-api-graphql.js",
-    "./dist/aws-amplify-api-graphql.min.js"
+    "./lib-esm/GraphQLAPI.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -46,15 +43,15 @@
   },
   "files": ["lib", "lib-esm", "src"],
   "dependencies": {
-    "@aws-amplify/api-rest": "2.0.59",
-    "@aws-amplify/auth": "4.6.12",
-    "@aws-amplify/cache": "4.0.61",
-    "@aws-amplify/core": "4.7.10",
-    "@aws-amplify/pubsub": "4.5.9",
+    "@aws-amplify/api-rest": "2.0.60",
+    "@aws-amplify/auth": "4.6.13",
+    "@aws-amplify/cache": "4.0.62",
+    "@aws-amplify/core": "4.7.11",
+    "@aws-amplify/pubsub": "4.5.10",
     "graphql": "15.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19",
-    "tslib": "^2.0.0"
+    "tslib": "^1.8.0"
   },
   "jest": {
     "globals": {

@@ -335,9 +335,10 @@ jobs:
       - run:
           name: yarn install --non-interactive
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           command: |
             mv .yarnrc ._yarnrc
-            yarn
+            yarn --ignore-engines
       - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
@@ -487,13 +488,6 @@ jobs:
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'Vue 2 Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Vue 3 Authenticator'
@@ -1216,6 +1210,53 @@ jobs:
           spec: background-process-manager
           browser: << parameters.browser >>
 
+  integ_react_datastore_related_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Related Models'
+          framework: react
+          category: datastore
+          sample_name: related-models
+          spec: related-models
+          browser: << parameters.browser >>
+
+  integ_react_iot_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for IoT'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-iot
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
+  integ_react_api_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for API'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-api
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1701,6 +1742,28 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_related_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_iot_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_api_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1752,6 +1815,9 @@ workflows:
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
+            - integ_react_datastore_related_models
+            - integ_react_iot_reconnect
+            - integ_react_api_reconnect
       - post_release:
           filters:
             branches:
@@ -1932,7 +1998,7 @@ orbs:
                     exit 1
                   fi
                 }
-                eval << parameters.pre-command >> 
+                eval << parameters.pre-command >>
                 retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 
