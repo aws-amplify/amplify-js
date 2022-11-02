@@ -42,8 +42,7 @@
   "dependencies": {
     "@aws-amplify/core": "4.7.11",
     "amazon-cognito-identity-js": "5.2.12",
-    "crypto-js": "^4.1.1",
-    "tslib": "^2.0.0"
+    "tslib": "^1.8.0"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
