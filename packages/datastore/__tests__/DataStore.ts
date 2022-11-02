@@ -3092,7 +3092,7 @@ describe('DataStore tests', () => {
 			);
 
 			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
 			);
 
 			await expect(DataStore.delete(<any>{})).rejects.toThrow(
@@ -4059,13 +4059,7 @@ describe('DataStore tests', () => {
 				await expect(
 					DataStore.delete(PostCustomPK, <any>(() => {}))
 				).rejects.toThrow(
-					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
-				);
-
-				await expect(
-					DataStore.delete(PostCustomPK, <any>(() => {}))
-				).rejects.toThrow(
-					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+					"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
 				);
 
 				await expect(DataStore.delete(<any>{})).rejects.toThrow(

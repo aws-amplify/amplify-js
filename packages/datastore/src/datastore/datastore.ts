@@ -103,6 +103,7 @@ import {
 	recursivePredicateFor,
 	predicateFor,
 	GroupCondition,
+	internals,
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
@@ -1569,9 +1570,11 @@ class DataStore {
 							schema: modelDefinition,
 							pkField: getModelPKFieldName(modelConstructor),
 						});
-						const predicate = (
-							identifierOrCriteria as RecursiveModelPredicateExtender<T>
-						)(seedPredicate).__query;
+						const predicate = internals(
+							(identifierOrCriteria as RecursiveModelPredicateExtender<T>)(
+								seedPredicate
+							)
+						);
 						result = (await predicate.fetch(this.storage)) as T[];
 						result = inMemoryPagination(result, pagination);
 					}
@@ -1662,7 +1665,9 @@ class DataStore {
 				});
 
 				const producedCondition = condition
-					? condition(predicateFor(modelMeta)).__query.toStoragePredicate<T>()
+					? internals(
+							condition(predicateFor(modelMeta))
+					  ).toStoragePredicate<T>()
 					: undefined;
 
 				const [savedModel] = await this.storage.runExclusive(async s => {
@@ -1796,13 +1801,15 @@ class DataStore {
 								<T>identifierOrCriteria
 							);
 						} else {
-							condition = (identifierOrCriteria as ModelPredicateExtender<T>)(
-								predicateFor({
-									builder: modelConstructor as PersistentModelConstructor<T>,
-									schema: modelDefinition,
-									pkField: extractPrimaryKeyFieldNames(modelDefinition),
-								})
-							)?.__query.toStoragePredicate<T>();
+							condition = internals(
+								(identifierOrCriteria as ModelPredicateExtender<T>)(
+									predicateFor({
+										builder: modelConstructor as PersistentModelConstructor<T>,
+										schema: modelDefinition,
+										pkField: extractPrimaryKeyFieldNames(modelDefinition),
+									})
+								)
+							).toStoragePredicate<T>();
 						}
 
 						if (
@@ -1856,13 +1863,15 @@ class DataStore {
 							throw new Error(msg);
 						}
 
-						condition = (identifierOrCriteria as ModelPredicateExtender<T>)(
-							predicateFor({
-								builder: modelConstructor as PersistentModelConstructor<T>,
-								schema: modelDefinition,
-								pkField: extractPrimaryKeyFieldNames(modelDefinition),
-							})
-						).__query.toStoragePredicate<T>(pkPredicate);
+						condition = internals(
+							(identifierOrCriteria as ModelPredicateExtender<T>)(
+								predicateFor({
+									builder: modelConstructor as PersistentModelConstructor<T>,
+									schema: modelDefinition,
+									pkField: extractPrimaryKeyFieldNames(modelDefinition),
+								})
+							)
+						).toStoragePredicate<T>(pkPredicate);
 					} else {
 						condition = pkPredicate;
 					}
@@ -1956,13 +1965,15 @@ class DataStore {
 
 		if (modelConstructor && typeof identifierOrCriteria === 'string') {
 			const buildIdPredicate = seed => seed.id.eq(identifierOrCriteria);
-			executivePredicate = buildIdPredicate(
-				buildSeedPredicate(modelConstructor)
-			).__query;
+			executivePredicate = internals(
+				buildIdPredicate(buildSeedPredicate(modelConstructor))
+			);
 		} else if (modelConstructor && typeof identifierOrCriteria === 'function') {
-			executivePredicate = (
-				identifierOrCriteria as RecursiveModelPredicateExtender<T>
-			)(buildSeedPredicate(modelConstructor) as any).__query;
+			executivePredicate = internals(
+				(identifierOrCriteria as RecursiveModelPredicateExtender<T>)(
+					buildSeedPredicate(modelConstructor) as any
+				)
+			);
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
@@ -2085,9 +2096,11 @@ class DataStore {
 			}
 
 			if (model && typeof criteria === 'function') {
-				executivePredicate = (criteria as RecursiveModelPredicateExtender<T>)(
-					buildSeedPredicate(model)
-				).__query;
+				executivePredicate = internals(
+					(criteria as RecursiveModelPredicateExtender<T>)(
+						buildSeedPredicate(model)
+					)
+				);
 			} else if (isPredicatesAll(criteria)) {
 				executivePredicate = undefined;
 			}
@@ -2508,13 +2521,15 @@ class DataStore {
 						return [modelDefinition as any, null as any];
 					}
 
-					const predicate = condition(
-						predicateFor({
-							builder: modelConstructor,
-							schema: modelDefinition,
-							pkField: extractPrimaryKeyFieldNames(modelDefinition),
-						})
-					).__query.toStoragePredicate<any>();
+					const predicate = internals(
+						condition(
+							predicateFor({
+								builder: modelConstructor,
+								schema: modelDefinition,
+								pkField: extractPrimaryKeyFieldNames(modelDefinition),
+							})
+						)
+					).toStoragePredicate<any>();
 
 					return [modelDefinition as any, predicate as any];
 				}

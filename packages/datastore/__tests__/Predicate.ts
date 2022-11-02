@@ -1,4 +1,8 @@
-import { predicateFor, recursivePredicateFor } from '../src/predicates/next';
+import {
+	predicateFor,
+	recursivePredicateFor,
+	internals,
+} from '../src/predicates/next';
 import {
 	PersistentModel,
 	PersistentModelConstructor,
@@ -175,16 +179,16 @@ describe('Predicates', () => {
 				name: 'filters',
 				execute: async <T>(query: any) =>
 					asyncFilter(getFlatAuthorsArrayFixture(), i =>
-						query.__query.matches(i)
+						internals(query).matches(i)
 					),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[Author.name]: getFlatAuthorsArrayFixture(),
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -660,17 +664,17 @@ describe('Predicates', () => {
 			{
 				name: 'filters',
 				execute: async <T>(query: any) =>
-					asyncFilter(blogs, b => query.__query.matches(b)),
+					asyncFilter(blogs, b => internals(query).matches(b)),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[BlogOwner.name]: owners,
 							[Blog.name]: blogs,
 							[Post.name]: posts,
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -824,15 +828,15 @@ describe('Predicates', () => {
 			{
 				name: 'filters',
 				execute: async <T>(query: any) =>
-					asyncFilter(posts, p => query.__query.matches(p)),
+					asyncFilter(posts, p => internals(query).matches(p)),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[Post.name]: posts,
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -1055,9 +1059,9 @@ describe('Predicates', () => {
 		];
 		for (const [i, testCase] of predicateTestCases.entries()) {
 			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
-				const builder = testCase
-					.predicate(predicateFor(BlogMeta))
-					.__query.toStoragePredicate();
+				const builder = internals(
+					testCase.predicate(predicateFor(BlogMeta))
+				).toStoragePredicate();
 
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
