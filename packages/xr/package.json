@@ -41,7 +41,7 @@
   "files": ["lib", "lib-esm", "src"],
   "dependencies": {
     "@aws-amplify/core": "4.7.11",
-    "tslib": "^2.0.0"
+    "tslib": "^1.8.0"
   },
   "jest": {
     "globals": {
