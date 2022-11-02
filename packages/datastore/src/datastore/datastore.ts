@@ -999,7 +999,7 @@ const createModelClass = <T extends PersistentModel>(
 export class AsyncItem<T> extends Promise<T> {}
 
 export class AsyncCollection<T> implements AsyncIterable<T> {
-	values: Array<any> | Promise<Array<any>>;
+	private values: Array<any> | Promise<Array<any>>;
 
 	constructor(values: Array<any> | Promise<Array<any>>) {
 		this.values = values;

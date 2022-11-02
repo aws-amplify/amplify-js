@@ -99,27 +99,27 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 		? (
 				inclusiveLowerBound: Scalar<MT>,
 				inclusiveUpperBound: Scalar<MT>
-		  ) => ModelPredicateLeaf
-		: (operand: Scalar<MT>) => ModelPredicateLeaf;
+		  ) => PredicateInternalsKey
+		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
 type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
 	...predicates:
 		| [RecursiveModelPredicateAggregateExtender<RT>]
-		| ModelPredicateLeaf[]
-) => ModelPredicateLeaf;
+		| PredicateInternalsKey[]
+) => PredicateInternalsKey;
 
 type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT> | ModelPredicateLeaf
-) => ModelPredicateLeaf;
+	predicate: RecursiveModelPredicateExtender<RT> | PredicateInternalsKey
+) => PredicateInternalsKey;
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateAggregateExtender<RT>] | ModelPredicateLeaf[]
-) => ModelPredicateLeaf;
+	...predicates: [ModelPredicateAggregateExtender<RT>] | PredicateInternalsKey[]
+) => PredicateInternalsKey;
 
 type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT> | ModelPredicateLeaf
-) => ModelPredicateLeaf;
+	predicate: ModelPredicateExtender<RT> | PredicateInternalsKey
+) => PredicateInternalsKey;
 
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
@@ -129,7 +129,7 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	or: RecursiveModelPredicateOperator<RT>;
 	and: RecursiveModelPredicateOperator<RT>;
 	not: RecursiveModelPredicateNegation<RT>;
-} & ModelPredicateLeaf;
+} & PredicateInternalsKey;
 
 export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
@@ -139,9 +139,7 @@ export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
-} & ModelPredicateLeaf;
-
-export type ModelPredicateLeaf = PredicateInternalsKey;
+} & PredicateInternalsKey;
 
 type GroupOperator = 'and' | 'or' | 'not';
 
@@ -152,15 +150,44 @@ type UntypedCondition = {
 	toAST(): any;
 };
 
-type PredicateInternalsKey = {};
+/**
+ * A pointer used by DataStore internally to lookup predicate details
+ * that should not be exposed on public customer interfaces.
+ */
+export type PredicateInternalsKey = {};
+
+/**
+ * A map from keys (exposed to customers) to the internal predicate data
+ * structures invoking code should not muck with.
+ */
 const predicateInternalsMap = new Map<PredicateInternalsKey, GroupCondition>();
 
+/**
+ * Creates a link between a key (and generates a key if needed) and an internal
+ * `GroupCondition`, which allows us to return a key object instead of the gory
+ * conditions details to customers/invoking code.
+ *
+ * @param condition The internal condition to keep hidden.
+ * @param key The object DataStore will use to find the internal condition.
+ * If no key is given, an empty one is created.
+ */
 const registerPredicateInternals = (condition: GroupCondition, key?: any) => {
 	const finalKey = key || {};
 	predicateInternalsMap.set(finalKey, condition);
 	return finalKey;
 };
 
+/**
+ * Takes a key object from `registerPredicateInternals()` to fetch an internal
+ * `GroupCondition` object, which can then be used to query storage or
+ * test/match objects.
+ *
+ * This indirection exists to hide `GroupCondition` from public interfaces, since
+ * `GroupCondition` contains extra methods and properties that public callers
+ * should not use.
+ *
+ * @param key A key object previously returned by `registerPredicateInternals()`
+ */
 export const internals = (key: any) => {
 	if (!predicateInternalsMap.has(key)) {
 		throw new Error(
@@ -809,7 +836,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// TODO: If revisiting this code, consider proxy.
 	link.not = (
 		builder: RecursiveModelPredicateExtender<T>
-	): ModelPredicateLeaf => {
+	): PredicateInternalsKey => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
 		const { query, newTail } = copyLink();
