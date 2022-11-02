@@ -12,7 +12,10 @@ import {
 	PredicateAll,
 	Predicates as V1Predicates,
 } from '../src/predicates';
-import { validatePredicate as flatPredicateMatches } from '../src/util';
+import {
+	validatePredicate as flatPredicateMatches,
+	asyncFilter,
+} from '../src/util';
 import {
 	predicateToGraphQLCondition,
 	predicateToGraphQLFilter,
@@ -171,7 +174,9 @@ describe('Predicates', () => {
 			{
 				name: 'filters',
 				execute: async <T>(query: any) =>
-					query.filter(getFlatAuthorsArrayFixture()) as T[],
+					asyncFilter(getFlatAuthorsArrayFixture(), i =>
+						query.__query.matches(i)
+					),
 			},
 			{
 				name: 'storage predicates',
@@ -654,7 +659,8 @@ describe('Predicates', () => {
 			//
 			{
 				name: 'filters',
-				execute: async <T>(query: any) => query.filter(blogs) as T[],
+				execute: async <T>(query: any) =>
+					asyncFilter(blogs, b => query.__query.matches(b)),
 			},
 			{
 				name: 'storage predicates',
@@ -817,7 +823,8 @@ describe('Predicates', () => {
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) => query.filter(posts) as T[],
+				execute: async <T>(query: any) =>
+					asyncFilter(posts, p => query.__query.matches(p)),
 			},
 			{
 				name: 'storage predicates',

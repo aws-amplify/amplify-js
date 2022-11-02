@@ -196,13 +196,6 @@ export type ModelPredicateLeaf = {
 	 * DataStore internal
 	 */
 	__tail: GroupCondition;
-
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	filter: <T>(items: T[]) => Promise<T[]>;
 };
 
 type GroupOperator = 'and' | 'or' | 'not';
@@ -819,9 +812,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 				newtail
 			);
 		},
-		filter: items => {
-			return asyncFilter(items, i => link.__query.matches(i));
-		},
 	} as RecursiveModelPredicate<T>;
 
 	// Adds .or() and .and() methods to the link.
@@ -858,9 +848,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			return {
 				__query: newlink.__query,
 				__tail: newlink.__tail,
-				filter: items => {
-					return asyncFilter(items, i => newlink.__query.matches(i));
-				},
 			};
 		};
 	});
@@ -900,9 +887,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		return {
 			__query: newlink.__query,
 			__tail: newlink.__tail,
-			filter: items => {
-				return asyncFilter(items, i => newlink.__query.matches(i));
-			},
 		};
 	};
 
@@ -945,9 +929,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								return {
 									__query: newlink.__query,
 									__tail: newlink.__tail,
-									filter: (items: any[]) => {
-										return asyncFilter(items, i => newlink.__query.matches(i));
-									},
 								};
 							},
 						};
