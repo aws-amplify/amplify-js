@@ -14,7 +14,7 @@ import {
 } from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
-import { asyncSome, asyncEvery, asyncFilter } from '../util';
+import { asyncSome, asyncEvery } from '../util';
 
 type MatchableTypes =
 	| string
