@@ -1903,7 +1903,7 @@ orbs:
     executors:
       web-executor:
         docker:
-          - image: cimg/node:v14-lts
+          - image: cimg/node:lts
         resource_class: large
 
       android-executor:
