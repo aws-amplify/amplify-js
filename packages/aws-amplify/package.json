@@ -45,6 +45,7 @@
     "@aws-amplify/predictions": "4.0.60",
     "@aws-amplify/pubsub": "4.5.10",
     "@aws-amplify/storage": "4.5.13",
+    "@aws-amplify/ui": "2.0.7",
     "@aws-amplify/xr": "3.0.60"
   },
   "jest": {
