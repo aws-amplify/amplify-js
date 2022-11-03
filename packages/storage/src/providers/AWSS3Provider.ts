@@ -47,7 +47,7 @@ import {
 	ResumableUploadConfig,
 	UploadTask,
 	S3ClientOptions,
-	S3ProviderListOutputWithToken,
+	S3ProviderListOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -674,8 +674,8 @@ export class AWSS3Provider implements StorageProvider {
 		params: ListObjectsV2Request,
 		opt: S3ClientOptions,
 		prefix: string
-	): Promise<S3ProviderListOutputWithToken> {
-		const list: S3ProviderListOutputWithToken = {
+	): Promise<S3ProviderListOutput> {
+		const list: S3ProviderListOutput = {
 			results: [],
 			hasNextToken: false,
 		};
@@ -701,13 +701,13 @@ export class AWSS3Provider implements StorageProvider {
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<S3ProviderListOutputWithToken>} - Promise resolves to list of keys, eTags, lastModified
+	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified
 	 * and file size for all objects in path
 	 */
 	public async list(
 		path: string,
 		config?: S3ProviderListConfig
-	): Promise<S3ProviderListOutputWithToken> {
+	): Promise<S3ProviderListOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
@@ -718,12 +718,12 @@ export class AWSS3Provider implements StorageProvider {
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
 		try {
-			const list: S3ProviderListOutputWithToken = {
+			const list: S3ProviderListOutput = {
 				results: [],
 				hasNextToken: false,
 			};
 			const MAX_PAGE_SIZE = 1000;
-			let listResult: S3ProviderListOutputWithToken;
+			let listResult: S3ProviderListOutput;
 			const params: ListObjectsV2Request = {
 				Bucket: bucket,
 				Prefix: final_path,
