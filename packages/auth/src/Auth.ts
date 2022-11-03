@@ -17,7 +17,7 @@ import {
 	Hub,
 	Parser,
 } from '@aws-amplify/core';
-import { AuthErrorStrings } from './constants/AuthErrorStrings';
+import { AuthPluginOptions, AuthSignUpResult, AuthUserAttributeKey, SignUpRequest } from './types/AmazonCognitoProvider';
 import { AuthProvider } from './types/AuthProvider';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
@@ -101,9 +101,11 @@ export class AuthClass {
 		this._pluggable = null;
 	}
 
-	signUp(): Promise<any> {
+	signUp<UserAttributeKey extends Record<string, any>, PluginOptions extends Record<string, any>>(req: SignUpRequest<string, PluginOptions>): Promise<any>;
+	signUp<UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey, 
+	PluginOptions extends AuthPluginOptions = AuthPluginOptions>(req: SignUpRequest<UserAttributeKey, PluginOptions>):Promise<AuthSignUpResult<UserAttributeKey>> {
 		assertPluginAvailable(this._pluggable);
-		return this._pluggable.signUp();
+		return this._pluggable.signUp(req);
 	}
 	confirmSignUp(): Promise<any> {
 		assertPluginAvailable(this._pluggable);

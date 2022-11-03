@@ -21,7 +21,7 @@ export interface AuthProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	signUp(): Promise<any>;
+	signUp(req: any): Promise<any>;
 
 	confirmSignUp(): Promise<any>;
 

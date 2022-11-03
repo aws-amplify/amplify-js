@@ -61,7 +61,6 @@
 	"devDependencies": {
 		"@babel/cli": "7.17.0",
 		"@babel/core": "7.17.2",
-		"@types/lodash": "4.14.182",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
 		"@types/jest": "^24.0.18",
@@ -122,5 +121,8 @@
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
+	},
+	"dependencies": {
+		"@aws-sdk/client-cognito-identity-provider": "^3.198.0"
 	}
 }

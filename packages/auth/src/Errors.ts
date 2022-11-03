@@ -19,35 +19,29 @@ import { AuthErrorMessages } from './types/AuthErrorMessages';
 const logger = new Logger('AuthError');
 
 export class AuthError extends Error {
-	public log: string;
-	constructor(type: AuthErrorTypes) {
-		const { message, log } = authErrorMessages[type];
-		super(message);
-
-		// Hack for making the custom error class work when transpiled to es5
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = AuthError;
-		Object.setPrototypeOf(this, AuthError.prototype);
-
-		this.name = 'AuthError';
-		this.log = log || message;
-
-		logger.error(this.log);
+	underlyingException?: Error;
+	recoverySuggestion?: string;
+	constructor(error: ErrorInterface) {
+		super(error.message);
+		this.underlyingException = error.underlyingException;
+		this.recoverySuggestion = error.recoverySuggestion;
+		logger.log(this.message);
+		Error.captureStackTrace(this);
 	}
 }
 
-export class NoUserPoolError extends AuthError {
-	constructor(type: AuthErrorTypes) {
-		super(type);
+// export class NoUserPoolError extends AuthError {
+// 	constructor(type: AuthErrorTypes) {
+// 		super(type);
 
-		// Hack for making the custom error class work when transpiled to es5
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = NoUserPoolError;
-		Object.setPrototypeOf(this, NoUserPoolError.prototype);
+// 		// Hack for making the custom error class work when transpiled to es5
+// 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
+// 		this.constructor = NoUserPoolError;
+// 		Object.setPrototypeOf(this, NoUserPoolError.prototype);
 
-		this.name = 'NoUserPoolError';
-	}
-}
+// 		this.name = 'NoUserPoolError';
+// 	}
+// }
 
 export const authErrorMessages: AuthErrorMessages = {
 	noConfig: {
@@ -118,3 +112,9 @@ export const authErrorMessages: AuthErrorMessages = {
 		message: AuthErrorStrings.DEFAULT_MSG,
 	},
 };
+
+export type ErrorInterface = {
+	message: string;
+	underlyingException?: Error;
+	recoverySuggestion?: string;
+}
