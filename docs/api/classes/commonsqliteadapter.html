@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ProvidertOptions | amplify-js</title>
+	<title>CommonSQLiteAdapter | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -915,8 +915,34 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 <ul>
-	<li class="current tsd-kind-interface">
-		<a href="providertoptions.html" class="tsd-kind-icon">Providert<wbr>Options</a>
+	<li class="current tsd-kind-class">
+		<a href="commonsqliteadapter.html" class="tsd-kind-icon">CommonSQLite<wbr>Adapter</a>
+		<ul>
+			<li class=" tsd-kind-constructor tsd-parent-kind-class">
+				<a href="commonsqliteadapter.html#constructor" class="tsd-kind-icon">constructor</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="commonsqliteadapter.html#batchsave" class="tsd-kind-icon">batch<wbr>Save</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="commonsqliteadapter.html#clear" class="tsd-kind-icon">clear</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="commonsqliteadapter.html#delete" class="tsd-kind-icon">delete</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="commonsqliteadapter.html#query" class="tsd-kind-icon">query</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="commonsqliteadapter.html#queryone" class="tsd-kind-icon">query<wbr>One</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<a href="commonsqliteadapter.html#save" class="tsd-kind-icon">save</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="commonsqliteadapter.html#setup" class="tsd-kind-icon">set<wbr>Up</a>
+			</li>
+		</ul>
 	</li>
 </ul>
 </nav>
@@ -926,18 +952,302 @@ img { max-width: 100%; }
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="target">ProvidertOptions</span>
-				<ul class="tsd-hierarchy">
-					<li>
-						<a href="mqttprovidertoptions.html" class="tsd-signature-type">MqttProvidertOptions</a>
-					</li>
-				</ul>
+				<span class="target">CommonSQLiteAdapter</span>
 			</li>
 		</ul>
 	</section>
-	<section class="tsd-panel tsd-kind-interface">
-		<h3 class="tsd-before-signature">Indexable</h3>
-		<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></div>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><span class="tsd-signature-type">any</span></li>
+		</ul>
+	</section>
+	<section class="tsd-panel-group tsd-index-group">
+		<h2>Index</h2>
+		<section class="tsd-panel tsd-index-panel">
+			<div class="tsd-index-content">
+				<section class="tsd-index-section ">
+					<h3>Constructors</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="commonsqliteadapter.html#constructor" class="tsd-kind-icon">constructor</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section ">
+					<h3>Methods</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commonsqliteadapter.html#batchsave" class="tsd-kind-icon">batch<wbr>Save</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="commonsqliteadapter.html#clear" class="tsd-kind-icon">clear</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commonsqliteadapter.html#delete" class="tsd-kind-icon">delete</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commonsqliteadapter.html#query" class="tsd-kind-icon">query</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commonsqliteadapter.html#queryone" class="tsd-kind-icon">query<wbr>One</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="commonsqliteadapter.html#save" class="tsd-kind-icon">save</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="commonsqliteadapter.html#setup" class="tsd-kind-icon">set<wbr>Up</a></li>
+					</ul>
+				</section>
+			</div>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Constructors</h2>
+		<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+			<a name="constructor" class="tsd-anchor"></a>
+			<h3>constructor</h3>
+			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">new <wbr>CommonSQLite<wbr>Adapter<span class="tsd-signature-symbol">(</span>db<span class="tsd-signature-symbol">: </span><a href="../interfaces/commonsqlitedatabase.html" class="tsd-signature-type">CommonSQLiteDatabase</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="commonsqliteadapter.html" class="tsd-signature-type">CommonSQLiteAdapter</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L52">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:52</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>db: <a href="../interfaces/commonsqlitedatabase.html" class="tsd-signature-type">CommonSQLiteDatabase</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="commonsqliteadapter.html" class="tsd-signature-type">CommonSQLiteAdapter</a></h4>
+				</li>
+			</ul>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="batchsave" class="tsd-anchor"></a>
+			<h3>batch<wbr>Save</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadatawithid" class="tsd-signature-type">ModelInstanceMetadataWithId</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L411">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:411</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>modelConstructor: <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5>items: <a href="../globals.html#modelinstancemetadatawithid" class="tsd-signature-type">ModelInstanceMetadataWithId</a><span class="tsd-signature-symbol">[]</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="clear" class="tsd-anchor"></a>
+			<h3>clear</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L92">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:92</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="delete" class="tsd-anchor"></a>
+			<h3>delete</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">delete&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelOrModelConstructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L332">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:332</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>modelOrModelConstructor: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> condition: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="query" class="tsd-anchor"></a>
+			<h3>query</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">query&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, predicate<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, pagination<span class="tsd-signature-symbol">?: </span><a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L252">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:252</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>modelConstructor: <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pagination: <a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="queryone" class="tsd-anchor"></a>
+			<h3>query<wbr>One</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">query<wbr>One&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, firstOrLast<span class="tsd-signature-symbol">?: </span><a href="../enums/queryone.html" class="tsd-signature-type">QueryOne</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L314">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:314</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>modelConstructor: <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> firstOrLast: <a href="../enums/queryone.html" class="tsd-signature-type">QueryOne</a><span class="tsd-signature-symbol"> = QueryOne.FIRST</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+			<a name="save" class="tsd-anchor"></a>
+			<h3>save</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">save&lt;T&gt;<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L98">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:98</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodel" class="tsd-signature-type">PersistentModel</a></h4>
+						</li>
+					</ul>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>model: <span class="tsd-signature-type">T</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> condition: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="setup" class="tsd-anchor"></a>
+			<h3>set<wbr>Up</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Up<span class="tsd-signature-symbol">(</span>theSchema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, getModelConstructorByModelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts#L58">packages/datastore-storage-adapter/src/common/CommonSQLiteAdapter.ts:58</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>theSchema: <a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a></h5>
+						</li>
+						<li>
+							<h5>namespaceResolver: <a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a></h5>
+						</li>
+						<li>
+							<h5>modelInstanceCreator: <a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a></h5>
+						</li>
+						<li>
+							<h5>getModelConstructorByModelName: <span class="tsd-signature-type">function</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-siganture">
+									<ul class="tsd-signatures tsd-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>namsespaceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>namsespaceName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+												<li>
+													<h5>modelName: <span class="tsd-signature-type">string</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
 	</section>
 	<footer>
 		<div class="container">

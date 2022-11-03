@@ -973,7 +973,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/merger.ts#L8">packages/datastore/src/sync/merger.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore/src/sync/merger.ts#L12">packages/datastore/src/sync/merger.ts:12</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -996,15 +996,17 @@ img { max-width: 100%; }
 			<a name="merge" class="tsd-anchor"></a>
 			<h3>merge</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">merge&lt;T&gt;<span class="tsd-signature-symbol">(</span>storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">merge&lt;T&gt;<span class="tsd-signature-symbol">(</span>storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, modelDefinition<span class="tsd-signature-symbol">: </span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/merger.ts#L14">packages/datastore/src/sync/merger.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore/src/sync/merger.ts#L24">packages/datastore/src/sync/merger.ts:24</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+					</div>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
 					<ul class="tsd-type-parameters">
 						<li>
@@ -1015,12 +1017,22 @@ img { max-width: 100%; }
 					<ul class="tsd-parameters">
 						<li>
 							<h5>storage: <a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Storage adapter that contains the data.</p>
+							</div>
 						</li>
 						<li>
 							<h5>model: <span class="tsd-signature-type">T</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The model from an outbox mutation.</p>
+							</div>
+						</li>
+						<li>
+							<h5>modelDefinition: <a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">&gt;</span></h4>
+					<p>The type of operation (INSERT/UPDATE/DELETE)</p>
 				</li>
 			</ul>
 		</section>
@@ -1028,13 +1040,13 @@ img { max-width: 100%; }
 			<a name="mergepage" class="tsd-anchor"></a>
 			<h3>merge<wbr>Page</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">merge<wbr>Page<span class="tsd-signature-symbol">(</span>storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">merge<wbr>Page<span class="tsd-signature-symbol">(</span>storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span>, modelDefinition<span class="tsd-signature-symbol">: </span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/merger.ts#L35">packages/datastore/src/sync/merger.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/ec59a62d8/packages/datastore/src/sync/merger.ts#L50">packages/datastore/src/sync/merger.ts:50</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1047,6 +1059,9 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5>items: <a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span></h5>
+						</li>
+						<li>
+							<h5>modelDefinition: <a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
