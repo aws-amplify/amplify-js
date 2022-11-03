@@ -809,7 +809,7 @@ describe('Storage', () => {
 			const result: S3ProviderListOutputWithToken = {
 				results: [],
 				hasNextToken: false,
-				nextToken: null,
+				nextToken: undefined,
 			};
 			listSpy = jest
 				.spyOn(AWSStorageProvider.prototype, 'list')
@@ -844,7 +844,8 @@ describe('Storage', () => {
 		test('list without provider', async () => {
 			const storage = new StorageClass();
 			try {
-				await storage.list('');
+				const result = await storage.list('');
+				expect(result.hasNextToken).toBeUndefined();
 			} catch (err) {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}

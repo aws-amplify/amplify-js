@@ -122,7 +122,7 @@ export interface S3ProviderListOutputItem {
 	size: ListObjectsCommandOutputContent['Size'];
 }
 
-export type S3ProviderListOutput = S3ProviderListOutputItem[];
+export type S3ProviderListOutput = S3ProviderListOutputWithToken;
 
 export interface S3CopyTarget {
 	key: string;
