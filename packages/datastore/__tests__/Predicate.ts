@@ -1,4 +1,8 @@
-import { predicateFor, recursivePredicateFor } from '../src/predicates/next';
+import {
+	predicateFor,
+	recursivePredicateFor,
+	internals,
+} from '../src/predicates/next';
 import {
 	PersistentModel,
 	PersistentModelConstructor,
@@ -12,7 +16,10 @@ import {
 	PredicateAll,
 	Predicates as V1Predicates,
 } from '../src/predicates';
-import { validatePredicate as flatPredicateMatches } from '../src/util';
+import {
+	validatePredicate as flatPredicateMatches,
+	asyncFilter,
+} from '../src/util';
 import {
 	predicateToGraphQLCondition,
 	predicateToGraphQLFilter,
@@ -171,15 +178,17 @@ describe('Predicates', () => {
 			{
 				name: 'filters',
 				execute: async <T>(query: any) =>
-					query.filter(getFlatAuthorsArrayFixture()) as T[],
+					asyncFilter(getFlatAuthorsArrayFixture(), i =>
+						internals(query).matches(i)
+					),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[Author.name]: getFlatAuthorsArrayFixture(),
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -641,7 +650,7 @@ describe('Predicates', () => {
 						postBlogId: blog.id,
 						blog: Promise.resolve(blog),
 					} as unknown as ModelOf<typeof Post>;
-					(blog.posts.values as any).push(post);
+					((blog.posts as any).values as any).push(post);
 					return post;
 				});
 			})
@@ -654,17 +663,18 @@ describe('Predicates', () => {
 			//
 			{
 				name: 'filters',
-				execute: async <T>(query: any) => query.filter(blogs) as T[],
+				execute: async <T>(query: any) =>
+					asyncFilter(blogs, b => internals(query).matches(b)),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[BlogOwner.name]: owners,
 							[Blog.name]: blogs,
 							[Post.name]: posts,
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -817,15 +827,16 @@ describe('Predicates', () => {
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) => query.filter(posts) as T[],
+				execute: async <T>(query: any) =>
+					asyncFilter(posts, p => internals(query).matches(p)),
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(
+					(await internals(query).fetch(
 						getStorageFake({
 							[Post.name]: posts,
-						})
+						}) as any
 					)) as T[],
 			},
 		].forEach(mechanism => {
@@ -1048,9 +1059,9 @@ describe('Predicates', () => {
 		];
 		for (const [i, testCase] of predicateTestCases.entries()) {
 			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
-				const builder = testCase
-					.predicate(predicateFor(BlogMeta))
-					.__query.toStoragePredicate();
+				const builder = internals(
+					testCase.predicate(predicateFor(BlogMeta))
+				).toStoragePredicate();
 
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 

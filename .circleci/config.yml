@@ -1227,6 +1227,36 @@ jobs:
           spec: related-models
           browser: << parameters.browser >>
 
+  integ_react_iot_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for IoT'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-iot
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
+  integ_react_api_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for API'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-api
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1721,6 +1751,18 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_iot_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_api_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
 
       - deploy:
           filters:
@@ -1774,6 +1816,8 @@ workflows:
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
             - integ_react_datastore_related_models
+            - integ_react_iot_reconnect
+            - integ_react_api_reconnect
       - post_release:
           filters:
             branches:
