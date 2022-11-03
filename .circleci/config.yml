@@ -399,7 +399,7 @@ jobs:
           paths:
             - amplify-js-samples-staging
 
-  integ_react_auth:
+  integ_react_auth_1: #break react auth test to 2 sections to save time
     parameters:
       browser:
         type: string
@@ -429,6 +429,15 @@ jobs:
           sample_name: typescript-amplify-authenticator
           spec: new-ui-authenticator
           browser: << parameters.browser >>
+  integ_react_auth_2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
@@ -1344,7 +1353,16 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integ_react_auth:
+      - integ_react_auth_1:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_auth_2:
           requires:
             - integ_setup
             - build
@@ -1796,7 +1814,8 @@ workflows:
             - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
-            - integ_react_auth
+            - integ_react_auth_1
+            - integ_react_auth_2
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
