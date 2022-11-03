@@ -379,7 +379,6 @@ describe('Predicates', () => {
 				describe('predicate typings', () => {
 					test('not group must return single', async () => {
 						expect(() =>
-							// @ts-expect-error
 							recursivePredicateFor(AuthorMeta).not(a => [
 								a.name.contains('Bob'),
 							])
@@ -388,14 +387,12 @@ describe('Predicates', () => {
 
 					test('and group must return array', async () => {
 						expect(() =>
-							// @ts-expect-error
 							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
 						).toThrow();
 					});
 
 					test('or group must return array', async () => {
 						expect(() =>
-							// @ts-expect-error
 							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
 						).toThrow();
 					});
