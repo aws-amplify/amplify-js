@@ -73,6 +73,7 @@ export class AnalyticsClass {
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
 		Hub.listen('analytics', listener);
+		Hub.listen('core', listener);
 	}
 
 	public getModuleName() {
@@ -321,6 +322,8 @@ export class AnalyticsClass {
 let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
+let credentialsConfigured = false;
+
 const listener = capsule => {
 	const { channel, payload } = capsule;
 	logger.debug('on hub capsule ' + channel, payload);
@@ -334,6 +337,9 @@ const listener = capsule => {
 			break;
 		case 'analytics':
 			analyticsEvent(payload);
+			break;
+		case 'core':
+			coreEvent(payload);
 			break;
 		default:
 			break;
@@ -389,7 +395,7 @@ const authEvent = payload => {
 			return recordAuthEvent('auth_fail');
 		case 'configured':
 			authConfigured = true;
-			if (authConfigured && analyticsConfigured) {
+			if (analyticsConfigured) {
 				sendEvents();
 			}
 			break;
@@ -403,7 +409,21 @@ const analyticsEvent = payload => {
 	switch (event) {
 		case 'pinpointProvider_configured':
 			analyticsConfigured = true;
-			if (authConfigured && analyticsConfigured) {
+			if (authConfigured || credentialsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const coreEvent = payload => {
+	const { event } = payload;
+	if (!event) return;
+
+	switch (event) {
+		case 'credentials_configured':
+			credentialsConfigured = true;
+			if (analyticsConfigured) {
 				sendEvents();
 			}
 			break;

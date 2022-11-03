@@ -1,6 +1,6 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
 import { Amplify } from '../src/Amplify';
-
+import { Hub } from '../src/Hub';
 const session = {};
 
 const user = {
@@ -70,10 +70,21 @@ describe('Credentials test', () => {
 	});
 
 	describe('configure test', () => {
-		test('happy case', () => {
+		test('happy case', done => {
+			expect.assertions(1);
 			const config = {
 				attr: 'attr',
 			};
+
+			Hub.listen('core', ({ channel, payload, source }) => {
+				if (
+					channel === 'core' &&
+					payload?.event === 'credentials_configured' &&
+					source === 'Credentials'
+				) {
+					done();
+				}
+			});
 
 			const credentials = new Credentials(null);
 			expect(credentials.configure(config)).toEqual({
