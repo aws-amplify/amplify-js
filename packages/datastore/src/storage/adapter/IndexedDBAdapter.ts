@@ -457,9 +457,9 @@ class IndexedDBAdapter implements Adapter {
 								break;
 							}
 
-							const keys = targetNames.map(
-								targetName => recordItem[targetName]
-							);
+							const keys = targetNames
+								.filter(targetName => recordItem[targetName] ?? false)
+								.map(targetName => recordItem[targetName]);
 
 							// Retrieve the connected record
 							const connectionRecord = await this._get(store, keys);
@@ -872,7 +872,9 @@ class IndexedDBAdapter implements Adapter {
 
 						if (targetNames?.length) {
 							// CPK codegen
-							const values = targetNames.map(targetName => model[targetName]);
+							const values = targetNames
+								.filter(targetName => model[targetName] ?? false)
+								.map(targetName => model[targetName]);
 
 							if (values.length === 0) break;
 
