@@ -376,6 +376,31 @@ describe('Predicates', () => {
 					]);
 				});
 
+				describe('predicate typings', () => {
+					test('not group must return single', async () => {
+						expect(() =>
+							// @ts-expect-error
+							recursivePredicateFor(AuthorMeta).not(a => [
+								a.name.contains('Bob'),
+							])
+						).toThrow();
+					});
+
+					test('and group must return array', async () => {
+						expect(() =>
+							// @ts-expect-error
+							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
+						).toThrow();
+					});
+
+					test('or group must return array', async () => {
+						expect(() =>
+							// @ts-expect-error
+							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
+						).toThrow();
+					});
+				});
+
 				describe('with a logical grouping', () => {
 					test('can perform and() logic, matching an item', async () => {
 						const query = recursivePredicateFor(AuthorMeta).and(a => [
@@ -390,6 +415,21 @@ describe('Predicates', () => {
 						expect(matches[0].name).toBe('Bob Jones');
 					});
 
+					test('can perform and() logic, matching an item - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(negated =>
+							negated.and(a => [
+								a.name.contains('Bob'),
+								a.name.contains('Jones'),
+							])
+						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(4);
+						expect(matches.map(n => n.name)).not.toContain('Bob Jones');
+					});
+
 					test('can perform and() logic, matching no items', async () => {
 						const query = recursivePredicateFor(AuthorMeta).and(a => [
 							a.name.contains('Adam'),
@@ -400,6 +440,20 @@ describe('Predicates', () => {
 						);
 
 						expect(matches.length).toBe(0);
+					});
+
+					test('can perform and() logic, matching no items - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(negated =>
+							negated.and(a => [
+								a.name.contains('Adam'),
+								a.name.contains('Donut'),
+							])
+						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(5);
 					});
 
 					test('can perform or() logic, matching different items', async () => {
@@ -418,6 +472,22 @@ describe('Predicates', () => {
 						]);
 					});
 
+					test('can perform or() logic, matching different items - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(negated =>
+							negated.or(a => [
+								a.name.contains('Bob'),
+								a.name.contains('Donut'),
+							])
+						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(3);
+						expect(matches.map(m => m.name)).not.toContain('Bob Jones');
+						expect(matches.map(m => m.name)).not.toContain('Debbie Donut');
+					});
+
 					test('can perform or() logic, matching a single item', async () => {
 						const query = recursivePredicateFor(AuthorMeta).or(a => [
 							a.name.contains('Bob'),
@@ -429,6 +499,21 @@ describe('Predicates', () => {
 
 						expect(matches.length).toBe(1);
 						expect(matches[0].name).toEqual('Bob Jones');
+					});
+
+					test('can perform or() logic, matching a single item - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(negated =>
+							negated.or(a => [
+								a.name.contains('Bob'),
+								a.name.contains('Jones'),
+							])
+						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(4);
+						expect(matches.map(n => n.name)).not.toContain('Bob Jones');
 					});
 
 					test('can perform or() logic, matching a single item with extra unmatched conditions', async () => {
@@ -492,6 +577,27 @@ describe('Predicates', () => {
 
 						expect(matches.length).toBe(1);
 						expect(matches.map(m => m.name)).toEqual(['Debbie Donut']);
+					});
+
+					test('can perform and() logic with nested or() logic - NEGATED', async () => {
+						const query = recursivePredicateFor(AuthorMeta).not(c =>
+							c.and(author_and => [
+								author_and.or(a => [
+									a.name.contains('Bob'),
+									a.name.contains('Donut'),
+								]),
+								author_and.or(a => [
+									a.name.contains('Debbie'),
+									a.name.contains('from the Legend of Zelda'),
+								]),
+							])
+						);
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(4);
+						expect(matches.map(m => m.name)).not.toContain('Debbie Donut');
 					});
 
 					test('can perform simple not() logic, matching all but one item', async () => {
@@ -719,6 +825,25 @@ describe('Predicates', () => {
 					expect(matches[0].name).toBe("Bob Jones's Blog");
 				});
 
+				test('can filter nested or() .. and() - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(c =>
+						c.or(b => [
+							b.owner.and(o => [
+								o.name.contains('Bob'),
+								o.name.contains('Jones'),
+							]),
+							b.owner.and(o => [
+								o.name.contains('Debbie'),
+								o.name.contains('Starling'),
+							]),
+						])
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(4);
+					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
+				});
+
 				test('can filter 3 level nested, logically grouped', async () => {
 					const query = recursivePredicateFor(BlogMeta).or(b => [
 						b.owner.and(o => [o.name.contains('Bob'), o.name.contains('West')]),
@@ -736,6 +861,28 @@ describe('Predicates', () => {
 					expect(matches[0].name).toBe("Debbie Donut's Blog");
 				});
 
+				test('can filter 3 level nested, logically grouped - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(negated =>
+						negated.or(b => [
+							b.owner.and(o => [
+								o.name.contains('Bob'),
+								o.name.contains('West'),
+							]),
+							b.owner.and(owner => [
+								owner.blog.or(innerBlog => [
+									innerBlog.name.contains('Debbie'),
+									innerBlog.name.contains('from the Legend of Zelda'),
+								]),
+								owner.name.contains('Donut'),
+							]),
+						])
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(4);
+					expect(matches.map(n => n.name)).not.toContain("Debbie Donut's Blog");
+				});
+
 				test('can filter on child collections', async () => {
 					const query =
 						recursivePredicateFor(BlogMeta).posts.title.contains('Bob Jones');
@@ -743,6 +890,16 @@ describe('Predicates', () => {
 
 					expect(matches.length).toBe(1);
 					expect(matches[0].name).toBe("Bob Jones's Blog");
+				});
+
+				test('can filter on child collections - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(negated =>
+						negated.posts.title.contains('Bob Jones')
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(4);
+					expect(matches.map(n => n.name)).not.toContain("Bob Jones's Blog");
 				});
 
 				test('can filter on child collections in or()', async () => {
@@ -759,6 +916,22 @@ describe('Predicates', () => {
 					]);
 				});
 
+				test('can filter on child collections in or() - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(negated =>
+						negated.or(b => [
+							b.posts.title.contains('Bob Jones'),
+							b.posts.title.contains("Zelda's Blog post"),
+						])
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(3);
+					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
+					expect(matches.map(m => m.name)).not.toContain(
+						"Zelda from the Legend of Zelda's Blog"
+					);
+				});
+
 				test('can filter on or() extended off child collections', async () => {
 					const query = recursivePredicateFor(BlogMeta).posts.or(p => [
 						p.title.contains('Bob Jones'),
@@ -773,6 +946,22 @@ describe('Predicates', () => {
 					]);
 				});
 
+				test('can filter on or() extended off child collections - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(negated =>
+						negated.posts.or(p => [
+							p.title.contains('Bob Jones'),
+							p.title.contains("Zelda's Blog post"),
+						])
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(3);
+					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
+					expect(matches.map(m => m.name)).not.toContain(
+						"Zelda from the Legend of Zelda's Blog"
+					);
+				});
+
 				test('can filter and() between parent and child collection properties', async () => {
 					const query = recursivePredicateFor(BlogMeta).and(b => [
 						b.name.contains('Bob Jones'),
@@ -781,6 +970,18 @@ describe('Predicates', () => {
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(0);
+				});
+
+				test('can filter and() between parent and child collection properties - NEGATED', async () => {
+					const query = recursivePredicateFor(BlogMeta).not(negated =>
+						negated.and(b => [
+							b.name.contains('Bob Jones'),
+							b.posts.title.contains('Zelda'),
+						])
+					);
+					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
+
+					expect(matches.length).toBe(5);
 				});
 			});
 		});
