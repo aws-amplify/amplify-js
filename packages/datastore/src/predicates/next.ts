@@ -814,6 +814,15 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			// to head off mutability concerns.
 			const { query, newTail } = copyLink();
 
+			const childConditions = builder(
+				recursivePredicateFor(ModelType, allowRecursion)
+			);
+			if (!Array.isArray(childConditions)) {
+				throw new Error(
+					`Invalid predicate. \`${op}\` groups must return an array of child conditions.`
+				);
+			}
+
 			// the customer will supply a child predicate, which apply to the `model.field`
 			// of the tail GroupCondition.
 			newTail?.operands.push(
@@ -822,9 +831,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 					field,
 					undefined,
 					op as 'and' | 'or',
-					builder(recursivePredicateFor(ModelType, allowRecursion)).map(c =>
-						internals(c)
-					)
+					childConditions.map(c => internals(c))
 				)
 			);
 

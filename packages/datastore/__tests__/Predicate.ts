@@ -376,6 +376,33 @@ describe('Predicates', () => {
 					]);
 				});
 
+				describe('predicate typings', () => {
+					test('not group builders must return single child condition', async () => {
+						expect(() =>
+							recursivePredicateFor(AuthorMeta).not(a => [
+								a.name.contains('Bob'),
+							])
+						).toThrow(
+							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+						);
+					});
+
+					test('and group builders must return an array of child conditions', async () => {
+						expect(() =>
+							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
+						).toThrow(
+							'Invalid predicate. `and` groups must return an array of child conditions.'
+						);
+					});
+
+					test('or group builders must return array of child conditions', async () => {
+						expect(() =>
+							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
+						).toThrow(
+							'Invalid predicate. `or` groups must return an array of child conditions.'
+						);
+					});
+				});
 
 				describe('with a logical grouping', () => {
 					test('can perform and() logic, matching an item', async () => {
