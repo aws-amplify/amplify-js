@@ -13,9 +13,14 @@ import {
 	Post,
 	Comment,
 	testSchema,
+	HasOneParent,
+	HasOneChild,
 } from './helpers';
 
 export { pause };
+
+const isSQLiteAdapter = () =>
+	expect.getState().testPath.includes('SQLiteAdapter');
 
 /**
  * Adds common query test cases that all adapters should support.
@@ -364,5 +369,55 @@ export function addCommonQueryTests({
 				_deleted: v => v === undefined || v === null,
 			});
 		});
+	});
+
+	describe('common `delete()` cases', () => {
+		let HasOneParent: PersistentModelConstructor<HasOneParent>;
+		let HasOneChild: PersistentModelConstructor<HasOneChild>;
+
+		beforeEach(async () => {
+			const classes = initSchema(testSchema());
+			({ HasOneParent, HasOneChild } = classes as {
+				HasOneParent: PersistentModelConstructor<HasOneParent>;
+				HasOneChild: PersistentModelConstructor<HasOneChild>;
+			});
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+		});
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting disconnected hasOne',
+			async () => {
+				const hasOneParent = await DataStore.save(new HasOneParent({}));
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(HasOneParent, hasOneParent.id)
+				).toBeUndefined();
+			}
+		);
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting connected hasOne',
+			async () => {
+				const hasOneChild = await DataStore.save(new HasOneChild({}));
+				const hasOneParent = await DataStore.save(
+					new HasOneParent({ child: hasOneChild })
+				);
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(HasOneParent, hasOneParent.id)
+				).toBeUndefined();
+
+				expect(
+					await DataStore.query(HasOneChild, hasOneChild.id)
+				).toBeUndefined();
+			}
+		);
 	});
 }
