@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "4.5.10",
+  "version": "4.5.11",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -45,9 +45,9 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "@aws-amplify/auth": "4.6.13",
-    "@aws-amplify/cache": "4.0.62",
-    "@aws-amplify/core": "4.7.11",
+    "@aws-amplify/auth": "4.6.14",
+    "@aws-amplify/cache": "4.0.63",
+    "@aws-amplify/core": "4.7.12",
     "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",

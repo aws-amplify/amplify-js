@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.43](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.42...aws-amplify@4.3.43) (2022-11-04)
+
+
+### Bug Fixes
+
+* Missing `cache` exports in React Native ([#10577](https://github.com/aws-amplify/amplify-js/issues/10577)) ([dabf01a](https://github.com/aws-amplify/amplify-js/commit/dabf01a76ea7d6133fe3d32fc24a9025c0b03c8f))
+
+
+
+
+
 ## [4.3.42](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.41...aws-amplify@4.3.42) (2022-10-27)
 
 **Note:** Version bump only for package aws-amplify
