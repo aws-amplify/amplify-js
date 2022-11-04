@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "4.7.10",
+	"version": "4.7.11",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -9,14 +9,10 @@
 		"access": "public"
 	},
 	"sideEffects": [
-		"./src/I18n/index.ts",
-		"./src/Credentials.ts",
 		"./lib/I18n/index.js",
 		"./lib/Credentials.js",
 		"./lib-esm/I18n/index.js",
-		"./lib-esm/Credentials.js",
-		"./dist/aws-amplify-core.min.js",
-		"./dist/aws-amplify-core.js"
+		"./lib-esm/Credentials.js"
 	],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
@@ -65,7 +61,7 @@
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"universal-cookie": "^4.0.4",
 		"zen-observable-ts": "0.8.19",
-		"tslib": "^2.0.0"
+		"tslib": "^1.8.0"
 	},
 	"jest": {
 		"globals": {

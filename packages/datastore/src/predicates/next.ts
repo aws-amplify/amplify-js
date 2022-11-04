@@ -14,7 +14,7 @@ import {
 } from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
-import { asyncSome, asyncEvery, asyncFilter } from '../util';
+import { asyncSome, asyncEvery } from '../util';
 
 type MatchableTypes =
 	| string
@@ -59,25 +59,11 @@ type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
  */
 export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: RecursiveModelPredicate<RT>
-) => {
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__query: GroupCondition;
-};
+) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateAggregateExtender<
 	RT extends PersistentModel
-> = (lambda: RecursiveModelPredicate<RT>) => {
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__query: GroupCondition;
-}[];
+> = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
 /**
  * A function that accepts a ModelPrecicate<T>, which it must use to return a
@@ -102,52 +88,38 @@ export type RecursiveModelPredicateAggregateExtender<
  */
 export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
-) => {
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__query: GroupCondition;
-};
+) => PredicateInternalsKey;
 
 export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
-) => {
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__query: GroupCondition;
-}[];
+) => PredicateInternalsKey[];
 
 type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 	[K in AllFieldOperators]: K extends 'between'
 		? (
 				inclusiveLowerBound: Scalar<MT>,
 				inclusiveUpperBound: Scalar<MT>
-		  ) => ModelPredicateLeaf
-		: (operand: Scalar<MT>) => ModelPredicateLeaf;
+		  ) => PredicateInternalsKey
+		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
 type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
 	...predicates:
 		| [RecursiveModelPredicateAggregateExtender<RT>]
-		| ModelPredicateLeaf[]
-) => ModelPredicateLeaf;
+		| PredicateInternalsKey[]
+) => PredicateInternalsKey;
 
 type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT> | ModelPredicateLeaf
-) => ModelPredicateLeaf;
+	predicate: RecursiveModelPredicateExtender<RT> | PredicateInternalsKey
+) => PredicateInternalsKey;
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateAggregateExtender<RT>] | ModelPredicateLeaf[]
-) => ModelPredicateLeaf;
+	...predicates: [ModelPredicateAggregateExtender<RT>] | PredicateInternalsKey[]
+) => PredicateInternalsKey;
 
 type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT> | ModelPredicateLeaf
-) => ModelPredicateLeaf;
+	predicate: ModelPredicateExtender<RT> | PredicateInternalsKey
+) => PredicateInternalsKey;
 
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
@@ -157,13 +129,7 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
 	or: RecursiveModelPredicateOperator<RT>;
 	and: RecursiveModelPredicateOperator<RT>;
 	not: RecursiveModelPredicateNegation<RT>;
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__copy: () => RecursiveModelPredicate<RT>;
-} & ModelPredicateLeaf;
+} & PredicateInternalsKey;
 
 export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
@@ -173,37 +139,7 @@ export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
-
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__copy: () => ModelPredicate<RT>;
-} & ModelPredicateLeaf;
-
-export type ModelPredicateLeaf = {
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__query: GroupCondition;
-
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	__tail: GroupCondition;
-
-	/**
-	 * @private
-	 *
-	 * DataStore internal
-	 */
-	filter: <T>(items: T[]) => Promise<T[]>;
-};
+} & PredicateInternalsKey;
 
 type GroupOperator = 'and' | 'or' | 'not';
 
@@ -212,6 +148,53 @@ type UntypedCondition = {
 	matches: (item: Record<string, any>) => Promise<boolean>;
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
+};
+
+/**
+ * A pointer used by DataStore internally to lookup predicate details
+ * that should not be exposed on public customer interfaces.
+ */
+export type PredicateInternalsKey = {};
+
+/**
+ * A map from keys (exposed to customers) to the internal predicate data
+ * structures invoking code should not muck with.
+ */
+const predicateInternalsMap = new Map<PredicateInternalsKey, GroupCondition>();
+
+/**
+ * Creates a link between a key (and generates a key if needed) and an internal
+ * `GroupCondition`, which allows us to return a key object instead of the gory
+ * conditions details to customers/invoking code.
+ *
+ * @param condition The internal condition to keep hidden.
+ * @param key The object DataStore will use to find the internal condition.
+ * If no key is given, an empty one is created.
+ */
+const registerPredicateInternals = (condition: GroupCondition, key?: any) => {
+	const finalKey = key || {};
+	predicateInternalsMap.set(finalKey, condition);
+	return finalKey;
+};
+
+/**
+ * Takes a key object from `registerPredicateInternals()` to fetch an internal
+ * `GroupCondition` object, which can then be used to query storage or
+ * test/match objects.
+ *
+ * This indirection exists to hide `GroupCondition` from public interfaces, since
+ * `GroupCondition` contains extra methods and properties that public callers
+ * should not use.
+ *
+ * @param key A key object previously returned by `registerPredicateInternals()`
+ */
+export const internals = (key: any) => {
+	if (!predicateInternalsMap.has(key)) {
+		throw new Error(
+			"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+		);
+	}
+	return predicateInternalsMap.get(key)!;
 };
 
 /**
@@ -595,7 +578,7 @@ export class GroupCondition {
 							applyConditionsToV1Predicate(
 								p,
 								individualRowJoinConditions,
-								negateChildren
+								false
 							);
 						relativesPredicates.push(predicate as any);
 					}
@@ -796,114 +779,81 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
-): RecursiveModelPredicate<T> {
-	let starter: GroupCondition | undefined;
-	// if we don't have an existing query + tail to build onto,
-	// we need to start a new query chain.
-	if (!query || !tail) {
-		starter = new GroupCondition(ModelType, field, undefined, 'and', []);
-	}
+): RecursiveModelPredicate<T> & PredicateInternalsKey {
+	// to be used if we don't have a base query or tail to build onto
+	const starter = new GroupCondition(ModelType, field, undefined, 'and', []);
+
+	const baseCondition = query && tail ? query : starter;
+	const tailCondition = query && tail ? tail : starter;
 
 	// our eventual return object, which can be built upon.
 	// next steps will be to add or(), and(), not(), and field.op() methods.
-	const link = {
-		__query: starter || query,
-		__tail: starter || tail,
-		__copy: () => {
-			const [query, newtail] = link.__query.copy(link.__tail);
-			return recursivePredicateFor(
-				ModelType,
-				allowRecursion,
-				undefined,
-				query,
-				newtail
-			);
-		},
-		filter: items => {
-			return asyncFilter(items, i => link.__query.matches(i));
-		},
-	} as RecursiveModelPredicate<T>;
+	const link = {} as any;
+
+	registerPredicateInternals(baseCondition, link);
+
+	const copyLink = () => {
+		const [query, newTail] = baseCondition.copy(tailCondition);
+		const newLink = recursivePredicateFor(
+			ModelType,
+			allowRecursion,
+			undefined,
+			query,
+			newTail
+		);
+		return { query, newTail, newLink };
+	};
 
 	// Adds .or() and .and() methods to the link.
 	// TODO: If revisiting this code, consider writing a Proxy instead.
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
-			...builderOrPredicates:
-				| [RecursiveModelPredicateAggregateExtender<T>]
-				| ModelPredicateLeaf[]
-		): ModelPredicateLeaf => {
+			builder: RecursiveModelPredicateAggregateExtender<T>
+		) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
-			const newlink = link.__copy();
+			const { query, newTail } = copyLink();
 
 			// the customer will supply a child predicate, which apply to the `model.field`
 			// of the tail GroupCondition.
-			newlink.__tail.operands.push(
+			newTail?.operands.push(
 				new GroupCondition(
 					ModelType,
 					field,
 					undefined,
 					op as 'and' | 'or',
-					typeof builderOrPredicates[0] === 'function'
-						? // handle the the `c => [c.field.eq(v)]` form
-						  builderOrPredicates[0](
-								recursivePredicateFor(ModelType, allowRecursion)
-						  ).map(p => p.__query)
-						: // handle the `[MyModel.field.eq(v)]` form (not yet available)
-						  (builderOrPredicates as ModelPredicateLeaf[]).map(p => p.__query)
+					builder(recursivePredicateFor(ModelType, allowRecursion)).map(c =>
+						internals(c)
+					)
 				)
 			);
 
 			// FinalPredicate
-			return {
-				__query: newlink.__query,
-				__tail: newlink.__tail,
-				filter: items => {
-					return asyncFilter(items, i => newlink.__query.matches(i));
-				},
-			};
+			return registerPredicateInternals(query);
 		};
 	});
 
 	// TODO: If revisiting this code, consider proxy.
 	link.not = (
-		builderOrPredicate: RecursiveModelPredicateExtender<T> | ModelPredicateLeaf
-	): ModelPredicateLeaf => {
+		builder: RecursiveModelPredicateExtender<T>
+	): PredicateInternalsKey => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
-		const newlink = link.__copy();
+		const { query, newTail } = copyLink();
 
 		// unlike and() and or(), the customer will supply a "singular" child predicate.
 		// the difference being: not() does not accept an array of predicate-like objects.
 		// it negates only a *single* predicate subtree.
-		newlink.__tail.operands.push(
-			new GroupCondition(
-				ModelType,
-				field,
-				undefined,
-				'not',
-				typeof builderOrPredicate === 'function'
-					? // handle the the `c => c.field.eq(v)` form
-					  [
-							builderOrPredicate(
-								recursivePredicateFor(ModelType, allowRecursion)
-							).__query,
-					  ]
-					: // handle the `MyModel.field.eq(v)` form (not yet available)
-					  [builderOrPredicate.__query]
-			)
+		newTail?.operands.push(
+			new GroupCondition(ModelType, field, undefined, 'not', [
+				internals(builder(recursivePredicateFor(ModelType, allowRecursion))),
+			])
 		);
 
 		// A `FinalModelPredicate`.
 		// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 		// or query storage: `.__query.fetch(storage)`.
-		return {
-			__query: newlink.__query,
-			__tail: newlink.__tail,
-			filter: items => {
-				return asyncFilter(items, i => newlink.__query.matches(i));
-			},
-		};
+		return registerPredicateInternals(query);
 	};
 
 	// For each field on the model schema, we want to add a getter
@@ -931,24 +881,18 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							[operator]: (...operands: any[]) => {
 								// build off a fresh copy of the existing `link`, just in case
 								// the same link is being used elsewhere by the customer.
-								const newlink = link.__copy();
+								const { query, newTail } = copyLink();
 
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
-								newlink.__tail.operands.push(
+								newTail?.operands.push(
 									new FieldCondition(fieldName, operator, operands)
 								);
 
 								// A `FinalModelPredicate`.
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 								// or query storage: `.__query.fetch(storage)`.
-								return {
-									__query: newlink.__query,
-									__tail: newlink.__tail,
-									filter: (items: any[]) => {
-										return asyncFilter(items, i => newlink.__query.matches(i));
-									},
-								};
+								return registerPredicateInternals(query);
 							},
 						};
 					}, {});
@@ -975,7 +919,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 						// `Model.reletedModelField` returns a copy of the original link,
 						// and will contains copies of internal GroupConditions
 						// to head off mutability concerns.
-						const [newquery, oldtail] = link.__query.copy(link.__tail);
+						const [newquery, oldtail] = baseCondition.copy(tailCondition);
 						const newtail = new GroupCondition(
 							relatedMeta,
 							fieldName,
@@ -1011,6 +955,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>
-): ModelPredicate<T> {
+): ModelPredicate<T> & PredicateInternalsKey {
 	return recursivePredicateFor(ModelType, false) as any as ModelPredicate<T>;
 }
