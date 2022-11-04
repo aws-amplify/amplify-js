@@ -1282,6 +1282,23 @@ jobs:
           spec: selective-sync-v5
           browser: << parameters.browser >>
 
+  integ_react_datastore_nested_predicate:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/nested-predicate
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nested Predicate'
+          framework: react
+          category: datastore
+          sample_name: nested-predicate
+          spec: nested-predicate
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1806,6 +1823,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_nested_predicate:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
 
       - deploy:
           filters:
@@ -1863,6 +1889,7 @@ workflows:
             - integ_react_iot_reconnect
             - integ_react_api_reconnect
             - integ_react_datastore_selective_sync
+            - integ_react_datastore_nested_predicate
       - post_release:
           filters:
             branches:
