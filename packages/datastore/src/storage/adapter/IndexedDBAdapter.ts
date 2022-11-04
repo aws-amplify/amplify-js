@@ -847,7 +847,9 @@ class IndexedDBAdapter implements Adapter {
 
 						if (targetNames?.length) {
 							// CPK codegen
-							const values = targetNames.map(targetName => model[targetName]);
+							const values = targetNames
+								.filter(targetName => model[targetName] ?? false)
+								.map(targetName => model[targetName]);
 
 							if (values.length === 0) break;
 
