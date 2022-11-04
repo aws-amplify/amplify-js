@@ -95,7 +95,7 @@ export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 };
 
-export type S3ProviderListOutputWithToken = {
+export type S3ProviderListOutput = {
 	results: S3ProviderListOutputItem[];
 	nextToken?: string;
 	hasNextToken: boolean;
@@ -121,8 +121,6 @@ export interface S3ProviderListOutputItem {
 	lastModified: ListObjectsCommandOutputContent['LastModified'];
 	size: ListObjectsCommandOutputContent['Size'];
 }
-
-export type S3ProviderListOutput = S3ProviderListOutputItem[];
 
 export interface S3CopyTarget {
 	key: string;

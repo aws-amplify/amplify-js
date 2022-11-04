@@ -8,10 +8,7 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": [
-    "./lib/amplifySingleton.js",
-    "./lib-esm/amplifySingleton.js"
-  ],
+  "sideEffects": false,
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
@@ -51,7 +48,6 @@
     "@aws-amplify/predictions": "4.0.60",
     "@aws-amplify/pubsub": "4.5.10",
     "@aws-amplify/storage": "4.5.13",
-    "@aws-amplify/ui": "2.0.7",
     "@aws-amplify/xr": "3.0.60",
     "tslib": "^2.0.0"
   },

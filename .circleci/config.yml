@@ -399,7 +399,7 @@ jobs:
           paths:
             - amplify-js-samples-staging
 
-  integ_react_auth:
+  integ_react_auth_1: #break react auth test to 2 sections to save time
     parameters:
       browser:
         type: string
@@ -413,7 +413,7 @@ jobs:
           framework: react
           category: auth
           sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Guest to Authenticated User"'
@@ -427,21 +427,30 @@ jobs:
           framework: react
           category: auth
           sample_name: typescript-amplify-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
+  integ_react_auth_2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
-          spec: custom-authenticator
+          spec: new-ui-custom-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: with-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Sign In after Sign Up'
@@ -1227,6 +1236,36 @@ jobs:
           spec: related-models
           browser: << parameters.browser >>
 
+  integ_react_iot_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for IoT'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-iot
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
+  integ_react_api_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for API'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-api
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1313,7 +1352,16 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integ_react_auth:
+      - integ_react_auth_1:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_auth_2:
           requires:
             - integ_setup
             - build
@@ -1658,15 +1706,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      - integ_react_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_react_geo:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - integ_next_datastore_owner_auth:
           requires:
             - integ_setup
@@ -1721,6 +1769,18 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_iot_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_api_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
 
       - deploy:
           filters:
@@ -1753,7 +1813,8 @@ workflows:
             - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
-            - integ_react_auth
+            - integ_react_auth_1
+            - integ_react_auth_2
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
@@ -1767,13 +1828,15 @@ workflows:
               # - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_graphql_api
-            - integ_react_geo
+            # - integ_react_geo
             - integ_next_datastore_owner_auth
             - integ_react_datastore_custom_pk_unconnected_models
             - integ_react_datastore_custom_pk_has_one
             - integ_react_datastore_custom_pk_has_many_many_to_many
             - integ_react_datastore_background_process_manager
             - integ_react_datastore_related_models
+            - integ_react_iot_reconnect
+            - integ_react_api_reconnect
       - post_release:
           filters:
             branches:
