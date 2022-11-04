@@ -22,6 +22,8 @@ import {
 	Comment,
 	testSchema,
 	CompositePKParent,
+	HasOneParent,
+	HasOneChild,
 } from './helpers';
 
 export { pause };
@@ -366,12 +368,16 @@ export function addCommonQueryTests({
 	describe('common `delete()` cases', () => {
 		let Comment: PersistentModelConstructor<Comment>;
 		let Post: PersistentModelConstructor<Post>;
+		let HasOneParent: PersistentModelConstructor<HasOneParent>;
+		let HasOneChild: PersistentModelConstructor<HasOneChild>;
 
 		beforeEach(async () => {
 			const classes = initSchema(testSchema());
-			({ Comment, Post } = classes as {
+			({ Comment, Post, HasOneParent, HasOneChild } = classes as {
 				Comment: PersistentModelConstructor<Comment>;
 				Post: PersistentModelConstructor<Post>;
+				HasOneParent: PersistentModelConstructor<HasOneParent>;
+				HasOneChild: PersistentModelConstructor<HasOneChild>;
 			});
 		});
 
@@ -509,6 +515,39 @@ export function addCommonQueryTests({
 			);
 			expect(retrievedDeletedComment).toBeUndefined();
 		});
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting disconnected hasOne',
+			async () => {
+				const hasOneParent = await DataStore.save(new HasOneParent({}));
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(HasOneParent, hasOneParent.id)
+				).toBeUndefined();
+			}
+		);
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting connected hasOne',
+			async () => {
+				const hasOneChild = await DataStore.save(new HasOneChild({}));
+				const hasOneParent = await DataStore.save(
+					new HasOneParent({ child: hasOneChild })
+				);
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(HasOneParent, hasOneParent.id)
+				).toBeUndefined();
+
+				expect(
+					await DataStore.query(HasOneChild, hasOneChild.id)
+				).toBeUndefined();
+			}
+		);
 	});
 
 	describe('Related models', () => {
