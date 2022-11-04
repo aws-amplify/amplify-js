@@ -377,8 +377,10 @@ describe('Predicates', () => {
 				});
 
 				describe('predicate typings', () => {
-					test('not group builders must return single child condition', async () => {
+					test('not group builders must return single child condition - recursive/relational predicates', async () => {
 						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).not(a => [
 								a.name.contains('Bob'),
 							])
@@ -387,17 +389,51 @@ describe('Predicates', () => {
 						);
 					});
 
-					test('and group builders must return an array of child conditions', async () => {
+					test('and group builders must return an array of child conditions - recursive/relational predicates', async () => {
 						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
 						).toThrow(
 							'Invalid predicate. `and` groups must return an array of child conditions.'
 						);
 					});
 
-					test('or group builders must return array of child conditions', async () => {
+					test('or group builders must return array of child conditions - recursive/relational predicates', async () => {
 						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
+						).toThrow(
+							'Invalid predicate. `or` groups must return an array of child conditions.'
+						);
+					});
+
+					test('not group builders must return single child condition - flat predicates', async () => {
+						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
+							predicateFor(AuthorMeta).not(a => [a.name.contains('Bob')])
+						).toThrow(
+							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+						);
+					});
+
+					test('and group builders must return an array of child conditions - flat predicates', async () => {
+						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
+							predicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
+						).toThrow(
+							'Invalid predicate. `and` groups must return an array of child conditions.'
+						);
+					});
+
+					test('or group builders must return array of child conditions - flat predicates', async () => {
+						expect(() =>
+							// @ts-expect-error doesn't work until TS 3.9 ... until then:
+							// @ts-ignore
+							predicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
 						).toThrow(
 							'Invalid predicate. `or` groups must return an array of child conditions.'
 						);

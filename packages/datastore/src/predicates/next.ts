@@ -65,6 +65,24 @@ export type RecursiveModelPredicateAggregateExtender<
 	RT extends PersistentModel
 > = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
+type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
+	predicates: RecursiveModelPredicateAggregateExtender<RT>
+) => PredicateInternalsKey;
+
+type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: RecursiveModelPredicateExtender<RT>
+) => PredicateInternalsKey;
+
+export type RecursiveModelPredicate<RT extends PersistentModel> = {
+	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
+		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
+		: ValuePredicate<RT, RT[K]>;
+} & {
+	or: RecursiveModelPredicateOperator<RT>;
+	and: RecursiveModelPredicateOperator<RT>;
+	not: RecursiveModelPredicateNegation<RT>;
+} & PredicateInternalsKey;
+
 /**
  * A function that accepts a ModelPrecicate<T>, which it must use to return a
  * final condition.
@@ -103,34 +121,6 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
-type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates:
-		| [RecursiveModelPredicateAggregateExtender<RT>]
-		| PredicateInternalsKey[]
-) => PredicateInternalsKey;
-
-type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT> | PredicateInternalsKey
-) => PredicateInternalsKey;
-
-type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateAggregateExtender<RT>] | PredicateInternalsKey[]
-) => PredicateInternalsKey;
-
-type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT> | PredicateInternalsKey
-) => PredicateInternalsKey;
-
-export type RecursiveModelPredicate<RT extends PersistentModel> = {
-	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
-		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
-		: ValuePredicate<RT, RT[K]>;
-} & {
-	or: RecursiveModelPredicateOperator<RT>;
-	and: RecursiveModelPredicateOperator<RT>;
-	not: RecursiveModelPredicateNegation<RT>;
-} & PredicateInternalsKey;
-
 export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
 		? never
@@ -140,6 +130,14 @@ export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
 } & PredicateInternalsKey;
+
+type ModelPredicateOperator<RT extends PersistentModel> = (
+	predicates: ModelPredicateAggregateExtender<RT>
+) => PredicateInternalsKey;
+
+type ModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: ModelPredicateExtender<RT>
+) => PredicateInternalsKey;
 
 type GroupOperator = 'and' | 'or' | 'not';
 
@@ -154,7 +152,9 @@ type UntypedCondition = {
  * A pointer used by DataStore internally to lookup predicate details
  * that should not be exposed on public customer interfaces.
  */
-export type PredicateInternalsKey = {};
+export class PredicateInternalsKey {
+	private __isPredicateInternalsKeySentinel: boolean = true;
+}
 
 /**
  * A map from keys (exposed to customers) to the internal predicate data
@@ -172,7 +172,7 @@ const predicateInternalsMap = new Map<PredicateInternalsKey, GroupCondition>();
  * If no key is given, an empty one is created.
  */
 const registerPredicateInternals = (condition: GroupCondition, key?: any) => {
-	const finalKey = key || {};
+	const finalKey = key || new PredicateInternalsKey();
 	predicateInternalsMap.set(finalKey, condition);
 	return finalKey;
 };
