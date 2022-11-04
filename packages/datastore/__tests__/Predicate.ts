@@ -376,27 +376,6 @@ describe('Predicates', () => {
 					]);
 				});
 
-				describe('predicate typings', () => {
-					test('not group must return single', async () => {
-						expect(() =>
-							recursivePredicateFor(AuthorMeta).not(a => [
-								a.name.contains('Bob'),
-							])
-						).toThrow();
-					});
-
-					test('and group must return array', async () => {
-						expect(() =>
-							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
-						).toThrow();
-					});
-
-					test('or group must return array', async () => {
-						expect(() =>
-							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
-						).toThrow();
-					});
-				});
 
 				describe('with a logical grouping', () => {
 					test('can perform and() logic, matching an item', async () => {
