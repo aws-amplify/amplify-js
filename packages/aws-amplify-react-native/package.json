@@ -40,7 +40,7 @@
 		"react-test-renderer": "^17.0.2",
 		"rimraf": "^2.6.2"
 	},
-	"files": ["lib", "lib-esm", "src", "types.d.ts"],
+	"files": ["lib", "lib-esm", "src", "dist", "types.d.ts"],
   "dependencies": {
 		"buffer": "^5.2.1"
 	},
