@@ -8,10 +8,7 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": [
-    "./lib/amplifySingleton.js",
-    "./lib-esm/amplifySingleton.js"
-  ],
+  "sideEffects": false,
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",
