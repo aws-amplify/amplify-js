@@ -578,7 +578,7 @@ export class GroupCondition {
 							applyConditionsToV1Predicate(
 								p,
 								individualRowJoinConditions,
-								negateChildren
+								false
 							);
 						relativesPredicates.push(predicate as any);
 					}
