@@ -496,9 +496,11 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	}
 
 	if (!isValid) {
-		const message = `Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
-			codegenVersion || 'an unknown version'
-		}, whereas ^${majorVersion}.${minorVersion}.0 is required. Update to the latest CLI and rerun codegen.`;
+		const message =
+			`Models were generated with an unsupported version of codegen. Codegen artifacts are from ${
+				codegenVersion || 'an unknown version'
+			}, whereas ^${majorVersion}.${minorVersion}.0 is required. ` +
+			"Update to the latest CLI and run 'amplify codegen models'.";
 		logger.error(message);
 		throw new Error(message);
 	}
