@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "4.5.13",
+  "version": "5.0.0",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
