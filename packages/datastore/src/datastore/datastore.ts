@@ -2516,7 +2516,7 @@ class DataStore {
 					const { modelConstructor, conditionProducer } = await syncExpression;
 					const modelDefinition = getModelDefinition(modelConstructor)!;
 
-					// conditionProducer is either a predicate, e.g. (c) => c.field('eq', 1)
+					// conditionProducer is either a predicate, e.g. (c) => c.field.eq(1)
 					// OR a function/promise that returns a predicate
 					const condition = await this.unwrapPromise(conditionProducer);
 					if (isPredicatesAll(condition)) {
@@ -2561,7 +2561,7 @@ class DataStore {
 	): Promise<ModelPredicateExtender<T>> {
 		try {
 			const condition = await conditionProducer();
-			return condition;
+			return condition || conditionProducer;
 		} catch (error) {
 			if (error instanceof TypeError) {
 				return conditionProducer;
