@@ -40,7 +40,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"files": ["lib", "lib-esm", "src"],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.11",
+		"@aws-amplify/core": "5.0.0",
 		"@aws-sdk/client-lex-runtime-service": "3.186.0",
 		"@aws-sdk/client-lex-runtime-v2": "3.186.0",
 		"base-64": "1.0.0",

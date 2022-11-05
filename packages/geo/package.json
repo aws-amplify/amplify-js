@@ -40,7 +40,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"files": ["lib", "lib-esm", "src"],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.11",
+		"@aws-amplify/core": "5.0.0",
 		"@aws-sdk/client-location": "3.186.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",

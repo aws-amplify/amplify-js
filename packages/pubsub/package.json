@@ -48,9 +48,9 @@
 		"src"
 	],
   "dependencies": {
-    "@aws-amplify/auth": "4.6.13",
-    "@aws-amplify/cache": "4.0.62",
-    "@aws-amplify/core": "4.7.11",
+    "@aws-amplify/auth": "5.0.0",
+    "@aws-amplify/cache": "5.0.0",
+    "@aws-amplify/core": "5.0.0",
     "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",

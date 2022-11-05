@@ -50,8 +50,8 @@
 	},
 	"files": ["lib", "lib-esm", "src", "index.*.d.ts"],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "2.3.24",
-		"@aws-amplify/api-rest": "2.0.60",
+		"@aws-amplify/api-graphql": "3.0.0",
+		"@aws-amplify/api-rest": "3.0.0",
 		"tslib": "^1.8.0"
 	},
 	"jest": {

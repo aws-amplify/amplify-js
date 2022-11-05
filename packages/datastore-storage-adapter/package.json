@@ -35,8 +35,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/core": "4.7.11",
-		"@aws-amplify/datastore": "3.14.3",
+		"@aws-amplify/core": "5.0.0",
+		"@aws-amplify/datastore": "4.0.0",
 		"@types/react-native-sqlite-storage": "5.0.1",
 		"expo-file-system": "13.1.4",
 		"expo-sqlite": "10.1.0",
