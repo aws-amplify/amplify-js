@@ -18,6 +18,11 @@ import { Auth } from '@aws-amplify/auth';
 import { API } from '@aws-amplify/api';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
+import {
+	ModelPredicateExtender,
+	PredicateInternalsKey,
+	ModelPredicate as V5ModelPredicate,
+} from './predicates/next';
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
@@ -995,16 +1000,18 @@ syncExpressions: [
 	}),
 ]
 */
+
 type Option0 = [];
-type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option1<T extends PersistentModel> = [V5ModelPredicate<T> | undefined];
 type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
 type Lookup<T extends PersistentModel> = {
 	0:
-		| ProducerModelPredicate<T>
-		| Promise<ProducerModelPredicate<T>>
-		| typeof PredicateAll;
-	1: ModelPredicate<T> | undefined;
+		| ModelPredicateExtender<T>
+		| Promise<ModelPredicateExtender<T>>
+		| typeof PredicateAll
+		| Promise<typeof PredicateAll | symbol>;
+	1: PredicateInternalsKey | undefined;
 };
 
 type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
