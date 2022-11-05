@@ -251,6 +251,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
 	};
+	CognitoUser.prototype.setSignInUserSession = session => {};
 
 	return CognitoUser;
 });

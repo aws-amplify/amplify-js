@@ -1831,7 +1831,9 @@ export class AuthClass {
 		try {
 			this.inflightSessionPromiseCounter++;
 			const userSession = await this.inflightSessionPromise;
-			user.setSignInUserSession(userSession!);
+			if (this.inflightSessionPromiseCounter > 1) {
+				user.setSignInUserSession(userSession!);
+			}
 			return userSession!;
 		} finally {
 			this.inflightSessionPromiseCounter--;
