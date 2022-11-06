@@ -1828,12 +1828,11 @@ export class AuthClass {
 				}
 			);
 		}
+		this.inflightSessionPromiseCounter++;
+
 		try {
-			this.inflightSessionPromiseCounter++;
 			const userSession = await this.inflightSessionPromise;
-			if (this.inflightSessionPromiseCounter > 1) {
-				user.setSignInUserSession(userSession!);
-			}
+			user.setSignInUserSession(userSession!);
 			return userSession!;
 		} finally {
 			this.inflightSessionPromiseCounter--;
