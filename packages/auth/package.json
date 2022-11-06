@@ -16,7 +16,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "yarn lint --fix && jest -w 1",
+    "test": "yarn lint --fix && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
