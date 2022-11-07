@@ -25,12 +25,6 @@ const authOptions: AuthOptions = {
 };
 
 describe('Refresh token', () => {
-	beforeEach(() => {
-		jest
-			.spyOn(CognitoUser.prototype, 'setSignInUserSession')
-			.mockImplementation(() => {});
-	});
-
 	it('currentUserPoolUser  user.getSession using ClientMetadata from config', async () => {
 		// configure with client metadata
 		const auth = new Auth(authOptions);

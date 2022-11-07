@@ -102,8 +102,7 @@ export class AuthClass {
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 	private autoSignInInitiated: boolean = false;
-	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
-	private inflightSessionPromiseCounter: number = 0;
+
 	Credentials = Credentials;
 
 	/**
@@ -1620,71 +1619,90 @@ export class AuthClass {
 						return;
 					}
 
+					const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 					// refresh the session if the session expired.
-					try {
-						const session = await this._userSession(user);
-
-						// get user data from Cognito
-						const bypassCache = params ? params.bypassCache : false;
-
-						if (bypassCache) {
-							await this.Credentials.clear();
-						}
-
-						const clientMetadata = this._config.clientMetadata;
-
-						// validate the token's scope first before calling this function
-						const { scope = '' } = session.getAccessToken().decodePayload();
-						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-							user.getUserData(
-								async (err, data) => {
-									if (err) {
-										logger.debug('getting user data failed', err);
-										if (this.isSessionInvalid(err)) {
-											try {
-												await this.cleanUpInvalidSession(user);
-											} catch (cleanUpError) {
-												rej(
-													new Error(
-														`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-													)
-												);
-												return;
-											}
-											rej(err);
-										} else {
-											res(user);
-										}
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the user session', err);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
 										return;
 									}
-									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-									const attributeList = [];
+								}
+								rej(err);
+								return;
+							}
 
-									for (let i = 0; i < data.UserAttributes.length; i++) {
-										const attribute = {
-											Name: data.UserAttributes[i].Name,
-											Value: data.UserAttributes[i].Value,
-										};
-										const userAttribute = new CognitoUserAttribute(attribute);
-										attributeList.push(userAttribute);
-									}
+							// get user data from Cognito
+							const bypassCache = params ? params.bypassCache : false;
 
-									const attributes = this.attributesToObject(attributeList);
-									Object.assign(user, { attributes, preferredMFA });
-									return res(user);
-								},
-								{ bypassCache, clientMetadata }
-							);
-						} else {
-							logger.debug(
-								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-									`is not in the scopes of the access token`
-							);
-							return res(user);
-						}
-					} catch (err) {
-						rej(err);
-					}
+							if (bypassCache) {
+								await this.Credentials.clear();
+							}
+
+							const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+							// validate the token's scope first before calling this function
+							const { scope = '' } = session.getAccessToken().decodePayload();
+							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
+								user.getUserData(
+									async (err, data) => {
+										if (err) {
+											logger.debug('getting user data failed', err);
+											if (this.isSessionInvalid(err)) {
+												try {
+													await this.cleanUpInvalidSession(user);
+												} catch (cleanUpError) {
+													rej(
+														new Error(
+															`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+														)
+													);
+													return;
+												}
+												rej(err);
+											} else {
+												res(user);
+											}
+											return;
+										}
+										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+										const attributeList = [];
+
+										for (let i = 0; i < data.UserAttributes.length; i++) {
+											const attribute = {
+												Name: data.UserAttributes[i].Name,
+												Value: data.UserAttributes[i].Value,
+											};
+											const userAttribute = new CognitoUserAttribute(attribute);
+											attributeList.push(userAttribute);
+										}
+
+										const attributes = this.attributesToObject(attributeList);
+										Object.assign(user, { attributes, preferredMFA });
+										return res(user);
+									},
+									{ bypassCache, clientMetadata }
+								);
+							} else {
+								logger.debug(
+									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
+										`is not in the scopes of the access token`
+								);
+								return res(user);
+							}
+						},
+						{ clientMetadata }
+					);
 				})
 				.catch(e => {
 					logger.debug('Failed to sync cache info into memory', e);
@@ -1788,64 +1806,47 @@ export class AuthClass {
 		});
 	}
 
-	private async _userSession(user?: CognitoUser): Promise<CognitoUserSession> {
-		if (!user) {
-			logger.debug('the user is null');
-			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
-		}
-		const clientMetadata = this._config.clientMetadata;
-		// Debouncing the concurrent userSession calls by caching the promise.
-		// This solution asumes users will always call this function with the same CognitoUser instance.
-		if (this.inflightSessionPromiseCounter === 0) {
-			this.inflightSessionPromise = new Promise<CognitoUserSession>(
-				(res, rej) => {
-					user.getSession(
-						async (err, session) => {
-							if (err) {
-								logger.debug('Failed to get the session from user', user);
-								if (this.isSessionInvalid(err)) {
-									try {
-										await this.cleanUpInvalidSession(user);
-									} catch (cleanUpError) {
-										rej(
-											new Error(
-												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-											)
-										);
-										return;
-									}
-								}
-								rej(err);
-								return;
-							} else {
-								logger.debug('Succeed to get the user session', session);
-								res(session);
-								return;
-							}
-						},
-						{ clientMetadata }
-					);
-				}
-			);
-		}
-		this.inflightSessionPromiseCounter++;
-
-		try {
-			const userSession = await this.inflightSessionPromise;
-			user.setSignInUserSession(userSession!);
-			return userSession!;
-		} finally {
-			this.inflightSessionPromiseCounter--;
-		}
-	}
-
 	/**
 	 * Get the corresponding user session
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		return this._userSession(user);
+		if (!user) {
+			logger.debug('the user is null');
+			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
+		}
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+		return new Promise((res, rej) => {
+			logger.debug('Getting the session from this user:', user);
+			user.getSession(
+				async (err, session) => {
+					if (err) {
+						logger.debug('Failed to get the session from user', user);
+						if (this.isSessionInvalid(err)) {
+							try {
+								await this.cleanUpInvalidSession(user);
+							} catch (cleanUpError) {
+								rej(
+									new Error(
+										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+									)
+								);
+								return;
+							}
+						}
+						rej(err);
+						return;
+					} else {
+						logger.debug('Succeed to get the user session', session);
+						res(session);
+						return;
+					}
+				},
+				{ clientMetadata }
+			);
+		});
 	}
 
 	/**
