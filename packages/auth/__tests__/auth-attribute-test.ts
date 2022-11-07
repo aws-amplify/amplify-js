@@ -20,6 +20,12 @@ const authOptions: AuthOptions = {
 };
 
 describe('User-Attribute-validation', () => {
+	beforeAll(() => {
+		jest
+			.spyOn(CognitoUser.prototype, 'setSignInUserSession')
+			.mockImplementation(() => {});
+	});
+
 	it('Check-non-verified-attributes', async () => {
 		const spyonAuthUserAttributes = jest
 			.spyOn(Auth.prototype, 'userAttributes')
