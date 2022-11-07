@@ -1,4 +1,4 @@
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	AuthModeStrategy,
@@ -19,7 +19,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
-	return rule.provider;
+	return rule.provider!;
 }
 
 function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
