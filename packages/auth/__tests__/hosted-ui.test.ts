@@ -27,6 +27,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 					},
 				});
 			},
+			setSignInUserSession: () => {},
 		};
 	};
 
@@ -153,6 +154,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.getUserData = callback => {
 		callback(null, 'data');
 	};
+
+	CognitoUser.prototype.setSignInUserSession = (session) => {};
 
 	return CognitoUser;
 });
