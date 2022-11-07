@@ -994,7 +994,7 @@ describe('StorageProvider test', () => {
 			spyon.mockClear();
 		});
 
-		test('list object with pageSize and pageToken', async () => {
+		test('list object with pageSize and nextToken', async () => {
 			expect.assertions(4);
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')
@@ -1022,7 +1022,7 @@ describe('StorageProvider test', () => {
 			const response = await storage.list('listWithTokenResultsPath', {
 				level: 'public',
 				pageSize: 1,
-				pageToken: 'TEST_TOKEN',
+				nextToken: 'TEST_TOKEN',
 			});
 			expect(response.results).toEqual([
 				{

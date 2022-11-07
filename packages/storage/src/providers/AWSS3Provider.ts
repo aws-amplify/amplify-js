@@ -713,7 +713,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt: S3ClientOptions = Object.assign({}, this._config, config);
-		const { bucket, track, pageSize, pageToken } = opt;
+		const { bucket, track, pageSize, nextToken } = opt;
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
@@ -728,9 +728,9 @@ export class AWSS3Provider implements StorageProvider {
 				Bucket: bucket,
 				Prefix: final_path,
 				MaxKeys: MAX_PAGE_SIZE,
-				ContinuationToken: pageToken,
+				ContinuationToken: nextToken,
 			};
-			params.ContinuationToken = pageToken;
+			params.ContinuationToken = nextToken;
 			if (pageSize === 'ALL') {
 				do {
 					listResult = await this._list(params, opt, prefix);

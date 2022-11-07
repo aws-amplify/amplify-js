@@ -108,7 +108,7 @@ export type S3ProviderListConfig = CommonStorageOptions & {
 	pageSize?: number | 'ALL';
 	provider?: 'AWSS3';
 	identityId?: string;
-	pageToken?: string;
+	nextToken?: string;
 };
 
 export type S3ClientOptions = StorageOptions & {
