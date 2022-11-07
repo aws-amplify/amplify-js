@@ -103,6 +103,7 @@ export class AuthClass {
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 	private autoSignInInitiated: boolean = false;
 	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
+	private inflightSessionPromiseCounter: number = 0;
 	Credentials = Credentials;
 
 	/**
@@ -1795,7 +1796,7 @@ export class AuthClass {
 		const clientMetadata = this._config.clientMetadata;
 		// Debouncing the concurrent userSession calls by caching the promise.
 		// This solution asumes users will always call this function with the same CognitoUser instance.
-		if (!this.inflightSessionPromise) {
+		if (this.inflightSessionPromiseCounter === 0) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {
 					user.getSession(
@@ -1827,11 +1828,14 @@ export class AuthClass {
 				}
 			);
 		}
+		this.inflightSessionPromiseCounter++;
 
 		try {
-			return await this.inflightSessionPromise;
+			const userSession = await this.inflightSessionPromise;
+			user.setSignInUserSession(userSession!);
+			return userSession!;
 		} finally {
-			this.inflightSessionPromise = null;
+			this.inflightSessionPromiseCounter--;
 		}
 	}
 
