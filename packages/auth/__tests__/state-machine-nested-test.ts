@@ -6,24 +6,11 @@ import { StateTransition } from '../src/stateMachine/types';
 import {
 	DummyContext,
 	dummyMachine,
+	goodEvent1,
 	state1Name,
 	State1Payload,
 	state2Name,
 } from './utils/dummyMachine';
-
-const goodEvent = {
-	name: 'event1',
-	payload: {
-		p1: 'good',
-	},
-};
-
-const badEvent = {
-	name: 'event1',
-	payload: {
-		p1: 'bad',
-	},
-};
 
 let parentMachine: Machine<DummyContext>;
 let parentStateOneTransitions: StateTransition<DummyContext, State1Payload>[];
@@ -41,7 +28,7 @@ describe('Nested state machine persisted actor tests...', () => {
 				nextState: state2Name,
 				actions: [
 					async (ctx, _) => {
-						ctx.actor?.send<State1Payload>(goodEvent);
+						ctx.actor?.send<State1Payload>(goodEvent1);
 					},
 				],
 			},
@@ -73,7 +60,7 @@ describe('Nested state machine persisted actor tests...', () => {
 	});
 
 	test('...parent can send an event to the child', () => {
-		parentMachine?.send<State1Payload>(goodEvent);
+		parentMachine?.send<State1Payload>(goodEvent1);
 		expect(parentMachine?.context.actor?.current.name).toEqual(state2Name);
 	});
 });

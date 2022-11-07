@@ -5,10 +5,10 @@ import { noop } from 'lodash';
 import { Machine } from '../src/stateMachine/machine';
 import { StateTransition } from '../src/stateMachine/types';
 import {
-	badEvent,
+	badEvent1,
 	DummyContext,
 	dummyMachine,
-	goodEvent,
+	goodEvent1,
 	state1Name,
 	State1Payload,
 	state2Name,
@@ -50,7 +50,7 @@ describe('State machine instantiation tests...', () => {
 	});
 
 	test('...the SM performs a simple state transition', () => {
-		machine?.send<State1Payload>(goodEvent);
+		machine?.send<State1Payload>(goodEvent1);
 		expect(machine?.current?.name).toEqual(state2Name);
 	});
 });
@@ -72,12 +72,12 @@ describe('State machine guard tests...', () => {
 	});
 
 	test('...the state transitions if guard passes', () => {
-		machine?.send<State1Payload>(goodEvent);
+		machine?.send<State1Payload>(goodEvent1);
 		expect(machine?.current?.name).toEqual(state2Name);
 	});
 
 	test('...the state transitions does not transition if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
+		machine?.send<State1Payload>(badEvent1);
 		expect(machine?.current?.name).toEqual(state1Name);
 	});
 });
@@ -112,12 +112,12 @@ describe('State machine action tests...', () => {
 	});
 
 	test('...the actions fire after transition', () => {
-		machine?.send<State1Payload>(goodEvent);
+		machine?.send<State1Payload>(goodEvent1);
 		expect(machine?.context.testFn).toHaveBeenCalledTimes(1);
 	});
 
 	test('...the actions do not fire if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
+		machine?.send<State1Payload>(badEvent1);
 		expect(machine?.context.testFn).toHaveBeenCalledTimes(0);
 	});
 });
@@ -152,12 +152,12 @@ describe('State machine reducer tests...', () => {
 	});
 
 	test('...the reducers fire after transition', () => {
-		machine?.send<State1Payload>(goodEvent);
+		machine?.send<State1Payload>(goodEvent1);
 		expect(machine?.context.optional1).toEqual('good');
 	});
 
 	test('...the reducers do not fire if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
+		machine?.send<State1Payload>(badEvent1);
 		expect(machine?.context.optional1).toBeFalsy();
 	});
 });

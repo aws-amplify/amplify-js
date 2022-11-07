@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Completer } from './completer';
 import { Invocation } from './invocation';
 import { MachineState } from './machineState';
 
@@ -15,7 +16,7 @@ export type MachineContext = Record<string, unknown>;
 export type MachineEventPayload = Record<string, unknown>;
 
 /**
- * Base type for a MachineEvent's payload
+ * The type accepted by Machine's send method
  * @typeParam PayloadType - The type of the Event's payload
  * @param name - The event name; used when matching a transition
  * @param payload - The event payload
@@ -26,18 +27,33 @@ export type MachineEvent<PayloadType extends MachineEventPayload> = {
 };
 
 /**
+ * A wrapper for the MachineEvent when it is queued
+ * @typeParam PayloadType - The type of the Event's payload
+ * @param event - The underlying event to be enqueued
+ * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
+ * @param completer - A promise that will resolve when a restingState is reached
+ */
+export type QueuedMachineEvent<ContextType extends MachineContext> = {
+	event: MachineEvent<MachineEventPayload>;
+	restingStates?: string[];
+	completer?: Completer<ContextType>;
+};
+
+/**
  * The type accepted by the Machine constructor
  * @typeParam PayloadType - The type of the Event's payload
  * @param name - The Machine's name
  * @param states - An array of MachineStates
  * @param context - The Machine's extended state
  * @param initial - The name of the Machine's initial State
+ * @param enqueueEvents - Flag to determine if events should be enqueued
  */
 export type StateMachineParams<ContextType extends MachineContext> = object & {
 	name: string;
 	states: MachineState<ContextType, MachineEventPayload>[];
 	context: ContextType;
 	initial: string;
+	enqueueEvents?: boolean;
 };
 
 /**

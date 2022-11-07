@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Hub, Logger } from '@aws-amplify/core';
+import { HubClass } from '@aws-amplify/core/src/Hub';
 import { MachineState } from './MachineState';
 import {
 	MachineContext,
@@ -8,6 +10,7 @@ import {
 	MachineEvent,
 	StateMachineParams,
 	StateTransition,
+	QueuedMachineEvent,
 } from './types';
 
 // TODO: Queue
@@ -17,20 +20,33 @@ export class Machine<ContextType extends MachineContext> {
 	states: Map<string, MachineState<ContextType, MachineEventPayload>>;
 	context: ContextType;
 	current: MachineState<ContextType, MachineEventPayload>;
+	hub: HubClass;
+	public hubChannel: string;
+	logger: Logger;
+	initial?: MachineState<ContextType, MachineEventPayload>;
 	constructor(params: StateMachineParams<ContextType>) {
 		this.name = params.name;
 		this.states = this._createStateMap(params.states);
 		this.context = params.context;
 		this.current = this.states.get(params.initial) || this.states[0];
+		this.hub = new HubClass('auth-state-machine');
+		this.hubChannel = `${this.name}-channel`;
+		this.logger = new Logger(this.name);
 	}
 
 	/**
-	 * Receives an event for processing
+	 * Receives an event for immediate processing
 	 *
 	 * @typeParam PayloadType - The type of payload received in current state
 	 * @param event - The dispatched Event
 	 */
 	send<PayloadType extends MachineEventPayload>(
+		event: MachineEvent<PayloadType>
+	) {
+		this._processEvent(event);
+	}
+
+	protected _processEvent<PayloadType extends MachineEventPayload>(
 		event: MachineEvent<PayloadType>
 	) {
 		const validTransition = this.current.findTransition(event);
@@ -54,6 +70,9 @@ export class Machine<ContextType extends MachineContext> {
 		event: MachineEvent<MachineEventPayload>
 	) {
 		this._invokeReducers(transition, event);
+
+		// _broadCastTransition after _invokeReducers (for updated context)
+		this._broadCastTransition();
 		this._invokeActions(transition, event);
 		if (this.current?.invocation) {
 			this.current.invocation.machine.send(this.current.invocation.event);
@@ -101,5 +120,15 @@ export class Machine<ContextType extends MachineContext> {
 			map.set(obj.name, obj);
 			return map;
 		}, new Map<string, MachineState<ContextType, MachineEventPayload>>());
+	}
+
+	private _broadCastTransition() {
+		this.hub.dispatch(this.hubChannel, {
+			event: 'transition',
+			data: {
+				state: this.current?.name,
+				context: this.context,
+			},
+		});
 	}
 }
