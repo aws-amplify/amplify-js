@@ -44,7 +44,7 @@
     "@aws-amplify/datastore": "3.14.3",
     "@aws-amplify/geo": "1.3.23",
     "@aws-amplify/interactions": "4.1.8",
-    "@aws-amplify/notifications": "1.0.0",
+    "@aws-amplify/notifications": "0.0.1",
     "@aws-amplify/predictions": "4.0.60",
     "@aws-amplify/pubsub": "4.5.10",
     "@aws-amplify/storage": "4.5.13",
