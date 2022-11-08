@@ -45,7 +45,7 @@
 	},
 	"peerDependencies": {
 		"@react-native-picker/picker": ">=1.2",
-		"aws-amplify": "4.x.x",
+		"aws-amplify": "5.x.x",
 		"graphql": "^14.0.0"
 	},
 	"repository": {
