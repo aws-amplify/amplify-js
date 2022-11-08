@@ -369,7 +369,8 @@ jobs:
           # https://github.com/TryGhost/node-sqlite3#source-install
           command: |
             cd packages/datastore-storage-adapter
-            npm install sqlite3 --build-from-source
+            npm install --build-from-source
+            rm -rf node_modules/@aws-amplify node_modules/@aws-sdk
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
