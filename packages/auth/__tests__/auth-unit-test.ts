@@ -91,6 +91,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 					},
 				});
 			},
+			setSignInUserSession: () => {},
 		};
 	};
 
@@ -109,7 +110,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = () => {};
+	const CognitoUser = function() {
+		// mock private member
+		this.signInUserSession = null;
+	};
 
 	CognitoUser.prototype.CognitoUser = options => {
 		CognitoUser.prototype.options = options;
@@ -250,6 +254,12 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	};
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.setSignInUserSession = function(session) {
+		this.signInUserSession = session;
+	};
+	CognitoUser.prototype.getSignInUserSession = function() {
+		return this.signInUserSession;
 	};
 
 	return CognitoUser;
@@ -1807,6 +1817,33 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('debouncer happy case', async () => {
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementationOnce(function(callback: any) {
+					this.signInUserSession = session;
+					callback(null, session);
+				});
+
+			const auth = new Auth(authOptions);
+
+			const promiseArr = Array.from({ length: 10 }, async () => {
+				const user = new CognitoUser({
+					Username: 'username',
+					Pool: userPool,
+				});
+				const signInUserSession = await auth.userSession(user);
+				return [signInUserSession, user] as const;
+			});
+			const results = await Promise.all(promiseArr);
+			for (const [signInUserSession, user] of results) {
+				expect(signInUserSession).toBeInstanceOf(CognitoUserSession);
+				expect(user.getSignInUserSession()).toBe(signInUserSession);
+			}
+			expect(spyon).toHaveBeenCalledTimes(1);
+			spyon.mockClear();
+		});
+
 		test('callback error', async () => {
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
@@ -1827,6 +1864,31 @@ describe('auth unit test', () => {
 				expect(e).toBe('err');
 			}
 
+			spyon.mockClear();
+		});
+
+		test('debounce callback error', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback('err', null);
+				});
+			try {
+				const promiseArr = Array.from({ length: 10 }, async () => {
+					const user = new CognitoUser({
+						Username: 'username',
+						Pool: userPool,
+					});
+					return await auth.userSession(user);
+				});
+				await Promise.all(promiseArr);
+				fail('expect promsie to reject');
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+			expect(spyon).toHaveBeenCalledTimes(1);
 			spyon.mockClear();
 		});
 
@@ -1873,6 +1935,47 @@ describe('auth unit test', () => {
 				'Auth',
 				Symbol.for('amplify_default')
 			);
+			jest.clearAllMocks();
+		});
+
+		test('debounce refresh token revoked case', async () => {
+			const auth = new Auth(authOptions);
+			const credentialsClearSpy = jest.spyOn(Credentials, 'clear');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			let user: CognitoUser | null = null;
+			const getSessionSpy = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementationOnce((callback: any) => {
+					callback(new Error('Refresh Token has been revoked'), null);
+				});
+			const userSignoutSpy = jest.fn();
+			// expect.assertions(2);
+			const promiseArr = Array.from({ length: 10 }, async () => {
+				user = new CognitoUser({
+					Username: 'username',
+					Pool: userPool,
+				});
+				jest.spyOn(user, 'signOut').mockImplementationOnce(() => {
+					userSignoutSpy();
+				});
+				return await auth.userSession(user);
+			});
+			try {
+				await Promise.all(promiseArr);
+				fail('expect promsie to reject');
+			} catch (e) {
+				expect(e.message).toBe('Refresh Token has been revoked');
+			}
+			expect(getSessionSpy).toHaveBeenCalledTimes(1);
+			expect(userSignoutSpy).toHaveBeenCalledTimes(1);
+			expect(credentialsClearSpy).toHaveBeenCalledTimes(1);
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{ data: null, event: 'signOut', message: 'A user has been signed out' },
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+			jest.clearAllMocks();
 		});
 	});
 

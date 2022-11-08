@@ -1767,7 +1767,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup

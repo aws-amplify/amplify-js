@@ -17,6 +17,12 @@ const authOptions: AuthOptions = {
 };
 
 describe('credentials syncing tests', () => {
+	beforeEach(() => {
+		jest
+			.spyOn(CognitoUser.prototype, 'setSignInUserSession')
+			.mockImplementation(() => {});
+	});
+
 	it('BypassCache clear credentials', async () => {
 		const auth = new Auth(authOptions);
 
