@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "3.12.12",
+	"version": "4.0.0",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -12,11 +12,8 @@
 		"access": "public"
 	},
 	"sideEffects": [
-		"./src/datastore/datastore.ts",
 		"./lib/datastore/datastore.js",
-		"./lib-esm/datastore/datastore.js",
-		"./dist/aws-amplify-datastore.min.js",
-		"./dist/aws-amplify-datastore.js"
+		"./lib-esm/datastore/datastore.js"
 	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
@@ -27,8 +24,9 @@
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "yarn clean && yarn build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
-		"format": "echo \"Not implemented\"",
-		"lint": "tslint '{__tests__,src}/**/*.ts'"
+		"format": "echo \"Not implemented\"  && npm run ts-coverage",
+		"lint": "tslint '{__tests__,src}/**/*.ts'",
+		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
 		"type": "git",
@@ -43,16 +41,18 @@
 	"devDependencies": {
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/uuid": "3.4.5",
+		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
+	"files": ["lib", "lib-esm", "src", "ssr"],
 	"dependencies": {
-		"@aws-amplify/api": "4.0.55",
-		"@aws-amplify/auth": "4.6.8",
-		"@aws-amplify/core": "4.7.6",
-		"@aws-amplify/pubsub": "4.5.5",
-		"amazon-cognito-identity-js": "5.2.10",
+		"@aws-amplify/api": "5.0.0",
+		"@aws-amplify/auth": "5.0.0",
+		"@aws-amplify/core": "5.0.0",
+		"@aws-amplify/pubsub": "5.0.0",
+		"amazon-cognito-identity-js": "6.0.0",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
 		"ulid": "2.3.0",
@@ -72,9 +72,11 @@
 						"esnext.asynciterable",
 						"es2019"
 					],
+					"target": "es5",
 					"allowJs": true,
 					"esModuleInterop": true,
-					"downlevelIteration": true
+					"downlevelIteration": true,
+					"strictNullChecks": true
 				}
 			}
 		},

@@ -1,5 +1,5 @@
 import { isAppInForeground } from '../src/utils/AppUtils';
-import MethodEmbed from '../src/utils/MethodEmbed';
+import { MethodEmbed } from '../src/utils/MethodEmbed';
 
 jest.mock('../src/utils/AppUtils.native', () => {
 	return {

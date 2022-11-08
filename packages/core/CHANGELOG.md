@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.10...@aws-amplify/core@4.7.11) (2022-10-27)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.7.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.9...@aws-amplify/core@4.7.10) (2022-10-26)
+
+
+### Bug Fixes
+
+* remove dep on es2020.promise lib additions ([#10532](https://github.com/aws-amplify/amplify-js/issues/10532)) ([8ad200e](https://github.com/aws-amplify/amplify-js/commit/8ad200e7b98967d565e7abe29c2dfb971b9f52a1))
+
+
+
+
+
+## [4.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.8...@aws-amplify/core@4.7.9) (2022-10-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10450](https://github.com/aws-amplify/amplify-js/issues/10450)) ([16c535b](https://github.com/aws-amplify/amplify-js/commit/16c535beda9386a027c2805f29a359fbeb8bac15)), closes [#10449](https://github.com/aws-amplify/amplify-js/issues/10449)
+
+
+
+
+
+## [4.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.7...@aws-amplify/core@4.7.8) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.6...@aws-amplify/core@4.7.7) (2022-10-14)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [4.7.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.4...@aws-amplify/core@4.7.6) (2022-09-30)
 
 **Note:** Version bump only for package @aws-amplify/core
