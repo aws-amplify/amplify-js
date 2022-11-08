@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -41,8 +41,8 @@
 	"homepage": "https://docs.amplify.aws/",
 	"files": ["lib", "lib-esm", "src"],
   "dependencies": {
-		"@aws-amplify/cache": "5.0.0",
-		"@aws-amplify/core": "5.0.0",
+		"@aws-amplify/cache": "4.0.62",
+		"@aws-amplify/core": "4.7.11",
 		"@aws-sdk/client-pinpoint": "3.186.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
