@@ -80,8 +80,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		this.client = new CognitoIdentityProviderClient({ region: config.region });
 	}
 
-	signUp<UserAttributeKey extends AuthUserAttributeKey = CognitoUserAttributeKey,
-	PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<UserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<UserAttributeKey>> {
+	signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		if (!this._config?.userPoolId) {
 			this.rejectNoUserPool();
 		}
@@ -161,7 +160,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 						);
 						reject(err)
 					} else {
-						let result: AuthSignUpResult<UserAttributeKey>;
+						let result: AuthSignUpResult<CognitoUserAttributeKey>;
 						if (data?.UserConfirmed) {
 							result = {
 								isSignUpComplete: true,
@@ -185,7 +184,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 									codeDeliveryDetails: {
 										deliveryMedium: data?.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
 										destination: data?.CodeDeliveryDetails?.Destination as string,
-										attributeName: data?.CodeDeliveryDetails?.AttributeName as UserAttributeKey
+										attributeName: data?.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
 									}
 								}
 							}

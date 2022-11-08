@@ -141,10 +141,6 @@ export interface CognitoSignUpOptions extends AuthPluginOptions {
 	validationData?: ValidationData;
 }
 
-// export type SignUpCognitoPluginOptions = CognitoPluginOptions & {
-// 	validationData?: ValidationData;
-// }
-
 // sign in
 
 export type AuthSignInResult<UserAttributeKey extends AuthUserAttributeKey> = {
