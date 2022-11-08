@@ -3,7 +3,7 @@ import {
 	PutRecordBatchCommand,
 } from '@aws-sdk/client-firehose';
 import { Credentials } from '@aws-amplify/core';
-import KinesisFirehoseProvider from '../../src/Providers/AWSKinesisFirehoseProvider';
+import { AWSKinesisFirehoseProvider as KinesisFirehoseProvider } from '../../src/Providers/AWSKinesisFirehoseProvider';
 
 jest.mock('@aws-sdk/client-firehose');
 

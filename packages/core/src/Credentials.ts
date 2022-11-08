@@ -18,12 +18,28 @@ import {
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
+import { parseAWSExports } from './parseAWSExports';
+import { Hub } from './Hub';
 
 const logger = new Logger('Credentials');
 
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 const COGNITO_IDENTITY_KEY_PREFIX = 'CognitoIdentityId-';
+
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
+
+const dispatchCredentialsEvent = (
+	event: string,
+	data: any,
+	message: string
+) => {
+	Hub.dispatch('core', { event, data, message }, 'Credentials', AMPLIFY_SYMBOL);
+};
 
 export class CredentialsClass {
 	private _config;
@@ -78,6 +94,12 @@ export class CredentialsClass {
 			this._storageSync = this._storage['sync']();
 		}
 
+		dispatchCredentialsEvent(
+			'credentials_configured',
+			null,
+			`Credentials has been configured successfully`
+		);
+
 		return this._config;
 	}
 
@@ -117,7 +139,8 @@ export class CredentialsClass {
 		const { Auth = Amplify.Auth } = this;
 
 		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
-			return Promise.reject('No Auth module registered in Amplify');
+			// If Auth module is not imported, do a best effort to get guest credentials
+			return this._setCredentialsForGuest();
 		}
 
 		if (!this._isExpired(cred) && this._isPastTTL()) {
@@ -233,7 +256,17 @@ export class CredentialsClass {
 
 	private async _setCredentialsForGuest() {
 		logger.debug('setting credentials for guest');
+		if (!this._config?.identityPoolId) {
+			// If Credentials are not configured thru Auth module,
+			// doing best effort to check if the library was configured
+			this._config = Object.assign(
+				{},
+				this._config,
+				parseAWSExports(this._config || {}).Auth
+			);
+		}
 		const { identityPoolId, region, mandatorySignIn } = this._config;
+
 		if (mandatorySignIn) {
 			return Promise.reject(
 				'cannot get guest credentials when mandatory signin enabled'
@@ -624,8 +657,3 @@ export class CredentialsClass {
 export const Credentials = new CredentialsClass(null);
 
 Amplify.register(Credentials);
-
-/**
- * @deprecated use named import
- */
-export default Credentials;
