@@ -1,9 +1,3 @@
-jest.mock('crypto-js/sha256', () => {
-	return {
-		default: jest.fn(() => ''),
-	};
-});
-
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
 		clearAll: jest.fn(),

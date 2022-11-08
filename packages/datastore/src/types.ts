@@ -1,6 +1,5 @@
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
-	exhaustiveCheck,
 	isAWSDate,
 	isAWSTime,
 	isAWSDateTime,
@@ -10,18 +9,27 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	NAMESPACES,
 	extractPrimaryKeyFieldNames,
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Auth } from '@aws-amplify/auth';
 import { API } from '@aws-amplify/api';
-import Cache from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
+import {
+	ModelPredicateExtender,
+	PredicateInternalsKey,
+	ModelPredicate as V5ModelPredicate,
+} from './predicates/next';
+
+export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
 //#region Schema types
 export type Schema = UserSchema & {
 	version: string;
+	codegenVersion: string;
 };
 export type UserSchema = {
 	models: SchemaModels;
@@ -34,6 +42,7 @@ export type UserSchema = {
 export type InternalSchema = {
 	namespaces: SchemaNamespaces;
 	version: string;
+	codegenVersion: string;
 };
 export type SchemaNamespaces = Record<string, SchemaNamespace>;
 export type SchemaNamespace = UserSchema & {
@@ -68,7 +77,11 @@ type SchemaEnum = {
 	name: string;
 	values: string[];
 };
-
+export type ModelMeta<T extends PersistentModel> = {
+	builder: PersistentModelConstructor<T>;
+	schema: SchemaModel;
+	pkField: string[];
+};
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
@@ -91,6 +104,16 @@ export function isTargetNameAssociation(
 	obj: any
 ): obj is TargetNameAssociation {
 	return obj?.targetName || obj?.targetNames;
+}
+
+type FieldAssociation = {
+	connectionType: 'HAS_ONE' | 'BELONGS_TO' | 'HAS_MANY';
+};
+export function isFieldAssociation(
+	obj: any,
+	fieldName: string
+): obj is FieldAssociation {
+	return obj?.fields[fieldName]?.association?.connectionType;
 }
 
 export type ModelAttributes = ModelAttribute[];
@@ -226,7 +249,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): 'string' | 'number' | 'boolean' | 'object' {
+	) {
 		switch (scalar) {
 			case 'Boolean':
 				return 'boolean';
@@ -247,7 +270,7 @@ export namespace GraphQLScalarType {
 			case 'AWSJSON':
 				return 'object';
 			default:
-				exhaustiveCheck(scalar as never);
+				throw new Error('Invalid scalar type');
 		}
 	}
 
@@ -256,7 +279,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): ((val: string | number) => boolean) | undefined {
+	): ((val: string) => boolean) | ((val: number) => boolean) | undefined {
 		switch (scalar) {
 			case 'AWSDate':
 				return isAWSDate;
@@ -301,8 +324,13 @@ export function isGraphQLScalarType(
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
-export type ModelFieldType = { model: string };
-export function isModelFieldType(obj: any): obj is ModelFieldType {
+export type ModelFieldType = {
+	model: string;
+	modelConstructor?: ModelMeta<PersistentModel>;
+};
+export function isModelFieldType<T extends PersistentModel>(
+	obj: any
+): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
 
@@ -357,6 +385,24 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void
 	): T;
 };
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoadingDisabled {
+	disabled: true;
+}
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * Indicates to use lazy models or eager models.
+ */
+export declare class LazyLoading {}
 
 export type TypeConstructorMap = Record<
 	string,
@@ -439,6 +485,53 @@ export type PersistentModelMetaData<T> = {
 	readOnlyFields?: string;
 };
 
+export interface AsyncCollection<T> extends AsyncIterable<T> {
+	toArray(options?: { max?: number }): Promise<T[]>;
+}
+
+export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
+	? undefined extends InnerPromiseType
+		? InnerPromiseType | null
+		: InnerPromiseType
+	: T extends AsyncCollection<infer InnerCollectionType>
+	? InnerCollectionType[] | undefined
+	: undefined extends T
+	? T | null
+	: T;
+
+export type PredicateFieldType<T> = NonNullable<
+	Scalar<
+		T extends Promise<infer InnerPromiseType>
+			? InnerPromiseType
+			: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType
+			: T
+	>
+>;
+
+type KeysOfType<T, FilterType> = {
+	[P in keyof T]: T[P] extends FilterType ? P : never;
+}[keyof T];
+
+type KeysOfSuperType<T, FilterType> = {
+	[P in keyof T]: FilterType extends T[P] ? P : never;
+}[keyof T];
+
+type OptionalRelativesOf<T> =
+	| KeysOfType<T, AsyncCollection<any>>
+	| KeysOfSuperType<T, Promise<undefined>>;
+
+type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
+type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
+type OmitOptionalFields<T> = Omit<
+	T,
+	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
+>;
+type PickOptionalFields<T> = Pick<
+	T,
+	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
+>;
+
 export type DefaultPersistentModelMetaData = {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
 	readOnlyFields: never;
@@ -468,7 +561,7 @@ export type MetadataReadOnlyFields<
 // This type omits readOnlyFields in the constructor init object
 // This type requires some identifiers in the constructor init object (e.g. CustomIdentifier)
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
-export type ModelInit<
+export type ModelInitBase<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T> = {}
 > = Omit<
@@ -482,9 +575,26 @@ export type ModelInit<
 		? Partial<Pick<T, IdentifierFieldsForInit<T, M>>>
 		: Required<Pick<T, IdentifierFieldsForInit<T, M>>>);
 
+export type ModelInit<
+	T extends PersistentModel,
+	M extends PersistentModelMetaData<T> = {}
+> = {
+	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
+		ModelInitBase<T, M>[P]
+	>;
+} & {
+	[P in keyof PickOptionalRelatives<ModelInitBase<T, M>>]+?: SettableFieldType<
+		ModelInitBase<T, M>[P]
+	>;
+};
+
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
+		: T[P] extends Promise<infer InnerPromiseType>
+		? InnerPromiseType
+		: T[P] extends AsyncCollection<infer InnerCollectionType>
+		? InnerCollectionType[] | undefined
 		: DeepWritable<T[P]>;
 };
 
@@ -753,10 +863,10 @@ export type SystemComponent = {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>,
-		appId: string
+		appId?: string
 	): Promise<void>;
 };
 
@@ -890,16 +1000,18 @@ syncExpressions: [
 	}),
 ]
 */
+
 type Option0 = [];
-type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option1<T extends PersistentModel> = [V5ModelPredicate<T> | undefined];
 type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
 type Lookup<T extends PersistentModel> = {
 	0:
-		| ProducerModelPredicate<T>
-		| Promise<ProducerModelPredicate<T>>
-		| typeof PredicateAll;
-	1: ModelPredicate<T> | undefined;
+		| ModelPredicateExtender<T>
+		| Promise<ModelPredicateExtender<T>>
+		| typeof PredicateAll
+		| Promise<typeof PredicateAll | symbol>;
+	1: PredicateInternalsKey | undefined;
 };
 
 type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (

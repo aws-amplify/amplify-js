@@ -3,14 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.3.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.24...@aws-amplify/api-graphql@2.3.25) (2022-11-04)
-
-**Note:** Version bump only for package @aws-amplify/api-graphql
-
-
-
-
-
 ## [2.3.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.3.23...@aws-amplify/api-graphql@2.3.24) (2022-10-27)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

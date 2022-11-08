@@ -27,14 +27,14 @@ describe('Hub', () => {
 			}
 
 			// Default handler for listening events
-			onHubCapsule = jest.fn(function(capsule) {
+			onHubCapsule = jest.fn(function (capsule) {
 				const { channel, payload } = capsule;
 				if (channel === 'auth') {
 					this.onAuthEvent(payload);
 				}
 			});
 
-			onAuthEvent = jest.fn(function(payload) {
+			onAuthEvent = jest.fn(function (payload) {
 				// ... your implementation
 			});
 		}
@@ -245,42 +245,6 @@ describe('Hub', () => {
 	test('Remove listener', () => {
 		const listener = jest.fn(() => {});
 
-		Hub.listen('auth', listener);
-
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
-
-		expect(listener).toHaveBeenCalled();
-
-		listener.mockReset();
-
-		Hub.remove('auth', listener);
-
-		Hub.dispatch(
-			'auth',
-			{
-				event: 'signOut2',
-				data: 'the user has been signed out',
-				message: 'User singout has taken place',
-			},
-			'Auth',
-			Symbol.for('amplify_default')
-		);
-
-		expect(listener).not.toHaveBeenCalled();
-	});
-
-	test('Remove listener with unsubscribe function', () => {
-		const listener = jest.fn(() => {});
-
 		const unsubscribe = Hub.listen('auth', listener);
 
 		Hub.dispatch(
@@ -288,7 +252,7 @@ describe('Hub', () => {
 			{
 				event: 'signOut',
 				data: 'the user has been signed out',
-				message: 'User singout has taken place',
+				message: 'User signout has taken place',
 			},
 			'Auth',
 			Symbol.for('amplify_default')
@@ -305,7 +269,7 @@ describe('Hub', () => {
 			{
 				event: 'signOut2',
 				data: 'the user has been signed out',
-				message: 'User singout has taken place',
+				message: 'User signout has taken place',
 			},
 			'Auth',
 			Symbol.for('amplify_default')

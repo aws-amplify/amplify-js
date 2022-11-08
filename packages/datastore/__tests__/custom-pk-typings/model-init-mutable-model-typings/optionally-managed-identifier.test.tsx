@@ -82,7 +82,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
 			await DataStore.query(OptionallyManagedDefaultRO, c =>
-				c.createdAt('ge', '2019')
+				c.createdAt.ge('2019')
 			)
 		);
 
@@ -92,7 +92,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.createdAt('ge', '2019')
+				c.createdAt.ge('2019')
 			)
 		);
 
@@ -105,7 +105,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
@@ -113,7 +113,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedDefaultRO, c =>
-				c.createdAt('le', '2019')
+				c.createdAt.le('2019')
 			)
 		);
 
@@ -127,7 +127,7 @@ describe('Optionally Managed Identifier', () => {
 			}
 		);
 		DataStore.observe(OptionallyManagedDefaultRO, c =>
-			c.description('beginsWith', 'something')
+			c.description.beginsWith('something')
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(model);
 			expectType<OptionallyManagedDefaultRO>(element);
@@ -148,13 +148,13 @@ describe('Optionally Managed Identifier', () => {
 			}
 		);
 		DataStore.observeQuery(OptionallyManagedDefaultRO, c =>
-			c.description('notContains', 'something')
+			c.description.notContains('something')
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(
 			OptionallyManagedDefaultRO,
-			c => c.description('notContains', 'something'),
+			c => c.description.notContains('something'),
 			{ sort: c => c.createdAt('ASCENDING') }
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedDefaultRO[]>(items);
@@ -234,7 +234,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO[]>(
 			await DataStore.query(OptionallyManagedCustomRO, c =>
-				c.createdOn('ge', '2019')
+				c.createdOn.ge('2019')
 			)
 		);
 
@@ -244,7 +244,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.createdOn('ge', '2019')
+				c.createdOn.ge('2019')
 			)
 		);
 
@@ -257,7 +257,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.description('contains', 'something')
+				c.description.contains('something')
 			)
 		);
 		expectType<OptionallyManagedCustomRO[]>(
@@ -265,7 +265,7 @@ describe('Optionally Managed Identifier', () => {
 		);
 		expectType<OptionallyManagedCustomRO[]>(
 			await DataStore.delete(OptionallyManagedCustomRO, c =>
-				c.createdOn('le', '2019')
+				c.createdOn.le('2019')
 			)
 		);
 
@@ -279,7 +279,7 @@ describe('Optionally Managed Identifier', () => {
 			}
 		);
 		DataStore.observe(OptionallyManagedCustomRO, c =>
-			c.description('beginsWith', 'something')
+			c.description.beginsWith('something')
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(model);
 			expectType<OptionallyManagedCustomRO>(element);
@@ -298,13 +298,13 @@ describe('Optionally Managed Identifier', () => {
 			expectType<OptionallyManagedCustomRO[]>(items);
 		});
 		DataStore.observeQuery(OptionallyManagedCustomRO, c =>
-			c.description('notContains', 'something')
+			c.description.notContains('something')
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedCustomRO[]>(items);
 		});
 		DataStore.observeQuery(
 			OptionallyManagedCustomRO,
-			c => c.description('notContains', 'something'),
+			c => c.description.notContains('something'),
 			{ sort: c => c.createdOn('ASCENDING') }
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedCustomRO[]>(items);
