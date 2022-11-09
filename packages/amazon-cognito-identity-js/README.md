@@ -939,6 +939,17 @@ if (AWS.config.credentials.needsRefresh()) {
 }
 ```
 
+**Use case 33.** Using a custom storage key for your pool.
+
+```javascript
+var poolData = {
+	UserPoolId: '...', // Your user pool id here
+	ClientId: '...', // Your client id here
+	StorageKeyPrefix: 'MyApplication',
+};
+var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+```
+
 ## Network Configuration
 
 The Amazon Cognito Identity JavaScript SDK will make requests to the following endpoints

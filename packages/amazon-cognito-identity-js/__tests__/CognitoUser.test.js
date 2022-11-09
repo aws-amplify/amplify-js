@@ -66,7 +66,7 @@ describe('CognitoUser constructor', () => {
 	});
 
 	test('happy case constructor', () => {
-		const spyon = jest.spyOn(cognitoUserPool, 'getClientId');
+		const spyon = jest.spyOn(cognitoUserPool, 'getStorageKeyPrefix');
 
 		expect(() => {
 			new CognitoUser({ ...userDefaults });
@@ -129,6 +129,52 @@ describe('getters and setters', () => {
 
 		// getter after set explicitly
 		expect(user.getAuthenticationFlowType()).toEqual('TEST_FLOW_TYPE');
+	});
+});
+
+describe('custom storage key session and tokens', () => {
+	const storageKey = 'MyCustomStorageKey';
+	const cognitoUserPool = new CognitoUserPool({
+		UserPoolId: userPoolId,
+		ClientId: clientId,
+		StorageKeyPrefix: storageKey,
+	});
+	const user = new CognitoUser({ Username: 'username', Pool: cognitoUserPool });
+	const refreshTokenKey = `${storageKey}.3pu8tnp684l4lmlfoth25ojmd2.username.refreshToken`;
+
+	describe('setSignInUserSession()', () => {
+		const cacheSpy = jest.spyOn(CognitoUser.prototype, 'clearCachedUserData');
+		const cacheTokenSpy = jest.spyOn(CognitoUser.prototype, 'cacheTokens');
+
+		test('happy path should have an empty cache, after user session is set, cache tokens', () => {
+			// precondition
+			expect(user.getSignInUserSession()).toEqual(null);
+			expect(user.storage.getItem('')).toEqual(null);
+
+			user.setSignInUserSession(vCognitoUserSession);
+			expect(cacheSpy).toBeCalled();
+			expect(cacheTokenSpy).toBeCalled();
+
+			// post-condition
+			expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(
+				vRefreshToken.token
+			);
+		});
+
+		test('checking that tokens are cleared properly', () => {
+			// precondition
+			expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+			user.setSignInUserSession(ivCognitoUserSession);
+			expect(cacheSpy).toBeCalled();
+			expect(cacheTokenSpy).toBeCalled();
+
+			// post-condition
+			expect(user.getSignInUserSession()).toEqual(ivCognitoUserSession);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(
+				ivRefreshToken.token
+			);
+		});
 	});
 });
 
