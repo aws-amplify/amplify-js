@@ -57,7 +57,7 @@ export interface InProgressRequest {
 }
 
 export interface UploadTaskCompleteEvent {
-	key: string;
+	key?: string;
 }
 
 export interface UploadTaskProgressEvent {
@@ -229,8 +229,9 @@ export class AWSS3UploadTask implements UploadTask {
 	private _validateParams() {
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error(
-				`Too many parts. Number of parts is ${this.file.size /
-					this.partSize}, maximum is ${MAX_PARTS}.`
+				`Too many parts. Number of parts is ${
+					this.file.size / this.partSize
+				}, maximum is ${MAX_PARTS}.`
 			);
 		}
 	}
@@ -304,7 +305,7 @@ export class AWSS3UploadTask implements UploadTask {
 			);
 			this._verifyFileSize();
 			this._emitEvent<UploadTaskCompleteEvent>(TaskEvents.UPLOAD_COMPLETE, {
-				key: `${this.params.Bucket}/${this.params.Key}`,
+				key: this.params.Key,
 			});
 			this._removeFromCache();
 			this.state = AWSS3UploadTaskState.COMPLETED;
