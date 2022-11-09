@@ -12,7 +12,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- debouncing get user session calls ([#10553](https://github.com/aws-amplify/amplify-js/pull/10553))
 - Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
 - Migrate auth and amazon-cognito-identity-js to use @aws-crypto/sha256-js ([#10523](https://github.com/aws-amplify/amplify-js/pull/10523))
 - Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))

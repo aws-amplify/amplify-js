@@ -11,7 +11,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **pubsub:** Automated reconnect for IoT and API ([#10235](https://github.com/aws-amplify/amplify-js/issues/10235)) ([a677cd8](https://github.com/aws-amplify/amplify-js/commit/a677cd85cd60665fb1660e66aebf7eb230c4dfca))
 - Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
 - Migrate auth and amazon-cognito-identity-js to use @aws-crypto/sha256-js ([#10523](https://github.com/aws-amplify/amplify-js/pull/10523))
 - Remove miscellaneous deprecated exports & prototypes ([#10528](https://github.com/aws-amplify/amplify-js/pull/10528))
