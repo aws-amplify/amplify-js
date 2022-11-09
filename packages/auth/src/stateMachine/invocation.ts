@@ -2,16 +2,45 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Machine } from './machine';
-import { MachineContext, MachineEventPayload, MachineEvent } from './types';
+import {
+	MachineContext,
+	MachineEventPayload,
+	MachineEvent,
+	StateMachineParams,
+	InvocationPromise,
+	InvokedPromiseType,
+} from './types';
 
 export class Invocation<
 	ContextType extends MachineContext,
-	PayloadType extends MachineEventPayload
+	InitialEventPayloadType extends MachineEventPayload
 > {
-	event: MachineEvent<PayloadType>;
-	machine: Machine<ContextType>;
-	constructor(event: MachineEvent<PayloadType>, machine: Machine<ContextType>) {
-		this.event = event;
-		this.machine = machine;
+	event?: MachineEvent<InitialEventPayloadType>;
+	invokedMachine?: Machine<ContextType>;
+	invokedPromise?: InvocationPromise<
+		ContextType,
+		InitialEventPayloadType,
+		InvokedPromiseType
+	>;
+	expectedStates?: string[];
+	constructor(params: {
+		event?: MachineEvent<InitialEventPayloadType>;
+		machineParams?: StateMachineParams<ContextType>;
+		invokedPromise?: InvocationPromise<
+			ContextType,
+			InitialEventPayloadType,
+			InvokedPromiseType
+		>;
+		expectedStates?: string[];
+	}) {
+		this.event = params?.event;
+
+		this.expectedStates = params?.expectedStates;
+
+		if (params.machineParams) {
+			this.invokedMachine = new Machine<ContextType>(params.machineParams);
+		} else if (params.invokedPromise) {
+			this.invokedPromise = params.invokedPromise;
+		}
 	}
 }

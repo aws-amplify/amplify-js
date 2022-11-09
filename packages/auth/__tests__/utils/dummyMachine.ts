@@ -56,67 +56,67 @@ type State2Payload = MachineEventPayload & {
 };
 
 type State3Payload = MachineEventPayload & {
-	p2?: string;
+	p3?: string;
 };
 
 const state1Name = 'State1';
 const state2Name = 'State2';
 const state3Name = 'State3';
 
-function dummyMachine(
-	initialContext: DummyContext,
-	stateOneTransitions?: StateTransition<DummyContext, State1Payload>[],
-	stateOneInvocation?: Invocation<DummyContext, State1Payload>,
-	stateTwoTransitions?: StateTransition<DummyContext, State2Payload>[],
-	stateTwoInvocation?: Invocation<DummyContext, State2Payload>
-): Machine<DummyContext> {
+function dummyMachine(params: {
+	initialContext: DummyContext;
+	stateOneTransitions?: StateTransition<DummyContext, State1Payload>[];
+	stateOneInvocation?: Invocation<DummyContext, State1Payload>;
+	stateTwoTransitions?: StateTransition<DummyContext, State2Payload>[];
+	stateTwoInvocation?: Invocation<DummyContext, State2Payload>;
+}): Machine<DummyContext> {
 	return new Machine<DummyContext>({
 		name: 'DummyMachine',
-		context: initialContext,
+		context: params.initialContext,
 		initial: state1Name,
 		states: [
 			new MachineState<DummyContext, State1Payload>({
 				name: state1Name,
-				transitions: stateOneTransitions,
-				invocation: stateOneInvocation,
+				transitions: params.stateOneTransitions,
+				invocation: params.stateOneInvocation,
 			}),
 			new MachineState<DummyContext, State2Payload>({
 				name: state2Name,
-				transitions: stateTwoTransitions,
-				invocation: stateTwoInvocation,
+				transitions: params.stateTwoTransitions,
+				invocation: params.stateTwoInvocation,
 			}),
 		],
 	});
 }
 
-function dummyMachineQueued(
-	initialContext: DummyContext,
-	stateOneTransitions?: StateTransition<DummyContext, State1Payload>[],
-	stateOneInvocation?: Invocation<DummyContext, State1Payload>,
-	stateTwoTransitions?: StateTransition<DummyContext, State1Payload>[],
-	stateTwoInvocation?: Invocation<DummyContext, State1Payload>,
-	stateThreeTransitions?: StateTransition<DummyContext, State3Payload>[],
-	stateThreeInvocation?: Invocation<DummyContext, State3Payload>
-): QueuedMachine<DummyContext> {
+function dummyMachineQueued(params: {
+	initialContext: DummyContext;
+	stateOneTransitions?: StateTransition<DummyContext, State1Payload>[];
+	stateOneInvocation?: Invocation<DummyContext, State1Payload>;
+	stateTwoTransitions?: StateTransition<DummyContext, State1Payload>[];
+	stateTwoInvocation?: Invocation<DummyContext, State1Payload>;
+	stateThreeTransitions?: StateTransition<DummyContext, State3Payload>[];
+	stateThreeInvocation?: Invocation<DummyContext, State3Payload>;
+}): QueuedMachine<DummyContext> {
 	return new QueuedMachine<DummyContext>({
 		name: 'DummyMachineQueued',
-		context: initialContext,
+		context: params.initialContext,
 		initial: state1Name,
 		states: [
 			new MachineState<DummyContext, State1Payload>({
 				name: state1Name,
-				transitions: stateOneTransitions,
-				invocation: stateOneInvocation,
+				transitions: params.stateOneTransitions,
+				invocation: params.stateOneInvocation,
 			}),
 			new MachineState<DummyContext, State2Payload>({
 				name: state2Name,
-				transitions: stateTwoTransitions,
-				invocation: stateTwoInvocation,
+				transitions: params.stateTwoTransitions,
+				invocation: params.stateTwoInvocation,
 			}),
 			new MachineState<DummyContext, State2Payload>({
 				name: state3Name,
-				transitions: stateThreeTransitions,
-				invocation: stateThreeInvocation,
+				transitions: params.stateThreeTransitions,
+				invocation: params.stateThreeInvocation,
 			}),
 		],
 	});
@@ -126,6 +126,7 @@ export {
 	DummyContext,
 	State1Payload,
 	State2Payload,
+	State3Payload,
 	dummyMachine,
 	dummyMachineQueued,
 	state1Name,
@@ -133,4 +134,5 @@ export {
 	state3Name,
 	goodEvent1,
 	badEvent1,
+	goodEvent2,
 };

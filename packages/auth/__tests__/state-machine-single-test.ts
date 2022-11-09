@@ -26,7 +26,10 @@ describe('State machine instantiation tests...', () => {
 				nextState: state2Name,
 			},
 		];
-		machine = dummyMachine({ testSource }, stateOneTransitions);
+		machine = dummyMachine({
+			initialContext: { testSource },
+			stateOneTransitions,
+		});
 	});
 
 	test('...the SM can be instantiated', () => {
@@ -68,7 +71,10 @@ describe('State machine guard tests...', () => {
 				],
 			},
 		];
-		machine = dummyMachine({ testSource }, stateOneTransitions);
+		machine = dummyMachine({
+			initialContext: { testSource },
+			stateOneTransitions,
+		});
 	});
 
 	test('...the state transitions if guard passes', () => {
@@ -101,10 +107,10 @@ describe('State machine action tests...', () => {
 				],
 			},
 		];
-		machine = dummyMachine(
-			{ testSource, testFn: jestMock },
-			stateOneTransitions
-		);
+		machine = dummyMachine({
+			initialContext: { testSource, testFn: jestMock },
+			stateOneTransitions,
+		});
 	});
 
 	test('...the actions do not fire before transition', () => {
@@ -137,14 +143,15 @@ describe('State machine reducer tests...', () => {
 				reducers: [
 					(ctx, evt) => {
 						ctx.optional1 = evt.payload?.p1;
+						return ctx;
 					},
 				],
 			},
 		];
-		machine = dummyMachine(
-			{ testSource, testFn: jestMock },
-			stateOneTransitions
-		);
+		machine = dummyMachine({
+			initialContext: { testSource, testFn: jestMock },
+			stateOneTransitions,
+		});
 	});
 
 	test('...the reducer is not invoked before transition ', () => {

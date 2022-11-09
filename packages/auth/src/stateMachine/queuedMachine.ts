@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 
-import { Hub } from '@aws-amplify/core';
 import { Completer } from './completer';
 import { Machine } from './machine';
 import {
@@ -38,8 +37,10 @@ export class QueuedMachine<
 	 * @typeParam PayloadType - The type of payload received in current state
 	 * @param event - The dispatched Event
 	 */
-	send<PayloadType extends MachineEventPayload>(_: MachineEvent<PayloadType>) {
-		// super.logger.warn(
+	async send<PayloadType extends MachineEventPayload>(
+		_: MachineEvent<PayloadType>
+	) {
+		// this.logger.warn(
 		// 	'An event cannot be directly sent to a QueuedMachine. Use QueuedMachine.enqueue instead.'
 		// );
 	}
@@ -59,18 +60,22 @@ export class QueuedMachine<
 		}
 	}
 
-	async _queueProcessor() {
+	_queueProcessor() {
 		while (this.queue.length != 0) {
-			let currentEvent = this.queue[0];
-			Hub.listen('DummyMachineQueued-channel', data => {
-				const { payload } = data;
-				if (currentEvent.restingStates?.includes(payload.data.state)) {
-					currentEvent.completer!.complete(payload.data.context);
-				}
-				this.queue.shift();
-			});
-			super._processEvent(currentEvent.event);
+			let currentEvent = this.queue.shift();
+			this._processItem(currentEvent!);
 		}
 		this.processing = false;
+	}
+
+	async _processItem(currentEvent: QueuedMachineEvent<ContextType>) {
+		// this.hub.listen('DummyMachineQueued-channel', data => {
+		// 	const { payload } = data;
+		// 	if (currentEvent!.restingStates.includes(payload.data.state)) {
+		// 		currentEvent!.completer!.complete(payload.data.context);
+		// 	}
+		// });
+		super._processEvent(currentEvent!.event);
+		await currentEvent!.completer!.promise;
 	}
 }

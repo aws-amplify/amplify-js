@@ -4,6 +4,7 @@
 import { Completer } from './completer';
 import { Invocation } from './invocation';
 import { MachineState } from './machineState';
+import UuidStatic from 'uuid';
 
 /**
  * Base type for a Machine's context
@@ -14,6 +15,8 @@ export type MachineContext = Record<string, unknown>;
  * Base type for a MachineEvent's payload
  */
 export type MachineEventPayload = Record<string, unknown>;
+
+export type InvokedPromiseType = object;
 
 /**
  * The type accepted by Machine's send method
@@ -31,11 +34,12 @@ export type MachineEvent<PayloadType extends MachineEventPayload> = {
  * @typeParam PayloadType - The type of the Event's payload
  * @param event - The underlying event to be enqueued
  * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
+ * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
  * @param completer - A promise that will resolve when a restingState is reached
  */
 export type QueuedMachineEvent<ContextType extends MachineContext> = {
 	event: MachineEvent<MachineEventPayload>;
-	restingStates?: string[];
+	restingStates: string[];
 	completer?: Completer<ContextType>;
 };
 
@@ -122,4 +126,13 @@ export type TransitionGuard<
 export type TransitionReducer<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (context: ContextType, event: MachineEvent<PayloadType>) => void;
+> = (context: ContextType, event: MachineEvent<PayloadType>) => ContextType;
+
+export type InvocationPromise<
+	ContextType extends MachineContext,
+	PayloadType extends MachineEventPayload,
+	ReturnType extends InvokedPromiseType
+> = (
+	context: ContextType,
+	event: MachineEvent<PayloadType>
+) => Promise<ReturnType>;

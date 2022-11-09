@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub, Logger } from '@aws-amplify/core';
-import { HubClass } from '@aws-amplify/core/src/Hub';
+import { Logger } from '@aws-amplify/core';
+// import { HubClass } from '@aws-amplify/core';
 import { MachineState } from './MachineState';
 import {
 	MachineContext,
@@ -13,16 +13,14 @@ import {
 	QueuedMachineEvent,
 } from './types';
 
-// TODO: Queue
-// TODO: Listeners
 export class Machine<ContextType extends MachineContext> {
 	name: string;
 	states: Map<string, MachineState<ContextType, MachineEventPayload>>;
 	context: ContextType;
 	current: MachineState<ContextType, MachineEventPayload>;
-	hub: HubClass;
+	// hub: HubClass;
 	public hubChannel: string;
-	logger: Logger;
+	// logger: Logger;
 	initial?: MachineState<ContextType, MachineEventPayload>;
 	constructor(params: StateMachineParams<ContextType>) {
 		this.name = params.name;
@@ -31,7 +29,7 @@ export class Machine<ContextType extends MachineContext> {
 		this.current = this.states.get(params.initial) || this.states[0];
 		this.hub = new HubClass('auth-state-machine');
 		this.hubChannel = `${this.name}-channel`;
-		this.logger = new Logger(this.name);
+		// this.logger = new Logger(this.name);
 	}
 
 	/**
@@ -40,15 +38,15 @@ export class Machine<ContextType extends MachineContext> {
 	 * @typeParam PayloadType - The type of payload received in current state
 	 * @param event - The dispatched Event
 	 */
-	send<PayloadType extends MachineEventPayload>(
+	async send<PayloadType extends MachineEventPayload>(
 		event: MachineEvent<PayloadType>
 	) {
-		this._processEvent(event);
+		await this._processEvent(event);
 	}
 
-	protected _processEvent<PayloadType extends MachineEventPayload>(
+	protected async _processEvent<PayloadType extends MachineEventPayload>(
 		event: MachineEvent<PayloadType>
-	) {
+	): Promise<void> {
 		const validTransition = this.current.findTransition(event);
 
 		///TODO: Communicate null transition
@@ -62,20 +60,24 @@ export class Machine<ContextType extends MachineContext> {
 		if (!nextState) return;
 
 		this.current = nextState;
-		this._enterState(validTransition, event);
+		await this._enterState(validTransition, event);
 	}
 
-	private _enterState(
+	private async _enterState(
 		transition: StateTransition<ContextType, MachineEventPayload>,
 		event: MachineEvent<MachineEventPayload>
-	) {
+	): Promise<void> {
 		this._invokeReducers(transition, event);
 
 		// _broadCastTransition after _invokeReducers (for updated context)
-		this._broadCastTransition();
+		this._broadCastTransition(transition);
 		this._invokeActions(transition, event);
-		if (this.current?.invocation) {
-			this.current.invocation.machine.send(this.current.invocation.event);
+		if (this.current?.invocation?.invokedMachine) {
+			this.current.invocation.invokedMachine.send(
+				this.current.invocation.event!
+			);
+		} else if (this.current?.invocation?.invokedPromise) {
+			await this.current.invocation.invokedPromise(this.context, event);
 		}
 	}
 
@@ -98,7 +100,10 @@ export class Machine<ContextType extends MachineContext> {
 	): void {
 		if (!transition.reducers) return;
 		for (let r = 0; r < transition.reducers.length; r++) {
-			transition.reducers[r](this.context, event);
+			this.context = transition.reducers[r](
+				this._copyContext(this.context),
+				event
+			);
 		}
 	}
 
@@ -122,13 +127,19 @@ export class Machine<ContextType extends MachineContext> {
 		}, new Map<string, MachineState<ContextType, MachineEventPayload>>());
 	}
 
-	private _broadCastTransition() {
-		this.hub.dispatch(this.hubChannel, {
-			event: 'transition',
-			data: {
-				state: this.current?.name,
-				context: this.context,
-			},
-		});
+	private _broadCastTransition(
+		transition: StateTransition<ContextType, MachineEventPayload>
+	): void {
+		// this.hub.dispatch(this.hubChannel, {
+		// 	event: 'transition',
+		// 	data: {
+		// 		state: this.current?.name,
+		// 		context: this.context,
+		// 	},
+		// });
+	}
+
+	private _copyContext<T extends object>(source: T): T {
+		return JSON.parse(JSON.stringify(source));
 	}
 }

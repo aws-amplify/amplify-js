@@ -7,7 +7,6 @@ import {
 	DummyContext,
 	dummyMachine,
 	goodEvent1,
-	state1Name,
 	State1Payload,
 	state2Name,
 } from './utils/dummyMachine';
@@ -39,19 +38,19 @@ describe('Nested state machine persisted actor tests...', () => {
 				nextState: state2Name,
 			},
 		];
-		childMachine = dummyMachine(
-			{
+		childMachine = dummyMachine({
+			initialContext: {
 				testSource: childTestSource,
 			},
-			childStateOneTransitions
-		);
-		parentMachine = dummyMachine(
-			{
+			stateOneTransitions: childStateOneTransitions,
+		});
+		parentMachine = dummyMachine({
+			initialContext: {
 				testSource: parentTestSource,
 				actor: childMachine,
 			},
-			parentStateOneTransitions
-		);
+			stateOneTransitions: parentStateOneTransitions,
+		});
 	});
 
 	test('...the child SM can be instantiated on a parent machine context', () => {
