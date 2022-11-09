@@ -63,7 +63,7 @@ AWS Amplify is available as `aws-amplify` on [npm](https://www.npmjs.com/package
 
 To get started pick your platform from our [**Getting Started** home page](https://docs.amplify.aws/start/?sc_icampaign=start&sc_ichannel=docs-home)
 
-## [Notice:][notice]
+## Notice:
 
 ### Amplify 5.x.x has breaking changes. Please see the breaking changes below:
 
