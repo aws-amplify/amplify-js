@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
-  "version": "2.0.60",
+  "version": "3.0.0",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -26,7 +26,7 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 65.41"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 65.41"
   },
   "repository": {
     "type": "git",
@@ -38,9 +38,13 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "files": ["lib", "lib-esm", "src"],
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.7.11",
+    "@aws-amplify/core": "5.0.0",
     "axios": "0.26.0",
     "tslib": "^1.8.0"
   },

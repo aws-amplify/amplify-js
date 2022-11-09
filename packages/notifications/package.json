@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -24,7 +24,7 @@
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
@@ -39,10 +39,14 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://docs.amplify.aws/",
-	"files": ["lib", "lib-esm", "src"],
-  "dependencies": {
-		"@aws-amplify/cache": "4.0.62",
-		"@aws-amplify/core": "4.7.11",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
+	"dependencies": {
+		"@aws-amplify/cache": "5.0.0",
+		"@aws-amplify/core": "5.0.0",
 		"@aws-sdk/client-pinpoint": "3.186.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
