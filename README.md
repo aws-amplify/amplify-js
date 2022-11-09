@@ -106,6 +106,23 @@ To get started pick your platform from our [**Getting Started** home page](https
     + const { key } = photos.results[0];
     ```
 
+- `Storage.put` with resumable turned on has changed the key to no longer include the bucket name. For example:
+
+  - ```diff
+    - let uploadedObjectKey;
+    - Storage.put(file.name, file, {
+    -   resumable: true,
+    -   // Necessary to parse the bucket name out to work with the key
+    -   completeCallback: (obj) => uploadedObjectKey = obj.key.substring( obj.key.indexOf("/") + 1 )
+    - }
+
+    + let uploadedObjectKey;
+    + Storage.put(file.name, file, {
+    +   resumable: true,
+    +   completeCallback: (obj) => uploadedObjectKey = obj.key
+    + }
+    ```
+
 - `Analytics.record` no longer supports passing a string only as input. For example:
 
   - ```diff
