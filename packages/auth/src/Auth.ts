@@ -1832,7 +1832,9 @@ export class AuthClass {
 
 		try {
 			const userSession = await this.inflightSessionPromise;
-			user.setSignInUserSession(userSession!);
+			// Set private member. Avoid user.setSignInUserSession() to prevent excessive localstorage refresh.
+			// @ts-ignore
+			user.signInUserSession = userSession;
 			return userSession!;
 		} finally {
 			this.inflightSessionPromiseCounter--;
