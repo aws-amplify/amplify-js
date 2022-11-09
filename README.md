@@ -86,6 +86,48 @@ Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q
 
 ## Notice:
 
+### Amplify 5.x.x has breaking changes. Please see the breaking changes below:
+
+- If you are using **default exports** from any Amplify package, then you will need to migrate to using named exports. For example:
+
+  - ```diff
+    - import Amplify from 'aws-amplify';
+    + import { Amplify } from 'aws-amplify'
+
+    - import Analytics from '@aws-amplify/analytics';
+    + import { Analytics } from '@aws-amplify/analytics';
+
+    - import Storage from '@aws-amplify/storage';
+    + import { Storage } from '@aws-amplify/storage';
+    ```
+
+- Datastore predicate syntax has changed, impacting the `DataStore.save`, `DataStore.delete`, `DataStore.observe` interfaces. For example:
+
+  - ```diff
+    - await DataStore.delete(Post, (post) => post.status('eq', PostStatus.INACTIVE));
+    + await DataStore.delete(Post, (post) => post.status.eq(PostStatus.INACTIVE));
+
+    - await DataStore.query(Post, p => p.and( p => [p.title('eq', 'Amplify Getting Started Guide'), p.score('gt', 8)]));
+    + await DataStore.query(Post, p => p.and( p => [p.title.eq('Amplify Getting Started Guide'), p.score.gt(8)]));
+    ```
+
+  - To use this new syntax with 5.x.x you may need to rebuild your Datastore models with the latest version of Amplify codegen. To do this:
+    - [Upgrade the Amplify CLI](https://docs.amplify.aws/cli/start/workflows/#upgrade-amplify-cli)
+      - `npm install -g @aws-amplify/cli`
+    - [Re-generate your models with Amplify codegen](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/#code-generation-amplify-cli)
+      - `amplify codegen models`
+
+- `Storage.list` has changed the name of the `maxKeys` parameter to `pageSize`. For example:
+  - ```diff
+    - const photos = await Storage.list('photos/', { maxKeys: 100 });
+    + const photos = await Storage.list('photos/', { pageSize: 100 });
+    ```
+- `Analytics.record` no longer supports passing a string only as input. For example:
+  - ```diff
+    - Analytics.record('my example event');
+    + Analytics.record( { name: 'my example event' });
+    ```
+
 ### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
 
 - If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
