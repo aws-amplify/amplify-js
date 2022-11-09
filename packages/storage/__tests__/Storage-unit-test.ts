@@ -1,6 +1,10 @@
-import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { AWSS3Provider as AWSStorageProvider } from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
-import { Storage as StorageCategory, StorageProvider } from '../src';
+import {
+	S3ProviderListOutput,
+	Storage as StorageCategory,
+	StorageProvider,
+} from '../src';
 import axios, { CancelToken } from 'axios';
 import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -55,8 +59,10 @@ class TestCustomProvider implements StorageProvider {
 	}
 }
 
-class TestCustomProviderWithCopy extends TestCustomProvider
-	implements StorageProvider {
+class TestCustomProviderWithCopy
+	extends TestCustomProvider
+	implements StorageProvider
+{
 	copy(
 		src: { key: string },
 		dest: { key: string },
@@ -800,9 +806,14 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
+			const result: S3ProviderListOutput = {
+				results: [],
+				hasNextToken: false,
+				nextToken: undefined,
+			};
 			listSpy = jest
 				.spyOn(AWSStorageProvider.prototype, 'list')
-				.mockImplementation(() => Promise.resolve([]));
+				.mockImplementation(() => Promise.resolve(result));
 		});
 
 		afterEach(() => {
@@ -819,7 +830,7 @@ describe('Storage', () => {
 			test('call list object with all available config', async () => {
 				storage.list('path', {
 					track: false,
-					maxKeys: 10,
+					pageSize: 10,
 					level: 'public',
 					customPrefix: {
 						public: 'public',
@@ -833,7 +844,8 @@ describe('Storage', () => {
 		test('list without provider', async () => {
 			const storage = new StorageClass();
 			try {
-				await storage.list('');
+				const result = await storage.list('');
+				expect(result.hasNextToken).toBeUndefined();
 			} catch (err) {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
@@ -970,7 +982,7 @@ describe('Storage', () => {
 				.spyOn(axios.CancelToken, 'source')
 				.mockImplementation(() => {
 					return {
-						token: (tokenMock as unknown) as CancelToken,
+						token: tokenMock as unknown as CancelToken,
 						cancel: cancelMock,
 					};
 				});

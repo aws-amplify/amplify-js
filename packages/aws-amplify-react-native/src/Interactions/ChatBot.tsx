@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import {
-	View,
-	TextInput,
-	Text,
-	KeyboardAvoidingView,
-	ScrollView,
-} from 'react-native';
-import Interactions from '@aws-amplify/interactions';
+import { View, TextInput, Text, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { Interactions } from '@aws-amplify/interactions';
 import { I18n } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
@@ -194,13 +188,10 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 
-		await new Promise(resolve =>
+		await new Promise((resolve) =>
 			this.setState(
 				{
-					dialog: [
-						...this.state.dialog,
-						{ message: this.state.inputText, from: 'me' },
-					],
+					dialog: [...this.state.dialog, { message: this.state.inputText, from: 'me' }],
 				},
 				resolve
 			)
@@ -214,15 +205,9 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 					messageType: 'text',
 				},
 			};
-			response = await Interactions.send(
-				this.props.botName,
-				interactionsMessage
-			);
+			response = await Interactions.send(this.props.botName, interactionsMessage);
 		} else {
-			response = await Interactions.send(
-				this.props.botName,
-				this.state.inputText
-			);
+			response = await Interactions.send(this.props.botName, this.state.inputText);
 		}
 
 		this.setState(
@@ -254,19 +239,16 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 			const path = `${RNFS.DocumentDirectoryPath}/responseAudio.mp3`;
 			const data = Buffer.from(response.audioStream).toString('base64');
 			await RNFS.writeFile(path, data, 'base64');
-			const speech = new Sound(path, '', async err => {
+			const speech = new Sound(path, '', async (err) => {
 				if (!err) {
 					speech.play(async () => {
 						speech.release();
-						RNFS.exists(path).then(res => {
+						RNFS.exists(path).then((res) => {
 							if (res) {
 								RNFS.unlink(path);
 							}
 						});
-						if (
-							response.dialogState === 'ElicitSlot' &&
-							this.props.conversationModeOn
-						) {
+						if (response.dialogState === 'ElicitSlot' && this.props.conversationModeOn) {
 							await this.startRecognizing();
 						}
 					});
@@ -284,10 +266,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 
 			this.setState(
 				{
-					dialog: [
-						...(!clearOnComplete && this.state.dialog),
-						message && { from: 'bot', message },
-					].filter(Boolean),
+					dialog: [...(!clearOnComplete && this.state.dialog), message && { from: 'bot', message }].filter(Boolean),
 				},
 				() => {
 					setTimeout(() => {
@@ -394,11 +373,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 		const { styles: overrideStyles } = this.props;
 
 		return (
-			<KeyboardAvoidingView
-				style={[styles.container, overrideStyles.container]}
-				behavior="padding"
-				enabled
-			>
+			<KeyboardAvoidingView style={[styles.container, overrideStyles.container]} behavior="padding" enabled>
 				<ScrollView
 					ref={this.listItemsRef}
 					style={[styles.list, overrideStyles.list]}
@@ -412,7 +387,7 @@ export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 					textEnabled={this.props.textEnabled}
 					styles={styles}
 					overrideStyles={overrideStyles}
-					onChangeText={inputText => this.setState({ inputText })}
+					onChangeText={(inputText) => this.setState({ inputText })}
 					inputText={this.state.inputText}
 					onSubmitEditing={this.submit}
 					editable={this.state.inputEditable}
@@ -455,12 +430,7 @@ function ChatBotInputs(props) {
 	}
 
 	if (!voiceEnabled && !textEnabled) {
-		return (
-			<Text>
-				No Chatbot inputs enabled. Set at least one of voiceEnabled or
-				textEnabled in the props.{' '}
-			</Text>
-		);
+		return <Text>No Chatbot inputs enabled. Set at least one of voiceEnabled or textEnabled in the props. </Text>;
 	}
 
 	return (
@@ -552,11 +522,7 @@ function ChatBotMicButton(props) {
 	}
 
 	return (
-		<AmplifyButton
-			onPress={handleMicButton}
-			style={[styles.buttonMic, overrideStyles.buttonMic]}
-			text={micText}
-		/>
+		<AmplifyButton onPress={handleMicButton} style={[styles.buttonMic, overrideStyles.buttonMic]} text={micText} />
 	);
 }
 

@@ -13,12 +13,6 @@ import {
 
 const MAX_DEVICES: number = 60;
 
-jest.mock('crypto-js/sha256', () => {
-	return {
-		default: jest.fn(() => ''),
-	};
-});
-
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
 		clearAll: jest.fn(),
@@ -280,14 +274,7 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import Cache from '@aws-amplify/cache';
-import {
-	Credentials,
-	GoogleOAuth,
-	StorageHelper,
-	ICredentials,
-	Hub,
-} from '@aws-amplify/core';
+import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
@@ -1910,9 +1897,9 @@ describe('auth unit test', () => {
 
 			const spyon2 = jest
 				.spyOn(Credentials, 'refreshFederatedToken')
-				.mockImplementationOnce((() => {
-					return Promise.resolve('cred');
-				}) as any);
+				.mockImplementationOnce(() => {
+					return Promise.resolve('cred' as any);
+				});
 
 			expect.assertions(1);
 			expect(await auth.currentUserCredentials()).toBe('cred');

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "3.0.60",
+  "version": "4.0.0",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/XR.ts",
     "./lib/XR.js",
-    "./lib-esm/XR.js",
-    "./dist/aws-amplify-xr.min.js",
-    "./dist/aws-amplify-xr.js"
+    "./lib-esm/XR.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -28,7 +25,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts'",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json"
   },
   "repository": {
     "type": "git",
@@ -40,8 +38,14 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.7.11"
+    "@aws-amplify/core": "5.0.0",
+    "tslib": "^1.8.0"
   },
   "jest": {
     "globals": {

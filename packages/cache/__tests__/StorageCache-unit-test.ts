@@ -1,5 +1,5 @@
 import { CacheConfig } from '../src/types/Cache';
-import StorageCache from '../src/StorageCache';
+import { StorageCache } from '../src/StorageCache';
 import { defaultConfig } from '../src/Utils';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
