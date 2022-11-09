@@ -18,21 +18,6 @@ import { Auth } from '@aws-amplify/auth';
 import { API } from '@aws-amplify/api';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
-import {
-	ModelPredicateExtender,
-	RecursiveModelPredicateExtender,
-	PredicateInternalsKey,
-	ModelPredicate as V5ModelPredicate,
-	RecursiveModelPredicate as V5RecursiveModelPredicate,
-} from './predicates/next';
-
-export {
-	V5ModelPredicate,
-	V5RecursiveModelPredicate,
-	PredicateInternalsKey,
-	ModelPredicateExtender,
-	RecursiveModelPredicateExtender,
-};
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
@@ -1106,3 +1091,139 @@ export type AmplifyContext = {
 	API: typeof API;
 	Cache: typeof Cache;
 };
+
+// #region V5 predicate types
+
+export type MatchableTypes =
+	| string
+	| string[]
+	| number
+	| number[]
+	| boolean
+	| boolean[];
+
+export type AllFieldOperators = keyof AllOperators;
+
+export type NonNeverKeys<T> = {
+	[K in keyof T]: T[K] extends never ? never : K;
+}[keyof T];
+
+export type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
+
+/**
+ * A function that accepts a RecursiveModelPrecicate<T>, which it must use to
+ * return a final condition.
+ *
+ * This is used in `DataStore.query()`, `DataStore.observe()`, and
+ * `DataStore.observeQuery()` as the second argument. E.g.,
+ *
+ * ```
+ * DataStore.query(MyModel, model => model.field.eq('some value'))
+ * ```
+ *
+ * More complex queries should also be supported. E.g.,
+ *
+ * ```
+ * DataStore.query(MyModel, model => model.and(m => [
+ *   m.relatedEntity.or(relative => [
+ *     relative.relativeField.eq('whatever'),
+ *     relative.relativeField.eq('whatever else')
+ *   ]),
+ *   m.myModelField.ne('something')
+ * ]))
+ * ```
+ */
+export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
+	lambda: RecursiveModelPredicate<RT>
+) => PredicateInternalsKey;
+
+export type RecursiveModelPredicateAggregateExtender<
+	RT extends PersistentModel
+> = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
+
+export type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
+	predicates: RecursiveModelPredicateAggregateExtender<RT>
+) => PredicateInternalsKey;
+
+export type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: RecursiveModelPredicateExtender<RT>
+) => PredicateInternalsKey;
+
+export type RecursiveModelPredicate<RT extends PersistentModel> = {
+	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
+		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
+		: ValuePredicate<RT, RT[K]>;
+} & {
+	or: RecursiveModelPredicateOperator<RT>;
+	and: RecursiveModelPredicateOperator<RT>;
+	not: RecursiveModelPredicateNegation<RT>;
+} & PredicateInternalsKey;
+
+/**
+ * A function that accepts a ModelPrecicate<T>, which it must use to return a
+ * final condition.
+ *
+ * This is used as predicates in `DataStore.save()`, `DataStore.delete()`, and
+ * DataStore sync expressions.
+ *
+ * ```
+ * DataStore.save(record, model => model.field.eq('some value'))
+ * ```
+ *
+ * Logical operators are supported. But, condtiions are related records are
+ * NOT supported. E.g.,
+ *
+ * ```
+ * DataStore.delete(record, model => model.or(m => [
+ * 	m.field.eq('whatever'),
+ * 	m.field.eq('whatever else')
+ * ]))
+ * ```
+ */
+export type ModelPredicateExtender<RT extends PersistentModel> = (
+	lambda: V5ModelPredicate<RT>
+) => PredicateInternalsKey;
+
+export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
+	lambda: V5ModelPredicate<RT>
+) => PredicateInternalsKey[];
+
+export type ValuePredicate<
+	RT extends PersistentModel,
+	MT extends MatchableTypes
+> = {
+	[K in AllFieldOperators]: K extends 'between'
+		? (
+				inclusiveLowerBound: Scalar<MT>,
+				inclusiveUpperBound: Scalar<MT>
+		  ) => PredicateInternalsKey
+		: (operand: Scalar<MT>) => PredicateInternalsKey;
+};
+
+export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
+	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
+		? never
+		: ValuePredicate<RT, RT[K]>;
+}> & {
+	or: ModelPredicateOperator<RT>;
+	and: ModelPredicateOperator<RT>;
+	not: ModelPredicateNegation<RT>;
+} & PredicateInternalsKey;
+
+export type ModelPredicateOperator<RT extends PersistentModel> = (
+	predicates: ModelPredicateAggregateExtender<RT>
+) => PredicateInternalsKey;
+
+export type ModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: ModelPredicateExtender<RT>
+) => PredicateInternalsKey;
+
+/**
+ * A pointer used by DataStore internally to lookup predicate details
+ * that should not be exposed on public customer interfaces.
+ */
+export class PredicateInternalsKey {
+	private __isPredicateInternalsKeySentinel: boolean = true;
+}
+
+// #endregion
