@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "3.14.3",
+	"version": "4.0.0",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -26,7 +26,7 @@
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
 		"lint": "tslint '{__tests__,src}/**/*.ts'",
-		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
 		"type": "git",
@@ -46,13 +46,18 @@
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
-	"files": ["lib", "lib-esm", "src", "ssr"],
+	"files": [
+		"lib",
+		"lib-esm",
+		"src",
+		"ssr"
+	],
 	"dependencies": {
-		"@aws-amplify/api": "4.0.60",
-		"@aws-amplify/auth": "4.6.13",
-		"@aws-amplify/core": "4.7.11",
-		"@aws-amplify/pubsub": "4.5.10",
-		"amazon-cognito-identity-js": "5.2.12",
+		"@aws-amplify/api": "5.0.0",
+		"@aws-amplify/auth": "5.0.0",
+		"@aws-amplify/core": "5.0.0",
+		"@aws-amplify/pubsub": "5.0.0",
+		"amazon-cognito-identity-js": "6.0.0",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
 		"ulid": "2.3.0",
