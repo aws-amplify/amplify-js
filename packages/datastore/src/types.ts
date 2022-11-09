@@ -20,9 +20,19 @@ import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 import {
 	ModelPredicateExtender,
+	RecursiveModelPredicateExtender,
 	PredicateInternalsKey,
 	ModelPredicate as V5ModelPredicate,
+	RecursiveModelPredicate as V5RecursiveModelPredicate,
 } from './predicates/next';
+
+export {
+	V5ModelPredicate,
+	V5RecursiveModelPredicate,
+	PredicateInternalsKey,
+	ModelPredicateExtender,
+	RecursiveModelPredicateExtender,
+};
 
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
