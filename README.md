@@ -100,10 +100,10 @@ To get started pick your platform from our [**Getting Started** home page](https
 
   - ```diff
     - const photos = await Storage.list('photos/', { maxKeys: 100 });
-    - const key = photos[0];
+    - const { key } = photos[0];
 
     + const photos = await Storage.list('photos/', { pageSize: 100 });
-    + const key = photos.results[0];
+    + const { key } = photos.results[0];
     ```
 
 - `Analytics.record` no longer supports passing a string only as input. For example:
