@@ -14,6 +14,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
+- Storage/pagination for storage list api ([#10199](https://github.com/aws-amplify/amplify-js/pull/10199))
 - Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
 - Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
 - Expand \* exports to optimize tree-shaking ([#10555](https://github.com/aws-amplify/amplify-js/pull/10555))
