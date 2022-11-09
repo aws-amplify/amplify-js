@@ -69,26 +69,26 @@ To get started pick your platform from our [**Getting Started** home page](https
 
 - If you are using **default exports** from any Amplify package, then you will need to migrate to using named exports. For example:
 
-  - ```diff
-    - import Amplify from 'aws-amplify';
-    + import { Amplify } from 'aws-amplify'
+  ```diff
+  - import Amplify from 'aws-amplify';
+  + import { Amplify } from 'aws-amplify'
 
-    - import Analytics from '@aws-amplify/analytics';
-    + import { Analytics } from '@aws-amplify/analytics';
+  - import Analytics from '@aws-amplify/analytics';
+  + import { Analytics } from '@aws-amplify/analytics';
 
-    - import Storage from '@aws-amplify/storage';
-    + import { Storage } from '@aws-amplify/storage';
-    ```
+  - import Storage from '@aws-amplify/storage';
+  + import { Storage } from '@aws-amplify/storage';
+  ```
 
 - Datastore predicate syntax has changed, impacting the `DataStore.query`, `DataStore.save`, `DataStore.delete`, and `DataStore.observe` interfaces. For example:
 
-  - ```diff
-    - await DataStore.delete(Post, (post) => post.status('eq', PostStatus.INACTIVE));
-    + await DataStore.delete(Post, (post) => post.status.eq(PostStatus.INACTIVE));
+  ```diff
+  - await DataStore.delete(Post, (post) => post.status('eq', PostStatus.INACTIVE));
+  + await DataStore.delete(Post, (post) => post.status.eq(PostStatus.INACTIVE));
 
-    - await DataStore.query(Post, p => p.and( p => [p.title('eq', 'Amplify Getting Started Guide'), p.score('gt', 8)]));
-    + await DataStore.query(Post, p => p.and( p => [p.title.eq('Amplify Getting Started Guide'), p.score.gt(8)]));
-    ```
+  - await DataStore.query(Post, p => p.and( p => [p.title('eq', 'Amplify Getting Started Guide'), p.score('gt', 8)]));
+  + await DataStore.query(Post, p => p.and( p => [p.title.eq('Amplify Getting Started Guide'), p.score.gt(8)]));
+  ```
 
   - To use the new syntax with 5.x.x you may need to rebuild your Datastore models with the latest version of Amplify codegen. To do this:
     - [Upgrade the Amplify CLI](https://docs.amplify.aws/cli/start/workflows/#upgrade-amplify-cli)
@@ -98,52 +98,52 @@ To get started pick your platform from our [**Getting Started** home page](https
 
 - `Storage.list` has changed the name of the `maxKeys` parameter to `pageSize` and has a new return type that contains the results list. For example:
 
-  - ```diff
-    - const photos = await Storage.list('photos/', { maxKeys: 100 });
-    - const { key } = photos[0];
+  ```diff
+  - const photos = await Storage.list('photos/', { maxKeys: 100 });
+  - const { key } = photos[0];
 
-    + const photos = await Storage.list('photos/', { pageSize: 100 });
-    + const { key } = photos.results[0];
-    ```
+  + const photos = await Storage.list('photos/', { pageSize: 100 });
+  + const { key } = photos.results[0];
+  ```
 
 - `Storage.put` with resumable turned on has changed the key to no longer include the bucket name. For example:
 
-  - ```diff
-    - let uploadedObjectKey;
-    - Storage.put(file.name, file, {
-    -   resumable: true,
-    -   // Necessary to parse the bucket name out to work with the key
-    -   completeCallback: (obj) => uploadedObjectKey = obj.key.substring( obj.key.indexOf("/") + 1 )
-    - }
+  ```diff
+  - let uploadedObjectKey;
+  - Storage.put(file.name, file, {
+  -   resumable: true,
+  -   // Necessary to parse the bucket name out to work with the key
+  -   completeCallback: (obj) => uploadedObjectKey = obj.key.substring( obj.key.indexOf("/") + 1 )
+  - }
 
-    + let uploadedObjectKey;
-    + Storage.put(file.name, file, {
-    +   resumable: true,
-    +   completeCallback: (obj) => uploadedObjectKey = obj.key
-    + }
-    ```
+  + let uploadedObjectKey;
+  + Storage.put(file.name, file, {
+  +   resumable: true,
+  +   completeCallback: (obj) => uploadedObjectKey = obj.key
+  + }
+  ```
 
 - `Analytics.record` no longer supports passing a string only as input. For example:
 
-  - ```diff
-    - Analytics.record('my example event');
-    + Analytics.record( { name: 'my example event' });
-    ```
+  ```diff
+  - Analytics.record('my example event');
+  + Analytics.record( { name: 'my example event' });
+  ```
 
 - The `JS` export has been removed from `@aws-amplify/core` in favor the exporting the functions it contained.
 - Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported, instead use the named exports. For example:
 
-  - ```diff
-    - import { Amplify } from 'aws-amplify';
-    - Amplify.configure(...);
-    - // ...
-    - Amplify.Auth.signIn(...);
+  ```diff
+  - import { Amplify } from 'aws-amplify';
+  - Amplify.configure(...);
+  - // ...
+  - Amplify.Auth.signIn(...);
 
-    + import { Amplify, Auth } from 'aws-amplify';
-    + Amplify.configure(...);
-    + // ...
-    + Auth.signIn(...);
-    ```
+  + import { Amplify, Auth } from 'aws-amplify';
+  + Amplify.configure(...);
+  + // ...
+  + Auth.signIn(...);
+  ```
 
 ### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
 
