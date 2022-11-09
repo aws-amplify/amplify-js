@@ -5,14 +5,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [5.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.9...@aws-amplify/interactions@5.0.0) (2022-11-09)
 
-### Bug Fixes
-
-- Lower `tslib` version to improve dependency flattening ([#10588](https://github.com/aws-amplify/amplify-js/issues/10588)) ([a48a17b](https://github.com/aws-amplify/amplify-js/commit/a48a17b1b6adaf09305e338869129b4f7c380fc9))
-- Restore `tslib` dependencies for v5 ([#10512](https://github.com/aws-amplify/amplify-js/issues/10512)) ([b631360](https://github.com/aws-amplify/amplify-js/commit/b6313600557e822f76ddaee8d571d17aa534874c))
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
-
 ### Features
 
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- Expand \* exports to optimize tree-shaking ([#10555](https://github.com/aws-amplify/amplify-js/pull/10555))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 
 ## [4.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.1.7...@aws-amplify/interactions@4.1.8) (2022-10-27)

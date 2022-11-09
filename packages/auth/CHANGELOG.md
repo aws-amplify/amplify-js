@@ -7,18 +7,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
-- **auth:** race condision when signInUserSession was skipped ([771adf9](https://github.com/aws-amplify/amplify-js/commit/771adf9bbd81a458ccf351c244629b17e10d0947))
-- **auth:** revert session debouncer ([#10630](https://github.com/aws-amplify/amplify-js/issues/10630)) ([ad6b5c5](https://github.com/aws-amplify/amplify-js/commit/ad6b5c57e09c55e4a09f48f3140d83a9b3253cba)), closes [#10624](https://github.com/aws-amplify/amplify-js/issues/10624) [#10553](https://github.com/aws-amplify/amplify-js/issues/10553)
-- Lower `tslib` version to improve dependency flattening ([#10588](https://github.com/aws-amplify/amplify-js/issues/10588)) ([a48a17b](https://github.com/aws-amplify/amplify-js/commit/a48a17b1b6adaf09305e338869129b4f7c380fc9))
-- remove session test ([10fa350](https://github.com/aws-amplify/amplify-js/commit/10fa35015ac0e57d8239ca4b3aae8beee5f3ae9e))
-- Restore `tslib` dependencies for v5 ([#10512](https://github.com/aws-amplify/amplify-js/issues/10512)) ([b631360](https://github.com/aws-amplify/amplify-js/commit/b6313600557e822f76ddaee8d571d17aa534874c))
+- Move cache sideEffects to align with other packages ([#10562](https://github.com/aws-amplify/amplify-js/pull/10562))
 - Standardize `cache` named export to preserve interoperability with RN ([#10546](https://github.com/aws-amplify/amplify-js/issues/10546)) ([20b096b](https://github.com/aws-amplify/amplify-js/commit/20b096b1a34e6a102d08dabcedb38772f3a6caf7))
-- unintended commit ([165b1bf](https://github.com/aws-amplify/amplify-js/commit/165b1bf56ba3ebf52f1a7ad71d100b32553f59cc))
-- **auth:** session debouncer loads empty signinUserSession ([0ec16d6](https://github.com/aws-amplify/amplify-js/commit/0ec16d6895a3b30d1daa2841d4654480345eac2a))
 
 ### Features
 
+- debouncing get user session calls ([#10553](https://github.com/aws-amplify/amplify-js/pull/10553))
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Migrate auth and amazon-cognito-identity-js to use @aws-crypto/sha256-js ([#10523](https://github.com/aws-amplify/amplify-js/pull/10523))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
 - **@aws-amplify/auth:** remove crypto-js dependency ([#10591](https://github.com/aws-amplify/amplify-js/issues/10591)) ([daa4a98](https://github.com/aws-amplify/amplify-js/commit/daa4a983242fe2986991f4b9351de2d0a114915e))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 

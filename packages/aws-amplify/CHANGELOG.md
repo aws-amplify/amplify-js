@@ -7,14 +7,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
 - **aws-amplify:** Fix remove side effect ([#10611](https://github.com/aws-amplify/amplify-js/issues/10611)) ([f8162de](https://github.com/aws-amplify/amplify-js/commit/f8162de66e40f523e4481ce5bfcd3ca7ba80cc09))
 - Re-add notifications to aws-amplify deps ([#10541](https://github.com/aws-amplify/amplify-js/issues/10541)) ([488118e](https://github.com/aws-amplify/amplify-js/commit/488118e281573783dfa627ead1c879da8f2cda68))
-- Restore `tslib` dependencies for v5 ([#10512](https://github.com/aws-amplify/amplify-js/issues/10512)) ([b631360](https://github.com/aws-amplify/amplify-js/commit/b6313600557e822f76ddaee8d571d17aa534874c))
 - Standardize `cache` named export to preserve interoperability with RN ([#10546](https://github.com/aws-amplify/amplify-js/issues/10546)) ([20b096b](https://github.com/aws-amplify/amplify-js/commit/20b096b1a34e6a102d08dabcedb38772f3a6caf7))
 
 ### Features
 
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Remove legacy UI packages ([#10433](https://github.com/aws-amplify/amplify-js/pull/10433))
+- Remove miscellaneous deprecated exports & prototypes ([#10528](https://github.com/aws-amplify/amplify-js/pull/10528))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- Remove deprecated UI package dependency ([#10604](https://github.com/aws-amplify/amplify-js/pull/10604))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 
 ## [4.3.42](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.41...aws-amplify@4.3.42) (2022-10-27)

@@ -7,15 +7,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
 - **storage:** Storage.list receives nextToken to align with API ([#10626](https://github.com/aws-amplify/amplify-js/issues/10626)) ([b518d62](https://github.com/aws-amplify/amplify-js/commit/b518d6247386b84b8eebe7225bd4ea0292d8301d))
 - Consolidating naming to avoid unnecessary extra exports ([8df5428](https://github.com/aws-amplify/amplify-js/commit/8df54281a59547d59dc4eec39b778aec7763544e))
 - **storage:** Fix storage api to have correct typing of .list response ([ca23e5e](https://github.com/aws-amplify/amplify-js/commit/ca23e5e4158067a909c26e47c1c415a7fcaf4db3))
-- Lower `tslib` version to improve dependency flattening ([#10588](https://github.com/aws-amplify/amplify-js/issues/10588)) ([a48a17b](https://github.com/aws-amplify/amplify-js/commit/a48a17b1b6adaf09305e338869129b4f7c380fc9))
 - **storage:** Optimized storage category `sideEffects` to improve shake-ability ([#10375](https://github.com/aws-amplify/amplify-js/issues/10375)) ([58014c5](https://github.com/aws-amplify/amplify-js/commit/58014c51722b3af246a19e437d34de171dcff64c))
 
 ### Features
 
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- Expand \* exports to optimize tree-shaking ([#10555](https://github.com/aws-amplify/amplify-js/pull/10555))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 - **storage:** updating naming for consistency across libraries ([#10414](https://github.com/aws-amplify/amplify-js/issues/10414)) ([85c682a](https://github.com/aws-amplify/amplify-js/commit/85c682acd5d8b615f9d8934e426b0000009f7cda))
 

@@ -5,12 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [6.0.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.12...amazon-cognito-identity-js@6.0.0) (2022-11-09)
 
-### Bug Fixes
-
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
-
 ### Features
 
+- Migrate auth and amazon-cognito-identity-js to use @aws-crypto/sha256-js ([#10523](https://github.com/aws-amplify/amplify-js/pull/10523))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 
 ## [5.2.12](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.11...amazon-cognito-identity-js@5.2.12) (2022-10-25)

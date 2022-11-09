@@ -7,15 +7,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-- Lower `tslib` version to improve dependency flattening ([#10588](https://github.com/aws-amplify/amplify-js/issues/10588)) ([a48a17b](https://github.com/aws-amplify/amplify-js/commit/a48a17b1b6adaf09305e338869129b4f7c380fc9))
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
 - Standardize `cache` named export to preserve interoperability with RN ([#10546](https://github.com/aws-amplify/amplify-js/issues/10546)) ([20b096b](https://github.com/aws-amplify/amplify-js/commit/20b096b1a34e6a102d08dabcedb38772f3a6caf7))
 - **pubsub:** surface graphql connection failure error to observers ([04f5160](https://github.com/aws-amplify/amplify-js/commit/04f51603f52964d09b63eb3c8b5035671340ea69))
 
 ### Features
 
-- add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 - **pubsub:** Automated reconnect for IoT and API ([#10235](https://github.com/aws-amplify/amplify-js/issues/10235)) ([a677cd8](https://github.com/aws-amplify/amplify-js/commit/a677cd85cd60665fb1660e66aebf7eb230c4dfca))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 
 ## [4.5.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.5.9...@aws-amplify/pubsub@4.5.10) (2022-10-27)
 

@@ -8,10 +8,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 - Remove `files` list from `aws-amplify-react-native` ([#10620](https://github.com/aws-amplify/amplify-js/issues/10620)) ([4db6725](https://github.com/aws-amplify/amplify-js/commit/4db67254dacfdfa2b380db6a24777acda7cae4d7))
-- Rollback the manual major version changes and change release command to increment the major versions ([#10638](https://github.com/aws-amplify/amplify-js/issues/10638)) ([660e5d9](https://github.com/aws-amplify/amplify-js/commit/660e5d9e7f18c514dc3c88322a1df6b5d5a5e796))
 
 ### Features
 
+- Expand \* exports to optimize tree-shaking ([#10555](https://github.com/aws-amplify/amplify-js/pull/10555))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
 - add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
 
 ## [6.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.5...aws-amplify-react-native@6.0.8) (2022-10-27)
