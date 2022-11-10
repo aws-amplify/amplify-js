@@ -29,6 +29,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
+    "@react-native-community/push-notification-ios": "^1.0.3",
     "@types/jest": "^20.0.8",
     "@types/node": "^8.10.15",
     "awesome-typescript-loader": "^3.2.2",
@@ -52,8 +53,10 @@
     "android"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.0",
-    "@react-native-community/push-notification-ios": "1.0.3"
+    "@aws-amplify/core": "5.0.0"
+  },
+  "peerDependencies": {
+    "@react-native-community/push-notification-ios": "^1.0.3"
   },
   "jest": {
     "globals": {
