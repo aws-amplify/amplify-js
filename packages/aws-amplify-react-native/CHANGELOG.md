@@ -3,76 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.8...aws-amplify-react-native@7.0.0) (2022-11-09)
+
+### Bug Fixes
+
+- Remove `files` list from `aws-amplify-react-native` ([#10620](https://github.com/aws-amplify/amplify-js/issues/10620)) ([4db6725](https://github.com/aws-amplify/amplify-js/commit/4db67254dacfdfa2b380db6a24777acda7cae4d7))
+
+### Features
+
+- Expand \* exports to optimize tree-shaking ([#10555](https://github.com/aws-amplify/amplify-js/pull/10555))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
+
 ## [6.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.5...aws-amplify-react-native@6.0.8) (2022-10-27)
 
 **Note:** Version bump only for package aws-amplify-react-native
 
-
-
-
-
 ## [6.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.4...aws-amplify-react-native@6.0.5) (2022-06-15)
-
 
 ### Bug Fixes
 
-* **aws-amplify-react-native:** set Resend Code enabled/disabled from current username value ([#9767](https://github.com/aws-amplify/amplify-js/issues/9767)) ([94813a9](https://github.com/aws-amplify/amplify-js/commit/94813a9b364f9d13c72da38c0c13aefbe52157d7))
-
-
-
-
+- **aws-amplify-react-native:** set Resend Code enabled/disabled from current username value ([#9767](https://github.com/aws-amplify/amplify-js/issues/9767)) ([94813a9](https://github.com/aws-amplify/amplify-js/commit/94813a9b364f9d13c72da38c0c13aefbe52157d7))
 
 ## [6.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.3...aws-amplify-react-native@6.0.4) (2022-03-28)
 
-
 ### Bug Fixes
 
-* **withAuthenticator:** RN Set default usernameAttributes to username and autofill the username in ConfirmSignUp Page. ([#9723](https://github.com/aws-amplify/amplify-js/issues/9723)) ([4ce84c7](https://github.com/aws-amplify/amplify-js/commit/4ce84c7dc04c4489804f9bba2b47b391dfba3b1b))
-
-
-
-
+- **withAuthenticator:** RN Set default usernameAttributes to username and autofill the username in ConfirmSignUp Page. ([#9723](https://github.com/aws-amplify/amplify-js/issues/9723)) ([4ce84c7](https://github.com/aws-amplify/amplify-js/commit/4ce84c7dc04c4489804f9bba2b47b391dfba3b1b))
 
 ## [6.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.2...aws-amplify-react-native@6.0.3) (2022-02-28)
 
-
 ### Bug Fixes
 
-* **aws-amplify-react-native:** Add linkUnderlay to theme object so it can be overridden ([#9446](https://github.com/aws-amplify/amplify-js/issues/9446)) ([#9650](https://github.com/aws-amplify/amplify-js/issues/9650)) ([8cdb8be](https://github.com/aws-amplify/amplify-js/commit/8cdb8bede75697443f16dae6bb6bd6c4b9e36712))
-
-
-
-
+- **aws-amplify-react-native:** Add linkUnderlay to theme object so it can be overridden ([#9446](https://github.com/aws-amplify/amplify-js/issues/9446)) ([#9650](https://github.com/aws-amplify/amplify-js/issues/9650)) ([8cdb8be](https://github.com/aws-amplify/amplify-js/commit/8cdb8bede75697443f16dae6bb6bd6c4b9e36712))
 
 ## [6.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@6.0.1...aws-amplify-react-native@6.0.2) (2021-12-16)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/aws-amplify-react-native:** fix dev build for Windows ([#9341](https://github.com/aws-amplify/amplify-js/issues/9341)) ([5c8496f](https://github.com/aws-amplify/amplify-js/commit/5c8496fe8b448f19ebba8911e8f1c3d498b9ade7))
-
-
-
-
+- **@aws-amplify/aws-amplify-react-native:** fix dev build for Windows ([#9341](https://github.com/aws-amplify/amplify-js/issues/9341)) ([5c8496f](https://github.com/aws-amplify/amplify-js/commit/5c8496fe8b448f19ebba8911e8f1c3d498b9ade7))
 
 ## [6.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.5...aws-amplify-react-native@6.0.1) (2021-11-12)
 
-
 ### Bug Fixes
 
-* **aws-amplify-react-native:** migrate to community picker ([#9158](https://github.com/aws-amplify/amplify-js/issues/9158)) ([55ce697](https://github.com/aws-amplify/amplify-js/commit/55ce69707007c4afc23b58c037317cf7dee44703))
-
-
-
-
+- **aws-amplify-react-native:** migrate to community picker ([#9158](https://github.com/aws-amplify/amplify-js/issues/9158)) ([55ce697](https://github.com/aws-amplify/amplify-js/commit/55ce69707007c4afc23b58c037317cf7dee44703))
 
 ## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.4...aws-amplify-react-native@5.0.5) (2021-10-28)
 
 **Note:** Version bump only for package aws-amplify-react-native
-
-
-
-
 
 ## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.3...aws-amplify-react-native@5.0.4) (2021-10-21)
 
