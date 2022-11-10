@@ -1800,10 +1800,10 @@ workflows:
             <<: *releasable_branches
       - integ_react_datastore_selective_sync:
           requires:
-              - integ_setup
-              - build
-            filters:
-              <<: *releasable_branches
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
 
       - deploy:
           filters:
