@@ -65,7 +65,7 @@ declare class BlogModel {
 	): BlogModel;
 }
 
-initSchema(schema) as {
+const { Blog } = initSchema(schema) as {
 	Blog: PersistentModelConstructor<BlogModel>;
 };
 
@@ -74,6 +74,9 @@ describe('DB versions migration with destructive schema change', () => {
 		await DataStore.clear();
 	});
 
+	/* 
+		Note: ensure fake-idb/Dexie data isolation if adding additional tests
+	*/
 	test(`Migration from v1 to v${DB_VERSION}`, async () => {
 		const v1Data = require('./v1schema.data.json');
 
@@ -87,10 +90,18 @@ describe('DB versions migration with destructive schema change', () => {
 		// Migrate to latest
 		await DataStore.start();
 
+		const blogRes = await DataStore.query(Blog);
+		const expectedCount = v1Data.data.tables.find(
+			t => t.name === 'user_Blog'
+		).rowCount;
+
+		expect(blogRes.length).toEqual(expectedCount);
+
 		// Open latest
 		db = await idb.openDB('amplify-datastore', DB_VERSION);
 
-		expect(db.objectStoreNames.length).toBeGreaterThan(0);
+		// 3 internal stores + 1 user store, user_Blog
+		expect(db.objectStoreNames.length).toBe(4);
 
 		for (const storeName of db.objectStoreNames) {
 			expect(db.transaction(storeName).store.indexNames).toContain('byPk');
