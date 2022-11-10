@@ -75,9 +75,13 @@ To get started pick your platform from our [**Getting Started** home page](https
 
   - import Analytics from '@aws-amplify/analytics';
   + import { Analytics } from '@aws-amplify/analytics';
+  // or better
+  + import { Analytics } from 'aws-amplify';
 
   - import Storage from '@aws-amplify/storage';
   + import { Storage } from '@aws-amplify/storage';
+  // or better
+  + import { Storage } from 'aws-amplify';
   ```
 
 - Datastore predicate syntax has changed, impacting the `DataStore.query`, `DataStore.save`, `DataStore.delete`, and `DataStore.observe` interfaces. For example:
