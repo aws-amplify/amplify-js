@@ -69,9 +69,8 @@ export class AmazonCognitoProvider implements AuthProvider {
 	static providerName = 'AmazonCognito';
 
 	private _config: AuthOptions;
-	private userPool;
 	private client: CognitoIdentityProviderClient;
-	private _storage;
+	private _storage: any;
 	private autoSignInInitiated = false;
 
 	constructor(config?) {
@@ -97,51 +96,37 @@ export class AmazonCognitoProvider implements AuthProvider {
 			this.rejectAuthError(authErrorMessages.emptyPassword);
 		}
 
-		let attributes: AttributeType[];
-		let validationData: AttributeType[];
-		let clientMetaData: Record<string, string>;
-		let autoSignIn: AutoSignInOptions = { enabled: false };
-		let autoSignInClientMetaData: ClientMetaData = {};
-
 		let signUpCommandInput: SignUpCommandInput = {
 			ClientId: clientId,
 			Username: username,
 			Password: password,
 		};
 
+		let autoSignIn: AutoSignInOptions = { enabled: false };
+		let autoSignInClientMetaData: ClientMetaData = {};
+
 		if (req.options?.userAttributes) {
-			const userAttributesArray = req.options.userAttributes;
-			attributes = [];
-			userAttributesArray.forEach(obj => {
-				attributes.push({
-					Name: obj.userAttributeKey,
-					Value: obj.value
-				})
-			});
-			signUpCommandInput.UserAttributes = attributes;
+			signUpCommandInput.UserAttributes = req.options.userAttributes.map(obj => ({
+				Name: obj.userAttributeKey,
+				Value: obj.value
+			}))
 		}
 
 		if (req.options?.pluginOptions) {
 			const pluginOptions = req.options.pluginOptions;
 			const validationDataObject:ValidationData = pluginOptions['ValidationData'];
-			if (validationDataObject) {
-				validationData = [];
-				Object.keys(validationDataObject).map(key => {
-					validationData.push({
-						Name: key,
-						Value: validationDataObject[key]
-					})
-				});
-				signUpCommandInput.ValidationData = validationData;
-			}
-			clientMetaData = pluginOptions['clientMetaData'];
+			signUpCommandInput.ValidationData = Object.entries(validationDataObject).map(([key, value]) => ({
+				Name: key,
+				Value: value
+			}));
+
+			const clientMetaData: Record<string, string> = pluginOptions['clientMetaData'];
 			if (clientMetaData) {
 				signUpCommandInput.ClientMetadata = clientMetaData;
 			}
 		}
 
-		autoSignIn = req.options?.autoSignIn ?? { enabled: false };
-		if (autoSignIn.enabled) {
+		if (req.options?.autoSignIn) {
 			this._storage.setItem('amplify-auto-sign-in', 'true');
 			autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 		}
