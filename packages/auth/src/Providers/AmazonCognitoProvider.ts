@@ -79,7 +79,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		this.client = new CognitoIdentityProviderClient({ region: config.region });
 	}
 
-	signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
+	async signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		if (!this._config?.userPoolId) {
 			this.rejectNoUserPool();
 		}
@@ -131,65 +131,59 @@ export class AmazonCognitoProvider implements AuthProvider {
 			autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 		}
 
-		const signUpCommand = new SignUpCommand(signUpCommandInput)
+		const signUpCommand = new SignUpCommand(signUpCommandInput);
 
-		return new Promise((resolve, reject) => {
-			this.client.send(
-				signUpCommand,
-				(err, data) => {
-					if (err) {
-						dispatchAuthEvent(
-							AuthHubEvent.SIGN_UP_FAILURE,
-							err,
-							`${username} failed to sign-up`
-						);
-						reject(err)
-					} else {
-						let result: AuthSignUpResult<CognitoUserAttributeKey>;
-						if (data?.UserConfirmed) {
-							result = {
-								isSignUpComplete: true,
-								nextStep: {
-									signUpStep: AuthSignUpStep.DONE
-								}
-							}
-							dispatchAuthEvent(
-								AuthHubEvent.SIGN_UP,
-								{
-									response: result,
-									user: null
-								},
-								`${username} has signed up successfully`
-							);
-						} else {
-							result = {
-								isSignUpComplete: false,
-								nextStep: {
-									signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-									codeDeliveryDetails: {
-										deliveryMedium: data?.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
-										destination: data?.CodeDeliveryDetails?.Destination as string,
-										attributeName: data?.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
-									}
-								}
-							}
-							dispatchAuthEvent(
-								AuthHubEvent.SIGN_UP,
-								{
-									response: result,
-									user: null
-								},
-								`${username} has signed up successfully`
-							);
+		try {
+			const signUpCommandOutput = await this.client.send(signUpCommand);
+			let result: AuthSignUpResult<CognitoUserAttributeKey>;
+			if (signUpCommandOutput.UserConfirmed) {
+				result = {
+					isSignUpComplete: true,
+						nextStep: {
+							signUpStep: AuthSignUpStep.DONE
 						}
-						if (autoSignIn.enabled) {
-							this.handleAutoSignIn(username, password, clientId, autoSignInClientMetaData, result);
+				}
+				dispatchAuthEvent(
+					AuthHubEvent.SIGN_UP,
+					{
+						response: result,
+						user: null
+					},
+					`${username} has signed up successfully`
+				);
+			} else {
+				result = {
+					isSignUpComplete: false,
+					nextStep: {
+						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+						codeDeliveryDetails: {
+							deliveryMedium: signUpCommandOutput.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+							destination: signUpCommandOutput.CodeDeliveryDetails?.Destination as string,
+							attributeName: signUpCommandOutput.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
 						}
-						resolve(result)
 					}
 				}
-			)
-		})
+				dispatchAuthEvent(
+					AuthHubEvent.SIGN_UP,
+					{
+						response: result,
+						user: null
+					},
+					`${username} has signed up successfully`
+				);
+			}
+			if (autoSignIn.enabled) {
+				this.handleAutoSignIn(username, password, clientId, autoSignInClientMetaData, result);
+			}
+			return result;
+		} catch (error) {
+			dispatchAuthEvent(
+				AuthHubEvent.SIGN_UP_FAILURE,
+				error,
+				`${username} failed to sign-up`
+			);
+			return error;
+		}
 	}
 
 	private handleAutoSignIn<UserAttributeKey extends AuthUserAttributeKey>(
