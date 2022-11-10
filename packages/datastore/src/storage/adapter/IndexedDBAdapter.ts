@@ -182,6 +182,16 @@ class IndexedDBAdapter implements Adapter {
 									const { namespaceName, modelName } =
 										this.getNamespaceAndModelFromStorename(storeName);
 
+									const storeExists = !!Object.values(
+										this.schema.namespaces[namespaceName].models
+									)?.find(m => m.name === modelName);
+
+									if (!storeExists) {
+										// delete original
+										db.deleteObjectStore(tmpName);
+										continue;
+									}
+
 									const newStore = this.createObjectStoreForModel(
 										db,
 										namespaceName,
