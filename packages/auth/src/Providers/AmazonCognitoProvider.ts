@@ -84,7 +84,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 			this.rejectNoUserPool();
 		}
 
-		const clientId = this._config.userPoolId ?? "";
+		const clientId = this._config.userPoolId ?? '';
 		const username: string = req.username;
 		const password: string = req.password;
 
@@ -101,9 +101,6 @@ export class AmazonCognitoProvider implements AuthProvider {
 			Username: username,
 			Password: password,
 		};
-
-		let autoSignIn: AutoSignInOptions = { enabled: false };
-		let autoSignInClientMetaData: ClientMetaData = {};
 
 		if (req.options?.userAttributes) {
 			signUpCommandInput.UserAttributes = req.options.userAttributes.map(obj => ({
@@ -126,7 +123,11 @@ export class AmazonCognitoProvider implements AuthProvider {
 			}
 		}
 
-		if (req.options?.autoSignIn) {
+		let autoSignIn: AutoSignInOptions = { enabled: false };
+		let autoSignInClientMetaData: ClientMetaData = {};
+
+		if (req.options?.autoSignIn?.enabled) {
+			autoSignIn = req.options.autoSignIn;
 			this._storage.setItem('amplify-auto-sign-in', 'true');
 			autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 		}
@@ -186,7 +187,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		}
 	}
 
-	private handleAutoSignIn<UserAttributeKey extends AuthUserAttributeKey>(
+	private async handleAutoSignIn<UserAttributeKey extends AuthUserAttributeKey>(
 		username: string,
 		password: string,
 		clientId: string,
@@ -205,11 +206,11 @@ export class AmazonCognitoProvider implements AuthProvider {
 		});
 
 		if (signUpResult.isSignUpComplete) {
-			this.signInAfterUserConfirmed(initiateAuthCommand, username);
+			await this.signInAfterUserConfirmed(initiateAuthCommand, username);
 		} else if (this._config.signUpVerificationMethod === 'link') {
-			this.handleLinkAutoSignIn(initiateAuthCommand, username);
+			await this.handleLinkAutoSignIn(initiateAuthCommand, username);
 		} else {
-			this.handleCodeAutoSignIn(initiateAuthCommand, username);
+			await this.handleCodeAutoSignIn(initiateAuthCommand, username);
 		}
 
 	}
@@ -217,7 +218,6 @@ export class AmazonCognitoProvider implements AuthProvider {
 	private async signInAfterUserConfirmed<UserAttributeKey extends AuthUserAttributeKey>(
 		initiateAuthCommand: InitiateAuthCommand,
 		username: string,
-		hubListenerRemoveToken?: () => void,
 		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
 	) {
 		try {
@@ -232,7 +232,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 					}
 				}
 			} else {
-				const challengeName = result.ChallengeName ?? "";
+				const challengeName = result.ChallengeName ?? '';
 				authSignInResult = {
 					isSignedIn: false,
 					nextStep: {
@@ -249,10 +249,6 @@ export class AmazonCognitoProvider implements AuthProvider {
 				},
 				`${username} has signed in successfully`
 			)
-
-			if (hubListenerRemoveToken) {
-				hubListenerRemoveToken();
-			}
 
 			if (autoSignInPollingIntervalId) {
 				clearInterval(autoSignInPollingIntervalId);
@@ -278,15 +274,17 @@ export class AmazonCognitoProvider implements AuthProvider {
 					'autoSignIn has failed'
 				)
 			} else {
-				this.signInAfterUserConfirmed(initiateAuthCommand, username, undefined, autoSignInPollingIntervalId);
+				this.signInAfterUserConfirmed(initiateAuthCommand, username, autoSignInPollingIntervalId);
 			}
 		}, 5000);
+
 	}
 
 	private handleCodeAutoSignIn(initiateAuthCommand: InitiateAuthCommand, username: string) {
-		const hubListenerCancelToken = Hub.listen('auth', ({ payload }) => {
+		const hubListenerCancelToken = Hub.listen('auth', async ({ payload }) => {
 			if (payload.event === 'confirmSignUp') {
-				this.signInAfterUserConfirmed(initiateAuthCommand, username, hubListenerCancelToken);
+				await this.signInAfterUserConfirmed(initiateAuthCommand, username);
+				hubListenerCancelToken();
 			}
 		})
 	}
