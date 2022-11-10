@@ -117,4 +117,4 @@ export type ErrorInterface = {
 	message: string;
 	underlyingException?: Error;
 	recoverySuggestion?: string;
-}
+};

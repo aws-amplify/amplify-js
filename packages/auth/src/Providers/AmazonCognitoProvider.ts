@@ -96,7 +96,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 			this.rejectAuthError(authErrorMessages.emptyPassword);
 		}
 
-		let signUpCommandInput: SignUpCommandInput = {
+		const signUpCommandInput: SignUpCommandInput = {
 			ClientId: clientId,
 			Username: username,
 			Password: password,
@@ -106,7 +106,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 			signUpCommandInput.UserAttributes = req.options.userAttributes.map(obj => ({
 				Name: obj.userAttributeKey,
 				Value: obj.value
-			}))
+			}));
 		}
 
 		if (req.options?.pluginOptions) {
@@ -143,7 +143,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 						nextStep: {
 							signUpStep: AuthSignUpStep.DONE
 						}
-				}
+				};
 				dispatchAuthEvent(
 					AuthHubEvent.SIGN_UP,
 					{
@@ -163,7 +163,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 							attributeName: signUpCommandOutput.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
 						}
 					}
-				}
+				};
 				dispatchAuthEvent(
 					AuthHubEvent.SIGN_UP,
 					{
@@ -230,7 +230,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 					nextStep: {
 						signInStep: AuthSignInStep.DONE
 					}
-				}
+				};
 			} else {
 				const challengeName = result.ChallengeName ?? '';
 				authSignInResult = {
@@ -238,7 +238,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 					nextStep: {
 						signInStep: this.mapChallengeNames(challengeName)
 					}
-				}
+				};
 			}
 
 			dispatchAuthEvent(
@@ -248,7 +248,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 					user: null
 				},
 				`${username} has signed in successfully`
-			)
+			);
 
 			if (autoSignInPollingIntervalId) {
 				clearInterval(autoSignInPollingIntervalId);
@@ -272,7 +272,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 					AuthHubEvent.AUTO_SIGN_IN_FAILURE,
 					new AuthError({message: authErrorMessages.autoSignInError.message}),
 					'autoSignIn has failed'
-				)
+				);
 			} else {
 				this.signInAfterUserConfirmed(initiateAuthCommand, username, autoSignInPollingIntervalId);
 			}
@@ -286,7 +286,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 				await this.signInAfterUserConfirmed(initiateAuthCommand, username);
 				hubListenerCancelToken();
 			}
-		})
+		});
 	}
 
 	private mapChallengeNames(challengeName: string): AuthSignInStep {
@@ -328,7 +328,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 				};
 			}
 		}
-		return { message: authErrorMessages.noConfig.message }
+		return { message: authErrorMessages.noConfig.message };
 	}
 	confirmSignUp(): Promise<any> {
 		throw new Error('Method not implemented.');
