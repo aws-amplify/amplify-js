@@ -91,7 +91,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 					},
 				});
 			},
-			setSignInUserSession: () => {},
 		};
 	};
 
@@ -254,9 +253,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	};
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
-	};
-	CognitoUser.prototype.setSignInUserSession = function(session) {
-		this.signInUserSession = session;
 	};
 	CognitoUser.prototype.getSignInUserSession = function() {
 		return this.signInUserSession;
