@@ -25,7 +25,7 @@
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
-		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 87.84"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.84"
 	},
 	"repository": {
 		"type": "git",
@@ -37,7 +37,11 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"files": ["lib", "lib-esm", "src"],
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
 	"dependencies": {
 		"@aws-amplify/core": "5.0.0",
 		"@aws-amplify/storage": "5.0.0",
@@ -48,8 +52,8 @@
 		"@aws-sdk/client-translate": "3.6.1",
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
 		"@aws-sdk/util-utf8-node": "3.6.1",
-		"uuid": "^3.2.1",
-		"tslib": "^1.8.0"
+		"tslib": "^1.8.0",
+		"uuid": "^3.2.1"
 	},
 	"jest": {
 		"globals": {

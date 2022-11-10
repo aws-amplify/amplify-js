@@ -26,7 +26,7 @@
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
 		"lint": "tslint '{__tests__,src}/**/*.ts'",
-		"ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
 		"type": "git",
@@ -46,7 +46,12 @@
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
-	"files": ["lib", "lib-esm", "src", "ssr"],
+	"files": [
+		"lib",
+		"lib-esm",
+		"src",
+		"ssr"
+	],
 	"dependencies": {
 		"@aws-amplify/api": "5.0.0",
 		"@aws-amplify/auth": "5.0.0",

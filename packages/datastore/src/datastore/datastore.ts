@@ -72,6 +72,8 @@ import {
 	isIdentifierObject,
 	AmplifyContext,
 	isFieldAssociation,
+	RecursiveModelPredicateExtender,
+	ModelPredicateExtender,
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
@@ -98,8 +100,6 @@ import {
 	mergePatches,
 } from '../util';
 import {
-	RecursiveModelPredicateExtender,
-	ModelPredicateExtender,
 	recursivePredicateFor,
 	predicateFor,
 	GroupCondition,

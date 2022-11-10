@@ -43,19 +43,19 @@
     "cpx": "^1.5.0"
   },
   "files": [
-		"lib",
-		"lib-esm",
-		"src"
-	],
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
     "@aws-amplify/auth": "5.0.0",
     "@aws-amplify/cache": "5.0.0",
     "@aws-amplify/core": "5.0.0",
     "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
+    "tslib": "^1.8.0",
     "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19",
-	  "tslib": "^1.8.0"
+    "zen-observable-ts": "0.8.19"
   },
   "jest": {
     "globals": {

@@ -26,7 +26,7 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 75.62"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 75.62"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,11 @@
   "devDependencies": {
     "@types/zen-observable": "^0.8.0"
   },
-  "files": ["lib", "lib-esm", "src"],
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
     "@aws-amplify/api-rest": "3.0.0",
     "@aws-amplify/auth": "5.0.0",
@@ -49,9 +53,9 @@
     "@aws-amplify/core": "5.0.0",
     "@aws-amplify/pubsub": "5.0.0",
     "graphql": "15.8.0",
+    "tslib": "^1.8.0",
     "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19",
-    "tslib": "^1.8.0"
+    "zen-observable-ts": "0.8.19"
   },
   "jest": {
     "globals": {
