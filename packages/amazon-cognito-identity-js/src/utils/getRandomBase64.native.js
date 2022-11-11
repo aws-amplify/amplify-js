@@ -1,6 +1,15 @@
 import { NativeModules } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 
-const getRandomBase64 = NativeModules.ExpoRandom
+let ExpoRandom;
+if (requireNativeModule) {
+	// we're dealing with sdk 45 and above for expo
+	ExpoRandom = requireNativeModule('ExpoRandom');
+}
+
+const getRandomBase64 = ExpoRandom
+	? ExpoRandom.getRandomBase64String
+	: NativeModules.ExpoRandom
 	? NativeModules.ExpoRandom.getRandomBase64String
 	: NativeModules.RNAWSCognito
 	? NativeModules.RNAWSCognito.getRandomBase64
