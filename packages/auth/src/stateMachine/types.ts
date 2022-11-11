@@ -4,7 +4,6 @@
 import { Completer } from './completer';
 import { Invocation } from './invocation';
 import { MachineState } from './machineState';
-import UuidStatic from 'uuid';
 
 /**
  * Base type for a Machine's context
@@ -16,17 +15,29 @@ export type MachineContext = Record<string, unknown>;
  */
 export type MachineEventPayload = Record<string, unknown>;
 
+/**
+ * Base type for an Invocation using a payload
+ */
 export type InvokedPromiseType = object;
 
 /**
  * The type accepted by Machine's send method
  * @typeParam PayloadType - The type of the Event's payload
+ * @typeParam ContextType - The type of the target Machine's context
  * @param name - The event name; used when matching a transition
  * @param payload - The event payload
+ * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
+ * @param completer - A promise that will resolve when a restingState is reached
  */
-export type MachineEvent<PayloadType extends MachineEventPayload> = {
+export type MachineEvent<
+	ContextType extends MachineContext,
+	PayloadType extends MachineEventPayload
+> = {
 	name: string;
 	payload?: PayloadType;
+	restingStates: string[];
+	completer?: Completer<ContextType>;
+	id?: string;
 };
 
 /**
@@ -38,7 +49,7 @@ export type MachineEvent<PayloadType extends MachineEventPayload> = {
  * @param completer - A promise that will resolve when a restingState is reached
  */
 export type QueuedMachineEvent<ContextType extends MachineContext> = {
-	event: MachineEvent<MachineEventPayload>;
+	event: MachineEvent<ContextType, MachineEventPayload>;
 	restingStates: string[];
 	completer?: Completer<ContextType>;
 };
@@ -106,7 +117,10 @@ export type StateTransition<
 export type TransitionAction<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (context: ContextType, event: MachineEvent<PayloadType>) => Promise<void>;
+> = (
+	context: ContextType,
+	event: MachineEvent<ContextType, PayloadType>
+) => Promise<void>;
 
 /**
  * Type for a TransitionGuard, which can prevent the enclosing Transition from completing
@@ -116,7 +130,10 @@ export type TransitionAction<
 export type TransitionGuard<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (context: ContextType, event: MachineEvent<PayloadType>) => boolean;
+> = (
+	context: ContextType,
+	event: MachineEvent<ContextType, PayloadType>
+) => boolean;
 
 /**
  * Type for a TransitionReducer, which is used to modify the enclosing Machine's Context
@@ -126,13 +143,15 @@ export type TransitionGuard<
 export type TransitionReducer<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (context: ContextType, event: MachineEvent<PayloadType>) => ContextType;
+> = (
+	context: ContextType,
+	event: MachineEvent<ContextType, PayloadType>
+) => ContextType;
 
 export type InvocationPromise<
 	ContextType extends MachineContext,
-	PayloadType extends MachineEventPayload,
-	ReturnType extends InvokedPromiseType
+	PayloadType extends MachineEventPayload
 > = (
 	context: ContextType,
-	event: MachineEvent<PayloadType>
-) => Promise<ReturnType>;
+	event: MachineEvent<ContextType, PayloadType>
+) => Promise<void>;

@@ -15,23 +15,15 @@ export class Invocation<
 	ContextType extends MachineContext,
 	InitialEventPayloadType extends MachineEventPayload
 > {
-	event?: MachineEvent<InitialEventPayloadType>;
+	event?: MachineEvent<ContextType, InitialEventPayloadType>;
 	invokedMachine?: Machine<ContextType>;
-	invokedPromise?: InvocationPromise<
-		ContextType,
-		InitialEventPayloadType,
-		InvokedPromiseType
-	>;
+	invokedPromise?: InvocationPromise<ContextType, InitialEventPayloadType>;
 	expectedStates?: string[];
 	constructor(params: {
-		event?: MachineEvent<InitialEventPayloadType>;
 		machineParams?: StateMachineParams<ContextType>;
-		invokedPromise?: InvocationPromise<
-			ContextType,
-			InitialEventPayloadType,
-			InvokedPromiseType
-		>;
+		invokedPromise?: InvocationPromise<ContextType, InitialEventPayloadType>;
 		expectedStates?: string[];
+		event?: MachineEvent<ContextType, InitialEventPayloadType>;
 	}) {
 		this.event = params?.event;
 
