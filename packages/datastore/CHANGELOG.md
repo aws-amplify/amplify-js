@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.0...@aws-amplify/datastore@4.0.1) (2022-11-11)
+
+
+### Bug Fixes
+
+* **datastore:** upgrade after destructive schema change ([#10658](https://github.com/aws-amplify/amplify-js/issues/10658)) ([d987a28](https://github.com/aws-amplify/amplify-js/commit/d987a2837d16c2ca93205089eebb837f1f8e7c15))
+* export DataStore predicate types ([#10653](https://github.com/aws-amplify/amplify-js/issues/10653)) ([a517610](https://github.com/aws-amplify/amplify-js/commit/a517610889ab4115c40dcd58213414e6e1aabf7b))
+
+
+
+
+
 # [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.4...@aws-amplify/datastore@4.0.0) (2022-11-09)
 
 ### Bug Fixes
