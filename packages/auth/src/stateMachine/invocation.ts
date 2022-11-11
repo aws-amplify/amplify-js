@@ -8,7 +8,6 @@ import {
 	MachineEvent,
 	StateMachineParams,
 	InvocationPromise,
-	InvokedPromiseType,
 } from './types';
 
 export class Invocation<

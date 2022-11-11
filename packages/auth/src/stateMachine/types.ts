@@ -16,11 +16,6 @@ export type MachineContext = Record<string, unknown>;
 export type MachineEventPayload = Record<string, unknown>;
 
 /**
- * Base type for an Invocation using a payload
- */
-export type InvokedPromiseType = object;
-
-/**
  * The type accepted by Machine's send method
  * @typeParam PayloadType - The type of the Event's payload
  * @typeParam ContextType - The type of the target Machine's context

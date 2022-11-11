@@ -10,12 +10,12 @@
 			"type": "node",
 			"request": "launch",
 			// The debugger will only run tests for the package specified here:
-			"cwd": "${workspaceFolder}/packages/auth",
+			"cwd": "${workspaceFolder}/packages/datastore",
 			"runtimeArgs": [
 				"--inspect-brk",
 				"${workspaceRoot}/node_modules/.bin/jest",
 				// Optionally specify a single test file to run/debug:
-				"state-machine-queued-test.ts",
+				"storage.test.ts",
 				"--runInBand",
 				"--testTimeout",
 				"600000", // 10 min timeout so jest doesn't error while we're stepping through code
