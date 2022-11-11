@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Invocation } from '../../src/stateMachine/invocation';
 import { Machine } from '../../src/stateMachine/machine';
 import { MachineState } from '../../src/stateMachine/machineState';
