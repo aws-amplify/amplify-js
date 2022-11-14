@@ -135,7 +135,7 @@ To get started pick your platform from our [**Getting Started** home page](https
   ```
 
 - The `JS` export has been removed from `@aws-amplify/core` in favor the exporting the functions it contained.
-- Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported, instead your code should use the named exports. For example:
+- Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported. Instead , your code should use the named exports. For example:
 
   ```diff
   - import { Amplify } from 'aws-amplify';
