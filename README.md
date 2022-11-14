@@ -131,7 +131,7 @@ To get started pick your platform from our [**Getting Started** home page](https
 
   ```diff
   - Analytics.record('my example event');
-  + Analytics.record( { name: 'my example event' });
+  + Analytics.record({ name: 'my example event' });
   ```
 
 - The `JS` export has been removed from `@aws-amplify/core` in favor the exporting the functions it contained.
