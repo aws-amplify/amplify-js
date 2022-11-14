@@ -127,7 +127,7 @@ To get started pick your platform from our [**Getting Started** home page](https
   + }
   ```
 
-- `Analytics.record` no longer supports passing a string only inputs. For example:
+- `Analytics.record` no longer accepts string as input. For example:
 
   ```diff
   - Analytics.record('my example event');
