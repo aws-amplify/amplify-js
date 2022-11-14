@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.0...@aws-amplify/storage@5.0.1) (2022-11-11)
+
+
+### Bug Fixes
+
+* **storage:** changed returned event.key value when using resumable:true to be consistent with returned keys in storage ([#10651](https://github.com/aws-amplify/amplify-js/issues/10651)) ([623374d](https://github.com/aws-amplify/amplify-js/commit/623374dedb951061e49529c11434d31d36c31bf8))
+
+
+
+
+
 # [5.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.14...@aws-amplify/storage@5.0.0) (2022-11-09)
 
 ### Bug Fixes
