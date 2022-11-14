@@ -291,7 +291,7 @@ describe('IndexedDBAdapter tests', () => {
 	});
 
 	describe('Benchmark', () => {
-		let { DataStore, User } = getDataStore();
+		const { DataStore, User } = getDataStore();
 
 		afterEach(async () => {
 			await DataStore.clear();
@@ -341,14 +341,12 @@ describe('IndexedDBAdapter tests', () => {
 				expect(fetched.length).toBe(1);
 			});
 
-			console.log({ byPkTime, byNameTime });
-
 			// clamp indexed queries on a small data-set to be less than 1/3
 			// of the runtime of their non-indexed equivalent.
 			//
 			// We're using a rather unimpressive 1/3 here instead of
-			// something smaller and more realistic overall (like 1/8) because each
-			// iteration performs assertions, which adds some notable overhead.
+			// something smaller and more realistic overall (like 1/8) because of the
+			// overhead of each loop, such as asserting on the results.
 			expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 3);
 		});
 	});
