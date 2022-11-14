@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	ICookieStorageData,
@@ -25,6 +15,7 @@ export interface SignUpParams {
 	attributes?: object;
 	validationData?: { [key: string]: any };
 	clientMetadata?: { [key: string]: string };
+	autoSignIn?: AutoSignInOptions;
 }
 
 export interface AuthCache {
@@ -50,6 +41,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
+	signUpVerificationMethod?: 'code' | 'link';
 }
 
 export enum CognitoHostedUIIdentityProvider {
@@ -201,6 +193,7 @@ export enum AuthErrorTypes {
 	Default = 'default',
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
+	AutoSignInError = 'autoSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
@@ -226,4 +219,18 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 export interface IAuthDevice {
 	id: string;
 	name: string;
+}
+
+export interface AutoSignInOptions {
+	enabled: boolean;
+	clientMetaData?: ClientMetaData;
+	validationData?: { [key: string]: any };
+}
+
+export enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
 }

@@ -1,24 +1,15 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	ConsoleLogger as Logger,
 	ClientDevice,
 	Credentials,
 	Signer,
-	JS,
 	Hub,
 	getAmplifyUserAgent,
+	transferKeyToLowerCase,
+	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import {
 	EventsBatch,
@@ -27,7 +18,7 @@ import {
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import Cache from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 
 import {
 	AnalyticsProvider,
@@ -40,10 +31,11 @@ import {
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event, data) => {
 	Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
@@ -395,7 +387,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		const request = this._endpointRequest(
 			config,
-			JS.transferKeyToLowerCase(
+			transferKeyToLowerCase(
 				event,
 				[],
 				['attributes', 'userAttributes', 'Attributes', 'UserAttributes']
@@ -706,7 +698,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			immediate,
 			...ret
 		} = tmp;
-		return JS.transferKeyToUpperCase(
+		return transferKeyToUpperCase(
 			ret,
 			[],
 			['metrics', 'userAttributes', 'attributes']
@@ -735,8 +727,3 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSPinpointProvider;

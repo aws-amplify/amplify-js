@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.12](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.11...amazon-cognito-identity-js@5.2.12) (2022-10-25)
+
+
+### Bug Fixes
+
+* Update .d.ts file to match the actual code ([#8825](https://github.com/aws-amplify/amplify-js/issues/8825)) ([272c2c6](https://github.com/aws-amplify/amplify-js/commit/272c2c607cc4adb5ddc9421444887bdb382227a0))
+
+
+
+
+
+## [5.2.11](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.10...amazon-cognito-identity-js@5.2.11) (2022-10-14)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [5.2.10](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.9...amazon-cognito-identity-js@5.2.10) (2022-07-07)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** Missing cognito user challenge name … ([#10047](https://github.com/aws-amplify/amplify-js/issues/10047)) ([de0441b](https://github.com/aws-amplify/amplify-js/commit/de0441b4fa67409ccbc630c42890e2c58ee779fb)), closes [#6974](https://github.com/aws-amplify/amplify-js/issues/6974)
+
+
+
+
+
+## [5.2.9](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.8...amazon-cognito-identity-js@5.2.9) (2022-05-23)
+
+
+### Bug Fixes
+
+* docs for amazon-cognito-identity-js ([#9909](https://github.com/aws-amplify/amplify-js/issues/9909)) ([08e01b1](https://github.com/aws-amplify/amplify-js/commit/08e01b1c09cfab73f2eb1b1b18fe1a696e2a028f))
+
+
+
+
+
+## [5.2.8](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.7...amazon-cognito-identity-js@5.2.8) (2022-03-10)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [5.2.7](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.6...amazon-cognito-identity-js@5.2.7) (2022-02-28)
+
+
+### Bug Fixes
+
+* pin async storage to 1.15.17 ([#9570](https://github.com/aws-amplify/amplify-js/issues/9570)) ([bc5235a](https://github.com/aws-amplify/amplify-js/commit/bc5235ac0d15242f7a13457f40999b5331823395))
+* pin babel-core and babel-cli version ([#9593](https://github.com/aws-amplify/amplify-js/issues/9593)) ([a0fc830](https://github.com/aws-amplify/amplify-js/commit/a0fc830626ea5466555f2f60d66cc496145a5d1b))
+
+
+
+
+
 ## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.5...amazon-cognito-identity-js@5.2.6) (2022-02-03)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

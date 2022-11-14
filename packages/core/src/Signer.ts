@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from './Logger';
 import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
@@ -41,13 +31,7 @@ const hash = function(src) {
  */
 const escape_RFC3986 = function(component) {
 	return component.replace(/[!'()*]/g, function(c) {
-		return (
-			'%' +
-			c
-				.charCodeAt(0)
-				.toString(16)
-				.toUpperCase()
-		);
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 	});
 };
 
@@ -290,6 +274,12 @@ export class Signer {
 	static sign(request, access_info, service_info = null) {
 		request.headers = request.headers || {};
 
+		if (request.body && !request.data) {
+			throw new Error(
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+			);
+		}
+
 		// datetime string and date string
 		const dt = DateUtils.getDateWithClockOffset(),
 			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
@@ -439,8 +429,3 @@ export class Signer {
 		return result;
 	}
 }
-
-/**
- * @deprecated use per-function import
- */
-export default Signer;

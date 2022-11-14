@@ -1,25 +1,15 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { pageViewTrackOpts } from '../types';
 import { MethodEmbed } from '../utils/MethodEmbed';
-import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
 
 const logger = new Logger('PageViewTracker');
 const PREV_URL_KEY = 'aws-amplify-analytics-prevUrl';
 
 const getUrl = () => {
-	if (!JS.browserOrNode().isBrowser) return '';
+	if (!browserOrNode().isBrowser) return '';
 	else return window.location.origin + window.location.pathname;
 };
 
@@ -71,7 +61,7 @@ export class PageViewTracker {
 
 	private async _pageViewTrackDefault() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!window.sessionStorage
 		) {
@@ -106,7 +96,7 @@ export class PageViewTracker {
 
 	private async _trackFunc() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!history.pushState ||
 			!window.sessionStorage
@@ -143,7 +133,7 @@ export class PageViewTracker {
 
 	private _pageViewTrackSPA() {
 		if (
-			!JS.browserOrNode().isBrowser ||
+			!browserOrNode().isBrowser ||
 			!window.addEventListener ||
 			!history.pushState
 		) {
@@ -165,8 +155,3 @@ export class PageViewTracker {
 		}
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default PageViewTracker;

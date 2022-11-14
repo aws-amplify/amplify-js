@@ -27,6 +27,13 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				blogOwnerId: {
+					name: 'blogOwnerId',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
 				posts: {
 					name: 'posts',
 					isArray: true,
@@ -37,7 +44,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'blog',
+						associatedWith: ['blog'],
 					},
 				},
 				owner: {
@@ -50,7 +57,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'blogOwnerId',
+						targetNames: ['blogOwnerId'],
 					},
 				},
 			},
@@ -80,6 +87,13 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				referencePostId: {
+					name: 'referencePostId',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
 				reference: {
 					name: 'reference',
 					isArray: false,
@@ -90,7 +104,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'referencePostId',
+						targetNames: ['referencePostId'],
 					},
 				},
 				blog: {
@@ -103,7 +117,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'postBlogId',
+						targetNames: ['postBlogId'],
 					},
 				},
 				comments: {
@@ -116,7 +130,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'post',
+						associatedWith: ['post'],
 					},
 				},
 				authors: {
@@ -129,7 +143,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'post',
+						associatedWith: ['post'],
 					},
 				},
 				metadata: {
@@ -168,6 +182,13 @@ export const newSchema: Schema = {
 					isRequired: false,
 					attributes: [],
 				},
+				commentPostId: {
+					name: 'commentPostId',
+					isArray: false,
+					type: 'ID',
+					isRequired: false,
+					attributes: [],
+				},
 				post: {
 					name: 'post',
 					isArray: false,
@@ -178,7 +199,82 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'commentPostId',
+						targetNames: ['commentPostId'],
+					},
+				},
+			},
+		},
+		Song: {
+			syncable: true,
+			name: 'Song',
+			pluralName: 'Songs',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				songID: {
+					name: 'songID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				content: {
+					name: 'content',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		},
+		Album: {
+			syncable: true,
+			name: 'Album',
+			pluralName: 'Albums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				songs: {
+					name: 'songs',
+					isArray: true,
+					type: {
+						model: 'Song',
+					},
+					isRequired: false,
+					attributes: [],
+					isArrayNullable: true,
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: ['songID'],
 					},
 				},
 			},
@@ -225,7 +321,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'authorId',
+						targetNames: ['authorId'],
 					},
 				},
 				post: {
@@ -238,7 +334,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'BELONGS_TO',
-						targetName: 'postId',
+						targetNames: ['postId'],
 					},
 				},
 			},
@@ -278,7 +374,161 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_MANY',
-						associatedWith: 'author',
+						associatedWith: ['author'],
+					},
+				},
+			},
+		},
+		Forum: {
+			syncable: true,
+			name: 'Forum',
+			pluralName: 'Forums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				editors: {
+					name: 'editors',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: ['forum'],
+					},
+				},
+			},
+		},
+		Editor: {
+			syncable: true,
+			name: 'Editor',
+			pluralName: 'Editors',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				forums: {
+					name: 'forums',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: ['editor'],
+					},
+				},
+			},
+		},
+		ForumEditorJoin: {
+			syncable: true,
+			name: 'ForumEditorJoin',
+			pluralName: 'ForumEditorJoins',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byEditor',
+						fields: ['editorID', 'forumID'],
+					},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byForum',
+						fields: ['forumID', 'editorID'],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				forumID: {
+					name: 'forumID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				editorID: {
+					name: 'editorID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				editor: {
+					name: 'editor',
+					isArray: false,
+					type: {
+						model: 'Editor',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetNames: ['editorID'],
+					},
+				},
+				forum: {
+					name: 'forum',
+					isArray: false,
+					type: {
+						model: 'Forum',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetNames: ['forumID'],
 					},
 				},
 			},
@@ -318,7 +568,7 @@ export const newSchema: Schema = {
 					attributes: [],
 					association: {
 						connectionType: 'HAS_ONE',
-						associatedWith: 'owner',
+						associatedWith: ['owner'],
 					},
 				},
 			},
@@ -364,13 +614,88 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Team: {
+			syncable: true,
+			name: 'Team',
+			pluralName: 'Teams',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+		Project: {
+			syncable: true,
+			name: 'Project',
+			pluralName: 'Projects',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				teamID: {
+					name: 'teamID',
+					isArray: false,
+					type: 'ID',
+					isRequired: false,
+					attributes: [],
+				},
+				team: {
+					name: 'team',
+					isArray: false,
+					type: {
+						model: 'Team',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_ONE',
+						associatedWith: ['id'],
+						targetNames: ['teamID'],
+					},
+				},
+			},
+		},
 	},
 	enums: {},
 	nonModels: {
 		PostMetadata: {
 			name: 'PostMetadata',
 			fields: {
-				author: {
+				rating: {
 					name: 'rating',
 					isArray: false,
 					type: 'Int',
@@ -409,6 +734,7 @@ export const newSchema: Schema = {
 		},
 	},
 	version: 'a66372d29356c40e7cd29e41527cead7',
+	codegenVersion: '3.2.0',
 };
 
 export const implicitOwnerSchema = {
@@ -458,6 +784,7 @@ export const implicitOwnerSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };
 
 export const explicitOwnerSchema = {
@@ -514,6 +841,7 @@ export const explicitOwnerSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };
 
 export const groupSchema = {
@@ -563,4 +891,5 @@ export const groupSchema = {
 	enums: {},
 	nonModels: {},
 	version: '0e29e95012de2d43cf8329d731a5cfb2',
+	codegenVersion: '3.2.0',
 };

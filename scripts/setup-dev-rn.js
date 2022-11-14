@@ -15,10 +15,13 @@ const LERNA_BASE = 'npx lerna exec';
 const NPM_BASE = 'npm run';
 const PARALLEL_FLAG = '--parallel';
 
+// Watchman constants
+const WATCHMAN_WATCH_SRC = `watchman watch node_modules/wml/src`;
+
 // WML Constants
-const WML_REMOVE_ALL_LINKS = `npm-exec wml rm all`;
-const WML_START = `npm-exec wml start`;
-const WML_ADD_LINK = 'npm-exec wml add';
+const WML_REMOVE_ALL_LINKS = `npx wml rm all`;
+const WML_START = `npx wml start`;
+const WML_ADD_LINK = 'npx wml add';
 
 // OSAScript constants
 const OSA_SCRIPT_BASE = 'osascript';
@@ -27,24 +30,13 @@ const TO_DO_SCRIPT = `${MULTILINE_FLAG} 'tell application "Terminal" to do scrip
 const IN_FRONT_WINDOW = `in front window'${WHITE_SPACE}`;
 
 // List of packages to exclude that do not have build:watch script
-const EXCLUDED_PACKAGES = [
-	'aws-amplify-vue',
-	'@aws-amplify/ui',
-	'@aws-amplify/ui-vue',
-	'@aws-amplify/ui-angular',
-	'@aws-amplify/ui-components',
-	'@aws-amplify/ui-storybook',
-	'aws-amplify-angular',
-];
+const EXCLUDED_PACKAGES = [];
 
 // List of CJS identified packages
 const CJS_PACKAGES_PRESET = [
 	'aws-amplify-react-native',
 	'@aws-amplify/pushnotification',
-	'@aws-amplify/ui',
 ];
-
-const UI_PACKAGES_PRESET = ['@aws-amplify/ui-react'];
 
 // Utility functions for string manipulation
 // Explicit functions as they are important in an osaScript
@@ -54,10 +46,6 @@ const doubleQuotedFormOf = content => `"${content}"`;
 const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 
 // Constants using the utility fuctions
-const aliasWml = sanatizeCommand(
-	'alias',
-	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
-);
 const getDelay = seconds =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
@@ -216,7 +204,7 @@ const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 	);
 
 	// Use char ; to separate commands to be run on the same tab
-	return `${aliasWml} ; ${doubleQuotedFormOf(
+	return `${doubleQuotedFormOf(WATCHMAN_WATCH_SRC)} ; ${doubleQuotedFormOf(
 		WML_REMOVE_ALL_LINKS
 	)} ; ${wmlAddcommand} ; ${doubleQuotedFormOf(WML_START)}`;
 };
@@ -238,12 +226,7 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 	packages.forEach(pack => {
 		const packageName = pack.split('/')[1] ?? pack;
 
-		let sourceDirectoryName = '';
-		if (UI_PACKAGES_PRESET.includes(pack)) {
-			sourceDirectoryName = `amplify-${packageName}`;
-		} else {
-			sourceDirectoryName = packageName;
-		}
+		const sourceDirectoryName = packageName;
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
 		wmlAddCommands += `${doubleQuotedFormOf(

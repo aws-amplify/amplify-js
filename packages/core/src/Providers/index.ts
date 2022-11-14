@@ -1,1 +1,1 @@
-export * from './AWSCloudWatchProvider';
+export { AWSCloudWatchProvider } from './AWSCloudWatchProvider';

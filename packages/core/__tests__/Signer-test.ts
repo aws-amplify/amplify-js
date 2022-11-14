@@ -1,4 +1,4 @@
-import Signer from '../src/Signer';
+import { Signer } from '../src/Signer';
 import { DateUtils } from '../src';
 
 jest.mock('@aws-sdk/util-hex-encoding', () => ({
@@ -71,5 +71,62 @@ describe('Signer test', () => {
 
 			spyon.mockClear();
 		});
+	});
+});
+describe('Sign method error', () => {
+	test('Should throw an Error if body attribute is passed to sign method', () => {
+		const url = 'https://host/some/path';
+
+		const request_body = {
+			url,
+			headers: {},
+			body: {},
+		};
+
+		const access_info = {
+			session_token: 'session_token',
+		};
+
+		const spyon = jest
+			.spyOn(Date.prototype, 'toISOString')
+			.mockReturnValueOnce('0');
+
+		expect(() => {
+			Signer.sign(request_body, access_info, {
+				service: 'aservice',
+				region: 'aregion',
+			});
+		}).toThrowError(
+			'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+		);
+
+		spyon.mockClear();
+	});
+
+	test('Should NOT throw an Error if data attribute is passed to sign method', () => {
+		const url = 'https://host/some/path';
+
+		const request_data = {
+			url,
+			headers: {},
+			data: {},
+		};
+
+		const access_info = {
+			session_token: 'session_token',
+		};
+
+		const spyon = jest
+			.spyOn(Date.prototype, 'toISOString')
+			.mockReturnValueOnce('0');
+
+		expect(() => {
+			Signer.sign(request_data, access_info, {
+				service: 'aservice',
+				region: 'aregion',
+			});
+		}).not.toThrowError();
+
+		spyon.mockClear();
 	});
 });

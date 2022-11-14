@@ -1,17 +1,6 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ICredentials } from '@aws-amplify/core';
-
 /**
  * Analytics instance options
  */
@@ -59,3 +48,40 @@ export interface SessionTrackOpts {
 		| (() => EventAttributes | Promise<EventAttributes>);
 	provider?: string;
 }
+
+export type AutoTrackAttributes =
+	| (() => EventAttributes | Promise<EventAttributes>)
+	| EventAttributes;
+
+export interface AutoTrackSessionOpts {
+	enable: boolean;
+	attributes?: AutoTrackAttributes;
+	provider?: string;
+}
+
+export interface AutoTrackPageViewOpts {
+	enable: boolean;
+	eventName?: string;
+	attributes?: AutoTrackAttributes;
+	type?: 'SPA' | 'multiPageApp';
+	provider?: string;
+	getUrl?: () => string;
+}
+
+export interface AutoTrackEventOpts {
+	enable: boolean;
+	events?: string[];
+	selectorPrefix?: string;
+	provider?: string;
+	attributes?: AutoTrackAttributes;
+}
+
+export interface AnalyticsEvent {
+	name: string;
+	attributes?: EventAttributes;
+	metrics?: EventMetrics;
+	immediate?: boolean;
+}
+
+export { PersonalizeAnalyticsEvent } from './Providers/AmazonPersonalizeProvider';
+export { KinesisAnalyticsEvent } from './Providers/AWSKinesisProvider';

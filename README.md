@@ -82,12 +82,6 @@ For React Native development, install `aws-amplify`:
 $ npm install aws-amplify --save
 ```
 
-If you are developing a [React Native](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
-
-```bash
-$ npm install aws-amplify-react-native --save
-```
-
 Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q/integration/react-native) to start building your web app.
 
 ## Notice:
@@ -97,15 +91,14 @@ Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q
 - If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
   - `@react-native-community/netinfo`
   - `@react-native-async-storage/async-storage`
-  - `@react-native-picker/picker`
 
 ```
 // React Native
-yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
 npx pod-install
 
 // Expo
-yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
 ```
 
 ### Amplify 3.x.x has breaking changes. Please see the breaking changes below:
@@ -128,3 +121,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
   ```js
   import { Auth } from 'aws-amplify';
   ```
+
+### DataStore Docs
+
+For more information on contributing to DataStore / how DataStore works, see the [DataStore Docs](packages/datastore/README.md)

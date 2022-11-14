@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 // configuration shape for the Geo class
 export interface GeoConfig {
 	region?: string;
@@ -22,6 +12,10 @@ export interface GeoConfig {
 			items: string[];
 			default: string;
 		};
+		geofenceCollections?: {
+			items: string[];
+			default: string;
+		};
 	};
 }
 
@@ -31,10 +25,10 @@ export interface MapStyle {
 	style: string;
 }
 
-export type Latitude = number;
 export type Longitude = number;
+export type Latitude = number;
 
-// Coordinate point
+// Coordinates are a tuple of longitude and latitude
 export type Coordinates = [Longitude, Latitude];
 
 // SW Longitude point for bounding box
@@ -73,10 +67,15 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithBiasPosition
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
+// Options object for searchByCoordinates
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
 	searchIndexName?: string;
 	providerName?: string;
+};
+
+export type searchByPlaceIdOptions = {
+	searchIndexName?: string;
 };
 
 // Geometry object for Place points
@@ -97,6 +96,78 @@ export interface Place {
 	street?: string;
 	subRegion?: string;
 }
+// Array of 4 or more coordinates, where the first and last coordinate are the same to form a closed boundary
+export type LinearRing = Coordinates[];
+
+// An array of one linear ring
+export type GeofencePolygon = LinearRing[];
+
+// Geometry object for Polygon
+export type PolygonGeometry = {
+	polygon: GeofencePolygon;
+};
+
+export type GeofenceId = string;
+
+// Geofence object used as input for saveGeofences
+export type GeofenceInput = {
+	geofenceId: GeofenceId;
+	geometry: PolygonGeometry;
+};
+
+// Options object for saveGeofences
+export type GeofenceOptions = {
+	providerName?: string;
+};
+
+// Error type for errors related to Geofence API calls
+export type GeofenceError = {
+	error: {
+		code: string;
+		message: string;
+	};
+	geofenceId: GeofenceId;
+};
+
+// Base geofence object
+type GeofenceBase = {
+	geofenceId: GeofenceId;
+	createTime?: Date;
+	updateTime?: Date;
+};
+
+// Results object for getGeofence
+export type Geofence = GeofenceBase & {
+	geometry: PolygonGeometry;
+};
+
+// Results object for saveGeofences
+export type SaveGeofencesResults = {
+	successes: GeofenceBase[];
+	errors: GeofenceError[];
+};
+
+// Options object for listGeofence
+export type ListGeofenceOptions = GeofenceOptions & {
+	nextToken?: string;
+};
+
+// Results options for listGeofence
+export type ListGeofenceResults = {
+	entries: Geofence[];
+	nextToken: string | undefined;
+};
+
+// Results object for deleteGeofence
+export type DeleteGeofencesResults = {
+	successes: GeofenceId[];
+	errors: GeofenceError[];
+};
 
 // Return type for searchForSuggestions
-export type SearchForSuggestionsResults = string[];
+export type SearchForSuggestionsResults = SearchForSuggestionsResult[];
+
+export type SearchForSuggestionsResult = {
+	text: string;
+	placeId?: string;
+};

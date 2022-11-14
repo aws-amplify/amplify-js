@@ -11,6 +11,7 @@ import {
 	isGraphQLScalarType,
 	isPredicateObj,
 	isSchemaModel,
+	isSchemaModelWithAttributes,
 	isTargetNameAssociation,
 	isNonModelFieldType,
 	ModelFields,
@@ -26,8 +27,13 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ModelAttributes,
 } from '../types';
-import { exhaustiveCheck } from '../util';
+import {
+	extractPrimaryKeyFieldNames,
+	establishRelationAndKeys,
+	IDENTIFIER_KEY_SEPARATOR,
+} from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -47,10 +53,10 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Omit<ModelInstanceMetadata, 'id'> = {
-	_version: undefined,
-	_lastChangedAt: undefined,
-	_deleted: undefined,
+const dummyMetadata: ModelInstanceMetadata = {
+	_version: undefined!,
+	_lastChangedAt: undefined!,
+	_deleted: undefined!,
 };
 
 const metadataFields = <(keyof ModelInstanceMetadata)[]>(
@@ -79,7 +85,7 @@ export function generateSelectionSet(
 	if (isSchemaModel(modelDefinition)) {
 		scalarAndMetadataFields = scalarAndMetadataFields
 			.concat(getMetadataFields())
-			.concat(getConnectionFields(modelDefinition));
+			.concat(getConnectionFields(modelDefinition, namespace));
 	}
 
 	const result = scalarAndMetadataFields.join('\n');
@@ -103,8 +109,8 @@ function getOwnerFields(
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const ownerFields: string[] = [];
-	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
-		modelDefinition.attributes.forEach(attr => {
+	if (isSchemaModelWithAttributes(modelDefinition)) {
+		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
 				if (rule && rule.ownerField) {
@@ -138,13 +144,17 @@ function getScalarFields(
 	return result;
 }
 
-function getConnectionFields(modelDefinition: SchemaModel): string[] {
-	const result = [];
+// Used for generating the selection set for queries and mutations
+function getConnectionFields(
+	modelDefinition: SchemaModel,
+	namespace: SchemaNamespace
+): string[] {
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
 		.forEach(({ name, association }) => {
-			const { connectionType } = association;
+			const { connectionType } = association || {};
 
 			switch (connectionType) {
 				case 'HAS_ONE':
@@ -153,11 +163,30 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					break;
 				case 'BELONGS_TO':
 					if (isTargetNameAssociation(association)) {
-						result.push(`${name} { id _deleted }`);
+						// New codegen (CPK)
+						if (association.targetNames && association.targetNames.length > 0) {
+							// Need to retrieve relations in order to get connected model keys
+							const [relations] = establishRelationAndKeys(namespace);
+
+							const connectedModelName =
+								modelDefinition.fields[name].type['model'];
+
+							const byPkIndex = relations[connectedModelName].indexes.find(
+								([name]) => name === 'byPk'
+							);
+							const keyFields = byPkIndex && byPkIndex[1];
+							const keyFieldSelectionSet = keyFields?.join(' ');
+
+							// We rely on `_deleted` when we process the sync query (e.g. in batchSave in the adapters)
+							result.push(`${name} { ${keyFieldSelectionSet} _deleted }`);
+						} else {
+							// backwards-compatability for schema generated prior to custom primary key support
+							result.push(`${name} { id _deleted }`);
+						}
 					}
 					break;
 				default:
-					exhaustiveCheck(connectionType);
+					throw new Error(`Invalid connection type ${connectionType}`);
 			}
 		});
 
@@ -168,7 +197,7 @@ function getNonModelFields(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
@@ -177,13 +206,12 @@ function getNonModelFields(
 				({ name }) => name
 			);
 
-			const nested = [];
+			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
 					);
@@ -201,8 +229,8 @@ export function getAuthorizationRules(
 	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
-	const authConfig = []
-		.concat(modelDefinition.attributes)
+	const authConfig = ([] as ModelAttributes)
+		.concat(modelDefinition.attributes || [])
 		.find(attr => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
@@ -241,8 +269,8 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// look for the subscription level override
 			// only pay attention to the public level
-			const modelConfig = (<typeof modelDefinition.attributes>[])
-				.concat(modelDefinition.attributes)
+			const modelConfig = ([] as ModelAttributes)
+				.concat(modelDefinition.attributes || [])
 				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
@@ -308,8 +336,8 @@ export function buildGraphQLOperation(
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	let operation: string;
-	let documentArgs: string = ' ';
-	let operationArgs: string = ' ';
+	let documentArgs: string;
+	let operationArgs: string;
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -348,17 +376,16 @@ export function buildGraphQLOperation(
 			operationArgs = '(id: $id)';
 			transformerMutationType = TransformerMutationType.GET;
 			break;
-
 		default:
-			exhaustiveCheck(graphQLOpType);
+			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
 
 	return [
 		[
-			transformerMutationType,
-			operation,
+			transformerMutationType!,
+			operation!,
 			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-		${operation}${operationArgs}{
+		${operation!}${operationArgs}{
 			${selectionSet}
 		}
 	}`,
@@ -392,7 +419,7 @@ export function createMutationInstanceFromModelOperation<
 			operation = TransformerMutationType.DELETE;
 			break;
 		default:
-			exhaustiveCheck(opType);
+			throw new Error(`Invalid opType ${opType}`);
 	}
 
 	// stringify nested objects of type AWSJSON
@@ -412,12 +439,15 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	const modelId = getIdentifierValue(modelDefinition, element);
+	const optionalId = OpType.INSERT && id ? { id } : {};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
-		...(id ? { id } : {}),
+		...optionalId,
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
-		operation,
+		operation: operation!,
 		condition: JSON.stringify(condition),
 	});
 
@@ -425,7 +455,8 @@ export function createMutationInstanceFromModelOperation<
 }
 
 export function predicateToGraphQLCondition(
-	predicate: PredicatesGroup<any>
+	predicate: PredicatesGroup<any>,
+	modelDefinition: SchemaModel
 ): GraphQLCondition {
 	const result = {};
 
@@ -433,25 +464,22 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
-	predicate.predicates.forEach(p => {
-		if (isPredicateObj(p)) {
-			const { field, operator, operand } = p;
+	// This is compatible with how the GQL Transform currently generates the Condition Input,
+	// i.e. any PK and SK fields are omitted and can't be used as conditions.
+	// However, I think this limits usability.
+	// What if we want to delete all records where SK > some value
+	// Or all records where PK = some value but SKs are different values
 
-			if (field === 'id') {
-				return;
-			}
+	// TODO: if the Transform gets updated we'll need to modify this logic to only omit
+	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
 
-			result[field] = { [operator]: operand };
-		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
-		}
-	});
-
-	return result;
+	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
 
 export function predicateToGraphQLFilter(
-	predicatesGroup: PredicatesGroup<any>
+	predicatesGroup: PredicatesGroup<any>,
+	fieldsToOmit: string[] = []
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -471,6 +499,8 @@ export function predicateToGraphQLFilter(
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
+			if (fieldsToOmit.includes(field as string)) return;
+
 			const gqlField: GraphQLField = {
 				[field]: { [operator]: operand },
 			};
@@ -479,8 +509,15 @@ export function predicateToGraphQLFilter(
 			return;
 		}
 
-		appendToFilter(predicateToGraphQLFilter(predicate));
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit);
+		Object.keys(child).length > 0 && appendToFilter(child);
 	});
+
+	if (isList) {
+		if (result[type].length === 0) return {};
+	} else {
+		if (Object.keys(result[type]).length === 0) return {};
+	}
 
 	return result;
 }
@@ -515,11 +552,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
@@ -611,4 +646,16 @@ export async function getTokenForCustomAuth(
 			);
 		}
 	}
+}
+
+// Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
+export function getIdentifierValue(
+	modelDefinition: SchemaModel,
+	model: ModelInstanceMetadata | PersistentModel
+): string {
+	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
+
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
+
+	return idOrPk;
 }

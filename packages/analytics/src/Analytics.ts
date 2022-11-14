@@ -1,25 +1,25 @@
-/*
- * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	Parser,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventMetrics } from './types';
+import {
+	AnalyticsProvider,
+	EventAttributes,
+	EventMetrics,
+	AnalyticsEvent,
+	AutoTrackSessionOpts,
+	AutoTrackPageViewOpts,
+	AutoTrackEventOpts,
+	PersonalizeAnalyticsEvent,
+	KinesisAnalyticsEvent,
+} from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
@@ -45,6 +45,8 @@ const trackers = {
 	session: SessionTracker,
 };
 
+type TrackerTypes = keyof typeof trackers;
+type Trackers = typeof trackers[TrackerTypes];
 let _instance = null;
 
 /**
@@ -53,8 +55,8 @@ let _instance = null;
 export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
-	private _disabled;
-	private _trackers;
+	private _disabled: boolean;
+	private _trackers: Trackers | {};
 
 	/**
 	 * Initialize Analtyics
@@ -71,6 +73,7 @@ export class AnalyticsClass {
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
 		Hub.listen('analytics', listener);
+		Hub.listen('core', listener);
 	}
 
 	public getModuleName() {
@@ -83,7 +86,7 @@ export class AnalyticsClass {
 	public configure(config?) {
 		if (!config) return this._config;
 		logger.debug('configure Analytics', config);
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign(
 			{},
 			this._config,
@@ -100,7 +103,7 @@ export class AnalyticsClass {
 			this._config['autoSessionRecord'] = true;
 		}
 
-		this._pluggables.forEach((pluggable) => {
+		this._pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
 				pluggable.getProviderName() === 'AWSPinpoint' &&
@@ -130,7 +133,7 @@ export class AnalyticsClass {
 
 	/**
 	 * add plugin into Analytics category
-	 * @param {Object} pluggable - an instance of the plugin
+	 * @param pluggable - an instance of the plugin
 	 */
 	public addPluggable(pluggable: AnalyticsProvider) {
 		if (pluggable && pluggable.getCategory() === 'Analytics') {
@@ -149,9 +152,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Get the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public getPluggable(providerName) {
+	public getPluggable(providerName: string): AnalyticsProvider {
 		for (let i = 0; i < this._pluggables.length; i += 1) {
 			const pluggable = this._pluggables[i];
 			if (pluggable.getProviderName() === providerName) {
@@ -165,9 +168,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Remove the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public removePluggable(providerName) {
+	public removePluggable(providerName: string): void {
 		let idx = 0;
 		while (idx < this._pluggables.length) {
 			if (this._pluggables[idx].getProviderName() === providerName) {
@@ -201,58 +204,69 @@ export class AnalyticsClass {
 
 	/**
 	 * Record Session start
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async startSession(provider?: string) {
-		const params = { event: { name: '_session.start' }, provider };
+		const event = { name: '_session.start' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session start event'
+		);
+
 		return this._sendEvent(params);
 	}
 
 	/**
 	 * Record Session stop
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async stopSession(provider?: string) {
-		const params = { event: { name: '_session.stop' }, provider };
+		const event = { name: '_session.stop' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session stop event'
+		);
+
 		return this._sendEvent(params);
 	}
 
 	/**
 	 * Record one analytic event and send it to Pinpoint
-	 * @param {String} name - The name of the event
-	 * @param {Object} [attributes] - Attributes of the event
-	 * @param {Object} [metrics] - Event metrics
-	 * @return - A promise which resolves if buffer doesn't overflow
+	 * @param event - An object with the name of the event, attributes of the event and event metrics.
+	 * @param [provider] - name of the provider.
 	 */
 	public async record(
-		event: string | object,
-		provider?,
-		metrics?: EventMetrics
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent,
+		provider?: string
 	) {
-		let params = null;
-		// this is just for compatibility, going to be deprecated
-		if (typeof event === 'string') {
-			params = {
-				event: {
-					name: event,
-					attributes: provider,
-					metrics,
-				},
-				provider: 'AWSPinpoint',
-			};
-		} else {
-			params = { event, provider };
-		}
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
+
 		return this._sendEvent(params);
 	}
 
-	public async updateEndpoint(attrs, provider?) {
+	public async updateEndpoint(
+		attrs: { [key: string]: any },
+		provider?: string
+	) {
 		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}
 
-	private _sendEvent(params) {
+	private _sendEvent(params: {
+		event: AnalyticsEvent | PersonalizeAnalyticsEvent | KinesisAnalyticsEvent;
+		provider?: string;
+	}) {
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();
@@ -261,7 +275,7 @@ export class AnalyticsClass {
 		const provider = params.provider ? params.provider : 'AWSPinpoint';
 
 		return new Promise((resolve, reject) => {
-			this._pluggables.forEach((pluggable) => {
+			this._pluggables.forEach(pluggable => {
 				if (pluggable.getProviderName() === provider) {
 					pluggable.record(params, { resolve, reject });
 				}
@@ -269,7 +283,20 @@ export class AnalyticsClass {
 		});
 	}
 
-	public autoTrack(trackerType, opts) {
+	/**
+	 * Enable or disable auto tracking
+	 * @param trackerType - The type of tracker to activate.
+	 * @param [opts] - Auto tracking options.
+	 */
+	public autoTrack(trackerType: 'session', opts: AutoTrackSessionOpts);
+	public autoTrack(trackerType: 'pageView', opts: AutoTrackPageViewOpts);
+	public autoTrack(trackerType: 'event', opts: AutoTrackEventOpts);
+	// ensures backwards compatibility for non-pinpoint provider users
+	public autoTrack(
+		trackerType: TrackerTypes,
+		opts: { provider: string; [key: string]: any }
+	);
+	public autoTrack(trackerType: TrackerTypes, opts: { [key: string]: any }) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
 			return;
@@ -295,7 +322,9 @@ export class AnalyticsClass {
 let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
-const listener = (capsule) => {
+let credentialsConfigured = false;
+
+const listener = capsule => {
 	const { channel, payload } = capsule;
 	logger.debug('on hub capsule ' + channel, payload);
 
@@ -309,12 +338,15 @@ const listener = (capsule) => {
 		case 'analytics':
 			analyticsEvent(payload);
 			break;
+		case 'core':
+			coreEvent(payload);
+			break;
 		default:
 			break;
 	}
 };
 
-const storageEvent = (payload) => {
+const storageEvent = payload => {
 	const {
 		data: { attrs, metrics },
 	} = payload;
@@ -327,19 +359,19 @@ const storageEvent = (payload) => {
 				attributes: attrs,
 				metrics,
 			})
-			.catch((e) => {
+			.catch(e => {
 				logger.debug('Failed to send the storage event automatically', e);
 			});
 	}
 };
 
-const authEvent = (payload) => {
+const authEvent = payload => {
 	const { event } = payload;
 	if (!event) {
 		return;
 	}
 
-	const recordAuthEvent = async (eventName) => {
+	const recordAuthEvent = async eventName => {
 		if (authConfigured && analyticsConfigured) {
 			try {
 				return await _instance.record({ name: `_userauth.${eventName}` });
@@ -363,21 +395,35 @@ const authEvent = (payload) => {
 			return recordAuthEvent('auth_fail');
 		case 'configured':
 			authConfigured = true;
-			if (authConfigured && analyticsConfigured) {
+			if (analyticsConfigured) {
 				sendEvents();
 			}
 			break;
 	}
 };
 
-const analyticsEvent = (payload) => {
+const analyticsEvent = payload => {
 	const { event } = payload;
 	if (!event) return;
 
 	switch (event) {
 		case 'pinpointProvider_configured':
 			analyticsConfigured = true;
-			if (authConfigured && analyticsConfigured) {
+			if (authConfigured || credentialsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const coreEvent = payload => {
+	const { event } = payload;
+	if (!event) return;
+
+	switch (event) {
+		case 'credentials_configured':
+			credentialsConfigured = true;
+			if (analyticsConfigured) {
 				sendEvents();
 			}
 			break;
@@ -387,7 +433,7 @@ const analyticsEvent = (payload) => {
 const sendEvents = () => {
 	const config = _instance.configure();
 	if (!endpointUpdated && config['autoSessionRecord']) {
-		_instance.updateEndpoint({ immediate: true }).catch((e) => {
+		_instance.updateEndpoint({ immediate: true }).catch(e => {
 			logger.debug('Failed to update the endpoint', e);
 		});
 		endpointUpdated = true;
