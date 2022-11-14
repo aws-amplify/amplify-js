@@ -15,6 +15,7 @@ import {
 	Post,
 	Comment,
 	testSchema,
+	getDataStore,
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { addCommonQueryTests } from './commonAdapterTests';
@@ -286,6 +287,69 @@ describe('IndexedDBAdapter tests', () => {
 			const user = await DataStore.query(User, user1Id);
 			expect(user!.profileID).toEqual(profile.id);
 			expect(await user!.profile).toEqual(profile);
+		});
+	});
+
+	describe('Benchmark', () => {
+		let { DataStore, User } = getDataStore();
+
+		afterEach(async () => {
+			await DataStore.clear();
+		});
+
+		const benchmark = async (f, iterations = 1000) => {
+			const start = new Date();
+			for (let i = 0; i < iterations; i++) {
+				await f();
+			}
+			const end = new Date();
+			return end.getTime() - start.getTime();
+		};
+
+		/**
+		 * This test ensures fake indexeddb is giving us observably different performance on indexed
+		 * vs non-indexed queries, as well as demonstrate a baseline for how much of a difference we're
+		 * looking for.
+		 */
+		test('[SANITY CHECK] queries against key vs key-key fields yield measurably different performance', async () => {
+			// get by PK using the `byId` index is sable behavior, AFAIK. so, we'll benchmark against that.
+			// saving records is very heavy. to stay within test time limits, we'll seed a "small" number of
+			// records a query "many" times.
+
+			// as we seed records, remember the *last* user, so that scans and queries work "reasonably hard"
+			// to find it.
+			let user: User;
+
+			// seed the records
+			for (let i = 0; i < 250; i++) {
+				user = await DataStore.save(
+					new User({
+						name: `user ${i}`,
+					})
+				);
+			}
+
+			// check timing of fetch byPk
+			const byPkTime = await benchmark(async () => {
+				const fetched = await DataStore.query(User, user.id);
+				expect(fetched).toBeDefined();
+			});
+
+			// check timing of fetch by non-indexed field (name)
+			const byNameTime = await benchmark(async () => {
+				const fetched = await DataStore.query(User, u => u.name.eq(user.name));
+				expect(fetched.length).toBe(1);
+			});
+
+			console.log({ byPkTime, byNameTime });
+
+			// clamp indexed queries on a small data-set to be less than 1/3
+			// of the runtime of their non-indexed equivalent.
+			//
+			// We're using a rather unimpressive 1/3 here instead of
+			// something smaller and more realistic overall (like 1/8) because each
+			// iteration performs assertions, which adds some notable overhead.
+			expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 3);
 		});
 	});
 });
