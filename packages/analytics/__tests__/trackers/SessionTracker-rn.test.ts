@@ -11,7 +11,7 @@ jest.mock('react-native', () => {
 	};
 });
 
-import SessionTracker from '../../src/trackers/SessionTracker-rn';
+import { SessionTracker } from '../../src/trackers/SessionTracker-rn';
 import { AppState } from 'react-native';
 
 const tracker = jest.fn().mockImplementation(() => {

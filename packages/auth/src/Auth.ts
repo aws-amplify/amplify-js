@@ -15,7 +15,6 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	Parser,
 } from '@aws-amplify/core';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { AuthProvider } from './types/AuthProvider';

@@ -25,11 +25,11 @@ describe('aws-amplify', () => {
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
+			  "Notifications",
 			  "XR",
 			  "Predictions",
 			  "Logger",
 			  "Hub",
-			  "JS",
 			  "ClientDevice",
 			  "Signer",
 			  "I18n",
@@ -37,7 +37,6 @@ describe('aws-amplify', () => {
 			  "AWSCloudWatchProvider",
 			  "withSSRContext",
 			  "Geo",
-			  "default",
 			]
 		`);
 		});
