@@ -1871,6 +1871,7 @@ describe('auth unit test', () => {
 				.mockImplementationOnce((callback: any) => {
 					callback('err', null);
 				});
+			expect.assertions(2);
 			try {
 				const promiseArr = Array.from({ length: 10 }, async () => {
 					const user = new CognitoUser({
@@ -1880,7 +1881,7 @@ describe('auth unit test', () => {
 					return await auth.userSession(user);
 				});
 				await Promise.all(promiseArr);
-				fail('expect promsie to reject');
+				fail('expect promise to reject');
 			} catch (e) {
 				expect(e).toBe('err');
 			}
@@ -1945,7 +1946,7 @@ describe('auth unit test', () => {
 					callback(new Error('Refresh Token has been revoked'), null);
 				});
 			const userSignoutSpy = jest.fn();
-			// expect.assertions(2);
+			expect.assertions(5);
 			const promiseArr = Array.from({ length: 10 }, async () => {
 				user = new CognitoUser({
 					Username: 'username',
@@ -1958,7 +1959,7 @@ describe('auth unit test', () => {
 			});
 			try {
 				await Promise.all(promiseArr);
-				fail('expect promsie to reject');
+				fail('expect promise to reject');
 			} catch (e) {
 				expect(e.message).toBe('Refresh Token has been revoked');
 			}

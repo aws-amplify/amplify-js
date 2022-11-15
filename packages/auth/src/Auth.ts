@@ -1795,7 +1795,7 @@ export class AuthClass {
 		}
 		const clientMetadata = this._config.clientMetadata;
 		// Debouncing the concurrent userSession calls by caching the promise.
-		// This solution asumes users will always call this function with the same CognitoUser instance.
+		// This solution assumes users will always call this function with the same CognitoUser instance.
 		if (this.inflightSessionPromiseCounter === 0) {
 			this.inflightSessionPromise = new Promise<CognitoUserSession>(
 				(res, rej) => {
