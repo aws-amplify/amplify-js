@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "4.5.8",
+  "version": "5.0.1",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib-esm/index.js",
-    "./dist/aws-amplify-storage.min.js",
-    "./dist/aws-amplify-storage.js"
+    "./lib/Storage.js",
+    "./lib-esm/Storage.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -28,7 +25,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
   },
   "repository": {
     "type": "git",
@@ -40,14 +38,20 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.7.6",
+    "@aws-amplify/core": "5.0.1",
     "@aws-sdk/client-s3": "3.6.1",
     "@aws-sdk/s3-request-presigner": "3.6.1",
     "@aws-sdk/util-create-request": "3.6.1",
     "@aws-sdk/util-format-url": "3.6.1",
     "axios": "0.26.0",
-    "events": "^3.1.0"
+    "events": "^3.1.0",
+    "tslib": "^1.8.0"
   },
   "jest": {
     "globals": {

@@ -7,10 +7,10 @@ const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser } = browserOrNode();
 
 	if ((isBrowser && window.indexedDB) || (isWebWorker() && self.indexedDB)) {
-		return IndexedDBAdapter;
+		return IndexedDBAdapter as Adapter;
 	}
 
-	return AsyncStorageAdapter;
+	return AsyncStorageAdapter as Adapter;
 };
 
 export default getDefaultAdapter;

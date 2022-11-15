@@ -30,6 +30,11 @@ Object {
       },
       Object {
         "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Album",
+      },
+      Object {
+        "inbound": false,
         "rows": Array [
           Object {
             "$": Array [
@@ -410,6 +415,21 @@ Object {
       Object {
         "inbound": false,
         "rows": Array [],
+        "tableName": "user_Editor",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Forum",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_ForumEditorJoin",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
         "tableName": "user_Person",
       },
       Object {
@@ -465,6 +485,21 @@ Object {
         "rows": Array [],
         "tableName": "user_PostAuthorJoin",
       },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Project",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Song",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Team",
+      },
     ],
     "databaseName": "amplify-datastore",
     "databaseVersion": 0.3,
@@ -481,6 +516,11 @@ Object {
       },
       Object {
         "name": "sync_MutationEvent",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Album",
         "rowCount": 0,
         "schema": "++,&[id]",
       },
@@ -505,6 +545,21 @@ Object {
         "schema": "++,&[id],[commentPostId]",
       },
       Object {
+        "name": "user_Editor",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Forum",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_ForumEditorJoin",
+        "rowCount": 0,
+        "schema": "++,&[id],[editorID],[editorID+forumID],[forumID],[forumID+editorID]",
+      },
+      Object {
         "name": "user_Person",
         "rowCount": 0,
         "schema": "++,&[id]",
@@ -518,6 +573,21 @@ Object {
         "name": "user_PostAuthorJoin",
         "rowCount": 0,
         "schema": "++,[authorId],&[id],[postId]",
+      },
+      Object {
+        "name": "user_Project",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Song",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Team",
+        "rowCount": 0,
+        "schema": "++,&[id]",
       },
     ],
   },
