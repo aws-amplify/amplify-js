@@ -1814,16 +1814,18 @@ describe('auth unit test', () => {
 		});
 
 		test('debouncer happy case', async () => {
+			const concurrency = 10;
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
 				.mockImplementationOnce(function(callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
 				});
+			expect.assertions(2 * concurrency + 1);
 
 			const auth = new Auth(authOptions);
 
-			const promiseArr = Array.from({ length: 10 }, async () => {
+			const promiseArr = Array.from({ length: concurrency }, async () => {
 				const user = new CognitoUser({
 					Username: 'username',
 					Pool: userPool,
