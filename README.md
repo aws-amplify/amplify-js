@@ -24,7 +24,7 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
 
 > **Note**
-> aws-amplify 5 has be released. If you are looking for upgrade guidance [click here](#notice)
+> aws-amplify 5 has been released. If you are looking for upgrade guidance [click here](#notice)
 
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
@@ -127,15 +127,15 @@ To get started pick your platform from our [**Getting Started** home page](https
   + }
   ```
 
-- `Analytics.record` no longer supports passing a string only as input. For example:
+- `Analytics.record` no longer accepts string as input. For example:
 
   ```diff
   - Analytics.record('my example event');
-  + Analytics.record( { name: 'my example event' });
+  + Analytics.record({ name: 'my example event' });
   ```
 
 - The `JS` export has been removed from `@aws-amplify/core` in favor the exporting the functions it contained.
-- Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported, instead use the named exports. For example:
+- Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported. Instead , your code should use the named exports. For example:
 
   ```diff
   - import { Amplify } from 'aws-amplify';
