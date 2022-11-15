@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
 	OperationDefinitionNode,
@@ -27,8 +17,8 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
-import Auth from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { Auth } from '@aws-amplify/auth';
+import { Cache } from '@aws-amplify/cache';
 import {
 	GraphQLAuthError,
 	GraphQLOptions,
@@ -256,6 +246,7 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql<T>(
@@ -280,10 +271,7 @@ export class GraphQLAPIClass {
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
-		if (!this._api) {
-			await this.createInstance();
-		}
-
+		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -357,6 +345,12 @@ export class GraphQLAPIClass {
 		}
 
 		return response;
+	}
+
+	async createInstanceIfNotCreated() {
+		if (!this._api) {
+			await this.createInstance();
+		}
 	}
 
 	/**

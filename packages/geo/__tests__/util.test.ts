@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	validateCoordinates,
@@ -17,6 +7,7 @@ import {
 	validatePolygon,
 	validateGeofenceId,
 	validateGeofencesInput,
+	mapSearchOptions,
 } from '../src/util';
 
 import {
@@ -35,6 +26,9 @@ import {
 	geofencesWithDuplicate,
 	geofencesWithInvalidId,
 	geofenceWithTooManyVertices,
+	searchOptions,
+	searchOptionsMappedToInput,
+	locationServiceInput,
 } from './testData';
 
 describe('Geo utility functions', () => {
@@ -184,5 +178,56 @@ describe('Geo utility functions', () => {
 		).toThrowError(
 			`Geofence 'geofenceWithTooManyVertices' has more than the maximum of 1000 vertices`
 		);
+	});
+
+	describe('mapSearchOptions', () => {
+		test('should map search options to Amazon Location Service input object', () => {
+			const result = mapSearchOptions(searchOptions, locationServiceInput);
+			expect(result).toEqual(searchOptionsMappedToInput);
+		});
+
+		test('should map search options with bias position to Amazon Location Service input object', () => {
+			const searchOptionsWithBiasPosition = {
+				...searchOptions,
+				biasPosition: [12345, 67890],
+			};
+			const modifiedSearchOptionsMappedToInput = {
+				...searchOptionsMappedToInput,
+				BiasPosition: searchOptionsWithBiasPosition.biasPosition,
+			};
+			const result = mapSearchOptions(
+				searchOptionsWithBiasPosition,
+				locationServiceInput
+			);
+			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
+		});
+
+		test('should map search options with search area constraints to Amazon Location Service input object', () => {
+			const searchOptionsWithSearchAreaConstraints = {
+				...searchOptions,
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+			const modifiedSearchOptionsMappedToInput = {
+				...searchOptionsMappedToInput,
+				FilterBBox:
+					searchOptionsWithSearchAreaConstraints.searchAreaConstraints,
+			};
+			const result = mapSearchOptions(
+				searchOptionsWithSearchAreaConstraints,
+				locationServiceInput
+			);
+			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
+		});
+
+		test('should throw error when trying to map search options with bias position and search area constraints to Amazon Location Service input object', () => {
+			const searchOptionsExtended = {
+				...searchOptions,
+				biasPosition: [12345, 67890],
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+			expect(() => mapSearchOptions(searchOptionsExtended, {})).toThrowError(
+				`BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object`
+			);
+		});
 	});
 });

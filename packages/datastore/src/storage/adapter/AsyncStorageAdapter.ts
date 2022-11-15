@@ -2,10 +2,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import {
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from '../../predicates';
+import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -23,13 +20,13 @@ import {
 } from '../../types';
 import {
 	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
-	exhaustiveCheck,
 	getIndex,
 	getIndexFromAssociation,
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
-	sortCompareFunction,
+	inMemoryPagination,
+	NAMESPACES,
 	keysEqual,
 	getStorename,
 	getIndexKeys,
@@ -40,17 +37,21 @@ import {
 const logger = new Logger('DataStore');
 
 export class AsyncStorageAdapter implements Adapter {
-	private schema: InternalSchema;
-	private namespaceResolver: NamespaceResolver;
-	private modelInstanceCreator: ModelInstanceCreator;
-	private getModelConstructorByModelName: (
-		namsespaceName: string,
+	// Non-null assertions (bang operators) added to most properties to make TS happy.
+	// For now, we can be reasonably sure they're available when they're needed, because
+	// the adapter is not used directly outside the library boundary.
+	// TODO: rejigger for DI?
+	private schema!: InternalSchema;
+	private namespaceResolver!: NamespaceResolver;
+	private modelInstanceCreator!: ModelInstanceCreator;
+	private getModelConstructorByModelName!: (
+		namsespaceName: NAMESPACES,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: AsyncStorageDatabase;
-	private initPromise: Promise<void>;
-	private resolve: (value?: any) => void;
-	private reject: (value?: any) => void;
+	private db!: AsyncStorageDatabase;
+	private initPromise!: Promise<void>;
+	private resolve!: (value?: any) => void;
+	private reject!: (value?: any) => void;
 
 	private getStorenameForModel(
 		modelConstructor: PersistentModelConstructor<any>
@@ -88,7 +89,7 @@ export class AsyncStorageAdapter implements Adapter {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
@@ -131,7 +132,7 @@ export class AsyncStorageAdapter implements Adapter {
 			model,
 			this.schema.namespaces[namespaceName],
 			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.getModelConstructorByModelName as any
 		);
 
 		const set = new Set<string>();
@@ -152,7 +153,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
-			const { predicates: predicateObjs, type } = predicates;
+			const { predicates: predicateObjs, type } = predicates!;
 
 			const isValid = validatePredicate(fromDB, type, predicateObjs);
 
@@ -189,17 +190,16 @@ export class AsyncStorageAdapter implements Adapter {
 				result.push([instance, opType]);
 			}
 		}
-
 		return result;
 	}
 
 	private async load<T>(
-		namespaceName: string,
+		namespaceName: NAMESPACES,
 		srcModelName: string,
 		records: T[]
 	): Promise<T[]> {
 		const namespace = this.schema.namespaces[namespaceName];
-		const relations = namespace.relationships[srcModelName].relationTypes;
+		const relations = namespace.relationships![srcModelName].relationTypes;
 		const connectionStoreNames = relations.map(({ modelName }) => {
 			return getStorename(namespaceName, modelName);
 		});
@@ -214,111 +214,6 @@ export class AsyncStorageAdapter implements Adapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const { fieldName, modelName, targetName, targetNames, relationType } =
-				relation;
-			const storeName = getStorename(namespaceName, modelName);
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				modelName
-			);
-
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						// ASYNC CPK TODO: make this cleaner
-						if (targetNames?.length) {
-							let getByFields = [];
-							let allPresent;
-							// iterate through all targetnames to make sure they are all present in the recordItem
-							allPresent = targetNames.every(targetName => {
-								return recordItem[targetName] != null;
-							});
-
-							if (!allPresent) {
-								break;
-							}
-
-							getByFields = targetNames as any;
-
-							// keys are the key values
-							const keys = getByFields
-								.map(getByField => recordItem[getByField])
-								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
-
-							const connectionRecord = await this.db.get(keys, storeName);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						} else {
-							const getByfield = recordItem[targetName]
-								? targetName
-								: fieldName;
-							if (!recordItem[getByfield]) break;
-
-							const key = recordItem[getByfield];
-
-							const connectionRecord = await this.db.get(key, storeName);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						// ASYNC CPK TODO: make this cleaner
-						if (targetNames?.length) {
-							let allPresent;
-							// iterate through all targetnames to make sure they are all present in the recordItem
-							allPresent = targetNames.every(targetName => {
-								return recordItem[targetName] != null;
-							});
-
-							// If not present, there is not yet a connected record
-							if (!allPresent) {
-								break;
-							}
-
-							const keys = targetNames
-								.map(targetName => recordItem[targetName])
-								.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
-
-							// Retrieve the connected record
-							const connectionRecord = await this.db.get(keys, storeName);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-
-							targetNames?.map(targetName => {
-								delete recordItem[targetName];
-							});
-						} else if (recordItem[targetName as any]) {
-							const key = recordItem[targetName];
-
-							const connectionRecord = await this.db.get(key, storeName);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					exhaustiveCheck(relationType);
-					break;
-			}
-		}
-
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
@@ -330,7 +225,9 @@ export class AsyncStorageAdapter implements Adapter {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const namespaceName = this.namespaceResolver(modelConstructor);
+		const namespaceName = this.namespaceResolver(
+			modelConstructor
+		) as NAMESPACES;
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
@@ -344,7 +241,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
-		const records: T[] = await (async () => {
+		const records: T[] = (await (async () => {
 			if (queryByKey) {
 				const record = await this.getByKey(storeName, queryByKey);
 				return record ? [record] : [];
@@ -361,7 +258,7 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 
 			return this.getAll(storeName);
-		})();
+		})()) as T[];
 
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
@@ -390,7 +287,7 @@ export class AsyncStorageAdapter implements Adapter {
 			return;
 		}
 
-		const keyValues = [];
+		const keyValues = [] as any[];
 
 		for (const key of keys) {
 			const predicateObj = predicateObjs.find(
@@ -424,26 +321,7 @@ export class AsyncStorageAdapter implements Adapter {
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination && records.length > 1) {
-			if (pagination.sort) {
-				const sortPredicates = ModelSortPredicateCreator.getPredicates(
-					pagination.sort
-				);
-
-				if (sortPredicates.length) {
-					const compareFn = sortCompareFunction(sortPredicates);
-					records.sort(compareFn);
-				}
-			}
-			const { page = 0, limit = 0 } = pagination;
-			const start = Math.max(0, page * limit) || 0;
-
-			const end = limit > 0 ? start + limit : records.length;
-
-			return records.slice(start, end);
-		}
-
-		return records;
+		return inMemoryPagination(records, pagination);
 	}
 
 	async queryOne<T extends PersistentModel>(
@@ -463,14 +341,15 @@ export class AsyncStorageAdapter implements Adapter {
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
 		if (isModelConstructor(modelOrModelConstructor)) {
-			const modelConstructor = modelOrModelConstructor;
-			const nameSpace = this.namespaceResolver(modelConstructor);
+			const modelConstructor =
+				modelOrModelConstructor as PersistentModelConstructor<T>;
+			const nameSpace = this.namespaceResolver(modelConstructor) as NAMESPACES;
 
 			// models to be deleted.
-			const models = await this.query(modelConstructor, condition);
+			const models = await this.query(modelConstructor, condition!);
 			// TODO: refactor this to use a function like getRelations()
 			const relations =
-				this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+				this.schema.namespaces[nameSpace].relationships![modelConstructor.name]
 					.relationTypes;
 
 			if (condition !== undefined) {
@@ -509,11 +388,11 @@ export class AsyncStorageAdapter implements Adapter {
 				return [models, deletedModels];
 			}
 		} else {
-			const model = modelOrModelConstructor;
+			const model = modelOrModelConstructor as T;
 
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;
-			const namespaceName = this.namespaceResolver(modelConstructor);
+			const nameSpace = this.namespaceResolver(modelConstructor) as NAMESPACES;
 
 			const storeName = this.getStorenameForModel(modelConstructor);
 
@@ -530,7 +409,7 @@ export class AsyncStorageAdapter implements Adapter {
 				}
 
 				const predicates = ModelPredicateCreator.getPredicates(condition);
-				const { predicates: predicateObjs, type } = predicates;
+				const { predicates: predicateObjs, type } = predicates!;
 
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
 				if (!isValid) {
@@ -541,20 +420,19 @@ export class AsyncStorageAdapter implements Adapter {
 				}
 
 				const relations =
-					this.schema.namespaces[namespaceName].relationships[
+					this.schema.namespaces[nameSpace].relationships![
 						modelConstructor.name
 					].relationTypes;
-
 				await this.deleteTraverse(
 					relations,
 					[model],
 					modelConstructor.name,
-					namespaceName,
+					nameSpace,
 					deleteQueue
 				);
 			} else {
 				const relations =
-					this.schema.namespaces[namespaceName].relationships[
+					this.schema.namespaces[nameSpace].relationships![
 						modelConstructor.name
 					].relationTypes;
 
@@ -562,7 +440,7 @@ export class AsyncStorageAdapter implements Adapter {
 					relations,
 					[model],
 					modelConstructor.name,
-					namespaceName,
+					nameSpace,
 					deleteQueue
 				);
 			}
@@ -581,7 +459,7 @@ export class AsyncStorageAdapter implements Adapter {
 	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
-		for await (const deleteItem of deleteQueue) {
+		for await (const deleteItem of deleteQueue!) {
 			const { storeName, items } = deleteItem;
 
 			for await (const item of items) {
@@ -594,6 +472,7 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 	}
+
 	/**
 	 * Populates the delete Queue with all the items to delete
 	 * @param relations
@@ -606,7 +485,7 @@ export class AsyncStorageAdapter implements Adapter {
 		relations: RelationType[],
 		models: T[],
 		srcModel: string,
-		nameSpace: string,
+		nameSpace: NAMESPACES,
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
@@ -621,7 +500,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 			const index: string | undefined =
 				getIndex(
-					this.schema.namespaces[nameSpace].relationships[modelName]
+					this.schema.namespaces[nameSpace].relationships![modelName]
 						.relationTypes,
 					srcModel
 				) ||
@@ -629,8 +508,8 @@ export class AsyncStorageAdapter implements Adapter {
 				// i.e. for keyName connections, attempt to find one by the
 				// associatedWith property
 				getIndexFromAssociation(
-					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
-					rel.associatedWith
+					this.schema.namespaces[nameSpace].relationships![modelName].indexes,
+					rel.associatedWith!
 				);
 
 			switch (relationType) {
@@ -664,9 +543,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 							if (hasConnectedModelFields && isUnidirectionalConnection) {
 								// Values will be that of the child model
-								values = targetNames.map(
-									targetName => model[targetName]
-								) as any;
+								values = targetNames
+									.filter(targetName => model[targetName] ?? false)
+									.map(targetName => model[targetName]) as any;
 							} else {
 								// values will be that of the parent model
 								values = keyValuesPath.split(
@@ -702,7 +581,7 @@ export class AsyncStorageAdapter implements Adapter {
 							}
 
 							await this.deleteTraverse<T>(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete,
 								modelName,
@@ -711,10 +590,10 @@ export class AsyncStorageAdapter implements Adapter {
 							);
 						} else {
 							const hasOneIndex = index || associatedWith;
-							const hasOneCustomField = targetName in model;
+							const hasOneCustomField = targetName! in model;
 							const keyValuesPath: string = this.getIndexKeyValuesPath(model);
 							const value = hasOneCustomField
-								? model[targetName]
+								? model[targetName!]
 								: keyValuesPath;
 
 							if (!value) break;
@@ -726,7 +605,7 @@ export class AsyncStorageAdapter implements Adapter {
 							) as T[];
 
 							await this.deleteTraverse<T>(
-								this.schema.namespaces[nameSpace].relationships[modelName]
+								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
 								recordToDelete,
 								modelName,
@@ -743,14 +622,14 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 
-						const indices = index.split(IDENTIFIER_KEY_SEPARATOR);
+						const indices = index!.split(IDENTIFIER_KEY_SEPARATOR);
 
 						const childrenArray = allRecords.filter(childItem =>
 							indices.every(index => keyValues.includes(childItem[index]))
 						) as T[];
 
 						await this.deleteTraverse<T>(
-							this.schema.namespaces[nameSpace].relationships[modelName]
+							this.schema.namespaces[nameSpace].relationships![modelName]
 								.relationTypes,
 							childrenArray,
 							modelName,
@@ -763,8 +642,7 @@ export class AsyncStorageAdapter implements Adapter {
 					// Intentionally blank
 					break;
 				default:
-					exhaustiveCheck(relationType);
-					break;
+					throw new Error(`Invalid relationType ${relationType}`);
 			}
 		}
 
@@ -782,8 +660,8 @@ export class AsyncStorageAdapter implements Adapter {
 	async clear(): Promise<void> {
 		await this.db.clear();
 
-		this.db = undefined;
-		this.initPromise = undefined;
+		this.db = undefined!;
+		this.initPromise = undefined!;
 	}
 
 	async batchSave<T extends PersistentModel>(
@@ -812,7 +690,7 @@ export class AsyncStorageAdapter implements Adapter {
 			const { instance } = connectedModels.find(({ instance }) => {
 				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
 				return keysEqual([instanceKeyValuesPath], [keyValuesPath]);
-			});
+			})!;
 
 			batch.push(instance);
 		}

@@ -171,7 +171,7 @@ commands:
           name: 'Run cypress test << parameters.spec >>'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -335,9 +335,10 @@ jobs:
       - run:
           name: yarn install --non-interactive
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           command: |
             mv .yarnrc ._yarnrc
-            yarn
+            yarn --ignore-engines
       - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
@@ -368,8 +369,7 @@ jobs:
           # https://github.com/TryGhost/node-sqlite3#source-install
           command: |
             cd packages/datastore-storage-adapter
-            npm install --build-from-source
-            rm -rf node_modules/@aws-amplify node_modules/@aws-sdk
+            npm install sqlite3 --build-from-source
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
@@ -387,6 +387,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout next-major-version/5
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -397,7 +398,7 @@ jobs:
           paths:
             - amplify-js-samples-staging
 
-  integ_react_auth:
+  integ_react_auth_1: #break react auth test to 2 sections to save time
     parameters:
       browser:
         type: string
@@ -410,15 +411,8 @@ jobs:
           test_name: 'React Authenticator'
           framework: react
           category: auth
-          sample_name: with-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
-          test_name: 'React Authenticator'
-          framework: react
-          category: auth
           sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Guest to Authenticated User"'
@@ -432,21 +426,30 @@ jobs:
           framework: react
           category: auth
           sample_name: typescript-amplify-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
+  integ_react_auth_2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
-          spec: custom-authenticator
+          spec: new-ui-custom-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: with-authenticator
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Sign In after Sign Up'
@@ -464,13 +467,6 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - prepare_test_env
-      - integ_test_js:
-          test_name: 'Angular Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator-legacy
-          spec: authenticator
-          browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
@@ -502,18 +498,11 @@ jobs:
           spec: authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'Vue 2 Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-          spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
-      - integ_test_js:
           test_name: 'Vue 3 Authenticator'
           framework: vue
           category: auth
           sample_name: authenticator-vue3
-          spec: ui-amplify-authenticator
+          spec: new-ui-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'Vue Custom Authenticator'
@@ -929,18 +918,6 @@ jobs:
           sample_name: graphql
           spec: graphql
           browser: << parameters.browser >>
-  integ_react_storage_ui:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageComp
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'React Storage UI Components'
-          framework: react
-          category: storage
-          sample_name: storageComp
-          spec: storage-comp
   integ_react_amazon_cognito_identity_js_cookie_storage:
     parameters:
       browser:
@@ -1173,6 +1150,138 @@ jobs:
           spec: next-owner-based-default
           browser: << parameters.browser >>
 
+  integ_react_datastore_custom_pk_unconnected_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Connected Models)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-unconnected-models
+          spec: custom-pk-unconnected-models
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_one:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-one
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has One)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-one
+          spec: custom-pk-has-one
+          browser: << parameters.browser >>
+
+  integ_react_datastore_custom_pk_has_many_many_to_many:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-has-many-many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Custom Primary Key (Has Many / Many to Many)'
+          framework: react
+          category: datastore
+          sample_name: v2/custom-pk-has-many-many-to-many
+          spec: custom-pk-has-many-many-to-many
+          browser: << parameters.browser >>
+
+  integ_react_datastore_background_process_manager:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/background-process-manager
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Background Process Manager'
+          framework: react
+          category: datastore
+          sample_name: v2/background-process-manager
+          spec: background-process-manager
+          browser: << parameters.browser >>
+
+  integ_react_datastore_related_models:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/related-models
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Related Models'
+          framework: react
+          category: datastore
+          sample_name: related-models
+          spec: related-models
+          browser: << parameters.browser >>
+
+  integ_react_iot_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for IoT'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-iot
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
+  integ_react_api_reconnect:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'PubSub - Reconnection for API'
+          framework: react
+          category: pubsub
+          sample_name: reconnection-api
+          spec: reconnection
+          # Firefox doesn't support network state management in cypress
+          browser: chrome
+
+  integ_react_datastore_selective_sync:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/selective-sync-v5
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Selective Sync'
+          framework: react
+          category: datastore
+          sample_name: selective-sync-v5
+          spec: selective-sync-v5
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1209,7 +1318,7 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:main
+            git push --force-with-lease origin release:main
 
 releasable_branches: &releasable_branches
   branches:
@@ -1219,7 +1328,8 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - geo/main
-      - ds-custom-pk
+      - in-app-messaging/main
+      - next-major-version/5
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1258,7 +1368,16 @@ workflows:
       - unit_test:
           requires:
             - build
-      - integ_react_auth:
+      - integ_react_auth_1:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_auth_2:
           requires:
             - integ_setup
             - build
@@ -1498,12 +1617,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_storage_ui:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
       - integ_react_amazon_cognito_identity_js_cookie_storage:
           requires:
             - integ_setup
@@ -1627,6 +1740,74 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_custom_pk_unconnected_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_custom_pk_has_one:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_custom_pk_has_many_many_to_many:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+
+      - integ_react_datastore_background_process_manager:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_related_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_iot_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_api_reconnect:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_datastore_selective_sync:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1652,14 +1833,14 @@ workflows:
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
-            - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
             - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
-            - integ_react_auth
+            - integ_react_auth_1
+            - integ_react_auth_2
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
@@ -1675,6 +1856,14 @@ workflows:
             - integ_react_graphql_api
             - integ_react_geo
             - integ_next_datastore_owner_auth
+            - integ_react_datastore_custom_pk_unconnected_models
+            - integ_react_datastore_custom_pk_has_one
+            - integ_react_datastore_custom_pk_has_many_many_to_many
+            - integ_react_datastore_background_process_manager
+            - integ_react_datastore_related_models
+            - integ_react_iot_reconnect
+            - integ_react_api_reconnect
+            - integ_react_datastore_selective_sync
       - post_release:
           filters:
             branches:
@@ -1855,7 +2044,7 @@ orbs:
                     exit 1
                   fi
                 }
-                eval << parameters.pre-command >> 
+                eval << parameters.pre-command >>
                 retry "<< parameters.command >>"
               no_output_timeout: << parameters.no_output_timeout >>
 

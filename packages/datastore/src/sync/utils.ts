@@ -27,9 +27,9 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ModelAttributes,
 } from '../types';
 import {
-	exhaustiveCheck,
 	extractPrimaryKeyFieldNames,
 	establishRelationAndKeys,
 	IDENTIFIER_KEY_SEPARATOR,
@@ -54,9 +54,9 @@ export enum TransformerMutationType {
 }
 
 const dummyMetadata: ModelInstanceMetadata = {
-	_version: undefined,
-	_lastChangedAt: undefined,
-	_deleted: undefined,
+	_version: undefined!,
+	_lastChangedAt: undefined!,
+	_deleted: undefined!,
 };
 
 const metadataFields = <(keyof ModelInstanceMetadata)[]>(
@@ -110,7 +110,7 @@ function getOwnerFields(
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModelWithAttributes(modelDefinition)) {
-		modelDefinition.attributes.forEach(attr => {
+		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
 				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
 				if (rule && rule.ownerField) {
@@ -154,7 +154,7 @@ function getConnectionFields(
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
 		.forEach(({ name, association }) => {
-			const { connectionType } = association;
+			const { connectionType } = association || {};
 
 			switch (connectionType) {
 				case 'HAS_ONE':
@@ -186,7 +186,7 @@ function getConnectionFields(
 					}
 					break;
 				default:
-					exhaustiveCheck(connectionType);
+					throw new Error(`Invalid connection type ${connectionType}`);
 			}
 		});
 
@@ -197,7 +197,7 @@ function getNonModelFields(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
@@ -206,13 +206,12 @@ function getNonModelFields(
 				({ name }) => name
 			);
 
-			const nested = [];
+			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
 					);
@@ -230,8 +229,8 @@ export function getAuthorizationRules(
 	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
-	const authConfig = []
-		.concat(modelDefinition.attributes)
+	const authConfig = ([] as ModelAttributes)
+		.concat(modelDefinition.attributes || [])
 		.find(attr => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
@@ -270,8 +269,8 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// look for the subscription level override
 			// only pay attention to the public level
-			const modelConfig = (<typeof modelDefinition.attributes>[])
-				.concat(modelDefinition.attributes)
+			const modelConfig = ([] as ModelAttributes)
+				.concat(modelDefinition.attributes || [])
 				.find(attr => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
@@ -337,8 +336,8 @@ export function buildGraphQLOperation(
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	let operation: string;
-	let documentArgs: string = ' ';
-	let operationArgs: string = ' ';
+	let documentArgs: string;
+	let operationArgs: string;
 	let transformerMutationType: TransformerMutationType;
 
 	switch (graphQLOpType) {
@@ -377,17 +376,16 @@ export function buildGraphQLOperation(
 			operationArgs = '(id: $id)';
 			transformerMutationType = TransformerMutationType.GET;
 			break;
-
 		default:
-			exhaustiveCheck(graphQLOpType);
+			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
 
 	return [
 		[
-			transformerMutationType,
-			operation,
+			transformerMutationType!,
+			operation!,
 			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-		${operation}${operationArgs}{
+		${operation!}${operationArgs}{
 			${selectionSet}
 		}
 	}`,
@@ -421,7 +419,7 @@ export function createMutationInstanceFromModelOperation<
 			operation = TransformerMutationType.DELETE;
 			break;
 		default:
-			exhaustiveCheck(opType);
+			throw new Error(`Invalid opType ${opType}`);
 	}
 
 	// stringify nested objects of type AWSJSON
@@ -449,7 +447,7 @@ export function createMutationInstanceFromModelOperation<
 		data: JSON.stringify(element, replacer),
 		modelId,
 		model: model.name,
-		operation,
+		operation: operation!,
 		condition: JSON.stringify(condition),
 	});
 
@@ -466,35 +464,22 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
+	// This is compatible with how the GQL Transform currently generates the Condition Input,
+	// i.e. any PK and SK fields are omitted and can't be used as conditions.
+	// However, I think this limits usability.
+	// What if we want to delete all records where SK > some value
+	// Or all records where PK = some value but SKs are different values
+
+	// TODO: if the Transform gets updated we'll need to modify this logic to only omit
+	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
+
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
-
-	predicate.predicates.forEach(p => {
-		if (isPredicateObj(p)) {
-			const { field, operator, operand } = p;
-
-			// This is compatible with how the GQL Transform currently generates the Condition Input,
-			// i.e. any PK and SK fields are omitted and can't be used as conditions.
-			// However, I think this limits usability.
-			// What if we want to delete all records where SK > some value
-			// Or all records where PK = some value but SKs are different values
-
-			// TODO: if the Transform gets updated ^ we'll need to modify this logic to only omit
-			// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
-			if (keyFields.includes(field as string)) {
-				return;
-			}
-
-			result[field] = { [operator]: operand };
-		} else {
-			result[p.type] = predicateToGraphQLCondition(p, modelDefinition);
-		}
-	});
-
-	return result;
+	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
 
 export function predicateToGraphQLFilter(
-	predicatesGroup: PredicatesGroup<any>
+	predicatesGroup: PredicatesGroup<any>,
+	fieldsToOmit: string[] = []
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -514,6 +499,8 @@ export function predicateToGraphQLFilter(
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
+			if (fieldsToOmit.includes(field as string)) return;
+
 			const gqlField: GraphQLField = {
 				[field]: { [operator]: operand },
 			};
@@ -522,8 +509,15 @@ export function predicateToGraphQLFilter(
 			return;
 		}
 
-		appendToFilter(predicateToGraphQLFilter(predicate));
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit);
+		Object.keys(child).length > 0 && appendToFilter(child);
 	});
+
+	if (isList) {
+		if (result[type].length === 0) return {};
+	} else {
+		if (Object.keys(result[type]).length === 0) return {};
+	}
 
 	return result;
 }
@@ -661,9 +655,7 @@ export function getIdentifierValue(
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 
-	const idOrPk = pkFieldNames
-		.map(f => model[f])
-		.join(IDENTIFIER_KEY_SEPARATOR);
+	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
 }

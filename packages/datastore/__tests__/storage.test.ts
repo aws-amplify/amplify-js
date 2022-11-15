@@ -169,7 +169,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.optionalField1 = null;
+						draft.optionalField1 = null!;
 					})
 				);
 
@@ -212,7 +212,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.emails = [...draft.emails, 'joe@doe.com'];
+						draft.emails = [...draft.emails!, 'joe@doe.com'];
 					})
 				);
 
@@ -242,7 +242,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.emails.push('joe@doe.com');
+						draft.emails!.push('joe@doe.com');
 					})
 				);
 
@@ -322,7 +322,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.emails = null;
+						draft.emails = null!;
 					})
 				);
 
@@ -342,6 +342,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
@@ -351,7 +352,7 @@ describe('Storage tests', () => {
 						draft.metadata = {
 							...draft.metadata,
 							penNames: ['bob'],
-						};
+						} as any;
 					})
 				);
 
@@ -361,6 +362,7 @@ describe('Storage tests', () => {
 					author: 'some author',
 					rewards: [],
 					penNames: ['bob'],
+					nominations: [],
 				};
 
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
@@ -381,13 +383,14 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
-						draft.metadata.penNames = ['bob'];
+						draft.metadata!.penNames = ['bob'];
 					})
 				);
 
@@ -406,6 +409,84 @@ describe('Storage tests', () => {
 				);
 			});
 
+			test('allowing nested BELONGS_TO to be set', async () => {
+				const { DataStore, Post, Comment } = getDataStore();
+
+				const originalPost = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const newPost = await DataStore.save(
+					new Post({
+						title: 'oops. i mean this is my best post',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'your post is not that great, actually ....',
+						post: originalPost,
+					})
+				);
+
+				await DataStore.save(
+					Comment.copyOf(comment, draft => {
+						draft.post = newPost;
+					})
+				);
+
+				const updatedComment = await DataStore.query(Comment, comment.id);
+
+				expect((await updatedComment!.post).title).toEqual(
+					'oops. i mean this is my best post'
+				);
+			});
+
+			// TODO.
+			// Uncomment this test when implementing cascading saves
+			test.skip('allowing nested HAS_MANY to be set', async () => {
+				const { DataStore, Post, Comment } = getDataStore();
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'comment 1',
+						post,
+					})
+				);
+
+				new Comment({
+					content: 'comment 1',
+					post,
+				});
+
+				await DataStore.save(
+					Post.copyOf(post, updated => {
+						updated.comments = [
+							comment,
+							new Comment({
+								content: 'comment 2',
+							} as any),
+						];
+					})
+				);
+
+				const test = await DataStore.query(Post, post.id);
+
+				// might have to sort
+				expect((await test!.comments.toArray()).map(c => c.content)).toEqual([
+					'comment 1',
+					'comment 2',
+				]);
+			});
+
 			test('custom type unchanged', async () => {
 				const { DataStore, Model } = getDataStore();
 
@@ -417,6 +498,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						},
 					})
 				);
@@ -428,6 +510,7 @@ describe('Storage tests', () => {
 							author: 'some author',
 							rewards: [],
 							penNames: [],
+							nominations: [],
 						};
 					})
 				);

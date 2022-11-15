@@ -29,6 +29,9 @@ const MULTILINE_FLAG = '-e';
 const TO_DO_SCRIPT = `${MULTILINE_FLAG} 'tell application "Terminal" to do script`;
 const IN_FRONT_WINDOW = `in front window'${WHITE_SPACE}`;
 
+// List of packages to exclude that do not have build:watch script
+const EXCLUDED_PACKAGES = [];
+
 // List of CJS identified packages
 const CJS_PACKAGES_PRESET = [
 	'aws-amplify-react-native',
@@ -221,8 +224,7 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 	packages.forEach(pack => {
 		const packageName = pack.split('/')[1] ?? pack;
 
-		let sourceDirectoryName = packageName;
-
+		const sourceDirectoryName = packageName;
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
 		wmlAddCommands += `${doubleQuotedFormOf(
