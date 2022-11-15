@@ -1058,6 +1058,13 @@ jobs:
           sample_name: << parameters.scenario >>
           spec: << parameters.scenario >>
           browser: firefox
+      - integ_test_js:
+          test_name: 'DataStore Auth - Edge'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: edge
 
   integ_datastore_auth_v2:
     parameters:
@@ -1082,6 +1089,13 @@ jobs:
           sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
           browser: firefox
+      - integ_test_js:
+          test_name: 'DataStore Auth CLI v2 - Edge'
+          framework: react
+          category: datastore
+          sample_name: v2/<< parameters.scenario >>-v2
+          spec: << parameters.scenario >>
+          browser: edge
       # integ_duplicate_packages:
       #   parameters:
       #     browser:
@@ -1297,7 +1311,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH # TODO: remove prior to merging PR
 
   post_release:
     executor: build-executor
@@ -1330,9 +1344,10 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
+      - add-edge-testing # TODO: Remove prior to merging PR
 
 test_browsers: &test_browsers
-  browser: [chrome, firefox]
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
