@@ -443,7 +443,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				const errString = `Log entry exceeds maximum size for CloudWatch logs. Log size: ${eventSize}. Truncating log message.`;
 				logger.warn(errString);
 
-				currentEvent.message = currentEvent.message.substring(0, eventSize);
+				currentEvent.message = currentEvent.message.substring(0, AWS_CLOUDWATCH_MAX_EVENT_SIZE - AWS_CLOUDWATCH_BASE_BUFFER_SIZE);
+				eventSize = new TextEncoder().encode(currentEvent.message).length
 			}
 
 			if (totalByteSize + eventSize > AWS_CLOUDWATCH_MAX_BATCH_EVENT_SIZE)
