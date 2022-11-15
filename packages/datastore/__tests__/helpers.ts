@@ -893,9 +893,15 @@ class FakeGraphQLService {
 /**
  * Re-requries DataStore, initializes the test schema.
  *
+ * Clears ALL mocks and modules in doing so.
+ *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({ online = false, isNode = true } = {}) {
+export function getDataStore({
+	online = false,
+	isNode = true,
+	storageAdapterFactory = () => undefined as any,
+} = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -973,6 +979,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
 
+	DataStore.configure({
+		storageAdapter: storageAdapterFactory(),
+	});
+
 	// private, test-only DI's.
 	if (online) {
 		(DataStore as any).amplifyContext.API = graphqlService;
@@ -982,6 +992,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	}
 
 	const classes = initSchema(testSchema());
+
 	const {
 		Post,
 		Comment,
@@ -995,6 +1006,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 	} = classes as {
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
@@ -1008,6 +1020,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		Model: PersistentModelConstructor<Model>;
 	};
 
 	return {
@@ -1028,6 +1041,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 	};
 }
 

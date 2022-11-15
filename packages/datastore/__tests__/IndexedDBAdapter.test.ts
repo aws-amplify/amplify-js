@@ -17,13 +17,12 @@ import {
 	testSchema,
 	getDataStore,
 } from './helpers';
-import { Predicates } from '../src/predicates';
+import { Predicates as PredicatesClass } from '../src/predicates';
 import { addCommonQueryTests } from './commonAdapterTests';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-// using any to get access to private methods
-const IDBAdapter = <any>Adapter;
+let Predicates = PredicatesClass;
 
 describe('IndexedDBAdapter tests', () => {
 	async function getMutations(adapter) {
@@ -48,20 +47,36 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getByKey');
-		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
-		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
-		const spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
 
-		beforeAll(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-			DataStore.configure({ storageAdapter: Adapter });
+		let spyOnGetOne: jest.SpyInstance<any>;
+		let spyOnGetAll: jest.SpyInstance<any>;
+		let spyOnEngine: jest.SpyInstance<any>;
+		let spyOnMemory: jest.SpyInstance<any>;
 
-			const classes = initSchema(testSchema());
+		beforeEach(async () => {
+			({ DataStore, Model } = getDataStore({
+				storageAdapterFactory: () => {
+					const IDBAdapter =
+						require('../src/storage/adapter/IndexedDBAdapter').default;
+					spyOnGetOne = jest.spyOn(IDBAdapter, 'getByKey');
+					spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
+					spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
+					spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
 
-			({ Model } = classes as {
-				Model: PersistentModelConstructor<Model>;
-			});
+					// becuase jest has cleared modules, the `Predicates.ALL` we currently have is
+					// not the particular instance DataStore recognizes. functionally, this would
+					// return the the correct results. but, it won't hit the code paths we're looking
+					// to hit in these tests. so, we need to re-import it.
+					// this affects calls to `inMemoryPagination` and `enginePagination` in particular
+					({ Predicates } = require('../src/predicates'));
+
+					return IDBAdapter;
+				},
+			}));
+
+			// console.log({
+			// 	adapter: (DataStore as any).storage.storageAdapter,
+			// });
 
 			// NOTE: sort() test on these models can be flaky unless we
 			// strictly control the datestring of each! In a non-negligible percentage
@@ -69,8 +84,6 @@ describe('IndexedDBAdapter tests', () => {
 			// quickly enough that dates were colliding. (or so it seemed!)
 
 			const baseDate = new Date();
-
-			await DataStore.start();
 
 			({ id: model1Id } = await DataStore.save(
 				new Model({
@@ -90,14 +103,13 @@ describe('IndexedDBAdapter tests', () => {
 					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
 				})
 			);
-		});
 
-		beforeEach(() => {
 			jest.clearAllMocks();
 		});
 
-		afterAll(async () => {
+		afterEach(async () => {
 			await DataStore.clear();
+			jest.restoreAllMocks();
 		});
 
 		it('Should call getById for query by id', async () => {
@@ -164,18 +176,8 @@ describe('IndexedDBAdapter tests', () => {
 		let post1Id: string;
 		let comment1Id: string;
 
-		beforeAll(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-
-			const classes = initSchema(testSchema());
-
-			({ User } = classes as {
-				User: PersistentModelConstructor<User>;
-			});
-
-			({ Profile } = classes as {
-				Profile: PersistentModelConstructor<Profile>;
-			});
+		beforeEach(async () => {
+			({ DataStore, User, Profile, Post, Comment } = getDataStore());
 
 			({ id: profile1Id } = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
@@ -184,18 +186,14 @@ describe('IndexedDBAdapter tests', () => {
 			({ id: user1Id } = await DataStore.save(
 				new User({ name: 'test', profileID: profile1Id })
 			));
-		});
 
-		beforeEach(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-			const classes = initSchema(testSchema());
-			({ Post } = classes as {
-				Post: PersistentModelConstructor<Post>;
-			});
+			({ id: profile1Id } = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			));
 
-			({ Comment } = classes as {
-				Comment: PersistentModelConstructor<Comment>;
-			});
+			({ id: user1Id } = await DataStore.save(
+				new User({ name: 'test', profileID: profile1Id })
+			));
 
 			const post = await DataStore.save(new Post({ title: 'Test' }));
 			({ id: post1Id } = post);
@@ -203,6 +201,10 @@ describe('IndexedDBAdapter tests', () => {
 			({ id: comment1Id } = await DataStore.save(
 				new Comment({ content: 'Test Content', post })
 			));
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
 		});
 
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
@@ -249,22 +251,16 @@ describe('IndexedDBAdapter tests', () => {
 		let Profile: PersistentModelConstructor<Profile>;
 		let profile: Profile;
 
-		beforeAll(async () => {
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-
-			const classes = initSchema(testSchema());
-
-			({ User } = classes as {
-				User: PersistentModelConstructor<User>;
-			});
-
-			({ Profile } = classes as {
-				Profile: PersistentModelConstructor<Profile>;
-			});
+		beforeEach(async () => {
+			({ DataStore, User, Profile } = getDataStore());
 
 			profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
 			);
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
 		});
 
 		it('should allow linking model via model field', async () => {
@@ -289,65 +285,73 @@ describe('IndexedDBAdapter tests', () => {
 			expect(await user!.profile).toEqual(profile);
 		});
 	});
+});
 
-	describe('Benchmark', () => {
-		const { DataStore, User } = getDataStore();
+/**
+ * Execute many operations against datastore, comparing performance between operations
+ * that should benefit from using indexes versus those that don't.
+ *
+ * Unlike clamping fine-grained calls to the adapter, these also ensure no other funny
+ * business is going on. But, they should be kept to a minimum as they consume notable
+ * wall-clock time.
+ */
+describe('IndexedDB benchmarks', () => {
+	const { DataStore, User } = getDataStore();
 
-		afterEach(async () => {
-			await DataStore.clear();
+	afterEach(async () => {
+		await DataStore.clear();
+	});
+
+	const benchmark = async (f, iterations = 1000) => {
+		const start = new Date();
+		for (let i = 0; i < iterations; i++) {
+			await f();
+		}
+		const end = new Date();
+		return end.getTime() - start.getTime();
+	};
+
+	/**
+	 * This test ensures fake indexeddb is giving us observably different performance on indexed
+	 * vs non-indexed queries, as well as demonstrate a baseline for how much of a difference we're
+	 * looking for.
+	 */
+	test('[SANITY CHECK] queries against key vs key-key fields yield measurably different performance', async () => {
+		// get by PK using the `byId` index is sable behavior, AFAIK. so, we'll benchmark against that.
+		// saving records is very heavy. to stay within test time limits, we'll seed a "small" number of
+		// records a query "many" times.
+
+		// as we seed records, remember the *last* user, so that scans and queries work "reasonably hard"
+		// to find it.
+		let user: User;
+
+		// seed the records
+		for (let i = 0; i < 250; i++) {
+			user = await DataStore.save(
+				new User({
+					name: `user ${i}`,
+				})
+			);
+		}
+
+		// check timing of fetch byPk
+		const byPkTime = await benchmark(async () => {
+			const fetched = await DataStore.query(User, user.id);
+			expect(fetched).toBeDefined();
 		});
 
-		const benchmark = async (f, iterations = 1000) => {
-			const start = new Date();
-			for (let i = 0; i < iterations; i++) {
-				await f();
-			}
-			const end = new Date();
-			return end.getTime() - start.getTime();
-		};
-
-		/**
-		 * This test ensures fake indexeddb is giving us observably different performance on indexed
-		 * vs non-indexed queries, as well as demonstrate a baseline for how much of a difference we're
-		 * looking for.
-		 */
-		test('[SANITY CHECK] queries against key vs key-key fields yield measurably different performance', async () => {
-			// get by PK using the `byId` index is sable behavior, AFAIK. so, we'll benchmark against that.
-			// saving records is very heavy. to stay within test time limits, we'll seed a "small" number of
-			// records a query "many" times.
-
-			// as we seed records, remember the *last* user, so that scans and queries work "reasonably hard"
-			// to find it.
-			let user: User;
-
-			// seed the records
-			for (let i = 0; i < 250; i++) {
-				user = await DataStore.save(
-					new User({
-						name: `user ${i}`,
-					})
-				);
-			}
-
-			// check timing of fetch byPk
-			const byPkTime = await benchmark(async () => {
-				const fetched = await DataStore.query(User, user.id);
-				expect(fetched).toBeDefined();
-			});
-
-			// check timing of fetch by non-indexed field (name)
-			const byNameTime = await benchmark(async () => {
-				const fetched = await DataStore.query(User, u => u.name.eq(user.name));
-				expect(fetched.length).toBe(1);
-			});
-
-			// clamp indexed queries on a small data-set to be less than 1/3
-			// of the runtime of their non-indexed equivalent.
-			//
-			// We're using a rather unimpressive 1/3 here instead of
-			// something smaller and more realistic overall (like 1/8) because of the
-			// overhead of each loop, such as asserting on the results.
-			expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 3);
+		// check timing of fetch by non-indexed field (name)
+		const byNameTime = await benchmark(async () => {
+			const fetched = await DataStore.query(User, u => u.name.eq(user.name));
+			expect(fetched.length).toBe(1);
 		});
+
+		// clamp indexed queries on a small data-set to be less than 1/2
+		// of the runtime of their non-indexed equivalent.
+		//
+		// We're using a rather unimpressive 1/2 here instead of
+		// something smaller and more realistic overall (like 1/8) because of the
+		// overhead of each loop, such as asserting on the results.
+		expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 2);
 	});
 });
