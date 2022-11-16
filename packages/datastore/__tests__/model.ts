@@ -138,8 +138,27 @@ declare class EditorModel {
 
 declare class AuthorModel {
 	readonly id: string;
+
+	/**
+	 * For testing Boolean comparisions.
+	 */
 	readonly isActive?: boolean;
+
+	/**
+	 * For testing Float comparisions.
+	 */
+	readonly rating?: number;
+
+	/**
+	 * For testing Int comparisions.
+	 */
+	readonly karma?: number;
+
+	/**
+	 * For testing String comparisons.
+	 */
 	readonly name: string;
+
 	readonly posts: AsyncCollection<PostAuthorJoinModel>;
 	constructor(init: ModelInit<AuthorModel>);
 	static copyOf(

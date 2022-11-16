@@ -363,6 +363,18 @@ export const newSchema: Schema = {
 					type: 'Boolean',
 					isRequired: false,
 				},
+				rating: {
+					name: 'rating',
+					isArray: false,
+					type: 'Float',
+					isRequired: false,
+				},
+				karma: {
+					name: 'karma',
+					isArray: false,
+					type: 'Int',
+					isRequired: false,
+				},
 				name: {
 					name: 'name',
 					isArray: false,
