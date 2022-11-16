@@ -1484,7 +1484,7 @@ export declare class LegacyJSONComment {
 
 export declare class ModelWithBoolean {
 	public readonly id: string;
-	public readonly boolField: boolean;
+	public readonly boolField?: boolean;
 	public readonly createdAt?: string;
 	public readonly updatedAt?: string;
 
