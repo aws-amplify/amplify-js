@@ -357,6 +357,12 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				isActive: {
+					name: 'isActive',
+					isArray: false,
+					type: 'Boolean',
+					isRequired: false,
+				},
 				name: {
 					name: 'name',
 					isArray: false,

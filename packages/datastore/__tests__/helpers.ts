@@ -983,6 +983,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 
 	const classes = initSchema(testSchema());
 	const {
+		ModelWithBoolean,
 		Post,
 		Comment,
 		User,
@@ -996,6 +997,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		HasOneParent,
 		HasOneChild,
 	} = classes as {
+		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
 		User: PersistentModelConstructor<User>;
@@ -1016,6 +1018,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		ModelWithBoolean,
 		Post,
 		Comment,
 		User,
@@ -1073,6 +1076,7 @@ export declare class Model {
 		mutator: (draft: MutableModel<Model>) => void | Model
 	): Model;
 }
+
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
@@ -1478,6 +1482,20 @@ export declare class LegacyJSONComment {
 	): LegacyJSONComment;
 }
 
+export declare class ModelWithBoolean {
+	public readonly id: string;
+	public readonly boolField: boolean;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<ModelWithBoolean>);
+
+	static copyOf(
+		src: ModelWithBoolean,
+		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
+	): ModelWithBoolean;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1546,6 +1564,41 @@ export function testSchema(): Schema {
 						isRequired: false,
 						attributes: [],
 						isArrayNullable: true,
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+			},
+			ModelWithBoolean: {
+				name: 'ModelWithBoolean',
+				pluralName: 'ModelWithBooleans',
+				syncable: true,
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+					},
+					boolField: {
+						name: 'boolField',
+						isArray: false,
+						type: 'Boolean',
+						isRequired: false,
 					},
 					createdAt: {
 						name: 'createdAt',

@@ -138,6 +138,7 @@ declare class EditorModel {
 
 declare class AuthorModel {
 	readonly id: string;
+	readonly isActive: boolean;
 	readonly name: string;
 	readonly posts: AsyncCollection<PostAuthorJoinModel>;
 	constructor(init: ModelInit<AuthorModel>);

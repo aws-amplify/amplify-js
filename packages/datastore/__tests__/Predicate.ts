@@ -171,7 +171,9 @@ describe('Predicates', () => {
 				'Clarice Starling',
 				'Debbie Donut',
 				'Zelda from the Legend of Zelda',
-			].map(name => new Author({ name }));
+			].map((name, index) => {
+				return new Author({ name, isActive: index % 2 === 0 });
+			});
 		};
 
 		[
@@ -214,6 +216,24 @@ describe('Predicates', () => {
 
 					expect(matches.length).toBe(getFlatAuthorsArrayFixture().length - 1);
 					expect(matches.some(a => a.name === 'Adam West')).toBe(false);
+				});
+
+				test('match on eq on booleans', async () => {
+					const query = recursivePredicateFor(AuthorMeta).isActive.eq(true);
+					const matches = await mechanism.execute<
+						ModelOf<ModelOf<typeof Author>>
+					>(query);
+
+					expect(matches.length).toBe(3);
+				});
+
+				test('match on ne on booleans', async () => {
+					const query = recursivePredicateFor(AuthorMeta).isActive.ne(true);
+					const matches = await mechanism.execute<
+						ModelOf<ModelOf<typeof Author>>
+					>(query);
+
+					expect(matches.length).toBe(2);
 				});
 
 				test('match on gt', async () => {

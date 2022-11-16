@@ -33,6 +33,7 @@ import {
 	Profile,
 	testSchema,
 	User,
+	ModelWithBoolean,
 } from './helpers';
 
 type T = ModelInit<Model>;
@@ -1730,6 +1731,96 @@ describe('Model behavior', () => {
 		expect(disconnectedParent.id).toEqual(parent.id);
 		expect(disconnectedParent.hasOneParentChildId).toEqual(child.id);
 		expect(await disconnectedParent.child).toBeUndefined();
+	});
+
+	test('removes items update out of the from the snapshot with an eq predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.eq(true)
+				).subscribe(({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					console.log({ items });
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes items update out of the from the snapshot with a ne predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				const expecteds = [5, 4];
+
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.ne(false)
+				).subscribe(({ items, isSynced }) => {
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					console.log({ items });
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
 	});
 });
 
