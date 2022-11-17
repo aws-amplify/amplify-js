@@ -10,8 +10,10 @@ module.exports = {
 		{
 			'@aws-amplify/auth': 'aws_amplify_auth',
 			'@aws-amplify/cache': 'aws_amplify_cache',
-			'@aws-amplify/core': 'aws_amplify_core'
-		}
+			'@aws-amplify/core': 'aws_amplify_core',
+			'@aws-amplify/api-graphql': 'aws_amplify_api-graphql',
+			'@aws-amplify/api-rest': 'aws_amplify_api-rest',
+		},
 	],
 	output: {
 		filename: '[name].js',

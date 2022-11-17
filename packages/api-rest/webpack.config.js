@@ -10,9 +10,10 @@ module.exports = {
 		{
 			'@aws-amplify/auth': 'aws_amplify_auth',
 			'@aws-amplify/cache': 'aws_amplify_cache',
-			'@aws-amplify/core': 'aws_amplify_core'
-		}
+			'@aws-amplify/core': 'aws_amplify_core',
+		},
 	],
+	externalsType: 'umd',
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
