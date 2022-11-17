@@ -14,10 +14,9 @@
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Hub,
-	Parser,
+	Hub
 } from '@aws-amplify/core';
-import { AuthPluginOptions, AuthSignUpResult, AuthUserAttributeKey, CognitoSignUpOptions, CognitoUserAttributeKey, SignUpRequest } from './types/AmazonCognitoProvider';
+import { AuthPluginOptions, AuthSignUpResult, CognitoSignUpOptions, CognitoUserAttributeKey, SignUpRequest } from './types/AmazonCognitoProvider';
 import { AuthProvider } from './types/AuthProvider';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
@@ -101,8 +100,10 @@ export class AuthClass {
 		this._pluggable = null;
 	}
 
-	signUp<PluginOptions extends Record<string, any>>(req: SignUpRequest<string, PluginOptions>): Promise<any>;
-	signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey,PluginOptions>):Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
+	public signUp<PluginOptions extends Record<string, any>>(req: SignUpRequest<string, PluginOptions>): Promise<any>;
+	public signUp<PluginOptions extends AuthPluginOptions = 
+	CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey,PluginOptions>):
+	Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signUp(req);
 	}

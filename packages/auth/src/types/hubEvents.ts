@@ -1,5 +1,5 @@
-import { AuthError } from '../Errors';
-import { AuthSignInResult, AuthSignUpResult, AuthUserAttributeKey, ResetPasswordResult, SignOutResult } from './AmazonCognitoProvider';
+import { AuthError } from '../Errors'
+import { AuthSignInResult, AuthSignUpResult, AuthUserAttributeKey, ResetPasswordResult, SignOutResult } from './AmazonCognitoProvider'
 
 
 export const enum AuthHubEvent {
@@ -30,92 +30,92 @@ export const enum AuthHubEvent {
   
   
   export type AuthEventPayloadMap<UserAttributeKey extends AuthUserAttributeKey> = {
-	[AuthHubEvent.SIGN_IN]: {
+	[ AuthHubEvent.SIGN_IN ]: {
 	  data: {response: AuthSignInResult<UserAttributeKey>, user: {}};
-	  message: `A user ${string} has been signed in`;
-	}
-	[AuthHubEvent.SIGN_IN_FAILURE]: {
-	  data: AuthError;
-	  message: `${string} failed to sign-in`;
-	}
-	[AuthHubEvent.SIGN_UP]: {
-	  data: {response: AuthSignUpResult<UserAttributeKey>, user:null;}
-	  message: `${string} has signed up successfully`;
-	}
-	[AuthHubEvent.SIGN_UP_FAILURE]: {
-	  data: AuthError;
-	  message: `${string} failed to sign-up`;
-	}
+	  message:`A user ${string} has been signed in`
+	},
+	[ AuthHubEvent.SIGN_IN_FAILURE ]: {
+	  data: AuthError
+	  message:`${string} failed to sign-in`
+	},
+	[ AuthHubEvent.SIGN_UP ]: {
+	  data: {response: AuthSignUpResult<UserAttributeKey>, user:null}
+	  message:`${string} has signed up successfully`
+	},
+	[ AuthHubEvent.SIGN_UP_FAILURE ]: {
+	  data: AuthError
+	  message:`${string} failed to sign-up`
+	},
 	[AuthHubEvent.CONFIRM_SIGN_UP]: {
-	  data: AuthSignUpResult<UserAttributeKey>;
-	  message: `${string} has been confirmed successfully`;
-	}
+	  data: AuthSignUpResult<UserAttributeKey>
+	  message:`${string} has been confirmed successfully`
+	},
 	[AuthHubEvent.SIGN_OUT]: {
-	  data: SignOutResult;
-	  message: `A user has been signed out`;
-	}
+	  data: SignOutResult
+	  message:'A user has been signed out'
+	},
 	[AuthHubEvent.TOKEN_REFRESH]: {
-	  data: undefined;
-	  message: `New token retrieved`;
-	}
+	  data: undefined
+	  message:'New token retrieved'
+	},
 	[AuthHubEvent.TOKEN_REFRESH_FAILURE]: {
-	  data: AuthError;
-	  message: `Failed to retrieve new token`;
-	}
+	  data: AuthError
+	  message:'Failed to retrieve new token'
+	},
 	[AuthHubEvent.AUTO_SIGN_IN]: {
-	  data: {response: AuthSignInResult<UserAttributeKey>, user:null;}
-	  message: `${string} has signed in successfully`;
-	}
+	  data: {response: AuthSignInResult<UserAttributeKey>, user:null}
+	  message:`${string} has signed in successfully`
+	},
 	[AuthHubEvent.AUTO_SIGN_IN_FAILURE]: {
-	  data: AuthError;
-	  message: 'autoSignIn has failed';
-	}
+	  data: AuthError
+	  message:'autoSignIn has failed'
+	},
 	[AuthHubEvent.CONFIGURED]: {
-	  data: null;
-	  message: `The Auth category has been configured successfully`;
-	}
+	  data: null
+	  message:'The Auth category has been configured successfully'
+	},
 	[AuthHubEvent.COMPLETE_NEW_PASSWORD_FAILURE]: {
-	  data: AuthError;
-	  message: `${string} failed to complete the new password flow`;
-	}
+	  data: AuthError
+	  message:`${string} failed to complete the new password flow`
+	},
 	[AuthHubEvent.DELETE_USER]: {
-	  data: null;
-	  message: `The authenticated user has been deleted.`;
-	}
+	  data: null
+	  message:'The authenticated user has been deleted.'
+	},
 	[AuthHubEvent.FORGOT_PASSWORD]: {
-	  data: ResetPasswordResult;
-	  message: `${string} has initiated forgot password flow`;
-	}
+	  data: ResetPasswordResult
+	  message:`${string} has initiated forgot password flow`
+	},
 	[AuthHubEvent.FORGOT_PASSWORD_FAILURE]: {
-	  data: AuthError;
-	  message: `${string} forgotPassword failed`;
-	}
+	  data: AuthError
+	  message:`${string} forgotPassword failed`
+	},
 	[AuthHubEvent.FORGOT_PASSWORD_SUBMIT]: {
-	  data: null;
-	  message: `${string} forgotPasswordSubmit successful`;
-	}
+	  data: null
+	  message:`${string} forgotPasswordSubmit successful`
+	},
 	[AuthHubEvent.FORGOT_PASSWORD_SUBMIT_FAILURE]: {
-	  data: AuthError;
-	  message: `${string} forgotPasswordSubmit failed`;
-	}
+	  data: AuthError
+	  message:`${string} forgotPasswordSubmit failed`
+	},
 	[AuthHubEvent.PARSING_CALLBACK_URL]: {
-	  data: { url: string; }
-	  message: `The callback url is being parsed`;
-	}
+	  data: { url: string }
+	  message:'The callback url is being parsed'
+	},
 	[AuthHubEvent.COGNITO_HOSTED_UI]: {
-	  data: AuthSignInResult<UserAttributeKey>;
-	  message: `A user ${string} has been signed in via Cognito Hosted UI`;
-	}
+	  data: AuthSignInResult<UserAttributeKey>
+	  message:`A user ${string} has been signed in via Cognito Hosted UI`
+	},
 	[AuthHubEvent.CUSTOM_OAUTH_STATE]:{
 	  data: string,
-	  message: `State for user ${string}`;
+	  message:`State for user ${string}`
 	},
 	[AuthHubEvent.COGNITO_HOSTED_UI_FAILURE]:{
 	  data: AuthError,
-	  message: `A failure occurred when returning to the Cognito Hosted UI`;
+	  message:'A failure occurred when returning to the Cognito Hosted UI'
 	},
 	[AuthHubEvent.CUSTOM_OAUTH_STATE_FAILURE]:{
 	  data: AuthError,
-	  message: 'A failure occurred when returning state';
+	  message:'A failure occurred when returning state'
 	}
   }

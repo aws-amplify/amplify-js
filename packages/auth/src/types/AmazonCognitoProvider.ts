@@ -1,8 +1,6 @@
 
 // common types
 
-import { OAuthOpts } from '../../lib-esm/types';
-
 export type AuthPluginOptions = Record<string, any>;
 
 export type ClientMetaData = {
@@ -36,15 +34,17 @@ export enum DeliveryMedium {
 	UNKNOWN = 'UNKNOWN'
 }
 
-export enum AuthProvider {
-	GOOGLE = 'GOOGLE',
-	FACEBOOK = 'FACEBOOK',
-	AMAZON = 'AMAZON',
-	COGNITO = 'COGNITO'
-}
+export type AuthProvider = 
+	'GOOGLE' | 
+	'FACEBOOK'|
+ 	'AMAZON' | 
+	'COGNITO' | 
+	`custom${string}` |
+	`oidc${string}` |
+	`saml${string}`;
 
 export type CognitoUserAttributeKey =
-  | 'address'
+  'address'
   | 'birthday'
   | 'email'
   | 'family_name'
@@ -61,7 +61,7 @@ export type CognitoUserAttributeKey =
   | 'update_at'
   | 'website'
   | 'zoneinfo'
-  | `custom:${string}`;
+  | `custom: ${string}`;
 
 
 // configure
@@ -73,7 +73,7 @@ export type AuthOptions = {
 	region?: string;
 	mandatorySignIn?: boolean;
 	cookieStorage?: ICookieStorageData;
-	oauth?: OAuthOpts;
+	oauth?: any;
 	refreshHandlers?: object;
 	storage?: ICognitoStorage;
 	authenticationFlowType?: string;
@@ -100,7 +100,8 @@ export type ICognitoStorage = {
 
 // Sign up
 
-export type CognitoUserAttributes<UserAttributeKey extends AuthUserAttributeKey = CognitoUserAttributeKey> = Record<UserAttributeKey, string>;
+export type CognitoUserAttributes<UserAttributeKey 
+	extends AuthUserAttributeKey = CognitoUserAttributeKey> = Record<UserAttributeKey, string>;
 
 export type AutoSignInOptions = {
 	enabled: boolean;
@@ -137,8 +138,8 @@ export type SignUpRequest<UserAttributeKey extends AuthUserAttributeKey, PluginO
 };
 
 export interface CognitoSignUpOptions extends AuthPluginOptions {
-	clientMetaData?: ClientMetaData;
-	validationData?: ValidationData;
+	clientMetaData?: ClientMetaData
+	validationData?: ValidationData
 }
 
 // sign in
@@ -170,7 +171,7 @@ export enum AuthSignInStep {
 // sign out
 
 export type SignOutResult = {
-
+	signedOutLocally: boolean;
 };
 
 

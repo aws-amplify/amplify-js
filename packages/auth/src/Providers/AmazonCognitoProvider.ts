@@ -13,7 +13,6 @@
 
 import {
 	ConsoleLogger as Logger,
-	JS,
 	Hub,
 	getAmplifyUserAgent
 } from '@aws-amplify/core';
@@ -35,9 +34,7 @@ import {
 } from '../types/AmazonCognitoProvider';
 import { AuthProvider } from '../types/AuthProvider';
 import { 
-	AttributeType, 
-	AuthFlowType, 
-	ChallengeNameType, 
+	AuthFlowType,  
 	CognitoIdentityProviderClient, 
 	InitiateAuthCommand, 
 	SignUpCommand, 
@@ -45,6 +42,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthEventPayloadMap, AuthHubEvent } from '../types/hubEvents';
 import { AuthError, authErrorMessages, ErrorInterface } from '../Errors';
+import { createCognitoIdentityProviderClient, mapChallengeNames } from '../common/CognitoIdentityProviderClientUtils';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -76,24 +74,23 @@ export class AmazonCognitoProvider implements AuthProvider {
 	constructor(config?) {
 		this._config = config ? config : {};
 		this._storage = this._config.storage;
-		this.client = new CognitoIdentityProviderClient({ region: config.region });
+		this.client = createCognitoIdentityProviderClient(config);
 	}
 
 	async signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		if (!this._config?.userPoolId) {
 			this.rejectNoUserPool();
 		}
-
 		const clientId = this._config.userPoolId ?? '';
 		const username: string = req.username;
 		const password: string = req.password;
 
 		if (!username) {
-			this.rejectAuthError(authErrorMessages.emptyUsername);
+			throw new AuthError({message: authErrorMessages.emptyUsername.message});
 		}
 
 		if (!password) {
-			this.rejectAuthError(authErrorMessages.emptyPassword);
+			throw new AuthError({message: authErrorMessages.emptyPassword.message})
 		}
 
 		const signUpCommandInput: SignUpCommandInput = {
@@ -112,11 +109,12 @@ export class AmazonCognitoProvider implements AuthProvider {
 		if (req.options?.pluginOptions) {
 			const pluginOptions = req.options.pluginOptions;
 			const validationDataObject:ValidationData = pluginOptions['ValidationData'];
-			signUpCommandInput.ValidationData = Object.entries(validationDataObject).map(([key, value]) => ({
-				Name: key,
-				Value: value
-			}));
-
+			if (validationDataObject) {
+				signUpCommandInput.ValidationData = Object.entries(validationDataObject).map(([key, value]) => ({
+					Name: key,
+					Value: value
+				}));
+			}
 			const clientMetaData: Record<string, string> = pluginOptions['clientMetaData'];
 			if (clientMetaData) {
 				signUpCommandInput.ClientMetadata = clientMetaData;
@@ -128,21 +126,19 @@ export class AmazonCognitoProvider implements AuthProvider {
 
 		if (req.options?.autoSignIn?.enabled) {
 			autoSignIn = req.options.autoSignIn;
-			this._storage.setItem('amplify-auto-sign-in', 'true');
+			// this._storage.setItem('amplify-auto-sign-in', 'true'); // TODO uncomment when storage is implemented in config
 			autoSignInClientMetaData = autoSignIn.clientMetaData ?? {};
 		}
 
-		const signUpCommand = new SignUpCommand(signUpCommandInput);
-
 		try {
-			const signUpCommandOutput = await this.client.send(signUpCommand);
+			const signUpCommandOutput = await this.client.send(new SignUpCommand(signUpCommandInput));
 			let result: AuthSignUpResult<CognitoUserAttributeKey>;
 			if (signUpCommandOutput.UserConfirmed) {
 				result = {
 					isSignUpComplete: true,
-						nextStep: {
-							signUpStep: AuthSignUpStep.DONE
-						}
+					nextStep: {
+						signUpStep: AuthSignUpStep.DONE
+					}
 				};
 				dispatchAuthEvent(
 					AuthHubEvent.SIGN_UP,
@@ -174,7 +170,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 				);
 			}
 			if (autoSignIn.enabled) {
-				this.handleAutoSignIn(username, password, clientId, autoSignInClientMetaData, result);
+				this.handleAutoSignIn(username, password, clientId, autoSignInClientMetaData, result.isSignUpComplete);
 			}
 			return result;
 		} catch (error) {
@@ -183,16 +179,16 @@ export class AmazonCognitoProvider implements AuthProvider {
 				error,
 				`${username} failed to sign-up`
 			);
-			return error;
+			throw error;
 		}
 	}
 
-	private async handleAutoSignIn<UserAttributeKey extends AuthUserAttributeKey>(
+	private async handleAutoSignIn(
 		username: string,
 		password: string,
 		clientId: string,
 		clientMetaData: ClientMetaData,
-		signUpResult: AuthSignUpResult<UserAttributeKey>
+		isSignUpComplete: boolean
 	) {
 		this.autoSignInInitiated = true;
 		const initiateAuthCommand = new InitiateAuthCommand({
@@ -205,7 +201,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 			ClientMetadata: clientMetaData
 		});
 
-		if (signUpResult.isSignUpComplete) {
+		if (isSignUpComplete) {
 			await this.signInAfterUserConfirmed(initiateAuthCommand, username);
 		} else if (this._config.signUpVerificationMethod === 'link') {
 			await this.handleLinkAutoSignIn(initiateAuthCommand, username);
@@ -215,14 +211,14 @@ export class AmazonCognitoProvider implements AuthProvider {
 
 	}
 
-	private async signInAfterUserConfirmed<UserAttributeKey extends AuthUserAttributeKey>(
+	private async signInAfterUserConfirmed(
 		initiateAuthCommand: InitiateAuthCommand,
 		username: string,
 		autoSignInPollingIntervalId?: ReturnType<typeof setInterval>
 	) {
 		try {
 			const result = await this.client.send(initiateAuthCommand);
-			let authSignInResult: AuthSignInResult<UserAttributeKey>;
+			let authSignInResult: AuthSignInResult<CognitoUserAttributeKey>;
 
 			if (result.AuthenticationResult) {
 				authSignInResult = {
@@ -236,7 +232,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 				authSignInResult = {
 					isSignedIn: false,
 					nextStep: {
-						signInStep: this.mapChallengeNames(challengeName)
+						signInStep: mapChallengeNames(challengeName)
 					}
 				};
 			}
@@ -252,10 +248,10 @@ export class AmazonCognitoProvider implements AuthProvider {
 
 			if (autoSignInPollingIntervalId) {
 				clearInterval(autoSignInPollingIntervalId);
-				this._storage.removeItem('amplify_polling_started');
+				// this._storage.removeItem('amplify_polling_started'); // TODO: uncommnet when storage is implemented in configure
 			}
 
-			this._storage.removeItem('amplify-auto-sign-in');
+			// this._storage.removeItem('amplify-auto-sign-in'); // TODO uncomment when storage is implemented in configure
 		} catch (error) {
 			logger.error(error);
 		}
@@ -263,7 +259,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 	}
 
 	private handleLinkAutoSignIn(initiateAuthCommand: InitiateAuthCommand, username: string) {
-		this._storage.setItem('amplify-polling-started', 'true');
+		// this._storage.setItem('amplify-polling-started', 'true'); // TODO uncomment when storage is implemented in config
 		const start = Date.now();
 		const autoSignInPollingIntervalId = setInterval(() => {
 			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
@@ -289,35 +285,9 @@ export class AmazonCognitoProvider implements AuthProvider {
 		});
 	}
 
-	private mapChallengeNames(challengeName: string): AuthSignInStep {
-		switch(challengeName) {
-			// case ChallengeNameType.ADMIN_NO_SRP_AUTH:
-			case ChallengeNameType.CUSTOM_CHALLENGE:
-				return AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE;
-			// case ChallengeNameType.DEVICE_PASSWORD_VERIFIER:
-			// case ChallengeNameType.DEVICE_SRP_AUTH:
-			// case ChallengeNameType.MFA_SETUP:
-			case ChallengeNameType.NEW_PASSWORD_REQUIRED:
-				return AuthSignInStep.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED;
-			// case ChallengeNameType.PASSWORD_VERIFIER:
-			case ChallengeNameType.SELECT_MFA_TYPE:
-				return AuthSignInStep.SELECT_MFA_TYPE;
-			case ChallengeNameType.SMS_MFA:
-				return AuthSignInStep.CONFIRM_SIGN_IN_WITH_SMS_MFA_CODE;
-			case ChallengeNameType.SOFTWARE_TOKEN_MFA:
-				return AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_CODE;
-			default:
-				return AuthSignInStep.DONE;
-		}
-	}
-
-	private rejectAuthError(type: ErrorInterface): Promise<never> {
-		return Promise.reject(new AuthError(type));
-	}
-
 	private rejectNoUserPool(): Promise<never> {
 		const noUserPoolError = this.noUserPoolErrorHandler(this._config);
-		return Promise.reject(new AuthError(noUserPoolError));
+		throw new AuthError(noUserPoolError);
 	}
 
 	private noUserPoolErrorHandler(config: AuthOptions): ErrorInterface {
