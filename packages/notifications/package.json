@@ -3,7 +3,7 @@
 	"version": "1.0.14",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
+	"module": "./dist/aws-amplify-notifications.js",
 	"typings": "./lib-esm/index.d.ts",
 	"sideEffects": [
 		"./lib/Notifications.js",
@@ -41,7 +41,7 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://docs.amplify.aws/",
-	"files": [
+	"files": [ "dist",
 		"lib",
 		"lib-esm",
 		"src"

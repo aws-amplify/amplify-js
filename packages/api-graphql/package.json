@@ -3,7 +3,7 @@
   "version": "3.1.2",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
+  "module": "./dist/aws-amplify-api-graphql.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@types/zen-observable": "^0.8.0"
   },
-  "files": [
+  "files": [ "dist",
     "lib",
     "lib-esm",
     "src"

@@ -3,7 +3,7 @@
   "version": "5.0.14",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
+  "module": "./dist/aws-amplify.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
@@ -34,7 +34,7 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "files": [
+  "files": [ "dist",
     "lib",
     "lib-esm",
     "src"
