@@ -562,32 +562,40 @@ export function addCommonQueryTests({
 			}
 		);
 
-		test('deleting disconnected hasOne without cpk', async () => {
-			const hasOneParent = await DataStore.save(new DefaultPKHasOneParent({}));
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting disconnected hasOne without cpk',
+			async () => {
+				const hasOneParent = await DataStore.save(
+					new DefaultPKHasOneParent({})
+				);
 
-			await DataStore.delete(hasOneParent);
+				await DataStore.delete(hasOneParent);
 
-			expect(
-				await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
-			).toBeUndefined();
-		});
+				expect(
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+				).toBeUndefined();
+			}
+		);
 
-		test('deleting connected hasOne without cpk', async () => {
-			const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
-			const hasOneParent = await DataStore.save(
-				new DefaultPKHasOneParent({ child: hasOneChild })
-			);
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting connected hasOne without cpk',
+			async () => {
+				const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
+				const hasOneParent = await DataStore.save(
+					new DefaultPKHasOneParent({ child: hasOneChild })
+				);
 
-			await DataStore.delete(hasOneParent);
+				await DataStore.delete(hasOneParent);
 
-			expect(
-				await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
-			).toBeUndefined();
+				expect(
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+				).toBeUndefined();
 
-			expect(
-				await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)
-			).toBeUndefined();
-		});
+				expect(
+					await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)
+				).toBeUndefined();
+			}
+		);
 	});
 
 	describe('Related models', () => {
