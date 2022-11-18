@@ -1321,6 +1321,7 @@ export declare class DefaultPKChild {
 
 export declare class DefaultPKHasOneParent {
 	readonly id: string;
+	readonly content?: string | null;
 	readonly child?: Promise<DefaultPKHasOneChild>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
@@ -1335,6 +1336,7 @@ export declare class DefaultPKHasOneParent {
 
 export declare class DefaultPKHasOneChild {
 	readonly id: string;
+	readonly content?: string | null;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
 	readonly defaultPKHasOneParentChildrenId?: string | null;
@@ -2379,6 +2381,13 @@ export function testSchema(): Schema {
 						isRequired: true,
 						attributes: [],
 					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
 					child: {
 						name: 'child',
 						isArray: false,
@@ -2434,6 +2443,13 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'ID',
 						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
 						attributes: [],
 					},
 					createdAt: {
