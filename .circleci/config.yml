@@ -1330,6 +1330,7 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
       - next-major-version/5
+      - clear-dep-resolution
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
