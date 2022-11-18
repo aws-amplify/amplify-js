@@ -1300,6 +1300,10 @@ export declare class DefaultPKParent {
 }
 
 export declare class DefaultPKChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<DefaultPKChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
 	readonly id: string;
 	readonly content?: string | null;
 	readonly parent: Promise<DefaultPKParent | undefined>;
