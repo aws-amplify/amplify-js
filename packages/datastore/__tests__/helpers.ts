@@ -1093,6 +1093,43 @@ export declare class PostCustomPKComposite {
 	): PostCustomPKComposite;
 }
 
+export declare class HasOneParent {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneParent, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly child?: HasOneChild | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly hasOneParentChildId?: string | null;
+	constructor(init: ModelInit<HasOneParent>);
+	static copyOf(
+		source: HasOneParent,
+		mutator: (
+			draft: MutableModel<HasOneParent>
+		) => MutableModel<HasOneParent> | void
+	): HasOneParent;
+}
+
+export declare class HasOneChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<HasOneChild>);
+	static copyOf(
+		source: HasOneChild,
+		mutator: (
+			draft: MutableModel<HasOneChild>
+		) => MutableModel<HasOneChild> | void
+	): HasOneChild;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1592,6 +1629,118 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							fields: ['id', 'postId', 'sort'],
+						},
+					},
+				],
+			},
+			HasOneParent: {
+				name: 'HasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'HasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: ['id'],
+							targetNames: ['hasOneParentChildId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					hasOneParentChildId: {
+						name: 'hasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			HasOneChild: {
+				name: 'HasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
 						},
 					},
 				],

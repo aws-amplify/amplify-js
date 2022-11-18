@@ -664,9 +664,9 @@ export class AsyncStorageAdapter implements Adapter {
 
 							if (hasConnectedModelFields && isUnidirectionalConnection) {
 								// Values will be that of the child model
-								values = targetNames.map(
-									targetName => model[targetName]
-								) as any;
+								values = targetNames
+									.filter(targetName => model[targetName] ?? false)
+									.map(targetName => model[targetName]) as any;
 							} else {
 								// values will be that of the parent model
 								values = keyValuesPath.split(
