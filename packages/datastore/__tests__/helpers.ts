@@ -2297,7 +2297,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: ['mtmLeft'],
+							associatedWith: 'mtmLeft',
 						},
 					},
 					createdAt: {
@@ -2360,7 +2360,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: ['mtmRight'],
+							associatedWith: 'mtmRight',
 						},
 					},
 					createdAt: {
@@ -2429,7 +2429,7 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'BELONGS_TO',
-							targetNames: ['mtmLeftId'],
+							targetName: 'mtmLeftId',
 						},
 					},
 					mtmRight: {
@@ -2442,7 +2442,7 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'BELONGS_TO',
-							targetNames: ['mtmRightId'],
+							targetName: 'mtmRightId',
 						},
 					},
 					createdAt: {

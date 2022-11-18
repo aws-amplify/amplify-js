@@ -1031,7 +1031,7 @@ export function addCommonQueryTests({
 	 * query one left side by a property that matches many records on the other
 	 * side, we expect the returned instances to be unique.
 	 */
-	describe.only('many-to-many', () => {
+	describe('many-to-many', () => {
 		let MtmLeft: PersistentModelConstructor<MtmLeft>;
 		let MtmRight: PersistentModelConstructor<MtmRight>;
 		let MtmJoin: PersistentModelConstructor<MtmJoin>;
@@ -1083,9 +1083,9 @@ export function addCommonQueryTests({
 			leftOnes: string[],
 			rightOnes: string[]
 		): Promise<MtmBag> => {
-			let left = [] as MtmLeft[];
-			let right = [] as MtmRight[];
-			let join = [] as MtmJoin[];
+			const left = [] as MtmLeft[];
+			const right = [] as MtmRight[];
+			const join = [] as MtmJoin[];
 
 			for (const content of leftOnes) {
 				left.push(await DataStore.save(new MtmLeft({ content })));
