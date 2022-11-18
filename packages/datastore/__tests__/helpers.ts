@@ -11,6 +11,7 @@ import {
 	PersistentModel,
 	OptionallyManagedIdentifier,
 	PersistentModelConstructor,
+	AsyncItem,
 } from '../src';
 import { validatePredicate } from '../src/util';
 import { ModelPredicateCreator } from '../src/predicates';
@@ -996,6 +997,9 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
@@ -1010,6 +1014,9 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		MtmLeft: PersistentModelConstructor<MtmLeft>;
+		MtmRight: PersistentModelConstructor<MtmRight>;
+		MtmJoin: PersistentModelConstructor<MtmJoin>;
 	};
 
 	return {
@@ -1031,6 +1038,9 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
 	};
 }
 
@@ -1272,6 +1282,62 @@ export declare class HasOneChild {
 			draft: MutableModel<HasOneChild>
 		) => MutableModel<HasOneChild> | void
 	): HasOneChild;
+}
+
+export declare class MtmLeft {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmLeft, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly rightOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmLeft>);
+	static copyOf(
+		source: MtmLeft,
+		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void
+	): MtmLeft;
+}
+
+export declare class MtmRight {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmRight, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly leftOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmRight>);
+	static copyOf(
+		source: MtmRight,
+		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void
+	): MtmRight;
+}
+
+export declare class MtmJoin {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<MtmJoin, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly mtmLeftId?: string | null;
+	readonly mtmRightId?: string | null;
+	readonly mtmLeft: AsyncItem<MtmLeft>;
+	readonly mtmRight: AsyncItem<MtmRight>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmJoin>);
+	static copyOf(
+		source: MtmJoin,
+		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void
+	): MtmJoin;
 }
 
 export declare class DefaultPKParent {
@@ -2199,6 +2265,222 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmLeft: {
+				name: 'MtmLeft',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					rightOnes: {
+						name: 'rightOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['mtmLeft'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmLefts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmRight: {
+				name: 'MtmRight',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					leftOnes: {
+						name: 'leftOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['mtmRight'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmRights',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmJoin: {
+				name: 'MtmJoin',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					mtmLeftId: {
+						name: 'mtmLeftId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmRightId: {
+						name: 'mtmRightId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmLeft: {
+						name: 'mtmLeft',
+						isArray: false,
+						type: {
+							model: 'MtmLeft',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['mtmLeftId'],
+						},
+					},
+					mtmRight: {
+						name: 'mtmRight',
+						isArray: false,
+						type: {
+							model: 'MtmRight',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['mtmRightId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmJoins',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmLeft',
+							fields: ['mtmLeftId'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmRight',
+							fields: ['mtmRightId'],
 						},
 					},
 				],
