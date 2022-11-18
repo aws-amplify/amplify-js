@@ -194,6 +194,15 @@ describe('Amazon Cognito Auth unit test', () => {
 			const result = await Auth.signUp(signUpRequestAutoSignIn);
 			expect(result).toEqual(signUpResult);
 			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledTimes(2);
+			const command = {
+				input: {
+					AuthFlow: 'USER_PASSWORD_AUTH',
+					AuthParameters: {username: 'username', password: 'password'},
+					ClientId: 'userPoolId',
+					ClientMetadata: {}
+				}
+			}
+			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledWith(expect.objectContaining(command));
 			spyon.mockClear();
 		});
 		test('happy case confirmation code', async () => {
@@ -213,6 +222,15 @@ describe('Amazon Cognito Auth unit test', () => {
 			await Auth.signUp(signUpRequestAutoSignIn);
 			Hub.dispatch('auth', {event: 'confirmSignUp', data: 'user', message: 'message'}); // TODO replace with confirmSignUp call when implemented
 			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledTimes(2);
+			const command = {
+				input: {
+					AuthFlow: 'USER_PASSWORD_AUTH',
+					AuthParameters: {username: 'username', password: 'password'},
+					ClientId: 'userPoolId',
+					ClientMetadata: {}
+				}
+			}
+			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledWith(expect.objectContaining(command));
 			spyon.mockClear();
 		});
 		test('happy case confirmation link', async () => {
@@ -239,6 +257,15 @@ describe('Amazon Cognito Auth unit test', () => {
 			await Auth.signUp(signUpRequestAutoSignIn);
 			jest.advanceTimersByTime(6000);
 			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledTimes(2);
+			const command = {
+				input: {
+					AuthFlow: 'USER_PASSWORD_AUTH',
+					AuthParameters: {username: 'username', password: 'password'},
+					ClientId: 'userPoolId',
+					ClientMetadata: {}
+				}
+			}
+			expect(CognitoIdentityProviderClient.prototype.send).toBeCalledWith(expect.objectContaining(command));
 			spyon.mockClear();
 		});
 	})
