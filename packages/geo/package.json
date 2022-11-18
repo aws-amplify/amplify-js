@@ -3,7 +3,7 @@
 	"version": "2.0.14",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
-	"module": "./dist/aws-amplify-geo.js",
+	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
@@ -40,7 +40,7 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"files": [ "dist",
+	"files": [
 		"lib",
 		"lib-esm",
 		"src"

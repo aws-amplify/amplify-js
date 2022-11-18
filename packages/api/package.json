@@ -3,7 +3,7 @@
 	"version": "5.0.14",
 	"description": "Api category of aws-amplify",
 	"main": "./lib/index.js",
-	"module": "./dist/aws-amplify-api.js",
+	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"typesVersions": {
 		"<3.8": {
@@ -50,7 +50,7 @@
 	"devDependencies": {
 		"@types/zen-observable": "^0.8.0"
 	},
-	"files": [ "dist",
+	"files": [
 		"lib",
 		"lib-esm",
 		"src",
