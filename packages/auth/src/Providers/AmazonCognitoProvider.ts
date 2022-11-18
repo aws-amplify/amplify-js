@@ -29,6 +29,8 @@ import {
 	CognitoSignUpOptions, 
 	CognitoUserAttributeKey, 
 	DeliveryMedium, 
+	ResetPasswordRequest, 
+	ResetPasswordResult, 
 	SignUpRequest, 
 	ValidationData 
 } from '../types/AmazonCognitoProvider';
@@ -201,6 +203,8 @@ export class AmazonCognitoProvider implements AuthProvider {
 			ClientMetadata: clientMetaData
 		});
 
+		console.log(initiateAuthCommand);
+
 		if (isSignUpComplete) {
 			await this.signInAfterUserConfirmed(initiateAuthCommand, username);
 		} else if (this._config.signUpVerificationMethod === 'link') {
@@ -321,7 +325,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 	signOut(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	resetPassword(): Promise<void> {
+	resetPassword <PluginOptions extends AuthPluginOptions>(req: ResetPasswordRequest<PluginOptions>): Promise<ResetPasswordResult> {
 		throw new Error('Method not implemented.');
 	}
 	confirmResetPassword(): Promise<void> {

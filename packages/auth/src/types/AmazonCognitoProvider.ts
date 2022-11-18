@@ -177,6 +177,23 @@ export type SignOutResult = {
 
 // reset password
 
-export type ResetPasswordResult = {
-
+export type ResetPasswordRequest<PluginOptions> = {
+	username: string;
+	pluginOptions?: PluginOptions;
 };
+
+export type ResetPasswordResult<UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey> = {
+	isPasswordReset: boolean;
+	nextStep: AuthNextResetPasswordStep<UserAttributeKey>;
+};
+
+export type AuthNextResetPasswordStep<UserAttributeKey extends AuthUserAttributeKey> = {
+	resetPasswordStep: AuthResetPasswordStep;
+	additionalInfo: { [key: string]: string };
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>
+};
+
+const enum AuthResetPasswordStep {
+	CONFIRM_RESET_PASSWORD_WITH_CODE = 'CONFIRM_RESET_PASSWORD_WITH_CODE',
+	DONE = 'DONE'
+}

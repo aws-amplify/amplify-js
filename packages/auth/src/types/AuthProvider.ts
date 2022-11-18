@@ -37,7 +37,7 @@ export interface AuthProvider {
 
 	signOut(): Promise<void>;
 
-	resetPassword(): Promise<void>;
+	resetPassword(req: any): Promise<any>;
 
 	confirmResetPassword(): Promise<void>;
 

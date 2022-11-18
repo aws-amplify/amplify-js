@@ -16,7 +16,7 @@ import {
 	ConsoleLogger as Logger,
 	Hub
 } from '@aws-amplify/core';
-import { AuthPluginOptions, AuthSignUpResult, CognitoSignUpOptions, CognitoUserAttributeKey, SignUpRequest } from './types/AmazonCognitoProvider';
+import { AuthPluginOptions, AuthSignUpResult, CognitoSignUpOptions, CognitoUserAttributeKey, ResetPasswordRequest, ResetPasswordResult, SignUpRequest } from './types/AmazonCognitoProvider';
 import { AuthProvider } from './types/AuthProvider';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
@@ -135,9 +135,10 @@ export class AuthClass {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signOut();
 	}
-	resetPassword(): Promise<void> {
+	public resetPassword<PluginOptions extends AuthPluginOptions>(req: ResetPasswordRequest<PluginOptions>): Promise<ResetPasswordResult>
+	public resetPassword(req): Promise<any> {
 		assertPluginAvailable(this._pluggable);
-		return this._pluggable.resetPassword();
+		return this._pluggable.resetPassword(req);
 	}
 	confirmResetPassword(): Promise<void> {
 		assertPluginAvailable(this._pluggable);
