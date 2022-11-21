@@ -1265,6 +1265,23 @@ jobs:
           # Firefox doesn't support network state management in cypress
           browser: chrome
 
+  integ_react_datastore_selective_sync:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/selective-sync-v5
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Selective Sync'
+          framework: react
+          category: datastore
+          sample_name: selective-sync-v5
+          spec: selective-sync-v5
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1750,7 +1767,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup
@@ -1781,6 +1797,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_datastore_selective_sync:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
 
       - deploy:
           filters:
@@ -1837,6 +1862,7 @@ workflows:
             - integ_react_datastore_related_models
             - integ_react_iot_reconnect
             - integ_react_api_reconnect
+            - integ_react_datastore_selective_sync
       - post_release:
           filters:
             branches:
