@@ -1,11 +1,14 @@
 import {
-	Scalar,
 	PersistentModel,
 	ModelFieldType,
 	ModelMeta,
-	AllOperators,
-	PredicateFieldType,
 	ModelPredicate as StoragePredicate,
+	AllFieldOperators,
+	PredicateInternalsKey,
+	V5ModelPredicate as ModelPredicate,
+	RecursiveModelPredicate,
+	RecursiveModelPredicateExtender,
+	RecursiveModelPredicateAggregateExtender,
 } from '../types';
 
 import {
@@ -16,128 +19,7 @@ import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
 import { asyncSome, asyncEvery } from '../util';
 
-type MatchableTypes =
-	| string
-	| string[]
-	| number
-	| number[]
-	| boolean
-	| boolean[];
-
-type AllFieldOperators = keyof AllOperators;
-
 const ops = [...comparisonKeys] as AllFieldOperators[];
-
-type NonNeverKeys<T> = {
-	[K in keyof T]: T[K] extends never ? never : K;
-}[keyof T];
-
-type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
-
-/**
- * A function that accepts a RecursiveModelPrecicate<T>, which it must use to
- * return a final condition.
- *
- * This is used in `DataStore.query()`, `DataStore.observe()`, and
- * `DataStore.observeQuery()` as the second argument. E.g.,
- *
- * ```
- * DataStore.query(MyModel, model => model.field.eq('some value'))
- * ```
- *
- * More complex queries should also be supported. E.g.,
- *
- * ```
- * DataStore.query(MyModel, model => model.and(m => [
- *   m.relatedEntity.or(relative => [
- *     relative.relativeField.eq('whatever'),
- *     relative.relativeField.eq('whatever else')
- *   ]),
- *   m.myModelField.ne('something')
- * ]))
- * ```
- */
-export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: RecursiveModelPredicate<RT>
-) => PredicateInternalsKey;
-
-export type RecursiveModelPredicateAggregateExtender<
-	RT extends PersistentModel
-> = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
-
-type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: RecursiveModelPredicateAggregateExtender<RT>
-) => PredicateInternalsKey;
-
-type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT>
-) => PredicateInternalsKey;
-
-export type RecursiveModelPredicate<RT extends PersistentModel> = {
-	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
-		? RecursiveModelPredicate<PredicateFieldType<RT[K]>>
-		: ValuePredicate<RT, RT[K]>;
-} & {
-	or: RecursiveModelPredicateOperator<RT>;
-	and: RecursiveModelPredicateOperator<RT>;
-	not: RecursiveModelPredicateNegation<RT>;
-} & PredicateInternalsKey;
-
-/**
- * A function that accepts a ModelPrecicate<T>, which it must use to return a
- * final condition.
- *
- * This is used as predicates in `DataStore.save()`, `DataStore.delete()`, and
- * DataStore sync expressions.
- *
- * ```
- * DataStore.save(record, model => model.field.eq('some value'))
- * ```
- *
- * Logical operators are supported. But, condtiions are related records are
- * NOT supported. E.g.,
- *
- * ```
- * DataStore.delete(record, model => model.or(m => [
- * 	m.field.eq('whatever'),
- * 	m.field.eq('whatever else')
- * ]))
- * ```
- */
-export type ModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: ModelPredicate<RT>
-) => PredicateInternalsKey;
-
-export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
-	lambda: ModelPredicate<RT>
-) => PredicateInternalsKey[];
-
-type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
-	[K in AllFieldOperators]: K extends 'between'
-		? (
-				inclusiveLowerBound: Scalar<MT>,
-				inclusiveUpperBound: Scalar<MT>
-		  ) => PredicateInternalsKey
-		: (operand: Scalar<MT>) => PredicateInternalsKey;
-};
-
-export type ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
-	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
-		? never
-		: ValuePredicate<RT, RT[K]>;
-}> & {
-	or: ModelPredicateOperator<RT>;
-	and: ModelPredicateOperator<RT>;
-	not: ModelPredicateNegation<RT>;
-} & PredicateInternalsKey;
-
-type ModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: ModelPredicateAggregateExtender<RT>
-) => PredicateInternalsKey;
-
-type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT>
-) => PredicateInternalsKey;
 
 type GroupOperator = 'and' | 'or' | 'not';
 
@@ -147,14 +29,6 @@ type UntypedCondition = {
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
 };
-
-/**
- * A pointer used by DataStore internally to lookup predicate details
- * that should not be exposed on public customer interfaces.
- */
-export class PredicateInternalsKey {
-	private __isPredicateInternalsKeySentinel: boolean = true;
-}
 
 /**
  * A map from keys (exposed to customers) to the internal predicate data
@@ -311,7 +185,7 @@ export class FieldCondition {
 	 * @returns `Promise<boolean>`, `true` if matches; `false` otherwise.
 	 */
 	async matches(item: Record<string, any>): Promise<boolean> {
-		const v = String(item[this.field]);
+		const v = item[this.field];
 		const operations = {
 			eq: () => v === this.operands[0],
 			ne: () => v !== this.operands[0],
@@ -326,7 +200,8 @@ export class FieldCondition {
 		};
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
-			return operation();
+			const result = operation();
+			return result;
 		} else {
 			throw new Error(`Invalid operator given: ${this.operator}`);
 		}
