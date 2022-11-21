@@ -903,7 +903,7 @@ class IndexedDBAdapter implements Adapter {
 							if (targetName && targetName in model) {
 								index = hasOneIndex;
 								const value = model[targetName];
-								if (value === null) break;
+								if (!value) break;
 								values = [value];
 							} else {
 								// backwards compatability for older versions of codegen that did not emit targetName for HAS_ONE relations
