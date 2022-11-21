@@ -203,8 +203,6 @@ export class AmazonCognitoProvider implements AuthProvider {
 			ClientMetadata: clientMetaData
 		});
 
-		console.log(initiateAuthCommand);
-
 		if (isSignUpComplete) {
 			await this.signInAfterUserConfirmed(initiateAuthCommand, username);
 		} else if (this._config.signUpVerificationMethod === 'link') {
@@ -326,6 +324,12 @@ export class AmazonCognitoProvider implements AuthProvider {
 		throw new Error('Method not implemented.');
 	}
 	resetPassword <PluginOptions extends AuthPluginOptions>(req: ResetPasswordRequest<PluginOptions>): Promise<ResetPasswordResult> {
+		if (!this._config?.userPoolId) {
+			this.rejectNoUserPool();
+		}
+		if (!req.username) {
+			throw new AuthError({message: authErrorMessages.emptyUsername.message});
+		}
 		throw new Error('Method not implemented.');
 	}
 	confirmResetPassword(): Promise<void> {
