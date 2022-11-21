@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "2.3.21",
+  "version": "3.0.3",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/GraphQLAPI.ts",
     "./lib/GraphQLAPI.js",
-    "./lib-esm/GraphQLAPI.js",
-    "./dist/aws-amplify-api-graphql.js",
-    "./dist/aws-amplify-api-graphql.min.js"
+    "./lib-esm/GraphQLAPI.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -28,7 +25,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 75.62"
   },
   "repository": {
     "type": "git",
@@ -43,13 +41,19 @@
   "devDependencies": {
     "@types/zen-observable": "^0.8.0"
   },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/api-rest": "2.0.57",
-    "@aws-amplify/auth": "4.6.10",
-    "@aws-amplify/cache": "4.0.59",
-    "@aws-amplify/core": "4.7.8",
-    "@aws-amplify/pubsub": "4.5.7",
+    "@aws-amplify/api-rest": "3.0.3",
+    "@aws-amplify/auth": "5.0.3",
+    "@aws-amplify/cache": "5.0.3",
+    "@aws-amplify/core": "5.0.3",
+    "@aws-amplify/pubsub": "5.0.3",
     "graphql": "15.8.0",
+    "tslib": "^1.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },

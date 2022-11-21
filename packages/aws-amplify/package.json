@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "4.3.39",
+  "version": "5.0.3",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -19,9 +19,10 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "generate-docs-local": "typedoc --out docs src",
-    "generate-docs-root": "typedoc --out ../../docs src"
+    "generate-docs-root": "typedoc --out ../../docs src",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
   },
   "repository": {
     "type": "git",
@@ -33,20 +34,26 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/analytics": "5.2.24",
-    "@aws-amplify/api": "4.0.57",
-    "@aws-amplify/auth": "4.6.10",
-    "@aws-amplify/cache": "4.0.59",
-    "@aws-amplify/core": "4.7.8",
-    "@aws-amplify/datastore": "3.14.0",
-    "@aws-amplify/geo": "1.3.20",
-    "@aws-amplify/interactions": "4.1.5",
-    "@aws-amplify/predictions": "4.0.57",
-    "@aws-amplify/pubsub": "4.5.7",
-    "@aws-amplify/storage": "4.5.10",
-    "@aws-amplify/ui": "2.0.5",
-    "@aws-amplify/xr": "3.0.57"
+    "@aws-amplify/analytics": "6.0.3",
+    "@aws-amplify/api": "5.0.3",
+    "@aws-amplify/auth": "5.0.3",
+    "@aws-amplify/cache": "5.0.3",
+    "@aws-amplify/core": "5.0.3",
+    "@aws-amplify/datastore": "4.0.3",
+    "@aws-amplify/geo": "2.0.3",
+    "@aws-amplify/interactions": "5.0.3",
+    "@aws-amplify/notifications": "1.0.3",
+    "@aws-amplify/predictions": "5.0.3",
+    "@aws-amplify/pubsub": "5.0.3",
+    "@aws-amplify/storage": "5.0.3",
+    "@aws-amplify/xr": "4.0.3",
+    "tslib": "^2.0.0"
   },
   "jest": {
     "globals": {

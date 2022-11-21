@@ -42,7 +42,7 @@ export class ServiceWorkerClass {
 	// The AWS Amplify logger
 	private _logger: Logger = new Logger('ServiceWorker');
 
-	constructor() { }
+	constructor() {}
 
 	/**
 	 * Get the currently active service worker
@@ -202,8 +202,3 @@ export class ServiceWorkerClass {
 		});
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default ServiceWorkerClass;

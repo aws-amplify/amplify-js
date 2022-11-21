@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "1.3.20",
+	"version": "2.0.3",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -12,11 +12,8 @@
 		"access": "public"
 	},
 	"sideEffects": [
-		"./src/geo/geo.ts",
 		"./lib/geo/geo.js",
-		"./lib-esm/geo/geo.js",
-		"./dist/aws-amplify-geo.min.js",
-		"./dist/aws-amplify-geo.js"
+		"./lib-esm/geo/geo.js"
 	],
 	"scripts": {
 		"test": "yarn run lint && jest -w 1 --coverage",
@@ -28,7 +25,8 @@
 		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint '{__tests__,src}/**/*.ts'"
+		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
 	},
 	"repository": {
 		"type": "git",
@@ -40,11 +38,17 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.8",
+		"@aws-amplify/core": "5.0.3",
 		"@aws-sdk/client-location": "3.186.0",
 		"@turf/boolean-clockwise": "6.5.0",
-		"camelcase-keys": "6.2.2"
+		"camelcase-keys": "6.2.2",
+		"tslib": "^1.8.0"
 	},
 	"jest": {
 		"globals": {

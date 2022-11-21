@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "4.0.57",
+	"version": "5.0.3",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/Predictions.ts",
 		"./lib/Predictions.js",
-		"./lib-esm/Predictions.js",
-		"./dist/aws-amplify-predictions.min.js",
-		"./dist/aws-amplify-predictions.js"
+		"./lib-esm/Predictions.js"
 	],
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
@@ -25,9 +22,10 @@
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
-		"generate-docs-root": "typedoc --out ../../docs src"
+		"generate-docs-root": "typedoc --out ../../docs src",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.84"
 	},
 	"repository": {
 		"type": "git",
@@ -39,9 +37,14 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.8",
-		"@aws-amplify/storage": "4.5.10",
+		"@aws-amplify/core": "5.0.3",
+		"@aws-amplify/storage": "5.0.3",
 		"@aws-sdk/client-comprehend": "3.6.1",
 		"@aws-sdk/client-polly": "3.6.1",
 		"@aws-sdk/client-rekognition": "3.6.1",
@@ -49,6 +52,7 @@
 		"@aws-sdk/client-translate": "3.6.1",
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
 		"@aws-sdk/util-utf8-node": "3.6.1",
+		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
 	},
 	"jest": {
