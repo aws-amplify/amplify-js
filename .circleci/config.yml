@@ -1143,7 +1143,7 @@ jobs:
           category: geo
           sample_name: display-map-static
           spec: display-map-static
-          browser: << parameters.browser >>
+          browser: chrome
           amplifyjs_dir: ~/amplify-js
       - integ_test_js:
           test_name: 'Search Outside Map'
@@ -1151,7 +1151,7 @@ jobs:
           category: geo
           sample_name: search-outside-map-static
           spec: search-outside-map-static
-          browser: << parameters.browser >>
+          browser: chrome
           amplifyjs_dir: ~/amplify-js
   integ_react_geo:
     parameters:
