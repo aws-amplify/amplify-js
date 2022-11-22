@@ -387,8 +387,9 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null
-            if [ "$?" == "0" ]; then git checkout <<pipeline.git.branch>> ; fi
+            branchExists=true
+            git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
+            if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
