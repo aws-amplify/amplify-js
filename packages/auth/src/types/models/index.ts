@@ -7,7 +7,7 @@ import { AuthProvider } from './AuthProvider';
 import { AuthSignInStep } from './authSignInStep';
 import { AuthSignUpStep } from './authSignUpStep';
 import { AuthUserAttribute } from './authUserAttribute';
-import { AuthUserAttributeKey } from './authUserAttributeKey';
+import { AuthStandardAttributeKey, AuthUserAttributeKey } from './authUserAttributeKey';
 
 export {
 	AuthUserAttributeKey,
@@ -20,5 +20,6 @@ export {
 	AuthSignUpStep,
 	AdditionalInfo,
 	AuthNextSignInStep,
-	AuthSignInStep
+	AuthSignInStep,
+	AuthStandardAttributeKey
 }

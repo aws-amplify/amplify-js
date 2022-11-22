@@ -1,6 +1,6 @@
 export type AuthUserAttributeKey = AuthStandardAttributeKey | string;
 
-type AuthStandardAttributeKey = 
+export type AuthStandardAttributeKey = 
 | 'address'
 | 'birthday'
 | 'email'

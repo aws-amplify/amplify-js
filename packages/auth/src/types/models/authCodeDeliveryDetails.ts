@@ -7,7 +7,7 @@ export type AuthCodeDeliveryDetails<UserAttributeKey extends AuthUserAttributeKe
 	attributeName?: UserAttributeKey;
 }
 
-export enum DeliveryMedium {
+export const enum DeliveryMedium {
 	EMAIL = 'EMAIL',
 	SMS = 'SMS',
 	UNKNOWN = 'UNKNOWN'
