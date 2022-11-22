@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.2...@aws-amplify/datastore@4.0.3) (2022-11-19)
+
+
+### Bug Fixes
+
+* **datastore:** optional hasOne ([#10688](https://github.com/aws-amplify/amplify-js/issues/10688)) ([a851713](https://github.com/aws-amplify/amplify-js/commit/a85171384db4bca202bb5cb5f832a8e319ec89d4))
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.1...@aws-amplify/datastore@4.0.2) (2022-11-16)
+
+
+### Bug Fixes
+
+* predicate logic against bools ([#10679](https://github.com/aws-amplify/amplify-js/issues/10679)) ([062cb55](https://github.com/aws-amplify/amplify-js/commit/062cb5530ba6d22b8dd97bbd046b08691f874765))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.0...@aws-amplify/datastore@4.0.1) (2022-11-11)
 
 

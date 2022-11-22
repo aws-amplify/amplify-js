@@ -185,7 +185,7 @@ export class FieldCondition {
 	 * @returns `Promise<boolean>`, `true` if matches; `false` otherwise.
 	 */
 	async matches(item: Record<string, any>): Promise<boolean> {
-		const v = String(item[this.field]);
+		const v = item[this.field];
 		const operations = {
 			eq: () => v === this.operands[0],
 			ne: () => v !== this.operands[0],
@@ -200,7 +200,8 @@ export class FieldCondition {
 		};
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
-			return operation();
+			const result = operation();
+			return result;
 		} else {
 			throw new Error(`Invalid operator given: ${this.operator}`);
 		}
