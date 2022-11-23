@@ -996,6 +996,8 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
@@ -1010,6 +1012,8 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
+		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
 	};
 
 	return {
@@ -1031,6 +1035,8 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
 	};
 }
 
@@ -1311,6 +1317,36 @@ export declare class DefaultPKChild {
 			draft: MutableModel<DefaultPKChild>
 		) => MutableModel<DefaultPKChild> | void
 	): DefaultPKChild;
+}
+
+export declare class DefaultPKHasOneParent {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly child?: Promise<DefaultPKHasOneChild>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<DefaultPKParent>);
+	static copyOf(
+		source: DefaultPKHasOneParent,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneParent>
+		) => MutableModel<DefaultPKHasOneParent> | void
+	): DefaultPKHasOneParent;
+}
+
+export declare class DefaultPKHasOneChild {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly defaultPKHasOneParentChildrenId?: string | null;
+	constructor(init: ModelInit<DefaultPKHasOneChild>);
+	static copyOf(
+		source: DefaultPKHasOneChild,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneChild>
+		) => MutableModel<DefaultPKHasOneChild> | void
+	): DefaultPKHasOneChild;
 }
 
 /**
@@ -2332,6 +2368,113 @@ export function testSchema(): Schema {
 						properties: {
 							fields: ['id'],
 						},
+					},
+				],
+			},
+			DefaultPKHasOneParent: {
+				name: 'DefaultPKHasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'DefaultPKHasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: 'id',
+							targetName: 'defaultPKHasOneParentChildId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					defaultPKHasOneParentChildId: {
+						name: 'defaultPKHasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			DefaultPKHasOneChild: {
+				name: 'DefaultPKHasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
 					},
 				],
 			},
