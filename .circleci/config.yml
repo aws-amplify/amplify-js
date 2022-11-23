@@ -1912,7 +1912,7 @@ workflows:
             - integ_react_auth_1
             - integ_react_auth_2
             - integ_angular_auth
-            # - integ_javascript_auth
+            # - integ_javascript_auth # TODO: enable it when CDN deployment is automated
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
@@ -1925,7 +1925,7 @@ workflows:
               # - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_graphql_api
-            # - integ_javascript_geo
+            # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
             - integ_react_geo
             - integ_next_datastore_owner_auth
             - integ_react_datastore_custom_pk_unconnected_models
