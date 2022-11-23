@@ -1,4 +1,7 @@
-import { ICognitoStorage, ICookieStorageData } from ".";
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { ClientMetadata, ICognitoStorage, ICookieStorageData } from ".";
 
 export type AuthOptions = {
 	userPoolId?: string;
@@ -12,7 +15,7 @@ export type AuthOptions = {
 	storage?: ICognitoStorage;
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
-	clientMetaData?: any;
+	clientMetaData?: ClientMetadata;
 	endpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 }
