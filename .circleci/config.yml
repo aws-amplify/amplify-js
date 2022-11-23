@@ -387,6 +387,9 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            branchExists=true
+            git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
+            if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -1319,6 +1322,12 @@ jobs:
             git push origin release
             git push --force-with-lease origin release:main
 
+# Specifies the branches that can be considered releasable.
+#
+# Listing a branch here has the following effects:
+#   - Allows the branch to be published to NPM assuming there is a corresponding `publish:<branch>` script in package.json
+#   - Runs the full test suite against the branch in CircleCI on pushes to that branch. If the exact branch name also exists
+#     in the `amplify-js-samples-staging` repo, it will be used when executing tests. Otherwise, defaults to `main`.
 releasable_branches: &releasable_branches
   branches:
     only:
