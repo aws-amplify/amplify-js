@@ -189,9 +189,11 @@ class MutationEventOutbox {
 
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
-		if (!valuesEqual(incomingData, outgoingData, true)) {
-			return;
-		}
+
+		// if (!valuesEqual(incomingData, outgoingData, true)) {
+		// 	console.log('not equal', incomingData, outgoingData);
+		// 	return;
+		// }
 
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models['MutationEvent'];
