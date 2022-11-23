@@ -2,12 +2,7 @@ module.exports = {
 	entry: {
 		'aws-amplify-predictions.min': './lib-esm/index.js',
 	},
-	externals: [
-		{
-			'@aws-amplify/core': 'aws_amplify_core',
-			'@aws-amplify/storage': 'aws_amplify_storage',
-		},
-	],
+	externals: [{ '@aws-amplify/core': 'aws_amplify_core' }],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',

@@ -13,7 +13,6 @@ module.exports = {
 			'@aws-amplify/core': 'aws_amplify_core',
 		},
 	],
-	externalsType: 'umd',
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
