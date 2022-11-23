@@ -134,7 +134,7 @@ To get started pick your platform from our [**Getting Started** home page](https
   + Analytics.record({ name: 'my example event' });
   ```
 
-- The `JS` export has been removed from `@aws-amplify/core` in favor the exporting the functions it contained.
+- The `JS` export has been removed from `@aws-amplify/core` in favor of exporting the functions it contained.
 - Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported. Instead, your code should use the named exports. For example:
 
   ```diff
