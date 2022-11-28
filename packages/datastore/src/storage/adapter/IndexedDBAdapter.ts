@@ -385,8 +385,6 @@ class IndexedDBAdapter implements Adapter {
 			srcModelName
 		);
 
-		console.log({ records });
-
 		if (connectionStoreNames.length === 0) {
 			return records.map(record =>
 				this.modelInstanceCreator(modelConstructor, record)

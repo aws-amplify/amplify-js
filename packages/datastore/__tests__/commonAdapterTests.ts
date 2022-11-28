@@ -1167,18 +1167,18 @@ export function addCommonQueryTests({
 		 * to show as passing.
 		 */
 
-		test.only('sets can be established and traversed, cardinality 1x1', async () => {
+		test('sets can be established and traversed, cardinality 1x1', async () => {
 			const expectedGroupA = await saveManyToManys(
 				['left content A'],
 				['right content A']
 			);
-			// const expectedGroupB = await saveManyToManys(
-			// 	['left content B'],
-			// 	['right content B']
-			// );
+			const expectedGroupB = await saveManyToManys(
+				['left content B'],
+				['right content B']
+			);
 
-			// await expectMatchingMtmsInDataStore(expectedGroupA);
-			// await expectMatchingMtmsInDataStore(expectedGroupB);
+			await expectMatchingMtmsInDataStore(expectedGroupA);
+			await expectMatchingMtmsInDataStore(expectedGroupB);
 		});
 
 		test('sets can be established and traversed, cardinality 3x3', async () => {
