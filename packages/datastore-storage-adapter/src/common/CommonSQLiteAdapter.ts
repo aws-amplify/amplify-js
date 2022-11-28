@@ -182,11 +182,12 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
-		console.log({ records });
-
-		return records.map(record =>
-			this.modelInstanceCreator(modelConstructor, record)
-		);
+		return records.map(record => {
+			for (const r of relations) {
+				delete record[r.fieldName];
+			}
+			return this.modelInstanceCreator(modelConstructor, record);
+		});
 	}
 
 	async query<T extends PersistentModel>(
