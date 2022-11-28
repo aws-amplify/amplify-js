@@ -510,7 +510,6 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - run:
-          shell: /bin/bash # ignore failure
           name: Failed step to see if pipeline will be blocked
           command: exit 1
   integ_vue_auth:
