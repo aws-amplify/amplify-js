@@ -182,6 +182,11 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
+		// Remove related-model fields. They're all `null` in the database,
+		// and any that happen to be required will result in a false validation
+		// error when DataStore attempts to initialize with `null`.
+		// These fields aren't actually needed here. DataStore will use the FK's
+		// from the schema model.
 		return records.map(record => {
 			for (const r of relations) {
 				delete record[r.fieldName];

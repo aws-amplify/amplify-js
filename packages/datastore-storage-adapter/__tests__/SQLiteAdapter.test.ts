@@ -60,7 +60,6 @@ class InnerSQLiteDatabase {
 		logger = undefined
 	) {
 		sqlog.push(`${statement}; ${JSON.stringify(params)}`);
-		// console.log(`${statement}; ${JSON.stringify(params)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
 			return new Promise(async resolve => {
 				const rows: any[] = [];

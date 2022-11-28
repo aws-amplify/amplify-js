@@ -56,6 +56,10 @@ export function addCommonQueryTests({
 	getMutations: any;
 	clearOutbox: any;
 }) {
+	// This MUST be in a `beforeAll` or `beforeEach` scoped at this level to
+	// ensure all down-the-line tests use the given adapter. It is otherwise
+	// VERY EASY to forgot to include this, which can cause some of these tests
+	// to run against a different adapter and thus test the wrong things.
 	beforeAll(() => {
 		DataStore.configure({ storageAdapter });
 	});
@@ -693,7 +697,8 @@ export function addCommonQueryTests({
 		} else {
 			// Our manyToMany example requires both side of the relationship to be
 			// populated, so we need a different testing pattern.
-			// also notably, this is "extra" test work. MTM is just two hasMany's.
+			// Originally thought to be "extra" testing, but showed that we were
+			// not previously testing *required* relationships.
 			modelNamesToTest = modelNamesToTest.filter(n => !n.startsWith('Mtm'));
 		}
 
@@ -1071,6 +1076,7 @@ export function addCommonQueryTests({
 
 	/**
 	 * Given the way `manyToMany` works, these tests are *mostly* superfluous.
+	 * (They *do* however stress *required* relationship handling. A prior gap.)
 	 * `manyToMany` is just a helper to create `belongsTo`/`hasMany` models. So,
 	 * these don't dive as deep or expansively as other relationship tests.
 	 *
