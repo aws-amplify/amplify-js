@@ -504,6 +504,14 @@ jobs:
           spec: auth-cdn
           browser: << parameters.browser >>
           amplifyjs_dir: ~/amplify-js
+  test_integ_fail:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - run:
+          name: Failed step to see if pipeline will be blocked
+          command: exit 1
   integ_vue_auth:
     parameters:
       browser:
@@ -1383,6 +1391,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - test-cdn-artifacts
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1517,6 +1526,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - test_integ_fail:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_react_datastore:
           requires:
             - integ_setup
