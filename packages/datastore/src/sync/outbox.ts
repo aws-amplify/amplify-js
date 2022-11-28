@@ -170,30 +170,13 @@ class MutationEventOutbox {
 			return;
 		}
 
-		const { _version, _lastChangedAt, _deleted, ..._incomingData } = record;
-		const incomingData = this.removeTimestampFields(head.model, _incomingData);
+		const { _version, _lastChangedAt } = record;
 
 		const data = JSON.parse(head.data);
 
 		if (!data) {
 			return;
 		}
-
-		const {
-			_version: __version,
-			_lastChangedAt: __lastChangedAt,
-			_deleted: __deleted,
-			..._outgoingData
-		} = data;
-		const outgoingData = this.removeTimestampFields(head.model, _outgoingData);
-
-		// Don't sync the version when the data in the response does not match the data
-		// in the request, i.e., when there's a handled conflict
-
-		// if (!valuesEqual(incomingData, outgoingData, true)) {
-		// 	console.log('not equal', incomingData, outgoingData);
-		// 	return;
-		// }
 
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models['MutationEvent'];
@@ -263,49 +246,6 @@ class MutationEventOutbox {
 			...current,
 			data,
 		});
-	}
-
-	/* 
-	if a model is using custom timestamp fields
-	the custom field names will be stored in the model attributes
-
-	e.g.
-	"attributes": [
-    {
-			"type": "model",
-			"properties": {
-				"timestamps": {
-					"createdAt": "createdOn",
-					"updatedAt": "updatedOn"
-				}
-			}
-    }
-	]
-	*/
-	private removeTimestampFields(
-		model: string,
-		record: PersistentModel
-	): PersistentModel {
-		const CREATED_AT_DEFAULT_KEY = 'createdAt';
-		const UPDATED_AT_DEFAULT_KEY = 'updatedAt';
-
-		let createdTimestampKey = CREATED_AT_DEFAULT_KEY;
-		let updatedTimestampKey = UPDATED_AT_DEFAULT_KEY;
-
-		const modelAttributes = this.schema.namespaces[USER].models[
-			model
-		].attributes?.find(attr => attr.type === 'model');
-		const timestampFieldsMap = modelAttributes?.properties?.timestamps;
-
-		if (timestampFieldsMap) {
-			createdTimestampKey = timestampFieldsMap[CREATED_AT_DEFAULT_KEY];
-			updatedTimestampKey = timestampFieldsMap[UPDATED_AT_DEFAULT_KEY];
-		}
-
-		delete (record as Record<string, any>)[createdTimestampKey];
-		delete (record as Record<string, any>)[updatedTimestampKey];
-
-		return record;
 	}
 }
 
