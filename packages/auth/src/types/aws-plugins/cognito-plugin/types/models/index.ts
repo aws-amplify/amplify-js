@@ -3,14 +3,18 @@
 
 import { AuthFlowType } from './authFlowType';
 import { ClientMetadata } from './clientMetadata';
-import { ICognitoStorage } from './ICognitoStorage';
-import { ICookieStorageData } from './iCookieStorageData';
+import { CognitoStorage } from './cognitoStorage';
+import { CookieStorageData } from './cookieStorageData';
+import { OAuth } from './oAuth';
+import { OAuthResponseType } from './oAuthResponseType';
 import { ValidationData } from './validationData';
 
 export {
 	ClientMetadata,
 	ValidationData,
-	ICookieStorageData,
-	ICognitoStorage,
-	AuthFlowType
+	CookieStorageData,
+	CognitoStorage,
+	AuthFlowType,
+	OAuth,
+	OAuthResponseType
 }

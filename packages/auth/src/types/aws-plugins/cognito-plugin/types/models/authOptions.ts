@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ClientMetadata, ICognitoStorage, ICookieStorageData } from ".";
+import { ClientMetadata, CognitoStorage, CookieStorageData, OAuth } from '.';
 
 export type AuthOptions = {
 	userPoolId?: string;
@@ -9,10 +9,10 @@ export type AuthOptions = {
 	identityPoolId?: string;
 	region?: string;
 	mandatorySignIn?: boolean;
-	cookieStorage?: ICookieStorageData;
-	oauth?: any;
+	cookieStorage?: CookieStorageData;
+	oauth?: OAuth;
 	refreshHandlers?: object;
-	storage?: ICognitoStorage;
+	storage?: CognitoStorage;
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
 	clientMetaData?: ClientMetadata;
