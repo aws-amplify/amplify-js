@@ -1,4 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { AuthProvider } from './models';
+import { SignUpRequest } from './signUpRequest';
+
+export {
+	SignUpRequest
+}

@@ -1,4 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { AuthProvider } from './models';
+export const enum OAuthResponseType {
+	CODE = 'code',
+	IMPLICIT = 'implicit'
+}
