@@ -746,6 +746,7 @@ const initializeInstance = <T extends PersistentModel>(
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
+	console.log('initializeInstance', init);
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
 		const parsedValue = castInstanceType(modelDefinition, k, v);

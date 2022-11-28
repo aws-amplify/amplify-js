@@ -182,6 +182,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
+		console.log({ records });
+
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
