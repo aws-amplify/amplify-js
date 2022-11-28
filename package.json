@@ -101,19 +101,6 @@
 		"winston": "^3.2.1",
 		"wml": "0.0.83"
 	},
-	"resolutions": {
-		"@babel/generator": "7.19.6",
-		"@babel/helpers": "7.19.4",
-		"@babel/helper-skip-transparent-expression-wrappers": "7.18.9",
-		"@babel/types": "7.12.10",
-		"@types/babel__traverse": "7.0.8",
-		"@babel/traverse": "7.17.9",
-		"@types/react": "16.9.10",
-		"terser": "4.6.7",
-		"npm-packlist": "1.1.12",
-		"error-stack-parser": "2.0.6",
-		"@types/minimatch": "3.0.5"
-	},
 	"bundlewatch": {
 		"files": [
 			{
