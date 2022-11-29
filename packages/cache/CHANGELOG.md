@@ -7,17 +7,33 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/cache
 
+
+
+
+
 ## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.2...@aws-amplify/cache@5.0.3) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
 
 ## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.1...@aws-amplify/cache@5.0.2) (2022-11-16)
 
 **Note:** Version bump only for package @aws-amplify/cache
 
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.0.0...@aws-amplify/cache@5.0.1) (2022-11-11)
 
 **Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
 
 # [5.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@4.0.63...@aws-amplify/cache@5.0.0) (2022-11-09)
 
