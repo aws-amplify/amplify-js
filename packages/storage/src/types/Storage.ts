@@ -79,28 +79,45 @@ type StorageOperationConfig<
 			provider: ReturnType<T['getProviderName']>;
 	  };
 
-export type StorageGetConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'get'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'get'>, T>;
+export type StorageGetConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'get'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'get'>,
+				T
+		  >;
 
-export type StoragePutConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'put'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'put'>, T>;
+export type StoragePutConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'put'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'put'>,
+				T
+		  >;
 
-export type StorageRemoveConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'remove'>
-	: StorageOperationConfigMap<
-			StorageOperationConfig<AWSS3Provider, 'remove'>,
-			T
-	  >;
+export type StorageRemoveConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'remove'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'remove'>,
+				T
+		  >;
 
-export type StorageListConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'list'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'list'>, T>;
+export type StorageListConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'list'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'list'>,
+				T
+		  >;
 
-export type StorageCopyConfig<T> = T extends StorageProviderWithCopy
-	? StorageOperationConfig<T, 'copy'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'copy'>, T>;
+export type StorageCopyConfig<T extends Record<string, any>> =
+	T extends StorageProviderWithCopy
+		? StorageOperationConfig<T, 'copy'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'copy'>,
+				T
+		  >;
 
 /**
  * Utility type for checking if the generic type is a provider or a Record that has the key 'provider'.
@@ -124,9 +141,8 @@ type PickProviderOutput<
 		: Promise<any>
 	: DefaultOutput;
 
-export type StorageGetOutput<
-	T extends StorageProvider | Record<string, any>
-> = PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
+export type StorageGetOutput<T extends StorageProvider | Record<string, any>> =
+	PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
 export type StoragePutOutput<T> = PickProviderOutput<
 	S3ProviderPutOutput<T>,

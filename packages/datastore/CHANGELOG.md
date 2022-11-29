@@ -3,17 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.0...@aws-amplify/datastore@4.0.1) (2022-11-11)
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.3...@aws-amplify/datastore@4.0.4) (2022-11-23)
 
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.2...@aws-amplify/datastore@4.0.3) (2022-11-19)
 
 ### Bug Fixes
 
-* **datastore:** upgrade after destructive schema change ([#10658](https://github.com/aws-amplify/amplify-js/issues/10658)) ([d987a28](https://github.com/aws-amplify/amplify-js/commit/d987a2837d16c2ca93205089eebb837f1f8e7c15))
-* export DataStore predicate types ([#10653](https://github.com/aws-amplify/amplify-js/issues/10653)) ([a517610](https://github.com/aws-amplify/amplify-js/commit/a517610889ab4115c40dcd58213414e6e1aabf7b))
+- **datastore:** optional hasOne ([#10688](https://github.com/aws-amplify/amplify-js/issues/10688)) ([a851713](https://github.com/aws-amplify/amplify-js/commit/a85171384db4bca202bb5cb5f832a8e319ec89d4))
 
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.1...@aws-amplify/datastore@4.0.2) (2022-11-16)
 
+### Bug Fixes
 
+- predicate logic against bools ([#10679](https://github.com/aws-amplify/amplify-js/issues/10679)) ([062cb55](https://github.com/aws-amplify/amplify-js/commit/062cb5530ba6d22b8dd97bbd046b08691f874765))
 
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.0...@aws-amplify/datastore@4.0.1) (2022-11-11)
+
+### Bug Fixes
+
+- **datastore:** upgrade after destructive schema change ([#10658](https://github.com/aws-amplify/amplify-js/issues/10658)) ([d987a28](https://github.com/aws-amplify/amplify-js/commit/d987a2837d16c2ca93205089eebb837f1f8e7c15))
+- export DataStore predicate types ([#10653](https://github.com/aws-amplify/amplify-js/issues/10653)) ([a517610](https://github.com/aws-amplify/amplify-js/commit/a517610889ab4115c40dcd58213414e6e1aabf7b))
 
 # [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.4...@aws-amplify/datastore@4.0.0) (2022-11-09)
 
