@@ -55,8 +55,11 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
-const isBrowser = typeof navigator !== 'undefined';
-const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
+const isNavigatorAvailable = typeof navigator !== 'undefined';
+var specificUserAgent = isNavigatorAvailable ? navigator.userAgent : '';
+if (isNavigatorAvailable && navigator.product === 'ReactNative')
+	specificUserAgent = 'react-native';
+const userAgent = isNavigatorAvailable ? specificUserAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {
