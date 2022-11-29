@@ -1,0 +1,4 @@
+paths-ignore:
+  - 'packages/*/__tests__'
+  - 'packages/*/__mocks__'
+  - docs/
