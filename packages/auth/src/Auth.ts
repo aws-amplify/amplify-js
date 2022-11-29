@@ -7,7 +7,7 @@ import {
 	Hub,
 } from '@aws-amplify/core';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
-import { AuthProvider } from './types/AuthProvider';
+import { AuthProvider } from './types';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
 const logger = new Logger('AuthClass');
@@ -90,7 +90,7 @@ export class AuthClass {
 		this._pluggable = null;
 	}
 
-	signUp(): Promise<any> {
+	signUp(req): Promise<any> {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signUp();
 	}

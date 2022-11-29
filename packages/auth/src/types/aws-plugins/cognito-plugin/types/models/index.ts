@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthFlowType } from './authFlowType';
+import { AuthOptions } from './authOptions';
 import { ClientMetadata } from './clientMetadata';
 import { CognitoStorage } from './cognitoStorage';
+import { CognitoUserAttributeKey } from './cognitoUserAttributeKey';
 import { CookieStorageData } from './cookieStorageData';
 import { OAuth } from './oAuth';
 import { OAuthResponseType } from './oAuthResponseType';
@@ -16,5 +18,7 @@ export {
 	CognitoStorage,
 	AuthFlowType,
 	OAuth,
-	OAuthResponseType
+	OAuthResponseType,
+	CognitoUserAttributeKey,
+	AuthOptions
 }

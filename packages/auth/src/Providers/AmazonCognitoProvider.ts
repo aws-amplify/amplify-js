@@ -16,7 +16,14 @@ import {
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { AuthProvider } from '../types/AuthProvider';
+import { AuthProvider } from '../types';
+import { AuthPluginOptions } from '../types/models';
+import { CognitoSignUpOptions } from '../types/aws-plugins/cognito-plugin/types/options';
+import { SignUpRequest } from '../types/request';
+import { AuthSignUpResult } from '../types/result';
+import { CognitoUserAttributeKey } from '../types/aws-plugins/cognito-plugin/types/models';
+import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { createCognitoIdentityProviderClient } from '../utils/CognitoIdentityProviderClientUtils';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -31,11 +38,16 @@ export class AmazonCognitoProvider implements AuthProvider {
 	static providerName = 'AmazonCognito';
 
 	private _config;
+	private _client: CognitoIdentityProviderClient;
 
 	constructor(config?) {
 		this._config = config ? config : {};
+		this._client = createCognitoIdentityProviderClient(config);
 	}
-	signUp(): Promise<any> {
+	signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(
+		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
+	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
+		
 		throw new Error('Method not implemented.');
 	}
 	confirmSignUp(): Promise<any> {
