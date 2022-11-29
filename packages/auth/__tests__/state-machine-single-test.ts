@@ -209,6 +209,7 @@ describe('State Machine queueing tests...', () => {
 		stateTwoInvocation = new Invocation<DummyContext, State1Payload>({
 			invokedPromise: async () => {
 				await new Promise(r => setTimeout(r, timeoutMS));
+				console.log('done...');
 			},
 		});
 		stateOneTransitions = [
@@ -240,11 +241,10 @@ describe('State Machine queueing tests...', () => {
 
 		// invocation will block for value of timeoutMS
 		// thus we check that transition has not happened yet.
-		await new Promise(r => setTimeout(r, timeoutMS - 100));
 		expect(machine?.current.name).toEqual(state2Name);
 
 		// wait again to make sure the timeout has elapsed before checking state again
-		await new Promise(r => setTimeout(r, timeoutMS));
+		await new Promise(r => setTimeout(r, timeoutMS + timeoutMS));
 		expect(machine?.current.name).toEqual(state3Name);
 	});
 });

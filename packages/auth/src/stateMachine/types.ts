@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Completer } from './completer';
+// import { Completer } from './completer';
 import { Invocation } from './invocation';
 import { MachineState } from './machineState';
 
@@ -24,15 +24,12 @@ export type MachineEventPayload = Record<string, unknown>;
  * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
  * @param completer - A promise that will resolve when a restingState is reached
  */
-export type MachineEvent<
-	ContextType extends MachineContext,
-	PayloadType extends MachineEventPayload
-> = {
+export type MachineEvent<PayloadType extends MachineEventPayload> = {
 	name: string;
 	payload?: PayloadType;
 	restingStates: string[];
-	completer?: Completer<ContextType>;
-	id?: string;
+	// completer?: Completer<ContextType>;
+	// id?: string;
 };
 
 /**
@@ -43,11 +40,11 @@ export type MachineEvent<
  * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
  * @param completer - A promise that will resolve when a restingState is reached
  */
-export type QueuedMachineEvent<ContextType extends MachineContext> = {
-	event: MachineEvent<ContextType, MachineEventPayload>;
-	restingStates: string[];
-	completer?: Completer<ContextType>;
-};
+// export type QueuedMachineEvent<ContextType extends MachineContext> = {
+// 	event: MachineEvent<ContextType, MachineEventPayload>;
+// 	restingStates: string[];
+// 	// completer?: Completer<ContextType>;
+// };
 
 /**
  * The type accepted by the Machine constructor
@@ -112,10 +109,7 @@ export type StateTransition<
 export type TransitionAction<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (
-	context: ContextType,
-	event: MachineEvent<ContextType, PayloadType>
-) => Promise<void>;
+> = (context: ContextType, event: MachineEvent<PayloadType>) => Promise<void>;
 
 /**
  * Type for a TransitionGuard, which can prevent the enclosing Transition from completing
@@ -125,10 +119,7 @@ export type TransitionAction<
 export type TransitionGuard<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (
-	context: ContextType,
-	event: MachineEvent<ContextType, PayloadType>
-) => boolean;
+> = (context: ContextType, event: MachineEvent<PayloadType>) => boolean;
 
 /**
  * Type for a TransitionReducer, which is used to modify the enclosing Machine's Context
@@ -138,15 +129,9 @@ export type TransitionGuard<
 export type TransitionReducer<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (
-	context: ContextType,
-	event: MachineEvent<ContextType, PayloadType>
-) => ContextType;
+> = (context: ContextType, event: MachineEvent<PayloadType>) => ContextType;
 
 export type InvocationPromise<
 	ContextType extends MachineContext,
 	PayloadType extends MachineEventPayload
-> = (
-	context: ContextType,
-	event: MachineEvent<ContextType, PayloadType>
-) => Promise<void>;
+> = (context: ContextType, event: MachineEvent<PayloadType>) => Promise<void>;

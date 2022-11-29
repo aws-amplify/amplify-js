@@ -12,7 +12,7 @@ export const state1Name = 'State1';
 export const state2Name = 'State2';
 export const state3Name = 'State3';
 
-export const goodEvent1: MachineEvent<DummyContext, State1Payload> = {
+export const goodEvent1: MachineEvent<State1Payload> = {
 	name: 'event1',
 	payload: {
 		p1: 'good',
@@ -20,7 +20,7 @@ export const goodEvent1: MachineEvent<DummyContext, State1Payload> = {
 	restingStates: [state2Name],
 };
 
-export const badEvent1: MachineEvent<DummyContext, State1Payload> = {
+export const badEvent1: MachineEvent<State1Payload> = {
 	name: 'event1',
 	payload: {
 		p1: 'bad',
@@ -28,7 +28,7 @@ export const badEvent1: MachineEvent<DummyContext, State1Payload> = {
 	restingStates: [state2Name],
 };
 
-export const goodEvent2: MachineEvent<DummyContext, State2Payload> = {
+export const goodEvent2: MachineEvent<State2Payload> = {
 	name: 'event2',
 	payload: {
 		p2: 'good',
@@ -36,7 +36,7 @@ export const goodEvent2: MachineEvent<DummyContext, State2Payload> = {
 	restingStates: [state3Name],
 };
 
-export const badEvent2: MachineEvent<DummyContext, State2Payload> = {
+export const badEvent2: MachineEvent<State2Payload> = {
 	name: 'event2',
 	payload: {
 		p2: 'bad',

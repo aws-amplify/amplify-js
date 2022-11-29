@@ -25,7 +25,7 @@ export class MachineState<
 	}
 
 	findTransition(
-		event: MachineEvent<ContextType, PayloadType>
+		event: MachineEvent<PayloadType>
 	): StateTransition<ContextType, PayloadType> | undefined {
 		return this.transitions?.find(t => t.event === event.name);
 	}

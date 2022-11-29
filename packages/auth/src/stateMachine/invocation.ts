@@ -14,7 +14,7 @@ export class Invocation<
 	ContextType extends MachineContext,
 	InitialEventPayloadType extends MachineEventPayload
 > {
-	event?: MachineEvent<ContextType, InitialEventPayloadType>;
+	event?: MachineEvent<InitialEventPayloadType>;
 	invokedMachine?: Machine<ContextType>;
 	invokedPromise?: InvocationPromise<ContextType, InitialEventPayloadType>;
 	expectedStates?: string[];
@@ -22,7 +22,7 @@ export class Invocation<
 		machineParams?: StateMachineParams<ContextType>;
 		invokedPromise?: InvocationPromise<ContextType, InitialEventPayloadType>;
 		expectedStates?: string[];
-		event?: MachineEvent<ContextType, InitialEventPayloadType>;
+		event?: MachineEvent<InitialEventPayloadType>;
 	}) {
 		this.event = params?.event;
 
