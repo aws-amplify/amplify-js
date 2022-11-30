@@ -1137,6 +1137,7 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent('signIn', user, ``);
 					dispatchAuthEvent(
 						'verify',
 						user,
