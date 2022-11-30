@@ -624,8 +624,10 @@ class IndexedDBAdapter implements Adapter {
 			for (const query of indexedQueries) {
 				const resultGroup = await query();
 				for (const item of resultGroup) {
-					// TODO: custom PK
-					distinctResults.set(item.id, item);
+					const uniquePKString = JSON.stringify(
+						this.getIndexKeyValuesFromModel(item)
+					);
+					distinctResults.set(uniquePKString, item);
 				}
 			}
 
