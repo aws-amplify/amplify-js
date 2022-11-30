@@ -57,10 +57,11 @@ import StorageHelper from './StorageHelper';
  */
 
 const isNavigatorAvailable = typeof navigator !== 'undefined';
-var browserReactNativeAgent = Platform.isReactNative
-	? 'react-native'
-	: navigator.userAgent;
-const userAgent = isNavigatorAvailable ? browserReactNativeAgent : 'nodejs';
+const userAgent = isNavigatorAvailable
+	? Platform.isReactNative
+		? 'react-native'
+		: navigator.userAgent
+	: 'nodejs';
 
 /** @class */
 export default class CognitoUser {
