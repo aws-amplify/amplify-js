@@ -15,6 +15,7 @@ import CognitoUserSession from './CognitoUserSession';
 import DateHelper from './DateHelper';
 import CognitoUserAttribute from './CognitoUserAttribute';
 import StorageHelper from './StorageHelper';
+import Platform from './Platform';
 
 /**
  * @callback nodeCallback
@@ -56,10 +57,10 @@ import StorageHelper from './StorageHelper';
  */
 
 const isNavigatorAvailable = typeof navigator !== 'undefined';
-var specificUserAgent = isNavigatorAvailable ? navigator.userAgent : '';
-if (isNavigatorAvailable && navigator.product === 'ReactNative')
-	specificUserAgent = 'react-native';
-const userAgent = isNavigatorAvailable ? specificUserAgent : 'nodejs';
+var browserReactNativeAgent = Platform.isReactNative
+	? 'react-native'
+	: navigator.userAgent;
+const userAgent = isNavigatorAvailable ? browserReactNativeAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {
