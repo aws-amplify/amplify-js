@@ -377,8 +377,8 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		.constructor as PersistentModelConstructor<any>;
 
 	return createMutationInstanceFromModelOperation(
-		undefined,
-		undefined,
+		undefined!,
+		undefined!,
 		opType,
 		modelConstructor,
 		originalElement,
@@ -395,7 +395,7 @@ async function processMutationResponse(
 ): Promise<void> {
 	await outbox.dequeue(storage, record, recordOp);
 
-	const modelConstructor = Model as PersistentModelConstructor<any>;
+	const modelConstructor = Model as unknown as PersistentModelConstructor<any>;
 	const model = modelInstanceCreator(modelConstructor, record);
 	const modelDefinition = getModelDefinition(model);
 	await merger.merge(storage, model, modelDefinition);

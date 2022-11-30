@@ -1,4 +1,4 @@
-import Amplify from '../src';
+import { Amplify } from '../src';
 
 describe('Amplify config test', () => {
 	test('empty config', () => {
