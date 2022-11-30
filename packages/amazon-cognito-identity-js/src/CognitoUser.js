@@ -5,6 +5,7 @@
 
 import { Buffer } from 'buffer';
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { Platform } from './Platform';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -15,7 +16,6 @@ import CognitoUserSession from './CognitoUserSession';
 import DateHelper from './DateHelper';
 import CognitoUserAttribute from './CognitoUserAttribute';
 import StorageHelper from './StorageHelper';
-import Platform from './Platform';
 
 /**
  * @callback nodeCallback
