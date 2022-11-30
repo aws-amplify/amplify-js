@@ -515,6 +515,12 @@ class IndexedDBAdapter implements Adapter {
 				}
 			}
 
+			// console.log('matchingQueries', {
+			// 	predicates,
+			// 	keypath,
+			// 	matchingPredicateValues,
+			// });
+
 			// if we have a matchind predicate field for each component of this index,
 			// we can build a query for it. otherwise, we can't.
 			if (matchingPredicateValues.length === keypath.length) {
@@ -538,6 +544,8 @@ class IndexedDBAdapter implements Adapter {
 		predicates: PredicatesGroup<T>
 	) {
 		let { predicates: predicateObjs, type } = predicates;
+
+		// console.log(JSON.stringify({ predicates }, null, 2));
 
 		// the predicate objects we care about tend to be nested at least
 		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
@@ -600,12 +608,17 @@ class IndexedDBAdapter implements Adapter {
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
-		let { predicates: predicateObjs, type } = predicates;
+		const { predicates: predicateObjs, type } = predicates;
 
 		const { groupType, indexedQueries } = await this.baseQueryIndex(
 			storeName,
 			predicates
 		);
+
+		// console.log('baseQueryIndex', {
+		// 	storeName,
+		// 	indexedQueries,
+		// });
 
 		// where we'll accumulate candidate results, which will be filtered at the end.
 		let candidateResults: T[];

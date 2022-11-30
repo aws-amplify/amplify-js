@@ -1014,6 +1014,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
@@ -1034,6 +1036,8 @@ export function getDataStore({
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
+		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
 
 	return {
@@ -1061,6 +1065,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	};
 }
 

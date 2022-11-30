@@ -1,3 +1,4 @@
+import * as IDB from 'idb';
 import Adapter from '../src/storage/adapter/IndexedDBAdapter';
 import 'fake-indexeddb/auto';
 import {
@@ -14,6 +15,7 @@ import {
 	Profile,
 	Post,
 	Comment,
+	CompositePKParent,
 	testSchema,
 	getDataStore,
 } from './helpers';
@@ -302,9 +304,13 @@ describe('IndexedDBAdapter tests', () => {
  * wall-clock time.
  */
 describe.only('IndexedDB benchmarks', () => {
-	const { DataStore, User } = getDataStore({
-		storageAdapterFactory: () =>
-			require('../src/storage/adapter/IndexedDBAdapter').default,
+	let adapter: typeof Adapter;
+
+	const { DataStore, User, CompositePKParent } = getDataStore({
+		storageAdapterFactory: () => {
+			adapter = require('../src/storage/adapter/IndexedDBAdapter').default;
+			return adapter;
+		},
 	});
 
 	afterEach(async () => {
@@ -321,6 +327,45 @@ describe.only('IndexedDB benchmarks', () => {
 	};
 
 	/**
+	 * Saves a bunch of records to IndexedDB directly, bypassing DataStore.
+	 *
+	 * Used to load a lot of data very quickly, bypassing DataStore safety checks, and
+	 * performing all saves in a single transaction for maximum speed.
+	 *
+	 * Intended specifically for seeing benchmark data.
+	 *
+	 * @param size number of records to add
+	 * @param table the table to add to
+	 * @param build a function that accepts an Int (number of record to add) and returns
+	 * an instantiated record to save.
+	 */
+	const sideloadIDBData = async <T>(
+		size: number,
+		table: string,
+		build: (i: number) => T
+	) => {
+		await DataStore.start();
+		const db = (adapter as any).db;
+
+		const tx = db.transaction([`user_${table}`], 'readwrite');
+		const store = tx.objectStore(`user_${table}`);
+
+		async function save(item: T) {
+			await store.add(item);
+			return item;
+		}
+
+		const saves: Promise<any>[] = [];
+		for (let i = 0; i < size; i++) {
+			saves.push(save(build(i)));
+		}
+		await Promise.all(saves);
+
+		// should exist, even though TS doesn't believe it exists.
+		await tx.done;
+	};
+
+	/**
 	 * This test ensures fake indexeddb is giving us observably different performance on indexed
 	 * vs non-indexed queries, as well as demonstrate a baseline for how much of a difference we're
 	 * looking for.
@@ -334,13 +379,12 @@ describe.only('IndexedDB benchmarks', () => {
 		let user: User;
 
 		// seed the records
-		for (let i = 0; i < 50; i++) {
-			user = await DataStore.save(
-				new User({
-					name: `user ${i}`,
-				})
-			);
-		}
+		await sideloadIDBData(250, 'User', i => {
+			user = new User({
+				name: `user ${i}`,
+			});
+			return user;
+		});
 
 		// check timing of fetch byPk
 		const byPkTime = await benchmark(async () => {
@@ -369,14 +413,12 @@ describe.only('IndexedDB benchmarks', () => {
 		// as we seed records, we'll remember the last inserted user.
 		let user: User;
 
-		// seed the records
-		for (let i = 0; i < 50; i++) {
-			user = await DataStore.save(
-				new User({
-					name: `user ${i}`,
-				})
-			);
-		}
+		await sideloadIDBData(250, 'User', i => {
+			user = new User({
+				name: `user ${i}`,
+			});
+			return user;
+		});
 
 		// check timing of fetch byPk
 		const byPkTime = await benchmark(async () => {
@@ -397,6 +439,48 @@ describe.only('IndexedDB benchmarks', () => {
 		// something smaller and more realistic overall (like 1/8) because of the
 		// overhead of each loop, such as asserting on the results.
 		expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 2);
+	});
+
+	test('queries using `eq` against multi-field indexes vs non-indexed field are measurably faster', async () => {
+		// `id.eq()` should use an index, `name.eq()` should not.
+
+		// as we seed records, we'll remember the last inserted user.
+		let item: CompositePKParent;
+
+		await sideloadIDBData(250, 'CompositePKParent', i => {
+			item = new CompositePKParent({
+				customId: `id ${i}`,
+				content: `content ${i}`,
+			});
+			return item;
+		});
+
+		// check timing of fetch byPk
+		const byContentTime = await benchmark(async () => {
+			// `content` alone will not be able to use the index.
+			const fetched = await DataStore.query(CompositePKParent, i =>
+				i.content.eq(item.content)
+			);
+			expect(fetched).toBeDefined();
+		});
+
+		// check timing of fetch by non-indexed field (name)
+		const byPKEqTime = await benchmark(async () => {
+			const fetched = await DataStore.query(CompositePKParent, ({ and }) =>
+				and(i => [i.customId.eq(item.customId), i.content.eq(item.content)])
+			);
+			expect(fetched.length).toBe(1);
+		});
+
+		console.log({ byPKEqTime, byContentTime });
+
+		// clamp indexed queries on a small data-set to be less than 1/2
+		// of the runtime of their non-indexed equivalent.
+		//
+		// We're using a rather unimpressive 1/2 here instead of
+		// something smaller and more realistic overall (like 1/8) because of the
+		// overhead of each loop, such as asserting on the results.
+		expect(byPKEqTime / byContentTime).toBeLessThanOrEqual(1 / 2);
 	});
 
 	test.skip('deep joins are within time limits expected if indexes are being used using default PK', async () => {

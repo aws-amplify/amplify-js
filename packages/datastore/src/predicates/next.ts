@@ -391,6 +391,8 @@ export class GroupCondition {
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
 
+		// console.log({ groups, conditions });
+
 		for (const g of groups) {
 			const relatives = await g.fetch(
 				storage,
@@ -665,7 +667,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// next steps will be to add or(), and(), not(), and field.op() methods.
 	const link = {} as any;
 
-	registerPredicateInternals(baseCondition, link);
+	const baseQueryInternals = registerPredicateInternals(baseCondition, link);
 
 	const copyLink = () => {
 		const [query, newTail] = baseCondition.copy(tailCondition);
@@ -763,18 +765,19 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							[operator]: (...operands: any[]) => {
 								// build off a fresh copy of the existing `link`, just in case
 								// the same link is being used elsewhere by the customer.
-								const { query, newTail } = copyLink();
+								// const { query, newTail } = copyLink();
 
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
-								newTail?.operands.push(
+								tailCondition?.operands.push(
 									new FieldCondition(fieldName, operator, operands)
 								);
 
 								// A `FinalModelPredicate`.
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 								// or query storage: `.__query.fetch(storage)`.
-								return registerPredicateInternals(query);
+								// return registerPredicateInternals(query);
+								return baseQueryInternals;
 							},
 						};
 					}, {});
