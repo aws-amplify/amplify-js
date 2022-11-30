@@ -8,12 +8,12 @@ import { MachineState } from './machineState';
 /**
  * Base type for a Machine's context
  */
-export type MachineContext = Record<string, unknown>;
+export type MachineContext = object;
 
 /**
  * Base type for a MachineEvent's payload
  */
-export type MachineEventPayload = Record<string, unknown>;
+export type MachineEventPayload = object;
 
 /**
  * The type accepted by Machine's send method
@@ -26,7 +26,7 @@ export type MachineEventPayload = Record<string, unknown>;
  */
 export type MachineEvent<PayloadType extends MachineEventPayload> = {
 	name: string;
-	payload?: PayloadType;
+	payload: PayloadType;
 	restingStates: string[];
 	// completer?: Completer<ContextType>;
 	// id?: string;

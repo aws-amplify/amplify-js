@@ -26,11 +26,18 @@ export class Machine<ContextType extends MachineContext> {
 	public hubChannel: string;
 	logger: Logger;
 	initial?: MachineState<ContextType, MachineEventPayload>;
-	private _queue: MachineEvent<MachineEventPayload>[] = [];
+	// private _queue: MachineEvent<MachineEventPayload>[] = [];
+
+	private _queue: String[];
+
 	private _queueActive: boolean = false;
 	private _transitions: StateTransition<ContextType, any>[];
-	// private _transitionObservable: Observable<StateTransition<ContextType, any>>;
-	// private _transitionObserver: ZenObservable.Subscription;
+	private _transitionObservable: Observable<
+		MachineEvent<MachineEventPayload>[]
+	>;
+	private _transitionObserver: ZenObservable.Subscription;
+
+	private _observer: Observable<string>;
 
 	constructor(params: StateMachineParams<ContextType>) {
 		this.name = params.name;
@@ -42,8 +49,7 @@ export class Machine<ContextType extends MachineContext> {
 		this.hubChannel = `${this.name}-channel`;
 		this.logger = new Logger(this.name);
 		this._transitions = [];
-		// this._transitionObservable = Observable.from(this._transitions);
-		// this._transitionObserver = this._transitionObservable.subscribe({
+		// this._transitionObserver = Observable.of(this._queue).subscribe({
 		// 	next(x) {
 		// 		this._queueProcessor();
 		// 	},
@@ -54,6 +60,17 @@ export class Machine<ContextType extends MachineContext> {
 		// 		console.log('Finished');
 		// 	},
 		// });
+
+		// this._transitionObserver = Observable.from(this._queue).subscribe(() => {
+		// 	this._queueProcessor();
+		// });
+
+		this.hub.listen('auth-event-added', data => {
+			/// add to queue
+
+			/// then conditionally call processing function
+			console.log('data', data);
+		});
 	}
 
 	/**
@@ -65,12 +82,17 @@ export class Machine<ContextType extends MachineContext> {
 	async send<PayloadType extends MachineEventPayload>(
 		event: MachineEvent<PayloadType>
 	) {
-		this._queue.push(event);
-		if (!this._queueActive) {
-			this._queueActive = true;
-			this._queueProcessor();
-		}
-		return;
+		this.hub.dispatch('auth-event-added', {
+			event: 'auth-event-added',
+			data: {
+				event,
+			},
+		});
+		// if (!this._queueActive) {
+		// 	this._queueActive = true;
+		// 	this._queueProcessor();
+		// }
+		// return;
 	}
 
 	private async _queueProcessor() {
@@ -80,7 +102,7 @@ export class Machine<ContextType extends MachineContext> {
 			this.hub.listen(this.hubChannel, data => {
 				return this._queueProcessor();
 			});
-			this._processEvent(currentEvent!);
+			// this._processEvent(currentEvent!);
 		} else {
 			this._queueActive = false;
 			// this._transitionObserver.unsubscribe();
