@@ -407,6 +407,12 @@ class IndexedDBAdapter implements Adapter {
 			modelConstructor
 		) as NAMESPACES;
 
+		// console.log('query', {
+		// 	modelConstructor,
+		// 	predicate,
+		// 	pagination,
+		// });
+
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
 		const keyPath = getIndexKeys(
@@ -481,18 +487,113 @@ class IndexedDBAdapter implements Adapter {
 		return keyValues.length === keyPath.length ? keyValues : undefined;
 	}
 
-	private matchingIndex(
+	private matchingIndexQueries<T extends PersistentModel>(
 		storeName: string,
-		fieldName: string,
+		predicates: PredicateObject<T>[],
 		transaction: idb.IDBPTransaction<unknown, [string]>
 	) {
+		// could be expanded later to include `exec()` and a `cardinality` estimate?
+		const queries: (() => Promise<T[]>)[] = [];
+
+		const predicateIndex = new Map<string, PredicateObject<T>>();
+		for (const predicate of predicates) {
+			predicateIndex.set(String(predicate.field), predicate);
+		}
+
 		const store = transaction.objectStore(storeName);
 		for (const name of store.indexNames) {
 			const idx = store.index(name);
-			if (idx.keyPath === fieldName) {
-				return idx;
+			const keypath = Array.isArray(idx.keyPath) ? idx.keyPath : [idx.keyPath];
+			const matchingPredicateValues: string[] = [];
+
+			for (const field of keypath) {
+				const p = predicateIndex.get(field);
+				if (p) {
+					matchingPredicateValues.push(String(p.operand));
+				} else {
+					break;
+				}
+			}
+
+			// if we have a matchind predicate field for each component of this index,
+			// we can build a query for it. otherwise, we can't.
+			if (matchingPredicateValues.length === keypath.length) {
+				// re-create a transaction, beacuse the transaction used to fetch the
+				// indexes may no longer be active.
+				queries.push(() =>
+					this.db
+						.transaction(storeName)
+						.objectStore(storeName)
+						.index(name)
+						.getAll(this.canonicalKeyPath(matchingPredicateValues))
+				);
 			}
 		}
+
+		return queries;
+	}
+
+	private async baseQueryIndex<T extends PersistentModel>(
+		storeName: string,
+		predicates: PredicatesGroup<T>
+	) {
+		let { predicates: predicateObjs, type } = predicates;
+
+		// the predicate objects we care about tend to be nested at least
+		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
+		// and these containers
+		// so, we unpack and/or groups until we find a group with more than 1
+		// child OR a child that is not a group (and is therefore a predicate "object").
+		while (
+			predicateObjs.length === 1 &&
+			isPredicateGroup(predicateObjs[0]) &&
+			(predicateObjs[0] as PredicatesGroup<T>).type !== 'not'
+		) {
+			type = (predicateObjs[0] as PredicatesGroup<T>).type;
+			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
+		}
+
+		// AFAIK, this will always be a homogenous group of predicate objects at this point.
+		// but, if that ever changes, this pulls out just the predicates from the list that
+		// are field-level predicate objects we can potentially smash against an index.
+		const fieldPredicates = predicateObjs.filter(
+			p => isPredicateObj(p) && p.operator === 'eq'
+		) as PredicateObject<T>[];
+
+		// EARLY RETURN: if we have an OR group and ALL child predicates are not
+		// field level `eq` predicate objects, we will not try to optimize any further
+		// for now. it's higher complexity than is worth tackling for now.
+		if (type === 'or' && predicateObjs.length > fieldPredicates.length) {
+			return {
+				groupType: null,
+				indexedQueries: [] as (() => Promise<T[]>)[],
+			};
+		}
+
+		// several sub-queries could occur here. explicitly start a txn here to avoid
+		// opening/closing multiple txns.
+		const txn = this.db.transaction(storeName);
+
+		// our potential indexes or lacks thereof.
+		// note that we're only optimizing for `eq` right now.
+		const indexedQueries = this.matchingIndexQueries(
+			storeName,
+			fieldPredicates,
+			txn
+		);
+
+		// Explicitly wait for txns from index queries to complete before proceding.
+		// This helps ensure IndexedDB is in a stable, ready state. Else, subseqeuent
+		// qeuries can sometimes appear to deadlock (at least in FakeIndexedDB).
+		await txn.done;
+
+		return {
+			// set `groupType` to `null` if we don't have any meaningful indexes
+			// to use at this point, to provide a clear signal to calling code to
+			// break out and just scan and filter.
+			groupType: indexedQueries.length > 0 ? type : null,
+			indexedQueries,
+		};
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
@@ -501,86 +602,36 @@ class IndexedDBAdapter implements Adapter {
 	) {
 		let { predicates: predicateObjs, type } = predicates;
 
-		// the predicate objects we care about tend to be nested at least
-		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
-		// so, we unpack and/or groups until we find a group with more than 1
-		// child OR a child that is not a group (and is therefore a predicate "object").
-		while (predicateObjs.length === 1 && isPredicateGroup(predicateObjs[0])) {
-			type = (predicateObjs[0] as PredicatesGroup<T>).type;
-			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
-		}
+		const { groupType, indexedQueries } = await this.baseQueryIndex(
+			storeName,
+			predicates
+		);
 
 		// where we'll accumulate candidate results, which will be filtered at the end.
 		let candidateResults: T[];
 
-		// AFAIK, this will always be a homogenous group of predicate objects at this point.
-		// but, if that ever changes, this pulls out just the predicates from the list that
-		// are field-level predicate objects we can potentially smash against an index.
-		const fieldPredicates = predicateObjs.filter(p =>
-			isPredicateObj(p)
-		) as PredicateObject<T>[];
-
-		// several sub-queries could occur here. explicitly start a txn here to avoid
-		// opening/closing multiple txns.
-		const txn = this.db.transaction(storeName);
-
-		// our potential indexes or lacks thereof.
-		const predicateIndexes = fieldPredicates.map(p => {
-			return {
-				predicate: p,
-				index: this.matchingIndex(storeName, String(p.field), txn),
-			};
-		});
-
-		// Explicitly wait for txns from index queries to complete before proceding.
-		// This helps ensure IndexedDB is in a stable, ready state. Else, subseqeuent
-		// qeuries can sometimes appear to deadlock (at least in FakeIndexedDB).
-		await txn.done;
-
 		// semi-naive implementation:
-		if (type === 'and') {
+		if (groupType === 'and') {
 			// each condition must be satsified, we can form a base set with any
 			// ONE of those conditions and then filter.
-			const actualPredicateIndexes = predicateIndexes.filter(
-				i => i.index && i.predicate.operator === 'eq'
-			);
-
-			if (actualPredicateIndexes.length > 0) {
-				const predicateIndex = actualPredicateIndexes[0];
-				candidateResults = <T[]>(
-					await predicateIndex.index!.getAll(predicateIndex.predicate.operand)
-				);
-			} else {
-				// no usable indexes
-				candidateResults = <T[]>await this.getAll(storeName);
-			}
-		} else if (type === 'or') {
+			candidateResults = await indexedQueries[0]();
+		} else if (groupType === 'or') {
 			// NOTE: each condition implies a potentially distinct set. we only benefit
 			// from using indexes here if EVERY condition uses an index. if any one
 			// index requires a table scan, we gain nothing from the indexes.
 			// NOTE: results must be DISTINCT-ified if we leverage indexes.
-			if (
-				predicateIndexes.length > 0 &&
-				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
-			) {
-				const distinctResults = new Map<string, T>();
-				for (const predicateIndex of predicateIndexes) {
-					const resultGroup = <T[]>(
-						await predicateIndex.index!.getAll(predicateIndex.predicate.operand)
-					);
-					for (const item of resultGroup) {
-						// TODO: custom PK
-						distinctResults.set(item.id, item);
-					}
+			const distinctResults = new Map<string, T>();
+			for (const query of indexedQueries) {
+				const resultGroup = await query();
+				for (const item of resultGroup) {
+					// TODO: custom PK
+					distinctResults.set(item.id, item);
 				}
-
-				// we could conceivably check for special conditions and return early here.
-				// but, this is simpler and has not yet had a measurable performance impact.
-				candidateResults = Array.from(distinctResults.values());
-			} else {
-				// either no usable indexes or not all conditions can use one.
-				candidateResults = <T[]>await this.getAll(storeName);
 			}
+
+			// we could conceivably check for special conditions and return early here.
+			// but, this is simpler and has not yet had a measurable performance impact.
+			candidateResults = Array.from(distinctResults.values());
 		} else {
 			// nothing intelligent we can do with `not` groups unless or until we start
 			// smashing comparison operators against indexes -- at which point we could

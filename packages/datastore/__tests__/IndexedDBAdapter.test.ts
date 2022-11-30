@@ -177,7 +177,10 @@ describe('IndexedDBAdapter tests', () => {
 		let comment1Id: string;
 
 		beforeEach(async () => {
-			({ DataStore, User, Profile, Post, Comment } = getDataStore());
+			({ DataStore, User, Profile, Post, Comment } = getDataStore({
+				storageAdapterFactory: () =>
+					require('../src/storage/adapter/IndexedDBAdapter').default,
+			}));
 
 			({ id: profile1Id } = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
@@ -252,7 +255,10 @@ describe('IndexedDBAdapter tests', () => {
 		let profile: Profile;
 
 		beforeEach(async () => {
-			({ DataStore, User, Profile } = getDataStore());
+			({ DataStore, User, Profile } = getDataStore({
+				storageAdapterFactory: () =>
+					require('../src/storage/adapter/IndexedDBAdapter').default,
+			}));
 
 			profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
@@ -295,14 +301,17 @@ describe('IndexedDBAdapter tests', () => {
  * business is going on. But, they should be kept to a minimum as they consume notable
  * wall-clock time.
  */
-describe('IndexedDB benchmarks', () => {
-	const { DataStore, User } = getDataStore();
+describe.only('IndexedDB benchmarks', () => {
+	const { DataStore, User } = getDataStore({
+		storageAdapterFactory: () =>
+			require('../src/storage/adapter/IndexedDBAdapter').default,
+	});
 
 	afterEach(async () => {
 		await DataStore.clear();
 	});
 
-	const benchmark = async (f, iterations = 1000) => {
+	const benchmark = async (f, iterations = 100) => {
 		const start = new Date();
 		for (let i = 0; i < iterations; i++) {
 			await f();
@@ -316,17 +325,16 @@ describe('IndexedDB benchmarks', () => {
 	 * vs non-indexed queries, as well as demonstrate a baseline for how much of a difference we're
 	 * looking for.
 	 */
-	test('[SANITY CHECK] queries against key vs key-key fields yield measurably different performance', async () => {
+	test('[SANITY CHECK] PK queries against measurably faster than queries against non-key fields', async () => {
 		// get by PK using the `byId` index is sable behavior, AFAIK. so, we'll benchmark against that.
 		// saving records is very heavy. to stay within test time limits, we'll seed a "small" number of
 		// records a query "many" times.
 
-		// as we seed records, remember the *last* user, so that scans and queries work "reasonably hard"
-		// to find it.
+		// as we seed records, we'll remember the last inserted user.
 		let user: User;
 
 		// seed the records
-		for (let i = 0; i < 250; i++) {
+		for (let i = 0; i < 50; i++) {
 			user = await DataStore.save(
 				new User({
 					name: `user ${i}`,
@@ -353,5 +361,53 @@ describe('IndexedDB benchmarks', () => {
 		// something smaller and more realistic overall (like 1/8) because of the
 		// overhead of each loop, such as asserting on the results.
 		expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 2);
+	});
+
+	test('queries using `eq` against indexed vs non-indexed field are measurably faster', async () => {
+		// `id.eq()` should use an index, `name.eq()` should not.
+
+		// as we seed records, we'll remember the last inserted user.
+		let user: User;
+
+		// seed the records
+		for (let i = 0; i < 50; i++) {
+			user = await DataStore.save(
+				new User({
+					name: `user ${i}`,
+				})
+			);
+		}
+
+		// check timing of fetch byPk
+		const byPkTime = await benchmark(async () => {
+			const fetched = await DataStore.query(User, u => u.id.eq(user.id));
+			expect(fetched).toBeDefined();
+		});
+
+		// check timing of fetch by non-indexed field (name)
+		const byNameTime = await benchmark(async () => {
+			const fetched = await DataStore.query(User, u => u.name.eq(user.name));
+			expect(fetched.length).toBe(1);
+		});
+
+		// clamp indexed queries on a small data-set to be less than 1/2
+		// of the runtime of their non-indexed equivalent.
+		//
+		// We're using a rather unimpressive 1/2 here instead of
+		// something smaller and more realistic overall (like 1/8) because of the
+		// overhead of each loop, such as asserting on the results.
+		expect(byPkTime / byNameTime).toBeLessThanOrEqual(1 / 2);
+	});
+
+	test.skip('deep joins are within time limits expected if indexes are being used using default PK', async () => {
+		// e.g., a multi-layer join that would have to scan millions of records
+		// if indexes were not being leveraged.
+		throw new Error('Not yet implemented.');
+	});
+
+	test.skip('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
+		// e.g., a multi-layer join that would have to scan millions of records
+		// if indexes were not being leveraged.
+		throw new Error('Not yet implemented.');
 	});
 });
