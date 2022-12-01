@@ -53,6 +53,7 @@ import {
 	CognitoRefreshToken,
 	CognitoAccessToken,
 	NodeCallback,
+	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -1425,9 +1426,12 @@ export class AuthClass {
 					attributeList,
 					(err, result) => {
 						if (err) {
+							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
-							return resolve(result);
+							const attrs = this.createUpdateAttributesResultList(attributes, result.CodeDeliveryDetailsList);
+							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
+							return resolve('SUCCESS');
 						}
 					},
 					clientMetadata
@@ -1435,6 +1439,42 @@ export class AuthClass {
 			});
 		});
 	}
+
+	private createUpdateAttributesResultList(
+		attributes: object, 
+		codeDeliveryDetailsList?: CodeDeliveryDetails []
+	): object {
+		const attrs = {};
+		Object.keys(attributes).map(key => {
+			attrs[key] = {
+				isUpdated: true
+			}
+			if (codeDeliveryDetailsList) {
+				const codeDeliveryDetails = this.findCodeDeliveryDetails(key, codeDeliveryDetailsList);
+				if (codeDeliveryDetails) {
+					attrs[key].isUpdated = false;
+					attrs[key].codeDeliveryDetails = codeDeliveryDetails;
+				}
+			}
+
+		});
+		return attrs;
+	}
+
+	private findCodeDeliveryDetails(
+		attributeName: string, 
+		codeDeliveryDetailsList: CodeDeliveryDetails[]
+	): CodeDeliveryDetails | null {
+		let details;
+		codeDeliveryDetailsList.forEach(value => {
+			if (value.AttributeName === attributeName) {
+				details = value;
+				return
+			}
+		})
+		return details;
+	}
+
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object
