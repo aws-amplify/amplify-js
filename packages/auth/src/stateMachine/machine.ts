@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Logger } from '@aws-amplify/core';
-// TODO: Import from core once library build is resolved
-import { Completer } from './completer';
 import { MachineState } from './MachineState';
-import { Observable } from 'zen-observable-ts';
 import { v4 as uuid } from 'uuid';
 import {
 	MachineContext,
@@ -13,63 +10,42 @@ import {
 	MachineEvent,
 	StateMachineParams,
 	StateTransition,
+	CurrentStateAndContext,
 } from './types';
 import { StateMachineHubEventName } from '../constants/StateMachineHubEventName';
-import { HubClass } from '@aws-amplify/core/lib-esm/Hub';
+// TODO: Import from core once library build is resolved
+import { HubClass } from '@aws-amplify/core/lib/Hub';
 
 export class Machine<ContextType extends MachineContext> {
-	name: string;
-	states: Map<string, MachineState<ContextType, MachineEventPayload>>;
-	context: ContextType;
-	current: MachineState<ContextType, MachineEventPayload>;
-	hub: HubClass;
+	private _name: string;
+	private _states: Map<string, MachineState<ContextType, MachineEventPayload>>;
+	private _context: ContextType;
+	private _current: MachineState<ContextType, MachineEventPayload>;
+	private _logger: Logger;
+	public hub: HubClass;
 	public hubChannel: string;
-	logger: Logger;
-	initial?: MachineState<ContextType, MachineEventPayload>;
-	// private _queue: MachineEvent<MachineEventPayload>[] = [];
-
-	private _queue: String[];
-
-	private _queueActive: boolean = false;
-	private _transitions: StateTransition<ContextType, any>[];
-	private _transitionObservable: Observable<
-		MachineEvent<MachineEventPayload>[]
-	>;
-	private _transitionObserver: ZenObservable.Subscription;
-
-	private _observer: Observable<string>;
+	private _eventChannel: string;
+	private _queue: MachineEvent<MachineEventPayload>[];
+	private _queueIdle: boolean = true;
 
 	constructor(params: StateMachineParams<ContextType>) {
-		this.name = params.name;
-		this.states = this._createStateMap(params.states);
-		this.context = params.context;
+		this._name = params.name;
+		this._states = this._createStateMap(params.states);
+		this._context = params.context;
 		this._queue = [];
-		this.current = this.states.get(params.initial) || this.states[0];
+		this._current = this._states.get(params.initial) || this._states[0];
 		this.hub = new HubClass('auth-state-machine');
-		this.hubChannel = `${this.name}-channel`;
-		this.logger = new Logger(this.name);
-		this._transitions = [];
-		// this._transitionObserver = Observable.of(this._queue).subscribe({
-		// 	next(x) {
-		// 		this._queueProcessor();
-		// 	},
-		// 	error(err) {
-		// 		console.log(`Finished with error: ${err}`);
-		// 	},
-		// 	complete() {
-		// 		console.log('Finished');
-		// 	},
-		// });
+		this.hubChannel = `${this._name}-channel`;
+		this._eventChannel = `${this._name}-event-channel`;
 
-		// this._transitionObserver = Observable.from(this._queue).subscribe(() => {
-		// 	this._queueProcessor();
-		// });
+		this._logger = new Logger(this._name);
 
-		this.hub.listen('auth-event-added', data => {
-			/// add to queue
-
-			/// then conditionally call processing function
-			console.log('data', data);
+		this.hub.listen(this._eventChannel, hubEvent => {
+			this._queue.push(hubEvent.payload.data.event);
+			if (this._queueIdle) {
+				this._queueIdle = false;
+				this._queueProcessor();
+			}
 		});
 	}
 
@@ -82,38 +58,79 @@ export class Machine<ContextType extends MachineContext> {
 	async send<PayloadType extends MachineEventPayload>(
 		event: MachineEvent<PayloadType>
 	) {
-		this.hub.dispatch('auth-event-added', {
-			event: 'auth-event-added',
-			data: {
-				event,
-			},
+		event.id = uuid();
+		this.hub.dispatch(this._eventChannel, {
+			event: StateMachineHubEventName.AUTH_EVENT_ADDED,
+			data: { event },
 		});
-		// if (!this._queueActive) {
-		// 	this._queueActive = true;
-		// 	this._queueProcessor();
-		// }
-		// return;
+	}
+
+	/**
+	 * Returns the current state after previously queued events have been flushed
+	 */
+	async getCurrentState(): Promise<CurrentStateAndContext<ContextType, any>> {
+		let resolver: (
+			value:
+				| CurrentStateAndContext<ContextType, any>
+				| PromiseLike<CurrentStateAndContext<ContextType, any>>
+		) => void;
+		const awaiter = new Promise<CurrentStateAndContext<ContextType, any>>(
+			(resolve, _) => {
+				resolver = resolve;
+			}
+		);
+		const event: MachineEvent<MachineEventPayload> = {
+			name: 'current-state-request',
+			id: uuid(),
+			payload: {},
+			restingStates: [],
+		};
+
+		let cancelToken = this.hub.listen(this._eventChannel, hubEvent => {
+			if (
+				hubEvent.payload.data.event.id === event!.id &&
+				hubEvent.source === StateMachineHubEventName.CURRENT_STATE_REQUESTED
+			) {
+				// TODO: deep copy?
+				resolver({ currentState: this._current, context: this._context });
+				cancelToken();
+			}
+		});
+
+		this.hub.dispatch(
+			this._eventChannel,
+			{
+				event: StateMachineHubEventName.CURRENT_STATE_REQUESTED,
+				data: { event },
+			},
+			StateMachineHubEventName.CURRENT_STATE_REQUESTED
+		);
+		return await awaiter;
 	}
 
 	private async _queueProcessor() {
 		if (this._queue.length > 0) {
 			let currentEvent = this._queue.shift();
-			let queueProcessor = this._queueProcessor;
-			this.hub.listen(this.hubChannel, data => {
-				return this._queueProcessor();
+
+			let cancelToken = this.hub.listen(this.hubChannel, hubEvent => {
+				if (
+					hubEvent.payload.data.event &&
+					hubEvent.payload.data.event.id == currentEvent!.id
+				) {
+					this._queueProcessor();
+					cancelToken();
+				}
 			});
-			// this._processEvent(currentEvent!);
+			this._processEvent(currentEvent!);
 		} else {
-			this._queueActive = false;
-			// this._transitionObserver.unsubscribe();
+			this._queueIdle = true;
 		}
 	}
 
 	protected async _processEvent(
 		event: MachineEvent<MachineEventPayload>
 	): Promise<void> {
-		const validTransition = this.current.findTransition(event);
-		this._transitions.push(validTransition!);
+		const validTransition = this._current.findTransition(event);
 		if (!validTransition) {
 			this._handleFailure(StateMachineHubEventName.NULL_TRANSITION, event);
 			return;
@@ -124,13 +141,13 @@ export class Machine<ContextType extends MachineContext> {
 			return;
 		}
 
-		const nextState = this.states.get(validTransition.nextState);
+		const nextState = this._states.get(validTransition.nextState);
 		if (!nextState) {
 			this._handleFailure(StateMachineHubEventName.NEXT_STATE_NOT_FOUND, event);
 			return;
 		}
 
-		this.current = nextState;
+		this._current = nextState;
 
 		await this._enterState(validTransition, event!);
 	}
@@ -142,16 +159,14 @@ export class Machine<ContextType extends MachineContext> {
 		this._invokeReducers<PayloadType>(transition, event);
 
 		this._invokeActions<PayloadType>(transition, event);
-		if (this.current?.invocation?.invokedMachine) {
-			this.current.invocation.invokedMachine.send(
-				this.current.invocation.event!
+		if (this._current?.invocation?.invokedMachine) {
+			this._current.invocation.invokedMachine.send(
+				this._current.invocation.event!
 			);
-		} else if (this.current?.invocation?.invokedPromise) {
-			await this.current.invocation.invokedPromise(this.context, event);
+		} else if (this._current?.invocation?.invokedPromise) {
+			await this._current.invocation.invokedPromise(this._context, event);
 		}
-
-		// _broadCastTransition after _invokeReducers (for updated context)
-		this._broadCastTransition<PayloadType>(event, transition);
+		this._broadCastTransition<PayloadType>(transition, event);
 	}
 
 	private _checkGuards<PayloadType extends MachineEventPayload>(
@@ -160,7 +175,7 @@ export class Machine<ContextType extends MachineContext> {
 	): boolean {
 		if (!transition.guards) return true;
 		for (let g = 0; g < transition.guards.length; g++) {
-			if (!transition.guards[g](this.context, event)) {
+			if (!transition.guards[g](this._context, event)) {
 				return false;
 			}
 		}
@@ -173,8 +188,8 @@ export class Machine<ContextType extends MachineContext> {
 	): void {
 		if (!transition.reducers) return;
 		for (let r = 0; r < transition.reducers.length; r++) {
-			this.context = transition.reducers[r](
-				this._copyContext(this.context),
+			this._context = transition.reducers[r](
+				this._copyContext(this._context),
 				event
 			);
 		}
@@ -186,7 +201,7 @@ export class Machine<ContextType extends MachineContext> {
 	): Promise<void> {
 		if (!transition.actions) return;
 		for (let r = 0; r < transition.actions.length; r++) {
-			transition.actions[r](this.context, event);
+			transition.actions[r](this._context, event);
 		}
 	}
 
@@ -201,21 +216,21 @@ export class Machine<ContextType extends MachineContext> {
 	}
 
 	private _broadCastTransition<PayloadType extends MachineEventPayload>(
-		event: MachineEvent<PayloadType>,
-		transition: StateTransition<ContextType, PayloadType>
+		transition: StateTransition<ContextType, PayloadType>,
+		event: MachineEvent<PayloadType>
 	): void {
 		this.hub.dispatch(
 			this.hubChannel,
 			{
 				event: StateMachineHubEventName.STATE_TRANSITION,
 				data: {
-					state: this.current?.name,
-					context: this.context,
+					state: this._current?.name,
+					context: this._context,
 					transition,
 					event,
 				},
 			},
-			this.name
+			this._name
 		);
 	}
 
@@ -229,12 +244,12 @@ export class Machine<ContextType extends MachineContext> {
 			{
 				event: msg,
 				data: {
-					state: this.current?.name,
-					context: this.context,
+					state: this._current?.name,
+					context: this._context,
 					event,
 				},
 			},
-			this.name
+			this._name
 		);
 	}
 

@@ -59,9 +59,10 @@ describe('Nested state machine persisted actor tests...', () => {
 		});
 	});
 
-	test('...the child SM can be instantiated on a parent machine context', () => {
-		expect(parentMachine?.context.actor).toBeTruthy();
-		expect(parentMachine?.context.actor?.current).toBeTruthy();
+	test('...the child SM can be instantiated on a parent machine context', async () => {
+		const currentStateAndContext = await parentMachine?.getCurrentState();
+
+		expect(currentStateAndContext?.context.actor).toBeTruthy();
 	});
 
 	test('...parent can send an event to the child', async () => {

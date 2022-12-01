@@ -29,22 +29,25 @@ export type MachineEvent<PayloadType extends MachineEventPayload> = {
 	payload: PayloadType;
 	restingStates: string[];
 	// completer?: Completer<ContextType>;
-	// id?: string;
+	id?: string;
 };
 
 /**
- * A wrapper for the MachineEvent when it is queued
+ * The type accepted by Machine's send method
  * @typeParam PayloadType - The type of the Event's payload
- * @param event - The underlying event to be enqueued
- * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
+ * @typeParam ContextType - The type of the target Machine's context
+ * @param name - The event name; used when matching a transition
+ * @param payload - The event payload
  * @param restingStates - The state names of the underlying machine which, when reached, will allow for the event to be dequeued
  * @param completer - A promise that will resolve when a restingState is reached
  */
-// export type QueuedMachineEvent<ContextType extends MachineContext> = {
-// 	event: MachineEvent<ContextType, MachineEventPayload>;
-// 	restingStates: string[];
-// 	// completer?: Completer<ContextType>;
-// };
+export type CurrentStateAndContext<
+	ContextType extends MachineContext,
+	PayloadType extends MachineEventPayload
+> = {
+	currentState: MachineState<ContextType, PayloadType>;
+	context: ContextType;
+};
 
 /**
  * The type accepted by the Machine constructor
