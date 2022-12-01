@@ -133,11 +133,13 @@ describe('Credentials test', () => {
 			});
 
 			fromCognitoIdentity.mockImplementation(params => {
-				return {};
+				return async () => {
+					return {};
+				};
 			});
 		});
 
-		test.skip('should use identityPoolRegion param for credentials for federation', async () => {
+		test('should use identityPoolRegion param for credentials for federation', async () => {
 			expect.assertions(2);
 
 			const credentials = new Credentials(null);
@@ -155,13 +157,20 @@ describe('Credentials test', () => {
 				identity_id: '123',
 			});
 
+			console.log('YYYY');
+
 			expect(CognitoIdentityClient).toHaveBeenCalledWith(
 				expect.objectContaining({ region: identityPoolRegion })
 			);
 
-			expect(GetIdCommand).toBeCalledWith({
-				IdentityPoolId: identityPoolId,
-			});
+			expect(fromCognitoIdentity).toBeCalledWith(
+				expect.objectContaining({
+					identityId: '123',
+					logins: {
+						'accounts.google.com': 'token',
+					},
+				})
+			);
 		});
 
 		test('should use identityPoolRegion param for credentials from session', async () => {
