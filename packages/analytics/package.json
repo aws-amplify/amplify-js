@@ -1,16 +1,13 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "5.2.18",
+	"version": "6.0.4",
 	"description": "Analytics category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"sideEffects": [
-		"./src/Analytics.ts",
 		"./lib/Analytics.js",
-		"./lib-esm/Analytics.js",
-		"./dist/aws-amplify-analytics.js",
-		"./dist/aws-amplify-analytics.min.js"
+		"./lib-esm/Analytics.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -26,7 +23,8 @@
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 69.26"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js",
@@ -42,15 +40,21 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
 	"dependencies": {
-		"@aws-amplify/cache": "4.0.53",
-		"@aws-amplify/core": "4.7.2",
+		"@aws-amplify/cache": "5.0.4",
+		"@aws-amplify/core": "5.0.4",
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",
 		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
+		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
 	},
 	"jest": {

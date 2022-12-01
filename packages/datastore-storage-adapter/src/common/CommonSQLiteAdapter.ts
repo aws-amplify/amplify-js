@@ -17,9 +17,9 @@ import {
 	ModelSortPredicateCreator,
 	InternalSchema,
 	isPredicateObj,
-	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
+	NAMESPACES,
 	OpType,
 	PaginationInput,
 	PersistentModel,
@@ -29,7 +29,11 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase, ParameterizedStatement } from './types';
+import {
+	CommonSQLiteDatabase,
+	ParameterizedStatement,
+	ModelInstanceMetadataWithId,
+} from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -57,7 +61,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
@@ -178,72 +182,17 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const {
-				fieldName,
-				modelName: tableName,
-				targetName,
-				relationType,
-			} = relation;
-
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				tableName
-			);
-
-			// TODO: use SQL JOIN instead
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						const getByfield = recordItem[targetName] ? targetName : fieldName;
-						if (!recordItem[getByfield]) break;
-
-						const [queryStatement, params] = queryByIdStatement(
-							recordItem[getByfield],
-							tableName
-						);
-
-						const connectionRecord = await this.db.get(queryStatement, params);
-
-						recordItem[fieldName] =
-							connectionRecord &&
-							this.modelInstanceCreator(modelConstructor, connectionRecord);
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const [queryStatement, params] = queryByIdStatement(
-								recordItem[targetName],
-								tableName
-							);
-							const connectionRecord = await this.db.get(
-								queryStatement,
-								params
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					const _: never = relationType as never;
-					throw new Error(`invalid relation type ${relationType}`);
-					break;
+		// Remove related-model fields. They're all `null` in the database,
+		// and any that happen to be required will result in a false validation
+		// error when DataStore attempts to initialize with `null`.
+		// These fields aren't actually needed here. DataStore will use the FK's
+		// from the schema model.
+		return records.map(record => {
+			for (const r of relations) {
+				delete record[r.fieldName];
 			}
-		}
-
-		return records.map(record =>
-			this.modelInstanceCreator(modelConstructor, record)
-		);
+			return this.modelInstanceCreator(modelConstructor, record);
+		});
 	}
 
 	async query<T extends PersistentModel>(
@@ -407,7 +356,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadataWithId[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
 		const result: [T, OpType][] = [];

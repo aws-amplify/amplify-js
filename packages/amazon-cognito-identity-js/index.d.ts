@@ -134,7 +134,8 @@ declare module 'amazon-cognito-identity-js' {
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
-			callback: NodeCallback<Error, 'SUCCESS'>
+			callback: NodeCallback<Error, 'SUCCESS'>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public forgotPassword(
 			callbacks: {
@@ -233,7 +234,8 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: string) => void | null;
-			}
+			},
+			clientMetadata?: ClientMetadata
 		): void;
 		public deleteUser(callback: NodeCallback<Error, string>): void;
 		public enableMFA(callback: NodeCallback<Error, string>): void;
@@ -333,6 +335,7 @@ declare module 'amazon-cognito-identity-js' {
 		);
 
 		public getUserPoolId(): string;
+		public getUserPoolName(): string;
 		public getClientId(): string;
 
 		public signUp(

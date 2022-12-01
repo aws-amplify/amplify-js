@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DB versions migration Migration from v1 to v2: v2-schema 1`] = `
+exports[`DB versions migration Migration from v1 to v3: v3-schema 1`] = `
 Object {
   "data": Object {
     "data": Array [
@@ -27,6 +27,11 @@ Object {
         "inbound": false,
         "rows": Array [],
         "tableName": "sync_MutationEvent",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Album",
       },
       Object {
         "inbound": false,
@@ -410,6 +415,21 @@ Object {
       Object {
         "inbound": false,
         "rows": Array [],
+        "tableName": "user_Editor",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Forum",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_ForumEditorJoin",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
         "tableName": "user_Person",
       },
       Object {
@@ -465,59 +485,109 @@ Object {
         "rows": Array [],
         "tableName": "user_PostAuthorJoin",
       },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Project",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Song",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_Team",
+      },
     ],
     "databaseName": "amplify-datastore",
-    "databaseVersion": 0.2,
+    "databaseVersion": 0.3,
     "tables": Array [
       Object {
         "name": "datastore_Setting",
         "rowCount": 1,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "sync_ModelMetadata",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "sync_MutationEvent",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Album",
+        "rowCount": 0,
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Author",
         "rowCount": 2,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Blog",
         "rowCount": 6,
-        "schema": "++,&id",
+        "schema": "++,[blogOwnerId],&[id]",
       },
       Object {
         "name": "user_BlogOwner",
         "rowCount": 9,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Comment",
         "rowCount": 0,
-        "schema": "++,&id,commentPostId",
+        "schema": "++,&[id],[commentPostId]",
+      },
+      Object {
+        "name": "user_Editor",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Forum",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_ForumEditorJoin",
+        "rowCount": 0,
+        "schema": "++,&[id],[editorID],[editorID+forumID],[forumID],[forumID+editorID]",
       },
       Object {
         "name": "user_Person",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Post",
         "rowCount": 2,
-        "schema": "++,&id",
+        "schema": "++,&[id],[postBlogId],[referencePostId]",
       },
       Object {
         "name": "user_PostAuthorJoin",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,[authorId],&[id],[postId]",
+      },
+      Object {
+        "name": "user_Project",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Song",
+        "rowCount": 0,
+        "schema": "++,&[id]",
+      },
+      Object {
+        "name": "user_Team",
+        "rowCount": 0,
+        "schema": "++,&[id]",
       },
     ],
   },

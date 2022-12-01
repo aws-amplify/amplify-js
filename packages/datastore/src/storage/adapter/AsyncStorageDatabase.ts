@@ -6,7 +6,11 @@ import {
 	PersistentModel,
 	QueryOne,
 } from '../../types';
-import { monotonicUlidFactory } from '../../util';
+import {
+	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
+	indexNameFromKeys,
+	monotonicUlidFactory,
+} from '../../util';
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -23,6 +27,11 @@ class AsyncStorageDatabase {
 
 	private storage = createInMemoryStore();
 
+	/**
+	 * Collection index is map of stores (i.e. sync, metadata, mutation event, and data)
+	 * @param storeName {string} - Name of the store
+	 * @returns Map of ulid->id
+	 */
 	private getCollectionIndex(storeName: string) {
 		if (!this._collectionInMemoryIndex.has(storeName)) {
 			this._collectionInMemoryIndex.set(storeName, new Map());
@@ -31,12 +40,17 @@ class AsyncStorageDatabase {
 		return this._collectionInMemoryIndex.get(storeName);
 	}
 
+	/**
+	 * Return ULID for store if it exists, otherwise create a new one
+	 * @param storeName {string} - Name of the store
+	 * @returns ulid
+	 */
 	private getMonotonicFactory(storeName: string): ULID {
 		if (!monotonicFactoriesMap.has(storeName)) {
 			monotonicFactoriesMap.set(storeName, monotonicUlidFactory());
 		}
 
-		return monotonicFactoriesMap.get(storeName);
+		return monotonicFactoriesMap.get(storeName)!;
 	}
 
 	async init(): Promise<void> {
@@ -44,7 +58,7 @@ class AsyncStorageDatabase {
 
 		const allKeys: string[] = await this.storage.getAllKeys();
 
-		const keysForCollectionEntries = [];
+		const keysForCollectionEntries: string[] = [];
 
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
@@ -65,7 +79,7 @@ class AsyncStorageDatabase {
 
 						const item = await this.storage.getItem(oldKey);
 
-						await this.storage.setItem(newKey, item);
+						await this.storage.setItem(newKey, item!);
 						await this.storage.removeItem(oldKey);
 
 						ulid = newUlid;
@@ -73,7 +87,7 @@ class AsyncStorageDatabase {
 						ulid = ulidOrId;
 					}
 
-					this.getCollectionIndex(storeName).set(id, ulid);
+					this.getCollectionIndex(storeName)!.set(id, ulid);
 				} else if (recordType === COLLECTION) {
 					keysForCollectionEntries.push(key);
 				}
@@ -85,21 +99,32 @@ class AsyncStorageDatabase {
 		}
 	}
 
-	async save<T extends PersistentModel>(item: T, storeName: string) {
+	async save<T extends PersistentModel>(
+		item: T,
+		storeName: string,
+		keys: string[],
+		keyValuesPath: string
+	) {
+		const idxName = indexNameFromKeys(keys);
+
 		const ulid =
-			this.getCollectionIndex(storeName).get(item.id) ||
+			this.getCollectionIndex(storeName)?.get(idxName) ||
 			this.getMonotonicFactory(storeName)();
 
-		const itemKey = this.getKeyForItem(storeName, item.id, ulid);
+		// Retrieve db key for item
+		const itemKey = this.getKeyForItem(storeName, keyValuesPath, ulid);
 
-		this.getCollectionIndex(storeName).set(item.id, ulid);
+		// Set key in collection index
+		this.getCollectionIndex(storeName)?.set(keyValuesPath, ulid);
 
+		// Save item in db
 		await this.storage.setItem(itemKey, JSON.stringify(item));
 	}
 
 	async batchSave<T extends PersistentModel>(
 		storeName: string,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadata[],
+		keys: string[]
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {
 			return [];
@@ -107,17 +132,31 @@ class AsyncStorageDatabase {
 
 		const result: [T, OpType][] = [];
 
-		const collection = this.getCollectionIndex(storeName);
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const keysToDelete = new Set<string>();
 		const keysToSave = new Set<string>();
-		const allItemsKeys = [];
+		const allItemsKeys: string[] = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
-		for (const item of items) {
-			const { id, _deleted } = item;
-			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
 
-			const key = this.getKeyForItem(storeName, id, ulid);
+		/* Populate allItemKeys, keysToDelete, and keysToSave */
+		for (const item of items) {
+			// Extract keys from concatenated key path, map to item values
+			const keyValues = keys.map(field => item[field]);
+
+			const { _deleted } = item;
+
+			// If id is in the store, retrieve, otherwise generate new ULID
+			const ulid =
+				collection.get(keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR)) ||
+				this.getMonotonicFactory(storeName)();
+
+			// Generate the "longer key" for the item
+			const key = this.getKeyForItem(
+				storeName,
+				keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
+				ulid
+			);
 
 			allItemsKeys.push(key);
 			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
@@ -136,6 +175,7 @@ class AsyncStorageDatabase {
 			.filter(([, v]) => !!v)
 			.reduce((set, [k]) => set.add(k), new Set<string>());
 
+		// Delete
 		await new Promise((resolve, reject) => {
 			if (keysToDelete.size === 0) {
 				resolve();
@@ -144,9 +184,15 @@ class AsyncStorageDatabase {
 
 			const keysToDeleteArray = Array.from(keysToDelete);
 
-			keysToDeleteArray.forEach(key =>
-				collection.delete(itemsMap[key].model.id)
-			);
+			keysToDeleteArray.forEach(key => {
+				// key: full db key
+				// keys: PK and/or SK keys
+				const primaryKeyValues: string = keys
+					.map(field => itemsMap[key].model[field])
+					.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
+
+				collection.delete(primaryKeyValues);
+			});
 
 			this.storage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
 				if (errors && errors.length > 0) {
@@ -157,6 +203,7 @@ class AsyncStorageDatabase {
 			});
 		});
 
+		// Save
 		await new Promise((resolve, reject) => {
 			if (keysToSave.size === 0) {
 				resolve();
@@ -169,12 +216,14 @@ class AsyncStorageDatabase {
 			]);
 
 			keysToSave.forEach(key => {
-				const {
-					model: { id },
-					ulid,
-				} = itemsMap[key];
+				const { model, ulid } = itemsMap[key];
 
-				collection.set(id, ulid);
+				// Retrieve values from model, use as key for collection index
+				const keyValues: string = keys
+					.map(field => model[field])
+					.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
+
+				collection.set(keyValues, ulid);
 			});
 
 			this.storage.multiSet(entriesToSet, (errors?: Error[]) => {
@@ -201,32 +250,33 @@ class AsyncStorageDatabase {
 	}
 
 	async get<T extends PersistentModel>(
-		id: string,
+		keyValuePath: string,
 		storeName: string
 	): Promise<T> {
-		const ulid = this.getCollectionIndex(storeName).get(id);
-		const itemKey = this.getKeyForItem(storeName, id, ulid);
+		const ulid = this.getCollectionIndex(storeName)!.get(keyValuePath)!;
+		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
 		return record;
 	}
 
 	async getOne(firstOrLast: QueryOne, storeName: string) {
-		const collection = this.getCollectionIndex(storeName);
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const [itemId, ulid] =
 			firstOrLast === QueryOne.FIRST
 				? (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection) break; // Get first element of the set
-						return [id, ulid];
+						return [id!, ulid!];
 				  })()
 				: (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection); // Get last element of the set
-						return [id, ulid];
+						return [id!, ulid!];
 				  })();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);
+
 		const itemString = itemKey && (await this.storage.getItem(itemKey));
 
 		const result = itemString ? JSON.parse(itemString) || undefined : undefined;
@@ -242,7 +292,7 @@ class AsyncStorageDatabase {
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		const collection = this.getCollectionIndex(storeName);
+		const collection = this.getCollectionIndex(storeName)!;
 
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
@@ -272,11 +322,10 @@ class AsyncStorageDatabase {
 		return records;
 	}
 
-	async delete(id: string, storeName: string) {
-		const ulid = this.getCollectionIndex(storeName).get(id);
-		const itemKey = this.getKeyForItem(storeName, id, ulid);
-
-		this.getCollectionIndex(storeName).delete(id);
+	async delete(key: string, storeName: string) {
+		const ulid = this.getCollectionIndex(storeName)!.get(key)!;
+		const itemKey = this.getKeyForItem(storeName, key, ulid);
+		this.getCollectionIndex(storeName)!.delete(key);
 		await this.storage.removeItem(itemKey);
 	}
 

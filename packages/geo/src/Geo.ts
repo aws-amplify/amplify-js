@@ -1,19 +1,9 @@
-/*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	parseMobileHubConfig,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
@@ -35,6 +25,7 @@ import {
 	ListGeofenceOptions,
 	ListGeofenceResults,
 	DeleteGeofencesResults,
+	searchByPlaceIdOptions,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -112,7 +103,7 @@ export class GeoClass {
 
 		if (!config) return this._config;
 
-		const amplifyConfig = parseMobileHubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
 
 		this._pluggables.forEach(pluggable => {
@@ -162,6 +153,48 @@ export class GeoClass {
 
 		try {
 			return await prov.searchByText(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for search term suggestions based on input text
+	 * @param  {string} text - The text string that is to be search for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
+	 */
+	public async searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	) {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchForSuggestions(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Search for location by unique ID
+	 * @param  {string} placeId - Unique ID of the location that is to be searched for
+	 * @param  {searchByPlaceIdOptions} options? - Optional parameters to the search
+	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
+	 */
+	public async searchByPlaceId(
+		placeId: string,
+		options?: searchByPlaceIdOptions
+	) {
+		const providerName = DEFAULT_PROVIDER;
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.searchByPlaceId(placeId, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

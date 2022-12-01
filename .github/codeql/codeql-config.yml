@@ -1,0 +1,3 @@
+paths-ignore:
+  - docs
+  - packages/aws-amplify-react-native/docs

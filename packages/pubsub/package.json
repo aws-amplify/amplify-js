@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pubsub",
-  "version": "4.5.1",
+  "version": "5.0.4",
   "description": "Pubsub category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/PubSub.ts",
     "./lib/PubSub.js",
-    "./lib-esm/PubSub.js",
-    "./dist/aws-amplify-pubsub.min.js",
-    "./dist/aws-amplify-pubsub.js"
+    "./lib-esm/PubSub.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -28,7 +25,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.63"
   },
   "repository": {
     "type": "git",
@@ -44,12 +42,18 @@
     "@types/zen-observable": "^0.8.0",
     "cpx": "^1.5.0"
   },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/auth": "4.6.4",
-    "@aws-amplify/cache": "4.0.53",
-    "@aws-amplify/core": "4.7.2",
+    "@aws-amplify/auth": "5.0.4",
+    "@aws-amplify/cache": "5.0.4",
+    "@aws-amplify/core": "5.0.4",
     "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
+    "tslib": "^1.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
