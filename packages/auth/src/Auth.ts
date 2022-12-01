@@ -1448,7 +1448,7 @@ export class AuthClass {
 		Object.keys(attributes).map(key => {
 			attrs[key] = {
 				isUpdated: true
-			}
+			};
 			if (codeDeliveryDetailsList) {
 				const codeDeliveryDetails = this.findCodeDeliveryDetails(key, codeDeliveryDetailsList);
 				if (codeDeliveryDetails) {
@@ -1469,9 +1469,9 @@ export class AuthClass {
 		codeDeliveryDetailsList.forEach(value => {
 			if (value.AttributeName === attributeName) {
 				details = value;
-				return
+				return;
 			}
-		})
+		});
 		return details;
 	}
 
