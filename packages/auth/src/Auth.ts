@@ -1441,16 +1441,16 @@ export class AuthClass {
 	}
 
 	private createUpdateAttributesResultList(
-		attributes: object, 
+		attributes: Record<string, string>, 
 		codeDeliveryDetailsList?: CodeDeliveryDetails []
-	): object {
+	): Record<string, string> {
 		const attrs = {};
-		Object.keys(attributes).map(key => {
+		Object.keys(attributes).forEach(key => {
 			attrs[key] = {
 				isUpdated: true
 			};
 			if (codeDeliveryDetailsList) {
-				const codeDeliveryDetails = this.findCodeDeliveryDetails(key, codeDeliveryDetailsList);
+				const codeDeliveryDetails = codeDeliveryDetailsList.find(value => value.AttributeName === key);
 				if (codeDeliveryDetails) {
 					attrs[key].isUpdated = false;
 					attrs[key].codeDeliveryDetails = codeDeliveryDetails;
@@ -1459,20 +1459,6 @@ export class AuthClass {
 
 		});
 		return attrs;
-	}
-
-	private findCodeDeliveryDetails(
-		attributeName: string, 
-		codeDeliveryDetailsList: CodeDeliveryDetails[]
-	): CodeDeliveryDetails | null {
-		let details;
-		codeDeliveryDetailsList.forEach(value => {
-			if (value.AttributeName === attributeName) {
-				details = value;
-				return;
-			}
-		});
-		return details;
 	}
 
 	/**
