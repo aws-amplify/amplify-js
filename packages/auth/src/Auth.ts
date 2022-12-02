@@ -1429,7 +1429,9 @@ export class AuthClass {
 							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
-							const attrs = this.createUpdateAttributesResultList(attributes as Record<string, string>, result.CodeDeliveryDetailsList);
+							const attrs = this.createUpdateAttributesResultList(
+								attributes as Record<string, string>, result.CodeDeliveryDetailsList
+							);
 							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
 							return resolve('SUCCESS');
 						}
