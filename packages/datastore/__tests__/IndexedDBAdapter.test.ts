@@ -303,7 +303,7 @@ describe('IndexedDBAdapter tests', () => {
  * business is going on. But, they should be kept to a minimum as they consume notable
  * wall-clock time.
  */
-describe.only('IndexedDB benchmarks', () => {
+describe('IndexedDB benchmarks', () => {
 	let adapter: typeof Adapter;
 
 	const { DataStore, User, CompositePKParent } = getDataStore({
