@@ -444,6 +444,13 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
+          test_name: 'React Credentials Different Region'
+          framework: react
+          category: auth
+          sample_name: credentials-auth
+          spec: credentials-auth
+          browser: << parameters.browser >>
+      - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
