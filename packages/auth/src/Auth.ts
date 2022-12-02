@@ -197,11 +197,12 @@ export class AuthClass {
 
 		this.Credentials.configure({
 			mandatorySignIn,
-			region: identityPoolRegion || region,
+			region,
 			userPoolId,
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
+			identityPoolRegion
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
