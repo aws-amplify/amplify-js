@@ -659,6 +659,22 @@ export class GroupCondition {
 			}
 		}
 
+		// console.log(
+		// 	JSON.stringify(
+		// 		{
+		// 			self: this,
+		// 			breadcrumb,
+		// 			negate,
+		// 			negateChildren,
+		// 			operator,
+		// 			resultGroups,
+		// 			resultIndex: [...resultIndex?.values()],
+		// 		},
+		// 		null,
+		// 		2
+		// 	)
+		// );
+
 		return Array.from(resultIndex?.values() || []);
 	}
 

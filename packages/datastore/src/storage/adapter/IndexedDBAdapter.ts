@@ -487,6 +487,15 @@ class IndexedDBAdapter implements Adapter {
 		return keyValues.length === keyPath.length ? keyValues : undefined;
 	}
 
+	/**
+	 * Tries to generate an index fetcher for the given predicates. Assumes
+	 * that the given predicate conditions are contained by an AND group and
+	 * should therefore all match a single record.
+	 *
+	 * @param storeName The table to query.
+	 * @param predicates The predicates to try to AND together.
+	 * @param transaction
+	 */
 	private matchingIndexQueries<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicateObject<T>[],
@@ -550,7 +559,8 @@ class IndexedDBAdapter implements Adapter {
 		// the predicate objects we care about tend to be nested at least
 		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
 		// and these containers
-		// so, we unpack and/or groups until we find a group with more than 1
+		//
+		// so, unpack and/or groups until we find a group with more than 1
 		// child OR a child that is not a group (and is therefore a predicate "object").
 		while (
 			predicateObjs.length === 1 &&
@@ -561,47 +571,62 @@ class IndexedDBAdapter implements Adapter {
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
 
-		// AFAIK, this will always be a homogenous group of predicate objects at this point.
-		// but, if that ever changes, this pulls out just the predicates from the list that
-		// are field-level predicate objects we can potentially smash against an index.
 		const fieldPredicates = predicateObjs.filter(
 			p => isPredicateObj(p) && p.operator === 'eq'
 		) as PredicateObject<T>[];
-
-		// EARLY RETURN: if we have an OR group and ALL child predicates are not
-		// field level `eq` predicate objects, we will not try to optimize any further
-		// for now. it's higher complexity than is worth tackling for now.
-		if (type === 'or' && predicateObjs.length > fieldPredicates.length) {
-			return {
-				groupType: null,
-				indexedQueries: [] as (() => Promise<T[]>)[],
-			};
-		}
 
 		// several sub-queries could occur here. explicitly start a txn here to avoid
 		// opening/closing multiple txns.
 		const txn = this.db.transaction(storeName);
 
-		// our potential indexes or lacks thereof.
-		// note that we're only optimizing for `eq` right now.
-		const indexedQueries = this.matchingIndexQueries(
-			storeName,
-			fieldPredicates,
-			txn
-		);
+		let result = {} as {
+			groupType: typeof type | null;
+			indexedQueries: (() => Promise<T[]>)[];
+		};
+
+		// `or` conditions, if usable, need to generate multiple queries. this is unlike
+		// `and` conditions, which should just be combined.
+		if (type === 'or') {
+			// EARLY RETURN: if we have an OR group and ALL child predicates are not
+			// field level `eq` predicate objects, we will not try to optimize any further
+			// for now. it's higher complexity than is worth tackling for now.
+			if (predicateObjs.length > fieldPredicates.length) {
+				result = {
+					groupType: null,
+					indexedQueries: [] as (() => Promise<T[]>)[],
+				};
+			} else {
+				result = {
+					groupType: 'or',
+					indexedQueries: fieldPredicates.reduce((agg, p) => {
+						return agg.concat(this.matchingIndexQueries(storeName, [p], txn));
+					}, [] as (() => Promise<T[]>)[]),
+				};
+			}
+		} else if (type === 'and') {
+			// our potential indexes or lacks thereof.
+			// note that we're only optimizing for `eq` right now.
+			result = {
+				groupType: type,
+				indexedQueries: this.matchingIndexQueries(
+					storeName,
+					fieldPredicates,
+					txn
+				),
+			};
+		} else {
+			result = {
+				groupType: null,
+				indexedQueries: [],
+			};
+		}
 
 		// Explicitly wait for txns from index queries to complete before proceding.
 		// This helps ensure IndexedDB is in a stable, ready state. Else, subseqeuent
 		// qeuries can sometimes appear to deadlock (at least in FakeIndexedDB).
 		await txn.done;
 
-		return {
-			// set `groupType` to `null` if we don't have any meaningful indexes
-			// to use at this point, to provide a clear signal to calling code to
-			// break out and just scan and filter.
-			groupType: indexedQueries.length > 0 ? type : null,
-			indexedQueries,
-		};
+		return result;
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
@@ -624,11 +649,11 @@ class IndexedDBAdapter implements Adapter {
 		let candidateResults: T[];
 
 		// semi-naive implementation:
-		if (groupType === 'and') {
+		if (groupType === 'and' && indexedQueries.length > 0) {
 			// each condition must be satsified, we can form a base set with any
 			// ONE of those conditions and then filter.
 			candidateResults = await indexedQueries[0]();
-		} else if (groupType === 'or') {
+		} else if (groupType === 'or' && indexedQueries.length > 0) {
 			// NOTE: each condition implies a potentially distinct set. we only benefit
 			// from using indexes here if EVERY condition uses an index. if any one
 			// index requires a table scan, we gain nothing from the indexes.
@@ -637,10 +662,8 @@ class IndexedDBAdapter implements Adapter {
 			for (const query of indexedQueries) {
 				const resultGroup = await query();
 				for (const item of resultGroup) {
-					const uniquePKString = JSON.stringify(
-						this.getIndexKeyValuesFromModel(item)
-					);
-					distinctResults.set(uniquePKString, item);
+					const distinctificationString = JSON.stringify(item);
+					distinctResults.set(distinctificationString, item);
 				}
 			}
 

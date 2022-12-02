@@ -60,7 +60,7 @@ export function addCommonQueryTests({
 	// ensure all down-the-line tests use the given adapter. It is otherwise
 	// VERY EASY to forgot to include this, which can cause some of these tests
 	// to run against a different adapter and thus test the wrong things.
-	beforeAll(() => {
+	beforeEach(() => {
 		DataStore.configure({ storageAdapter });
 	});
 
@@ -1298,6 +1298,9 @@ export function addCommonQueryTests({
 			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
 				r.leftOnes.mtmLeft.content.contains('left content A')
 			);
+
+			console.log(JSON.stringify({ fetchedRightOnesA }, null, 2));
+
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
 				expectedNamesARight
 			);
