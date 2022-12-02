@@ -125,9 +125,6 @@ describe('Credentials test', () => {
 								IdentityId: '123',
 							};
 						}
-						if (params instanceof GetCredentialsForIdentityCommand) {
-							console.log('GetCredentialsForIdentityCommand', params);
-						}
 					},
 				};
 			});
@@ -156,8 +153,6 @@ describe('Credentials test', () => {
 				token: 'token',
 				identity_id: '123',
 			});
-
-			console.log('YYYY');
 
 			expect(CognitoIdentityClient).toHaveBeenCalledWith(
 				expect.objectContaining({ region: identityPoolRegion })
