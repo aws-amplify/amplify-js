@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "4.0.38",
+  "version": "5.0.4",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,14 +9,10 @@
     "./lib/index": "./lib-esm/reactnative.js"
   },
   "sideEffects": [
-    "./src/reactnative.ts",
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib/reactnative.js",
-    "./lib-esm/index.js",
-    "./lib-esm/reactnative.js",
-    "./dist/aws-amplify-cache.js",
-    "./dist/aws-amplify-cache.min.js"
+    "./lib/BrowserStorageCache.js",
+    "./lib/AsyncStorageCache.js",
+    "./lib-esm/BrowserStorageCache.js",
+    "./lib-esm/AsyncStorageCache.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -31,7 +27,8 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.74"
   },
   "repository": {
     "type": "git",
@@ -43,8 +40,14 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.5.0"
+    "@aws-amplify/core": "5.0.4",
+    "tslib": "^1.8.0"
   },
   "jest": {
     "globals": {

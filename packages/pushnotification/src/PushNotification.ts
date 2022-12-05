@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	NativeModules,
@@ -19,7 +9,7 @@ import {
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -43,13 +33,11 @@ export default class PushNotification {
 			this._config = {};
 		}
 		this.updateEndpoint = this.updateEndpoint.bind(this);
-		this.handleNotificationReceived = this.handleNotificationReceived.bind(
-			this
-		);
+		this.handleNotificationReceived =
+			this.handleNotificationReceived.bind(this);
 		this.handleNotificationOpened = this.handleNotificationOpened.bind(this);
-		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
-			this
-		);
+		this._checkIfOpenedByNotification =
+			this._checkIfOpenedByNotification.bind(this);
 		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
@@ -63,7 +51,7 @@ export default class PushNotification {
 	}
 
 	configure(config) {
-		if (JS.isEmpty(config)) return this._config;
+		if (isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
 		if (config['aws_mobile_analytics_app_id']) {
@@ -133,7 +121,6 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
-		RNPushNotification.initialize();
 
 		// check if the token is cached properly
 		if (!(await this._registerTokenCached())) {
@@ -254,9 +241,8 @@ export default class PushNotification {
 
 	handleNotificationReceived(rawMessage) {
 		logger.debug('handleNotificationReceived, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');
@@ -294,9 +280,8 @@ export default class PushNotification {
 		});
 
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
-		const { eventSource, eventSourceAttributes } = this.parseMessageData(
-			rawMessage
-		);
+		const { eventSource, eventSourceAttributes } =
+			this.parseMessageData(rawMessage);
 
 		if (!eventSource) {
 			logger.debug('message received is not from a pinpoint eventSource');

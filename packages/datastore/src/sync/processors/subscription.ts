@@ -1,7 +1,12 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
-import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { Auth } from '@aws-amplify/auth';
+import { Cache } from '@aws-amplify/cache';
+import {
+	ConsoleLogger as Logger,
+	Hub,
+	HubCapsule,
+	BackgroundProcessManager,
+} from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
@@ -12,6 +17,9 @@ import {
 	PredicatesGroup,
 	ModelPredicate,
 	AuthModeStrategy,
+	ErrorHandler,
+	ProcessName,
+	AmplifyContext,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
@@ -22,7 +30,8 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate } from '../../util';
+import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
+import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
 
@@ -50,13 +59,17 @@ class SubscriptionProcessor {
 	>();
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
-	private dataObserver: ZenObservable.Observer<any>;
+	private dataObserver!: ZenObservable.Observer<any>;
+
+	private runningProcesses = new BackgroundProcessManager();
 
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly authModeStrategy: AuthModeStrategy
+		private readonly authModeStrategy: AuthModeStrategy,
+		private readonly errorHandler: ErrorHandler,
+		private readonly amplifyContext: AmplifyContext = { Auth, API, Cache }
 	) {}
 
 	private buildSubscription(
@@ -92,7 +105,7 @@ class SubscriptionProcessor {
 			model,
 			transformerMutationType,
 			isOwner,
-			ownerField
+			ownerField!
 		);
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
@@ -115,7 +128,7 @@ class SubscriptionProcessor {
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
-			return null;
+			return null!;
 		}
 
 		// Group auth should take precedence over owner auth, so we are checking
@@ -179,8 +192,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Owner auth needs additional values to be returned in order to create the subscription with
@@ -206,8 +219,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Fallback: return authMode or default auth type
@@ -231,6 +244,9 @@ class SubscriptionProcessor {
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
+		this.runningProcesses =
+			this.runningProcesses || new BackgroundProcessManager();
+
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
 
@@ -246,11 +262,11 @@ class SubscriptionProcessor {
 			let cognitoTokenPayload: { [field: string]: any },
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
-			(async () => {
+			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const credentials = await Auth.currentCredentials();
+					const credentials =
+						await this.amplifyContext.Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
@@ -260,8 +276,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					// TODO Should this use `this.amplify.Auth` for SSR?
-					const session = await Auth.currentSession();
+					const session = await this.amplifyContext.Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
 					// best effort to get jwt from Cognito
@@ -278,11 +293,14 @@ class SubscriptionProcessor {
 
 					let token;
 					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
+					const federatedInfo = await this.amplifyContext.Cache.getItem(
+						'federatedInfo'
+					);
 					if (federatedInfo) {
 						token = federatedInfo.token;
 					} else {
-						const currentUser = await Auth.currentAuthenticatedUser();
+						const currentUser =
+							await this.amplifyContext.Auth.currentAuthenticatedUser();
 						if (currentUser) {
 							token = currentUser.token;
 						}
@@ -302,235 +320,286 @@ class SubscriptionProcessor {
 				Object.values(this.schema.namespaces).forEach(namespace => {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
-						.forEach(async modelDefinition => {
-							const modelAuthModes = await getModelAuthModes({
-								authModeStrategy: this.authModeStrategy,
-								defaultAuthMode:
-									this.amplifyConfig.aws_appsync_authenticationType,
-								modelName: modelDefinition.name,
-								schema: this.schema,
-							});
+						.forEach(
+							modelDefinition =>
+								this.runningProcesses.isOpen &&
+								this.runningProcesses.add(async () => {
+									const modelAuthModes = await getModelAuthModes({
+										authModeStrategy: this.authModeStrategy,
+										defaultAuthMode:
+											this.amplifyConfig.aws_appsync_authenticationType,
+										modelName: modelDefinition.name,
+										schema: this.schema,
+									});
 
-							// subscriptions are created only based on the READ auth mode(s)
-							const readAuthModes = modelAuthModes.READ;
+									// subscriptions are created only based on the READ auth mode(s)
+									const readAuthModes = modelAuthModes.READ;
 
-							subscriptions = {
-								...subscriptions,
-								[modelDefinition.name]: {
-									[TransformerMutationType.CREATE]: [],
-									[TransformerMutationType.UPDATE]: [],
-									[TransformerMutationType.DELETE]: [],
-								},
-							};
+									subscriptions = {
+										...subscriptions,
+										[modelDefinition.name]: {
+											[TransformerMutationType.CREATE]: [],
+											[TransformerMutationType.UPDATE]: [],
+											[TransformerMutationType.DELETE]: [],
+										},
+									};
 
-							const operations = [
-								TransformerMutationType.CREATE,
-								TransformerMutationType.UPDATE,
-								TransformerMutationType.DELETE,
-							];
+									const operations = [
+										TransformerMutationType.CREATE,
+										TransformerMutationType.UPDATE,
+										TransformerMutationType.DELETE,
+									];
 
-							const operationAuthModeAttempts = {
-								[TransformerMutationType.CREATE]: 0,
-								[TransformerMutationType.UPDATE]: 0,
-								[TransformerMutationType.DELETE]: 0,
-							};
+									const operationAuthModeAttempts = {
+										[TransformerMutationType.CREATE]: 0,
+										[TransformerMutationType.UPDATE]: 0,
+										[TransformerMutationType.DELETE]: 0,
+									};
 
-							// Retry failed subscriptions with next auth mode (if available)
-							const authModeRetry = async operation => {
-								const {
-									opType: transformerMutationType,
-									opName,
-									query,
-									isOwner,
-									ownerField,
-									ownerValue,
-									authMode,
-								} = this.buildSubscription(
-									namespace,
-									modelDefinition,
-									operation,
-									userCredentials,
-									cognitoTokenPayload,
-									oidcTokenPayload,
-									readAuthModes[operationAuthModeAttempts[operation]]
-								);
-
-								const authToken = await getTokenForCustomAuth(
-									authMode,
-									this.amplifyConfig
-								);
-
-								const variables = {};
-
-								if (isOwner) {
-									if (!ownerValue) {
-										observer.error(
-											'Owner field required, sign in is needed in order to perform this operation'
+									// Retry failed subscriptions with next auth mode (if available)
+									const authModeRetry = async operation => {
+										const {
+											opType: transformerMutationType,
+											opName,
+											query,
+											isOwner,
+											ownerField,
+											ownerValue,
+											authMode,
+										} = this.buildSubscription(
+											namespace,
+											modelDefinition,
+											operation,
+											userCredentials,
+											cognitoTokenPayload,
+											oidcTokenPayload,
+											readAuthModes[operationAuthModeAttempts[operation]]
 										);
-										return;
-									}
 
-									variables[ownerField] = ownerValue;
-								}
+										const authToken = await getTokenForCustomAuth(
+											authMode,
+											this.amplifyConfig
+										);
 
-								logger.debug(
-									`Attempting ${operation} subscription with authMode: ${
-										readAuthModes[operationAuthModeAttempts[operation]]
-									}`
-								);
+										const variables = {};
 
-								const queryObservable = <
-									Observable<{
-										value: GraphQLResult<Record<string, PersistentModel>>;
-									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
-								let subscriptionReadyCallback: () => void;
+										if (isOwner) {
+											if (!ownerValue) {
+												observer.error(
+													'Owner field required, sign in is needed in order to perform this operation'
+												);
+												return;
+											}
 
-								subscriptions[modelDefinition.name][
-									transformerMutationType
-								].push(
-									queryObservable
-										.map(({ value }) => value)
-										.subscribe({
-											next: ({ data, errors }) => {
-												if (Array.isArray(errors) && errors.length > 0) {
-													const messages = (<
-														{
-															message: string;
-														}[]
-													>errors).map(({ message }) => message);
+											variables[ownerField!] = ownerValue;
+										}
 
-													logger.warn(
-														`Skipping incoming subscription. Messages: ${messages.join(
-															'\n'
-														)}`
-													);
+										logger.debug(
+											`Attempting ${operation} subscription with authMode: ${
+												readAuthModes[operationAuthModeAttempts[operation]]
+											}`
+										);
 
-													this.drainBuffer();
-													return;
-												}
+										const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
 
-												const predicatesGroup =
-													ModelPredicateCreator.getPredicates(
-														this.syncPredicates.get(modelDefinition),
-														false
-													);
+										const queryObservable = <
+											Observable<{
+												value: GraphQLResult<Record<string, PersistentModel>>;
+											}>
+										>(<unknown>this.amplifyContext.API.graphql({
+											query,
+											variables,
+											...{ authMode },
+											authToken,
+											userAgentSuffix,
+										}));
 
-												const { [opName]: record } = data;
+										let subscriptionReadyCallback: () => void;
 
-												// checking incoming subscription against syncPredicate.
-												// once AppSync implements filters on subscriptions, we'll be
-												// able to set these when establishing the subscription instead.
-												// Until then, we'll need to filter inbound
-												if (
-													this.passesPredicateValidation(
-														record,
-														predicatesGroup
-													)
-												) {
-													this.pushToBuffer(
-														transformerMutationType,
-														modelDefinition,
-														record
-													);
-												}
-												this.drainBuffer();
-											},
-											error: subscriptionError => {
-												const {
-													error: { errors: [{ message = '' } = {}] } = {
-														errors: [],
+										// TODO: consider onTerminate.then(() => API.cancel(...))
+
+										subscriptions[modelDefinition.name][
+											transformerMutationType
+										].push(
+											queryObservable
+												.map(({ value }) => {
+													return value;
+												})
+												.subscribe({
+													next: ({ data, errors }) => {
+														if (Array.isArray(errors) && errors.length > 0) {
+															const messages = (<
+																{
+																	message: string;
+																}[]
+															>errors).map(({ message }) => message);
+
+															logger.warn(
+																`Skipping incoming subscription. Messages: ${messages.join(
+																	'\n'
+																)}`
+															);
+
+															this.drainBuffer();
+															return;
+														}
+
+														const predicatesGroup =
+															ModelPredicateCreator.getPredicates(
+																this.syncPredicates.get(modelDefinition)!,
+																false
+															);
+
+														// @ts-ignore
+														const { [opName]: record } = data;
+
+														// checking incoming subscription against syncPredicate.
+														// once AppSync implements filters on subscriptions, we'll be
+														// able to set these when establishing the subscription instead.
+														// Until then, we'll need to filter inbound
+														if (
+															this.passesPredicateValidation(
+																record,
+																predicatesGroup!
+															)
+														) {
+															this.pushToBuffer(
+																transformerMutationType,
+																modelDefinition,
+																record
+															);
+														}
+														this.drainBuffer();
 													},
-												} = subscriptionError;
+													error: async subscriptionError => {
+														const {
+															error: { errors: [{ message = '' } = {}] } = {
+																errors: [],
+															},
+														} = subscriptionError;
 
-												if (
-													message.includes(
-														PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
-													) ||
-													message.includes(PUBSUB_CONTROL_MSG.CONNECTION_FAILED)
-												) {
-													// Unsubscribe and clear subscription array for model/operation
-													subscriptions[modelDefinition.name][
-														transformerMutationType
-													].forEach(subscription => subscription.unsubscribe());
-													subscriptions[modelDefinition.name][
-														transformerMutationType
-													] = [];
+														if (
+															message.includes(
+																PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+															) ||
+															message.includes(
+																PUBSUB_CONTROL_MSG.CONNECTION_FAILED
+															)
+														) {
+															// Unsubscribe and clear subscription array for model/operation
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															].forEach(subscription =>
+																subscription.unsubscribe()
+															);
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															] = [];
 
-													operationAuthModeAttempts[operation]++;
-													if (
-														operationAuthModeAttempts[operation] >=
-														readAuthModes.length
-													) {
-														logger.debug(
-															`${operation} subscription failed with authMode: ${
-																readAuthModes[
-																	operationAuthModeAttempts[operation] - 1
-																]
-															}`
-														);
+															operationAuthModeAttempts[operation]++;
+															if (
+																operationAuthModeAttempts[operation] >=
+																readAuthModes.length
+															) {
+																// last auth mode retry. Continue with error
+																logger.debug(
+																	`${operation} subscription failed with authMode: ${
+																		readAuthModes[
+																			operationAuthModeAttempts[operation] - 1
+																		]
+																	}`
+																);
+															} else {
+																// retry with different auth mode. Do not trigger
+																// observer error or error handler
+																logger.debug(
+																	`${operation} subscription failed with authMode: ${
+																		readAuthModes[
+																			operationAuthModeAttempts[operation] - 1
+																		]
+																	}. Retrying with authMode: ${
+																		readAuthModes[
+																			operationAuthModeAttempts[operation]
+																		]
+																	}`
+																);
+																authModeRetry(operation);
+																return;
+															}
+														}
 														logger.warn('subscriptionError', message);
-														return;
-													} else {
-														logger.debug(
-															`${operation} subscription failed with authMode: ${
-																readAuthModes[
-																	operationAuthModeAttempts[operation] - 1
-																]
-															}. Retrying with authMode: ${
-																readAuthModes[
-																	operationAuthModeAttempts[operation]
-																]
-															}`
-														);
-														authModeRetry(operation);
-														return;
-													}
-												}
 
-												logger.warn('subscriptionError', message);
+														try {
+															await this.errorHandler({
+																recoverySuggestion:
+																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+																localModel: null!,
+																message,
+																model: modelDefinition.name,
+																operation,
+																errorType:
+																	getSubscriptionErrorType(subscriptionError),
+																process: ProcessName.subscribe,
+																remoteModel: null!,
+																cause: subscriptionError,
+															});
+														} catch (e) {
+															logger.error(
+																'Subscription error handler failed with:',
+																e
+															);
+														}
 
-												if (typeof subscriptionReadyCallback === 'function') {
-													subscriptionReadyCallback();
-												}
+														if (
+															typeof subscriptionReadyCallback === 'function'
+														) {
+															subscriptionReadyCallback();
+														}
 
-												if (
-													message.includes('"errorType":"Unauthorized"') ||
-													message.includes('"errorType":"OperationDisabled"')
-												) {
-													return;
-												}
+														if (
+															message.includes('"errorType":"Unauthorized"') ||
+															message.includes(
+																'"errorType":"OperationDisabled"'
+															)
+														) {
+															return;
+														}
+														observer.error(message);
+													},
+												})
+										);
 
-												observer.error(message);
-											},
-										})
-								);
+										promises.push(
+											(async () => {
+												let boundFunction: any;
 
-								promises.push(
-									(async () => {
-										let boundFunction: any;
+												await new Promise(res => {
+													subscriptionReadyCallback = res;
+													boundFunction = this.hubQueryCompletionListener.bind(
+														this,
+														res
+													);
+													Hub.listen('api', boundFunction);
+												});
+												Hub.remove('api', boundFunction);
+											})()
+										);
+									};
 
-										await new Promise(res => {
-											subscriptionReadyCallback = res;
-											boundFunction = this.hubQueryCompletionListener.bind(
-												this,
-												res
-											);
-											Hub.listen('api', boundFunction);
-										});
-										Hub.remove('api', boundFunction);
-									})()
-								);
-							};
-
-							operations.forEach(op => authModeRetry(op));
-						});
+									operations.forEach(op => authModeRetry(op));
+								})
+						);
 				});
 
-				Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED));
-			})();
+				this.runningProcesses.isOpen &&
+					this.runningProcesses.add(() =>
+						Promise.all(promises).then(() => {
+							observer.next(CONTROL_MSG.CONNECTED);
+						})
+					);
+			}, 'subscription processor new subscriber');
 
-			return () => {
+			return this.runningProcesses.addCleaner(async () => {
 				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
 						subscription => subscription.unsubscribe()
@@ -542,7 +611,7 @@ class SubscriptionProcessor {
 						subscription => subscription.unsubscribe()
 					);
 				});
-			};
+			});
 		});
 
 		const dataObservable = new Observable<
@@ -551,12 +620,17 @@ class SubscriptionProcessor {
 			this.dataObserver = observer;
 			this.drainBuffer();
 
-			return () => {
-				this.dataObserver = null;
-			};
+			return this.runningProcesses.addCleaner(async () => {
+				this.dataObserver = null!;
+			});
 		});
 
 		return [ctlObservable, dataObservable];
+	}
+
+	public async stop() {
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
 	}
 
 	private passesPredicateValidation(
@@ -582,7 +656,7 @@ class SubscriptionProcessor {
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next(data));
+			this.buffer.forEach(data => this.dataObserver.next!(data));
 			this.buffer = [];
 		}
 	}

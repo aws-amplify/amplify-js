@@ -449,8 +449,10 @@ async function testMultiAuthStrategy({
 }) {
 	mockCurrentUser({ hasAuthenticatedUser });
 
-	const multiAuthStrategy =
+	const multiAuthStrategyWrapper =
 		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
+
+	const multiAuthStrategy = multiAuthStrategyWrapper({});
 
 	const schema = getAuthSchema(authRules);
 
@@ -504,6 +506,7 @@ function getAuthSchema(
 			},
 		},
 		version: 'a77c7728256031f4909aab05bfcaf798',
+		codegenVersion: '3.2.0',
 	};
 
 	return {
@@ -538,14 +541,16 @@ function mockCurrentUser({
 	hasAuthenticatedUser: boolean;
 }) {
 	jest.mock('@aws-amplify/auth', () => ({
-		currentAuthenticatedUser: () => {
-			return new Promise((res, rej) => {
-				if (hasAuthenticatedUser) {
-					res(hasAuthenticatedUser);
-				} else {
-					rej(hasAuthenticatedUser);
-				}
-			});
+		Auth: {
+			currentAuthenticatedUser: () => {
+				return new Promise((res, rej) => {
+					if (hasAuthenticatedUser) {
+						res(hasAuthenticatedUser);
+					} else {
+						rej(hasAuthenticatedUser);
+					}
+				});
+			},
 		},
 		GRAPHQL_AUTH_MODE,
 	}));

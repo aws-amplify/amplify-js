@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
 	OperationDefinitionNode,
@@ -22,13 +12,13 @@ import Observable from 'zen-observable-ts';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Constants,
 	Credentials,
+	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
-import PubSub from '@aws-amplify/pubsub';
-import Auth from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { PubSub } from '@aws-amplify/pubsub';
+import { Auth } from '@aws-amplify/auth';
+import { Cache } from '@aws-amplify/cache';
 import {
 	GraphQLAuthError,
 	GraphQLOptions,
@@ -43,11 +33,13 @@ const logger = new Logger('GraphQLAPI');
 export const graphqlOperation = (
 	query,
 	variables = {},
-	authToken?: string
+	authToken?: string,
+	userAgentSuffix?: string
 ) => ({
 	query,
 	variables,
 	authToken,
+	userAgentSuffix,
 });
 
 /**
@@ -224,7 +216,13 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode,
+			authToken,
+			userAgentSuffix,
+		}: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -233,7 +231,7 @@ export class GraphQLAPIClass {
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			(def) => def.kind === 'OperationDefinition'
+			def => def.kind === 'OperationDefinition'
 		);
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
@@ -248,10 +246,11 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
+				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode },
+					{ query, variables, authMode, userAgentSuffix },
 					headers,
 					initParams
 				);
@@ -268,14 +267,11 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode, userAgentSuffix }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
-		if (!this._api) {
-			await this.createInstance();
-		}
-
+		this.createInstanceIfNotCreated();
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
@@ -294,7 +290,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: Constants.userAgent,
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentSuffix),
 			}),
 		};
 
@@ -351,6 +347,12 @@ export class GraphQLAPIClass {
 		return response;
 	}
 
+	async createInstanceIfNotCreated() {
+		if (!this._api) {
+			await this.createInstance();
+		}
+	}
+
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation
 	 * @param {any} error - Any error
@@ -367,6 +369,15 @@ export class GraphQLAPIClass {
 	 */
 	cancel(request: Promise<any>, message?: string) {
 		return this._api.cancel(request, message);
+	}
+
+	/**
+	 * Check if the request has a corresponding cancel token in the WeakMap.
+	 * @params request - The request promise
+	 * @return if the request has a corresponding cancel token.
+	 */
+	hasCancelToken(request: Promise<any>) {
+		return this._api.hasCancelToken(request);
 	}
 
 	private _graphqlSubscribe(
@@ -412,14 +423,14 @@ export class GraphQLAPIClass {
 	 */
 	_ensureCredentials() {
 		return this.Credentials.get()
-			.then((credentials) => {
+			.then(credentials => {
 				if (!credentials) return false;
 				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
 			})
-			.catch((err) => {
+			.catch(err => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});

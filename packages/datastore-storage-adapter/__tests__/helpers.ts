@@ -3,7 +3,6 @@ import {
 	MutableModel,
 	Schema,
 	InternalSchema,
-	SchemaModel,
 } from '@aws-amplify/datastore';
 
 export declare class Model {
@@ -608,6 +607,7 @@ export function testSchema(): Schema {
 			},
 		},
 		version: '1',
+		codegenVersion: '3.2.0',
 	};
 }
 
@@ -908,5 +908,6 @@ export function internalTestSchema(): InternalSchema {
 			},
 		},
 		version: '1',
+		codegenVersion: '3.2.0',
 	};
 }

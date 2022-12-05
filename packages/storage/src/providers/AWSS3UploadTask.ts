@@ -57,7 +57,7 @@ export interface InProgressRequest {
 }
 
 export interface UploadTaskCompleteEvent {
-	key: string;
+	key?: string;
 }
 
 export interface UploadTaskProgressEvent {
@@ -305,7 +305,7 @@ export class AWSS3UploadTask implements UploadTask {
 			);
 			await this._verifyFileSize();
 			this._emitEvent<UploadTaskCompleteEvent>(TaskEvents.UPLOAD_COMPLETE, {
-				key: `${this.params.Bucket}/${this.params.Key}`,
+				key: this.params.Key,
 			});
 			this._removeFromCache();
 			this.state = AWSS3UploadTaskState.COMPLETED;

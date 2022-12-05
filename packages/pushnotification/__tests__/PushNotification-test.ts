@@ -1,7 +1,7 @@
 import { DeviceEventEmitter, Platform, NativeModules } from 'react-native';
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import RegisteredPushNotification from '../src';
+import { PushNotification as RegisteredPushNotification } from '../src';
 import PushNotification from '../src/PushNotification';
 
 const defaultPlatform = 'ios';
@@ -179,20 +179,12 @@ describe('PushNotification:', () => {
 				'addEventListenerForAndroid'
 			);
 
-			const nativeInitSpy = jest.spyOn(
-				NativeModules.RNPushNotification,
-				'initialize'
-			);
-
 			const pushnotification = new PushNotification(null);
 			pushnotification.configure(defaultConfig);
 
-			expect.assertions(2);
+			expect.assertions(1);
 			expect(androidEventListenerSpy).toHaveBeenCalledTimes(3);
-			expect(nativeInitSpy).toHaveBeenCalledTimes(1);
-
 			androidEventListenerSpy.mockClear();
-			nativeInitSpy.mockClear();
 		});
 
 		test('should initialize iOS', () => {

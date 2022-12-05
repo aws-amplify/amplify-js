@@ -1,35 +1,38 @@
-/*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { AbstractInteractionsProvider } from './InteractionsProvider';
 import {
 	InteractionsOptions,
+	AWSLexProviderOptions,
 	InteractionsResponse,
 	InteractionsMessage,
 } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
+	PostTextCommandInput,
+	PostTextCommandOutput,
 	PostContentCommand,
+	PostContentCommandInput,
+	PostContentCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
 import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexProviderHelper/convert';
+import { convert } from './AWSLexProviderHelper/utils';
 
 const logger = new Logger('AWSLexProvider');
+
+interface PostContentCommandOutputFormatted
+	extends Omit<PostContentCommandOutput, 'audioStream'> {
+	audioStream?: Uint8Array;
+}
+
+type AWSLexProviderSendResponse =
+	| PostTextCommandOutput
+	| PostContentCommandOutputFormatted;
 
 export class AWSLexProvider extends AbstractInteractionsProvider {
 	private lexRuntimeServiceClient: LexRuntimeServiceClient;
@@ -44,7 +47,27 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		return 'AWSLexProvider';
 	}
 
-	reportBotStatus(data, botname) {
+	configure(config: AWSLexProviderOptions = {}): AWSLexProviderOptions {
+		const propertiesToTest = ['name', 'alias', 'region'];
+
+		Object.keys(config).forEach(botKey => {
+			const botConfig = config[botKey];
+
+			// is bot config correct
+			if (!propertiesToTest.every(x => x in botConfig)) {
+				throw new Error('invalid bot configuration');
+			}
+		});
+		return super.configure(config);
+	}
+
+	/**
+	 * @private
+	 * @deprecated
+	 * This is used internally by 'sendMessage' to call onComplete callback
+	 * for a bot if configured
+	 */
+	reportBotStatus(data: AWSLexProviderSendResponse, botname: string) {
 		// Check if state is fulfilled to resolve onFullfilment promise
 		logger.debug('postContent state', data.dialogState);
 		if (
@@ -52,21 +75,14 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			data.dialogState === 'Fulfilled'
 		) {
 			if (typeof this._botsCompleteCallback[botname] === 'function') {
-				setTimeout(
-					() =>
-						this._botsCompleteCallback[botname](null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._botsCompleteCallback[botname](null, data), 0);
 			}
 
 			if (
 				this._config &&
 				typeof this._config[botname].onComplete === 'function'
 			) {
-				setTimeout(
-					() => this._config[botname].onComplete(null, { slots: data.slots }),
-					0
-				);
+				setTimeout(() => this._config[botname].onComplete(null, data), 0);
 			}
 		}
 
@@ -94,11 +110,16 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<InteractionsResponse> {
+		// check if bot exists
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
-		const credentials = await Credentials.get();
-		if (!credentials) {
+
+		// check if credentials are present
+		let credentials;
+		try {
+			credentials = await Credentials.get();
+		} catch (error) {
 			return Promise.reject('No credentials');
 		}
 
@@ -108,7 +129,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
-		let params;
+		let params: PostTextCommandInput | PostContentCommandInput;
 		if (typeof message === 'string') {
 			params = {
 				botAlias: this._config[botname].alias,
@@ -118,10 +139,10 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			};
 
 			logger.debug('postText to lex', message);
-
 			try {
 				const postTextCommand = new PostTextCommand(params);
 				const data = await this.lexRuntimeServiceClient.send(postTextCommand);
+
 				this.reportBotStatus(data, botname);
 				return data;
 			} catch (err) {
@@ -133,15 +154,24 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				options: { messageType },
 			} = message;
 			if (messageType === 'voice') {
+				if (typeof content !== 'object') {
+					return Promise.reject('invalid content type');
+				}
+				const inputStream =
+					content instanceof Uint8Array ? content : await convert(content);
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
-					contentType: 'audio/x-l16; sample-rate=16000',
-					inputStream: content,
+					contentType: 'audio/x-l16; sample-rate=16000; channel-count=1',
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
+					inputStream,
 				};
 			} else {
+				if (typeof content !== 'string')
+					return Promise.reject('invalid content type');
+
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
@@ -157,18 +187,25 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const data = await this.lexRuntimeServiceClient.send(
 					postContentCommand
 				);
-				const audioArray = await convert(data.audioStream);
-				this.reportBotStatus(data, botname);
-				return { ...data, ...{ audioStream: audioArray } };
+
+				const audioArray = data.audioStream
+					? await convert(data.audioStream)
+					: undefined;
+
+				const response = { ...data, ...{ audioStream: audioArray } };
+
+				this.reportBotStatus(response, botname);
+				return response;
 			} catch (err) {
 				return Promise.reject(err);
 			}
 		}
 	}
 
-	onComplete(botname: string, callback) {
+	onComplete(botname: string, callback: (err, confirmation) => void) {
+		// does bot exist
 		if (!this._config[botname]) {
-			throw new ErrorEvent('Bot ' + botname + ' does not exist');
+			throw new Error('Bot ' + botname + ' does not exist');
 		}
 		this._botsCompleteCallback[botname] = callback;
 	}

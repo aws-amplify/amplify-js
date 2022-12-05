@@ -3,5 +3,10 @@
 	"useWorkspaces": true,
 	"packages": ["packages/*"],
 	"exact": true,
-	"version": "independent"
+	"version": "independent",
+	"command": {
+		"run": {
+			"private": false
+		}
+	}
 }

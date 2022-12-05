@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "4.3.15",
+  "version": "5.0.4",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -45,8 +45,14 @@
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src",
+    "android"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.5.0",
+    "@aws-amplify/core": "5.0.4",
     "@react-native-community/push-notification-ios": "1.0.3"
   },
   "jest": {
