@@ -265,7 +265,7 @@ export class CredentialsClass {
 				parseAWSExports(this._config || {}).Auth
 			);
 		}
-		const { identityPoolId, region, mandatorySignIn } = this._config;
+		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } = this._config;
 
 		if (mandatorySignIn) {
 			return Promise.reject(
@@ -282,7 +282,7 @@ export class CredentialsClass {
 			);
 		}
 
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
@@ -292,7 +292,7 @@ export class CredentialsClass {
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -396,12 +396,12 @@ export class CredentialsClass {
 		const logins = {};
 		logins[domain] = token;
 
-		const { identityPoolId, region } = this._config;
+		const { identityPoolId, region, identityPoolRegion } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
@@ -409,7 +409,7 @@ export class CredentialsClass {
 		}
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -435,12 +435,12 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId } = this._config;
+		const { region, userPoolId, identityPoolId, identityPoolRegion } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
@@ -451,7 +451,7 @@ export class CredentialsClass {
 		logins[key] = idToken;
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
