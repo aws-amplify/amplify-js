@@ -1,9 +1,10 @@
 declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
-	export type NodeCallback<E, T, K> = (err?: E, result?: T, details?: K) => void;
+	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	export type UpdateAttributesNodeCallback<E, T, K> = (err?: E, result?: T, details?: K) => void;
 	export namespace NodeCallback {
-		export type Any = NodeCallback<Error | undefined, any, any>;
+		export type Any = NodeCallback<Error | undefined, any>;
 	}
 
 	export interface CodeDeliveryDetails {
@@ -105,7 +106,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
-			callback: NodeCallback<any, any, any>,
+			callback: NodeCallback<any, any>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public authenticateUser(
@@ -119,7 +120,7 @@ declare module 'amazon-cognito-identity-js' {
 		public confirmRegistration(
 			code: string,
 			forceAliasCreation: boolean,
-			callback: NodeCallback<any, any, any>,
+			callback: NodeCallback<any, any>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public sendCustomChallengeAnswer(
@@ -128,13 +129,13 @@ declare module 'amazon-cognito-identity-js' {
 			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, any, any>,
+			callback: NodeCallback<Error, any>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
-			callback: NodeCallback<Error, 'SUCCESS', any>,
+			callback: NodeCallback<Error, 'SUCCESS'>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public forgotPassword(
@@ -217,16 +218,16 @@ declare module 'amazon-cognito-identity-js' {
 			}
 		): void;
 		public getUserAttributes(
-			callback: NodeCallback<Error, CognitoUserAttribute[], any>
+			callback: NodeCallback<Error, CognitoUserAttribute[]>
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string, any>,
+			callback: UpdateAttributesNodeCallback<Error, string, any>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(
 			attributeList: string[],
-			callback: NodeCallback<Error, string, any>
+			callback: NodeCallback<Error, string>
 		): void;
 		public getAttributeVerificationCode(
 			name: string,
@@ -237,12 +238,12 @@ declare module 'amazon-cognito-identity-js' {
 			},
 			clientMetadata?: ClientMetadata
 		): void;
-		public deleteUser(callback: NodeCallback<Error, string, any>): void;
-		public enableMFA(callback: NodeCallback<Error, string, any>): void;
-		public disableMFA(callback: NodeCallback<Error, string, any>): void;
-		public getMFAOptions(callback: NodeCallback<Error, MFAOption[], any>): void;
+		public deleteUser(callback: NodeCallback<Error, string>): void;
+		public enableMFA(callback: NodeCallback<Error, string>): void;
+		public disableMFA(callback: NodeCallback<Error, string>): void;
+		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
 		public getUserData(
-			callback: NodeCallback<Error, UserData, any>,
+			callback: NodeCallback<Error, UserData>,
 			params?: any
 		): void;
 		public associateSoftwareToken(callbacks: {
@@ -260,7 +261,7 @@ declare module 'amazon-cognito-identity-js' {
 		public setUserMfaPreference(
 			smsMfaSettings: IMfaSettings | null,
 			softwareTokenMfaSettings: IMfaSettings | null,
-			callback: NodeCallback<Error, string, any>
+			callback: NodeCallback<Error, string>
 		): void;
 		public sendMFASelectionAnswer(
 			answerChallenge: string,
@@ -343,7 +344,7 @@ declare module 'amazon-cognito-identity-js' {
 			password: string,
 			userAttributes: CognitoUserAttribute[],
 			validationData: CognitoUserAttribute[],
-			callback: NodeCallback<Error, ISignUpResult, any>,
+			callback: NodeCallback<Error, ISignUpResult>,
 			clientMetadata?: ClientMetadata
 		): void;
 
