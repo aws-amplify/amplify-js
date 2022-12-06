@@ -1271,7 +1271,7 @@ export default class CognitoUser {
 		}
 
 		try {
-			callback(null, JSON.parse(userData), null);
+			callback(null, JSON.parse(userData));
 			return;
 		} catch (err) {
 			this.clearCachedUserData();
