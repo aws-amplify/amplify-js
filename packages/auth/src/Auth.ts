@@ -1453,14 +1453,11 @@ export class AuthClass {
 			attrs[key] = {
 				isUpdated: true
 			};
-			if (codeDeliveryDetailsList) {
-				const codeDeliveryDetails = codeDeliveryDetailsList.find(value => value.AttributeName === key);
-				if (codeDeliveryDetails) {
-					attrs[key].isUpdated = false;
-					attrs[key].codeDeliveryDetails = codeDeliveryDetails;
-				}
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			if (codeDeliveryDetails) {
+				attrs[key].isUpdated = false;
+				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
 			}
-
 		});
 		return attrs;
 	}
