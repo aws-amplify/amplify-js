@@ -1425,16 +1425,17 @@ export class AuthClass {
 				}
 				user.updateAttributes(
 					attributeList,
-					(err, result) => {
+					(err, result, details) => {
+						
 						if (err) {
 							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
-								attributes as Record<string, string>, result.CodeDeliveryDetailsList
+								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
 							);
 							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
-							return resolve('SUCCESS');
+							return resolve(result);
 						}
 					},
 					clientMetadata

@@ -3000,7 +3000,7 @@ describe('auth unit test', () => {
 			expect.assertions(3);
 			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
-					callback(new Error('Error'), null);
+					callback(new Error('Error'), null, null);
 			});
 
 			const auth = new Auth(authOptions);
@@ -3048,8 +3048,8 @@ describe('auth unit test', () => {
 				]
 			};
 			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
-				.mockImplementationOnce((attrs, callback) => {
-					callback(undefined, codeDeliverDetailsResult);
+				.mockImplementationOnce((attrs, callback: any) => {
+					callback(null, 'SUCCESS', codeDeliverDetailsResult);
 			});
 			const auth = new Auth(authOptions);
 

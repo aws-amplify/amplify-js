@@ -1131,7 +1131,7 @@ export default class CognitoUser {
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, result), {
+				return this.getUserData(() => callback(null, 'SUCCESS', result), {
 					bypassCache: true,
 				});
 			}
@@ -1271,7 +1271,7 @@ export default class CognitoUser {
 		}
 
 		try {
-			callback(null, JSON.parse(userData));
+			callback(null, JSON.parse(userData), null);
 			return;
 		} catch (err) {
 			this.clearCachedUserData();
