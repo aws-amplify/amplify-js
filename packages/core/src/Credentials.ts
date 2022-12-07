@@ -297,6 +297,16 @@ export class CredentialsClass {
 			identityPoolRegion || region
 		);
 
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		let credentials = undefined;
 		if (identityId) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
@@ -413,6 +423,16 @@ export class CredentialsClass {
 			identityPoolRegion || region
 		);
 
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		let credentials = undefined;
 		if (identity_id) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
@@ -453,6 +473,16 @@ export class CredentialsClass {
 
 		const cognitoClient = createCognitoIdentityClient(
 			identityPoolRegion || region
+		);
+
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
 		);
 
 		/* 
