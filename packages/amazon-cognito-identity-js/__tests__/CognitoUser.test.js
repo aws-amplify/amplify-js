@@ -317,9 +317,7 @@ describe('authenticateUserInternal()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 
 	// same approach as used in CognitoUser.js
-	const authHelper = new AuthenticationHelper(
-		user.pool.getUserPoolId().split('_')[1]
-	);
+	const authHelper = new AuthenticationHelper(user.pool.getUserPoolName());
 
 	const authData = Object.assign(vCognitoUserSession, {
 		ChallengeParameters: {
@@ -1658,5 +1656,40 @@ describe('refreshSession()', () => {
 		expect(callback.mock.calls[0][0]).toMatchObject(
 			new Error('Username is null. Cannot retrieve a new session')
 		);
+	});
+
+	test('update attributes usage of three out of three parameters in callback', () => {
+		const codeDeliverDetailsResult = {
+			'CodeDeliveryDetailsList': [ 
+			   { 
+				  'AttributeName': 'email',
+				  'DeliveryMedium': 'EMAIL',
+				  'Destination': 'e***@e***'
+			   }
+			]
+		};
+		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+			.mockImplementationOnce((attrs, callback) => {
+				callback(null, 'SUCCESS', codeDeliverDetailsResult);
+		});
+		const attrs = [
+			{
+				Name: 'email',
+				Value: 'email@email.com'
+			},
+			{
+				Name: 'family_name',
+				Value: 'familyName'
+			}
+		];
+		cognitoUser.updateAttributes(
+			attrs,
+			(err, result, details) => {
+				expect(err).toBe(null);
+				expect(result).toBe('SUCCESS');
+				expect(details).toBe(codeDeliverDetailsResult);
+			} 
+		);
+		spyon.mockClear();
 	});
 });

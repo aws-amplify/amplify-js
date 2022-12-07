@@ -15,7 +15,7 @@ import { Linking } from 'react-native';
 
 import { Logger, Hub } from '@aws-amplify/core';
 import {
-	default as Auth,
+	Auth,
 	CognitoHostedUIIdentityProvider,
 } from '@aws-amplify/auth';
 

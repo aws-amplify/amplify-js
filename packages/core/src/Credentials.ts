@@ -18,12 +18,28 @@ import {
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
+import { parseAWSExports } from './parseAWSExports';
+import { Hub } from './Hub';
 
 const logger = new Logger('Credentials');
 
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 const COGNITO_IDENTITY_KEY_PREFIX = 'CognitoIdentityId-';
+
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
+
+const dispatchCredentialsEvent = (
+	event: string,
+	data: any,
+	message: string
+) => {
+	Hub.dispatch('core', { event, data, message }, 'Credentials', AMPLIFY_SYMBOL);
+};
 
 export class CredentialsClass {
 	private _config;
@@ -78,6 +94,12 @@ export class CredentialsClass {
 			this._storageSync = this._storage['sync']();
 		}
 
+		dispatchCredentialsEvent(
+			'credentials_configured',
+			null,
+			`Credentials has been configured successfully`
+		);
+
 		return this._config;
 	}
 
@@ -117,7 +139,8 @@ export class CredentialsClass {
 		const { Auth = Amplify.Auth } = this;
 
 		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
-			return Promise.reject('No Auth module registered in Amplify');
+			// If Auth module is not imported, do a best effort to get guest credentials
+			return this._setCredentialsForGuest();
 		}
 
 		if (!this._isExpired(cred) && this._isPastTTL()) {
@@ -187,7 +210,7 @@ export class CredentialsClass {
 		const MAX_DELAY_MS = 10 * 1000;
 		// refreshHandler will retry network errors, otherwise it will
 		// return NonRetryableError to break out of jitteredExponentialRetry
-		return jitteredExponentialRetry(refreshHandler, [], MAX_DELAY_MS)
+		return jitteredExponentialRetry<any>(refreshHandler, [], MAX_DELAY_MS)
 			.then(data => {
 				logger.debug('refresh federated token sucessfully', data);
 				return this._setCredentialsFromFederation({
@@ -233,7 +256,17 @@ export class CredentialsClass {
 
 	private async _setCredentialsForGuest() {
 		logger.debug('setting credentials for guest');
-		const { identityPoolId, region, mandatorySignIn } = this._config;
+		if (!this._config?.identityPoolId) {
+			// If Credentials are not configured thru Auth module,
+			// doing best effort to check if the library was configured
+			this._config = Object.assign(
+				{},
+				this._config,
+				parseAWSExports(this._config || {}).Auth
+			);
+		}
+		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } = this._config;
+
 		if (mandatorySignIn) {
 			return Promise.reject(
 				'cannot get guest credentials when mandatory signin enabled'
@@ -249,17 +282,17 @@ export class CredentialsClass {
 			);
 		}
 
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
 			);
 		}
 
-		const identityId = this._identityId = await this._getGuestIdentityId();
+		const identityId = (this._identityId = await this._getGuestIdentityId());
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -363,12 +396,12 @@ export class CredentialsClass {
 		const logins = {};
 		logins[domain] = token;
 
-		const { identityPoolId, region } = this._config;
+		const { identityPoolId, region, identityPoolRegion } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
@@ -376,7 +409,7 @@ export class CredentialsClass {
 		}
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -402,12 +435,12 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId } = this._config;
+		const { region, userPoolId, identityPoolId, identityPoolRegion } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		if (!region) {
+		if (!identityPoolRegion && !region) {
 			logger.debug('region is not configured for getting the credentials');
 			return Promise.reject(
 				'region is not configured for getting the credentials'
@@ -418,7 +451,7 @@ export class CredentialsClass {
 		logins[key] = idToken;
 
 		const cognitoClient = new CognitoIdentityClient({
-			region,
+			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -446,19 +479,14 @@ export class CredentialsClass {
 			}
 
 			const {
-				Credentials: {
-					AccessKeyId,
-					Expiration,
-					SecretKey,
-					SessionToken,
-				},
+				Credentials: { AccessKeyId, Expiration, SecretKey, SessionToken },
 				// single source of truth for the primary identity associated with the logins
 				// only if a guest identity is used for a first-time user, that guest identity will become its primary identity
 				IdentityId: primaryIdentityId,
 			} = await cognitoClient.send(
 				new GetCredentialsForIdentityCommand({
-				  IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
-				  Logins: logins,
+					IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
+					Logins: logins,
 				})
 			);
 
@@ -466,9 +494,13 @@ export class CredentialsClass {
 			if (guestIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
 				// it will be linked to the logins provided, and disqualified as an unauth identity
-				logger.debug(`The guest identity ${guestIdentityId} has been successfully linked to the logins`);
+				logger.debug(
+					`The guest identity ${guestIdentityId} has been successfully linked to the logins`
+				);
 				if (guestIdentityId === primaryIdentityId) {
-					logger.debug(`The guest identity ${guestIdentityId} has become the primary identity`);
+					logger.debug(
+						`The guest identity ${guestIdentityId} has become the primary identity`
+					);
 				}
 				// remove it from local storage to avoid being used as a guest Identity by _setCredentialsForGuest
 				await this._removeGuestIdentityId();
@@ -481,7 +513,7 @@ export class CredentialsClass {
 				sessionToken: SessionToken,
 				expiration: Expiration,
 				identityId: primaryIdentityId,
-			  };
+			};
 		};
 
 		const credentials = credentialsProvider().catch(async err => {
@@ -587,7 +619,7 @@ export class CredentialsClass {
 			await this._storageSync;
 			this._storage.setItem(
 				this._getCognitoIdentityIdStorageKey(identityPoolId),
-				identityId,
+				identityId
 			);
 		} catch (e) {
 			logger.debug('Failed to cache guest identityId', e);
@@ -625,8 +657,3 @@ export class CredentialsClass {
 export const Credentials = new CredentialsClass(null);
 
 Amplify.register(Credentials);
-
-/**
- * @deprecated use named import
- */
-export default Credentials;
