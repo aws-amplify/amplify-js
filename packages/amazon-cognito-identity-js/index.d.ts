@@ -2,6 +2,7 @@ declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	export type UpdateAttributesNodeCallback<E, T, K> = (err?: E, result?: T, details?: K) => void;
 	export namespace NodeCallback {
 		export type Any = NodeCallback<Error | undefined, any>;
 	}
@@ -221,7 +222,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string>,
+			callback: UpdateAttributesNodeCallback<Error, string, any>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(
