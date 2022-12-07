@@ -1658,40 +1658,6 @@ describe('refreshSession()', () => {
 		);
 	});
 
-	test('update attributes usage of two out of three parameters in callback', () => {
-		const codeDeliverDetailsResult = {
-			'CodeDeliveryDetailsList': [ 
-			   { 
-				  'AttributeName': 'email',
-				  'DeliveryMedium': 'EMAIL',
-				  'Destination': 'e***@e***'
-			   }
-			]
-		};
-		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
-			.mockImplementationOnce((attrs, callback) => {
-				callback(null, 'SUCCESS', codeDeliverDetailsResult);
-		});
-		const attrs = [
-			{
-				Name: 'email',
-				Value: 'email@email.com'
-			},
-			{
-				Name: 'family_name',
-				Value: 'familyName'
-			}
-		];
-		cognitoUser.updateAttributes(
-			attrs,
-			(err, result) => {
-				expect(err).toBe(null);
-				expect(result).toBe('SUCCESS');
-			} 
-		);
-		spyon.mockClear();
-	});
-
 	test('update attributes usage of three out of three parameters in callback', () => {
 		const codeDeliverDetailsResult = {
 			'CodeDeliveryDetailsList': [ 
