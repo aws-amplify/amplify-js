@@ -265,7 +265,8 @@ export class CredentialsClass {
 				parseAWSExports(this._config || {}).Auth
 			);
 		}
-		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } = this._config;
+		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } =
+			this._config;
 
 		if (mandatorySignIn) {
 			return Promise.reject(
@@ -295,6 +296,16 @@ export class CredentialsClass {
 			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
+
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
 
 		let credentials = undefined;
 		if (identityId) {
@@ -413,6 +424,16 @@ export class CredentialsClass {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		let credentials = undefined;
 		if (identity_id) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
@@ -435,7 +456,8 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId, identityPoolRegion } = this._config;
+		const { region, userPoolId, identityPoolId, identityPoolRegion } =
+			this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -454,6 +476,16 @@ export class CredentialsClass {
 			region: identityPoolRegion || region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
+
+		cognitoClient.middlewareStack.add(
+			(next, _) => (args: any) => {
+				args.request.headers['cache-control'] = 'no-store';
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
