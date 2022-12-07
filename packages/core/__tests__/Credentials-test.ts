@@ -126,6 +126,9 @@ describe('Credentials test', () => {
 							};
 						}
 					},
+					middlewareStack: {
+						add: (next, _) => {},
+					},
 				};
 			});
 
