@@ -4,7 +4,6 @@ import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
-import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -13,11 +12,10 @@ import {
 	FromCognitoIdentityPoolParameters,
 } from '@aws-sdk/credential-provider-cognito-identity';
 import {
-	CognitoIdentityClient,
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
-import { CredentialProvider, Provider } from '@aws-sdk/types';
+import { CredentialProvider } from '@aws-sdk/types';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
 import { createCognitoIdentityClient } from './Util/CognitoIdentityClient';

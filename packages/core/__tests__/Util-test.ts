@@ -7,13 +7,11 @@ import { ConsoleLogger as Logger } from '../src/Logger';
 import { urlSafeDecode, urlSafeEncode } from '../src/Util/StringUtils';
 import { DateUtils } from '../src/Util/DateUtils';
 import { createCognitoIdentityClient } from '../src/Util/CognitoIdentityClient';
-import { BuildMiddleware, HttpRequest, MiddlewareStack } from '@aws-sdk/types';
-import Client from 'amazon-cognito-identity-js/src/Client';
+import { BuildMiddleware, HttpRequest } from '@aws-sdk/types';
 import {
 	GetCredentialsForIdentityCommand,
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
-import { FromCognitoIdentityParameters } from '@aws-sdk/credential-provider-cognito-identity';
 
 Logger.LOG_LEVEL = 'DEBUG';
 
