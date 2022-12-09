@@ -826,7 +826,15 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					keyNames.forEach(key => ((draft as Object)[key] = source[key]));
+					keyNames.forEach(key => {
+						if (draft[key] !== source[key]) {
+							logger.warn(
+								`copyOf() does not update PK fields. The '${key}' update is being ignored.`,
+								{ source }
+							);
+						}
+						(draft as Object)[key] = source[key];
+					});
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
