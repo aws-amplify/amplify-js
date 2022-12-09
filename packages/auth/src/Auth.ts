@@ -241,6 +241,14 @@ export class AuthClass {
 			// See https://github.com/aws-amplify/amplify-js/issues/4388
 			const usedResponseUrls = {};
 			urlListener(({ url }) => {
+				if (
+					oauth &&
+					isCognitoHostedOpts(oauth) &&
+					!url.startsWith(oauth.redirectSignIn)
+				) {
+					return;
+				}
+
 				if (usedResponseUrls[url]) {
 					return;
 				}
