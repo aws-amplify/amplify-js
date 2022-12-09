@@ -1,81 +1,54 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Invocation } from '../../src/stateMachine/invocation';
 import { Machine } from '../../src/stateMachine/machine';
-import { MachineState } from '../../src/stateMachine/machineState';
 import {
-	MachineContext,
-	MachineEventPayload,
-	StateTransition,
+	EventBroker,
+	MachineEvent,
+	StateTransitions,
 } from '../../src/stateMachine/types';
 
-const goodEvent = {
-	name: 'event1',
+export type StateNames = 'State1' | 'State2' | 'State3';
+
+export type Event1 = {
+	name: 'event1';
 	payload: {
-		p1: 'good',
-	},
+		p1: 'good' | 'bad';
+	};
 };
 
-const badEvent = {
-	name: 'event1',
+export type Event2 = {
+	name: 'event2';
 	payload: {
-		p1: 'bad',
-	},
+		p2: 'good' | 'bad';
+	};
 };
 
-type DummyContext = MachineContext & {
+export type Events = Event1 | Event2;
+
+export type DummyContext = {
 	testSource: string;
 	testFn?: jest.Mock<any, any>;
 	optional1?: string;
 	optional2?: string;
-	actor?: Machine<DummyContext>;
 };
 
-type State1Payload = MachineEventPayload & {
-	p1?: string;
-};
-
-type State2Payload = MachineEventPayload & {
-	p2?: string;
-};
-
-const state1Name = 'State1';
-const state2Name = 'State2';
-
-function dummyMachine(
-	initialContext: DummyContext,
-	stateOneTransitions?: StateTransition<DummyContext, State1Payload>[],
-	stateOneInvocation?: Invocation<DummyContext, State1Payload>,
-	stateTwoTransitions?: StateTransition<DummyContext, State1Payload>[],
-	stateTwoInvocation?: Invocation<DummyContext, State1Payload>
-): Machine<DummyContext> {
-	return new Machine<DummyContext>({
+export function dummyMachine(params: {
+	initialContext: DummyContext;
+	stateOneTransitions?: StateTransitions<DummyContext, Events, StateNames>;
+	stateTwoTransitions?: StateTransitions<DummyContext, Events, StateNames>;
+	stateThreeTransitions?: StateTransitions<DummyContext, Events, StateNames>;
+	machineManager?: EventBroker<MachineEvent>;
+}) {
+	return new Machine<DummyContext, Events, StateNames>({
 		name: 'DummyMachine',
-		context: initialContext,
-		initial: state1Name,
-		states: [
-			new MachineState<DummyContext, State1Payload>({
-				name: state1Name,
-				transitions: stateOneTransitions,
-				invocation: stateOneInvocation,
-			}),
-			new MachineState<DummyContext, State2Payload>({
-				name: state2Name,
-				transitions: stateTwoTransitions,
-				invocation: stateTwoInvocation,
-			}),
-		],
+		context: params.initialContext,
+		initial: 'State1',
+		machineManager: params.machineManager ?? { dispatch: () => {} },
+		states: {
+			State1: params.stateOneTransitions ?? {},
+			State2: params.stateTwoTransitions ?? {},
+			State3: params.stateThreeTransitions ?? {},
+		},
 	});
 }
-
-export {
-	DummyContext,
-	State1Payload,
-	State2Payload,
-	dummyMachine,
-	state1Name,
-	state2Name,
-	goodEvent,
-	badEvent,
-};

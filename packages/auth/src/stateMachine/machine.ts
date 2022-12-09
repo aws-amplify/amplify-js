@@ -2,104 +2,110 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { MachineState } from './MachineState';
+import { v4 as uuid } from 'uuid';
 import {
+	CurrentStateAndContext,
+	EventConsumer,
 	MachineContext,
-	MachineEventPayload,
 	MachineEvent,
 	StateMachineParams,
-	StateTransition,
+	StateTransitions,
 } from './types';
+// TODO: Import from core once library build is resolved
+import { HubClass } from '@aws-amplify/core/lib-esm/Hub';
 
-// TODO: Queue
-// TODO: Listeners
-export class Machine<ContextType extends MachineContext> {
-	name: string;
-	states: Map<string, MachineState<ContextType, MachineEventPayload>>;
-	context: ContextType;
-	current: MachineState<ContextType, MachineEventPayload>;
-	constructor(params: StateMachineParams<ContextType>) {
+/**
+ * A Finite state machine implementation.
+ * @typeParam ContextType - The type of the enclosing Machine's context.
+ * @typeParam EventTypes - The type of all the possible events. Expecting a union of {@link MachineEvent} types.
+ * @typeParam StateNames - The type of all the state names. Expecting a union of strings.
+ */
+export class Machine<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent,
+	StateNames extends string
+> implements EventConsumer<EventTypes>
+{
+	private _states: Record<
+		StateNames,
+		MachineState<ContextType, EventTypes, StateNames>
+	>;
+	private _context: ContextType;
+	private _current: MachineState<ContextType, EventTypes, StateNames>;
+
+	public readonly name: string;
+	public readonly hub: HubClass;
+	public readonly hubChannel: string;
+
+	constructor(params: StateMachineParams<ContextType, EventTypes, StateNames>) {
 		this.name = params.name;
-		this.states = this._createStateMap(params.states);
-		this.context = params.context;
-		this.current = this.states.get(params.initial) || this.states[0];
+		this._context = params.context;
+		this.hub = new HubClass('auth-state-machine');
+		this.hubChannel = `${this.name}-channel`;
+
+		// TODO: validate FSM
+		this._states = Object.entries<
+			StateTransitions<ContextType, EventTypes, StateNames>
+		>(params.states as any)
+			.map(([stateName, transitions]) => {
+				const castedStateName = stateName as StateNames;
+				const machineState = new MachineState<
+					ContextType,
+					EventTypes,
+					StateNames
+				>({
+					name: castedStateName,
+					transitions: transitions,
+					machineContextGetter: () => this._context,
+					machineManager: params.machineManager,
+					hub: this.hub,
+					hubChannel: this.hubChannel,
+				});
+				return [castedStateName, machineState] as const;
+			})
+			.reduce((prev, [stateName, transitions]) => {
+				prev[stateName as string] = transitions;
+				return prev;
+			}, {} as Record<StateNames, MachineState<ContextType, EventTypes, StateNames>>);
+
+		this._current =
+			this._states[params.initial] ||
+			this._states[Object.keys(params.states)[0]];
 	}
 
 	/**
-	 * Receives an event for processing
-	 *
-	 * @typeParam PayloadType - The type of payload received in current state
-	 * @param event - The dispatched Event
+	 * Receives an event and make state transits accrodingly.
+	 * @param event - The dispatched Event.
+	 * @internal
 	 */
-	send<PayloadType extends MachineEventPayload>(
-		event: MachineEvent<PayloadType>
-	) {
-		const validTransition = this.current.findTransition(event);
-
-		///TODO: Communicate null transition
-		if (!validTransition) return;
-		const checkGuards = this._checkGuards(validTransition, event);
-		//TODO: Communicate guard failure
-		if (!checkGuards) return;
-
-		const nextState = this.states.get(validTransition.nextState);
-		//TODO: Handle error in state map
-		if (!nextState) return;
-
-		this.current = nextState;
-		this._enterState(validTransition, event);
-	}
-
-	private _enterState(
-		transition: StateTransition<ContextType, MachineEventPayload>,
-		event: MachineEvent<MachineEventPayload>
-	) {
-		this._invokeReducers(transition, event);
-		this._invokeActions(transition, event);
-		if (this.current?.invocation) {
-			this.current.invocation.machine.send(this.current.invocation.event);
+	async accept(event: EventTypes) {
+		event.id = uuid();
+		const {
+			nextState: nextStateName,
+			newContext,
+			effectsPromise,
+		} = this._current.accept(event);
+		const nextState = this._states[nextStateName];
+		if (!nextState) {
+			// TODO: handle invalid next state.
+			throw new Error('TODO: handle invalid next state.');
 		}
-	}
-
-	private _checkGuards(
-		transition: StateTransition<ContextType, MachineEventPayload>,
-		event: MachineEvent<MachineEventPayload>
-	): boolean {
-		if (!transition.guards) return true;
-		for (let g = 0; g < transition.guards.length; g++) {
-			if (!transition.guards[g](this.context, event)) {
-				return false;
-			}
+		this._current = nextState;
+		if (newContext) {
+			this._context = newContext;
 		}
-		return true;
+		await effectsPromise;
 	}
 
-	private _invokeReducers(
-		transition: StateTransition<ContextType, MachineEventPayload>,
-		event: MachineEvent<MachineEventPayload>
-	): void {
-		if (!transition.reducers) return;
-		for (let r = 0; r < transition.reducers.length; r++) {
-			transition.reducers[r](this.context, event);
-		}
-	}
-
-	private async _invokeActions(
-		transition: StateTransition<ContextType, MachineEventPayload>,
-		event: MachineEvent<MachineEventPayload>
-	): Promise<void> {
-		if (!transition.actions) return;
-		for (let r = 0; r < transition.actions.length; r++) {
-			transition.actions[r](this.context, event);
-		}
-	}
-
-	//TODO: validate states with uniqueness on name (otherwise a dupe will just be overridden in Map)
-	private _createStateMap(
-		states: MachineState<ContextType, MachineEventPayload>[]
-	): Map<string, MachineState<ContextType, MachineEventPayload>> {
-		return states.reduce(function (map, obj) {
-			map.set(obj.name, obj);
-			return map;
-		}, new Map<string, MachineState<ContextType, MachineEventPayload>>());
+	/**
+	 * Get the current state and context of the machine.
+	 * @returns The current state and context of the statemachine.
+	 * @internal
+	 */
+	getCurrentState(): CurrentStateAndContext<ContextType, StateNames> {
+		return {
+			currentState: this._current.name,
+			context: { ...this._context },
+		};
 	}
 }

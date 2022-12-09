@@ -1,163 +1,215 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { HubCapsule } from '@aws-amplify/core';
 import { noop } from 'lodash';
 import { Machine } from '../src/stateMachine/machine';
 import { StateTransition } from '../src/stateMachine/types';
 import {
-	badEvent,
 	DummyContext,
-	dummyMachine,
-	goodEvent,
-	state1Name,
-	State1Payload,
-	state2Name,
-} from './utils/dummyMachine';
+	Event1,
+	Event2,
+	Events,
+	StateNames,
+} from './utils/dummyEventsAndTypes';
+import { dummyMachine } from './utils/dummyMachine';
 
-let machine: Machine<DummyContext>;
-let stateOneTransitions: StateTransition<DummyContext, State1Payload>[];
+let machine: Machine<DummyContext, Events, StateNames>;
 const testSource = 'state-machine-single-tests';
+const goodEvent1: Event1 = { name: 'event1', payload: { p1: 'good' } };
+const badEvent1: Event1 = { name: 'event1', payload: { p1: 'bad' } };
 
 describe('State machine instantiation tests...', () => {
-	beforeAll(() => {
-		stateOneTransitions = [
-			{
-				event: 'event1',
-				nextState: state2Name,
+	beforeEach(() => {
+		machine = dummyMachine({
+			initialContext: { testSource },
+			stateOneTransitions: {
+				event1: [
+					{
+						nextState: 'State2',
+					},
+				],
 			},
-		];
-		machine = dummyMachine({ testSource }, stateOneTransitions);
+		});
 	});
 
 	test('...the SM can be instantiated', () => {
 		expect(machine).toBeTruthy();
 	});
 
-	test('...the SM state map has been created', () => {
-		const expectedState1 = machine?.states.get(state1Name);
-		const expectedState2 = machine?.states.get(state2Name);
-		expect(machine?.states.size).toEqual(2);
-		expect(expectedState1).toBeDefined();
-		expect(expectedState2).toBeDefined();
+	test("...the SM's initial context is set", async () => {
+		const currentStateAndContext = machine.getCurrentState();
+		expect(currentStateAndContext.context.testSource).toEqual(testSource);
 	});
 
-	test("...the SM's initial context is set", () => {
-		expect(machine?.context.testSource).toEqual(testSource);
+	test("...the SM's initial state is set", async () => {
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext?.currentState).toEqual('State1');
 	});
 
-	test("...the SM's initial state is set", () => {
-		expect(machine?.current?.name).toEqual(state1Name);
-	});
-
-	test('...the SM performs a simple state transition', () => {
-		machine?.send<State1Payload>(goodEvent);
-		expect(machine?.current?.name).toEqual(state2Name);
+	test('...the SM performs a simple state transition', async () => {
+		await machine?.accept(goodEvent1);
+		expect(machine?.getCurrentState()?.currentState).toEqual('State2');
 	});
 });
 
 describe('State machine guard tests...', () => {
 	beforeEach(() => {
-		stateOneTransitions = [
-			{
-				event: 'event1',
-				nextState: state2Name,
-				guards: [
-					(ctx, evt) => {
-						return evt.payload?.p1 == 'good';
+		machine = dummyMachine({
+			initialContext: { testSource },
+			stateOneTransitions: {
+				event1: [
+					{
+						nextState: 'State2',
+						guards: [(ctxt, event1) => event1.payload.p1 == 'bad'],
 					},
 				],
 			},
-		];
-		machine = dummyMachine({ testSource }, stateOneTransitions);
+		});
 	});
 
-	test('...the state transitions if guard passes', () => {
-		machine?.send<State1Payload>(goodEvent);
-		expect(machine?.current?.name).toEqual(state2Name);
+	test('...the state transitions if guard passes', async () => {
+		await machine?.accept(goodEvent1);
+		expect(machine?.getCurrentState().currentState).toEqual('State2');
 	});
 
-	test('...the state transitions does not transition if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
-		expect(machine?.current?.name).toEqual(state1Name);
+	test('...the state transitions does not transition if guard fails', async () => {
+		await machine?.accept({ name: 'event1', payload: { p1: 'bad' } });
+		expect(machine?.getCurrentState().currentState).toEqual('State1');
 	});
 });
 
-describe('State machine action tests...', () => {
+describe('State machine effect tests...', () => {
+	const mockDispatch = jest.fn();
+	const goodEvent2: Event2 = {
+		name: 'event2',
+		payload: { p2: 'good' },
+	};
+
 	beforeEach(() => {
-		const jestMock = jest.fn(() => {});
-		stateOneTransitions = [
-			{
-				event: 'event1',
-				nextState: state2Name,
-				guards: [
-					(_, evt) => {
-						return evt.payload?.p1 == 'good';
-					},
-				],
-				actions: [
-					async (ctx, _) => {
-						ctx.testFn ? ctx.testFn() : noop;
+		const jestMock = jest.fn();
+		machine = dummyMachine({
+			initialContext: { testSource, testFn: jestMock },
+			stateOneTransitions: {
+				event1: [
+					{
+						nextState: 'State2',
+						guards: [(ctx, event1) => event1.payload.p1 == 'bad'],
+						effects: [
+							async (ctx, even1, broker) => {
+								ctx?.testFn ? ctx.testFn() : noop;
+								broker.dispatch(goodEvent2);
+							},
+						],
 					},
 				],
 			},
-		];
-		machine = dummyMachine(
-			{ testSource, testFn: jestMock },
-			stateOneTransitions
-		);
+			machineManager: { dispatch: mockDispatch },
+		});
 	});
 
-	test('...the actions do not fire before transition', () => {
-		expect(machine?.context.testFn).toHaveBeenCalledTimes(0);
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
-	test('...the actions fire after transition', () => {
-		machine?.send<State1Payload>(goodEvent);
-		expect(machine?.context.testFn).toHaveBeenCalledTimes(1);
+	test('...the effects do not fire before transition', async () => {
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.context.testFn).toHaveBeenCalledTimes(0);
 	});
 
-	test('...the actions do not fire if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
-		expect(machine?.context.testFn).toHaveBeenCalledTimes(0);
+	test('...the effects fire after transition', async () => {
+		await machine?.accept(goodEvent1);
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.context.testFn).toHaveBeenCalledTimes(1);
+	});
+
+	test('...the effects do not fire if guard fails', async () => {
+		await machine?.accept(badEvent1);
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.context.testFn).toHaveBeenCalledTimes(0);
+	});
+
+	test('...the effects can dispath new event to machine manager', async () => {
+		await machine?.accept(goodEvent1);
+		expect(mockDispatch).toBeCalledTimes(1);
+		expect(mockDispatch).toBeCalledWith(goodEvent2);
 	});
 });
 
 describe('State machine reducer tests...', () => {
+	const mockDispatch = jest.fn();
+
 	beforeEach(() => {
 		const jestMock = jest.fn(() => {});
-		stateOneTransitions = [
-			{
-				event: 'event1',
-				nextState: state2Name,
-				guards: [
-					(_, evt) => {
-						return evt.payload?.p1 == 'good';
-					},
-				],
-				reducers: [
-					(ctx, evt) => {
-						ctx.optional1 = evt.payload?.p1;
+		machine = dummyMachine({
+			initialContext: { testSource, testFn: jestMock },
+			stateOneTransitions: {
+				event1: [
+					{
+						nextState: 'State2',
+						guards: [(ctx, event1) => event1.payload.p1 == 'bad'],
+						reducers: [
+							(ctx, even1) => {
+								ctx.optional1 = even1.payload.p1;
+								return ctx;
+							},
+						],
 					},
 				],
 			},
-		];
-		machine = dummyMachine(
-			{ testSource, testFn: jestMock },
-			stateOneTransitions
-		);
+			stateTwoTransitions: {
+				event1: [
+					{
+						nextState: 'State2',
+						effects: [
+							async (ctx, event1, broker) => {
+								broker.dispatch({
+									name: 'CurrentContext',
+									payload: {
+										context: ctx,
+									},
+								});
+							},
+						],
+					},
+				],
+			},
+			machineManager: { dispatch: mockDispatch },
+		});
 	});
 
-	test('...the reducer is not invoked before transition ', () => {
-		expect(machine?.context.optional1).toBeFalsy();
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
-	test('...the reducers fire after transition', () => {
-		machine?.send<State1Payload>(goodEvent);
-		expect(machine?.context.optional1).toEqual('good');
+	test('...the reducer is not invoked before transition ', async () => {
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.context.optional1).toBeFalsy();
 	});
 
-	test('...the reducers do not fire if guard fails', () => {
-		machine?.send<State1Payload>(badEvent);
-		expect(machine?.context.optional1).toBeFalsy();
+	test('...the reducers fire after transition', async () => {
+		await machine?.accept(goodEvent1);
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.context.optional1).toEqual('good');
+	});
+
+	test('...the reducers do not fire if guard fails', async () => {
+		await machine?.accept(badEvent1);
+		const currentStateAndContext = await machine?.getCurrentState();
+		expect(currentStateAndContext.context.optional1).toBeFalsy();
+	});
+
+	test("...the reducers's update shared across the states", async () => {
+		await machine?.accept(goodEvent1);
+		const currentStateAndContext = machine?.getCurrentState();
+		expect(currentStateAndContext.currentState).toEqual('State2');
+		await machine?.accept(goodEvent1);
+		expect(mockDispatch).toBeCalledTimes(1);
+		expect(mockDispatch).toBeCalledWith({
+			name: 'CurrentContext',
+			payload: {
+				context: expect.objectContaining({ optional1: 'good' }),
+			},
+		});
 	});
 });
