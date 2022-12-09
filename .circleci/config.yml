@@ -1366,7 +1366,7 @@ jobs:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs basic'
-          framework: nextjs
+          framework: next
           category: datastore
           sample_name: nextjs-13-basic
           spec: nextjs-13-basic
@@ -1383,7 +1383,7 @@ jobs:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs TS'
-          framework: nextjs
+          framework: next
           category: datastore
           sample_name: nextjs-13
           spec: nextjs-13
@@ -1400,7 +1400,7 @@ jobs:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs JS'
-          framework: nextjs
+          framework: next
           category: datastore
           sample_name: nextjs-13-js
           spec: nextjs-13
