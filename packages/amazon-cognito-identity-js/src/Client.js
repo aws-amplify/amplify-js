@@ -86,7 +86,7 @@ export default class Client {
 			headers,
 			method: 'POST',
 			mode: 'cors',
-			cache: 'no-store',
+			cache: 'no-cache',
 			body: JSON.stringify(params),
 		});
 
