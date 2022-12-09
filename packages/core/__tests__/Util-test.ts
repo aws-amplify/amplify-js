@@ -6,6 +6,14 @@ import Reachability from '../src/Util/Reachability';
 import { ConsoleLogger as Logger } from '../src/Logger';
 import { urlSafeDecode, urlSafeEncode } from '../src/Util/StringUtils';
 import { DateUtils } from '../src/Util/DateUtils';
+import { createCognitoIdentityClient } from '../src/Util/CognitoIdentityClient';
+import { BuildMiddleware, HttpRequest, MiddlewareStack } from '@aws-sdk/types';
+import Client from 'amazon-cognito-identity-js/src/Client';
+import {
+	GetCredentialsForIdentityCommand,
+	GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
+import { FromCognitoIdentityParameters } from '@aws-sdk/credential-provider-cognito-identity';
 
 Logger.LOG_LEVEL = 'DEBUG';
 
@@ -47,6 +55,60 @@ describe('Util', () => {
 		test('urlSafeDecode', () => {
 			expect(urlSafeDecode('736f6d652f706174683f746f2d7768617465766572')).toBe(
 				'some/path?to-whatever'
+			);
+		});
+	});
+
+	describe('cognito identity client test', () => {
+		test('client should be instantiated', async () => {
+			const cognitoClient = createCognitoIdentityClient('us-west-1');
+			expect(cognitoClient).toBeTruthy();
+		});
+
+		test('headers should be added by middleware on GetIdCommand', async () => {
+			const requestCacheHeaderValidator: BuildMiddleware<any, any> =
+				next => async args => {
+					// middleware intercept the request and return it early
+					const request = args.request as HttpRequest;
+					const { headers } = request;
+					expect(headers['cache-control']).toEqual('no-store');
+					return { output: {} as any, response: {} as any };
+				};
+
+			const client = createCognitoIdentityClient('us-west-1');
+			client.middlewareStack.addRelativeTo(requestCacheHeaderValidator, {
+				relation: 'after',
+				toMiddleware: 'cacheControlMiddleWare',
+			});
+
+			return await client.send(
+				new GetIdCommand({
+					IdentityPoolId: 'us-west-1:12345678-1234-1234-1234-123456789000',
+				})
+			);
+		});
+
+		test('headers should be added by middleware on GetCredentialsForIdentityCommand', async () => {
+			const requestCacheHeaderValidator: BuildMiddleware<any, any> =
+				next => async args => {
+					// middleware intercept the request and return it early
+					const request = args.request as HttpRequest;
+					const { headers } = request;
+					expect(headers['cache-control']).toEqual('no-store');
+					return { output: {} as any, response: {} as any };
+				};
+
+			const client = createCognitoIdentityClient('us-west-1');
+			client.middlewareStack.addRelativeTo(requestCacheHeaderValidator, {
+				relation: 'after',
+				toMiddleware: 'cacheControlMiddleWare',
+			});
+
+			return await client.send(
+				new GetCredentialsForIdentityCommand({
+					IdentityId: '1234',
+					Logins: {},
+				})
 			);
 		});
 	});

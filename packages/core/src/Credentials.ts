@@ -17,9 +17,10 @@ import {
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
-import { CredentialProvider } from '@aws-sdk/types';
+import { CredentialProvider, Provider } from '@aws-sdk/types';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
+import { createCognitoIdentityClient } from './Util/CognitoIdentityClient';
 
 const logger = new Logger('Credentials');
 
@@ -292,19 +293,8 @@ export class CredentialsClass {
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
-		const cognitoClient = new CognitoIdentityClient({
-			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
-
-		cognitoClient.middlewareStack.add(
-			(next, _) => (args: any) => {
-				args.request.headers['cache-control'] = 'no-store';
-				return next(args);
-			},
-			{
-				step: 'build',
-			}
+		const cognitoClient = createCognitoIdentityClient(
+			identityPoolRegion || region
 		);
 
 		let credentials = undefined;
@@ -419,19 +409,8 @@ export class CredentialsClass {
 			);
 		}
 
-		const cognitoClient = new CognitoIdentityClient({
-			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
-
-		cognitoClient.middlewareStack.add(
-			(next, _) => (args: any) => {
-				args.request.headers['cache-control'] = 'no-store';
-				return next(args);
-			},
-			{
-				step: 'build',
-			}
+		const cognitoClient = createCognitoIdentityClient(
+			identityPoolRegion || region
 		);
 
 		let credentials = undefined;
@@ -472,19 +451,8 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoClient = new CognitoIdentityClient({
-			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
-
-		cognitoClient.middlewareStack.add(
-			(next, _) => (args: any) => {
-				args.request.headers['cache-control'] = 'no-store';
-				return next(args);
-			},
-			{
-				step: 'build',
-			}
+		const cognitoClient = createCognitoIdentityClient(
+			identityPoolRegion || region
 		);
 
 		/* 
