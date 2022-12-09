@@ -391,6 +391,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout ds-nextjs-13
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
@@ -1354,6 +1355,57 @@ jobs:
           spec: nested-predicate
           browser: << parameters.browser >>
 
+  integ_next_datastore_13_basic:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13-basic
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs basic'
+          framework: nextjs
+          category: datastore
+          sample_name: nextjs-13-basic
+          spec: nextjs-13-basic
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs TS'
+          framework: nextjs
+          category: datastore
+          sample_name: nextjs-13
+          spec: nextjs-13
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13_js:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs JS'
+          framework: nextjs
+          category: datastore
+          sample_name: nextjs-13-js
+          spec: nextjs-13
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1407,6 +1459,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - ds-nextjs-workaround
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1910,7 +1963,33 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
+      - integ_next_datastore_13_basic:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1970,6 +2049,9 @@ workflows:
             - integ_react_api_reconnect
             - integ_react_datastore_selective_sync
             - integ_react_datastore_nested_predicate
+            - integ_next_datastore_13_basic
+            - integ_next_datastore_13
+            - integ_next_datastore_13_js
       - post_release:
           filters:
             branches:
