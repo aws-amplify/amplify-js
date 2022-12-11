@@ -6,13 +6,13 @@ import { noop } from 'lodash';
 import { Machine } from '../src/stateMachine/machine';
 import { StateTransition } from '../src/stateMachine/types';
 import {
+	dummyMachine,
 	DummyContext,
 	Event1,
 	Event2,
 	Events,
 	StateNames,
-} from './utils/dummyEventsAndTypes';
-import { dummyMachine } from './utils/dummyMachine';
+} from './utils/dummyMachine';
 
 let machine: Machine<DummyContext, Events, StateNames>;
 const testSource = 'state-machine-single-tests';
