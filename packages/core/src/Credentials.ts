@@ -291,9 +291,9 @@ export class CredentialsClass {
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
-		const cognitoClient = createCognitoIdentityClient(
-			identityPoolRegion || region
-		);
+		const cognitoClient = createCognitoIdentityClient({
+			region: identityPoolRegion || region,
+		});
 
 		let credentials = undefined;
 		if (identityId) {
@@ -407,9 +407,9 @@ export class CredentialsClass {
 			);
 		}
 
-		const cognitoClient = createCognitoIdentityClient(
-			identityPoolRegion || region
-		);
+		const cognitoClient = createCognitoIdentityClient({
+			region: identityPoolRegion || region,
+		});
 
 		let credentials = undefined;
 		if (identity_id) {
@@ -449,9 +449,9 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoClient = createCognitoIdentityClient(
-			identityPoolRegion || region
-		);
+		const cognitoClient = createCognitoIdentityClient({
+			region: identityPoolRegion || region,
+		});
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:

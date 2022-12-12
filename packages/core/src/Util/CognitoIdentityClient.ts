@@ -1,20 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CognitoIdentityClient } from '@aws-sdk/client-cognito-identity';
+import {
+	CognitoIdentityClient,
+	CognitoIdentityClientConfig,
+} from '@aws-sdk/client-cognito-identity';
 import { Provider } from '@aws-sdk/types';
 import { getAmplifyUserAgent } from '../Platform';
 
 /**
  * Returns a CognitoIdentityClient with middleware
- * @param {string} region
+ * @param {CognitoIdentityClientConfig} config
  * @return {CognitoIdentityClient}
  */
 export function createCognitoIdentityClient(
-	region: string | Provider<string> | undefined
+	config: CognitoIdentityClientConfig
 ): CognitoIdentityClient {
 	const client = new CognitoIdentityClient({
-		region,
+		region: config.region,
 		customUserAgent: getAmplifyUserAgent(),
 	});
 
@@ -31,7 +34,7 @@ export function createCognitoIdentityClient(
 	return client;
 }
 
-function middlewareArgs(args: { request: { headers: any }; input: any }) {
+export function middlewareArgs(args: { request: any; input: any }) {
 	return {
 		...args,
 		request: {
