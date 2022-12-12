@@ -1972,15 +1972,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_next_datastore_13:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_next_datastore_13:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - integ_next_datastore_13_js:
           requires:
             - integ_setup
