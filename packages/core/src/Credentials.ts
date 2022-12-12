@@ -4,7 +4,6 @@ import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
-import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -13,13 +12,13 @@ import {
 	FromCognitoIdentityPoolParameters,
 } from '@aws-sdk/credential-provider-cognito-identity';
 import {
-	CognitoIdentityClient,
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
+import { createCognitoIdentityClient } from './Util/CognitoIdentityClient';
 
 const logger = new Logger('Credentials');
 
@@ -265,7 +264,8 @@ export class CredentialsClass {
 				parseAWSExports(this._config || {}).Auth
 			);
 		}
-		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } = this._config;
+		const { identityPoolId, region, mandatorySignIn, identityPoolRegion } =
+			this._config;
 
 		if (mandatorySignIn) {
 			return Promise.reject(
@@ -291,9 +291,8 @@ export class CredentialsClass {
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		let credentials = undefined;
@@ -408,9 +407,8 @@ export class CredentialsClass {
 			);
 		}
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		let credentials = undefined;
@@ -435,7 +433,8 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId, identityPoolRegion } = this._config;
+		const { region, userPoolId, identityPoolId, identityPoolRegion } =
+			this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -450,9 +449,8 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region: identityPoolRegion || region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		/* 
