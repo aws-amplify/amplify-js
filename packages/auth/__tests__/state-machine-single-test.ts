@@ -108,7 +108,7 @@ describe('State machine effect tests...', () => {
 							async (ctx, event1, broker) => {
 								broker.dispatch({
 									...goodEvent2,
-									machineName: 'SomeOtherMachine',
+									toMachine: 'SomeOtherMachine',
 								});
 							},
 						],
@@ -145,7 +145,7 @@ describe('State machine effect tests...', () => {
 		expect(mockDispatch).toBeCalledTimes(1);
 		expect(mockDispatch).toBeCalledWith({
 			...goodEvent2,
-			machineName: 'DummyMachine',
+			toMachine: 'DummyMachine',
 		});
 	});
 
@@ -154,7 +154,7 @@ describe('State machine effect tests...', () => {
 		expect(mockDispatch).toBeCalledTimes(1);
 		expect(mockDispatch).toBeCalledWith({
 			...goodEvent2,
-			machineName: 'SomeOtherMachine',
+			toMachine: 'SomeOtherMachine',
 		});
 	});
 });

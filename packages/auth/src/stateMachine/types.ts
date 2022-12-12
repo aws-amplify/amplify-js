@@ -5,16 +5,20 @@ export type MachineContext = {};
 
 /**
  * The type accepted by Machine's send method
+ * @param name - The name of the event.
+ * @param paylaod - The payload of the event.
+ * @param id - Optional id of the event to track an individual event.
+ * @param toMachine - Optional name of machine the event is sent to.
  */
 export type MachineEvent = {
 	name: string;
 	payload: unknown;
 	id?: string;
-	machineName?: string;
+	toMachine?: string;
 };
 
 /**
- *
+ * @internal
  */
 export type EventProducer = {
 	addListener: (broker: EventBroker<MachineEvent>) => void;
