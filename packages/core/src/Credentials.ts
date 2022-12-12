@@ -4,7 +4,6 @@ import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
-import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
 import {
 	fromCognitoIdentity,
@@ -13,11 +12,11 @@ import {
 	FromCognitoIdentityPoolParameters,
 } from '@aws-sdk/credential-provider-cognito-identity';
 import {
-	CognitoIdentityClient,
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
+import { createCognitoIdentityClient } from './Util/CognitoIdentityClient';
 
 const logger = new Logger('Credentials');
 
@@ -258,9 +257,8 @@ export class CredentialsClass {
 
 		const identityId = (this._identityId = await this._getGuestIdentityId());
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		let credentials = undefined;
@@ -375,9 +373,8 @@ export class CredentialsClass {
 			);
 		}
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		let credentials = undefined;
@@ -417,9 +414,8 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoClient = new CognitoIdentityClient({
+		const cognitoClient = createCognitoIdentityClient({
 			region,
-			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		/* 
