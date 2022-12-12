@@ -5,7 +5,9 @@ import { MachineState } from './MachineState';
 import { v4 as uuid } from 'uuid';
 import {
 	CurrentStateAndContext,
+	EventBroker,
 	EventConsumer,
+	EventProducer,
 	MachineContext,
 	MachineEvent,
 	StateMachineParams,
@@ -24,7 +26,7 @@ export class Machine<
 	ContextType extends MachineContext,
 	EventTypes extends MachineEvent,
 	StateNames extends string
-> implements EventConsumer<EventTypes>
+> implements EventConsumer<EventTypes>, EventProducer
 {
 	private _states: Record<
 		StateNames,
@@ -32,6 +34,7 @@ export class Machine<
 	>;
 	private _context: ContextType;
 	private _current: MachineState<ContextType, EventTypes, StateNames>;
+	private _eventBrokers: EventBroker<MachineEvent>[];
 
 	public readonly name: string;
 	public readonly hub: HubClass;
@@ -40,8 +43,19 @@ export class Machine<
 	constructor(params: StateMachineParams<ContextType, EventTypes, StateNames>) {
 		this.name = params.name;
 		this._context = params.context;
+		this._eventBrokers = [];
 		this.hub = new HubClass('auth-state-machine');
 		this.hubChannel = `${this.name}-channel`;
+
+		const dispatchToBrokers = event => {
+			if (!event.machineName) {
+				// By default, the emitted events will be routed back to current state machine;
+				event.machineName = this.name;
+			}
+			for (const broker of this._eventBrokers) {
+				broker.dispatch(event);
+			}
+		};
 
 		// TODO: validate FSM
 		this._states = Object.entries<
@@ -57,7 +71,9 @@ export class Machine<
 					name: castedStateName,
 					transitions: transitions,
 					machineContextGetter: () => this._context,
-					machineManager: params.machineManager,
+					machineManager: {
+						dispatch: dispatchToBrokers,
+					},
 					hub: this.hub,
 					hubChannel: this.hubChannel,
 				});
@@ -107,5 +123,13 @@ export class Machine<
 			currentState: this._current.name,
 			context: { ...this._context },
 		};
+	}
+
+	/**
+	 *
+	 * @param broker
+	 */
+	addListener(broker: EventBroker<MachineEvent>): void {
+		this._eventBrokers.push(broker);
 	}
 }

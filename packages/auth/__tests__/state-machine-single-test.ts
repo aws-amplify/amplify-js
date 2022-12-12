@@ -1,10 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HubCapsule } from '@aws-amplify/core';
 import { noop } from 'lodash';
 import { Machine } from '../src/stateMachine/machine';
-import { StateTransition } from '../src/stateMachine/types';
 import {
 	dummyMachine,
 	DummyContext,
@@ -103,9 +101,22 @@ describe('State machine effect tests...', () => {
 						],
 					},
 				],
+				event2: [
+					{
+						nextState: 'State2',
+						effects: [
+							async (ctx, event1, broker) => {
+								broker.dispatch({
+									...goodEvent2,
+									machineName: 'SomeOtherMachine',
+								});
+							},
+						],
+					},
+				],
 			},
-			machineManager: { dispatch: mockDispatch },
 		});
+		machine.addListener({ dispatch: mockDispatch });
 	});
 
 	afterEach(() => {
@@ -129,10 +140,22 @@ describe('State machine effect tests...', () => {
 		expect(currentStateAndContext.context.testFn).toHaveBeenCalledTimes(0);
 	});
 
-	test('...the effects can dispath new event to machine manager', async () => {
+	test('...the effects can dispath new event to event broker', async () => {
 		await machine?.accept(goodEvent1);
 		expect(mockDispatch).toBeCalledTimes(1);
-		expect(mockDispatch).toBeCalledWith(goodEvent2);
+		expect(mockDispatch).toBeCalledWith({
+			...goodEvent2,
+			machineName: 'DummyMachine',
+		});
+	});
+
+	test('...the effects can dispath new event with different machine name', async () => {
+		await machine?.accept(goodEvent2);
+		expect(mockDispatch).toBeCalledTimes(1);
+		expect(mockDispatch).toBeCalledWith({
+			...goodEvent2,
+			machineName: 'SomeOtherMachine',
+		});
 	});
 });
 
@@ -174,8 +197,9 @@ describe('State machine reducer tests...', () => {
 					},
 				],
 			},
-			machineManager: { dispatch: mockDispatch },
 		});
+
+		machine.addListener({ dispatch: mockDispatch });
 	});
 
 	afterEach(() => {
@@ -205,11 +229,13 @@ describe('State machine reducer tests...', () => {
 		expect(currentStateAndContext.currentState).toEqual('State2');
 		await machine?.accept(goodEvent1);
 		expect(mockDispatch).toBeCalledTimes(1);
-		expect(mockDispatch).toBeCalledWith({
-			name: 'CurrentContext',
-			payload: {
-				context: expect.objectContaining({ optional1: 'good' }),
-			},
-		});
+		expect(mockDispatch).toBeCalledWith(
+			expect.objectContaining({
+				name: 'CurrentContext',
+				payload: {
+					context: expect.objectContaining({ optional1: 'good' }),
+				},
+			})
+		);
 	});
 });

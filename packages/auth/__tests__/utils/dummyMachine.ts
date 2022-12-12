@@ -38,13 +38,11 @@ export function dummyMachine(params: {
 	stateOneTransitions?: StateTransitions<DummyContext, Events, StateNames>;
 	stateTwoTransitions?: StateTransitions<DummyContext, Events, StateNames>;
 	stateThreeTransitions?: StateTransitions<DummyContext, Events, StateNames>;
-	machineManager?: EventBroker<MachineEvent>;
 }) {
 	return new Machine<DummyContext, Events, StateNames>({
 		name: 'DummyMachine',
 		context: params.initialContext,
 		initial: 'State1',
-		machineManager: params.machineManager ?? { dispatch: () => {} },
 		states: {
 			State1: params.stateOneTransitions ?? {},
 			State2: params.stateTwoTransitions ?? {},

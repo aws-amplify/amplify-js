@@ -10,12 +10,26 @@ export type MachineEvent = {
 	name: string;
 	payload: unknown;
 	id?: string;
+	machineName?: string;
 };
 
+/**
+ *
+ */
+export type EventProducer = {
+	addListener: (broker: EventBroker<MachineEvent>) => void;
+};
+
+/**
+ * @internal
+ */
 export type EventBroker<EventType extends MachineEvent> = {
 	dispatch: (event: EventType) => void;
 };
 
+/**
+ * @internal
+ */
 export type EventConsumer<EventType extends MachineEvent> = {
 	accept: (event: EventType) => Promise<void>;
 };
@@ -40,7 +54,6 @@ export type StateMachineParams<
 	states: MachineStateParams<ContextType, EventTypes, StateNames>;
 	context: ContextType;
 	initial: StateNames;
-	machineManager: EventBroker<MachineEvent>;
 };
 
 /**
