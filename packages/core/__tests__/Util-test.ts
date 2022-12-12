@@ -66,6 +66,7 @@ describe('Util', () => {
 				region: 'us-west-1',
 			});
 			expect(cognitoClient).toBeTruthy();
+			expect.assertions(1);
 		});
 
 		test('middlewareArgs helper should merge headers into request object', async () => {
@@ -79,6 +80,7 @@ describe('Util', () => {
 			});
 			expect(args.request.headers['test-header']).toEqual('1234');
 			expect(args.request.headers['cache-control']).toEqual('no-store');
+			expect.assertions(2);
 		});
 
 		test('headers should be added by middleware on GetIdCommand', async () => {
