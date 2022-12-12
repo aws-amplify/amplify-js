@@ -1364,28 +1364,11 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'DataStore - Nextjs basic'
+          test_name: 'DataStore - Nextjs 13 build with SWC - basic JS app'
           framework: next
           category: datastore
           sample_name: next-13-basic
           spec: nextjs-13-basic
-          browser: << parameters.browser >>
-
-  integ_next_datastore_13:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'DataStore - Nextjs TS'
-          framework: next
-          category: datastore
-          sample_name: next-13
-          spec: nextjs-13
           browser: << parameters.browser >>
 
   integ_next_datastore_13_js:
@@ -1398,7 +1381,7 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'DataStore - Nextjs JS'
+          test_name: 'DataStore - Nextjs 13 build with SWC - JS app'
           framework: next
           category: datastore
           sample_name: next-13-js
@@ -1970,15 +1953,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_next_datastore_13:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
       - integ_next_datastore_13_js:
           requires:
             - integ_setup
@@ -2048,7 +2022,6 @@ workflows:
             - integ_react_datastore_selective_sync
             - integ_react_datastore_nested_predicate
             - integ_next_datastore_13_basic
-            # - integ_next_datastore_13
             - integ_next_datastore_13_js
       - post_release:
           filters:
