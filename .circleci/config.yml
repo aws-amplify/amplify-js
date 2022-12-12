@@ -2050,7 +2050,7 @@ workflows:
             - integ_react_datastore_selective_sync
             - integ_react_datastore_nested_predicate
             - integ_next_datastore_13_basic
-            - integ_next_datastore_13
+            # - integ_next_datastore_13
             - integ_next_datastore_13_js
       - post_release:
           filters:
