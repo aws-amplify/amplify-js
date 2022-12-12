@@ -1361,14 +1361,14 @@ jobs:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13-basic
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-basic
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs basic'
           framework: next
           category: datastore
-          sample_name: nextjs-13-basic
+          sample_name: next-13-basic
           spec: nextjs-13-basic
           browser: << parameters.browser >>
 
@@ -1378,14 +1378,14 @@ jobs:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs TS'
           framework: next
           category: datastore
-          sample_name: nextjs-13
+          sample_name: next-13
           spec: nextjs-13
           browser: << parameters.browser >>
 
@@ -1395,14 +1395,14 @@ jobs:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/nextjs-13-js
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-js
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'DataStore - Nextjs JS'
           framework: next
           category: datastore
-          sample_name: nextjs-13-js
+          sample_name: next-13-js
           spec: nextjs-13
           browser: << parameters.browser >>
 
