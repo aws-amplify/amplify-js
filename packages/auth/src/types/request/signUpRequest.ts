@@ -10,6 +10,5 @@ export type SignUpRequest<
 > = {
 	username: string;
 	password: string;
-	userId?: string;
 	options?: AuthSignUpOptions<UserAttributeKey, PluginOptions>;
 };

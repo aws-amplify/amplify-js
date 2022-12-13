@@ -90,7 +90,7 @@ export class AuthClass {
 	}
 
 	signUp<PluginOptions extends AuthPluginOptions>(req: SignUpRequest<string, PluginOptions>): Promise<AuthSignUpResult<string>>;
-	signUp<PluginOptions extends AuthPluginOptions>(req:SignUpRequest<CognitoUserAttributeKey, PluginOptions>):Promise<AuthSignUpResult<CognitoUserAttributeKey>>
+	signUp<PluginOptions extends AuthPluginOptions>(req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>): Promise<AuthSignUpResult<CognitoUserAttributeKey>>
 	{
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signUp(req);

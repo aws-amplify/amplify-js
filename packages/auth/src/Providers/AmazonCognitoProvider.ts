@@ -67,8 +67,9 @@ export class AmazonCognitoProvider implements AuthProvider {
 		}
 
 		let userAttr: AttributeType[] | undefined;
-		if (req.options?.userAttributes) {
-			userAttr = req.options.userAttributes.map(obj => ({
+		const attrs = req.options?.userAttributes;
+		if (attrs) {
+			userAttr = attrs.map(obj => ({
 				Name: obj.userAttributeKey,
 				Value: obj.value
 			}));
@@ -76,8 +77,8 @@ export class AmazonCognitoProvider implements AuthProvider {
 
 		let validationData: AttributeType[] | undefined;
 		let clientMetadata: Record<string, string> | undefined;
-		if (req.options?.pluginOptions) {
-			const pluginOptions = req.options.pluginOptions;
+		const pluginOptions = req.options?.pluginOptions;
+		if (pluginOptions) {
 			const validationDataObject: ValidationData = pluginOptions['ValidationData'];
 			if (validationDataObject) {
 				validationData = Object.entries(validationDataObject).map(([key, value]) => ({
@@ -101,14 +102,15 @@ export class AmazonCognitoProvider implements AuthProvider {
 					}
 				};
 			} else {
+				const codeDeliveryDetails = signUpCommandOutput.CodeDeliveryDetails;
 				result = {
 					isSignUpComplete: false,
 					nextStep: {
 						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 						codeDeliveryDetails: {
-							deliveryMedium: signUpCommandOutput.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
-							destination: signUpCommandOutput.CodeDeliveryDetails?.Destination as string,
-							attributeName: signUpCommandOutput.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
+							deliveryMedium: codeDeliveryDetails.DeliveryMedium as DeliveryMedium,
+							destination: codeDeliveryDetails.Destination as string,
+							attributeName: codeDeliveryDetails.AttributeName as CognitoUserAttributeKey
 						}
 					}
 				}

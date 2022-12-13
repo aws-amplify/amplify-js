@@ -47,7 +47,7 @@ export const createSignUpCommand = (
 	password: string,
 	userAttributes?: AttributeType[],
 	validationData?: AttributeType[],
-	clientMetadata?
+	clientMetadata?: Record<string, string>
 ): SignUpCommand => {
 	const signUpCommandInput: SignUpCommandInput = {
 		ClientId: clientId,
@@ -68,8 +68,7 @@ export const createSignUpCommand = (
 
 export const sendCommand = async (client:CognitoIdentityProviderClient, command) => {
 	try {
-		const commandOutput = await client.send(command);
-		return commandOutput;
+		return await client.send(command);
 	} catch (error) {
 		throw error; // TODO change when AuthErrors are defined
 	}
