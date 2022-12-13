@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthOptions } from '../types';
-import { ChallengeNameType, CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
+import { AttributeType, ChallengeNameType, CognitoIdentityProviderClient, SignUpCommand, SignUpCommandInput } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthSignInStep } from '../types';
+import { AuthError } from '../Errors';
+import { AuthErrorTypes } from '../constants/AuthErrorTypes';
 
 export const createCognitoIdentityProviderClient = (
 	config: AuthOptions
@@ -30,5 +32,46 @@ export const mapChallengeNames = (challengeNameType: string): AuthSignInStep => 
 			return AuthSignInStep.CONFIRM_SIGN_IN_WITH_SOFTWARE_TOKEN_MFA_CODE;
 		default:
 			return AuthSignInStep.DONE;
+	}
+}
+
+export const getUserPoolId = (config: AuthOptions) => {
+	if (!config.userPoolId) {
+		throw new AuthError(AuthErrorTypes.NoConfig); // TODO change when AuthErrors are defined
+	} 
+	return config.userPoolId;
+}
+
+export const createSignUpCommand = (
+	clientId: string, 
+	username: string, 
+	password: string,
+	userAttributes?: AttributeType[],
+	validationData?: AttributeType[],
+	clientMetadata?
+): SignUpCommand => {
+	const signUpCommandInput: SignUpCommandInput = {
+		ClientId: clientId,
+		Username: username,
+		Password: password
+	};
+	if (userAttributes) {
+		signUpCommandInput.UserAttributes = userAttributes;
+	}
+	if (validationData) {
+		signUpCommandInput.ValidationData = validationData;
+	}
+	if (clientMetadata) {
+		signUpCommandInput.ClientMetadata = clientMetadata;
+	}
+	return new SignUpCommand(signUpCommandInput);
+}
+
+export const sendCommand = async (client:CognitoIdentityProviderClient, command) => {
+	try {
+		const commandOutput = await client.send(command);
+		return commandOutput;
+	} catch (error) {
+		throw error; // TODO change when AuthErrors are defined
 	}
 }

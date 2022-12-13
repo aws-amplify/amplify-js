@@ -17,13 +17,15 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { AuthProvider } from '../types';
-import { AuthPluginOptions } from '../types/models';
+import { AuthPluginOptions, AuthSignUpStep, DeliveryMedium } from '../types/models';
 import { CognitoSignUpOptions } from '../types/aws-plugins/cognito-plugin/types/options';
 import { SignUpRequest } from '../types/request';
 import { AuthSignUpResult } from '../types/result';
-import { CognitoUserAttributeKey } from '../types/aws-plugins/cognito-plugin/types/models';
-import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
-import { createCognitoIdentityProviderClient } from '../utils/CognitoIdentityProviderClientUtils';
+import { CognitoUserAttributeKey, ValidationData } from '../types/aws-plugins/cognito-plugin/types/models';
+import { AttributeType, CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { createCognitoIdentityProviderClient, createSignUpCommand, getUserPoolId, sendCommand } from '../utils/CognitoIdentityProviderClientUtils';
+import { AuthError } from '../Errors';
+import { AuthErrorTypes } from '../constants/AuthErrorTypes';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -44,11 +46,74 @@ export class AmazonCognitoProvider implements AuthProvider {
 		this._config = config ? config : {};
 		this._client = createCognitoIdentityProviderClient(config);
 	}
-	signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(
+	async signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(
 		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
 	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
-		
-		throw new Error('Method not implemented.');
+		const clientId: string = getUserPoolId(this._config);
+
+		const username: string = req.username;
+		if (!username) {
+			throw new AuthError(AuthErrorTypes.EmptyUsername); // TODO change when errors are defined
+		}
+
+		const password: string = req.password;
+		if (!password) {
+			throw new AuthError(AuthErrorTypes.EmptyPassword); // TODO change when errors are defined
+		}
+
+		let userAttr: AttributeType[] | undefined;
+		if (req.options?.userAttributes) {
+			userAttr = req.options.userAttributes.map(obj => ({
+				Name: obj.userAttributeKey,
+				Value: obj.value
+			}));
+		}
+
+		let validationData: AttributeType[] | undefined;
+		let clientMetadata: Record<string, string> | undefined;
+		if (req.options?.pluginOptions) {
+			const pluginOptions = req.options.pluginOptions;
+			const validationDataObject: ValidationData = pluginOptions['ValidationData'];
+			if (validationDataObject) {
+				validationData = Object.entries(validationDataObject).map(([key, value]) => ({
+					Name: key,
+					Value: value
+				}));
+			}
+			clientMetadata = pluginOptions['ClientMetadata'];
+		}
+
+		const signUpCommand: SignUpCommand = createSignUpCommand(clientId, username, password, userAttr, validationData, clientMetadata);
+
+		try {
+			const signUpCommandOutput: any = await sendCommand(this._client, signUpCommand);
+			let result: AuthSignUpResult<CognitoUserAttributeKey>;
+			if (signUpCommandOutput.UserConfirmed) {
+				result = {
+					isSignUpComplete: true,
+					nextStep: {
+						signUpStep: AuthSignUpStep.DONE
+					}
+				};
+			} else {
+				result = {
+					isSignUpComplete: false,
+					nextStep: {
+						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+						codeDeliveryDetails: {
+							deliveryMedium: signUpCommandOutput.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+							destination: signUpCommandOutput.CodeDeliveryDetails?.Destination as string,
+							attributeName: signUpCommandOutput.CodeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
+						}
+					}
+				}
+			}
+			// TODO dispatch successful sign up hub event once it is defined
+			return result;
+		} catch (error) {
+			// TODO dispatch fail sign up hub event once it is defined
+			throw error;
+		}
 	}
 	confirmSignUp(): Promise<any> {
 		throw new Error('Method not implemented.');

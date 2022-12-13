@@ -8,5 +8,5 @@ export type AuthSignUpOptions<
 	PluginOptions extends AuthPluginOptions = AuthPluginOptions
 > = {
 	userAttributes: AuthUserAttribute<UserAttributeKey>[];
-	options?: { pluginOptions?: PluginOptions };
+	pluginOptions?: PluginOptions;
 };
