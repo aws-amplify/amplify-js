@@ -12,7 +12,7 @@
  */
 
 import { AuthErrorStrings } from '../constants/AuthErrorStrings';
-import { AuthProvider } from '../types/AuthProvider';
+import { AuthProvider } from '../types';
 
 export function assertPluginAvailable(
 	plugin: AuthProvider | null
