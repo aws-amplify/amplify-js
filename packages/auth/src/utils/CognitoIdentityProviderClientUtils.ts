@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthOptions } from '../types';
 import { AttributeType, ChallengeNameType, CognitoIdentityProviderClient, SignUpCommand, SignUpCommandInput } from '@aws-sdk/client-cognito-identity-provider';
-import { AuthSignInStep } from '../types';
+import { AuthSignInStep, AuthOptions } from '../types';
 import { AuthError } from '../Errors';
 import { AuthErrorTypes } from '../constants/AuthErrorTypes';
 

@@ -16,12 +16,17 @@ import {
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { AuthProvider } from '../types';
-import { AuthPluginOptions, AuthSignUpStep, DeliveryMedium } from '../types/models';
-import { CognitoSignUpOptions } from '../types/aws-plugins/cognito-plugin/types/options';
-import { SignUpRequest } from '../types/request';
-import { AuthSignUpResult } from '../types/result';
-import { CognitoUserAttributeKey, ValidationData } from '../types/aws-plugins/cognito-plugin/types/models';
+import { 
+	AuthPluginOptions, 
+	AuthSignUpStep, 
+	DeliveryMedium, 
+	CognitoSignUpOptions, 
+	SignUpRequest, 
+	AuthSignUpResult, 
+	CognitoUserAttributeKey, 
+	ValidationData, 
+	AuthProvider 
+} from '../types';
 import { AttributeType, CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { createCognitoIdentityProviderClient, createSignUpCommand, getUserPoolId, sendCommand } from '../utils/CognitoIdentityProviderClientUtils';
 import { AuthError } from '../Errors';
