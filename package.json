@@ -126,9 +126,6 @@
 			}
 		]
 	},
-	"dependencies": {
-		"@aws-sdk/client-cognito-identity-provider": "^3.198.0"
-	},
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
