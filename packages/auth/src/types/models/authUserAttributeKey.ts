@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export type AuthUserAttributeKey = AuthStandardAttributeKey | string;
+export type AuthUserAttributeKey = AuthStandardAttributeKey | string | Record<string, string>;
 
 export type AuthStandardAttributeKey = 
 | 'address'

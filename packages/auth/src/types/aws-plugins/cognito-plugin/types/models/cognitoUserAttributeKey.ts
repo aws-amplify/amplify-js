@@ -5,4 +5,4 @@ import { AuthStandardAttributeKey } from '../../../../models';
 
 export type CognitoUserAttributeKey = 
 	| AuthStandardAttributeKey
-	| `custom:${string}`
+	| {custom:string};

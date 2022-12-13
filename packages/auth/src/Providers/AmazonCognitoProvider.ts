@@ -25,7 +25,7 @@ import {
 	AuthSignUpResult, 
 	CognitoUserAttributeKey, 
 	ValidationData, 
-	AuthProvider 
+	AuthProvider
 } from '../types';
 import { AttributeType, CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { createCognitoIdentityProviderClient, createSignUpCommand, getUserPoolId, sendCommand } from '../utils/CognitoIdentityProviderClientUtils';
@@ -70,7 +70,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		const attrs = req.options?.userAttributes;
 		if (attrs) {
 			userAttr = attrs.map(obj => ({
-				Name: obj.userAttributeKey,
+				Name: obj.userAttributeKey as string,
 				Value: obj.value
 			}));
 		}
@@ -91,36 +91,31 @@ export class AmazonCognitoProvider implements AuthProvider {
 
 		const signUpCommand: SignUpCommand = createSignUpCommand(clientId, username, password, userAttr, validationData, clientMetadata);
 
-		try {
-			const signUpCommandOutput: any = await sendCommand(this._client, signUpCommand);
-			let result: AuthSignUpResult<CognitoUserAttributeKey>;
-			if (signUpCommandOutput.UserConfirmed) {
-				result = {
-					isSignUpComplete: true,
-					nextStep: {
-						signUpStep: AuthSignUpStep.DONE
-					}
-				};
-			} else {
-				const codeDeliveryDetails = signUpCommandOutput.CodeDeliveryDetails;
-				result = {
-					isSignUpComplete: false,
-					nextStep: {
-						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-						codeDeliveryDetails: {
-							deliveryMedium: codeDeliveryDetails.DeliveryMedium as DeliveryMedium,
-							destination: codeDeliveryDetails.Destination as string,
-							attributeName: codeDeliveryDetails.AttributeName as CognitoUserAttributeKey
-						}
+		const signUpCommandOutput: any = await sendCommand(this._client, signUpCommand);
+		let result: AuthSignUpResult<CognitoUserAttributeKey>;
+		if (signUpCommandOutput.UserConfirmed) {
+			result = {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: AuthSignUpStep.DONE
+				}
+			};
+		} else {
+			const codeDeliveryDetails = signUpCommandOutput.CodeDeliveryDetails;
+			result = {
+				isSignUpComplete: false,
+				nextStep: {
+					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+					codeDeliveryDetails: {
+						deliveryMedium: codeDeliveryDetails.DeliveryMedium as DeliveryMedium,
+						destination: codeDeliveryDetails.Destination as string,
+						attributeName: codeDeliveryDetails.AttributeName as CognitoUserAttributeKey
 					}
 				}
 			}
-			// TODO dispatch successful sign up hub event once it is defined
-			return result;
-		} catch (error) {
-			// TODO dispatch fail sign up hub event once it is defined
-			throw error;
 		}
+		// TODO dispatch successful sign up hub event once it is defined
+		return result;
 	}
 	confirmSignUp(): Promise<any> {
 		throw new Error('Method not implemented.');
