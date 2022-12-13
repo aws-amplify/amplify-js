@@ -1,6 +1,5 @@
 import { Machine } from '../src/stateMachine/machine';
 import { MachineManager } from '../src/stateMachine/stateMachineManager';
-import { dummyMachine } from './utils/dummyMachine';
 
 describe(MachineManager.name, () => {
 	const wait = (ms: number) =>
@@ -9,27 +8,40 @@ describe(MachineManager.name, () => {
 				resolve();
 			}, ms);
 		});
+	type Context = {
+		events: Events[];
+	};
+	type Events = {
+		name: 'tick' | 'tock';
+		payload: {
+			recordId: string;
+		};
+	};
 	type Machine1States = 'StateA' | 'StateB';
-	const machine1 = new Machine<any, any, Machine1States>({
-		context: {},
-		name: 'Machine1',
+	const machine1 = new Machine<Context, Events, Machine1States>({
+		context: { events: [] },
+		name: 'Machine1' as const,
 		initial: 'StateA',
 		states: {
 			StateA: {
-				event1: [
+				tick: [
 					{
 						nextState: 'StateB',
 						effects: [
 							async (ctxt, event, broker) => {
 								console.log('tick');
 								await wait(1000);
+								broker.dispatch({
+									name: 'tock',
+									payload: 'tock',
+								});
 							},
 						],
 					},
 				],
 			},
 			StateB: {
-				event1: [
+				tock: [
 					{
 						nextState: 'StateA',
 						effects: [
@@ -48,13 +60,13 @@ describe(MachineManager.name, () => {
 
 	describe('event queueing', () => {
 		it('should handle concurrent events', async () => {
-			await Promise.all([
-				manager.send({ name: 'event1', payload: {}, toMachine: 'Machine1' }),
-				manager.send({ name: 'event1', payload: {}, toMachine: 'Machine1' }),
-				manager.send({ name: 'event1', payload: {}, toMachine: 'Machine1' }),
-				manager.send({ name: 'event1', payload: {}, toMachine: 'Machine1' }),
-				manager.send({ name: 'event1', payload: {}, toMachine: 'Machine1' }),
+			const tickEvent = { name: 'tick', payload: {}, toMachine: 'Machine1' };
+			const contexts = await Promise.all([
+				manager.send(tickEvent),
+				manager.send(tickEvent),
+				manager.send(tickEvent),
 			]);
+			expect(contexts[1]).toEqual([{ event }]);
 		}, 30000);
 	});
 });
