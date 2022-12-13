@@ -78,7 +78,7 @@ export class MachineState<
 				effect(newContext, castedEvent, this.machineManager)
 			);
 			// TODO: Concurrently running effects causes new events emitted in
-			// undetermined order. Should we run them in order?
+			// undetermined order. Should we run them in order? Or implement Promise.allSettle
 			response.effectsPromise = Promise.all(
 				promiseArr
 			) as unknown as Promise<void>;

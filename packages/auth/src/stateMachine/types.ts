@@ -1,3 +1,5 @@
+import type { MachineManager } from './stateMachineManager';
+
 /**
  * Base type for a Machine's context
  */
@@ -15,6 +17,13 @@ export type MachineEvent = {
 	payload: unknown;
 	id?: string;
 	toMachine?: string;
+};
+
+/**
+ * Event interface to sent to the {@link MachineManager.send | state machine manager}.
+ */
+export type MachineManagerEvent = MachineEvent & {
+	toMachine: string;
 };
 
 /**
@@ -158,11 +167,17 @@ export type TransitionReducer<
 > = (context: ContextType, event: EventType) => ContextType;
 
 /**
- * The type describing Machine's current status
+ * The type describing Machine's current status.
+ * 
+ * @remarks
+ * Since the context here is a _shallow_ copy of current state machine, you
+ * should expect the referenced object to change with the further state machine
+ * invocation.
+
  * @typeParam PayloadType - The type of the Event's payload
  * @typeParam StateNames - The type of all the state names.
  * @param currentState - The current state name.
- * @param context - The current Machine context
+ * @param context - The shallow copy of current Machine context
  */
 export type CurrentStateAndContext<
 	ContextType extends MachineContext,

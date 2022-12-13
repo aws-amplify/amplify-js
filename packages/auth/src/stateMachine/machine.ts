@@ -10,6 +10,7 @@ import {
 	EventProducer,
 	MachineContext,
 	MachineEvent,
+	MachineManagerEvent,
 	StateMachineParams,
 	StateTransitions,
 } from './types';
@@ -34,7 +35,7 @@ export class Machine<
 	>;
 	private _context: ContextType;
 	private _current: MachineState<ContextType, EventTypes, StateNames>;
-	private _eventBrokers: EventBroker<MachineEvent>[];
+	private _eventBrokers: EventBroker<MachineManagerEvent>[];
 
 	public readonly name: string;
 	public readonly hub: HubClass;
@@ -47,13 +48,13 @@ export class Machine<
 		this.hub = new HubClass('auth-state-machine');
 		this.hubChannel = `${this.name}-channel`;
 
-		const dispatchToBrokers = event => {
+		const dispatchToBrokers = (event: MachineEvent) => {
 			if (!event.toMachine) {
 				// By default, the emitted events will be routed back to current state machine;
 				event.toMachine = this.name;
 			}
 			for (const broker of this._eventBrokers) {
-				broker.dispatch(event);
+				broker.dispatch(event as MachineManagerEvent);
 			}
 		};
 
@@ -129,8 +130,9 @@ export class Machine<
 	 * Add more event brokers to current machine that would be invoked with
 	 * events emitted from transition effects.
 	 * @param broker
+	 * @internal
 	 */
-	addListener(broker: EventBroker<MachineEvent>): void {
+	addListener(broker: EventBroker<MachineManagerEvent>): void {
 		this._eventBrokers.push(broker);
 	}
 }
