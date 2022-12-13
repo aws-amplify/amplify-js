@@ -818,7 +818,7 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			let patches;
+			let patches: Patch[] = [];
 			const model = produce(
 				source,
 				draft => {
