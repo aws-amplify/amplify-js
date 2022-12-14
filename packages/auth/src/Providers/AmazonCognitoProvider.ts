@@ -86,7 +86,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		const pluginOptions = req.options?.pluginOptions;
 		if (pluginOptions) {
 			// TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
-			validationData = this.mapValidationDataObject(pluginOptions['validationData']);
+			validationData = this.convertValidationDataObjectToArray(pluginOptions['validationData']);
 			// TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped 
 			clientMetadata = pluginOptions['clientMetadata']; 
 		}
@@ -110,7 +110,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 		}	
 	}
 
-	private mapValidationDataObject(
+	private convertValidationDataObjectToArray(
 		validationDataObject?: ValidationData
 	): AttributeType[] | undefined  {
 		if (validationDataObject) {
