@@ -14,8 +14,6 @@ import {
 	StateMachineParams,
 	StateTransitions,
 } from './types';
-// TODO: Import from core once library build is resolved
-import { HubClass } from '@aws-amplify/core/lib-esm/Hub';
 
 /**
  * A Finite state machine implementation.
@@ -38,15 +36,11 @@ export class Machine<
 	private _eventBrokers: EventBroker<MachineManagerEvent>[];
 
 	public readonly name: string;
-	public readonly hub: HubClass;
-	public readonly hubChannel: string;
 
 	constructor(params: StateMachineParams<ContextType, EventTypes, StateNames>) {
 		this.name = params.name;
 		this._context = params.context;
 		this._eventBrokers = [];
-		this.hub = new HubClass('auth-state-machine');
-		this.hubChannel = `${this.name}-channel`;
 
 		const dispatchToBrokers = (event: MachineEvent) => {
 			if (!event.toMachine) {
@@ -75,8 +69,6 @@ export class Machine<
 					machineManager: {
 						dispatch: dispatchToBrokers,
 					},
-					hub: this.hub,
-					hubChannel: this.hubChannel,
 				});
 				return [castedStateName, machineState] as const;
 			})

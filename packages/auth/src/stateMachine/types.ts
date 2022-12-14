@@ -1,4 +1,5 @@
-import type { MachineManager } from './stateMachineManager';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 /**
  * Base type for a Machine's context

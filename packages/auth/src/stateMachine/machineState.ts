@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StateMachineHubEventName } from '../constants/StateMachineHubEventName';
-import { HubClass } from '@aws-amplify/core/lib-esm/Hub';
 import {
 	MachineContext,
 	MachineEvent,
@@ -13,7 +11,7 @@ import {
 	StateTransitions,
 } from './types';
 
-interface MachineStateClassParams<
+export interface MachineStateClassParams<
 	ContextType extends MachineContext,
 	EventTypes extends MachineEvent,
 	StateNames extends string
@@ -22,8 +20,6 @@ interface MachineStateClassParams<
 	transitions: StateTransitions<ContextType, EventTypes, StateNames>;
 	machineContextGetter: () => ContextType;
 	machineManager: EventBroker<MachineEvent>;
-	hub: HubClass;
-	hubChannel: string;
 }
 
 /**
@@ -39,8 +35,6 @@ export class MachineState<
 	transitions: StateTransitions<ContextType, EventTypes, StateNames>;
 	private readonly machineContextGetter: () => ContextType; // Use readonly to prevent re-assign of context reference
 	private readonly machineManager: EventBroker<MachineEvent>;
-	private readonly hub: HubClass;
-	private readonly hubChannel: string;
 
 	constructor(
 		props: MachineStateClassParams<ContextType, EventTypes, StateNames>
@@ -49,8 +43,6 @@ export class MachineState<
 		this.transitions = props.transitions ?? {};
 		this.machineContextGetter = props.machineContextGetter;
 		this.machineManager = props.machineManager;
-		this.hub = props.hub;
-		this.hubChannel = props.hubChannel;
 	}
 
 	accept(event: EventTypes): MachineStateEventResponse<ContextType> {
@@ -109,14 +101,6 @@ export class MachineState<
 				return !blocked;
 			}) ?? [];
 		if (validTransitions.length === 0) {
-			this.hub.dispatch(this.hubChannel, {
-				event: StateMachineHubEventName.NULL_TRANSITION,
-				data: {
-					state: this.name,
-					context: context,
-					event,
-				},
-			});
 			return undefined; // TODO: should we do nothing on unknown event?
 		} else if (validTransitions.length > 1) {
 			throw new Error('Got more than 1 valid transitions');
