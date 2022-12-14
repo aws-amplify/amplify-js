@@ -9,4 +9,4 @@ export type OAuth = {
 	redirectSignIn: string;
 	redirectSignOut: string;
 	responseType: OAuthResponseType;
-}
+};

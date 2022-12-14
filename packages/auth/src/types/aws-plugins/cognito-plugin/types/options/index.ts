@@ -9,4 +9,4 @@ export {
 	AutoSignInOptions,
 	CognitoSignInOptions,
 	CognitoSignUpOptions
-}
+};

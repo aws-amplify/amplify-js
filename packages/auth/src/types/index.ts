@@ -67,4 +67,4 @@ export {
 	SignUpRequest,
 	AuthSignUpResult,
 	AuthSignInResult
-}
+};

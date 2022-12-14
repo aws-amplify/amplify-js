@@ -21,4 +21,4 @@ export {
 	OAuthResponseType,
 	CognitoUserAttributeKey,
 	AuthOptions
-}
+};

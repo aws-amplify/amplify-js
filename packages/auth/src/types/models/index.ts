@@ -25,4 +25,4 @@ export {
 	AuthNextSignInStep,
 	AuthSignInStep,
 	AuthStandardAttributeKey
-}
+};

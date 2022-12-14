@@ -8,4 +8,4 @@ export type AuthNextSignUpStep<UserAttributeKey extends AuthUserAttributeKey> = 
 	signUpStep: AuthSignUpStep;
 	additionalInfo?: AdditionalInfo;
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-}
+};

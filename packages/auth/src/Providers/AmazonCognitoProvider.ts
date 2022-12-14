@@ -28,8 +28,19 @@ import {
 	AuthProvider,
 	AuthUserAttribute
 } from '../types';
-import { AttributeType, CodeDeliveryDetailsType, CognitoIdentityProviderClient, SignUpCommand, SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
-import { createCognitoIdentityProviderClient, createSignUpCommand, getUserPoolId, sendCommand } from '../utils/CognitoIdentityProviderClientUtils';
+import { 
+	AttributeType, 
+	CodeDeliveryDetailsType, 
+	CognitoIdentityProviderClient, 
+	SignUpCommand, 
+	SignUpCommandOutput 
+} from '@aws-sdk/client-cognito-identity-provider';
+import { 
+	createCognitoIdentityProviderClient, 
+	createSignUpCommand, 
+	getUserPoolId, 
+	sendCommand 
+} from '../utils/CognitoIdentityProviderClientUtils';
 import { AuthError } from '../Errors';
 import { AuthErrorTypes } from '../constants/AuthErrorTypes';
 
@@ -74,18 +85,23 @@ export class AmazonCognitoProvider implements AuthProvider {
 		let clientMetadata: Record<string, string> | undefined;
 		const pluginOptions = req.options?.pluginOptions;
 		if (pluginOptions) {
-			validationData = this.mapValidationDataObject(pluginOptions['ValidationData']); // TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
-			clientMetadata = pluginOptions['ClientMetadata']; // TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped
+			// TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
+			validationData = this.mapValidationDataObject(pluginOptions['ValidationData']);
+			// TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped 
+			clientMetadata = pluginOptions['ClientMetadata']; 
 		}
 
-		const signUpCommand: SignUpCommand = createSignUpCommand(clientId, username, password, userAttr, validationData, clientMetadata);
+		const signUpCommand: SignUpCommand = createSignUpCommand(
+			clientId, username, password, userAttr, validationData, clientMetadata);
 
 		const signUpCommandOutput = await sendCommand<SignUpCommandOutput>(this._client, signUpCommand);
 		
 		return this.createSignUpResultObject(signUpCommandOutput);
 	}
 
-	private mapAttributes(attrs?: AuthUserAttribute<CognitoUserAttributeKey>[]):AttributeType[] | undefined {
+	private mapAttributes(
+		attrs?: AuthUserAttribute<CognitoUserAttributeKey>[]
+	):AttributeType[] | undefined {
 		if (attrs) {
 			return attrs.map(obj => ({
 				Name: obj.userAttributeKey as string,
@@ -94,7 +110,9 @@ export class AmazonCognitoProvider implements AuthProvider {
 		}	
 	}
 
-	private mapValidationDataObject(validationDataObject?: ValidationData): AttributeType[] | undefined  {
+	private mapValidationDataObject(
+		validationDataObject?: ValidationData
+	): AttributeType[] | undefined  {
 		if (validationDataObject) {
 			return Object.entries(validationDataObject).map(([key, value]) => ({
 				Name: key,
@@ -103,7 +121,9 @@ export class AmazonCognitoProvider implements AuthProvider {
 		}	
 	}
 
-	private createSignUpResultObject(signUpCommandOutput: SignUpCommandOutput):AuthSignUpResult<CognitoUserAttributeKey> {
+	private createSignUpResultObject(
+		signUpCommandOutput: SignUpCommandOutput
+	):AuthSignUpResult<CognitoUserAttributeKey> {
 		let result;
 		if (signUpCommandOutput.UserConfirmed) {
 			result = {
@@ -124,7 +144,7 @@ export class AmazonCognitoProvider implements AuthProvider {
 						attributeName: codeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
 					}
 				}
-			}
+			};
 		}
 		// TODO: dispatch successful sign up hub event once it is defined
 		return result;

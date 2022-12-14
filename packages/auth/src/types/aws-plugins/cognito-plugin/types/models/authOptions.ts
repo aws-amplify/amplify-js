@@ -18,4 +18,4 @@ export type AuthOptions = {
 	clientMetaData?: ClientMetadata;
 	endpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
-}
+};
