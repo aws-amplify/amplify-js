@@ -385,6 +385,7 @@ jobs:
     working_directory: ~/
     steps:
       - run:
+          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
@@ -395,7 +396,7 @@ jobs:
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
-            yarn
+            yarn --ignore-engines
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
           paths:
