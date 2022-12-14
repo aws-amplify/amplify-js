@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.41](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.40...@aws-amplify/pushnotification@4.3.41) (2022-12-14)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 ## [4.3.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.3.39...@aws-amplify/pushnotification@4.3.40) (2022-11-04)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

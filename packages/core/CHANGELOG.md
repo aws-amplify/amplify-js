@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.12...@aws-amplify/core@4.7.13) (2022-12-14)
+
+
+### Bug Fixes
+
+* **core:** add cache-control header to cognito identity client ([#10769](https://github.com/aws-amplify/amplify-js/issues/10769)) ([b540335](https://github.com/aws-amplify/amplify-js/commit/b5403355bc696b9727a1b470496b3f8de810b0e3))
+
+
+
+
+
 ## [4.7.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.7.11...@aws-amplify/core@4.7.12) (2022-11-04)
 
 **Note:** Version bump only for package @aws-amplify/core

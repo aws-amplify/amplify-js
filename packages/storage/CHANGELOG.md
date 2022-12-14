@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.14...@aws-amplify/storage@4.5.15) (2022-12-14)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [4.5.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.5.13...@aws-amplify/storage@4.5.14) (2022-11-04)
 
 **Note:** Version bump only for package @aws-amplify/storage

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.14.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.4...@aws-amplify/datastore@3.14.5) (2022-12-14)
+
+
+### Bug Fixes
+
+* **datastore:** disconnected has one (v4) ([#10618](https://github.com/aws-amplify/amplify-js/issues/10618)) ([36406cb](https://github.com/aws-amplify/amplify-js/commit/36406cb01737c6f00f9ad6dd418b5e5e371a1411))
+
+
+
+
+
 ## [3.14.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.3...@aws-amplify/datastore@3.14.4) (2022-11-04)
 
 **Note:** Version bump only for package @aws-amplify/datastore
