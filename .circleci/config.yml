@@ -1354,6 +1354,40 @@ jobs:
           spec: nested-predicate
           browser: << parameters.browser >>
 
+  integ_next_datastore_13_basic:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-basic
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - basic JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-basic
+          spec: nextjs-13-basic
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13_js:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-js
+          spec: nextjs-13
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1910,7 +1944,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
+      - integ_next_datastore_13_basic:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1970,6 +2021,8 @@ workflows:
             - integ_react_api_reconnect
             - integ_react_datastore_selective_sync
             - integ_react_datastore_nested_predicate
+            - integ_next_datastore_13_basic
+            - integ_next_datastore_13_js
       - post_release:
           filters:
             branches:
