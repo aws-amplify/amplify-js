@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.0.5...@aws-amplify/datastore-storage-adapter@2.0.6) (2022-12-15)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+
+
+
+
+## [2.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.0.4...@aws-amplify/datastore-storage-adapter@2.0.5) (2022-12-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore-storage-adapter:** SQLiteAdapter fails on required related models ([#10720](https://github.com/aws-amplify/amplify-js/issues/10720)) ([fa7d6c6](https://github.com/aws-amplify/amplify-js/commit/fa7d6c681496dd45d40a2af672f953e0ff372940))
+
+
+
+
+
 ## [2.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.0.3...@aws-amplify/datastore-storage-adapter@2.0.4) (2022-11-23)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

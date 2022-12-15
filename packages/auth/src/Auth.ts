@@ -53,6 +53,7 @@ import {
 	CognitoRefreshToken,
 	CognitoAccessToken,
 	NodeCallback,
+	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -197,11 +198,12 @@ export class AuthClass {
 
 		this.Credentials.configure({
 			mandatorySignIn,
-			region: identityPoolRegion || region,
+			region,
 			userPoolId,
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
+			identityPoolRegion
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -1425,10 +1427,16 @@ export class AuthClass {
 				}
 				user.updateAttributes(
 					attributeList,
-					(err, result) => {
+					(err, result, details) => {
+						
 						if (err) {
+							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
+							const attrs = this.createUpdateAttributesResultList(
+								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
+							);
+							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
 							return resolve(result);
 						}
 					},
@@ -1437,6 +1445,25 @@ export class AuthClass {
 			});
 		});
 	}
+
+	private createUpdateAttributesResultList(
+		attributes: Record<string, string>, 
+		codeDeliveryDetailsList?: CodeDeliveryDetails []
+	): Record<string, string> {
+		const attrs = {};
+		Object.keys(attributes).forEach(key => {
+			attrs[key] = {
+				isUpdated: true
+			};
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			if (codeDeliveryDetails) {
+				attrs[key].isUpdated = false;
+				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
+			}
+		});
+		return attrs;
+	}
+
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object

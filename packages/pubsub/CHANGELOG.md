@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.5...@aws-amplify/pubsub@5.0.6) (2022-12-15)
+
+
+### Bug Fixes
+
+* **pubsub:** AppSync in China regions ([#10087](https://github.com/aws-amplify/amplify-js/issues/10087)) ([4725b5f](https://github.com/aws-amplify/amplify-js/commit/4725b5f2df332c006571e87efdc6ebd5fb3dbe4e))
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.4...@aws-amplify/pubsub@5.0.5) (2022-12-06)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.3...@aws-amplify/pubsub@5.0.4) (2022-11-23)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
