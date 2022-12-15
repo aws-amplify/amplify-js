@@ -1804,6 +1804,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_android_storage:
       #     requires:
       #       - integ_setup
@@ -2009,6 +2015,7 @@ workflows:
             - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
+            - integ_rn_ios_device_tracking
             # - integ_rn_android_storage
             # - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
