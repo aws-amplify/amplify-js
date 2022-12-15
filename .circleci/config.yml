@@ -1088,6 +1088,13 @@ jobs:
           sample_name: << parameters.scenario >>
           spec: << parameters.scenario >>
           browser: firefox
+      - integ_test_js:
+          test_name: 'DataStore Auth - Edge'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: firefox
 
   integ_datastore_auth_v2:
     parameters:
@@ -1403,7 +1410,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1441,9 +1448,10 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - poc-edge-testing
 
 test_browsers: &test_browsers
-  browser: [chrome, firefox]
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
