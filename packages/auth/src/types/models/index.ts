@@ -6,7 +6,7 @@ import { AuthCodeDeliveryDetails, DeliveryMedium } from './authCodeDeliveryDetai
 import { AuthNextSignInStep } from './authNextSignInStep';
 import { AuthNextSignUpStep } from './authNextSignUpStep';
 import { AuthPluginOptions } from './authPluginOptions';
-import { AuthProvider } from './AuthProvider';
+import { AuthPluginProvider } from './AuthPluginProvider';
 import { AuthSignInStep } from './authSignInStep';
 import { AuthSignUpStep } from './authSignUpStep';
 import { AuthUserAttribute } from './authUserAttribute';
@@ -16,7 +16,7 @@ export {
 	AuthUserAttributeKey,
 	AuthCodeDeliveryDetails,
 	DeliveryMedium,
-	AuthProvider,
+	AuthPluginProvider,
 	AuthUserAttribute,
 	AuthPluginOptions,
 	AuthNextSignUpStep,

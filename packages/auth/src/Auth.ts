@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core';
 import { 
 	AuthPluginOptions, 
-	AuthProvider, 
+	AuthPluginProvider, 
 	AuthSignUpResult, 
 	AuthUserAttributeKey, 
 	CognitoUserAttributeKey, 
@@ -47,7 +47,7 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
  */
 export class AuthClass {
 	private _config;
-	private _pluggable: AuthProvider | null;
+	private _pluggable: AuthPluginProvider | null;
 	private _storage;
 
 	/**
@@ -74,16 +74,16 @@ export class AuthClass {
 
 	/**
 	 * Adds a plugin to the Auth category
-	 * @param {AuthProvider} pluggable - an instance of the plugin
+	 * @param {AuthPluginProvider} pluggable - an instance of the plugin
 	 */
-	public addPluggable(pluggable: AuthProvider) {
+	public addPluggable(pluggable: AuthPluginProvider) {
 		// TODO: Align on whether we need to allow multiple plugins for Auth in single instance
 		this._pluggable = pluggable;
 	}
 
 	/**
 	 * Returns the plugin object
-	 * @returns {AuthProvider} The pluggable that has been added to the category
+	 * @returns {AuthPluginProvider} The pluggable that has been added to the category
 	 */
 	public getPluggable() {
 		return this._pluggable;
@@ -96,9 +96,20 @@ export class AuthClass {
 		this._pluggable = null;
 	}
 
+	/**
+	 * Sign up with username, password, and other attributes (i.e. phone, email)
+	 * @param {SignUpRequest} req Object contaning user attributes
+	 * @returns {AuthSignUpResult} A promise resolves an object with next steps data if success
+	 */
 	signUp<PluginOptions extends AuthPluginOptions>(
 		req: SignUpRequest<AuthUserAttributeKey, PluginOptions>
 	): Promise<AuthSignUpResult<AuthUserAttributeKey>>;
+	/**
+	 * Sign up with username, password, and other attributes (i.e. phone, email) using Amazon
+	 * Cognito Provider
+	 * @param {SignUpRequest} req Object contaning Amazon Cognito user attributes, plugin, and auto sign in options
+	 * @returns {AuthSignUpResult} A promise resolves an object with next steps data if success
+	 */
 	signUp<PluginOptions extends AuthPluginOptions>(
 		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
 	): Promise<AuthSignUpResult<CognitoUserAttributeKey>>

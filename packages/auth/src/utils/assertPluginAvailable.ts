@@ -12,11 +12,11 @@
  */
 
 import { AuthErrorStrings } from '../constants/AuthErrorStrings';
-import { AuthProvider } from '../types';
+import { AuthPluginProvider } from '../types';
 
 export function assertPluginAvailable(
-	plugin: AuthProvider | null
-): asserts plugin is AuthProvider {
+	plugin: AuthPluginProvider | null
+): asserts plugin is AuthPluginProvider {
 	if (!plugin) {
 		throw new Error(AuthErrorStrings.NO_PLUGIN);
 	}

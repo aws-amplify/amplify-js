@@ -25,7 +25,7 @@ import {
 	AuthSignUpResult, 
 	CognitoUserAttributeKey, 
 	ValidationData, 
-	AuthProvider,
+	AuthPluginProvider,
 	AuthUserAttribute
 } from '../types';
 import { 
@@ -52,7 +52,7 @@ const AMPLIFY_SYMBOL = (
 
 const logger = new Logger('AmazonCognitoProvider');
 
-export class AmazonCognitoProvider implements AuthProvider {
+export class AmazonCognitoProvider implements AuthPluginProvider {
 	static category = 'Auth';
 	static providerName = 'AmazonCognito';
 
@@ -64,6 +64,12 @@ export class AmazonCognitoProvider implements AuthProvider {
 		this._client = createCognitoIdentityProviderClient(config);
 	}
 
+	/**
+	 * Sign up using Amazon Cognito Provider with username, password, and other
+	 * Amazon Cognito User Attributes
+	 * @param {SignUpRequest} req Cognito user attributes, plugin, and auto sign in options
+	 * @returns { AuthSignUpResult } if success, resolves Promise with next steps data
+	 */
 	async signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(
 		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
 	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
