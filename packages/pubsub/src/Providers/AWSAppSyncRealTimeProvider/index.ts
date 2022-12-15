@@ -198,21 +198,21 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				const startSubscription = () => {
 					if (!subscriptionStartActive) {
 						subscriptionStartActive = true;
-						const startSubscriptionPromise =
-							this._startSubscriptionWithAWSAppSyncRealTime({
-								options,
-								observer,
-								subscriptionId,
-							}).catch<any>(err => {
+						this._startSubscriptionWithAWSAppSyncRealTime({
+							options,
+							observer,
+							subscriptionId,
+						})
+							.catch<any>(err => {
 								logger.debug(
 									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
 								);
 
 								this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
+							})
+							.then(() => {
+								subscriptionStartActive = false;
 							});
-						startSubscriptionPromise.finally(() => {
-							subscriptionStartActive = false;
-						});
 					}
 				};
 
