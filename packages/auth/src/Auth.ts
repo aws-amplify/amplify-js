@@ -1139,7 +1139,7 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
-					dispatchAuthEvent('signIn', user, ``);
+					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
 					dispatchAuthEvent(
 						'verify',
 						user,
