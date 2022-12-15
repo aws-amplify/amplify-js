@@ -119,6 +119,7 @@ export class AuthClass {
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
+				case 'verify':
 				case 'signIn':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'false');
 					break;
@@ -1146,10 +1147,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
 					dispatchAuthEvent(
-						'signIn',
+						'verify',
 						user,
-						`A user ${user.getUsername()} has been signed in`
+						`A user ${user.getUsername()} has been verified`
 					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
