@@ -1088,13 +1088,6 @@ jobs:
           sample_name: << parameters.scenario >>
           spec: << parameters.scenario >>
           browser: firefox
-      - integ_test_js:
-          test_name: 'DataStore Auth - Edge'
-          framework: react
-          category: datastore
-          sample_name: << parameters.scenario >>
-          spec: << parameters.scenario >>
-          browser: firefox
 
   integ_datastore_auth_v2:
     parameters:
@@ -1452,6 +1445,9 @@ releasable_branches: &releasable_branches
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
+
+test_browsers_all: &test_browsers_all
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1885,7 +1881,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
