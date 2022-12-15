@@ -1130,13 +1130,13 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err,result) => {
 				if (err) {
 					return callback(err, null);
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS'), {
+				return this.getUserData(() => callback(null, 'SUCCESS', result), {
 					bypassCache: true,
 				});
 			}

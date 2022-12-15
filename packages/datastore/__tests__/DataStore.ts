@@ -2096,6 +2096,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('Id cannot be changed inside copyOf', () => {
+			const consoleWarn = jest.spyOn(console, 'warn');
+
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};
@@ -2111,6 +2113,16 @@ describe('DataStore tests', () => {
 
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
+
+			// we should always be told *in some way* when an "update" will not actually
+			// be applied. for now, this is a warning, because throwing an error, updating
+			// the record's PK, or creating a new record are all breaking changes.
+			expect(consoleWarn).toHaveBeenCalledWith(
+				expect.stringContaining(
+					"copyOf() does not update PK fields. The 'id' update is being ignored."
+				),
+				expect.objectContaining({ source: model1 })
+			);
 		});
 
 		test('Optional field can be initialized with undefined', () => {
@@ -3629,6 +3641,8 @@ describe('DataStore tests', () => {
 			});
 
 			test('postId cannot be changed inside copyOf', () => {
+				const consoleWarn = jest.spyOn(console, 'warn');
+
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
@@ -3645,6 +3659,16 @@ describe('DataStore tests', () => {
 
 				// postId should be kept the same
 				expect(model1.postId).toBe(model2.postId);
+
+				// we should always be told *in some way* when an "update" will not actually
+				// be applied. for now, this is a warning, because throwing an error, updating
+				// the record's PK, or creating a new record are all breaking changes.
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"copyOf() does not update PK fields. The 'postId' update is being ignored."
+					),
+					expect.objectContaining({ source: model1 })
+				);
 			});
 
 			test('Optional field can be initialized with undefined', () => {
