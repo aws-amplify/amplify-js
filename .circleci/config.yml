@@ -1451,7 +1451,7 @@ releasable_branches: &releasable_branches
       - poc-edge-testing
 
 test_browsers: &test_browsers
-  browser: [chrome, firefox, edge]
+  browser: [chrome, firefox]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
