@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.0...@aws-amplify/auth@5.1.1) (2022-12-16)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** specify the correct userAgent/deviceName when remembering devices (React Native) ([#10724](https://github.com/aws-amplify/amplify-js/issues/10724)) ([01a5b84](https://github.com/aws-amplify/amplify-js/commit/01a5b84ea010f7fb66c4e19e73301cce82fc7370))
+
+
+
+
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.0.5...@aws-amplify/auth@5.1.0) (2022-12-15)
+
+
+### Features
+
+* **auth,cognito-identity-js:** returning code delivery details as part of callback for updateAttributes, adds hub event to Auth.updateUserAttributes ([#10731](https://github.com/aws-amplify/amplify-js/issues/10731)) ([fc4940b](https://github.com/aws-amplify/amplify-js/commit/fc4940bc17e0deeb9e9ca2a00bed101e8ff7d3df))
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.0.4...@aws-amplify/auth@5.0.5) (2022-12-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core,@aws-amplify/auth:** Use identityPoolRegion param correctly ([#10709](https://github.com/aws-amplify/amplify-js/issues/10709)) ([b4d2769](https://github.com/aws-amplify/amplify-js/commit/b4d27695b3e196cd14b486b9a8db778c9951bc29)), closes [#6462](https://github.com/aws-amplify/amplify-js/issues/6462)
+
+
+
+
+
 ## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.0.3...@aws-amplify/auth@5.0.4) (2022-11-23)
 
 **Note:** Version bump only for package @aws-amplify/auth

@@ -444,6 +444,13 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
+          test_name: 'React Credentials Different Region'
+          framework: react
+          category: auth
+          sample_name: credentials-auth
+          spec: credentials-auth
+          browser: << parameters.browser >>
+      - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
@@ -1058,6 +1065,13 @@ jobs:
     steps:
       - integ_test_rn_ios
 
+  integ_rn_ios_device_tracking:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/auth/deviceTracking
+    steps:
+      - integ_test_rn_ios
+
   integ_datastore_auth:
     parameters:
       scenario:
@@ -1328,6 +1342,57 @@ jobs:
           category: datastore
           sample_name: selective-sync-v5
           spec: selective-sync-v5
+          browser: << parameters.browser >>
+
+  integ_react_datastore_nested_predicate:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/nested-predicate
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nested Predicate'
+          framework: react
+          category: datastore
+          sample_name: nested-predicate
+          spec: nested-predicate
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13_basic:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-basic
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - basic JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-basic
+          spec: nextjs-13-basic
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13_js:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-js
+          spec: nextjs-13
           browser: << parameters.browser >>
 
   deploy:
@@ -1739,6 +1804,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_android_storage:
       #     requires:
       #       - integ_setup
@@ -1877,7 +1948,33 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
+      - integ_react_datastore_nested_predicate:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13_basic:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1918,6 +2015,7 @@ workflows:
             - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
+            - integ_rn_ios_device_tracking
             # - integ_rn_android_storage
             # - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
@@ -1936,6 +2034,9 @@ workflows:
             - integ_react_iot_reconnect
             - integ_react_api_reconnect
             - integ_react_datastore_selective_sync
+            - integ_react_datastore_nested_predicate
+            - integ_next_datastore_13_basic
+            - integ_next_datastore_13_js
       - post_release:
           filters:
             branches:

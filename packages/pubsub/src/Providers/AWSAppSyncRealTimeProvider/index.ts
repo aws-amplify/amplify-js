@@ -63,7 +63,7 @@ export type ObserverQuery = {
 };
 
 const standardDomainPattern =
-	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
+	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com(?:\.cn)?\/graphql$/i;
 
 const customDomainPath = '/realtime';
 
