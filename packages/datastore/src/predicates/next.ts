@@ -448,7 +448,6 @@ export class GroupCondition {
 		breadcrumb: string[] = [],
 		negate = false
 	): Promise<Record<string, any>[]> {
-		// console.log(JSON.stringify(this, null, 2));
 		if (!this.isOptimized) {
 			return this.optimized().fetch(storage);
 		}
@@ -461,21 +460,6 @@ export class GroupCondition {
 			| 'not';
 
 		const negateChildren = negate !== (this.operator === 'not');
-
-		// console.log(
-		// 	'fetch',
-		// 	JSON.stringify(
-		// 		{
-		// 			self: this,
-		// 			breadcrumb,
-		// 			negate,
-		// 			negateChildren,
-		// 			operator,
-		// 		},
-		// 		null,
-		// 		2
-		// 	)
-		// );
 
 		/**
 		 * Conditions that must be branched out and used to generate a base, "candidate"
@@ -494,8 +478,6 @@ export class GroupCondition {
 		const conditions = this.operands.filter(
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
-
-		// console.log({ groups, conditions });
 
 		for (const g of groups) {
 			const relatives = await g.fetch(
@@ -543,44 +525,17 @@ export class GroupCondition {
 					// type T isn't known here.
 					const allJoinConditions: any = [];
 
-					// const relativesPredicates: ((
-					// 	p: RecursiveModelPredicate<any>
-					// ) => RecursiveModelPredicate<any>)[] = [];
-
 					for (const relative of relatives) {
-						// const individualRowJoinConditions: FieldCondition[] = [];
-
 						const relativeConditions: any = [];
 						for (let i = 0; i < relationship.localJoinFields.length; i++) {
-							// rightHandValue
-							// individualRowJoinConditions.push(
-							// 	new FieldCondition(relationship.localJoinFields[i], 'eq', [
-							// 		relative[relationship.remoteJoinFields[i]],
-							// 	])
-							// );
 							relativeConditions.push({
 								[relationship.localJoinFields[i]]: {
 									eq: relative[relationship.remoteJoinFields[i]],
 								},
 							});
 						}
-
-						// const predicate = p =>
-						// 	applyConditionsToV1Predicate(
-						// 		p,
-						// 		individualRowJoinConditions,
-						// 		false
-						// 	);
-						// relativesPredicates.push(predicate as any);
-
 						allJoinConditions.push({ and: relativeConditions });
 					}
-
-					// const predicate = FlatModelPredicateCreator.createGroupFromExisting(
-					// 	this.model.schema,
-					// 	'or',
-					// 	relativesPredicates as any
-					// );
 
 					const predicate = FlatModelPredicateCreator.createFromAST(
 						this.model.schema,
@@ -615,21 +570,6 @@ export class GroupCondition {
 			resultGroups.push(
 				await storage.query(this.model.builder, predicate as any)
 			);
-
-			// console.log(
-			// 	JSON.stringify(
-			// 		{
-			// 			conditions,
-			// 			operator,
-			// 			negate,
-			// 			negateChildren,
-			// 			predicate: FlatModelPredicateCreator.getPredicates(predicate!),
-			// 			resultGroups,
-			// 		},
-			// 		null,
-			// 		2
-			// 	)
-			// );
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
@@ -678,22 +618,6 @@ export class GroupCondition {
 				}
 			}
 		}
-
-		// console.log(
-		// 	JSON.stringify(
-		// 		{
-		// 			self: this,
-		// 			breadcrumb,
-		// 			negate,
-		// 			negateChildren,
-		// 			operator,
-		// 			resultGroups,
-		// 			resultIndex: [...resultIndex?.values()],
-		// 		},
-		// 		null,
-		// 		2
-		// 	)
-		// );
 
 		return Array.from(resultIndex?.values() || []);
 	}

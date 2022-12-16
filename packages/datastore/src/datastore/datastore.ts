@@ -1642,7 +1642,6 @@ class DataStore {
 					for (const relationship of nonHasManyRelationships) {
 						const queryObject = relationship.createRemoteQueryObject(model);
 						if (queryObject !== null) {
-							// console.log({ queryObject });
 							const related = await s.query(
 								relationship.remoteModelConstructor,
 								ModelPredicateCreator.createFromFlatEqualities(

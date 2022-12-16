@@ -198,7 +198,6 @@ describe('Predicates', () => {
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) => {
-					// console.log(JSON.stringify({ query: internals(query) }, null, 2));
 					return (await internals(query).fetch(
 						getStorageFake({
 							[Author.name]: getFlatAuthorsArrayFixture(),
@@ -1101,14 +1100,6 @@ describe('Predicates', () => {
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) => {
-					// console.log(
-					// 	JSON.stringify(
-					// 		{ query: internals(query) },
-					// 		null,
-					// 		// ['query', 'operator', 'operands', 'field', 'groupId'],
-					// 		2
-					// 	)
-					// );
 					return (await internals(query).fetch(
 						getStorageFake({
 							[BlogOwner.name]: owners,

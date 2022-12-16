@@ -478,8 +478,6 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(1);
 		});
 
-		console.log({ byPKEqTime, byContentTime });
-
 		// clamp indexed queries on a small data-set to be less than 1/2
 		// of the runtime of their non-indexed equivalent.
 		//

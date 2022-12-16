@@ -1299,8 +1299,6 @@ export function addCommonQueryTests({
 				r.leftOnes.mtmLeft.content.contains('left content A')
 			);
 
-			console.log(JSON.stringify({ fetchedRightOnesA }, null, 2));
-
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
 				expectedNamesARight
 			);
