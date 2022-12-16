@@ -90,7 +90,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		Object.assign(params, { config: this._config, credentials });
 
 		if (params.event?.immediate) {
-			this._sendFromBuffer([params.event]);
+			this._sendEvents([params]);
 
 			return Promise.resolve(true);
 		} else {
