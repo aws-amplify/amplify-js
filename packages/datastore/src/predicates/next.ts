@@ -448,6 +448,7 @@ export class GroupCondition {
 		breadcrumb: string[] = [],
 		negate = false
 	): Promise<Record<string, any>[]> {
+		// console.log(JSON.stringify(this, null, 2));
 		if (!this.isOptimized) {
 			return this.optimized().fetch(storage);
 		}
@@ -539,34 +540,53 @@ export class GroupCondition {
 				const relationship = ModelRelationship.from(this.model, g.field);
 
 				if (relationship) {
-					const relativesPredicates: ((
-						p: RecursiveModelPredicate<any>
-					) => RecursiveModelPredicate<any>)[] = [];
-					for (const relative of relatives) {
-						const individualRowJoinConditions: FieldCondition[] = [];
+					// type T isn't known here.
+					const allJoinConditions: any = [];
 
+					// const relativesPredicates: ((
+					// 	p: RecursiveModelPredicate<any>
+					// ) => RecursiveModelPredicate<any>)[] = [];
+
+					for (const relative of relatives) {
+						// const individualRowJoinConditions: FieldCondition[] = [];
+
+						const relativeConditions: any = [];
 						for (let i = 0; i < relationship.localJoinFields.length; i++) {
 							// rightHandValue
-							individualRowJoinConditions.push(
-								new FieldCondition(relationship.localJoinFields[i], 'eq', [
-									relative[relationship.remoteJoinFields[i]],
-								])
-							);
+							// individualRowJoinConditions.push(
+							// 	new FieldCondition(relationship.localJoinFields[i], 'eq', [
+							// 		relative[relationship.remoteJoinFields[i]],
+							// 	])
+							// );
+							relativeConditions.push({
+								[relationship.localJoinFields[i]]: {
+									eq: relative[relationship.remoteJoinFields[i]],
+								},
+							});
 						}
 
-						const predicate = p =>
-							applyConditionsToV1Predicate(
-								p,
-								individualRowJoinConditions,
-								false
-							);
-						relativesPredicates.push(predicate as any);
+						// const predicate = p =>
+						// 	applyConditionsToV1Predicate(
+						// 		p,
+						// 		individualRowJoinConditions,
+						// 		false
+						// 	);
+						// relativesPredicates.push(predicate as any);
+
+						allJoinConditions.push({ and: relativeConditions });
 					}
 
-					const predicate = FlatModelPredicateCreator.createGroupFromExisting(
+					// const predicate = FlatModelPredicateCreator.createGroupFromExisting(
+					// 	this.model.schema,
+					// 	'or',
+					// 	relativesPredicates as any
+					// );
+
+					const predicate = FlatModelPredicateCreator.createFromAST(
 						this.model.schema,
-						'or',
-						relativesPredicates as any
+						{
+							or: allJoinConditions,
+						}
 					);
 
 					resultGroups.push(

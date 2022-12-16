@@ -15,7 +15,10 @@ import {
 	Profile,
 	Post,
 	Comment,
+	DefaultPKParent,
+	DefaultPKChild,
 	CompositePKParent,
+	CompositePKChild,
 	testSchema,
 	getDataStore,
 } from './helpers';
@@ -75,10 +78,6 @@ describe('IndexedDBAdapter tests', () => {
 					return IDBAdapter;
 				},
 			}));
-
-			// console.log({
-			// 	adapter: (DataStore as any).storage.storageAdapter,
-			// });
 
 			// NOTE: sort() test on these models can be flaky unless we
 			// strictly control the datestring of each! In a non-negligible percentage
@@ -306,7 +305,14 @@ describe('IndexedDBAdapter tests', () => {
 describe('IndexedDB benchmarks', () => {
 	let adapter: typeof Adapter;
 
-	const { DataStore, User, CompositePKParent } = getDataStore({
+	const {
+		DataStore,
+		User,
+		DefaultPKParent,
+		DefaultPKChild,
+		CompositePKParent,
+		CompositePKChild,
+	} = getDataStore({
 		storageAdapterFactory: () => {
 			adapter = require('../src/storage/adapter/IndexedDBAdapter').default;
 			return adapter;
@@ -483,15 +489,71 @@ describe('IndexedDB benchmarks', () => {
 		expect(byPKEqTime / byContentTime).toBeLessThanOrEqual(1 / 2);
 	});
 
-	test.skip('deep joins are within time limits expected if indexes are being used using default PK', async () => {
-		// e.g., a multi-layer join that would have to scan millions of records
-		// if indexes were not being leveraged.
-		throw new Error('Not yet implemented.');
+	test('deep joins are within time limits expected if indexes are being used using default PK', async () => {
+		const parents: DefaultPKParent[] = [];
+		await sideloadIDBData(250, 'DefaultPKParent', i => {
+			const parent = new DefaultPKParent({
+				content: `content ${i}`,
+			});
+			parents.push(parent);
+			return parent;
+		});
+
+		let child: DefaultPKChild;
+		await sideloadIDBData(250, 'DefaultPKChild', i => {
+			child = new DefaultPKChild({
+				content: `content ${i}`,
+				parent: parents[i],
+			});
+			return child;
+		});
+
+		const time = await benchmark(async () => {
+			const fetched = await DataStore.query(DefaultPKParent, p =>
+				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.id.eq(
+					child.id
+				)
+			);
+			expect(fetched.length).toBe(1);
+		}, 1);
+
+		// actual time on a decent dev machine is around 15ms, compared
+		// to over 130ms when the optimization is disabled.
+		expect(time).toBeLessThan(50);
 	});
 
-	test.skip('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
-		// e.g., a multi-layer join that would have to scan millions of records
-		// if indexes were not being leveraged.
-		throw new Error('Not yet implemented.');
+	test('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
+		const parents: CompositePKParent[] = [];
+		await sideloadIDBData(250, 'CompositePKParent', i => {
+			const parent = new CompositePKParent({
+				customId: `id ${i}`,
+				content: `content ${i}`,
+			});
+			parents.push(parent);
+			return parent;
+		});
+
+		let child: CompositePKChild;
+		await sideloadIDBData(250, 'CompositePKChild', i => {
+			child = new CompositePKChild({
+				childId: `id ${i}`,
+				content: `content ${i}`,
+				parent: parents[i],
+			});
+			return child;
+		});
+
+		const time = await benchmark(async () => {
+			const fetched = await DataStore.query(CompositePKParent, p =>
+				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.and(
+					c => [c.childId.eq(child.childId), c.content.eq(child.content)]
+				)
+			);
+			expect(fetched.length).toBe(1);
+		}, 1);
+
+		// actual time on a decent dev machine is around 20ms, compared
+		// to over 150ms when the optimization is disabled.
+		expect(time).toBeLessThan(50);
 	});
 });
