@@ -1,4 +1,4 @@
-* @aws-amplify/amplify-js
+* @aws-amplify/amplify-js @aws-amplify/amplify-js-admins
 /packages/amplify-ui @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/amplify-ui-angular @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/amplify-ui-components  @aws-amplify/amplify-js @aws-amplify/amplify-ui
