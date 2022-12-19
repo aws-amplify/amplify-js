@@ -1142,7 +1142,7 @@ export declare class DefaultPKHasOneParent {
 	readonly child?: Promise<DefaultPKHasOneChild>;
 	readonly createdAt?: string | null;
 	readonly updatedAt?: string | null;
-	constructor(init: ModelInit<DefaultPKParent>);
+	constructor(init: ModelInit<DefaultPKHasOneParent>);
 	static copyOf(
 		source: DefaultPKHasOneParent,
 		mutator: (
