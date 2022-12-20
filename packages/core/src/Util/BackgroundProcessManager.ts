@@ -359,10 +359,28 @@ export class BackgroundProcessManager {
 				}
 			}
 
+			// Create custom non-spec implementation for Promise.allSettled.
+			// In some cases React Native will not have Promise.allSettled available.
+			// https://github.com/aws-amplify/amplify-js/issues/10764#issuecomment-1359993927
+			//
+			// We only care about the promises fully settling and not being fully
+			// spec. This avoids adding additional dependencies.
+			//
 			// Use `allSettled()` because we want to wait for all to finish. We do
 			// not want to stop waiting if there is a failure.
-			this._closingPromise = Promise.allSettled(
-				Array.from(this.jobs).map(j => j.promise)
+			this._closingPromise = Promise.all(
+				Array.from(this.jobs).map(
+					j =>
+						Promise.resolve(j.promise)
+							.then(value => ({
+								status: 'fulfilled',
+								value,
+							}))
+							.catch(reason => ({
+								status: 'rejected',
+								reason,
+							})) as unknown as PromiseSettledResult<any>
+				)
 			);
 
 			await this._closingPromise;
