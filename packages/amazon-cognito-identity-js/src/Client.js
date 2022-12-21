@@ -80,13 +80,13 @@ export default class Client {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
 			'X-Amz-User-Agent': UserAgent.prototype.userAgent,
+			'Cache-Control': 'no-store',
 		};
 
 		const options = Object.assign({}, this.fetchOptions, {
 			headers,
 			method: 'POST',
 			mode: 'cors',
-			cache: 'no-store',
 			body: JSON.stringify(params),
 		});
 
