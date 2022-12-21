@@ -6,4 +6,4 @@ export type CognitoStorage = {
 	getItem(key: string): string | null;
 	removeItem(key: string): void;
 	clear(): void;
-}
+};

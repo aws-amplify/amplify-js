@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { MachineState } from './MachineState';
+import { MachineState } from './machineState';
 import {
 	MachineContext,
 	MachineEventPayload,

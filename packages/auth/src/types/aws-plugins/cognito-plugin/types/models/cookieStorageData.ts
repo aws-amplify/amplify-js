@@ -7,4 +7,4 @@ export type CookieStorageData = {
 	expires?: number;
 	secure?: boolean;
 	sameSite?: 'string' | 'lax' | 'none';
-}
+};

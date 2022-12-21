@@ -1,8 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthSignUpOptions } from './authSignUpOptions';
-
-export {
-	AuthSignUpOptions
-};
+export { Command } from './command';
+export { CommandOutput } from './commandOutput';

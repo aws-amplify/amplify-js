@@ -10,4 +10,4 @@ export type AuthNextSignInStep<UserAttributeKey extends AuthUserAttributeKey> = 
 	additionalInfo?: AdditionalInfo;
 	totpCode?: string;
 	missingAttributes?: UserAttributeKey[];
-}
+};

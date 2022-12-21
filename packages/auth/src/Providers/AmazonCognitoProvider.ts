@@ -16,7 +16,33 @@ import {
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { AuthProvider } from '../types/AuthProvider';
+import { 
+	AuthPluginOptions, 
+	AuthSignUpStep, 
+	DeliveryMedium, 
+	CognitoSignUpOptions, 
+	SignUpRequest, 
+	AuthSignUpResult, 
+	CognitoUserAttributeKey, 
+	ValidationData, 
+	AuthPluginProvider,
+	AuthUserAttribute
+} from '../types';
+import { 
+	AttributeType, 
+	CodeDeliveryDetailsType, 
+	CognitoIdentityProviderClient, 
+	SignUpCommand, 
+	SignUpCommandOutput 
+} from '@aws-sdk/client-cognito-identity-provider';
+import { 
+	createCognitoIdentityProviderClient, 
+	createSignUpCommand, 
+	getUserPoolId, 
+	sendCommand 
+} from '../utils/CognitoIdentityProviderClientUtils';
+import { AuthError } from '../Errors';
+import { AuthErrorTypes } from '../constants/AuthErrorTypes';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -26,18 +52,110 @@ const AMPLIFY_SYMBOL = (
 
 const logger = new Logger('AmazonCognitoProvider');
 
-export class AmazonCognitoProvider implements AuthProvider {
+export class AmazonCognitoProvider implements AuthPluginProvider {
 	static category = 'Auth';
 	static providerName = 'AmazonCognito';
 
 	private _config;
+	private _client: CognitoIdentityProviderClient;
 
 	constructor(config?) {
 		this._config = config ? config : {};
+		this._client = createCognitoIdentityProviderClient(config);
 	}
-	signUp(): Promise<any> {
-		throw new Error('Method not implemented.');
+
+	/**
+	 * Sign up using Amazon Cognito Provider with username, password, and other
+	 * Amazon Cognito User Attributes
+	 * @param {SignUpRequest} req Cognito user attributes, plugin, and auto sign in options
+	 * @returns { AuthSignUpResult } if success, resolves Promise with next steps data
+	 */
+	async signUp<PluginOptions extends AuthPluginOptions = CognitoSignUpOptions>(
+		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
+	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
+		const clientId: string = getUserPoolId(this._config);
+
+		const username: string = req.username;
+		if (!username) {
+			throw new AuthError(AuthErrorTypes.EmptyUsername); // TODO: change when errors are defined
+		}
+
+		const password: string = req.password;
+		if (!password) {
+			throw new AuthError(AuthErrorTypes.EmptyPassword); // TODO: change when errors are defined
+		}
+
+		const userAttr: AttributeType[] | undefined = this.mapAttributes(req.options?.userAttributes);
+
+		let validationData: AttributeType[] | undefined;
+		let clientMetadata: Record<string, string> | undefined;
+		const pluginOptions = req.options?.pluginOptions;
+		if (pluginOptions) {
+			// TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
+			validationData = this.convertValidationDataObjectToArray(pluginOptions['validationData']);
+			// TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped 
+			clientMetadata = pluginOptions['clientMetadata']; 
+		}
+
+		const signUpCommand: SignUpCommand = createSignUpCommand(
+			clientId, username, password, userAttr, validationData, clientMetadata);
+
+		const signUpCommandOutput = await sendCommand<SignUpCommandOutput>(this._client, signUpCommand);
+		
+		return this.createSignUpResultObject(signUpCommandOutput);
 	}
+
+	private mapAttributes(
+		attrs?: AuthUserAttribute<CognitoUserAttributeKey>[]
+	):AttributeType[] | undefined {
+		if (attrs) {
+			return attrs.map(obj => ({
+				Name: obj.userAttributeKey as string,
+				Value: obj.value
+			}));
+		}	
+	}
+
+	private convertValidationDataObjectToArray(
+		validationDataObject?: ValidationData
+	): AttributeType[] | undefined  {
+		if (validationDataObject) {
+			return Object.entries(validationDataObject).map(([key, value]) => ({
+				Name: key,
+				Value: value
+			}));
+		}	
+	}
+
+	private createSignUpResultObject(
+		signUpCommandOutput: SignUpCommandOutput
+	):AuthSignUpResult<CognitoUserAttributeKey> {
+		let result;
+		if (signUpCommandOutput.UserConfirmed) {
+			result = {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: AuthSignUpStep.DONE
+				}
+			};
+		} else {
+			const codeDeliveryDetails: CodeDeliveryDetailsType | undefined = signUpCommandOutput.CodeDeliveryDetails;
+			result = {
+				isSignUpComplete: false,
+				nextStep: {
+					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+					codeDeliveryDetails: {
+						deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+						destination: codeDeliveryDetails?.Destination as string,
+						attributeName: codeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
+					}
+				}
+			};
+		}
+		// TODO: dispatch successful sign up hub event once it is defined
+		return result;
+	}
+
 	confirmSignUp(): Promise<any> {
 		throw new Error('Method not implemented.');
 	}
