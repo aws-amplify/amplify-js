@@ -359,28 +359,10 @@ export class BackgroundProcessManager {
 				}
 			}
 
-			// Create custom non-spec implementation for Promise.allSettled.
-			// In some cases React Native will not have Promise.allSettled available.
-			// https://github.com/aws-amplify/amplify-js/issues/10764#issuecomment-1359993927
-			//
-			// We only care about the promises fully settling and not being fully
-			// spec. This avoids adding additional dependencies.
-			//
 			// Use `allSettled()` because we want to wait for all to finish. We do
 			// not want to stop waiting if there is a failure.
-			this._closingPromise = Promise.all(
-				Array.from(this.jobs).map(
-					j =>
-						Promise.resolve(j.promise)
-							.then(value => ({
-								status: 'fulfilled',
-								value,
-							}))
-							.catch(reason => ({
-								status: 'rejected',
-								reason,
-							})) as unknown as PromiseSettledResult<any>
-				)
+			this._closingPromise = allSettled(
+				Array.from(this.jobs).map(j => j.promise)
 			);
 
 			await this._closingPromise;
@@ -465,3 +447,30 @@ type JobEntry = {
 	 */
 	description?: string;
 };
+
+/**
+ * Custom non-spec implementation for Promise.allSettled.
+ * In some cases React Native will not have Promise.allSettled available.
+ * https://github.com/aws-amplify/amplify-js/issues/10764#issuecomment-1359993927
+ *
+ * We only care about the promises fully settling and not being fully
+ * spec. This avoids adding additional dependencies.
+ */
+export function allSettled(
+	promises: Promise<any>[]
+): Promise<PromiseSettledResult<any>[]> {
+	return Promise.all(
+		promises.map(
+			p =>
+				Promise.resolve(p) // wrap with promise to ensure all are pormises
+					.then(value => ({
+						status: 'fulfilled',
+						value,
+					}))
+					.catch(reason => ({
+						status: 'rejected',
+						reason,
+					})) as unknown as PromiseSettledResult<any>
+		)
+	);
+}

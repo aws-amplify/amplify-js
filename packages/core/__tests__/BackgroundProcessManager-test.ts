@@ -2,6 +2,7 @@ import Observable from 'zen-observable-ts';
 import {
 	BackgroundProcessManager,
 	BackgroundProcessManagerState,
+	allSettled,
 } from '../src/Util/BackgroundProcessManager';
 
 /**
@@ -649,5 +650,31 @@ describe('BackgroundProcessManager', () => {
 
 		unblock();
 		await close;
+	});
+});
+
+describe('allSettled', () => {
+	test('custom allSettled return value equals Promise.allSettled return value', async () => {
+		const promises = [Promise.resolve('foo'), Promise.reject('bar')];
+		const builtIn = await Promise.allSettled(promises);
+		const custom = await allSettled(promises);
+		expect(builtIn).toEqual(custom);
+	});
+
+	test('custom allSettled functions as promise', async () => {
+		const promises = [Promise.resolve('foo'), Promise.reject('bar')];
+
+		await expect(allSettled(promises)).resolves.toMatchInlineSnapshot(`
+					Array [
+					  Object {
+					    "status": "fulfilled",
+					    "value": "foo",
+					  },
+					  Object {
+					    "reason": "bar",
+					    "status": "rejected",
+					  },
+					]
+				`);
 	});
 });
