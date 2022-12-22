@@ -3,7 +3,8 @@ import { AuthConfigurationErrorCode } from '../code/authConfigErrorCode';
 export type AuthConfigErrorMap = {
 	[AuthConfigurationErrorCode.MissingAuthConfig]: {
 		message: 'Amplify has not been configured correctly';
-		recovery: `
+		recovery:
+			| `
 	  The configuration object is missing required auth properties.
 	  This error is typically caused by one of the following scenarios:
 	
@@ -11,11 +12,13 @@ export type AuthConfigErrorMap = {
 		  See https://aws-amplify.github.io/docs/js/authentication#amplify-project-setup for more information
 	
 	  2. This could also be caused by multiple conflicting versions of amplify packages, see (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js) for help upgrading Amplify packages.
-	`;
+	`
+			| string;
 	};
 	[AuthConfigurationErrorCode.NoConfig]: {
 		message: 'No configuration found';
-		recovery: `
+		recovery:
+			| `
 	  This error is typically caused by one of the following scenarios:
 	  
 	  1. Make sure you're passing the awsconfig object to Amplify.configure() in your app's entry point
@@ -23,6 +26,7 @@ export type AuthConfigErrorMap = {
 	  
 	  2. There might be multiple conflicting versions of amplify packages in your node_modules.
 	  Refer to our docs site for help upgrading Amplify packages (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js)
-	  `;
+	  `
+			| string;
 	};
 };
