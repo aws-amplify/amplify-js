@@ -1,4 +1,9 @@
-import { AuthErrorConstructor } from './types';
+type AuthErrorConstructor = {
+	message: string;
+	underlyingException?: Error | unknown;
+	recoverySuggestion?: string;
+	name: string;
+};
 
 export class AuthError extends Error {
 	underlyingException?: Error | unknown;
