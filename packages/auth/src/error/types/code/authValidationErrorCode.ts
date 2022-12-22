@@ -1,0 +1,15 @@
+export enum AuthValidationErrorCode {
+	EmptyMFA = 'EmptyMFA',
+	EmptySignInUsername = 'EmptySignInUsername',
+	EmptySignInPassword = 'EmptySignInPassword',
+	EmptySignUpUsername = 'EmptySignUpUsername',
+	EmptySignUpPassword = 'EmptySignUpPassword',
+	EmptyConfirmSignUpUsername = 'EmptyConfirmSignUpUsername',
+	EmptyConfirmSignUpCode = 'EmptyConfirmSignUpCode',
+	EmptyResendSignUpCodeUsername = 'EmptyresendSignUpCodeUsername',
+	EmptyChallengeResponse = 'EmptyChallengeResponse',
+	EmptyConfirmResetPasswordUsername = 'EmptyConfirmResetPasswordUsername',
+	EmptyConfirmResetPasswordNewPassword = 'EmptyConfirmResetPasswordNewPassword',
+	EmptyConfirmResetPasswordConfirmationCode = 'EmptyConfirmResetPasswordConfirmationCode',
+	EmptyResetPasswordUsername = 'EmptyResetPasswordUsername',
+}
