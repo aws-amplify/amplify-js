@@ -58,9 +58,9 @@
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
-  "size-limit": [
+	"size-limit": [
 		{
-      "name": "API (GraphQL client)",
+			"name": "API (GraphQL client)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, GraphQLAPI }",
 			"limit": "114.5 kB"

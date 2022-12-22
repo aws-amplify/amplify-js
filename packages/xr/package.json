@@ -48,7 +48,7 @@
     "@aws-amplify/core": "5.0.7",
     "tslib": "^1.8.0"
   },
-  "size-limit": [
+	"size-limit": [
 		{
 			"name": "XR (top-level class)",
 			"path": "./lib-esm/index.js",

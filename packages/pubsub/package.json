@@ -58,14 +58,14 @@
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
-  "size-limit": [
+	"size-limit": [
 		{
 			"name": "PubSub (IoT provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, PubSub, AWSIoTProvider }",
 			"limit": "97.5 kB"
 		},
-    {
+		{
 			"name": "PubSub (Mqtt provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, PubSub, MqttOverWSProvider }",

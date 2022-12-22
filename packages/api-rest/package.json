@@ -49,9 +49,9 @@
     "axios": "0.26.0",
     "tslib": "^1.8.0"
   },
-  "size-limit": [
+	"size-limit": [
 		{
-      "name": "API (rest client)",
+			"name": "API (rest client)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, RestAPI }",
 			"limit": "47.5 kB"

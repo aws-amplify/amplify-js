@@ -52,9 +52,9 @@
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
   },
-  "size-limit": [
+	"size-limit": [
 		{
-      "name": "Auth (top-level class)",
+			"name": "Auth (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Auth }",
 			"limit": "73 kB"
