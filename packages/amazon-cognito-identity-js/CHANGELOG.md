@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.13...amazon-cognito-identity-js@5.2.14) (2022-12-27)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** sets no-store header for cognito user pools ([#10804](https://github.com/aws-amplify/amplify-js/issues/10804)) ([#10811](https://github.com/aws-amplify/amplify-js/issues/10811)) ([eef9f98](https://github.com/aws-amplify/amplify-js/commit/eef9f980f34c512adb7fe2f67120339171d9810c))
+
+
+
+
+
 ## [5.2.13](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.2.12...amazon-cognito-identity-js@5.2.13) (2022-12-14)
 
 
