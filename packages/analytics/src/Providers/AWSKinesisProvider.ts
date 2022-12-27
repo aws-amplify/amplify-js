@@ -89,7 +89,13 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 
 		Object.assign(params, { config: this._config, credentials });
 
-		return this._putToBuffer(params);
+		if (params.event?.immediate) {
+			this._sendEvents([params]);
+
+			return Promise.resolve(true);
+		} else {
+			return this._putToBuffer(params);
+		}
 	}
 
 	public updateEndpoint() {
