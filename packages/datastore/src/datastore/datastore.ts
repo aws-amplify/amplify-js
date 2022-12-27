@@ -72,6 +72,8 @@ import {
 	isIdentifierObject,
 	AmplifyContext,
 	isFieldAssociation,
+	RecursiveModelPredicateExtender,
+	ModelPredicateExtender,
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
@@ -98,8 +100,6 @@ import {
 	mergePatches,
 } from '../util';
 import {
-	RecursiveModelPredicateExtender,
-	ModelPredicateExtender,
 	recursivePredicateFor,
 	predicateFor,
 	GroupCondition,
@@ -818,7 +818,7 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			let patches;
+			let patches: Patch[] = [];
 			const model = produce(
 				source,
 				draft => {
@@ -826,7 +826,15 @@ const createModelClass = <T extends PersistentModel>(
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
-					keyNames.forEach(key => ((draft as Object)[key] = source[key]));
+					keyNames.forEach(key => {
+						if (draft[key] !== source[key]) {
+							logger.warn(
+								`copyOf() does not update PK fields. The '${key}' update is being ignored.`,
+								{ source }
+							);
+						}
+						(draft as Object)[key] = source[key];
+					});
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {

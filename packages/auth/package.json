@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "5.0.0",
+  "version": "5.1.1",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -26,7 +26,7 @@
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
-    "ts-coverage":  "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
   },
   "repository": {
     "type": "git",
@@ -38,10 +38,14 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "files": ["lib", "lib-esm", "src"],
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.0",
-    "amazon-cognito-identity-js": "6.0.0",
+    "@aws-amplify/core": "5.0.7",
+    "amazon-cognito-identity-js": "6.1.1",
     "tslib": "^1.8.0"
   },
   "devDependencies": {
