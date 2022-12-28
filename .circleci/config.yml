@@ -1448,6 +1448,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - feat/storage-part-size
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
