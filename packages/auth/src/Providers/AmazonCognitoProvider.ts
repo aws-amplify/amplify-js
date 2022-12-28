@@ -13,7 +13,6 @@
 
 import {
 	ConsoleLogger as Logger,
-	JS,
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';

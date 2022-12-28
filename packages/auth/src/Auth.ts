@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	Parser,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { AuthProvider } from './types/AuthProvider';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';

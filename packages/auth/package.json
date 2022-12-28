@@ -25,7 +25,7 @@
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs" ,
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts'",
@@ -44,7 +44,8 @@
   "dependencies": {
     "@aws-amplify/cache": "4.0.57",
     "@aws-amplify/core": "4.7.6",
-    "crypto-js": "^4.1.1"
+    "crypto-js": "^4.1.1",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
@@ -96,11 +97,11 @@
     "testSequencer": "./testSequencer.js"
   },
   "bundlewatch": {
-		"files": [
-			{
-				"path": "./dist/*.min.js",
-				"maxSize": "40.66kB"
-			}
-		]
-	}
+    "files": [
+      {
+        "path": "./dist/*.min.js",
+        "maxSize": "40.66kB"
+      }
+    ]
+  }
 }
