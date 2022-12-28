@@ -28,6 +28,15 @@ import {
 	createS3Client,
 } from '../common/S3ClientUtils';
 
+const MB = 1024 * 1024;
+const GB = 1024 * MB;
+const TB = 1024 * GB;
+
+const DEFAULT_PART_SIZE = 5 * MB;
+const MAX_OBJECT_SIZE = 5 * TB;
+const MAX_PARTS_COUNT = 10000;
+const DEFAULT_QUEUE_SIZE = 4;
+
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
 export declare interface Part {
@@ -39,22 +48,19 @@ export declare interface Part {
 }
 
 export class AWSS3ProviderManagedUpload {
-	// Defaults
-	protected minPartSize = 5 * 1024 * 1024; // in MB
-	private queueSize = 4;
-
 	// Data for current upload
-	private body = null;
-	private params: PutObjectRequest = null;
+	private body;
+	private params: PutObjectRequest;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private s3client: S3Client;
-	private uploadId = null;
+	private uploadId: string | undefined;
+	private partSize = DEFAULT_PART_SIZE;
 
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter: events.EventEmitter = null;
+	private emitter: events.EventEmitter | null = null;
 
 	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
@@ -65,33 +71,34 @@ export class AWSS3ProviderManagedUpload {
 
 	public async upload() {
 		try {
-			this.body = await this.validateAndSanitizeBody(this.params.Body);
+			this.body = this.validateAndSanitizeBody(this.params.Body);
 			this.totalBytesToUpload = this.byteLength(this.body);
-			if (this.totalBytesToUpload <= this.minPartSize) {
+			if (this.totalBytesToUpload <= DEFAULT_PART_SIZE) {
 				// Multipart upload is not required. Upload the sanitized body as is
 				this.params.Body = this.body;
 				const putObjectCommand = new PutObjectCommand(this.params);
 				return this.s3client.send(putObjectCommand);
 			} else {
-				// Step 1: Initiate the multi part upload
+				// Step 1: Determine appropriate part size.
+				this.calculatePartSize();
+				// Step 2: Initiate the multi part upload
 				this.uploadId = await this.createMultiPartUpload();
 
-				// Step 2: Upload chunks in parallel as requested
+				// Step 3: Upload chunks in parallel as requested
 				const numberOfPartsToUpload = Math.ceil(
-					this.totalBytesToUpload / this.minPartSize
+					this.totalBytesToUpload / this.partSize
 				);
 
 				const parts: Part[] = this.createParts();
 				for (
 					let start = 0;
 					start < numberOfPartsToUpload;
-					start += this.queueSize
+					start += DEFAULT_QUEUE_SIZE
 				) {
-
 					// Upload as many as `queueSize` parts simultaneously
 					await this.uploadParts(
-						this.uploadId,
-						parts.slice(start, start + this.queueSize)
+						this.uploadId!,
+						parts.slice(start, start + DEFAULT_QUEUE_SIZE)
 					);
 				}
 
@@ -100,7 +107,7 @@ export class AWSS3ProviderManagedUpload {
 				});
 
 				// Step 3: Finalize the upload such that S3 can recreate the file
-				return await this.finishMultiPartUpload(this.uploadId);
+				return await this.finishMultiPartUpload(this.uploadId!);
 			}
 		} catch (error) {
 			// if any error is thrown, call cleanup
@@ -110,12 +117,20 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
+	private calculatePartSize() {
+		let partsCount = Math.ceil(this.totalBytesToUpload / this.partSize);
+		while (partsCount > MAX_PARTS_COUNT) {
+			this.partSize *= 2;
+			partsCount = Math.ceil(this.totalBytesToUpload / this.partSize);
+		}
+	}
+
 	private createParts(): Part[] {
 		try {
 			const parts: Part[] = [];
 			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
 				const bodyEnd = Math.min(
-					bodyStart + this.minPartSize,
+					bodyStart + this.partSize,
 					this.totalBytesToUpload
 				);
 				parts.push({
@@ -124,7 +139,7 @@ export class AWSS3ProviderManagedUpload {
 					emitter: new events.EventEmitter(),
 					_lastUploadedBytes: 0,
 				});
-				bodyStart += this.minPartSize;
+				bodyStart += this.partSize;
 			}
 			return parts;
 		} catch (error) {
@@ -212,12 +227,17 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private async cleanup(uploadId: string) {
+	private async cleanup(uploadId: string | undefined) {
 		// Reset this's state
 		this.body = null;
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.totalBytesToUpload = 0;
+
+		if (!uploadId) {
+			// This is a single part upload;
+			return;
+		}
 
 		const input = {
 			Bucket: this.params.Bucket,
@@ -277,21 +297,23 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private async validateAndSanitizeBody(body: any): Promise<any> {
-		if (this.isGenericObject(body)) {
-			// Any javascript object
-			return JSON.stringify(body);
-		} else {
-			// Files, arrayBuffer etc
-			return body;
-		}
+	private validateAndSanitizeBody(body: any): any {
+		const sanitizedBody = this.isGenericObject(body)
+			? JSON.stringify(body)
+			: body;
 		/* TODO: streams and files for nodejs 
 		if (
 			typeof body.path === 'string' &&
 			require('fs').lstatSync(body.path).size > 0
 		) {
-			return body;
+			sanitizedBody = body;
 		} */
+		if (this.byteLength(sanitizedBody) > MAX_OBJECT_SIZE) {
+			throw new Error(
+				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytesToUpload} Bytes`
+			);
+		}
+		return sanitizedBody;
 	}
 
 	private isGenericObject(body: any): body is Object {
