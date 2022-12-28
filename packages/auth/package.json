@@ -48,7 +48,8 @@
   "dependencies": {
     "@aws-amplify/core": "5.0.11",
     "@aws-sdk/client-cognito-identity-provider": "3.6.1",
-    "tslib": "^1.8.0"
+    "tslib": "^1.8.0",
+		"uuid": "^3.2.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
@@ -108,11 +109,11 @@
     "testSequencer": "./testSequencer.js"
   },
   "bundlewatch": {
-		"files": [
-			{
-				"path": "./dist/*.min.js",
-				"maxSize": "40.66kB"
-			}
-		]
-	}
+    "files": [
+      {
+        "path": "./dist/*.min.js",
+        "maxSize": "40.66kB"
+      }
+    ]
+  }
 }

@@ -16,6 +16,7 @@ import {
 	ConfirmResetPasswordRequest, 
 	SignUpRequest 
 } from './types';
+import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
 const logger = new Logger('AuthClass');
