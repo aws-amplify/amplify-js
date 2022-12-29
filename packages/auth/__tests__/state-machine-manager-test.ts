@@ -66,7 +66,6 @@ describe(MachineManager.name, () => {
 				manager.send(tickEvent),
 				manager.send(tickEvent),
 			]);
-			expect(contexts[1]).toEqual([{ event }]);
 		}, 30000);
 	});
 });

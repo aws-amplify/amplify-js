@@ -19,6 +19,11 @@ const CURRENT_STATES_EVENT: MachineEvent = {
 	payload: CURRENT_STATES_EVENT_SYMBOL,
 };
 
+type MachinePromiseContext = [
+	(value: MachineState | PromiseLike<MachineState>) => void,
+	(reason?: any) => void
+];
+
 /**
  * A state machine manager class that:
  * 1. Handles concurrent invocations. It queues the events if there's ongoing
@@ -28,15 +33,15 @@ const CURRENT_STATES_EVENT: MachineEvent = {
  *     including cross-machine events.
  */
 export class MachineManager<MachineTypes extends Machine<any, any, any>> {
-	private _apiQueue: [
-		MachineManagerEvent,
-		(value: MachineState | PromiseLike<MachineState>) => void,
-		(reason?: any) => void
-	][] = [];
+	private _apiQueue: {
+		event: MachineManagerEvent;
+		promiseContext: MachinePromiseContext;
+	}[] = [];
 	private _machineQueue: MachineEvent[] = [];
 	private _machines: Record<string, MachineTypes>;
 	private _isActive = false;
 
+	// TODO: support adding machines dynamically besides in the contructor.
 	constructor(...machines: Array<MachineTypes>) {
 		const managerEventBroker: EventBroker<MachineEvent> = {
 			dispatch: event => {
@@ -68,7 +73,7 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 			resolve = res;
 			reject = rej;
 		});
-		this._apiQueue.push([event, resolve, reject]);
+		this._apiQueue.push({ event, promiseContext: [resolve, reject] });
 		if (!this._isActive) {
 			this._processApiQueue();
 		}
@@ -77,7 +82,10 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 
 	private async _processApiQueue() {
 		this._isActive = true;
-		for (const [event, resolve, reject] of this._apiQueue) {
+		for (const {
+			event,
+			promiseContext: [resolve, reject],
+		} of this._apiQueue) {
 			try {
 				if (event.payload !== CURRENT_STATES_EVENT_SYMBOL) {
 					await this._processApiEvent(event);
@@ -108,6 +116,7 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 		}
 		const machine = this._machines[event.toMachine];
 		if (!machine) {
+			// TODO: remove this error but put this message into logger.
 			throw new Error(
 				`Cannot route event to machine ${
 					event.toMachine
