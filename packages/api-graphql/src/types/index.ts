@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Source, DocumentNode, GraphQLError } from 'graphql';
-export { OperationTypeNode } from 'graphql';
+export type { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 
