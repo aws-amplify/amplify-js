@@ -7,7 +7,6 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
-	ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
@@ -24,6 +23,7 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	PaginationInput,
 	DeferredCallbackResolverOptions,
 	LimitTimerRaceResolvedValues,
 	SchemaModel,
@@ -32,6 +32,7 @@ import {
 	ModelAssociation,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+import { ModelSortPredicateCreator } from './predicates';
 
 export const ID = 'id';
 
@@ -110,7 +111,7 @@ export const validatePredicate = <T extends PersistentModel>(
 			filterType = 'some';
 			break;
 		default:
-			exhaustiveCheck(groupType);
+			throw new Error(`Invalid ${groupType}`);
 	}
 
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
@@ -169,7 +170,6 @@ export const validatePredicateField = <T>(
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
-			exhaustiveCheck(operator, false);
 			return false;
 	}
 };
@@ -202,18 +202,14 @@ export const traverseModel = <T extends PersistentModel>(
 	namespace: SchemaNamespace,
 	modelInstanceCreator: ModelInstanceCreator,
 	getModelConstructorByModelName: (
-		namsespaceName: string,
+		namsespaceName: NAMESPACES,
 		modelName: string
 	) => PersistentModelConstructor<any>
 ) => {
-	const relationships = namespace.relationships;
-
 	const modelConstructor = getModelConstructorByModelName(
-		namespace.name,
+		namespace.name as NAMESPACES,
 		srcModelName
 	);
-
-	const relation = relationships[srcModelName];
 
 	const result: {
 		modelName: string;
@@ -221,136 +217,7 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
-		relation.relationTypes.forEach((rItem: RelationType) => {
-			const modelConstructor = getModelConstructorByModelName(
-				namespace.name,
-				rItem.modelName
-			);
-
-			switch (rItem.relationType) {
-				case 'HAS_ONE':
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-							console.log(error);
-						}
-
-						result.push({
-							modelName: rItem.modelName,
-							item: instance[rItem.fieldName],
-							instance: modelInstance,
-						});
-
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
-
-						// `targetName` will be defined for Has One if feature flag
-						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
-						// is true (default as of 5/7/21)
-						// Making this conditional for backward-compatibility
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
-
-								// Previously, we used the hardcoded 'id' as they key,
-								// now we need the value of the key to get the PK (and SK)
-								// values from the related record
-
-								const { primaryKey } = namespace.keys[modelConstructor.name];
-								const keyField = primaryKey && primaryKey[idx];
-
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
-
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
-						} else {
-							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-								draftInstance[rItem.fieldName]
-							)).id;
-						}
-					}
-
-					break;
-				case 'BELONGS_TO':
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-						}
-
-						const isDeleted = (<ModelInstanceMetadata>(
-							draftInstance[rItem.fieldName]
-						))._deleted;
-
-						if (!isDeleted) {
-							result.push({
-								modelName: rItem.modelName,
-								item: instance[rItem.fieldName],
-								instance: modelInstance,
-							});
-						}
-					}
-
-					if (draftInstance[rItem.fieldName]) {
-						const targetNames: string[] | undefined =
-							extractTargetNamesFromSrc(rItem);
-
-						if (targetNames) {
-							targetNames.forEach((targetName, idx) => {
-								// Get the connected record
-								const relatedRecordInProxy = <PersistentModel>(
-									draftInstance[rItem.fieldName]
-								);
-								// Previously, we used the hardcoded `id` for the key.
-								// Now, we need the value of the key to get the PK (and SK)
-								// values from the related record
-								const { primaryKey } = namespace.keys[modelConstructor.name];
-
-								// fall back to ID if
-								const keyField = primaryKey && primaryKey[idx];
-
-								// Get the value
-								const relatedRecordInProxyPkValue =
-									relatedRecordInProxy[keyField];
-
-								// Set the targetName value
-								(<any>draftInstance)[targetName] = relatedRecordInProxyPkValue;
-							});
-							// Delete the instance from the proxy
-							delete (<any>draftInstance)[rItem.fieldName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// Intentionally blank
-					break;
-				default:
-					exhaustiveCheck(rItem.relationType);
-					break;
-			}
-		});
-	});
+	const newInstance = modelConstructor.copyOf(instance, () => {});
 
 	result.unshift({
 		modelName: srcModelName,
@@ -361,7 +228,7 @@ export const traverseModel = <T extends PersistentModel>(
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering.keys())
+			Array.from(namespace.modelTopologicalOrdering!.keys())
 		);
 	}
 
@@ -369,7 +236,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 	result.sort((a, b) => {
 		return (
-			sortedModels.indexOf(a.modelName) - sortedModels.indexOf(b.modelName)
+			sortedModels!.indexOf(a.modelName) - sortedModels!.indexOf(b.modelName)
 		);
 	});
 
@@ -415,6 +282,96 @@ export const isPrivateMode = () => {
 		db.onerror = isPrivate;
 		db.onsuccess = isNotPrivate;
 	});
+};
+
+let safariCompatabilityModeResult;
+
+/**
+ * Whether the browser's implementation of IndexedDB breaks on array lookups
+ * against composite indexes whose keypath contains a single column.
+ *
+ * E.g., Whether `store.createIndex(indexName, ['id'])` followed by
+ * `store.index(indexName).get([1])` will *ever* return records.
+ *
+ * In all known, modern Safari browsers as of Q4 2022, the query against an index like
+ * this will *always* return `undefined`. So, the index needs to be created as a scalar.
+ */
+export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
+	try {
+		const dbName = uuid();
+		const storeName = 'indexedDBFeatureProbeStore';
+		const indexName = 'idx';
+
+		if (indexedDB === null) return false;
+
+		if (safariCompatabilityModeResult !== undefined) {
+			return safariCompatabilityModeResult;
+		}
+
+		const db: IDBDatabase | false = await new Promise(resolve => {
+			const dbOpenRequest = indexedDB.open(dbName);
+			dbOpenRequest.onerror = () => resolve(false);
+
+			dbOpenRequest.onsuccess = () => {
+				const db = dbOpenRequest.result;
+				resolve(db);
+			};
+
+			dbOpenRequest.onupgradeneeded = (event: any) => {
+				const db = event?.target?.result;
+
+				db.onerror = () => resolve(false);
+
+				const store = db.createObjectStore(storeName, {
+					autoIncrement: true,
+				});
+
+				store.createIndex(indexName, ['id']);
+			};
+		});
+
+		if (!db) {
+			throw new Error('Could not open probe DB');
+		}
+
+		const rwTx = db.transaction(storeName, 'readwrite');
+		const rwStore = rwTx.objectStore(storeName);
+		rwStore.add({
+			id: 1,
+		});
+
+		(rwTx as any).commit();
+
+		const result = await new Promise(resolve => {
+			const tx = db.transaction(storeName, 'readonly');
+			const store = tx.objectStore(storeName);
+			const index = store.index(indexName);
+
+			const getRequest = index.get([1]);
+
+			getRequest.onerror = () => resolve(false);
+
+			getRequest.onsuccess = (event: any) => {
+				resolve(event?.target?.result);
+			};
+		});
+
+		if (db && typeof db.close === 'function') {
+			await db.close();
+		}
+
+		await indexedDB.deleteDatabase(dbName);
+
+		if (result === undefined) {
+			safariCompatabilityModeResult = true;
+		} else {
+			safariCompatabilityModeResult = false;
+		}
+	} catch (error) {
+		safariCompatabilityModeResult = false;
+	}
+
+	return safariCompatabilityModeResult;
 };
 
 const randomBytes = (nBytes: number): Buffer => {
@@ -528,8 +485,8 @@ export function valuesEqual(
 	}
 
 	if (a instanceof Map && b instanceof Map) {
-		a = Object.fromEntries(a);
-		b = Object.fromEntries(b);
+		a = (Object as any).fromEntries(a);
+		b = (Object as any).fromEntries(b);
 	}
 
 	const aKeys = Object.keys(a);
@@ -555,6 +512,97 @@ export function valuesEqual(
 	}
 
 	return true;
+}
+
+/**
+ * Statelessly extracts the specified page from an array.
+ *
+ * @param records - The source array to extract a page from.
+ * @param pagination - A definition of the page to extract.
+ * @returns This items from `records` matching the `pagination` definition.
+ */
+export function inMemoryPagination<T extends PersistentModel>(
+	records: T[],
+	pagination?: PaginationInput<T>
+): T[] {
+	if (pagination && records.length > 1) {
+		if (pagination.sort) {
+			const sortPredicates = ModelSortPredicateCreator.getPredicates(
+				pagination.sort
+			);
+
+			if (sortPredicates.length) {
+				const compareFn = sortCompareFunction(sortPredicates);
+				records.sort(compareFn);
+			}
+		}
+		const { page = 0, limit = 0 } = pagination;
+		const start = Math.max(0, page * limit) || 0;
+
+		const end = limit > 0 ? start + limit : records.length;
+
+		return records.slice(start, end);
+	}
+	return records;
+}
+
+/**
+ * An `aysnc` implementation of `Array.some()`. Returns as soon as a match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if "some" items match; `false` otherwise.
+ */
+export async function asyncSome(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (await matches(item)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * An `aysnc` implementation of `Array.every()`. Returns as soon as a non-match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if every item matches; `false` otherwise.
+ */
+export async function asyncEvery(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (!(await matches(item))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * An `async` implementation of `Array.filter()`. Returns after all items have been filtered.
+ * TODO: Return AsyncIterable.
+ * @param items The items to filter.
+ * @param matches The `async` matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<T>` of matching items.
+ */
+export async function asyncFilter<T>(
+	items: T[],
+	matches: (item: T) => Promise<boolean>
+): Promise<T[]> {
+	const results: T[] = [];
+	for (const item of items) {
+		if (await matches(item)) {
+			results.push(item);
+		}
+	}
+	return results;
 }
 
 export const isAWSDate = (val: string): boolean => {
@@ -671,7 +719,7 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
-			return winner;
+			return winner!;
 		}
 	}
 
@@ -721,7 +769,7 @@ export function mergePatches<T>(
 			patches = p;
 		}
 	);
-	return patches;
+	return patches!;
 }
 
 export const getStorename = (namespace: string, modelName: string) => {
@@ -897,14 +945,14 @@ export const establishRelationAndKeys = (
 				typeof fieldAttribute.type === 'object' &&
 				'model' in fieldAttribute.type
 			) {
-				const connectionType = fieldAttribute.association.connectionType;
+				const connectionType = fieldAttribute.association!.connectionType;
 				relationship[mKey].relationTypes.push({
 					fieldName: fieldAttribute.name,
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
-					targetName: fieldAttribute.association['targetName'],
-					targetNames: fieldAttribute.association['targetNames'],
-					associatedWith: fieldAttribute.association['associatedWith'],
+					targetName: fieldAttribute.association!['targetName'],
+					targetNames: fieldAttribute.association!['targetNames'],
+					associatedWith: fieldAttribute.association!['associatedWith'],
 				});
 
 				if (connectionType === 'BELONGS_TO') {
@@ -1040,7 +1088,7 @@ export const getIndexKeys = (
 	namespace: SchemaNamespace,
 	modelName: string
 ): string[] => {
-	const keyPath = namespace?.keys[modelName]?.primaryKey;
+	const keyPath = namespace?.keys?.[modelName]?.primaryKey;
 
 	if (keyPath) {
 		return keyPath;

@@ -928,6 +928,9 @@ img { max-width: 100%; }
 				<a href="syncengine.html#start" class="tsd-kind-icon">start</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="syncengine.html#stop" class="tsd-kind-icon">stop</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="syncengine.html#unsubscribeconnectivity" class="tsd-kind-icon">unsubscribe<wbr>Connectivity</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -962,6 +965,7 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="syncengine.html#getmodelsyncedstatus" class="tsd-kind-icon">get<wbr>Model<wbr>Synced<wbr>Status</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="syncengine.html#start" class="tsd-kind-icon">start</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="syncengine.html#stop" class="tsd-kind-icon">stop</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="syncengine.html#unsubscribeconnectivity" class="tsd-kind-icon">unsubscribe<wbr>Connectivity</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="syncengine.html#getnamespace" class="tsd-kind-icon">get<wbr>Namespace</a></li>
 					</ul>
@@ -975,13 +979,13 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Sync<wbr>Engine<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelClasses<span class="tsd-signature-symbol">: </span><a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a>, userModelClasses<span class="tsd-signature-symbol">: </span><a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a>, storage<span class="tsd-signature-symbol">: </span><a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, conflictHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#conflicthandler" class="tsd-signature-type">ConflictHandler</a>, errorHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#errorhandler" class="tsd-signature-type">ErrorHandler</a>, syncPredicates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, amplifyConfig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, authModeStrategy<span class="tsd-signature-symbol">: </span><a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="syncengine.html" class="tsd-signature-type">SyncEngine</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Sync<wbr>Engine<span class="tsd-signature-symbol">(</span>schema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelClasses<span class="tsd-signature-symbol">: </span><a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a>, userModelClasses<span class="tsd-signature-symbol">: </span><a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a>, storage<span class="tsd-signature-symbol">: </span><a href="../interfaces/amplifyconfig.html#storage" class="tsd-signature-type">Storage</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, conflictHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#conflicthandler" class="tsd-signature-type">ConflictHandler</a>, errorHandler<span class="tsd-signature-symbol">: </span><a href="../globals.html#errorhandler" class="tsd-signature-type">ErrorHandler</a>, syncPredicates<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WeakMap</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#schemamodel" class="tsd-signature-type">SchemaModel</a><span class="tsd-signature-symbol">, </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>, amplifyConfig<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, authModeStrategy<span class="tsd-signature-symbol">: </span><a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a>, amplifyContext<span class="tsd-signature-symbol">: </span><a href="../globals.html#amplifycontext" class="tsd-signature-type">AmplifyContext</a>, connectivityMonitor<span class="tsd-signature-symbol">?: </span><a href="datastoreconnectivity.html" class="tsd-signature-type">DataStoreConnectivity</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="syncengine.html" class="tsd-signature-type">SyncEngine</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/index.ts#L107">packages/datastore/src/sync/index.ts:107</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L126">packages/datastore/src/sync/index.ts:126</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -999,7 +1003,7 @@ img { max-width: 100%; }
 							<h5>userModelClasses: <a href="../globals.html#typeconstructormap" class="tsd-signature-type">TypeConstructorMap</a></h5>
 						</li>
 						<li>
-							<h5>storage: <a href="../globals.html#storagemodule.storage" class="tsd-signature-type">Storage</a></h5>
+							<h5>storage: <a href="../interfaces/amplifyconfig.html#storage" class="tsd-signature-type">Storage</a></h5>
 						</li>
 						<li>
 							<h5>modelInstanceCreator: <a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a></h5>
@@ -1019,6 +1023,12 @@ img { max-width: 100%; }
 						<li>
 							<h5>authModeStrategy: <a href="../globals.html#authmodestrategy" class="tsd-signature-type">AuthModeStrategy</a></h5>
 						</li>
+						<li>
+							<h5>amplifyContext: <a href="../globals.html#amplifycontext" class="tsd-signature-type">AmplifyContext</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> connectivityMonitor: <a href="datastoreconnectivity.html" class="tsd-signature-type">DataStoreConnectivity</a></h5>
+						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="syncengine.html" class="tsd-signature-type">SyncEngine</a></h4>
 				</li>
@@ -1037,7 +1047,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/index.ts#L103">packages/datastore/src/sync/index.ts:103</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L122">packages/datastore/src/sync/index.ts:122</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1060,7 +1070,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/index.ts#L162">packages/datastore/src/sync/index.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L194">packages/datastore/src/sync/index.ts:194</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1074,6 +1084,29 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="stop" class="tsd-anchor"></a>
+			<h3>stop</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">stop<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L789">packages/datastore/src/sync/index.ts:789</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Stops all subscription activities and resolves when all activies report
+							that they&#39;re disconnected, done retrying, etc..</p>
+						</div>
+					</div>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="unsubscribeconnectivity" class="tsd-anchor"></a>
 			<h3>unsubscribe<wbr>Connectivity</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1083,7 +1116,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/index.ts#L696">packages/datastore/src/sync/index.ts:696</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L781">packages/datastore/src/sync/index.ts:781</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1100,7 +1133,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/sync/index.ts#L820">packages/datastore/src/sync/index.ts:820</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/sync/index.ts#L933">packages/datastore/src/sync/index.ts:933</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span>

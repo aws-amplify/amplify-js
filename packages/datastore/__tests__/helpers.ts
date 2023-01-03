@@ -2,16 +2,19 @@ import Observable, { ZenObservable } from 'zen-observable-ts';
 import { parse } from 'graphql';
 import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
 import {
+	AsyncCollection,
+	MutableModel,
 	DataStore as DS,
 	CompositeIdentifier,
 	CustomIdentifier,
 	ManagedIdentifier,
-	MutableModel,
 	PersistentModel,
 	OptionallyManagedIdentifier,
 	PersistentModelConstructor,
+	AsyncItem,
 } from '../src';
-
+import { validatePredicate } from '../src/util';
+import { ModelPredicateCreator } from '../src/predicates';
 import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
@@ -80,7 +83,10 @@ export function dummyInstance<T extends PersistentModel>(): T {
  * @param data the object to validate.
  * @param matchers the matcher functions/values/regexes to test the object with
  */
-export function errorsFrom(data, matchers) {
+export function errorsFrom<T extends Object>(
+	data: T,
+	matchers: Record<string, any>
+) {
 	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
 		const value = data[property];
 		if (
@@ -93,7 +99,7 @@ export function errorsFrom(data, matchers) {
 			)
 		) {
 			errors.push(
-				`Property '${property}' value "${value}" does not match "${matcher}"`
+				`Property '${property}' value "${value}" does not match "${matcher}"` as never
 			);
 		}
 		return errors;
@@ -415,6 +421,25 @@ export async function waitForEmptyOutbox(verbose = false) {
 	});
 }
 
+/**
+ * Watches Hub events until an outBoxStatus with isEmpty is received.
+ *
+ * @param verbose Whether to log hub events until empty
+ */
+export async function waitForDataStoreReady(verbose = false) {
+	return new Promise(resolve => {
+		const { Hub } = require('@aws-amplify/core');
+		const hubCallback = message => {
+			if (verbose) console.log('hub event', message);
+			if (message.payload.event === 'ready') {
+				Hub.remove('datastore', hubCallback);
+				resolve();
+			}
+		};
+		Hub.listen('datastore', hubCallback);
+	});
+}
+
 type ConnectionStatus = {
 	online: boolean;
 };
@@ -425,7 +450,7 @@ type ConnectionStatus = {
  */
 class FakeDataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
-	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+	private observer?: ZenObservable.SubscriptionObserver<ConnectionStatus>;
 
 	constructor() {
 		this.connectionStatus = {
@@ -490,6 +515,8 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
+	public logRequests = false;
+	public logAST = false;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -519,6 +546,8 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
+		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+
 		const operation = q.operation;
 		const name = q.name.value;
 		const selections = q.selectionSet.selections[0];
@@ -544,6 +573,41 @@ class FakeGraphQLService {
 				: selections?.selectionSet?.selections?.map(i => i.name.value);
 
 		return { operation, name, selection, type, table, items };
+	}
+
+	public satisfiesCondition(tableName, item, condition) {
+		if (this.logRequests)
+			console.log('checking satisfiesCondition', {
+				tableName,
+				item,
+				condition: JSON.stringify(condition),
+			});
+
+		if (!condition) {
+			console.log(
+				'checking satisfiesCondition matches all for `null` conditions'
+			);
+			return true;
+		}
+
+		const modelDefinition = this.schema.models[tableName];
+		const predicate = ModelPredicateCreator.createFromAST(
+			modelDefinition,
+			condition
+		);
+		const isMatch = validatePredicate(item, 'and', [
+			ModelPredicateCreator.getPredicates(predicate)!,
+		]);
+
+		this.logRequests &&
+			console.log('satisfiesCondition result', {
+				effectivePredicate: JSON.stringify(
+					ModelPredicateCreator.getPredicates(predicate)
+				),
+				isMatch,
+			});
+
+		return isMatch;
 	}
 
 	public subscribe(tableName, type, observer) {
@@ -604,6 +668,23 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeMissingVersion(data, selection) {
+		return {
+			path: [selection],
+			data,
+			errorType: 'ConflictUnhandled',
+			errorInfo: null,
+			locations: [
+				{
+					line: 20,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: 'Conflict resolver rejects mutation.',
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -659,16 +740,25 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
+		if (this.logRequests) {
+			console.log('API request', {
+				query,
+				variables: JSON.stringify(variables, null, 2),
+				authMode,
+				authToken,
+			});
+		}
+
 		if (!this.isConnected) {
 			return this.disconnectedError();
 		}
 
-		const {
-			operation,
-			selection,
-			table: tableName,
-			type,
-		} = this.parseQuery(query);
+		const parsed = this.parseQuery(query);
+		const { operation, selection, table: tableName, type } = parsed;
+
+		if (this.logRequests) {
+			console.log('Parsed request components', parsed);
+		}
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -683,7 +773,9 @@ class FakeGraphQLService {
 			} else if (type === 'list' || type === 'sync') {
 				data = {
 					[selection]: {
-						items: [...table.values()],
+						items: [...table.values()].filter(item =>
+							this.satisfiesCondition(tableName, item, variables.filter)
+						),
 						nextToken: null,
 						startedAt: new Date().getTime(),
 					},
@@ -727,12 +819,25 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
+				if (this.logRequests) console.log({ existing });
 				if (!existing) {
 					data = {
 						[selection]: null,
 					};
 					errors = [this.makeMissingUpdateTarget(selection)];
+				} else if (record._version === undefined) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeMissingVersion(existing, selection)];
 				} else if (existing._version !== record._version) {
+					data = {
+						[selection]: null,
+					};
+					errors = [this.makeConditionalUpateFailedError(selection)];
+				} else if (
+					!this.satisfiesCondition(tableName, existing, variables.condition)
+				) {
 					data = {
 						[selection]: null,
 					};
@@ -748,8 +853,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
+					if (this.logRequests) console.log({ data });
 				}
 			}
+
+			if (this.logRequests) console.log('response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -849,10 +957,11 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 			}),
 			JS: {
 				...actual.JS,
-				browserOrNode: () => ({
-					isBrowser: !isNode,
-					isNode,
-				}),
+				browserOrNode: () => {
+					throw new Error(
+						'amplify/core::JS.browserOrNode() does not exist anymore'
+					);
+				},
 			},
 		};
 	});
@@ -875,6 +984,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 
 	const classes = initSchema(testSchema());
 	const {
+		ModelWithBoolean,
 		Post,
 		Comment,
 		User,
@@ -883,7 +993,17 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK,
 		PostCustomPKSort,
 		PostCustomPKComposite,
+		DefaultPKParent,
+		DefaultPKChild,
+		HasOneParent,
+		HasOneChild,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
 	} = classes as {
+		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
 		User: PersistentModelConstructor<User>;
@@ -892,6 +1012,15 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK: PersistentModelConstructor<PostCustomPK>;
 		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSort>;
 		PostCustomPKComposite: PersistentModelConstructor<PostCustomPKComposite>;
+		DefaultPKParent: PersistentModelConstructor<DefaultPKParent>;
+		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
+		HasOneParent: PersistentModelConstructor<HasOneParent>;
+		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		MtmLeft: PersistentModelConstructor<MtmLeft>;
+		MtmRight: PersistentModelConstructor<MtmRight>;
+		MtmJoin: PersistentModelConstructor<MtmJoin>;
+		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
+		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
 	};
 
 	return {
@@ -900,6 +1029,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		ModelWithBoolean,
 		Post,
 		Comment,
 		User,
@@ -908,6 +1038,15 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		PostCustomPK,
 		PostCustomPKSort,
 		PostCustomPKComposite,
+		DefaultPKParent,
+		DefaultPKChild,
+		HasOneParent,
+		HasOneChild,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
 	};
 }
 
@@ -953,6 +1092,7 @@ export declare class Model {
 		mutator: (draft: MutableModel<Model>) => void | Model
 	): Model;
 }
+
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
@@ -972,6 +1112,7 @@ export declare class Login {
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
+	public readonly comments: AsyncCollection<Comment>;
 
 	constructor(init: ModelInit<Post>);
 
@@ -984,7 +1125,8 @@ export declare class Post {
 export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
-	public readonly post: Post;
+	public readonly post: Promise<Post>;
+	public readonly postId?: string;
 
 	constructor(init: ModelInit<Comment>);
 
@@ -997,7 +1139,7 @@ export declare class Comment {
 export declare class User {
 	public readonly id: string;
 	public readonly name: string;
-	public readonly profile?: Profile;
+	public readonly profile: Promise<Profile | undefined>;
 	public readonly profileID?: string;
 
 	constructor(init: ModelInit<User>);
@@ -1093,6 +1235,369 @@ export declare class PostCustomPKComposite {
 	): PostCustomPKComposite;
 }
 
+export declare class BasicModel {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<BasicModel, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<BasicModel>);
+	static copyOf(
+		source: BasicModel,
+		mutator: (
+			draft: MutableModel<BasicModel>
+		) => MutableModel<BasicModel> | void
+	): BasicModel;
+}
+
+export declare class HasOneParent {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneParent, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly child: Promise<HasOneChild | undefined>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly hasOneParentChildId?: string | null;
+	constructor(init: ModelInit<HasOneParent>);
+	static copyOf(
+		source: HasOneParent,
+		mutator: (
+			draft: MutableModel<HasOneParent>
+		) => MutableModel<HasOneParent> | void
+	): HasOneParent;
+}
+
+export declare class HasOneChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<HasOneChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<HasOneChild>);
+	static copyOf(
+		source: HasOneChild,
+		mutator: (
+			draft: MutableModel<HasOneChild>
+		) => MutableModel<HasOneChild> | void
+	): HasOneChild;
+}
+
+export declare class MtmLeft {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmLeft, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly rightOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmLeft>);
+	static copyOf(
+		source: MtmLeft,
+		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void
+	): MtmLeft;
+}
+
+export declare class MtmRight {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmRight, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly leftOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmRight>);
+	static copyOf(
+		source: MtmRight,
+		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void
+	): MtmRight;
+}
+
+export declare class MtmJoin {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<MtmJoin, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly mtmLeftId?: string | null;
+	readonly mtmRightId?: string | null;
+	readonly mtmLeft: AsyncItem<MtmLeft>;
+	readonly mtmRight: AsyncItem<MtmRight>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmJoin>);
+	static copyOf(
+		source: MtmJoin,
+		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void
+	): MtmJoin;
+}
+
+export declare class DefaultPKParent {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<DefaultPKParent, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly children: AsyncCollection<DefaultPKChild>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<DefaultPKParent>);
+	static copyOf(
+		source: DefaultPKParent,
+		mutator: (
+			draft: MutableModel<DefaultPKParent>
+		) => MutableModel<DefaultPKParent> | void
+	): DefaultPKParent;
+}
+
+export declare class DefaultPKChild {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<DefaultPKChild, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly parent: Promise<DefaultPKParent | undefined>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly defaultPKParentChildrenId?: string | null;
+	constructor(init: ModelInit<DefaultPKChild>);
+	static copyOf(
+		source: DefaultPKChild,
+		mutator: (
+			draft: MutableModel<DefaultPKChild>
+		) => MutableModel<DefaultPKChild> | void
+	): DefaultPKChild;
+}
+
+export declare class DefaultPKHasOneParent {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly child?: Promise<DefaultPKHasOneChild>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<DefaultPKParent>);
+	static copyOf(
+		source: DefaultPKHasOneParent,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneParent>
+		) => MutableModel<DefaultPKHasOneParent> | void
+	): DefaultPKHasOneParent;
+}
+
+export declare class DefaultPKHasOneChild {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly defaultPKHasOneParentChildrenId?: string | null;
+	constructor(init: ModelInit<DefaultPKHasOneChild>);
+	static copyOf(
+		source: DefaultPKHasOneChild,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneChild>
+		) => MutableModel<DefaultPKHasOneChild> | void
+	): DefaultPKHasOneChild;
+}
+
+/**
+ * This is it.
+ */
+export declare class CompositePKParent {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositePKParent, ['customId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly customId: string;
+	readonly content: string;
+	readonly children: AsyncCollection<CompositePKChild>;
+	readonly implicitChildren: AsyncCollection<ImplicitChild>;
+	readonly strangeChildren: AsyncCollection<StrangeExplicitChild>;
+	readonly childrenSansBelongsTo: AsyncCollection<ChildSansBelongsTo>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<CompositePKParent>);
+	static copyOf(
+		source: CompositePKParent,
+		mutator: (
+			draft: MutableModel<CompositePKParent>
+		) => MutableModel<CompositePKParent> | void
+	): CompositePKParent;
+}
+
+export declare class CompositePKChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<CompositePKChild, ['childId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly parent: Promise<CompositePKParent | undefined>;
+	readonly parentId?: string | null;
+	readonly parentTitle?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<CompositePKChild>);
+	static copyOf(
+		source: CompositePKChild,
+		mutator: (
+			draft: MutableModel<CompositePKChild>
+		) => MutableModel<CompositePKChild> | void
+	): CompositePKChild;
+}
+
+export declare class ImplicitChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<ImplicitChild, ['childId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly parent: Promise<CompositePKParent>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly compositePKParentImplicitChildrenCustomId?: string | null;
+	readonly compositePKParentImplicitChildrenContent?: string | null;
+	constructor(init: ModelInit<ImplicitChild>);
+	static copyOf(
+		source: ImplicitChild,
+		mutator: (
+			draft: MutableModel<ImplicitChild>
+		) => MutableModel<ImplicitChild> | void
+	): ImplicitChild;
+}
+
+export declare class StrangeExplicitChild {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<
+			StrangeExplicitChild,
+			['strangeId', 'content']
+		>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly strangeId: string;
+	readonly content: string;
+	readonly parent: Promise<CompositePKParent>;
+	readonly strangeParentId?: string | null;
+	readonly strangeParentTitle?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<StrangeExplicitChild>);
+	static copyOf(
+		source: StrangeExplicitChild,
+		mutator: (
+			draft: MutableModel<StrangeExplicitChild>
+		) => MutableModel<StrangeExplicitChild> | void
+	): StrangeExplicitChild;
+}
+
+export declare class ChildSansBelongsTo {
+	readonly [__modelMeta__]: {
+		identifier: CompositeIdentifier<ChildSansBelongsTo, ['childId', 'content']>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly childId: string;
+	readonly content: string;
+	readonly compositePKParentChildrenSansBelongsToCustomId: string;
+	readonly compositePKParentChildrenSansBelongsToContent?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ChildSansBelongsTo>);
+	static copyOf(
+		source: ChildSansBelongsTo,
+		mutator: (
+			draft: MutableModel<ChildSansBelongsTo>
+		) => MutableModel<ChildSansBelongsTo> | void
+	): ChildSansBelongsTo;
+}
+
+type LegacyJSONBlogMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+type LegacyJSONPostMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+type LegacyJSONCommentMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+export declare class LegacyJSONBlog {
+	readonly id: string;
+	readonly name?: string | null;
+	readonly posts?: AsyncCollection<LegacyJSONPost>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONBlog, LegacyJSONBlogMetaData>);
+	static copyOf(
+		source: LegacyJSONBlog,
+		mutator: (
+			draft: MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData>
+		) => MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData> | void
+	): LegacyJSONBlog;
+}
+
+export declare class LegacyJSONPost {
+	readonly id: string;
+	readonly title: string;
+	readonly blog?: Promise<LegacyJSONBlog | undefined>;
+	readonly comments?: AsyncCollection<LegacyJSONComment>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONPost, LegacyJSONPostMetaData>);
+	static copyOf(
+		source: LegacyJSONPost,
+		mutator: (
+			draft: MutableModel<LegacyJSONPost, LegacyJSONPostMetaData>
+		) => MutableModel<LegacyJSONPost, LegacyJSONPostMetaData> | void
+	): LegacyJSONPost;
+}
+
+export declare class LegacyJSONComment {
+	readonly id: string;
+	readonly post?: Promise<LegacyJSONPost | undefined>;
+	readonly content: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<LegacyJSONComment, LegacyJSONCommentMetaData>);
+	static copyOf(
+		source: LegacyJSONComment,
+		mutator: (
+			draft: MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData>
+		) => MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData> | void
+	): LegacyJSONComment;
+}
+
+export declare class ModelWithBoolean {
+	public readonly id: string;
+	public readonly boolField?: boolean;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<ModelWithBoolean>);
+
+	static copyOf(
+		src: ModelWithBoolean,
+		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
+	): ModelWithBoolean;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1180,6 +1685,41 @@ export function testSchema(): Schema {
 					},
 				},
 			},
+			ModelWithBoolean: {
+				name: 'ModelWithBoolean',
+				pluralName: 'ModelWithBooleans',
+				syncable: true,
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+					},
+					boolField: {
+						name: 'boolField',
+						isArray: false,
+						type: 'Boolean',
+						isRequired: false,
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+			},
 			Post: {
 				name: 'Post',
 				fields: {
@@ -1208,7 +1748,7 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: 'postId',
+							associatedWith: ['post'],
 						},
 					},
 				},
@@ -1231,6 +1771,13 @@ export function testSchema(): Schema {
 						isRequired: true,
 						attributes: [],
 					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
 					content: {
 						name: 'content',
 						isArray: false,
@@ -1248,7 +1795,7 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'BELONGS_TO',
-							targetName: 'postId',
+							targetNames: ['postId'],
 						},
 					},
 				},
@@ -1321,8 +1868,8 @@ export function testSchema(): Schema {
 						attributes: [],
 						association: {
 							connectionType: 'HAS_ONE',
-							associatedWith: 'id',
-							targetName: 'profileID',
+							associatedWith: ['id'],
+							targetNames: ['profileID'],
 						},
 					},
 				},
@@ -1596,6 +2143,1235 @@ export function testSchema(): Schema {
 					},
 				],
 			},
+
+			BasicModel: {
+				name: 'BasicModel',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModels',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			HasOneParent: {
+				name: 'HasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'HasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: ['id'],
+							targetNames: ['hasOneParentChildId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					hasOneParentChildId: {
+						name: 'hasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			HasOneChild: {
+				name: 'HasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'HasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmLeft: {
+				name: 'MtmLeft',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					rightOnes: {
+						name: 'rightOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'mtmLeft',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmLefts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmRight: {
+				name: 'MtmRight',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					leftOnes: {
+						name: 'leftOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'mtmRight',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmRights',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmJoin: {
+				name: 'MtmJoin',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					mtmLeftId: {
+						name: 'mtmLeftId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmRightId: {
+						name: 'mtmRightId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmLeft: {
+						name: 'mtmLeft',
+						isArray: false,
+						type: {
+							model: 'MtmLeft',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'mtmLeftId',
+						},
+					},
+					mtmRight: {
+						name: 'mtmRight',
+						isArray: false,
+						type: {
+							model: 'MtmRight',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'mtmRightId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmJoins',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmLeft',
+							fields: ['mtmLeftId'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmRight',
+							fields: ['mtmRightId'],
+						},
+					},
+				],
+			},
+			DefaultPKParent: {
+				name: 'DefaultPKParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					children: {
+						name: 'children',
+						isArray: true,
+						type: {
+							model: 'DefaultPKChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['defaultPKParentChildrenId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			DefaultPKChild: {
+				name: 'DefaultPKChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'DefaultPKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['defaultPKParentChildrenId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					defaultPKParentChildrenId: {
+						name: 'defaultPKParentChildrenId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			DefaultPKHasOneParent: {
+				name: 'DefaultPKHasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'DefaultPKHasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: 'id',
+							targetName: 'defaultPKHasOneParentChildId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					defaultPKHasOneParentChildId: {
+						name: 'defaultPKHasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			DefaultPKHasOneChild: {
+				name: 'DefaultPKHasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			CompositePKParent: {
+				name: 'CompositePKParent',
+				fields: {
+					customId: {
+						name: 'customId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					children: {
+						name: 'children',
+						isArray: true,
+						type: {
+							model: 'CompositePKChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['parent'],
+						},
+					},
+					implicitChildren: {
+						name: 'implicitChildren',
+						isArray: true,
+						type: {
+							model: 'ImplicitChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: [
+								'compositePKParentImplicitChildrenCustomId',
+								'compositePKParentImplicitChildrenContent',
+							],
+						},
+					},
+					strangeChildren: {
+						name: 'strangeChildren',
+						isArray: true,
+						type: {
+							model: 'StrangeExplicitChild',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['parent'],
+						},
+					},
+					childrenSansBelongsTo: {
+						name: 'childrenSansBelongsTo',
+						isArray: true,
+						type: {
+							model: 'ChildSansBelongsTo',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: [
+								'compositePKParentChildrenSansBelongsToCustomId',
+								'compositePKParentChildrenSansBelongsToContent',
+							],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'CompositePKParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['customId', 'content'],
+						},
+					},
+				],
+			},
+			CompositePKChild: {
+				name: 'CompositePKChild',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['parentId', 'parentTitle'],
+						},
+					},
+					parentId: {
+						name: 'parentId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					parentTitle: {
+						name: 'parentTitle',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'CompositePKChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byParent',
+							fields: ['parentId', 'parentTitle'],
+						},
+					},
+				],
+			},
+			ImplicitChild: {
+				name: 'ImplicitChild',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: [
+								'compositePKParentImplicitChildrenCustomId',
+								'compositePKParentImplicitChildrenContent',
+							],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					compositePKParentImplicitChildrenCustomId: {
+						name: 'compositePKParentImplicitChildrenCustomId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					compositePKParentImplicitChildrenContent: {
+						name: 'compositePKParentImplicitChildrenContent',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'ImplicitChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
+						},
+					},
+				],
+			},
+			StrangeExplicitChild: {
+				name: 'StrangeExplicitChild',
+				fields: {
+					strangeId: {
+						name: 'strangeId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					parent: {
+						name: 'parent',
+						isArray: false,
+						type: {
+							model: 'CompositePKParent',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['strangeParentId', 'strangeParentTitle'],
+						},
+					},
+					strangeParentId: {
+						name: 'strangeParentId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					strangeParentTitle: {
+						name: 'strangeParentTitle',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'StrangeExplicitChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['strangeId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byCompositePKParentX',
+							fields: ['strangeParentId', 'strangeParentTitle'],
+						},
+					},
+				],
+			},
+			ChildSansBelongsTo: {
+				name: 'ChildSansBelongsTo',
+				fields: {
+					childId: {
+						name: 'childId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					compositePKParentChildrenSansBelongsToCustomId: {
+						name: 'compositePKParentChildrenSansBelongsToCustomId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					compositePKParentChildrenSansBelongsToContent: {
+						name: 'compositePKParentChildrenSansBelongsToContent',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ChildSansBelongsTos',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['childId', 'content'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byParent',
+							fields: [
+								'compositePKParentChildrenSansBelongsToCustomId',
+								'compositePKParentChildrenSansBelongsToContent',
+							],
+						},
+					},
+				],
+			},
+			LegacyJSONBlog: {
+				name: 'LegacyJSONBlog',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					posts: {
+						name: 'posts',
+						isArray: true,
+						type: {
+							model: 'LegacyJSONPost',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'legacyJSONBlogPostsId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONBlogs',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			LegacyJSONPost: {
+				name: 'LegacyJSONPost',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					blog: {
+						name: 'blog',
+						isArray: false,
+						type: {
+							model: 'LegacyJSONBlog',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'legacyJSONBlogPostsId',
+						},
+					},
+					comments: {
+						name: 'comments',
+						isArray: true,
+						type: {
+							model: 'LegacyJSONComment',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'legacyJSONPostCommentsId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONPosts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			LegacyJSONComment: {
+				name: 'LegacyJSONComment',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					post: {
+						name: 'post',
+						isArray: false,
+						type: {
+							model: 'LegacyJSONPost',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'legacyJSONPostCommentsId',
+						},
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'LegacyJSONComments',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
 		},
 		nonModels: {
 			Metadata: {
@@ -1671,6 +3447,7 @@ export function testSchema(): Schema {
 			},
 		},
 		version: '1',
+		codegenVersion: '3.2.0',
 	};
 }
 
@@ -2001,6 +3778,7 @@ export function internalTestSchema(): InternalSchema {
 			},
 		},
 		version: '1',
+		codegenVersion: '3.2.0',
 	};
 }
 
@@ -2281,7 +4059,7 @@ export class CustomIdentifierNoRO {
 			draft: MutableModel<CustomIdentifierNoRO>
 		) => MutableModel<CustomIdentifierNoRO> | void
 	): CustomIdentifierDefaultRO {
-		return undefined;
+		return undefined!;
 	}
 }
 

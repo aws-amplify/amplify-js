@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "4.1.5",
+	"version": "5.0.8",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -9,11 +9,8 @@
 		"./lib/index": "./lib-esm/index.js"
 	},
 	"sideEffects": [
-		"./src/Interactions.ts",
 		"./lib/Interactions.js",
-		"./lib-esm/Interactions.js",
-		"./dist/aws-amplify-interactions.min.js",
-		"./dist/aws-amplify-interactions.js"
+		"./lib-esm/Interactions.js"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -28,7 +25,8 @@
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'"
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.6"
 	},
 	"repository": {
 		"type": "git",
@@ -40,13 +38,19 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
 	"dependencies": {
-		"@aws-amplify/core": "4.7.8",
+		"@aws-amplify/core": "5.0.8",
 		"@aws-sdk/client-lex-runtime-service": "3.186.0",
 		"@aws-sdk/client-lex-runtime-v2": "3.186.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
-		"pako": "2.0.4"
+		"pako": "2.0.4",
+		"tslib": "^1.8.0"
 	},
 	"jest": {
 		"globals": {
