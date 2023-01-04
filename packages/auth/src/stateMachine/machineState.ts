@@ -19,7 +19,7 @@ export class MachineState<
 	invocation?: Invocation<MachineContext, MachineEventPayload>;
 	constructor(params: MachineStateParams<ContextType, PayloadType>) {
 		this.name = params.name;
-		//TODO: validate transitions with uniqueness on event
+		// TODO: validate transitions with uniqueness on event
 		this.transitions = params.transitions;
 		this.invocation = params.invocation;
 	}
