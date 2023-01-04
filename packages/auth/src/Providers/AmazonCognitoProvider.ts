@@ -17,7 +17,8 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import { 
-	AuthPluginOptions, 
+	AuthPluginOptions,
+	AuthResetPasswordStep, 
 	AuthSignUpStep, 
 	DeliveryMedium, 
 	CognitoSignUpOptions, 
@@ -28,19 +29,25 @@ import {
 	AuthPluginProvider,
 	AuthUserAttribute,
 	CognitoConfirmResetPasswordOptions,
-	ConfirmResetPasswordRequest
+	ConfirmResetPasswordRequest,
+	CognitoResetPasswordOptions,
+	ResetPasswordRequest,
+	ResetPasswordResult
 } from '../types';
 import { 
 	AttributeType, 
 	CodeDeliveryDetailsType, 
 	CognitoIdentityProviderClient, 
 	ConfirmForgotPasswordCommandOutput, 
+	ForgotPasswordCommand, 
+	ForgotPasswordCommandOutput, 
 	SignUpCommand, 
 	SignUpCommandOutput 
 } from '@aws-sdk/client-cognito-identity-provider';
 import { 
 	createCognitoIdentityProviderClient, 
 	createConfirmForgotPasswordCommand, 
+	createForgotPasswordCommand, 
 	createSignUpCommand, 
 	getUserPoolId, 
 	sendCommand 
@@ -181,8 +188,32 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 	signOut(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	resetPassword(): Promise<void> {
-		throw new Error('Method not implemented.');
+
+	/**
+	 * Initiate a reset password request
+	 * @param {ResetPasswordRequest} req: username and plugin options
+	 * @returns {ResetPasswordResult} if success, returns promise with nextSteps data
+	 */
+	async resetPassword<PluginOptions extends AuthPluginOptions = CognitoResetPasswordOptions>(
+		req: ResetPasswordRequest<PluginOptions>
+	): Promise<ResetPasswordResult<CognitoUserAttributeKey>> {
+		const clientId: string = getUserPoolId(this._config);
+		const username: string = req.username;
+		if (!username) {
+			throw new AuthError(AuthErrorTypes.EmptyUsername); // TODO: change when errors are defined
+		}
+		let clientMetadata: Record<string, string> | undefined;
+		const pluginOptions = req.options?.pluginOptions;
+		if (pluginOptions) {
+			clientMetadata = pluginOptions['clientMetadata'];
+		} else if (this._config.clientMetadata) {
+			clientMetadata = this._config.clientMetadata;
+		}
+		const forgotPasswordCommand: ForgotPasswordCommand = createForgotPasswordCommand(clientId, username, clientMetadata);
+		const forgotPasswordCommandOutput = await sendCommand<ForgotPasswordCommandOutput>(
+			this._client, forgotPasswordCommand
+		);
+		return this.createResetPasswordResultObject(forgotPasswordCommandOutput);
 	}
 
 	async confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
@@ -216,6 +247,24 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 			createConfirmForgotPasswordCommand(clientId, username, code, password, clientMetadata)
 		);
 	}
+
+	private createResetPasswordResultObject(
+		forgotPasswordCommandOutput: ForgotPasswordCommandOutput
+	): ResetPasswordResult<CognitoUserAttributeKey> {
+		const codeDeliveryDetails: CodeDeliveryDetailsType | undefined = forgotPasswordCommandOutput.CodeDeliveryDetails;
+		return {
+			isPasswordReset: false,
+			nextStep: {
+				resetPasswordStep: AuthResetPasswordStep.CONFIRM_RESET_PASSWORD_WITH_CODE,
+				codeDeliveryDetails: {
+					deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+					destination: codeDeliveryDetails?.Destination as string,
+					attributeName: codeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
+				}
+			}
+		};
+	}
+	
 	updatePassword(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

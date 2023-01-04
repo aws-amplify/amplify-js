@@ -3,8 +3,10 @@
 
 import { AuthSignInResult } from './authSignInResult';
 import { AuthSignUpResult } from './authSignUpResult';
+import { ResetPasswordResult } from './resetPasswordResult';
 
 export {
 	AuthSignUpResult,
-	AuthSignInResult
+	AuthSignInResult,
+	ResetPasswordResult
 };

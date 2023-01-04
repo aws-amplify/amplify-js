@@ -12,8 +12,11 @@ import {
 	AuthSignUpResult, 
 	AuthUserAttributeKey, 
 	CognitoConfirmResetPasswordOptions, 
-	CognitoUserAttributeKey, 
 	ConfirmResetPasswordRequest, 
+	CognitoResetPasswordOptions, 
+	CognitoUserAttributeKey, 
+	ResetPasswordRequest, 
+	ResetPasswordResult, 
 	SignUpRequest 
 } from './types';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
@@ -147,9 +150,17 @@ export class AuthClass {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signOut();
 	}
-	resetPassword(): Promise<void> {
+	
+	/**
+	 * Initiate a reset password request
+	 * @param {ResetPasswordRequest} req: username and plugin options
+	 * @returns {ResetPasswordResult} if success, returns promise with nextSteps data
+	 */
+	resetPassword<PluginOptions extends AuthPluginOptions = CognitoResetPasswordOptions>(
+		req: ResetPasswordRequest<PluginOptions>
+	): Promise<ResetPasswordResult<CognitoUserAttributeKey>> {
 		assertPluginAvailable(this._pluggable);
-		return this._pluggable.resetPassword();
+		return this._pluggable.resetPassword(req);
 	}
 	confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
 		req: ConfirmResetPasswordRequest<PluginOptions>

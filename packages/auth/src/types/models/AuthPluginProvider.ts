@@ -27,7 +27,7 @@ export interface AuthPluginProvider {
 
 	signOut(): Promise<void>;
 
-	resetPassword(): Promise<void>;
+	resetPassword(req): Promise<any>;
 
 	confirmResetPassword(req): Promise<void>;
 

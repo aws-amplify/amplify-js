@@ -3,6 +3,7 @@
 
 import { 
 	ConfirmForgotPasswordCommandOutput,
+	ForgotPasswordCommandOutput,
 	InitiateAuthCommandOutput, 
 	SignUpCommandOutput 
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -10,4 +11,5 @@ import {
 export type CommandOutput = 
 	SignUpCommandOutput | 
 	InitiateAuthCommandOutput |
-	ConfirmForgotPasswordCommandOutput; // TODO: add more outputs when adding more functions to auth
+	ConfirmForgotPasswordCommandOutput |
+	ForgotPasswordCommandOutput; // TODO: add more outputs when adding more functions to auth

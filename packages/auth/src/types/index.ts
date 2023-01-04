@@ -16,16 +16,19 @@ import {
 import { 
 	AutoSignInOptions, 
 	CognitoConfirmResetPasswordOptions, 
+	CognitoResetPasswordOptions, 
 	CognitoSignInOptions, 
 	CognitoSignUpOptions 
 } from './aws-plugins/cognito-plugin/types/options';
 import { 
 	AdditionalInfo, 
 	AuthCodeDeliveryDetails, 
+	AuthNextResetPasswordStep, 
 	AuthNextSignInStep, 
 	AuthNextSignUpStep, 
 	AuthPluginOptions, 
 	AuthPluginProvider, 
+	AuthResetPasswordStep, 
 	AuthSignInStep, 
 	AuthSignUpStep, 
 	AuthStandardAttributeKey, 
@@ -34,8 +37,16 @@ import {
 	DeliveryMedium 
 } from './models';
 import { AuthSignUpOptions } from './options';
-import { ConfirmResetPasswordRequest, SignUpRequest } from './request';
-import { AuthSignInResult, AuthSignUpResult } from './result';
+import { 
+	ConfirmResetPasswordRequest, 
+	ResetPasswordRequest, 
+	SignUpRequest 
+} from './request';
+import { 
+	AuthSignInResult, 
+	AuthSignUpResult, 
+	ResetPasswordResult 
+} from './result';
 
 export {
 	Command,
@@ -69,5 +80,10 @@ export {
 	AuthSignUpResult,
 	AuthSignInResult,
 	ConfirmResetPasswordRequest,
-	CognitoConfirmResetPasswordOptions
+	CognitoConfirmResetPasswordOptions,
+	AuthNextResetPasswordStep,
+	AuthResetPasswordStep,
+	CognitoResetPasswordOptions,
+	ResetPasswordRequest,
+	ResetPasswordResult
 };

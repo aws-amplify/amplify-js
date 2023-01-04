@@ -7,6 +7,8 @@ import {
 	CognitoIdentityProviderClient,
 	ConfirmForgotPasswordCommand,
 	ConfirmForgotPasswordCommandInput,
+	ForgotPasswordCommand,
+	ForgotPasswordCommandInput,
 	SignUpCommand, 
 	SignUpCommandInput
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -94,6 +96,21 @@ export const createConfirmForgotPasswordCommand = (
 		confirmForgotPasswordCommandInput.ClientMetadata = clientMetadata;
 	}
 	return new ConfirmForgotPasswordCommand(confirmForgotPasswordCommandInput);
+}
+
+export const createForgotPasswordCommand = (
+	clientId: string,
+	username: string,
+	clientMetada?: Record<string, string>
+) => {
+	const forgotPasswordCommandInput: ForgotPasswordCommandInput = {
+		ClientId: clientId,
+		Username: username
+	};
+	if (clientMetada) {
+		forgotPasswordCommandInput.ClientMetadata = clientMetada;
+	}
+	return new ForgotPasswordCommand(forgotPasswordCommandInput);
 };
 
 export const sendCommand = async<Output extends CommandOutput> (
