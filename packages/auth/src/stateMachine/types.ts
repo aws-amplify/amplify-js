@@ -62,7 +62,8 @@ export type MachineStateParams<
  * @typeParam ContextType - The type of the enclosing Machine's context
  * @typeParam PayloadType - The type of the enclosing State's event payload
  * @param event - The name of the event that can trigger the Transition
- * @param nextState - The name of the State which will become the current State of the enclosing Machine, if the transition is triggered
+ * @param nextState - The name of the State which will become the current State of the 
+ * enclosing Machine, if the transition is triggered
  * @param actions - An array of TransitionActions, to be invoked when transition is completed
  * @param guards An array of TransitionGuards, to be invoked before the transition is completed
  * @param reducers An array of TransitionReducers, to be invoked when the transition is completed

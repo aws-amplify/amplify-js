@@ -63,7 +63,7 @@ describe('State machine guard tests...', () => {
 				nextState: state2Name,
 				guards: [
 					(ctx, evt) => {
-						return evt.payload?.p1 == 'good';
+						return evt.payload?.p1 === 'good';
 					},
 				],
 			},
@@ -91,7 +91,7 @@ describe('State machine action tests...', () => {
 				nextState: state2Name,
 				guards: [
 					(_, evt) => {
-						return evt.payload?.p1 == 'good';
+						return evt.payload?.p1 === 'good';
 					},
 				],
 				actions: [
@@ -131,7 +131,7 @@ describe('State machine reducer tests...', () => {
 				nextState: state2Name,
 				guards: [
 					(_, evt) => {
-						return evt.payload?.p1 == 'good';
+						return evt.payload?.p1 === 'good';
 					},
 				],
 				reducers: [
