@@ -12,20 +12,13 @@ jest.mock('@aws-amplify/core', () => ({
 import { PubSubClass as PubSub } from '../src/PubSub';
 import {
 	MqttOverWSProvider,
-	AWSAppSyncProvider,
 	AWSIoTProvider,
 	mqttTopicMatch,
 } from '../src/Providers';
 
-import {
-	Credentials,
-	Hub,
-	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-	Logger,
-	Reachability,
-} from '@aws-amplify/core';
+import { Credentials, Reachability } from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
-import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
+import { ConnectionState } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
 import * as constants from '../src/Providers/constants';
@@ -87,45 +80,6 @@ const testPubSubAsync = (pubsub, topic, message, options?) =>
 		pubsub.publish(topic, message, options);
 	});
 
-const testAppSyncAsync = (pubsub, topic, message) =>
-	new Promise((resolve, reject) => {
-		const testUrl = 'wss://appsync';
-		const testClientId = 'test-client';
-		const testTopicAlias = 'test-topic-alias';
-
-		const subscriptionOptions = {
-			mqttConnections: [
-				{
-					topics: [topic],
-					client: testClientId,
-					url: testUrl,
-				},
-			],
-			newSubscriptions: {
-				[testTopicAlias]: { topic },
-			},
-		};
-
-		const opt = {
-			...subscriptionOptions,
-			provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-		};
-
-		const obs = pubsub.subscribe(topic, opt).subscribe({
-			next: data => {
-				expect(data.value.data[testTopicAlias]).toEqual(message);
-				obs.unsubscribe();
-				resolve();
-			},
-			close: () => console.log('close'),
-			error: reject,
-		});
-
-		// simulate an AppSync update
-		const testClient = new Paho.Client(testUrl, testClientId);
-		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
-	});
-
 beforeEach(() => {
 	const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
 		return new Promise((res, rej) => {
@@ -173,12 +127,6 @@ describe('PubSub', () => {
 
 			const config = pubsub.configure(options);
 			expect(config).toEqual(options.PubSub);
-		});
-
-		test('should allow AppSync subscriptions without extra configuration', async () => {
-			const pubsub = new PubSub();
-
-			await testAppSyncAsync(pubsub, 'topicA', 'my message AWSAppSyncProvider');
 		});
 	});
 
@@ -512,16 +460,12 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			const awsAppSyncProvider = new AWSAppSyncProvider();
-			pubsub.addPluggable(awsAppSyncProvider);
-
 			const mqttOverWSProvider = new MqttOverWSProvider({
 				aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
 			});
 			pubsub.addPluggable(mqttOverWSProvider);
 
 			expect(awsIotProvider.getCategory()).toBe('PubSub');
-			expect(awsAppSyncProvider.getCategory()).toBe('PubSub');
 			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
 
 			await testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
@@ -542,8 +486,6 @@ describe('PubSub', () => {
 			pubsub.addPluggable(mqttOverWSProvider);
 
 			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
-
-			await testAppSyncAsync(pubsub, 'topicA', 'my message AWSAppSyncProvider');
 
 			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
 		});
@@ -575,9 +517,6 @@ describe('PubSub', () => {
 				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			pubsub.addPluggable(awsIotProvider);
-
-			const awsAppSyncProvider = new AWSAppSyncProvider();
-			pubsub.addPluggable(awsAppSyncProvider);
 
 			const mqttOverWSProvider = new MqttOverWSProvider({
 				aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
