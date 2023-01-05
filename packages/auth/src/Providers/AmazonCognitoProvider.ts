@@ -88,7 +88,7 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 		const userAttr: AttributeType[] | undefined = this.mapAttributes(req.options?.userAttributes);
 
 		let validationData: AttributeType[] | undefined;
-		let clientMetadata: Record<string, string> | undefined;
+		let clientMetadata: Record<string, string> | undefined = this._config.clientMetadata;
 		const pluginOptions = req.options?.pluginOptions;
 		if (pluginOptions) {
 			// TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
