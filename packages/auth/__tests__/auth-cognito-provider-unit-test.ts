@@ -30,6 +30,15 @@ const config = {
 	region: 'region'
 };
 
+const configWithClientMetadata = {
+	userPoolId: 'userPoolId',
+	storage: 'storage',
+	region: 'region',
+	clientMetadata: {
+		'foo': 'bar'
+	}
+};
+
 const noUserPoolConfig = {
 	userPoolId: '',
 	storage: 'storage',
@@ -52,6 +61,19 @@ const userAttributes: AuthUserAttribute<CognitoUserAttributeKey>[] = [
 	{userAttributeKey: 'email', value: 'email@email.com'},
 	{userAttributeKey: 'phone_number', value: '+12345678910'}
 ];
+
+const signUpCommandObjectWithClientMetadata = {
+	input: {
+		ClientId: 'userPoolId',
+		Username: 'username',
+		Password: 'password',
+		UserAttributes: [
+			{Name: 'email', Value: 'email@email.com'},
+			{Name: 'phone_number', Value: '+12345678910'}
+		],
+		ClientMetadata: {foo: 'bar'}
+	}
+};
 
 const signUpResult: AuthSignUpResult<CognitoUserAttributeKey> = {
 	isSignUpComplete: true,
@@ -141,20 +163,16 @@ describe('Amazon Cognito Auth unit test', () => {
 			};
 			Auth.addPluggable(provider);
 			await Auth.signUp(createSignUpRequest('username', 'password', options));
-			const commandObject = {
-				input: {
-					ClientId: 'userPoolId',
-					Username: 'username',
-					Password: 'password',
-					UserAttributes: [
-						{Name: 'email', Value: 'email@email.com'},
-						{Name: 'phone_number', Value: '+12345678910'}
-					],
-					ClientMetadata: {foo: 'bar'}
-				}
-			};
-			expect(CognitoIdentityProviderClient.prototype.send).toBeCalled();
-			expect(await CognitoIdentityProviderClient.prototype.send).toBeCalledWith(expect.objectContaining(commandObject));
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(signUpCommandObjectWithClientMetadata));
+		});
+
+		test('happy case with default metadata', async () => {
+			expect.assertions(1);
+			Auth.addPluggable(new AmazonCognitoProvider(configWithClientMetadata));
+			await Auth.signUp(createSignUpRequest('username', 'password', { userAttributes }));
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(signUpCommandObjectWithClientMetadata));
 		});
 
 		test('happy case with code delivery details in result', async () => {

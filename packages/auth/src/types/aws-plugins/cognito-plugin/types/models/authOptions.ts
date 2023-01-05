@@ -15,7 +15,7 @@ export type AuthOptions = {
 	storage?: CognitoStorage;
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
-	clientMetaData?: ClientMetadata;
+	clientMetadata?: ClientMetadata;
 	endpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 };
