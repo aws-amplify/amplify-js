@@ -390,12 +390,12 @@ export class GroupCondition {
 	 * This allows `fetch()` to pass both the `id` and `name` conditions to the adapter
 	 * together, which can then decide what index to use based on both fields together.
 	 *
-	 * @param preserve Whether to preserve the current node and to explicitly not eliminate
+	 * @param preserveNode Whether to preserve the current node and to explicitly not eliminate
 	 * it during optimization. Used internally to preserve the root node and children of
 	 * `not` groups. `not` groups will always have a single child, so there's nothing to
 	 * optimize below a `not` (for now), and it makes the query logic simpler later.
 	 */
-	optimized(preserve = true): UntypedCondition {
+	optimized(preserveNode = true): UntypedCondition {
 		const operands = this.operands.map(o =>
 			o instanceof GroupCondition ? o.optimized(this.operator === 'not') : o
 		);
@@ -405,7 +405,7 @@ export class GroupCondition {
 		// an `and`/`or` that contains a single child doesn't require the layer of
 		// logical grouping.
 		if (
-			!preserve &&
+			!preserveNode &&
 			['and', 'or'].includes(this.operator) &&
 			!this.field &&
 			operands.length === 1
