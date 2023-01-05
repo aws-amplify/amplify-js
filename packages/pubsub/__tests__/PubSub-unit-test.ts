@@ -16,15 +16,9 @@ import {
 	mqttTopicMatch,
 } from '../src/Providers';
 
-import {
-	Credentials,
-	Hub,
-	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	Logger,
-	Reachability,
-} from '@aws-amplify/core';
+import { Credentials, Reachability } from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
-import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
+import { ConnectionState } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
 import * as constants from '../src/Providers/constants';
