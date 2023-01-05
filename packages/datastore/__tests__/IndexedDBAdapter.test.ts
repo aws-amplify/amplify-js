@@ -68,7 +68,7 @@ describe('IndexedDBAdapter tests', () => {
 					spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
 					spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
 
-					// becuase jest has cleared modules, the `Predicates.ALL` we currently have is
+					// because jest has cleared modules, the `Predicates.ALL` we currently have is
 					// not the particular instance DataStore recognizes. functionally, this would
 					// return the the correct results. but, it won't hit the code paths we're looking
 					// to hit in these tests. so, we need to re-import it.

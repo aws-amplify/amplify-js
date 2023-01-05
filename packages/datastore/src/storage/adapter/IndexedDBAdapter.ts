@@ -521,7 +521,7 @@ class IndexedDBAdapter implements Adapter {
 			// if we have a matchind predicate field for each component of this index,
 			// we can build a query for it. otherwise, we can't.
 			if (matchingPredicateValues.length === keypath.length) {
-				// re-create a transaction, beacuse the transaction used to fetch the
+				// re-create a transaction, because the transaction used to fetch the
 				// indexes may no longer be active.
 				queries.push(() =>
 					this.db

@@ -392,7 +392,7 @@ export class GroupCondition {
 	 *
 	 * @param preserve Whether to preserve the current node and to explicitly not eliminate
 	 * it during optimization. Used internally to preserve the root node and children of
-	 * `not` groups. `not` groups will always have a single child, so there's nothign to
+	 * `not` groups. `not` groups will always have a single child, so there's nothing to
 	 * optimize below a `not` (for now), and it makes the query logic simpler later.
 	 */
 	optimized(preserve = true): UntypedCondition {
@@ -866,7 +866,6 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 								// or query storage: `.__query.fetch(storage)`.
 								return registerPredicateInternals(query);
-								// return baseQueryInternals;
 							},
 						};
 					}, {});
