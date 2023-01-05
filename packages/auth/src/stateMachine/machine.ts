@@ -35,14 +35,14 @@ export class Machine<ContextType extends MachineContext> {
 	) {
 		const validTransition = this.current.findTransition(event);
 
-		///TODO: Communicate null transition
+		// TODO: Communicate null transition
 		if (!validTransition) return;
 		const checkGuards = this._checkGuards(validTransition, event);
-		//TODO: Communicate guard failure
+		// TODO: Communicate guard failure
 		if (!checkGuards) return;
 
 		const nextState = this.states.get(validTransition.nextState);
-		//TODO: Handle error in state map
+		// TODO: Handle error in state map
 		if (!nextState) return;
 
 		this.current = nextState;
@@ -93,11 +93,11 @@ export class Machine<ContextType extends MachineContext> {
 		}
 	}
 
-	//TODO: validate states with uniqueness on name (otherwise a dupe will just be overridden in Map)
+	// TODO: validate states with uniqueness on name (otherwise a dupe will just be overridden in Map)
 	private _createStateMap(
 		states: MachineState<ContextType, MachineEventPayload>[]
 	): Map<string, MachineState<ContextType, MachineEventPayload>> {
-		return states.reduce(function (map, obj) {
+		return states.reduce(function(map, obj) {
 			map.set(obj.name, obj);
 			return map;
 		}, new Map<string, MachineState<ContextType, MachineEventPayload>>());
