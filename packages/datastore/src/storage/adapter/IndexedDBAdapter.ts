@@ -544,9 +544,7 @@ class IndexedDBAdapter implements Adapter {
 
 		// the predicate objects we care about tend to be nested at least
 		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
-		// and these containers
-		//
-		// so, unpack and/or groups until we find a group with more than 1
+		// so, we unpack and/or groups until we find a group with more than 1
 		// child OR a child that is not a group (and is therefore a predicate "object").
 		while (
 			predicateObjs.length === 1 &&

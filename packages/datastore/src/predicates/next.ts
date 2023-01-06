@@ -521,12 +521,11 @@ export class GroupCondition {
 
 				const relationship = ModelRelationship.from(this.model, g.field);
 
+				type JoinCondition = { [x: string]: { eq: any } };
 				if (relationship) {
-					// type T isn't known here.
-					const allJoinConditions: any = [];
-
+					const allJoinConditions: { and: JoinCondition[] }[] = [];
 					for (const relative of relatives) {
-						const relativeConditions: any = [];
+						const relativeConditions: JoinCondition[] = [];
 						for (let i = 0; i < relationship.localJoinFields.length; i++) {
 							relativeConditions.push({
 								[relationship.localJoinFields[i]]: {
@@ -756,7 +755,8 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// next steps will be to add or(), and(), not(), and field.op() methods.
 	const link = {} as any;
 
-	const baseQueryInternals = registerPredicateInternals(baseCondition, link);
+	// so it can be looked up later with in the internals when processing conditions.
+	registerPredicateInternals(baseCondition, link);
 
 	const copyLink = () => {
 		const [query, newTail] = baseCondition.copy(tailCondition);
