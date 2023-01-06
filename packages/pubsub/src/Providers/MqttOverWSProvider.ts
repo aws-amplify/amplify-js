@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { reinstateLocalStorageError } from '../utils/PatchLocalStorage';
 import * as Paho from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -19,6 +21,8 @@ import {
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new Logger('MqttOverWSProvider');
+
+reinstateLocalStorageError();
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');

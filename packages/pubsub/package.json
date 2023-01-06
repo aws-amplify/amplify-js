@@ -10,7 +10,9 @@
   },
   "sideEffects": [
     "./lib/PubSub.js",
-    "./lib-esm/PubSub.js"
+    "./lib-esm/PubSub.js",
+    "./lib/utils/PatchLocalStorage.js",
+    "./lib-esm/utils/PatchLocalStorage.js"
   ],
   "publishConfig": {
     "access": "public"
