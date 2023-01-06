@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.7...@aws-amplify/datastore@4.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.6...@aws-amplify/datastore@4.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.5...@aws-amplify/datastore@4.0.6) (2022-12-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** nextjs/swc broken build workaround ([#10765](https://github.com/aws-amplify/amplify-js/issues/10765)) ([24978b4](https://github.com/aws-amplify/amplify-js/commit/24978b4319d3c8aff8db6cf07ef6f023c401d4a9)), closes [#10759](https://github.com/aws-amplify/amplify-js/issues/10759)
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.4...@aws-amplify/datastore@4.0.5) (2022-12-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore-storage-adapter:** SQLiteAdapter fails on required related models ([#10720](https://github.com/aws-amplify/amplify-js/issues/10720)) ([fa7d6c6](https://github.com/aws-amplify/amplify-js/commit/fa7d6c681496dd45d40a2af672f953e0ff372940))
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.3...@aws-amplify/datastore@4.0.4) (2022-11-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.2...@aws-amplify/datastore@4.0.3) (2022-11-19)
 
 

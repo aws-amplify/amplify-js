@@ -918,7 +918,7 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-class">
 		<a href="sqlitedatabase.html" class="tsd-kind-icon">SQLite<wbr>Database</a>
 		<ul>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 				<a href="sqlitedatabase.html#batchquery" class="tsd-kind-icon">batch<wbr>Query</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -942,7 +942,7 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="sqlitedatabase.html#save" class="tsd-kind-icon">save</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 				<a href="sqlitedatabase.html#selectanddelete" class="tsd-kind-icon">select<wbr>And<wbr>Delete</a>
 			</li>
 		</ul>
@@ -959,6 +959,12 @@ img { max-width: 100%; }
 			</li>
 		</ul>
 	</section>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><a href="../interfaces/commonsqlitedatabase.html" class="tsd-signature-type">CommonSQLiteDatabase</a></li>
+		</ul>
+	</section>
 	<section class="tsd-panel-group tsd-index-group">
 		<h2>Index</h2>
 		<section class="tsd-panel tsd-index-panel">
@@ -966,7 +972,7 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#batchquery" class="tsd-kind-icon">batch<wbr>Query</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="sqlitedatabase.html#batchquery" class="tsd-kind-icon">batch<wbr>Query</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#batchsave" class="tsd-kind-icon">batch<wbr>Save</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#clear" class="tsd-kind-icon">clear</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#createschema" class="tsd-kind-icon">create<wbr>Schema</a></li>
@@ -974,7 +980,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="sqlitedatabase.html#getall" class="tsd-kind-icon">get<wbr>All</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#init" class="tsd-kind-icon">init</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#save" class="tsd-kind-icon">save</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sqlitedatabase.html#selectanddelete" class="tsd-kind-icon">select<wbr>And<wbr>Delete</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="sqlitedatabase.html#selectanddelete" class="tsd-kind-icon">select<wbr>And<wbr>Delete</a></li>
 					</ul>
 				</section>
 			</div>
@@ -982,26 +988,33 @@ img { max-width: 100%; }
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 			<a name="batchquery" class="tsd-anchor"></a>
 			<h3>batch<wbr>Query</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">batch<wbr>Query<span class="tsd-signature-symbol">(</span>queryStatements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">batch<wbr>Query&lt;T&gt;<span class="tsd-signature-symbol">(</span>queryParameterizedStatements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#batchquery">batchQuery</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L91">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:91</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L82">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:82</a></li>
 						</ul>
 					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+						</li>
+					</ul>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>queryStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							<h5>queryParameterizedStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1009,25 +1022,26 @@ img { max-width: 100%; }
 			<a name="batchsave" class="tsd-anchor"></a>
 			<h3>batch<wbr>Save</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save<span class="tsd-signature-symbol">(</span>saveStatements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span>, deleteStatements<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save<span class="tsd-signature-symbol">(</span>saveParameterizedStatements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span>, deleteParameterizedStatements<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#batchsave">batchSave</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L110">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:110</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L103">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:103</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>saveStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							<h5>saveParameterizedStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> deleteStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> deleteParameterizedStatements: <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1035,16 +1049,17 @@ img { max-width: 100%; }
 			<a name="clear" class="tsd-anchor"></a>
 			<h3>clear</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#clear">clear</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L50">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L45">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:45</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1052,13 +1067,14 @@ img { max-width: 100%; }
 			<a name="createschema" class="tsd-anchor"></a>
 			<h3>create<wbr>Schema</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">create<wbr>Schema<span class="tsd-signature-symbol">(</span>statements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">create<wbr>Schema<span class="tsd-signature-symbol">(</span>statements<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#createschema">createSchema</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L46">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L41">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:41</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1067,7 +1083,7 @@ img { max-width: 100%; }
 							<h5>statements: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1075,13 +1091,14 @@ img { max-width: 100%; }
 			<a name="get" class="tsd-anchor"></a>
 			<h3>get</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">get&lt;T&gt;<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get&lt;T&gt;<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#get">get</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L57">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L52">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:52</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1096,10 +1113,10 @@ img { max-width: 100%; }
 							<h5>statement: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>params: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+							<h5>params: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1107,13 +1124,14 @@ img { max-width: 100%; }
 			<a name="getall" class="tsd-anchor"></a>
 			<h3>get<wbr>All</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>All&lt;T&gt;<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>All&lt;T&gt;<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#getall">getAll</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L72">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L60">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:60</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1128,10 +1146,10 @@ img { max-width: 100%; }
 							<h5>statement: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>params: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+							<h5>params: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1139,16 +1157,17 @@ img { max-width: 100%; }
 			<a name="init" class="tsd-anchor"></a>
 			<h3>init</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">init<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#init">init</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L37">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L31">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:31</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1156,13 +1175,14 @@ img { max-width: 100%; }
 			<a name="save" class="tsd-anchor"></a>
 			<h3>save</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>statement<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#save">save</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L87">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:87</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L75">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:75</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1171,36 +1191,43 @@ img { max-width: 100%; }
 							<h5>statement: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>params: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+							<h5>params: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 			<a name="selectanddelete" class="tsd-anchor"></a>
 			<h3>select<wbr>And<wbr>Delete</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">select<wbr>And<wbr>Delete<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a>, _delete<span class="tsd-signature-symbol">: </span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">select<wbr>And<wbr>Delete&lt;T&gt;<span class="tsd-signature-symbol">(</span>queryParameterizedStatement<span class="tsd-signature-symbol">: </span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a>, deleteParameterizedStatement<span class="tsd-signature-symbol">: </span><a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/commonsqlitedatabase.html">CommonSQLiteDatabase</a>.<a href="../interfaces/commonsqlitedatabase.html#selectanddelete">selectAndDelete</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L126">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:126</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts#L121">packages/datastore-storage-adapter/src/SQLiteAdapter/SQLiteDatabase.ts:121</a></li>
 						</ul>
 					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+						</li>
+					</ul>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>query: <a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a></h5>
+							<h5>queryParameterizedStatement: <a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a></h5>
 						</li>
 						<li>
-							<h5>_delete: <a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a></h5>
+							<h5>deleteParameterizedStatement: <a href="../globals.html#parameterizedstatement" class="tsd-signature-type">ParameterizedStatement</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

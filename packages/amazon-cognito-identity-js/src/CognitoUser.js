@@ -5,6 +5,7 @@
 
 import { Buffer } from 'buffer';
 import { Sha256 } from '@aws-crypto/sha256-js';
+import { Platform } from './Platform';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -55,8 +56,12 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
-const isBrowser = typeof navigator !== 'undefined';
-const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
+const isNavigatorAvailable = typeof navigator !== 'undefined';
+const userAgent = isNavigatorAvailable
+	? Platform.isReactNative
+		? 'react-native'
+		: navigator.userAgent
+	: 'nodejs';
 
 /** @class */
 export default class CognitoUser {
@@ -1125,13 +1130,13 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err,result) => {
 				if (err) {
 					return callback(err, null);
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS'), {
+				return this.getUserData(() => callback(null, 'SUCCESS', result), {
 					bypassCache: true,
 				});
 			}

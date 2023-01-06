@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.7...@aws-amplify/core@5.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [5.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.6...@aws-amplify/core@5.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.5...@aws-amplify/core@5.0.6) (2022-12-15)
+
+
+### Bug Fixes
+
+* **core:** add cache-control header to cognito identity client ([#10753](https://github.com/aws-amplify/amplify-js/issues/10753)) ([dfbabaf](https://github.com/aws-amplify/amplify-js/commit/dfbabaf54dda902f1f77c4501e78f49e6a9397af))
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.4...@aws-amplify/core@5.0.5) (2022-12-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core,@aws-amplify/auth:** Use identityPoolRegion param correctly ([#10709](https://github.com/aws-amplify/amplify-js/issues/10709)) ([b4d2769](https://github.com/aws-amplify/amplify-js/commit/b4d27695b3e196cd14b486b9a8db778c9951bc29)), closes [#6462](https://github.com/aws-amplify/amplify-js/issues/6462)
+
+
+
+
+
+## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.3...@aws-amplify/core@5.0.4) (2022-11-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.2...@aws-amplify/core@5.0.3) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/core

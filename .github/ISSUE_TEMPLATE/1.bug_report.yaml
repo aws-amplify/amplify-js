@@ -1,5 +1,6 @@
 name: Bug report
 description: Create a report to help us improve Amplify JS
+labels: pending-triage
 
 body:
   - type: markdown
