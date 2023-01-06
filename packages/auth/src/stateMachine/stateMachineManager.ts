@@ -9,20 +9,37 @@ import {
 	MachineManagerEvent,
 } from './types';
 import { Machine } from './machine';
+import { Logger } from '@aws-amplify/core';
 
 type MachineState = CurrentStateAndContext<MachineContext, string>;
+// General type for any machine.
+type MachineType = Machine<any, any, any>;
 
 const CURRENT_STATES_EVENT_SYMBOL = Symbol('CURRENT_STATES_EVENT_PAYLOAD');
+interface CurrentStateEventType extends Omit<MachineManagerEvent, 'name'> {
+	name: typeof CURRENT_STATES_EVENT_SYMBOL;
+}
 
-const CURRENT_STATES_EVENT: MachineEvent = {
-	name: 'CURRENT_STATES_EVENT',
-	payload: CURRENT_STATES_EVENT_SYMBOL,
-};
+const ADD_MACHINE_EVENT_SYMBOL = Symbol('ADD_MACHINE_EVENT_PAYLOAD');
+interface AddMachineEventType extends Omit<MachineManagerEvent, 'name'> {
+	name: typeof ADD_MACHINE_EVENT_SYMBOL;
+	payload: { machine: Machine<any, any, any> };
+}
+
+type InternalEvent =
+	| MachineManagerEvent
+	| CurrentStateEventType
+	| AddMachineEventType;
 
 type MachinePromiseContext = [
 	(value: MachineState | PromiseLike<MachineState>) => void,
 	(reason?: any) => void
 ];
+
+export interface MachineManagerOptions {
+	name: string;
+	logger: Logger;
+}
 
 /**
  * A state machine manager class that:
@@ -32,31 +49,51 @@ type MachinePromiseContext = [
  * 2. Handles events may emit from any enclosing state machines' state transits,
  *     including cross-machine events.
  */
-export class MachineManager<MachineTypes extends Machine<any, any, any>> {
+export class MachineManager {
+	public readonly name: string;
+	private readonly logger: Logger;
 	private _apiQueue: {
-		event: MachineManagerEvent;
+		event: InternalEvent;
 		promiseContext: MachinePromiseContext;
 	}[] = [];
 	private _machineQueue: MachineEvent[] = [];
-	private _machines: Record<string, MachineTypes>;
+	private _machines: Record<string, MachineType> = {};
 	private _isActive = false;
 
-	// TODO: support adding machines dynamically besides in the contructor.
-	constructor(...machines: Array<MachineTypes>) {
-		const managerEventBroker: EventBroker<MachineEvent> = {
-			dispatch: event => {
-				this._machineQueue.push(event);
-			},
-		};
-		this._machines = machines.reduce((prev, curr) => {
-			if (prev[curr.name]) {
-				throw new Error(`Duplicated state machine name "${curr.name}"`);
-			}
-			// TODO: do we need to remove listeners?
-			curr.addListener(managerEventBroker);
-			prev[curr.name] = curr;
-			return prev;
-		}, {});
+	constructor(options: MachineManagerOptions) {
+		this.name = options.name;
+		this.logger = options.logger;
+	}
+
+	/**
+	 * Get the state and context of the specified machine. If there are events
+	 * being processed, it returns in the state and context after queueing events.
+	 *
+	 * @param machineName - The name of the requesting macine.
+	 */
+	public async getCurrentState(
+		machineName: string
+	): Promise<CurrentStateAndContext<MachineContext, string>> {
+		return await this._enqueueEvent({
+			name: CURRENT_STATES_EVENT_SYMBOL,
+			payload: {},
+			toMachine: machineName,
+		});
+	}
+
+	/**
+	 * Add a new state machine to the manager. If there are events being processed,
+	 * it adds the state machine after queueing events. No operation if the input
+	 * machine's name has already been added to the manager.
+	 *
+	 * @param machine
+	 */
+	public async addMachineIfAbsent(machine: MachineType) {
+		await this._enqueueEvent({
+			name: ADD_MACHINE_EVENT_SYMBOL,
+			payload: { machine },
+			toMachine: machine.name,
+		});
 	}
 
 	/**
@@ -64,9 +101,28 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 	 * context of all enclosing state machines context at the end of invocation.
 	 *
 	 * @param event - Machine event that may invoke any enclosing machine.
-	 * @return
 	 */
 	async send(event: MachineManagerEvent): Promise<MachineState> {
+		return this._enqueueEvent(event);
+	}
+
+	private async _addMachineIfAbsent(machine: MachineType) {
+		if (!this._machines[machine.name]) {
+			const managerEventBroker: EventBroker<MachineEvent> = {
+				dispatch: event => {
+					this._machineQueue.push(event);
+				},
+			};
+			machine.addListener(managerEventBroker);
+			this._machines[machine.name] = machine;
+		} else {
+			this.logger.debug(
+				`State machine ${machine.name} already exists in machine manager ${this.name}`
+			);
+		}
+	}
+
+	private async _enqueueEvent(event: InternalEvent) {
 		let resolve;
 		let reject;
 		const res = new Promise<MachineState>((res, rej) => {
@@ -82,12 +138,18 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 
 	private async _processApiQueue() {
 		this._isActive = true;
-		for (const {
-			event,
-			promiseContext: [resolve, reject],
-		} of this._apiQueue) {
+		while (this._apiQueue.length > 0) {
+			const {
+				event,
+				promiseContext: [resolve, reject],
+			} = this._apiQueue.shift()!;
 			try {
-				if (event.payload !== CURRENT_STATES_EVENT_SYMBOL) {
+				if (event.name === CURRENT_STATES_EVENT_SYMBOL) {
+					// Skip.
+				} else if (event.name === ADD_MACHINE_EVENT_SYMBOL) {
+					const newMachine = event.payload.machine;
+					await this._addMachineIfAbsent(newMachine);
+				} else {
 					await this._processApiEvent(event);
 				}
 				resolve(this._getMachineState(event.toMachine));
@@ -116,12 +178,13 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 		}
 		const machine = this._machines[event.toMachine];
 		if (!machine) {
-			// TODO: remove this error but put this message into logger.
-			throw new Error(
+			this.logger.debug(
 				`Cannot route event to machine ${
 					event.toMachine
 				}. Event ${JSON.stringify(event)}`
 			);
+			return;
+			// Skip.
 		}
 		await machine.accept(event);
 	}
@@ -135,11 +198,5 @@ export class MachineManager<MachineTypes extends Machine<any, any, any>> {
 			);
 		}
 		return this._machines[machineName].getCurrentState();
-	}
-
-	public async getCurrentState(
-		machineName: string
-	): Promise<CurrentStateAndContext<MachineContext, string>> {
-		return await this.send({ ...CURRENT_STATES_EVENT, toMachine: machineName });
 	}
 }

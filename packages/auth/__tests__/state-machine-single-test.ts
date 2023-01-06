@@ -59,7 +59,7 @@ describe('State machine guard tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctxt, event1) => event1.payload.p1 == 'bad'],
+						guards: [(ctxt, event1) => event1.payload.p1 === 'bad'],
 					},
 				],
 			},
@@ -92,7 +92,7 @@ describe('State machine effect tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctx, event1) => event1.payload.p1 == 'bad'],
+						guards: [(ctx, event1) => event1.payload.p1 === 'bad'],
 						effects: [
 							async (ctx, even1, broker) => {
 								ctx?.testFn ? ctx.testFn() : noop;
@@ -170,7 +170,7 @@ describe('State machine reducer tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctx, event1) => event1.payload.p1 == 'bad'],
+						guards: [(ctx, event1) => event1.payload.p1 === 'bad'],
 						reducers: [
 							(ctx, even1) => {
 								ctx.optional1 = even1.payload.p1;

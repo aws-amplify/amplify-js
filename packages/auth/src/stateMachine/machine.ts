@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { v4 } from 'uuid';
 import { MachineState } from './machineState';
 import {
 	CurrentStateAndContext,
@@ -63,7 +64,7 @@ export class Machine<
 					StateNames
 				>({
 					name: castedStateName,
-					transitions: transitions,
+					transitions,
 					machineContextGetter: () => this._context,
 					machineManager: {
 						dispatch: dispatchToBrokers,
@@ -87,7 +88,7 @@ export class Machine<
 	 * @internal
 	 */
 	async accept(event: EventTypes) {
-		event.id = uuid();
+		event.id = v4();
 		const {
 			nextState: nextStateName,
 			newContext,
