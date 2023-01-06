@@ -27,15 +27,12 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
-
-const MB = 1024 * 1024;
-const GB = 1024 * MB;
-const TB = 1024 * GB;
-
-const DEFAULT_PART_SIZE = 5 * MB;
-const MAX_OBJECT_SIZE = 5 * TB;
-const MAX_PARTS_COUNT = 10000;
-const DEFAULT_QUEUE_SIZE = 4;
+import {
+	DEFAULT_PART_SIZE,
+	DEFAULT_QUEUE_SIZE,
+	MAX_OBJECT_SIZE,
+} from '../common/StorageConstants';
+import { calculatePartSize } from '../common/StorageUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -80,7 +77,7 @@ export class AWSS3ProviderManagedUpload {
 				return this.s3client.send(putObjectCommand);
 			} else {
 				// Step 1: Determine appropriate part size.
-				this.calculatePartSize();
+				this.partSize = calculatePartSize(this.totalBytesToUpload);
 				// Step 2: Initiate the multi part upload
 				this.uploadId = await this.createMultiPartUpload();
 
@@ -114,14 +111,6 @@ export class AWSS3ProviderManagedUpload {
 			await this.cleanup(this.uploadId);
 			logger.error('Error. Cancelling the multipart upload.');
 			throw error;
-		}
-	}
-
-	private calculatePartSize() {
-		let partsCount = Math.ceil(this.totalBytesToUpload / this.partSize);
-		while (partsCount > MAX_PARTS_COUNT) {
-			this.partSize *= 2;
-			partsCount = Math.ceil(this.totalBytesToUpload / this.partSize);
 		}
 	}
 

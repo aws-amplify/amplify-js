@@ -16,9 +16,12 @@ import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
-import { byteLength, isFile } from '../common/StorageUtils';
+import { byteLength, calculatePartSize, isFile } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 import {
+	DEFAULT_PART_SIZE,
+	DEFAULT_QUEUE_SIZE,
+	MAX_OBJECT_SIZE,
 	SET_CONTENT_LENGTH_HEADER,
 	UPLOADS_STORAGE_KEY,
 } from '../common/StorageConstants';
@@ -80,13 +83,6 @@ export interface FileMetadata {
 	uploadId: string;
 }
 
-// maximum number of parts per upload request according the S3 spec,
-// see: https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
-const MAX_PARTS = 10000;
-// 5MB in bytes
-const PART_SIZE = 5 * 1024 * 1024;
-const DEFAULT_QUEUE_SIZE = 4;
-
 function comparePartNumber(a: CompletedPart, b: CompletedPart) {
 	return a.PartNumber - b.PartNumber;
 }
@@ -94,7 +90,6 @@ function comparePartNumber(a: CompletedPart, b: CompletedPart) {
 export class AWSS3UploadTask implements UploadTask {
 	private readonly emitter: events.EventEmitter;
 	private readonly file: Blob;
-	private readonly partSize: number = PART_SIZE;
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
 	private readonly s3client: S3Client;
 	private readonly storage: Storage;
@@ -102,6 +97,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly fileId: string;
 	private readonly params: PutObjectCommandInput;
 	private readonly prefixPromise: Promise<string>;
+	private partSize: number = DEFAULT_PART_SIZE;
 	private inProgress: InProgressRequest[] = [];
 	private completedParts: CompletedPart[] = [];
 	private queued: UploadPartCommandInput[] = [];
@@ -227,11 +223,9 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _validateParams() {
-		if (this.file.size / this.partSize > MAX_PARTS) {
+		if (this.totalBytes > MAX_OBJECT_SIZE) {
 			throw new Error(
-				`Too many parts. Number of parts is ${
-					this.file.size / this.partSize
-				}, maximum is ${MAX_PARTS}.`
+				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytes} Bytes`
 			);
 		}
 	}
@@ -440,6 +434,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	private async _initializeUploadTask() {
 		this.state = AWSS3UploadTaskState.IN_PROGRESS;
+		this.partSize = calculatePartSize(this.totalBytes);
 		try {
 			if (await this._isCached()) {
 				const { parts, uploadId } = await this._findCachedUploadParts();
