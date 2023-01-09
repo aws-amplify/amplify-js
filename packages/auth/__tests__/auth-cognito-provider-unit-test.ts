@@ -1,4 +1,4 @@
-import { CognitoIdentityProviderClient, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
+import { CognitoIdentityProviderClient, ConfirmForgotPasswordCommand, SignUpCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { Auth } from '../src/Auth';
 import { AuthErrorTypes } from '../src/constants/AuthErrorTypes';
 import { AuthError } from '../src/Errors';
@@ -10,12 +10,16 @@ import {
 	AuthUserAttribute, 
 	CognitoSignUpOptions, 
 	CognitoUserAttributeKey, 
+	ConfirmResetPasswordRequest, 
 	SignUpRequest 
 } from '../src/types';
 
 CognitoIdentityProviderClient.prototype.send = jest.fn(async command => {
 	if (command instanceof SignUpCommand) {
 		return Promise.resolve(signUpCommandOutput);
+	}
+	if (command instanceof ConfirmForgotPasswordCommand) {
+		return Promise.resolve('success');
 	}
 	return 'data';
 });
@@ -57,6 +61,20 @@ const createSignUpRequest = (
 	};
 };
 
+const createConfirmResetPasswordRequest = (
+	username,
+	newPassword,
+	code,
+	options?
+): ConfirmResetPasswordRequest<AuthPluginOptions> => {
+	return {
+		username,
+		newPassword,
+		code,
+		options
+	};
+};
+
 const userAttributes: AuthUserAttribute<CognitoUserAttributeKey>[] = [
 	{userAttributeKey: 'email', value: 'email@email.com'},
 	{userAttributeKey: 'phone_number', value: '+12345678910'}
@@ -71,6 +89,16 @@ const signUpCommandObjectWithClientMetadata = {
 			{Name: 'email', Value: 'email@email.com'},
 			{Name: 'phone_number', Value: '+12345678910'}
 		],
+		ClientMetadata: {foo: 'bar'}
+	}
+};
+
+const confirmForgotPasswordCommandWithClientMetadata = {
+	input: {
+		ClientId: 'userPoolId',
+		Username: 'username',
+		Password: 'password',
+		ConfirmationCode: '12345',
 		ClientMetadata: {foo: 'bar'}
 	}
 };
@@ -229,5 +257,111 @@ describe('Amazon Cognito Auth unit test', () => {
 		// TODO: test hub events when they are implemented in Sign up function
 	});
 
-	
+	describe('confirm reset password', () => {
+		test('happy case', async () => {
+			Auth.addPluggable(provider);
+			await Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username',
+				'password',
+				'12345'
+			));
+			const confirmForgotPasswordCommand = {
+				input: {
+					ClientId: 'userPoolId',
+					Username: 'username',
+					Password: 'password',
+					ConfirmationCode: '12345'
+				}
+			};
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(confirmForgotPasswordCommand));
+		});
+
+		test('happy case with default metadata', async () => {
+			Auth.addPluggable(new AmazonCognitoProvider(configWithClientMetadata));
+			await Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username',
+				'password',
+				'12345'
+			));
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(confirmForgotPasswordCommandWithClientMetadata));
+		});
+
+		test('happy case with metadata in options', async () => {
+			Auth.addPluggable(provider);
+			await Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username',
+				'password',
+				'12345',
+				{pluginOptions: {clientMetadata: {foo: 'bar'}}}
+			));
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(confirmForgotPasswordCommandWithClientMetadata));
+		});
+
+		test('happy case with options metadata over default', async () => {
+			Auth.addPluggable(new AmazonCognitoProvider(configWithClientMetadata));
+			await Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username',
+				'password',
+				'12345',
+				{pluginOptions: {clientMetadata: {name: 'data'}}}
+			));
+			const confirmForgotPasswordCommand = {
+				input: {
+					ClientId: 'userPoolId',
+					Username: 'username',
+					Password: 'password',
+					ConfirmationCode: '12345',
+					ClientMetadata: {name: 'data'}
+				}
+			};
+			expect(CognitoIdentityProviderClient.prototype.send)
+				.toBeCalledWith(expect.objectContaining(confirmForgotPasswordCommand));
+		});
+
+		test('client send command fails', async () => {
+			expect.assertions(1);
+			jest.spyOn(CognitoIdentityProviderClient.prototype, 'send').mockImplementationOnce(command => {
+				throw new Error('err');
+			});
+			Auth.addPluggable(provider);
+			await expect(Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username', 'password', '12345'
+			))).rejects.toThrow(new Error('err'));
+		});
+
+		test('no user pool', async () => {
+			expect.assertions(1);
+			Auth.addPluggable(new AmazonCognitoProvider(noUserPoolConfig));
+			await expect(Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username', 'password', '12345'
+			))).rejects.toThrow(new AuthError(AuthErrorTypes.NoConfig));
+		});
+
+		test('empty username', async () => {
+			expect.assertions(1);
+			Auth.addPluggable(provider);
+			await expect(Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'', 'password', '12345'
+			))).rejects.toThrow(new AuthError(AuthErrorTypes.EmptyUsername));
+		});
+
+		test('empty new password', async () => {
+			expect.assertions(1);
+			Auth.addPluggable(provider);
+			await expect(Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username', '', '12345'
+			))).rejects.toThrow(new AuthError(AuthErrorTypes.EmptyPassword));
+		});
+
+		test('empty confirmation code', async () => {
+			expect.assertions(1);
+			Auth.addPluggable(provider);
+			await expect(Auth.confirmResetPassword(createConfirmResetPasswordRequest(
+				'username', 'password', ''
+			))).rejects.toThrow(new AuthError(AuthErrorTypes.EmptyCode));
+		});
+	});
 });

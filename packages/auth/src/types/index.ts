@@ -15,6 +15,7 @@ import {
 } from './aws-plugins/cognito-plugin/types/models';
 import { 
 	AutoSignInOptions, 
+	CognitoConfirmResetPasswordOptions, 
 	CognitoSignInOptions, 
 	CognitoSignUpOptions 
 } from './aws-plugins/cognito-plugin/types/options';
@@ -33,7 +34,7 @@ import {
 	DeliveryMedium 
 } from './models';
 import { AuthSignUpOptions } from './options';
-import { SignUpRequest } from './request';
+import { ConfirmResetPasswordRequest, SignUpRequest } from './request';
 import { AuthSignInResult, AuthSignUpResult } from './result';
 
 export {
@@ -66,5 +67,7 @@ export {
 	AuthSignUpOptions,
 	SignUpRequest,
 	AuthSignUpResult,
-	AuthSignInResult
+	AuthSignInResult,
+	ConfirmResetPasswordRequest,
+	CognitoConfirmResetPasswordOptions
 };

@@ -26,17 +26,21 @@ import {
 	CognitoUserAttributeKey, 
 	ValidationData, 
 	AuthPluginProvider,
-	AuthUserAttribute
+	AuthUserAttribute,
+	CognitoConfirmResetPasswordOptions,
+	ConfirmResetPasswordRequest
 } from '../types';
 import { 
 	AttributeType, 
 	CodeDeliveryDetailsType, 
 	CognitoIdentityProviderClient, 
+	ConfirmForgotPasswordCommandOutput, 
 	SignUpCommand, 
 	SignUpCommandOutput 
 } from '@aws-sdk/client-cognito-identity-provider';
 import { 
 	createCognitoIdentityProviderClient, 
+	createConfirmForgotPasswordCommand, 
 	createSignUpCommand, 
 	getUserPoolId, 
 	sendCommand 
@@ -180,8 +184,37 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 	resetPassword(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	confirmResetPassword(): Promise<void> {
-		throw new Error('Method not implemented.');
+
+	async confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
+		req: ConfirmResetPasswordRequest<PluginOptions>
+	): Promise<void> {
+		const clientId: string = getUserPoolId(this._config);
+
+		const username: string = req.username;
+		if (!username) {
+			throw new AuthError(AuthErrorTypes.EmptyUsername); // TODO: change when errors are defined
+		}
+
+		const code: string = req.code;
+		if (!code) {
+			throw new AuthError(AuthErrorTypes.EmptyCode); // TODO: change when errors are defined
+		}
+
+		const password: string = req.newPassword;
+		if (!password) {
+			throw new AuthError(AuthErrorTypes.EmptyPassword); // TODO: change when errors are defined
+		}
+
+		const pluginOptions = req.options?.pluginOptions;
+		let clientMetadata: Record<string, string> | undefined = this._config.clientMetadata;
+		if (pluginOptions) {
+			clientMetadata = pluginOptions['clientMetadata'];
+		}
+
+		await sendCommand<ConfirmForgotPasswordCommandOutput>(
+			this._client, 
+			createConfirmForgotPasswordCommand(clientId, username, code, password, clientMetadata)
+		);
 	}
 	updatePassword(): Promise<void> {
 		throw new Error('Method not implemented.');

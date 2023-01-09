@@ -5,6 +5,8 @@ import {
 	AttributeType, 
 	ChallengeNameType, 
 	CognitoIdentityProviderClient,
+	ConfirmForgotPasswordCommand,
+	ConfirmForgotPasswordCommandInput,
 	SignUpCommand, 
 	SignUpCommandInput
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -73,6 +75,25 @@ export const createSignUpCommand = (
 		signUpCommandInput.ClientMetadata = clientMetadata;
 	}
 	return new SignUpCommand(signUpCommandInput);
+};
+
+export const createConfirmForgotPasswordCommand = (
+	clientId: string,
+	username: string,
+	code: string,
+	password: string,
+	clientMetadata?: Record<string, string>
+): ConfirmForgotPasswordCommand => {
+	const confirmForgotPasswordCommandInput: ConfirmForgotPasswordCommandInput = {
+		ClientId: clientId,
+		Username: username,
+		Password: password,
+		ConfirmationCode: code,
+	};
+	if (clientMetadata) {
+		confirmForgotPasswordCommandInput.ClientMetadata = clientMetadata;
+	}
+	return new ConfirmForgotPasswordCommand(confirmForgotPasswordCommandInput);
 };
 
 export const sendCommand = async<Output extends CommandOutput> (
