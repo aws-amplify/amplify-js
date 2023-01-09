@@ -99,12 +99,17 @@ function onMessageArrived(message) {
 		// which is used to define the module.
 		var version = '@VERSION@-@BUILDLEVEL@';
 
+		// 2023-01-05: AWS Amplify change to incorporate upstream pull request:
+		// https://github.com/eclipse/paho.mqtt.javascript/pull/247
+
 		/**
 		 * @private
 		 */
-		var localStorage =
-			global.localStorage ||
-			(function () {
+		var localStorage = (function () {
+			try {
+				// When third-party cookies are disabled accessing localStorage will cause an error
+				if (global.localStorage) return global.localStorage;
+			} catch (e) {
 				var data = {};
 
 				return {
@@ -118,7 +123,10 @@ function onMessageArrived(message) {
 						delete data[key];
 					},
 				};
-			})();
+			}
+		})();
+
+		// End of AWS Amplify change
 
 		/**
 		 * Unique message type identifiers, with associated
