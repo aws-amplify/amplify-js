@@ -108,7 +108,8 @@ export type StateTransitions<
  * @typeParam ContextType - The type of the enclosing Machine's context
  * @typeParam EventType - The type of event being handled.
  * @typeParam StateNames - The type of all the state names. Expecting a union of strings.
- * @param nextState - The name of the State which will become the current State of the enclosing Machine, if the transition is triggered.
+ * @param nextState - The name of the State which will become the current State of the enclosing Machine, if the
+ * 			transition is triggered.
  * @param guards - An array of {@link TransitionGuard}, to be invoked before the transition is completed.
  * @param reducers - An array of {@link TransitionReducer}, to be invoked when the transition is completed.
  * @param effects - An array of {@link TransitionEffect}, to be invoked when the transition is completed.
