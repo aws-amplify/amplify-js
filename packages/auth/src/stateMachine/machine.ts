@@ -88,7 +88,6 @@ export class Machine<
 	 * @internal
 	 */
 	async accept(event: EventTypes) {
-		event.id = v4();
 		const {
 			nextState: nextStateName,
 			newContext,

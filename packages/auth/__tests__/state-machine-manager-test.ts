@@ -1,8 +1,11 @@
 import { Logger } from '@aws-amplify/core';
+import { v4 } from 'uuid';
 import { MachineManager } from '../src/stateMachine/stateMachineManager';
 import { Context, TickEvent, tickTockMachine } from './utils/tickTockMachine';
 import { Machine } from '../src/stateMachine/machine';
 import { TransitionEffect } from '../src/stateMachine/types';
+
+jest.mock('uuid');
 
 describe(MachineManager.name, () => {
 	const mockLogger = {
@@ -80,6 +83,8 @@ describe(MachineManager.name, () => {
 
 		it('should not affect current events', async () => {
 			expect.assertions(1);
+			const mockUUID = 'MOCK_UUID';
+			(v4 as jest.Mock).mockReturnValue(mockUUID);
 			const sendToInvalidMacineEffect: TransitionEffect<
 				Context,
 				TickEvent
@@ -118,7 +123,7 @@ describe(MachineManager.name, () => {
 			]);
 			expect(mockLogger.debug).toBeCalledWith(
 				expect.stringContaining(
-					`Cannot route event to machine ${anothermachine.name}`
+					`Cannot route event name foo to machine ${anothermachine.name}. Event id ${mockUUID}`
 				)
 			);
 		});

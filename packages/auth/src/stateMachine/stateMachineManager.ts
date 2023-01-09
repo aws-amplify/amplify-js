@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import { Logger } from '@aws-amplify/core';
+import { v4 } from 'uuid';
 import {
 	CurrentStateAndContext,
 	EventBroker,
@@ -9,7 +10,6 @@ import {
 	MachineManagerEvent,
 } from './types';
 import { Machine } from './machine';
-import { Logger } from '@aws-amplify/core';
 
 type MachineState = CurrentStateAndContext<MachineContext, string>;
 // General type for any machine.
@@ -23,7 +23,7 @@ interface CurrentStateEventType extends Omit<MachineManagerEvent, 'name'> {
 const ADD_MACHINE_EVENT_SYMBOL = Symbol('ADD_MACHINE_EVENT_PAYLOAD');
 interface AddMachineEventType extends Omit<MachineManagerEvent, 'name'> {
 	name: typeof ADD_MACHINE_EVENT_SYMBOL;
-	payload: { machine: Machine<any, any, any> };
+	payload: { machine: MachineType };
 }
 
 type InternalEvent =
@@ -166,6 +166,7 @@ export class MachineManager {
 			// Get the first event of the machine queue. This cause a DFS-like manner
 			// of event propagation and state transits.
 			const machineEvent = this._machineQueue.shift();
+			machineEvent!.id = machineEvent!.id ?? v4();
 			await this._sendToMachine(machineEvent!);
 		}
 	}
@@ -179,9 +180,7 @@ export class MachineManager {
 		const machine = this._machines[event.toMachine];
 		if (!machine) {
 			this.logger.debug(
-				`Cannot route event to machine ${
-					event.toMachine
-				}. Event ${JSON.stringify(event)}`
+				`Cannot route event name ${event.name} to machine ${event.toMachine}. Event id ${event.id}.`
 			);
 			return;
 			// Skip.
