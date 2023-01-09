@@ -18,8 +18,8 @@
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
+    "build:cjs": "node ./build es5 && cpx src/vendor/** lib/vendor && webpack && webpack --config ./webpack.config.dev.js",
+    "build:esm": "node ./build es6 && cpx src/vendor/** lib-esm/vendor",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
