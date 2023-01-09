@@ -29,7 +29,7 @@ export interface AuthPluginProvider {
 
 	resetPassword(): Promise<void>;
 
-	confirmResetPassword(): Promise<void>;
+	confirmResetPassword(req): Promise<void>;
 
 	updatePassword(): Promise<void>;
 

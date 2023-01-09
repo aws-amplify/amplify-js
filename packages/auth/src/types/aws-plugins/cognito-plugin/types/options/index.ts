@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AutoSignInOptions } from './autoSignInOptions';
+import { CognitoConfirmResetPasswordOptions } from './cognitoConfirmResetPasswordOptions';
 import { CognitoSignInOptions } from './cognitoSignInOptions';
 import { CognitoSignUpOptions } from './cognitoSignUpOptions';
 
 export {
 	AutoSignInOptions,
 	CognitoSignInOptions,
-	CognitoSignUpOptions
+	CognitoSignUpOptions,
+	CognitoConfirmResetPasswordOptions
 };
