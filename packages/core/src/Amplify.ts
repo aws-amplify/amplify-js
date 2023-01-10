@@ -77,6 +77,13 @@ export class AmplifyClass {
 		return this._config;
 	}
 
+	getConfig() {
+		if (this._config) {
+			return JSON.parse(JSON.stringify(this._config));
+		}
+		return null;
+	}
+
 	addPluggable(pluggable) {
 		if (
 			pluggable &&
