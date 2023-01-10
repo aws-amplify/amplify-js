@@ -194,11 +194,15 @@ describe('resumable upload task test', () => {
 
 	test('upload a body that exceeds the size of default part size and parts count', done => {
 		const testUploadId = 'testUploadId';
+		let buffer: ArrayBuffer;
 		const file = {
 			size: 100_000 * MB,
-			slice: jest
-				.fn()
-				.mockImplementation((start, end) => new ArrayBuffer(end - start)),
+			slice: jest.fn().mockImplementation((start, end) => {
+				if (end - start !== buffer?.byteLength) {
+					buffer = new ArrayBuffer(end - start);
+				}
+				return buffer;
+			}),
 		} as any as File;
 
 		const s3ServiceCallSpy = jest
