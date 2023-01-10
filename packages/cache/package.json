@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "5.0.8",
+  "version": "5.0.9",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -46,7 +46,7 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.8",
+    "@aws-amplify/core": "5.0.9",
     "tslib": "^1.8.0"
   },
   "jest": {
