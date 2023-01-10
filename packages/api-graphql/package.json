@@ -17,13 +17,14 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "rimraf lib-esm lib dist dual-publish-tmp",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 75.62"
@@ -67,6 +68,14 @@
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
+	"size-limit": [
+		{
+			"name": "API (GraphQL client)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, GraphQLAPI }",
+			"limit": "114.5 kB"
+		}
+	],
   "jest": {
     "globals": {
       "ts-jest": {
