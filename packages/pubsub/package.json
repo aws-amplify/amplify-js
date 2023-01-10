@@ -17,13 +17,14 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm run clean && npm test && tsc && webpack",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "rimraf lib-esm lib dist dual-publish-tmp",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.63"
@@ -57,6 +58,20 @@
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
+	"size-limit": [
+		{
+			"name": "PubSub (IoT provider)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, PubSub, AWSIoTProvider }",
+			"limit": "97.5 kB"
+		},
+		{
+			"name": "PubSub (Mqtt provider)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, PubSub, MqttOverWSProvider }",
+			"limit": "97.5 kB"
+		}
+	],
   "jest": {
     "globals": {
       "ts-jest": {
