@@ -48,11 +48,11 @@ export class AuthClass {
 
 	/* BEGIN LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
 
-	/// TODO: These values are included temporarily as they are called from other libraries. They should be removed once fetchAuthSession has been implemented and replaced in other library locations.
+	/// TODO: These members are called from other libraries and can be uncommented temporarily to allow the library to build. Do not check-in uncommented member declarations to source.
 
-	public currentAuthenticatedUser;
-	public currentSession;
-	public currentCredentials;
+	// public currentAuthenticatedUser;
+	// public currentSession;
+	// public currentCredentials;
 
 	/* END LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
 
