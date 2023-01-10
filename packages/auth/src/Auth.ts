@@ -52,6 +52,16 @@ export class AuthClass {
 	private _pluggable: AuthPluginProvider | null;
 	private _storage;
 
+	/* BEGIN LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
+
+	/// TODO: These members are called from other libraries and can be uncommented temporarily to allow the library to build. Do not check-in uncommented member declarations to source.
+
+	// public currentAuthenticatedUser;
+	// public currentSession;
+	// public currentCredentials;
+
+	/* END LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
+
 	/**
 	 * Instantiates the Auth category
 	 */
@@ -114,8 +124,7 @@ export class AuthClass {
 	 */
 	signUp<PluginOptions extends AuthPluginOptions>(
 		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
-	): Promise<AuthSignUpResult<CognitoUserAttributeKey>>
-	{
+	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signUp(req);
 	}
