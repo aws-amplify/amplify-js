@@ -6,6 +6,15 @@ import Reachability from '../src/Util/Reachability';
 import { ConsoleLogger as Logger } from '../src/Logger';
 import { urlSafeDecode, urlSafeEncode } from '../src/Util/StringUtils';
 import { DateUtils } from '../src/Util/DateUtils';
+import {
+	createCognitoIdentityClient,
+	middlewareArgs,
+} from '../src/Util/CognitoIdentityClient';
+import { BuildMiddleware, HttpRequest } from '@aws-sdk/types';
+import {
+	GetCredentialsForIdentityCommand,
+	GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
 
 Logger.LOG_LEVEL = 'DEBUG';
 
@@ -51,19 +60,89 @@ describe('Util', () => {
 		});
 	});
 
-	test('jitteredExponential retry happy case', done => {
+	describe('cognito identity client test', () => {
+		test('client should be instantiated', async () => {
+			const cognitoClient = createCognitoIdentityClient({
+				region: 'us-west-1',
+			});
+			expect(cognitoClient).toBeTruthy();
+			expect.assertions(1);
+		});
+
+		test('middlewareArgs helper should merge headers into request object', async () => {
+			const args = middlewareArgs({
+				request: {
+					headers: {
+						'test-header': '1234',
+					},
+				},
+				input: {},
+			});
+			expect(args.request.headers['test-header']).toEqual('1234');
+			expect(args.request.headers['cache-control']).toEqual('no-store');
+			expect.assertions(2);
+		});
+
+		test('headers should be added by middleware on GetIdCommand', async () => {
+			const requestCacheHeaderValidator: BuildMiddleware<any, any> =
+				next => async args => {
+					// middleware intercept the request and return it early
+					const request = args.request as HttpRequest;
+					const { headers } = request;
+					expect(headers['cache-control']).toEqual('no-store');
+					return { output: {} as any, response: {} as any };
+				};
+
+			const client = createCognitoIdentityClient({ region: 'us-west-1' });
+			client.middlewareStack.addRelativeTo(requestCacheHeaderValidator, {
+				relation: 'after',
+				toMiddleware: 'cacheControlMiddleWare',
+			});
+
+			await client.send(
+				new GetIdCommand({
+					IdentityPoolId: 'us-west-1:12345678-1234-1234-1234-123456789000',
+				})
+			);
+			expect.assertions(1);
+		});
+
+		test('headers should be added by middleware on GetCredentialsForIdentityCommand', async () => {
+			const requestCacheHeaderValidator: BuildMiddleware<any, any> =
+				next => async args => {
+					// middleware intercept the request and return it early
+					const request = args.request as HttpRequest;
+					const { headers } = request;
+					expect(headers['cache-control']).toEqual('no-store');
+					return { output: {} as any, response: {} as any };
+				};
+
+			const client = createCognitoIdentityClient({ region: 'us-west-1' });
+			client.middlewareStack.addRelativeTo(requestCacheHeaderValidator, {
+				relation: 'after',
+				toMiddleware: 'cacheControlMiddleWare',
+			});
+			await client.send(
+				new GetCredentialsForIdentityCommand({
+					IdentityId: '1234',
+					Logins: {},
+				})
+			);
+
+			expect.assertions(1);
+		});
+	});
+
+	test('jitteredExponential retry happy case', async () => {
 		const resolveAt = 3;
-		expect.assertions(3);
+		let attempts = 0;
 		function createRetryableFunction() {
-			let attempt = 1;
 			return async () => {
-				expect(true).toBe(true);
-				if (attempt >= resolveAt) {
-					done();
+				if (attempts >= resolveAt) {
 					return 'done';
 				} else {
-					attempt++;
-					throw new Error('fail');
+					attempts++;
+					throw new Error('Expected failure');
 				}
 			};
 		}
@@ -71,8 +150,11 @@ describe('Util', () => {
 		const retryableFunction = createRetryableFunction();
 
 		try {
-			jitteredExponentialRetry(retryableFunction, []).then(done);
-		} catch (err) {}
+			await jitteredExponentialRetry(retryableFunction, []);
+			expect(attempts).toEqual(3);
+		} catch (err) {
+			expect(true).toBe(false);
+		}
 	});
 	test('Fail with NonRetryableError', async () => {
 		const nonRetryableError = new NonRetryableError('fatal');

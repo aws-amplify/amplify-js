@@ -2,6 +2,7 @@ declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	export type UpdateAttributesNodeCallback<E, T, K> = (err?: E, result?: T, details?: K) => void;
 	export namespace NodeCallback {
 		export type Any = NodeCallback<Error | undefined, any>;
 	}
@@ -134,7 +135,8 @@ declare module 'amazon-cognito-identity-js' {
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
-			callback: NodeCallback<Error, 'SUCCESS'>
+			callback: NodeCallback<Error, 'SUCCESS'>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public forgotPassword(
 			callbacks: {
@@ -220,7 +222,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public updateAttributes(
 			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
-			callback: NodeCallback<Error, string>,
+			callback: UpdateAttributesNodeCallback<Error, string, any>,
 			clientMetadata?: ClientMetadata
 		): void;
 		public deleteAttributes(
@@ -233,7 +235,8 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: string) => void | null;
-			}
+			},
+			clientMetadata?: ClientMetadata
 		): void;
 		public deleteUser(callback: NodeCallback<Error, string>): void;
 		public enableMFA(callback: NodeCallback<Error, string>): void;

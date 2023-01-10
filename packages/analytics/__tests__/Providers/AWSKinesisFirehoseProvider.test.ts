@@ -3,7 +3,7 @@ import {
 	PutRecordBatchCommand,
 } from '@aws-sdk/client-firehose';
 import { Credentials } from '@aws-amplify/core';
-import KinesisFirehoseProvider from '../../src/Providers/AWSKinesisFirehoseProvider';
+import { AWSKinesisFirehoseProvider as KinesisFirehoseProvider } from '../../src/Providers/AWSKinesisFirehoseProvider';
 
 jest.mock('@aws-sdk/client-firehose');
 
@@ -72,6 +72,44 @@ describe('kinesis firehose provider test', () => {
 
 			expect(await analytics.record('params')).toBe(false);
 			spyon.mockRestore();
+		});
+
+		test('record with immediate transmission', async () => {
+			const kinesisProvider = new KinesisFirehoseProvider();
+			const putRecordBatchCommandSpy = jest.spyOn(
+				PutRecordBatchCommand.prototype,
+				'constructor'
+			);
+
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			await expect(
+				kinesisProvider.record({
+					event: {
+						data: {
+							d: 1,
+						},
+						streamName: 'testStream',
+						immediate: true,
+					},
+					config: {},
+				})
+			).resolves.toBe(true);
+
+			// Ensure PutRecord was constructed as expected
+			expect(putRecordBatchCommandSpy).toHaveBeenCalledTimes(1);
+			expect(putRecordBatchCommandSpy).toHaveBeenCalledWith({
+				DeliveryStreamName: 'testStream',
+				Records: [
+					{
+						Data: new Uint8Array([123, 34, 100, 34, 58, 49, 125]), // Encoded data payload
+					},
+				],
+			});
+
+			expect(FirehoseClient.prototype.send).toHaveBeenCalledTimes(1);
 		});
 
 		test('record happy case', async () => {

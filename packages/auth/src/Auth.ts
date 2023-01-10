@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *	 http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	AuthOptions,
@@ -40,8 +30,8 @@ import {
 	Hub,
 	StorageHelper,
 	ICredentials,
-	Parser,
 	browserOrNode,
+	parseAWSExports,
 	UniversalStorage,
 	urlSafeDecode,
 	HubCallback,
@@ -63,6 +53,7 @@ import {
 	CognitoRefreshToken,
 	CognitoAccessToken,
 	NodeCallback,
+	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -112,7 +103,8 @@ export class AuthClass {
 	private oAuthFlowInProgress: boolean = false;
 	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 	private autoSignInInitiated: boolean = false;
-
+	private inflightSessionPromise: Promise<CognitoUserSession> | null = null;
+	private inflightSessionPromiseCounter: number = 0;
 	Credentials = Credentials;
 
 	/**
@@ -127,6 +119,7 @@ export class AuthClass {
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
+				case 'verify':
 				case 'signIn':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'false');
 					break;
@@ -150,7 +143,7 @@ export class AuthClass {
 		const conf = Object.assign(
 			{},
 			this._config,
-			Parser.parseMobilehubConfig(config).Auth,
+			parseAWSExports(config).Auth,
 			config
 		);
 		this._config = conf;
@@ -205,11 +198,12 @@ export class AuthClass {
 
 		this.Credentials.configure({
 			mandatorySignIn,
-			region: identityPoolRegion || region,
+			region,
 			userPoolId,
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
+			identityPoolRegion
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -1145,10 +1139,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
 					dispatchAuthEvent(
-						'signIn',
+						'verify',
 						user,
-						`A user ${user.getUsername()} has been signed in`
+						`A user ${user.getUsername()} has been verified`
 					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
@@ -1432,10 +1427,16 @@ export class AuthClass {
 				}
 				user.updateAttributes(
 					attributeList,
-					(err, result) => {
+					(err, result, details) => {
+						
 						if (err) {
+							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
+							const attrs = this.createUpdateAttributesResultList(
+								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
+							);
+							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
 							return resolve(result);
 						}
 					},
@@ -1444,6 +1445,25 @@ export class AuthClass {
 			});
 		});
 	}
+
+	private createUpdateAttributesResultList(
+		attributes: Record<string, string>, 
+		codeDeliveryDetailsList?: CodeDeliveryDetails []
+	): Record<string, string> {
+		const attrs = {};
+		Object.keys(attributes).forEach(key => {
+			attrs[key] = {
+				isUpdated: true
+			};
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			if (codeDeliveryDetails) {
+				attrs[key].isUpdated = false;
+				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
+			}
+		});
+		return attrs;
+	}
+
 	/**
 	 * Return user attributes
 	 * @param {Object} user - The CognitoUser object
@@ -1629,90 +1649,71 @@ export class AuthClass {
 						return;
 					}
 
-					const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
 					// refresh the session if the session expired.
-					user.getSession(
-						async (err, session) => {
-							if (err) {
-								logger.debug('Failed to get the user session', err);
-								if (this.isSessionInvalid(err)) {
-									try {
-										await this.cleanUpInvalidSession(user);
-									} catch (cleanUpError) {
-										rej(
-											new Error(
-												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-											)
-										);
+					try {
+						const session = await this._userSession(user);
+
+						// get user data from Cognito
+						const bypassCache = params ? params.bypassCache : false;
+
+						if (bypassCache) {
+							await this.Credentials.clear();
+						}
+
+						const clientMetadata = this._config.clientMetadata;
+
+						// validate the token's scope first before calling this function
+						const { scope = '' } = session.getAccessToken().decodePayload();
+						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
+							user.getUserData(
+								async (err, data) => {
+									if (err) {
+										logger.debug('getting user data failed', err);
+										if (this.isSessionInvalid(err)) {
+											try {
+												await this.cleanUpInvalidSession(user);
+											} catch (cleanUpError) {
+												rej(
+													new Error(
+														`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+													)
+												);
+												return;
+											}
+											rej(err);
+										} else {
+											res(user);
+										}
 										return;
 									}
-								}
-								rej(err);
-								return;
-							}
+									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+									const attributeList = [];
 
-							// get user data from Cognito
-							const bypassCache = params ? params.bypassCache : false;
+									for (let i = 0; i < data.UserAttributes.length; i++) {
+										const attribute = {
+											Name: data.UserAttributes[i].Name,
+											Value: data.UserAttributes[i].Value,
+										};
+										const userAttribute = new CognitoUserAttribute(attribute);
+										attributeList.push(userAttribute);
+									}
 
-							if (bypassCache) {
-								await this.Credentials.clear();
-							}
-
-							const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
-							// validate the token's scope first before calling this function
-							const { scope = '' } = session.getAccessToken().decodePayload();
-							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-								user.getUserData(
-									async (err, data) => {
-										if (err) {
-											logger.debug('getting user data failed', err);
-											if (this.isSessionInvalid(err)) {
-												try {
-													await this.cleanUpInvalidSession(user);
-												} catch (cleanUpError) {
-													rej(
-														new Error(
-															`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-														)
-													);
-													return;
-												}
-												rej(err);
-											} else {
-												res(user);
-											}
-											return;
-										}
-										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-										const attributeList = [];
-
-										for (let i = 0; i < data.UserAttributes.length; i++) {
-											const attribute = {
-												Name: data.UserAttributes[i].Name,
-												Value: data.UserAttributes[i].Value,
-											};
-											const userAttribute = new CognitoUserAttribute(attribute);
-											attributeList.push(userAttribute);
-										}
-
-										const attributes = this.attributesToObject(attributeList);
-										Object.assign(user, { attributes, preferredMFA });
-										return res(user);
-									},
-									{ bypassCache, clientMetadata }
-								);
-							} else {
-								logger.debug(
-									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-										`is not in the scopes of the access token`
-								);
-								return res(user);
-							}
-						},
-						{ clientMetadata }
-					);
+									const attributes = this.attributesToObject(attributeList);
+									Object.assign(user, { attributes, preferredMFA });
+									return res(user);
+								},
+								{ bypassCache, clientMetadata }
+							);
+						} else {
+							logger.debug(
+								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
+									`is not in the scopes of the access token`
+							);
+							return res(user);
+						}
+					} catch (err) {
+						rej(err);
+					}
 				})
 				.catch(e => {
 					logger.debug('Failed to sync cache info into memory', e);
@@ -1816,47 +1817,66 @@ export class AuthClass {
 		});
 	}
 
+	private async _userSession(user?: CognitoUser): Promise<CognitoUserSession> {
+		if (!user) {
+			logger.debug('the user is null');
+			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
+		}
+		const clientMetadata = this._config.clientMetadata;
+		// Debouncing the concurrent userSession calls by caching the promise.
+		// This solution assumes users will always call this function with the same CognitoUser instance.
+		if (this.inflightSessionPromiseCounter === 0) {
+			this.inflightSessionPromise = new Promise<CognitoUserSession>(
+				(res, rej) => {
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the session from user', user);
+								if (this.isSessionInvalid(err)) {
+									try {
+										await this.cleanUpInvalidSession(user);
+									} catch (cleanUpError) {
+										rej(
+											new Error(
+												`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
+											)
+										);
+										return;
+									}
+								}
+								rej(err);
+								return;
+							} else {
+								logger.debug('Succeed to get the user session', session);
+								res(session);
+								return;
+							}
+						},
+						{ clientMetadata }
+					);
+				}
+			);
+		}
+		this.inflightSessionPromiseCounter++;
+
+		try {
+			const userSession = await this.inflightSessionPromise;
+			// Set private member. Avoid user.setSignInUserSession() to prevent excessive localstorage refresh.
+			// @ts-ignore
+			user.signInUserSession = userSession;
+			return userSession!;
+		} finally {
+			this.inflightSessionPromiseCounter--;
+		}
+	}
+
 	/**
 	 * Get the corresponding user session
 	 * @param {Object} user - The CognitoUser object
 	 * @return - A promise resolves to the session
 	 */
 	public userSession(user): Promise<CognitoUserSession> {
-		if (!user) {
-			logger.debug('the user is null');
-			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
-		}
-		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
-
-		return new Promise((res, rej) => {
-			logger.debug('Getting the session from this user:', user);
-			user.getSession(
-				async (err, session) => {
-					if (err) {
-						logger.debug('Failed to get the session from user', user);
-						if (this.isSessionInvalid(err)) {
-							try {
-								await this.cleanUpInvalidSession(user);
-							} catch (cleanUpError) {
-								rej(
-									new Error(
-										`Session is invalid due to: ${err.message} and failed to clean up invalid session: ${cleanUpError.message}`
-									)
-								);
-								return;
-							}
-						}
-						rej(err);
-						return;
-					} else {
-						logger.debug('Succeed to get the user session', session);
-						res(session);
-						return;
-					}
-				},
-				{ clientMetadata }
-			);
-		});
+		return this._userSession(user);
 	}
 
 	/**

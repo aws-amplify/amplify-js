@@ -1,4 +1,4 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -26,6 +26,7 @@ import {
 	ConsoleLogger as Logger,
 	Hub,
 	NonRetryableError,
+	BackgroundProcessManager,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -39,6 +40,8 @@ const logger = new Logger('DataStore');
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
+
+	private runningProcesses = new BackgroundProcessManager();
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -70,16 +73,16 @@ class SyncProcessor {
 
 	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
-			return null;
+			return null!;
 		}
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
-			);
+			)!;
 
 		if (!predicatesGroup) {
-			return null;
+			return null!;
 		}
 
 		return predicateToGraphQLFilter(predicatesGroup);
@@ -89,10 +92,11 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null,
-		filter: GraphQLFilter
+		limit: number = null!,
+		filter: GraphQLFilter,
+		onTerminate: Promise<void>
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
-		const [opName, query] = this.typeQuery.get(modelDefinition);
+		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
 		const variables = {
 			limit,
@@ -113,6 +117,12 @@ class SyncProcessor {
 
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
+			if (!this.runningProcesses.isOpen) {
+				throw new Error(
+					'sync.retreievePage termination was requested. Exiting.'
+				);
+			}
+
 			try {
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
@@ -123,6 +133,7 @@ class SyncProcessor {
 					opName,
 					modelDefinition,
 					authMode: readAuthModes[authModeAttempts],
+					onTerminate,
 				});
 				logger.debug(
 					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
@@ -175,12 +186,14 @@ class SyncProcessor {
 		opName,
 		modelDefinition,
 		authMode,
+		onTerminate,
 	}: {
 		query: string;
 		variables: { limit: number; lastSync: number; nextToken: string };
 		opName: string;
 		modelDefinition: SchemaModel;
 		authMode: GRAPHQL_AUTH_MODE;
+		onTerminate: Promise<void>;
 	}): Promise<
 		GraphQLResult<{
 			[opName: string]: {
@@ -205,6 +218,8 @@ class SyncProcessor {
 						authToken,
 						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 					});
+
+					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
 					const clientOrForbiddenErrorMessage =
@@ -242,13 +257,13 @@ class SyncProcessor {
 									await this.errorHandler({
 										recoverySuggestion:
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-										localModel: null,
+										localModel: null!,
 										message: err.message,
 										model: modelDefinition.name,
 										operation: opName,
 										errorType: getSyncErrorType(err),
 										process: ProcessName.sync,
-										remoteModel: null,
+										remoteModel: null!,
 										cause: err,
 									});
 								} catch (e) {
@@ -288,24 +303,25 @@ class SyncProcessor {
 					throw error;
 				}
 			},
-			[query, variables]
+			[query, variables],
+			undefined,
+			onTerminate
 		);
 	}
 
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		let processing = true;
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering.keys()
+						namespace.modelTopologicalOrdering!.keys()
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync);
+						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
@@ -314,75 +330,87 @@ class SyncProcessor {
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
-				.map(async ([modelDefinition, [namespace, lastSync]]) => {
-					let done = false;
-					let nextToken: string = null;
-					let startedAt: number = null;
-					let items: ModelInstanceMetadata[] = null;
+				.map(
+					([modelDefinition, [namespace, lastSync]]) =>
+						this.runningProcesses.isOpen &&
+						this.runningProcesses.add(async onTerminate => {
+							let done = false;
+							let nextToken: string = null!;
+							let startedAt: number = null!;
+							let items: ModelInstanceMetadata[] = null!;
 
-					let recordsReceived = 0;
-					const filter = this.graphqlFilterFromPredicate(modelDefinition);
+							let recordsReceived = 0;
+							const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
-					const parents = this.schema.namespaces[
-						namespace
-					].modelTopologicalOrdering.get(modelDefinition.name);
-					const promises = parents.map(parent =>
-						parentPromises.get(`${namespace}_${parent}`)
-					);
-
-					const promise = new Promise<void>(async res => {
-						await Promise.all(promises);
-
-						do {
-							if (!processing) {
-								return;
-							}
-
-							const limit = Math.min(
-								maxRecordsToSync - recordsReceived,
-								syncPageSize
+							const parents = this.schema.namespaces[
+								namespace
+							].modelTopologicalOrdering!.get(modelDefinition.name);
+							const promises = parents!.map(parent =>
+								parentPromises.get(`${namespace}_${parent}`)
 							);
 
-							({ items, nextToken, startedAt } = await this.retrievePage(
-								modelDefinition,
-								lastSync,
-								nextToken,
-								limit,
-								filter
-							));
+							const promise = new Promise<void>(async res => {
+								await Promise.all(promises);
 
-							recordsReceived += items.length;
+								do {
+									if (!this.runningProcesses.isOpen) {
+										return;
+									}
 
-							done = nextToken === null || recordsReceived >= maxRecordsToSync;
+									const limit = Math.min(
+										maxRecordsToSync - recordsReceived,
+										syncPageSize
+									);
 
-							observer.next({
-								namespace,
-								modelDefinition,
-								items,
-								done,
-								startedAt,
-								isFullSync: !lastSync,
+									({ items, nextToken, startedAt } = await this.retrievePage(
+										modelDefinition,
+										lastSync,
+										nextToken,
+										limit,
+										filter,
+										onTerminate
+									));
+
+									recordsReceived += items.length;
+
+									done =
+										nextToken === null || recordsReceived >= maxRecordsToSync;
+
+									observer.next({
+										namespace,
+										modelDefinition,
+										items,
+										done,
+										startedAt,
+										isFullSync: !lastSync,
+									});
+								} while (!done);
+
+								res();
 							});
-						} while (!done);
 
-						res();
-					});
+							parentPromises.set(
+								`${namespace}_${modelDefinition.name}`,
+								promise
+							);
 
-					parentPromises.set(`${namespace}_${modelDefinition.name}`, promise);
+							await promise;
+						}, `adding model ${modelDefinition.name}`)
+				);
 
-					await promise;
-				});
-
-			Promise.all(allModelsReady).then(() => {
+			Promise.all(allModelsReady as Promise<any>[]).then(() => {
 				observer.complete();
 			});
-
-			return () => {
-				processing = false;
-			};
 		});
 
 		return observable;
+	}
+
+	async stop() {
+		logger.debug('stopping sync processor');
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
+		logger.debug('sync processor stopped');
 	}
 }
 

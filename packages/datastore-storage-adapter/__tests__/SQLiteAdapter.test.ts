@@ -11,7 +11,7 @@ import {
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
 import { Model, Post, Comment, testSchema } from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
+import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
 import Observable from 'zen-observable';
 import {
 	pause,
@@ -55,14 +55,14 @@ class InnerSQLiteDatabase {
 
 	async executeSql(
 		statement,
-		params = [],
-		callback = undefined,
+		params: any[] = [],
+		callback: ((...args) => Promise<any>) | undefined = undefined,
 		logger = undefined
 	) {
 		sqlog.push(`${statement}; ${JSON.stringify(params)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
 			return new Promise(async resolve => {
-				const rows = [];
+				const rows: any[] = [];
 				const resultSet = {
 					rows: {
 						get length() {
@@ -87,7 +87,7 @@ class InnerSQLiteDatabase {
 					}
 				);
 
-				if (callback) await callback(this, resultSet);
+				if (typeof callback === 'function') await callback(this, resultSet);
 			});
 		} else {
 			return await this.innerDB.run(statement, params, err => {
@@ -141,7 +141,7 @@ describe('SQLiteAdapter', () => {
 	({ initSchema, DataStore } = require('@aws-amplify/datastore'));
 	addCommonQueryTests({
 		initSchema,
-		DataStore,
+		DataStore: DataStore as any,
 		storageAdapter: SQLiteAdapter,
 		getMutations,
 		clearOutbox,
@@ -186,9 +186,7 @@ describe('SQLiteAdapter', () => {
 			});
 
 			it('is logging SQL statements during normal operation', async () => {
-				// `start()`, which is called during `beforeEach`, should perform
-				// a number of queries to create tables. the test adapter should
-				// log these all to `sqlog`.
+				await DataStore.query(Post);
 				expect(sqlog.length).toBeGreaterThan(0);
 			});
 
@@ -235,9 +233,9 @@ describe('SQLiteAdapter', () => {
 						'2022-04-18T19:29:46.316Z',
 						'abcd@abcd.com',
 						'a1d63606-bd3b-4641-870a-ac97694577a8',
-						null,
-						null,
-						null,
+						null!,
+						null!,
+						null!,
 					]
 				);
 

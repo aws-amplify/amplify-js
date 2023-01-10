@@ -12,26 +12,16 @@ jest.mock('@aws-amplify/core', () => ({
 import { PubSubClass as PubSub } from '../src/PubSub';
 import {
 	MqttOverWSProvider,
-	AWSAppSyncProvider,
 	AWSIoTProvider,
 	mqttTopicMatch,
 } from '../src/Providers';
-// import Amplify from '../../src/';
-import {
-	Credentials,
-	Hub,
-	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-	Logger,
-	Reachability,
-} from '@aws-amplify/core';
+
+import { Credentials, Reachability } from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
-import {
-	ConnectionState,
-	ConnectionState,
-	CONNECTION_STATE_CHANGE,
-} from '../src';
+import { ConnectionState } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
+import * as constants from '../src/Providers/constants';
 
 const pahoClientMockCache = {};
 
@@ -73,7 +63,8 @@ const credentials = {
 };
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
-	new Promise((resolve, reject) => {
+	new Promise(async (resolve, reject) => {
+		let hubConnectionListener = new HubConnectionListener('pubsub');
 		const obs = pubsub.subscribe(topic, options).subscribe({
 			next: data => {
 				expect(data.value).toEqual(message);
@@ -83,47 +74,10 @@ const testPubSubAsync = (pubsub, topic, message, options?) =>
 			close: () => console.log('close'),
 			error: reject,
 		});
-
+		await hubConnectionListener.waitUntilConnectionStateIn([
+			ConnectionState.Connected,
+		]);
 		pubsub.publish(topic, message, options);
-	});
-
-const testAppSyncAsync = (pubsub, topic, message) =>
-	new Promise((resolve, reject) => {
-		const testUrl = 'wss://appsync';
-		const testClientId = 'test-client';
-		const testTopicAlias = 'test-topic-alias';
-
-		const subscriptionOptions = {
-			mqttConnections: [
-				{
-					topics: [topic],
-					client: testClientId,
-					url: testUrl,
-				},
-			],
-			newSubscriptions: {
-				[testTopicAlias]: { topic },
-			},
-		};
-
-		const opt = {
-			...subscriptionOptions,
-			provider: INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
-		};
-
-		const obs = pubsub.subscribe(topic, opt).subscribe({
-			next: data => {
-				expect(data.value.data[testTopicAlias]).toEqual(message);
-				obs.unsubscribe();
-				resolve();
-			},
-			close: () => console.log('close'),
-			error: reject,
-		});
-
-		// simulate an AppSync update
-		const testClient = new Paho.Client(testUrl, testClientId);
-		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
 	});
 
 beforeEach(() => {
@@ -131,6 +85,11 @@ beforeEach(() => {
 		return new Promise((res, rej) => {
 			res(credentials);
 		});
+	});
+
+	// Reduce retry delay for tests to 100ms
+	Object.defineProperty(constants, 'RECONNECT_DELAY', {
+		value: 100,
 	});
 });
 
@@ -169,16 +128,12 @@ describe('PubSub', () => {
 			const config = pubsub.configure(options);
 			expect(config).toEqual(options.PubSub);
 		});
-
-		test('should allow AppSync subscriptions without extra configuration', async () => {
-			const pubsub = new PubSub();
-
-			await testAppSyncAsync(pubsub, 'topicA', 'my message AWSAppSyncProvider');
-		});
 	});
 
 	describe('AWSIoTProvider', () => {
 		test('subscribe and publish to the same topic using AWSIoTProvider', async done => {
+			let hubConnectionListener = new HubConnectionListener('pubsub');
+
 			const config = {
 				PubSub: {
 					aws_pubsub_region: 'region',
@@ -205,6 +160,10 @@ describe('PubSub', () => {
 				complete: () => console.log('done'),
 				error: error => console.log('error', error),
 			});
+
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Connected,
+			]);
 
 			await pubsub.publish('topicA', 'my message');
 		});
@@ -279,7 +238,8 @@ describe('PubSub', () => {
 			});
 		});
 
-		test('trigger observer error when disconnected', done => {
+		test('trigger reconnection when disconnected', async () => {
+			let hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new PubSub();
 
 			const awsIotProvider = new AWSIoTProvider({
@@ -288,11 +248,26 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			pubsub.subscribe('topic', { clientId: '123' }).subscribe({
-				error: () => done(),
-			});
+			pubsub.subscribe('topic', { clientId: '123' }).subscribe({});
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Connected,
+			]);
 
 			awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.ConnectionDisrupted,
+			]);
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Connected,
+			]);
+			expect(hubConnectionListener.observedConnectionStates).toEqual([
+				ConnectionState.Disconnected,
+				ConnectionState.Connecting,
+				ConnectionState.Connected,
+				ConnectionState.ConnectionDisrupted,
+				ConnectionState.Connecting,
+				ConnectionState.Connected,
+			]);
 		});
 
 		test('should remove MqttOverWSProvider', () => {
@@ -335,6 +310,13 @@ describe('PubSub', () => {
 							new Observable(observer => {
 								reachabilityObserver = observer;
 							})
+					)
+					// Twice because we subscribe to get the initial state then again to monitor reachability
+					.mockImplementationOnce(
+						() =>
+							new Observable(observer => {
+								reachabilityObserver = observer;
+							})
 					);
 				reachabilityObserver?.next?.({ online: true });
 			});
@@ -352,18 +334,20 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					ConnectionState.Connected,
+				]);
 				sub.unsubscribe();
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					'Disconnected',
+					ConnectionState.Disconnected,
 				]);
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					'Disconnected',
-					'Connecting',
-					'Connected',
-					'ConnectedPendingDisconnect',
-					'Disconnected',
+					ConnectionState.Disconnected,
+					ConnectionState.Connecting,
+					ConnectionState.Connected,
+					ConnectionState.ConnectedPendingDisconnect,
+					ConnectionState.Disconnected,
 				]);
 			});
 
@@ -380,22 +364,26 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					ConnectionState.Connected,
+				]);
 
 				reachabilityObserver?.next?.({ online: false });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					'ConnectedPendingNetwork',
+					ConnectionState.ConnectedPendingNetwork,
 				]);
 
 				reachabilityObserver?.next?.({ online: true });
-				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					ConnectionState.Connected,
+				]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					'Disconnected',
-					'Connecting',
-					'Connected',
-					'ConnectedPendingNetwork',
-					'Connected',
+					ConnectionState.Disconnected,
+					ConnectionState.Connecting,
+					ConnectionState.Connected,
+					ConnectionState.ConnectedPendingNetwork,
+					ConnectionState.Connected,
 				]);
 			});
 
@@ -412,24 +400,26 @@ describe('PubSub', () => {
 					error: () => {},
 				});
 
-				await hubConnectionListener.waitUntilConnectionStateIn(['Connected']);
+				await hubConnectionListener.waitUntilConnectionStateIn([
+					ConnectionState.Connected,
+				]);
 
 				reachabilityObserver?.next?.({ online: false });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					'ConnectedPendingNetwork',
+					ConnectionState.ConnectedPendingNetwork,
 				]);
 
 				awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
 				await hubConnectionListener.waitUntilConnectionStateIn([
-					'Disconnected',
+					ConnectionState.ConnectionDisruptedPendingNetwork,
 				]);
 
 				expect(hubConnectionListener.observedConnectionStates).toEqual([
-					'Disconnected',
-					'Connecting',
-					'Connected',
-					'ConnectedPendingNetwork',
-					'Disconnected',
+					ConnectionState.Disconnected,
+					ConnectionState.Connecting,
+					ConnectionState.Connected,
+					ConnectionState.ConnectedPendingNetwork,
+					ConnectionState.ConnectionDisruptedPendingNetwork,
 				]);
 			});
 		});
@@ -470,16 +460,12 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			const awsAppSyncProvider = new AWSAppSyncProvider();
-			pubsub.addPluggable(awsAppSyncProvider);
-
 			const mqttOverWSProvider = new MqttOverWSProvider({
 				aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
 			});
 			pubsub.addPluggable(mqttOverWSProvider);
 
 			expect(awsIotProvider.getCategory()).toBe('PubSub');
-			expect(awsAppSyncProvider.getCategory()).toBe('PubSub');
 			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
 
 			await testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
@@ -500,8 +486,6 @@ describe('PubSub', () => {
 			pubsub.addPluggable(mqttOverWSProvider);
 
 			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
-
-			await testAppSyncAsync(pubsub, 'topicA', 'my message AWSAppSyncProvider');
 
 			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
 		});
@@ -534,9 +518,6 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			const awsAppSyncProvider = new AWSAppSyncProvider();
-			pubsub.addPluggable(awsAppSyncProvider);
-
 			const mqttOverWSProvider = new MqttOverWSProvider({
 				aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
 			});
@@ -552,6 +533,7 @@ describe('PubSub', () => {
 		});
 
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new PubSub();
 
 			const spyDisconnect = jest.spyOn(
@@ -571,14 +553,16 @@ describe('PubSub', () => {
 				error: error => console.log('error', error),
 			});
 
-			// TODO: we should now when the connection is established to wait for that first
-			await (() => {
-				return new Promise(res => {
-					setTimeout(res, 100);
-				});
-			})();
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Connected,
+			]);
 
 			subscription1.unsubscribe();
+
+			await hubConnectionListener.waitUntilConnectionStateIn([
+				ConnectionState.Disconnected,
+			]);
+
 			expect(spyDisconnect).toHaveBeenCalled();
 			spyDisconnect.mockClear();
 		});
