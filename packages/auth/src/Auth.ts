@@ -1,14 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
-	AuthPluginOptions,
-	AuthPluginProvider,
-	AuthSignUpResult,
-	AuthUserAttributeKey,
-	CognitoUserAttributeKey,
-	SignUpRequest,
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+} from '@aws-amplify/core';
+import { 
+	AuthPluginOptions, 
+	AuthPluginProvider, 
+	AuthSignUpResult, 
+	AuthUserAttributeKey, 
+	CognitoUserAttributeKey, 
+	SignUpRequest 
 } from './types';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
@@ -154,9 +158,11 @@ export class AuthClass {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.resetPassword();
 	}
-	confirmResetPassword(): Promise<void> {
+	confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
+		req: ConfirmResetPasswordRequest<PluginOptions>
+	): Promise<void> {
 		assertPluginAvailable(this._pluggable);
-		return this._pluggable.confirmResetPassword();
+		return this._pluggable.confirmResetPassword(req);
 	}
 	updatePassword(): Promise<void> {
 		assertPluginAvailable(this._pluggable);
