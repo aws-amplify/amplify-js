@@ -11,7 +11,9 @@ import {
 	AuthPluginProvider, 
 	AuthSignUpResult, 
 	AuthUserAttributeKey, 
+	CognitoConfirmResetPasswordOptions, 
 	CognitoUserAttributeKey, 
+	ConfirmResetPasswordRequest, 
 	SignUpRequest 
 } from './types';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
