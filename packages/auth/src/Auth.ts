@@ -1,18 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-} from '@aws-amplify/core';
-import { 
-	AuthPluginOptions, 
-	AuthPluginProvider, 
-	AuthSignUpResult, 
-	AuthUserAttributeKey, 
-	CognitoUserAttributeKey, 
-	SignUpRequest 
+	AuthPluginOptions,
+	AuthPluginProvider,
+	AuthSignUpResult,
+	AuthUserAttributeKey,
+	CognitoUserAttributeKey,
+	SignUpRequest,
 } from './types';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
 
@@ -49,6 +45,16 @@ export class AuthClass {
 	private _config;
 	private _pluggable: AuthPluginProvider | null;
 	private _storage;
+
+	/* BEGIN LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
+
+	/// TODO: These values are included temporarily as they are called from other libraries. They should be removed once fetchAuthSession has been implemented and replaced in other library locations.
+
+	public currentAuthenticatedUser;
+	public currentSession;
+	public currentCredentials;
+
+	/* END LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
 
 	/**
 	 * Instantiates the Auth category
@@ -112,8 +118,7 @@ export class AuthClass {
 	 */
 	signUp<PluginOptions extends AuthPluginOptions>(
 		req: SignUpRequest<CognitoUserAttributeKey, PluginOptions>
-	): Promise<AuthSignUpResult<CognitoUserAttributeKey>>
-	{
+	): Promise<AuthSignUpResult<CognitoUserAttributeKey>> {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.signUp(req);
 	}
