@@ -10,8 +10,7 @@ import {
 	parseAWSExports,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
-import { GraphQLAuthError, GraphQLOptions } from '../types';
+import { GraphQLOptions } from '../types';
 import { restClient, USER_AGENT_HEADER } from '../utils';
 
 /**
@@ -26,10 +25,11 @@ export const query = async (
 	additionalHeaders?: { [key: string]: string }
 ) => {
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
-	const appSyncRegion = amplifyConfig.aws_appsync_region;
-	const appSyncGraphQLEndpoint = amplifyConfig.aws_appsync_graphqlEndpoint;
-	const customGraphQLEndpoint = amplifyConfig.graphql_endpoint;
-	const customGraphQLRegion = amplifyConfig.graphql_endpoint_iam_region;
+	const storageConfig = amplifyConfig.Storage;
+	const appSyncRegion = storageConfig.aws_appsync_region;
+	const appSyncGraphQLEndpoint = storageConfig.aws_appsync_graphqlEndpoint;
+	const customGraphQLEndpoint = storageConfig.graphql_endpoint;
+	const customGraphQLRegion = storageConfig.graphql_endpoint_iam_region;
 
 	const {
 		query: paramQuery,
@@ -66,16 +66,16 @@ export const query = async (
 	let session;
 	let authorizationHeaders = {};
 	if (!authToken) {
-		try {
-			// TODO: Replace this with new functional session method
-			session = await Auth.currentSession();
-		} catch (e) {
-			throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+		const userSession = Amplify.getUser();
+
+		if (userSession) {
+			const accessToken = userSession['accessToken'];
+			authorizationHeaders = {
+				Authorization: accessToken,
+			};
+		} else {
+			throw new Error('Failed to load active user session.');
 		}
-		const authorizationToken = session.getAccessToken().getJwtToken();
-		authorizationHeaders = {
-			Authorization: authorizationToken,
-		};
 	}
 
 	const queryHeaders = {
@@ -93,7 +93,7 @@ export const query = async (
 	const endpoint = customGraphQLEndpoint || appSyncGraphQLEndpoint;
 	const payload = Object.assign(
 		{
-			queryHeaders,
+			headers: queryHeaders,
 			body: {
 				query: print(query as DocumentNode),
 				variables,
