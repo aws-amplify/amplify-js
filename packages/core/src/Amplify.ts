@@ -10,6 +10,12 @@ export class AmplifyClass {
 	// All modules (with `getModuleName()`) are stored here for dependency injection
 	private _modules = {};
 
+	private _user = {
+		accessToken: '',
+		idToken: '',
+		refreshToken: '',
+	};
+
 	// for backward compatibility to avoid breaking change
 	// if someone is using like Amplify.Auth
 	Auth = null;
@@ -31,6 +37,16 @@ export class AmplifyClass {
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
+
+	setUser({ accessToken, idToken, refreshToken }) {
+		this._user.accessToken = accessToken;
+		this._user.idToken = idToken;
+		this._user.refreshToken = refreshToken;
+	}
+
+	getUser() {
+		return { ...this._user };
+	}
 
 	register(comp) {
 		logger.debug('component registered in amplify', comp);
