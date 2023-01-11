@@ -10,11 +10,11 @@ import {
 	parseAWSExports,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { GraphQLOptions } from '../types';
+import { GraphQLOptions, GraphQLResult } from '../types';
 import { restClient, USER_AGENT_HEADER } from '../utils';
 
 /**
- * Handles AppSync GraphQL queries.
+ * Handles AppSync GraphQL queries, including mutations.
  *
  * @param options GraphQL query options.
  * @param additionalHeaders Additional headers that will be appended to default headers.
@@ -23,7 +23,7 @@ import { restClient, USER_AGENT_HEADER } from '../utils';
 export const query = async (
 	options: GraphQLOptions,
 	additionalHeaders?: { [key: string]: string }
-) => {
+): Promise<GraphQLResult> => {
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
 	const storageConfig = amplifyConfig.Storage;
 	const appSyncRegion = storageConfig.aws_appsync_region;
@@ -60,6 +60,10 @@ export const query = async (
 	}
 	const cancellableToken = restClient.getCancellableToken();
 	const payloadParams = { cancellableToken };
+
+	if (operationType !== 'mutation' && operationType !== 'query') {
+		throw new Error('Unsupported operation type for this API.');
+	}
 
 	// Construct query headers
 	// TODO: Extract this as a utility, expand to cover auth modes not currently covered by POC
