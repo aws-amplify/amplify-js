@@ -116,6 +116,69 @@ describe('resumable upload task test', () => {
 		});
 	});
 
+	test('should throw error when remote and local file sizes to not match upon completed upload', done => {
+		const file = new File(['TestFileContent'], 'testFileName');
+		Object.defineProperty(file, 'size', { value: 25048576 });
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			s3Client: new S3Client(testOpts),
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof AbortMultipartUploadCommand) {
+				return Promise.resolve({ Key: input.params.Key });
+			} else if (command instanceof ListObjectsV2Command) {
+				return Promise.resolve({
+					Contents: [{ Key: input.params.Key, Size: 15048576 }],
+				});
+			} else if (command instanceof CompleteMultipartUploadCommand) {
+				return Promise.resolve();
+			} else if (command instanceof CreateMultipartUploadCommand) {
+				return Promise.resolve({
+					UploadId: 'test-upload-id',
+				});
+			} else if (command instanceof UploadPartCommand) {
+				return Promise.resolve({
+					ETag: 'test-upload-ETag',
+				});
+			}
+		});
+		const uploadTask = new AWSS3UploadTask(input);
+
+		Object.defineProperty(uploadTask, 'params', {
+			value: {
+				Bucket: 'test-bucket',
+				Key: 'test-key',
+			},
+		});
+		Object.defineProperty(uploadTask, 'uploadId', { value: 'test-upload-id' });
+		Object.defineProperty(uploadTask, 'completedParts', { value: [] });
+
+		// await expect(uploadTask._completeUpload()).rejects.toThrow(
+		// 	'File size does not match between local file and file on s3'
+		// );
+
+		function callback(err) {
+			expect(err?.message).toBe(
+				'File size does not match between local file and file on s3'
+			);
+			done();
+		}
+		emitter.addListener(TaskEvents.ERROR, callback);
+
+		// Only testing
+		// @ts-ignore
+		uploadTask._completeUpload();
+	});
+
 	test('should send listParts request if the upload task is cached', async () => {
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof ListPartsCommand) {
