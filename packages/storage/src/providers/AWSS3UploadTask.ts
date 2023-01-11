@@ -373,14 +373,18 @@ export class AWSS3UploadTask implements UploadTask {
 				key: this.params.Key,
 				bucket: this.params.Bucket,
 			});
-			const valid = Boolean(obj && obj.Size === this.file.size);
-			if (!valid) {
-				throw new Error(
-					'File size does not match between local file and file on s3'
-				);
-			}
 		} catch (e) {
 			logger.log('Could not get file on s3 for size matching: ', e);
+			// Don't gate verification on auth or other errors
+			// unrelated to file size verification
+			return;
+		}
+
+		const valid = Boolean(obj && obj.Size === this.file.size);
+		if (!valid) {
+			throw new Error(
+				'File size does not match between local file and file on s3'
+			);
 		}
 	}
 
