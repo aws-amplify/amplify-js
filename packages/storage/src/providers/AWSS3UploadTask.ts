@@ -16,12 +16,15 @@ import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
-import { byteLength, calculatePartSize, isFile } from '../common/StorageUtils';
-import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 import {
+	calculatePartSize,
 	DEFAULT_PART_SIZE,
 	DEFAULT_QUEUE_SIZE,
 	MAX_OBJECT_SIZE,
+} from '../common/S3ClientUtils';
+import { byteLength, isFile } from '../common/StorageUtils';
+import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
+import {
 	SET_CONTENT_LENGTH_HEADER,
 	UPLOADS_STORAGE_KEY,
 } from '../common/StorageConstants';

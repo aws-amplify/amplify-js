@@ -1,9 +1,5 @@
 import { Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	DEFAULT_PART_SIZE,
-	MAX_PARTS_COUNT,
-} from './StorageConstants';
+import { AMPLIFY_SYMBOL } from './StorageConstants';
 
 export const byteLength = (x: unknown) => {
 	if (typeof x === 'string') {
@@ -52,14 +48,4 @@ export const isBlob = (x: unknown): x is Blob => {
 
 const isArrayBuffer = (x: unknown): x is ArrayBuffer => {
 	return typeof x !== 'undefined' && x instanceof ArrayBuffer;
-};
-
-export const calculatePartSize = (totalSize: number): number => {
-	let partSize = DEFAULT_PART_SIZE;
-	let partsCount = Math.ceil(totalSize / partSize);
-	while (partsCount > MAX_PARTS_COUNT) {
-		partSize *= 2;
-		partsCount = Math.ceil(totalSize / partSize);
-	}
-	return partSize;
 };

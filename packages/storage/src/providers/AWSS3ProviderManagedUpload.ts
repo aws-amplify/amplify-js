@@ -21,18 +21,16 @@ import {
 } from './axios-http-handler';
 import * as events from 'events';
 import {
-	createPrefixMiddleware,
-	prefixMiddlewareOptions,
 	autoAdjustClockskewMiddleware,
 	autoAdjustClockskewMiddlewareOptions,
+	calculatePartSize,
+	createPrefixMiddleware,
 	createS3Client,
-} from '../common/S3ClientUtils';
-import {
+	prefixMiddlewareOptions,
 	DEFAULT_PART_SIZE,
 	DEFAULT_QUEUE_SIZE,
 	MAX_OBJECT_SIZE,
-} from '../common/StorageConstants';
-import { calculatePartSize } from '../common/StorageUtils';
+} from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
