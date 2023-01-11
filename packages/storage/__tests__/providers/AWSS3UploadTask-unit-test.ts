@@ -112,7 +112,7 @@ describe('resumable upload task test', () => {
 		expect(cancelled).toBe(true);
 		uploadTask._cancel().then(cancelled => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-			expect(cancelled).toBe(true);
+			expect(cancelled).toBe(false);
 		});
 	});
 
@@ -137,7 +137,7 @@ describe('resumable upload task test', () => {
 				return Promise.resolve({ Key: input.params.Key });
 			} else if (command instanceof ListObjectsV2Command) {
 				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 15048576 }],
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 15048576 }],
 				});
 			} else if (command instanceof CompleteMultipartUploadCommand) {
 				return Promise.resolve();
@@ -202,7 +202,7 @@ describe('resumable upload task test', () => {
 				});
 			} else if (command instanceof ListObjectsV2Command) {
 				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
 				});
 			}
 		});
@@ -267,10 +267,11 @@ describe('resumable upload task test', () => {
 				return buffer;
 			}),
 		} as any as File;
+		const key = 'key';
 
 		const s3ServiceCallSpy = jest
 			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async (command, axiosOptions) => {
+			.mockImplementation(async command => {
 				if (command instanceof CreateMultipartUploadCommand) {
 					return Promise.resolve({ UploadId: testUploadId });
 				} else if (command instanceof UploadPartCommand) {
@@ -278,10 +279,10 @@ describe('resumable upload task test', () => {
 						ETag: 'test_etag_' + command.input.PartNumber,
 					});
 				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.resolve({ Key: 'key' });
+					return Promise.resolve({ Key: key });
 				} else if (command instanceof ListObjectsV2Command) {
 					return Promise.resolve({
-						Contents: [{ Key: 'key', Size: file.size }],
+						Contents: [{ Key: 'prefix' + key, Size: file.size }],
 					});
 				}
 			});
