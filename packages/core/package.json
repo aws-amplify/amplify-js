@@ -16,6 +16,7 @@
 	],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "rimraf lib-esm && node ./build es6",
@@ -23,7 +24,7 @@
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
-		"clean": "rimraf lib-esm lib dist",
+		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 76.41"
@@ -68,6 +69,38 @@
 		"universal-cookie": "^4.0.4",
 		"zen-observable-ts": "0.8.19"
 	},
+	"size-limit": [
+		{
+			"name": "Core (ServiceWorker)",
+			"path": "./lib-esm/index.js",
+			"import": "{ ServiceWorker }",
+			"limit": "2.4 kB"
+		},
+		{
+			"name": "Core (Hub)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Hub }",
+			"limit": "2 kB"
+		},
+		{
+			"name": "Core (I18n)",
+			"path": "./lib-esm/index.js",
+			"import": "{ I18n }",
+			"limit": "2 kB"
+		},
+		{
+			"name": "Core (Logger)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Logger }",
+			"limit": "1.2 kB"
+		},
+		{
+			"name": "Core (Credentials)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Credentials }",
+			"limit": "34.5 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
