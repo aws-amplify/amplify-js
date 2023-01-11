@@ -37,6 +37,16 @@
   "bugs": {
     "url": "https://github.com/aws/aws-amplify/issues"
   },
+  "exports": {
+    ".": {
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./commands": {
+      "import": "./lib-esm/commands/index.js",
+      "require": "./lib/commands/index.js"
+    }
+  },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
     "@types/zen-observable": "^0.8.0"
