@@ -119,7 +119,7 @@ describe('resumable upload task test', () => {
 		});
 	});
 
-	test('should throw error when remote and local file sizes to not match upon completed upload', done => {
+	test('should throw error when remote and local file sizes do not match upon completed upload', done => {
 		const file = new File(['TestFileContent'], 'testFileName');
 		Object.defineProperty(file, 'size', { value: 25048576 });
 		const emitter = new events.EventEmitter();
@@ -164,10 +164,6 @@ describe('resumable upload task test', () => {
 		});
 		Object.defineProperty(uploadTask, 'uploadId', { value: 'test-upload-id' });
 		Object.defineProperty(uploadTask, 'completedParts', { value: [] });
-
-		// await expect(uploadTask._completeUpload()).rejects.toThrow(
-		// 	'File size does not match between local file and file on s3'
-		// );
 
 		function callback(err) {
 			expect(err?.message).toBe(
@@ -217,7 +213,7 @@ describe('resumable upload task test', () => {
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
 			storage: mockLocalStorage,
-			level: 'public' as StorageAccessLevel,
+			level: 'public',
 			params: {
 				Bucket: 'bucket',
 				Key: 'key',
