@@ -17,7 +17,7 @@ import {
 } from '../src/Providers';
 
 import { Credentials, Reachability } from '@aws-amplify/core';
-import * as Paho from 'paho-mqtt';
+import * as Paho from '../src/vendor/paho-mqtt';
 import { ConnectionState } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
