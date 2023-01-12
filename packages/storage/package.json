@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "5.0.5",
+  "version": "5.0.9",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -17,13 +17,14 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "rimraf lib-esm lib dist dual-publish-tmp",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
@@ -44,7 +45,7 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.5",
+    "@aws-amplify/core": "5.0.9",
     "@aws-sdk/client-s3": "3.6.1",
     "@aws-sdk/s3-request-presigner": "3.6.1",
     "@aws-sdk/util-create-request": "3.6.1",
@@ -53,6 +54,14 @@
     "events": "^3.1.0",
     "tslib": "^1.8.0"
   },
+  "size-limit": [
+		{
+			"name": "Storage (top-level class)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Storage }",
+			"limit": "84.5 kB"
+		}
+	],
   "jest": {
     "globals": {
       "ts-jest": {

@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.8...@aws-amplify/datastore@4.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.7...@aws-amplify/datastore@4.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.6...@aws-amplify/datastore@4.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.5...@aws-amplify/datastore@4.0.6) (2022-12-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** nextjs/swc broken build workaround ([#10765](https://github.com/aws-amplify/amplify-js/issues/10765)) ([24978b4](https://github.com/aws-amplify/amplify-js/commit/24978b4319d3c8aff8db6cf07ef6f023c401d4a9)), closes [#10759](https://github.com/aws-amplify/amplify-js/issues/10759)
+
+
+
+
+
 ## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.4...@aws-amplify/datastore@4.0.5) (2022-12-06)
 
 

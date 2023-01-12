@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "2.0.5",
+	"version": "2.0.9",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -17,13 +17,14 @@
 	],
 	"scripts": {
 		"test": "yarn run lint && jest -w 1 --coverage",
+		"test:size": "size-limit",
 		"build-with-test": "yarn test && yarn run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
+		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
@@ -44,12 +45,20 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.0.5",
+		"@aws-amplify/core": "5.0.9",
 		"@aws-sdk/client-location": "3.186.0",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^1.8.0"
 	},
+	"size-limit": [
+		{
+			"name": "Geo (top-level class)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Geo }",
+			"limit": "64.5 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {

@@ -541,6 +541,23 @@ jobs:
           sample_name: amplify-authenticator
           spec: custom-authenticator
           browser: << parameters.browser >>
+  integ_next_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Authenticator and SSR page'
+          framework: next
+          category: auth
+          sample_name: auth-ssr
+          spec: auth-ssr
+          browser: << parameters.browser >>
+
   integ_react_predictions:
     parameters:
       browser:
@@ -1065,6 +1082,13 @@ jobs:
     steps:
       - integ_test_rn_ios
 
+  integ_rn_ios_device_tracking:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/auth/deviceTracking
+    steps:
+      - integ_test_rn_ios
+
   integ_datastore_auth:
     parameters:
       scenario:
@@ -1354,6 +1378,40 @@ jobs:
           spec: nested-predicate
           browser: << parameters.browser >>
 
+  integ_next_datastore_13_basic:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-basic
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - basic JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-basic
+          spec: nextjs-13-basic
+          browser: << parameters.browser >>
+
+  integ_next_datastore_13_js:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/next/datastore/next-13-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Nextjs 13 build with SWC - JS app'
+          framework: next
+          category: datastore
+          sample_name: next-13-js
+          spec: nextjs-13
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1488,6 +1546,15 @@ workflows:
             parameters:
               <<: *test_browsers
       - integ_vue_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_auth:
           requires:
             - integ_setup
             - build
@@ -1763,6 +1830,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_android_storage:
       #     requires:
       #       - integ_setup
@@ -1910,7 +1983,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-
+      - integ_next_datastore_13_basic:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_next_datastore_13_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1947,10 +2037,12 @@ workflows:
             - integ_angular_auth
             # - integ_javascript_auth # TODO: enable it when CDN deployment is automated
             - integ_vue_auth
+            - integ_next_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
+            - integ_rn_ios_device_tracking
             # - integ_rn_android_storage
             # - integ_rn_ios_datastore_sqlite_adapter
             - integ_datastore_auth
@@ -1970,6 +2062,8 @@ workflows:
             - integ_react_api_reconnect
             - integ_react_datastore_selective_sync
             - integ_react_datastore_nested_predicate
+            - integ_next_datastore_13_basic
+            - integ_next_datastore_13_js
       - post_release:
           filters:
             branches:
