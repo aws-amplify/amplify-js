@@ -25,6 +25,7 @@ import {
 	S3ProviderListOutput,
 	S3ProviderCopyOutput,
 	S3ProviderPutOutput,
+	S3ProviderUploadFileOutput,
 } from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
@@ -97,6 +98,13 @@ export type StoragePutConfig<T> = T extends StorageProvider
 	? StorageOperationConfig<T, 'put'>
 	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'put'>, T>;
 
+export type StorageUploadFileConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'put'>
+	: StorageOperationConfigMap<
+			StorageOperationConfig<AWSS3Provider, 'uploadFile'>,
+			T
+	  >;
+
 export type StorageRemoveConfig<T> = T extends StorageProvider
 	? StorageOperationConfig<T, 'remove'>
 	: StorageOperationConfigMap<
@@ -134,14 +142,19 @@ type PickProviderOutput<
 		: Promise<any>
 	: DefaultOutput;
 
-export type StorageGetOutput<
-	T extends StorageProvider | Record<string, any>
-> = PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
+export type StorageGetOutput<T extends StorageProvider | Record<string, any>> =
+	PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
 export type StoragePutOutput<T> = PickProviderOutput<
 	S3ProviderPutOutput<T>,
 	T,
 	'put'
+>;
+
+export type StorageUploadFileOutput<T> = PickProviderOutput<
+	S3ProviderUploadFileOutput<T>,
+	T,
+	'uploadFile'
 >;
 
 export type StorageRemoveOutput<T> = PickProviderOutput<

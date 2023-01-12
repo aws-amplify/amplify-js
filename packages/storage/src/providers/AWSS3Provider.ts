@@ -30,6 +30,7 @@ import {
 	PutObjectCommandInput,
 	GetObjectCommandInput,
 	ListObjectsV2Request,
+	PutObjectCommand,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -58,6 +59,8 @@ import {
 	ResumableUploadConfig,
 	UploadTask,
 	S3ClientOptions,
+	S3ProviderUploadFileConfig,
+	S3ProviderUploadFileOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
@@ -75,6 +78,7 @@ import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -97,7 +101,7 @@ interface AddTaskInput {
 export class AWSS3Provider implements StorageProvider {
 	static readonly CATEGORY = 'Storage';
 	static readonly PROVIDER_NAME = 'AWSS3';
-	private _config: StorageOptions;
+	protected _config: StorageOptions;
 	private _storage: Storage;
 
 	/**
@@ -561,7 +565,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (SSEKMSKeyId) {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
-
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 
@@ -628,6 +631,157 @@ export class AWSS3Provider implements StorageProvider {
 				`Error uploading ${key}`
 			);
 			throw error;
+		}
+	}
+
+	public uploadFile<T extends S3ProviderUploadFileConfig>(
+		key: string,
+		filePath: string,
+		config?: T
+	): S3ProviderUploadFileOutput<T> {
+		const opt = Object.assign({}, this._config, config);
+		const { bucket, track, progressCallback, level } = opt;
+		const {
+			contentType,
+			contentDisposition,
+			contentEncoding,
+			cacheControl,
+			expires,
+			metadata,
+			tagging,
+			acl,
+		} = opt;
+		const {
+			serverSideEncryption,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+			SSEKMSKeyId,
+		} = opt;
+		const type = contentType ? contentType : 'binary/octet-stream';
+
+		const params: PutObjectCommandInput = {
+			Bucket: bucket,
+			Key: key,
+			Body: filePath,
+			ContentType: type,
+		};
+		if (cacheControl) {
+			params.CacheControl = cacheControl;
+		}
+		if (contentDisposition) {
+			params.ContentDisposition = contentDisposition;
+		}
+		if (contentEncoding) {
+			params.ContentEncoding = contentEncoding;
+		}
+		if (expires) {
+			params.Expires = expires;
+		}
+		if (metadata) {
+			params.Metadata = metadata;
+		}
+		if (tagging) {
+			params.Tagging = tagging;
+		}
+		if (serverSideEncryption) {
+			params.ServerSideEncryption = serverSideEncryption;
+		}
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
+		if (SSEKMSKeyId) {
+			params.SSEKMSKeyId = SSEKMSKeyId;
+		}
+
+		const emitter = new events.EventEmitter();
+		const uploadFileConfigs = {
+			progressCallback: config?.progressCallback,
+			successCallback: config?.successCallback,
+			errorCallback: config?.errorCallback,
+			cancelCallback: config?.cancelCallback,
+			notifications: config?.notifications,
+		};
+		const uploader = new AWSS3ProviderManagedUpload(
+			params,
+			opt,
+			emitter,
+			uploadFileConfigs
+		);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
+		try {
+			return uploader.uploadFile();
+		} catch (error) {
+			logger.warn('error uploading', error);
+			dispatchStorageEvent(
+				track,
+				'upload',
+				{ method: 'uploadFile', result: 'failed' },
+				null,
+				`Error uploading ${key}`
+			);
+			throw error;
+		}
+	}
+
+	public async getPresignedUploadUrl(
+		key: string,
+		object: PutObjectCommandInput['Body'],
+		config?: any
+	): Promise<Object | String> {
+		const opt = Object.assign({}, this._config, config);
+		const emitter = new events.EventEmitter();
+		const s3Client = this._createNewS3Client(opt, emitter);
+
+		const { bucket, track, progressCallback, level, resumable } = opt;
+		const {
+			contentType,
+			contentDisposition,
+			contentEncoding,
+			cacheControl,
+			expires,
+			metadata,
+			tagging,
+			acl,
+		} = opt;
+		const {
+			serverSideEncryption,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+			SSEKMSKeyId,
+		} = opt;
+		const type = contentType ? contentType : 'binary/octet-stream';
+
+		const params: PutObjectCommandInput = {
+			Bucket: bucket,
+			Key: key,
+			Body: object,
+			ContentType: type,
+		};
+		try {
+			// Create a command to put the object in the S3 bucket.
+			const command = new PutObjectCommand(params);
+			// Create the presigned URL.
+			const signedUrl = getSignedUrl(s3Client, command, {
+				expiresIn: 3600,
+			});
+			console.log(`\nPutting "${params.Key}" using signedUrl with body in v3`);
+			console.log(signedUrl);
+			return signedUrl;
+		} catch (err) {
+			console.log('Error creating presigned URL', err);
+			return 'Error creating presigned URL';
 		}
 	}
 

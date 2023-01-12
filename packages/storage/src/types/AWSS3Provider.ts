@@ -11,7 +11,7 @@ import {
 	UploadTaskCompleteEvent,
 	UploadTaskProgressEvent,
 } from '../providers/AWSS3UploadTask';
-import { UploadTask } from './Provider';
+import { UploadFileTask, UploadTask } from './Provider';
 import { ICredentials } from '@aws-amplify/core';
 
 type ListObjectsCommandOutputContent = _Object;
@@ -76,6 +76,42 @@ type _S3ProviderPutConfig = {
 	resumable?: boolean;
 };
 
+type _S3ProviderUploadFileConfig = {
+	provider?: 'AWSS3';
+	track?: boolean;
+	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
+	SSECustomerAlgorithm?: PutObjectRequest['SSECustomerAlgorithm'];
+	SSECustomerKey?: PutObjectRequest['SSECustomerKey'];
+	SSECustomerKeyMD5?: PutObjectRequest['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: PutObjectRequest['SSEKMSKeyId'];
+	acl?: PutObjectRequest['ACL'];
+	bucket?: PutObjectRequest['Bucket'];
+	cacheControl?: PutObjectRequest['CacheControl'];
+	contentDisposition?: PutObjectRequest['ContentDisposition'];
+	contentEncoding?: PutObjectRequest['ContentEncoding'];
+	contentType?: PutObjectRequest['ContentType'];
+	expires?: PutObjectRequest['Expires'];
+	metadata?: PutObjectRequest['Metadata'];
+	tagging?: PutObjectRequest['Tagging'];
+	useAccelerateEndpoint?: boolean;
+	notifications?: {
+		enabled: boolean;
+		progressMsg?: NotificationMsg;
+		cancelledMsg?: NotificationMsg;
+		errorMsg?: NotificationMsg;
+		successMsg?: NotificationMsg;
+	};
+	progressCallback?: (progress: any) => any;
+	successCallback?: (success: any) => any;
+	errorCallback?: (error: any) => any;
+	cancelCallback?: (cancel: any) => any;
+};
+
+export type NotificationMsg = {
+	title: string;
+	message: string;
+};
+
 export type ResumableUploadConfig = {
 	resumable: true;
 	progressCallback?: (progress: UploadTaskProgressEvent) => any;
@@ -89,6 +125,9 @@ export type S3ProviderPutConfig = CommonStorageOptions &
 		// discriminated union so users won't be able to add resumable specific callbacks without the resumable flag
 		| (_S3ProviderPutConfig & ResumableUploadConfig)
 	);
+
+export type S3ProviderUploadFileConfig = CommonStorageOptions &
+	_S3ProviderUploadFileConfig;
 
 export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	bucket?: string;
@@ -161,3 +200,8 @@ export type PutResult = {
 export type S3ProviderPutOutput<T> = T extends { resumable: true }
 	? UploadTask
 	: Promise<PutResult>;
+
+export type S3ProviderUploadFileOutput<T> =
+	| T
+	| UploadFileTask
+	| Promise<UploadFileTask>;

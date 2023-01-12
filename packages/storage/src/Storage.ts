@@ -19,16 +19,19 @@ import {
 	StorageGetConfig,
 	StorageProvider,
 	StoragePutConfig,
+	StorageUploadFileConfig,
 	StorageRemoveConfig,
 	StorageListConfig,
 	StorageCopyConfig,
 	StorageProviderWithCopy,
 	StorageGetOutput,
 	StoragePutOutput,
+	StorageUploadFileOutput,
 	StorageRemoveOutput,
 	StorageListOutput,
 	StorageCopyOutput,
 	UploadTask,
+	UploadFileTask,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -350,6 +353,47 @@ export class Storage {
 		return response as StoragePutOutput<T>;
 	}
 
+	private isUploadFileTask(x: unknown): x is UploadFileTask {
+		return typeof x !== 'undefined' && typeof x['cancel'] === 'function';
+	}
+
+	public uploadFile<T extends Record<string, any>>(
+		key: string,
+		object: any,
+		config?: StorageUploadFileConfig<T>
+	): StorageUploadFileOutput<T>;
+
+	public uploadFile<T extends StorageProvider = AWSS3Provider>(
+		key: string,
+		filePath: string,
+		config?: StorageUploadFileConfig<T>
+	): StorageUploadFileOutput<T> {
+		const provider = config?.provider || DEFAULT_PROVIDER;
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject(
+				'No plugin found in Storage for the provider'
+			) as StorageUploadFileOutput<T>;
+		}
+		const cancelTokenSource = this.getCancellableTokenSource();
+		if (typeof prov.uploadFile !== 'function') {
+			return Promise.reject(
+				`.uploadFile is not implemented on provider ${prov.getProviderName()}`
+			) as StorageUploadFileOutput<T>;
+		}
+
+		const response = prov.uploadFile(key, filePath, {
+			...config,
+			cancelTokenSource,
+		});
+		if (!this.isUploadFileTask(response)) {
+			this.updateRequestToBeCancellable(response, cancelTokenSource);
+		}
+		return response as StorageUploadFileOutput<T>;
+	}
 	/**
 	 * Remove the object for specified key
 	 * @param key - key of the object
@@ -402,6 +446,27 @@ export class Storage {
 			) as StorageListOutput<T>;
 		}
 		return prov.list(path, config) as StorageListOutput<T>;
+	}
+	public getPresignedUploadUrl(key: string, object: any, config?: any): String;
+	public getPresignedUploadUrl(
+		key: string,
+		object: Omit<PutObjectCommandInput['Body'], 'ReadableStream' | 'Readable'>,
+		config?: any
+	): String | Promise<Object> {
+		const provider = config?.provider || DEFAULT_PROVIDER;
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return 'No plugin found in Storage for the provider';
+		}
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const response = prov.getPresignedUploadUrl(key, object, {
+			...config,
+			cancelTokenSource,
+		});
+		return response;
 	}
 }
 
