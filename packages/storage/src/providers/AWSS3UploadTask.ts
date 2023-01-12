@@ -367,12 +367,13 @@ export class AWSS3UploadTask implements UploadTask {
 	 * @throws throws an error if the file size does not match between local copy of the file and the file on s3.
 	 */
 	private async _verifyFileSize() {
-		let obj = null;
+		let valid: boolean;
 		try {
-			obj = await this._listSingleFile({
+			const obj = await this._listSingleFile({
 				key: this.params.Key,
 				bucket: this.params.Bucket,
 			});
+			valid = Boolean(obj && obj.Size === this.file.size);
 		} catch (e) {
 			logger.log('Could not get file on s3 for size matching: ', e);
 			// Don't gate verification on auth or other errors
@@ -380,7 +381,6 @@ export class AWSS3UploadTask implements UploadTask {
 			return;
 		}
 
-		const valid = Boolean(obj && obj.Size === this.file.size);
 		if (!valid) {
 			throw new Error(
 				'File size does not match between local file and file on s3'
