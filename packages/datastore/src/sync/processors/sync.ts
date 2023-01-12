@@ -1,4 +1,4 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -41,7 +41,7 @@ const logger = new Logger('DataStore');
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
-	private runningProcesses: BackgroundProcessManager;
+	private runningProcesses = new BackgroundProcessManager();
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -73,16 +73,16 @@ class SyncProcessor {
 
 	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
-			return null;
+			return null!;
 		}
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
-			);
+			)!;
 
 		if (!predicatesGroup) {
-			return null;
+			return null!;
 		}
 
 		return predicateToGraphQLFilter(predicatesGroup);
@@ -92,11 +92,11 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null,
+		limit: number = null!,
 		filter: GraphQLFilter,
 		onTerminate: Promise<void>
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
-		const [opName, query] = this.typeQuery.get(modelDefinition);
+		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
 		const variables = {
 			limit,
@@ -180,16 +180,6 @@ class SyncProcessor {
 		};
 	}
 
-	// Partial data private feature flag. Not a public API. This will be removed in a future release.
-	private partialDataFeatureFlagEnabled() {
-		try {
-			const flag = sessionStorage.getItem('datastorePartialData');
-			return Boolean(flag);
-		} catch (e) {
-			return false;
-		}
-	}
-
 	private async jitteredRetry<T>({
 		query,
 		variables,
@@ -238,82 +228,79 @@ class SyncProcessor {
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
-					const hasItems = Boolean(
-						error &&
-							error.data &&
-							error.data[opName] &&
-							error.data[opName].items
-					);
-					if (this.partialDataFeatureFlagEnabled()) {
-						if (hasItems) {
-							const result = error;
-							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
-							);
-							if (error.errors) {
-								await Promise.all(
-									error.errors.map(async err => {
-										try {
-											await this.errorHandler({
-												recoverySuggestion:
-													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-												localModel: null,
-												message: err.message,
-												model: modelDefinition.name,
-												operation: opName,
-												errorType: getSyncErrorType(err),
-												process: ProcessName.sync,
-												remoteModel: null,
-												cause: err,
-											});
-										} catch (e) {
-											logger.error('Sync error handler failed with:', e);
-										}
-									})
-								);
-								Hub.dispatch('datastore', {
-									event: 'syncQueriesPartialSyncError',
-									data: {
-										errors: error.errors,
-										modelName: modelDefinition.name,
-									},
-								});
-							}
+					const hasItems = Boolean(error?.data?.[opName]?.items);
 
-							return result;
-						} else {
-							throw error;
-						}
-					}
-
-					// If the error is unauthorized, filter out unauthorized items and return accessible items
 					const unauthorized =
-						error &&
-						error.errors &&
+						error?.errors &&
 						(error.errors as [any]).some(
 							err => err.errorType === 'Unauthorized'
 						);
-					if (unauthorized) {
-						const result = error;
 
-						if (hasItems) {
-							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
-							);
-						} else {
-							result.data[opName] = {
-								...opResultDefaults,
-								...result.data[opName],
-							};
-						}
+					const otherErrors =
+						error?.errors &&
+						(error.errors as [any]).filter(
+							err => err.errorType !== 'Unauthorized'
+						);
+
+					const result = error;
+
+					if (hasItems) {
+						result.data[opName].items = result.data[opName].items.filter(
+							item => item !== null
+						);
+					}
+
+					if (hasItems && otherErrors?.length) {
+						await Promise.all(
+							otherErrors.map(async err => {
+								try {
+									await this.errorHandler({
+										recoverySuggestion:
+											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+										localModel: null!,
+										message: err.message,
+										model: modelDefinition.name,
+										operation: opName,
+										errorType: getSyncErrorType(err),
+										process: ProcessName.sync,
+										remoteModel: null!,
+										cause: err,
+									});
+								} catch (e) {
+									logger.error('Sync error handler failed with:', e);
+								}
+							})
+						);
+						Hub.dispatch('datastore', {
+							event: 'nonApplicableDataReceived',
+							data: {
+								errors: otherErrors,
+								modelName: modelDefinition.name,
+							},
+						});
+					}
+
+					if (unauthorized) {
 						logger.warn(
 							'queryError',
 							`User is unauthorized to query ${opName}, some items could not be returned.`
 						);
+
+						result.data = result.data || {};
+
+						result.data[opName] = {
+							...opResultDefaults,
+							...result.data[opName],
+						};
+
 						return result;
-					} else {
-						throw error;
 					}
+
+					if (result.data?.[opName].items?.length) {
+						return result;
+					}
+
+					throw error;
 				}
 			},
 			[query, variables],
@@ -325,29 +312,16 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		if (this.runningProcesses) {
-			throw new Error(
-				[
-					'The sync processor is already started!',
-					'Wait until it completes or `await stop()` it first!',
-					'(This is an Amplify bug; please open a Github Issue:',
-					'https://github.com/aws-amplify/amplify-js/issues)',
-				].join('\n')
-			);
-		}
-
-		this.runningProcesses = new BackgroundProcessManager();
-
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering.keys()
+						namespace.modelTopologicalOrdering!.keys()
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync);
+						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
@@ -356,75 +330,76 @@ class SyncProcessor {
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)
-				.map(([modelDefinition, [namespace, lastSync]]) =>
-					this.runningProcesses.add(async onTerminate => {
-						let done = false;
-						let nextToken: string = null;
-						let startedAt: number = null;
-						let items: ModelInstanceMetadata[] = null;
+				.map(
+					([modelDefinition, [namespace, lastSync]]) =>
+						this.runningProcesses.isOpen &&
+						this.runningProcesses.add(async onTerminate => {
+							let done = false;
+							let nextToken: string = null!;
+							let startedAt: number = null!;
+							let items: ModelInstanceMetadata[] = null!;
 
-						let recordsReceived = 0;
-						const filter = this.graphqlFilterFromPredicate(modelDefinition);
+							let recordsReceived = 0;
+							const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
-						const parents = this.schema.namespaces[
-							namespace
-						].modelTopologicalOrdering.get(modelDefinition.name);
-						const promises = parents.map(parent =>
-							parentPromises.get(`${namespace}_${parent}`)
-						);
+							const parents = this.schema.namespaces[
+								namespace
+							].modelTopologicalOrdering!.get(modelDefinition.name);
+							const promises = parents!.map(parent =>
+								parentPromises.get(`${namespace}_${parent}`)
+							);
 
-						const promise = new Promise<void>(async res => {
-							await Promise.all(promises);
+							const promise = new Promise<void>(async res => {
+								await Promise.all(promises);
 
-							do {
-								if (!this.runningProcesses) {
-									return;
-								}
+								do {
+									if (!this.runningProcesses.isOpen) {
+										return;
+									}
 
-								const limit = Math.min(
-									maxRecordsToSync - recordsReceived,
-									syncPageSize
-								);
+									const limit = Math.min(
+										maxRecordsToSync - recordsReceived,
+										syncPageSize
+									);
 
-								({ items, nextToken, startedAt } = await this.retrievePage(
-									modelDefinition,
-									lastSync,
-									nextToken,
-									limit,
-									filter,
-									onTerminate
-								));
+									({ items, nextToken, startedAt } = await this.retrievePage(
+										modelDefinition,
+										lastSync,
+										nextToken,
+										limit,
+										filter,
+										onTerminate
+									));
 
-								recordsReceived += items.length;
+									recordsReceived += items.length;
 
-								done =
-									nextToken === null || recordsReceived >= maxRecordsToSync;
+									done =
+										nextToken === null || recordsReceived >= maxRecordsToSync;
 
-								observer.next({
-									namespace,
-									modelDefinition,
-									items,
-									done,
-									startedAt,
-									isFullSync: !lastSync,
-								});
-							} while (!done);
+									observer.next({
+										namespace,
+										modelDefinition,
+										items,
+										done,
+										startedAt,
+										isFullSync: !lastSync,
+									});
+								} while (!done);
 
-							res();
-						});
+								res();
+							});
 
-						parentPromises.set(`${namespace}_${modelDefinition.name}`, promise);
+							parentPromises.set(
+								`${namespace}_${modelDefinition.name}`,
+								promise
+							);
 
-						await promise;
-					})
+							await promise;
+						}, `adding model ${modelDefinition.name}`)
 				);
 
-			Promise.all(allModelsReady).then(() => {
+			Promise.all(allModelsReady as Promise<any>[]).then(() => {
 				observer.complete();
-			});
-
-			return this.runningProcesses.addCleaner(async () => {
-				this.runningProcesses = undefined;
 			});
 		});
 
@@ -433,7 +408,8 @@ class SyncProcessor {
 
 	async stop() {
 		logger.debug('stopping sync processor');
-		this.runningProcesses && (await this.runningProcesses.close());
+		await this.runningProcesses.close();
+		await this.runningProcesses.open();
 		logger.debug('sync processor stopped');
 	}
 }

@@ -23,6 +23,9 @@
 [![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-js/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
 
+> **Note**
+> aws-amplify 5 has been released. If you are looking for upgrade guidance [click here](#notice)
+
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow and React Native for mobile developers.
@@ -56,56 +59,109 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 ## Getting Started
 
-AWS Amplify is available as `aws-amplify` package on [npm](https://www.npmjs.com/package/aws-amplify).
+AWS Amplify is available as `aws-amplify` on [npm](https://www.npmjs.com/package/aws-amplify).
 
-**Web**
-
-If you are developing a JavaScript app, please visit our documentation site on [JavaScript](https://docs.amplify.aws/start/q/integration/js).
-
-**React**
-
-If you are developing a [React](https://github.com/facebook/react/) app, please visit our documentation site on [React](https://docs.amplify.aws/start/q/integration/react).
-
-**Angular**
-
-If you are developing an [Angular](https://github.com/angular/angular) app, please visit our documentation site on [Angular](https://docs.amplify.aws/start/q/integration/angular).
-
-**Vue**
-
-If you are developing a [Vue](https://github.com/vuejs/vue) app, please visit our documentation site on [Vue](https://docs.amplify.aws/start/q/integration/vue).
-
-**React Native**
-
-For React Native development, install `aws-amplify`:
-
-```bash
-$ npm install aws-amplify --save
-```
-
-If you are developing a [React Native](https://github.com/facebook/react-native) app, you can install an additional package `aws-amplify-react-native` containing [Higher Order Components](https://reactjs.org/docs/higher-order-components.html):
-
-```bash
-$ npm install aws-amplify-react-native --save
-```
-
-Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q/integration/react-native) to start building your web app.
+To get started pick your platform from our [**Getting Started** home page](https://docs.amplify.aws/start/?sc_icampaign=start&sc_ichannel=docs-home)
 
 ## Notice:
+
+### Amplify 5.x.x has breaking changes. Please see the breaking changes below:
+
+- If you are using **default exports** from any Amplify package, then you will need to migrate to using named exports. For example:
+
+  ```diff
+  - import Amplify from 'aws-amplify';
+  + import { Amplify } from 'aws-amplify'
+
+  - import Analytics from '@aws-amplify/analytics';
+  + import { Analytics } from '@aws-amplify/analytics';
+  // or better
+  + import { Analytics } from 'aws-amplify';
+
+  - import Storage from '@aws-amplify/storage';
+  + import { Storage } from '@aws-amplify/storage';
+  // or better
+  + import { Storage } from 'aws-amplify';
+  ```
+
+- Datastore predicate syntax has changed, impacting the `DataStore.query`, `DataStore.save`, `DataStore.delete`, and `DataStore.observe` interfaces. For example:
+
+  ```diff
+  - await DataStore.delete(Post, (post) => post.status('eq', PostStatus.INACTIVE));
+  + await DataStore.delete(Post, (post) => post.status.eq(PostStatus.INACTIVE));
+
+  - await DataStore.query(Post, p => p.and( p => [p.title('eq', 'Amplify Getting Started Guide'), p.score('gt', 8)]));
+  + await DataStore.query(Post, p => p.and( p => [p.title.eq('Amplify Getting Started Guide'), p.score.gt(8)]));
+  ```
+
+  - To use the new syntax with 5.x.x you may need to rebuild your Datastore models with the latest version of Amplify codegen. To do this:
+    - [Upgrade the Amplify CLI](https://docs.amplify.aws/cli/start/workflows/#upgrade-amplify-cli)
+      - `npm install -g @aws-amplify/cli`
+    - [Re-generate your models with Amplify codegen](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/#code-generation-amplify-cli)
+      - `amplify codegen models`
+
+- `Storage.list` has changed the name of the `maxKeys` parameter to `pageSize` and has a new return type that contains the results list. For example:
+
+  ```diff
+  - const photos = await Storage.list('photos/', { maxKeys: 100 });
+  - const { key } = photos[0];
+
+  + const photos = await Storage.list('photos/', { pageSize: 100 });
+  + const { key } = photos.results[0];
+  ```
+
+- `Storage.put` with resumable turned on has changed the key to no longer include the bucket name. For example:
+
+  ```diff
+  - let uploadedObjectKey;
+  - Storage.put(file.name, file, {
+  -   resumable: true,
+  -   // Necessary to parse the bucket name out to work with the key
+  -   completeCallback: (obj) => uploadedObjectKey = obj.key.substring( obj.key.indexOf("/") + 1 )
+  - }
+
+  + let uploadedObjectKey;
+  + Storage.put(file.name, file, {
+  +   resumable: true,
+  +   completeCallback: (obj) => uploadedObjectKey = obj.key
+  + }
+  ```
+
+- `Analytics.record` no longer accepts string as input. For example:
+
+  ```diff
+  - Analytics.record('my example event');
+  + Analytics.record({ name: 'my example event' });
+  ```
+
+- The `JS` export has been removed from `@aws-amplify/core` in favor of exporting the functions it contained.
+- Any calls to `Amplify.Auth`, `Amplify.Cache`, and `Amplify.ServiceWorker` are no longer supported. Instead, your code should use the named exports. For example:
+
+  ```diff
+  - import { Amplify } from 'aws-amplify';
+  - Amplify.configure(...);
+  - // ...
+  - Amplify.Auth.signIn(...);
+
+  + import { Amplify, Auth } from 'aws-amplify';
+  + Amplify.configure(...);
+  + // ...
+  + Auth.signIn(...);
+  ```
 
 ### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
 
 - If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
   - `@react-native-community/netinfo`
   - `@react-native-async-storage/async-storage`
-  - `@react-native-picker/picker`
 
 ```
 // React Native
-yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
 npx pod-install
 
 // Expo
-yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
+yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
 ```
 
 ### Amplify 3.x.x has breaking changes. Please see the breaking changes below:

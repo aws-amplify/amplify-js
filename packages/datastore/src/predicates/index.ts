@@ -8,11 +8,7 @@ import {
 	ProducerModelPredicate,
 	SchemaModel,
 } from '../types';
-import {
-	exhaustiveCheck,
-	extractPrimaryKeyFieldNames,
-	extractPrimaryKeyValues,
-} from '../util';
+import { extractPrimaryKeyFieldNames, extractPrimaryKeyValues } from '../util';
 
 export { ModelSortPredicateCreator } from './sort';
 
@@ -23,6 +19,37 @@ export function isPredicatesAll(
 ): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
+
+const groupKeys = new Set(['and', 'or', 'not']);
+const isGroup = o => {
+	const keys = [...Object.keys(o)];
+	return keys.length === 1 && groupKeys.has(keys[0]);
+};
+
+export const comparisonKeys = new Set([
+	'eq',
+	'ne',
+	'gt',
+	'lt',
+	'ge',
+	'le',
+	'contains',
+	'notContains',
+	'beginsWith',
+	'between',
+]);
+const isComparison = o => {
+	const keys = [...Object.keys(o)];
+	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
+};
+
+const isValid = o => {
+	if (Array.isArray(o)) {
+		return o.every(v => isValid(v));
+	} else {
+		return Object.keys(o).length === 1;
+	}
+};
 
 // This symbol is not used at runtime, only its type (unique symbol)
 export const PredicateAll = Symbol('A predicate that matches all records');
@@ -43,20 +70,21 @@ export class ModelPredicateCreator {
 		PredicatesGroup<any>
 	>();
 
-	private static createPredicateBuilder<T extends PersistentModel>(
+	static createPredicateBuilder<T extends PersistentModel>(
 		modelDefinition: SchemaModel
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
 
 		let handler: ProxyHandler<ModelPredicate<T>>;
+
 		const predicate = new Proxy(
 			{} as ModelPredicate<T>,
 			(handler = {
 				get(
-					_target,
+					_,
 					propertyKey,
-					receiver: ModelPredicate<T>
+					self: ModelPredicate<T>
 				): PredicateExpression<T, any> {
 					const groupType = propertyKey as keyof PredicateGroups<T>;
 
@@ -80,7 +108,7 @@ export class ModelPredicateCreator {
 
 								// Set the recorder group
 								ModelPredicateCreator.predicateGroupsMap.set(
-									tmpPredicateRecorder,
+									tmpPredicateRecorder as any,
 									group
 								);
 
@@ -89,15 +117,15 @@ export class ModelPredicateCreator {
 
 								// Push the group to the top-level recorder
 								ModelPredicateCreator.predicateGroupsMap
-									.get(receiver)!
+									.get(self as any)!
 									.predicates.push(group);
 
-								return receiver;
+								return self;
 							};
 
 							return result;
 						default:
-							exhaustiveCheck(groupType, false);
+						// intentionally blank.
 					}
 
 					const field = propertyKey as keyof T;
@@ -113,9 +141,9 @@ export class ModelPredicateCreator {
 						operand: any
 					) => {
 						ModelPredicateCreator.predicateGroupsMap
-							.get(receiver)!
+							.get(self as any)!
 							.predicates.push({ field, operator, operand });
-						return receiver;
+						return self;
 					};
 					return result;
 				},
@@ -126,7 +154,7 @@ export class ModelPredicateCreator {
 			type: 'and',
 			predicates: [],
 		};
-		ModelPredicateCreator.predicateGroupsMap.set(predicate, group);
+		ModelPredicateCreator.predicateGroupsMap.set(predicate as any, group);
 
 		return predicate;
 	}
@@ -145,12 +173,12 @@ export class ModelPredicateCreator {
 			throw new Error('The predicate is not valid');
 		}
 
-		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
+		return ModelPredicateCreator.predicateGroupsMap.get(predicate as any);
 	}
 
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
+		modelDefinition?: SchemaModel,
 		existing?: ProducerModelPredicate<T>
 	) {
 		if (!existing || !modelDefinition) {
@@ -188,5 +216,103 @@ export class ModelPredicateCreator {
 		});
 
 		return modelPredicate;
+	}
+
+	/**
+	 * Searches a `Model` table for records matching the given equalities object.
+	 *
+	 * This only matches against fields given in the equalities object. No other
+	 * fields are tested by the predicate.
+	 *
+	 * @param modelDefinition The model we need a predicate for.
+	 * @param flatEqualities An object holding field equalities to search for.
+	 */
+	static createFromFlatEqualities<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		flatEqualities: Record<string, any>
+	) {
+		let predicate =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		for (const [field, value] of Object.entries(flatEqualities)) {
+			predicate = predicate[field]('eq' as any, value);
+		}
+
+		return predicate;
+	}
+
+	static createGroupFromExisting<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		group: 'and' | 'or' | 'not',
+		existingPredicates: (ProducerModelPredicate<T> | ModelPredicate<T>)[]
+	) {
+		let outer =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		outer = outer[group](seed => {
+			let inner = seed;
+			for (const existing of existingPredicates) {
+				if (typeof existing === 'function') {
+					inner = existing(inner);
+				} else {
+					ModelPredicateCreator.predicateGroupsMap
+						.get(inner)
+						?.predicates.push(
+							ModelPredicateCreator.predicateGroupsMap.get(
+								existing as ModelPredicate<T>
+							)!
+						);
+				}
+			}
+			return inner;
+		});
+
+		return outer;
+	}
+
+	static transformGraphQLtoPredicateAST(gql: any) {
+		if (!isValid(gql)) {
+			throw new Error('Invalid QGL AST: ' + gql);
+		}
+
+		if (isGroup(gql)) {
+			const groupkey = Object.keys(gql)[0];
+			const children = this.transformGraphQLtoPredicateAST(gql[groupkey]);
+			return {
+				type: groupkey,
+				predicates: Array.isArray(children) ? children : [children],
+			};
+		} else if (isComparison(gql)) {
+			const operatorKey = Object.keys(gql)[0];
+			return {
+				operator: operatorKey,
+				operand: gql[operatorKey],
+			};
+		} else {
+			if (Array.isArray(gql)) {
+				return gql.map(o => this.transformGraphQLtoPredicateAST(o));
+			} else {
+				const fieldKey = Object.keys(gql)[0];
+				return {
+					field: fieldKey,
+					...this.transformGraphQLtoPredicateAST(gql[fieldKey]),
+				};
+			}
+		}
+	}
+
+	static createFromAST(
+		modelDefinition: SchemaModel,
+		ast: any
+	): ModelPredicate<any> {
+		const predicate =
+			ModelPredicateCreator.createPredicateBuilder(modelDefinition);
+
+		ModelPredicateCreator.predicateGroupsMap.set(
+			predicate,
+			this.transformGraphQLtoPredicateAST(ast)
+		);
+
+		return predicate;
 	}
 }

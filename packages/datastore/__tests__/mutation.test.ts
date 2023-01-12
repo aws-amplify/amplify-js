@@ -297,9 +297,15 @@ jest.mock('@aws-amplify/api', () => {
 	const graphqlInstance = new GraphQLAPIClass(null);
 	graphqlInstance.configure(awsconfig);
 
+	const actualAPIModule = jest.requireActual('@aws-amplify/api');
+	const actualAPIInstance = actualAPIModule.API;
+
 	return {
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: graphqlInstance.graphql.bind(graphqlInstance),
+		...actualAPIModule,
+		API: {
+			...actualAPIInstance,
+			graphql: graphqlInstance.graphql.bind(graphqlInstance),
+		},
 	};
 });
 
@@ -407,8 +413,8 @@ async function createMutationEvent(model, opType): Promise<MutationEvent> {
 		.constructor as PersistentModelConstructor<any>;
 
 	return createMutationInstanceFromModelOperation(
-		undefined,
-		undefined,
+		undefined!,
+		undefined!,
 		opType,
 		modelConstructor,
 		model,

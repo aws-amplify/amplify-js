@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Storage instance options
  */
@@ -90,13 +80,21 @@ type StorageOperationConfig<
 			provider: ReturnType<T['getProviderName']>;
 	  };
 
-export type StorageGetConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'get'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'get'>, T>;
+export type StorageGetConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'get'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'get'>,
+				T
+		  >;
 
-export type StoragePutConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'put'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'put'>, T>;
+export type StoragePutConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'put'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'put'>,
+				T
+		  >;
 
 export type StorageUploadFileConfig<T> = T extends StorageProvider
 	? StorageOperationConfig<T, 'put'>
@@ -105,20 +103,29 @@ export type StorageUploadFileConfig<T> = T extends StorageProvider
 			T
 	  >;
 
-export type StorageRemoveConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'remove'>
-	: StorageOperationConfigMap<
-			StorageOperationConfig<AWSS3Provider, 'remove'>,
-			T
-	  >;
+export type StorageRemoveConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'remove'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'remove'>,
+				T
+		  >;
 
-export type StorageListConfig<T> = T extends StorageProvider
-	? StorageOperationConfig<T, 'list'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'list'>, T>;
+export type StorageListConfig<T extends Record<string, any>> =
+	T extends StorageProvider
+		? StorageOperationConfig<T, 'list'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'list'>,
+				T
+		  >;
 
-export type StorageCopyConfig<T> = T extends StorageProviderWithCopy
-	? StorageOperationConfig<T, 'copy'>
-	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'copy'>, T>;
+export type StorageCopyConfig<T extends Record<string, any>> =
+	T extends StorageProviderWithCopy
+		? StorageOperationConfig<T, 'copy'>
+		: StorageOperationConfigMap<
+				StorageOperationConfig<AWSS3Provider, 'copy'>,
+				T
+		  >;
 
 /**
  * Utility type for checking if the generic type is a provider or a Record that has the key 'provider'.

@@ -3,6 +3,115 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.4...@aws-amplify/datastore@4.0.5) (2022-12-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore-storage-adapter:** SQLiteAdapter fails on required related models ([#10720](https://github.com/aws-amplify/amplify-js/issues/10720)) ([fa7d6c6](https://github.com/aws-amplify/amplify-js/commit/fa7d6c681496dd45d40a2af672f953e0ff372940))
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.3...@aws-amplify/datastore@4.0.4) (2022-11-23)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.2...@aws-amplify/datastore@4.0.3) (2022-11-19)
+
+
+### Bug Fixes
+
+* **datastore:** optional hasOne ([#10688](https://github.com/aws-amplify/amplify-js/issues/10688)) ([a851713](https://github.com/aws-amplify/amplify-js/commit/a85171384db4bca202bb5cb5f832a8e319ec89d4))
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.1...@aws-amplify/datastore@4.0.2) (2022-11-16)
+
+
+### Bug Fixes
+
+* predicate logic against bools ([#10679](https://github.com/aws-amplify/amplify-js/issues/10679)) ([062cb55](https://github.com/aws-amplify/amplify-js/commit/062cb5530ba6d22b8dd97bbd046b08691f874765))
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.0...@aws-amplify/datastore@4.0.1) (2022-11-11)
+
+
+### Bug Fixes
+
+* **datastore:** upgrade after destructive schema change ([#10658](https://github.com/aws-amplify/amplify-js/issues/10658)) ([d987a28](https://github.com/aws-amplify/amplify-js/commit/d987a2837d16c2ca93205089eebb837f1f8e7c15))
+* export DataStore predicate types ([#10653](https://github.com/aws-amplify/amplify-js/issues/10653)) ([a517610](https://github.com/aws-amplify/amplify-js/commit/a517610889ab4115c40dcd58213414e6e1aabf7b))
+
+
+
+
+
+# [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.4...@aws-amplify/datastore@4.0.0) (2022-11-09)
+
+### Bug Fixes
+
+- **@aws-amplify/datastore:** remove predicate, AsyncCollection internals from public interfaces ([#10594](https://github.com/aws-amplify/amplify-js/issues/10594)) ([5a05c44](https://github.com/aws-amplify/amplify-js/commit/5a05c4467df4a479f0d2a9d06b78c818d2f40d06))
+- Standardize `cache` named export to preserve interoperability with RN ([#10546](https://github.com/aws-amplify/amplify-js/issues/10546)) ([20b096b](https://github.com/aws-amplify/amplify-js/commit/20b096b1a34e6a102d08dabcedb38772f3a6caf7))
+
+### Features
+
+- **@aws-amplify/datastore:** lazy loading and nested/related-model predicates ([#10477](https://github.com/aws-amplify/amplify-js/pull/10477))
+- Remove (most) default exports ([10461](https://github.com/aws-amplify/amplify-js/pull/10461))
+- Setup tslib & importHelpers to improve bundle size ([#10435](https://github.com/aws-amplify/amplify-js/pull/10435))
+- Remove miscellaneous deprecated exports & prototypes ([#10528](https://github.com/aws-amplify/amplify-js/pull/10528))
+- add a typescript coverage report mechanism ([#10551](https://github.com/aws-amplify/amplify-js/issues/10551)) ([8e8df55](https://github.com/aws-amplify/amplify-js/commit/8e8df55b449f8bae2fe962fe282613d1b818cc5a)), closes [#10379](https://github.com/aws-amplify/amplify-js/issues/10379)
+- change unsupported codegen error message ([#10563](https://github.com/aws-amplify/amplify-js/issues/10563)) ([fa6e515](https://github.com/aws-amplify/amplify-js/commit/fa6e51503e63726539eda9cb396123eb3c5dee93))
+
+## [3.14.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.2...@aws-amplify/datastore@3.14.3) (2022-10-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.14.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.1...@aws-amplify/datastore@3.14.2) (2022-10-26)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [3.14.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.0...@aws-amplify/datastore@3.14.1) (2022-10-25)
+
+### Bug Fixes
+
+- **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10450](https://github.com/aws-amplify/amplify-js/issues/10450)) ([16c535b](https://github.com/aws-amplify/amplify-js/commit/16c535beda9386a027c2805f29a359fbeb8bac15)), closes [#10449](https://github.com/aws-amplify/amplify-js/issues/10449)
+- **datastore:** CPK on Safari ([#10527](https://github.com/aws-amplify/amplify-js/issues/10527)) ([7a2f3ec](https://github.com/aws-amplify/amplify-js/commit/7a2f3ecf0fda83f087b1c2ce650f4b5f00214dbe))
+
+# [3.14.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.13.0...@aws-amplify/datastore@3.14.0) (2022-10-14)
+
+### Bug Fixes
+
+- **datastore:** unblock vite build after CPK changes ([#10478](https://github.com/aws-amplify/amplify-js/issues/10478)) ([42ae8de](https://github.com/aws-amplify/amplify-js/commit/42ae8de62f53e7d81363c0dd676967454271259a))
+
+### Features
+
+- **datastore:** allow sync query to complete when non-applicable data present ([#10471](https://github.com/aws-amplify/amplify-js/issues/10471)) ([f8e8ff4](https://github.com/aws-amplify/amplify-js/commit/f8e8ff4c1a59d600b96944e5963dfa56a44af035))
+
+# [3.13.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.12...@aws-amplify/datastore@3.13.0) (2022-10-14)
+
+### Bug Fixes
+
+- validate non models when using object literal ([#10417](https://github.com/aws-amplify/amplify-js/issues/10417)) ([b6f6c81](https://github.com/aws-amplify/amplify-js/commit/b6f6c813f80f951f21f986411928c0ddbd1c6b6c))
+- **@aws-amplify/datastore:** introduce "settlement" guarantees to stop() and clear() ([#10055](https://github.com/aws-amplify/amplify-js/issues/10055)) ([c64d7d6](https://github.com/aws-amplify/amplify-js/commit/c64d7d6284bc7b41a5a65b4b47d35ea274aed6b3))
+
+### Features
+
+- **datastore:** custom pk support ([66bfe31](https://github.com/aws-amplify/amplify-js/commit/66bfe312f300fd6ca1bc756ab01690d36f337af9))
+
+### Reverts
+
+- "fix(@aws-amplify/datastore): introduce "settlement" guarantees to stop() and clear()" ([#10449](https://github.com/aws-amplify/amplify-js/issues/10449)) ([d726bcc](https://github.com/aws-amplify/amplify-js/commit/d726bccca9712b8f43bc273052f970f8f931dd8c)), closes [aws-amplify/amplify-js#10055](https://github.com/aws-amplify/amplify-js/issues/10055)
+
 ## [3.12.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.12.10...@aws-amplify/datastore@3.12.12) (2022-09-30)
 
 **Note:** Version bump only for package @aws-amplify/datastore

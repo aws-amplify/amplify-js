@@ -27,6 +27,7 @@ export class AmplifyClass {
 	Predictions = null;
 	DataStore = null;
 	Geo = null;
+	Notifications = null;
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
@@ -95,8 +96,3 @@ export class AmplifyClass {
 }
 
 export const Amplify = new AmplifyClass();
-
-/**
- * @deprecated use named import
- */
-export default Amplify;

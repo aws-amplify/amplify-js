@@ -1,22 +1,12 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	Parser,
 	ICredentials,
 	StorageHelper,
 	Hub,
+	parseAWSExports,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -46,7 +36,6 @@ import {
 	S3ProviderGetOuput,
 	S3ProviderPutConfig,
 	S3ProviderRemoveConfig,
-	S3ProviderListOutput,
 	S3ProviderListConfig,
 	S3ProviderCopyConfig,
 	S3ProviderCopyOutput,
@@ -59,6 +48,8 @@ import {
 	ResumableUploadConfig,
 	UploadTask,
 	S3ClientOptions,
+
+	S3ProviderListOutput,
 	S3ProviderUploadFileConfig,
 	S3ProviderUploadFileOutput,
 } from '../types';
@@ -72,7 +63,6 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
-import { S3ProviderListOutputWithToken } from '.././types/AWSS3Provider';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
@@ -142,7 +132,7 @@ export class AWSS3Provider implements StorageProvider {
 	public configure(config?): object {
 		logger.debug('configure Storage', config);
 		if (!config) return this._config;
-		const amplifyConfig = Parser.parseMobilehubConfig(config);
+		const amplifyConfig = parseAWSExports(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
@@ -839,16 +829,16 @@ export class AWSS3Provider implements StorageProvider {
 		params: ListObjectsV2Request,
 		opt: S3ClientOptions,
 		prefix: string
-	): Promise<S3ProviderListOutputWithToken> {
-		const result: S3ProviderListOutputWithToken = {
-			contents: [],
-			nextToken: '',
+	): Promise<S3ProviderListOutput> {
+		const list: S3ProviderListOutput = {
+			results: [],
+			hasNextToken: false,
 		};
 		const s3 = this._createNewS3Client(opt);
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
 		if (response && response.Contents) {
-			result.contents = response.Contents.map(item => {
+			list.results = response.Contents.map(item => {
 				return {
 					key: item.Key.substr(prefix.length),
 					eTag: item.ETag,
@@ -856,17 +846,18 @@ export class AWSS3Provider implements StorageProvider {
 					size: item.Size,
 				};
 			});
-			result.nextToken = response.NextContinuationToken;
+			list.nextToken = response.NextContinuationToken;
+			list.hasNextToken = response.IsTruncated;
 		}
-		return result;
+		return list;
 	}
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
 	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified and file size for
-	 * all objects in path
+	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified
+	 * and file size for all objects in path
 	 */
 	public async list(
 		path: string,
@@ -877,49 +868,55 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt: S3ClientOptions = Object.assign({}, this._config, config);
-		const { bucket, track, maxKeys } = opt;
+		const { bucket, track, pageSize, nextToken } = opt;
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
 		logger.debug('list ' + path + ' from ' + final_path);
 		try {
-			const list: S3ProviderListOutput = [];
-			let token: string;
-			let listResult: S3ProviderListOutputWithToken;
+			const list: S3ProviderListOutput = {
+				results: [],
+				hasNextToken: false,
+			};
+			const MAX_PAGE_SIZE = 1000;
+			let listResult: S3ProviderListOutput;
 			const params: ListObjectsV2Request = {
 				Bucket: bucket,
 				Prefix: final_path,
-				MaxKeys: 1000,
+				MaxKeys: MAX_PAGE_SIZE,
+				ContinuationToken: nextToken,
 			};
-			if (maxKeys === 'ALL') {
+			params.ContinuationToken = nextToken;
+			if (pageSize === 'ALL') {
 				do {
-					params.ContinuationToken = token;
-					params.MaxKeys = 1000;
 					listResult = await this._list(params, opt, prefix);
-					list.push(...listResult.contents);
-					if (listResult.nextToken) token = listResult.nextToken;
+					list.results.push(...listResult.results);
+					if (listResult.nextToken)
+						params.ContinuationToken = listResult.nextToken;
 				} while (listResult.nextToken);
 			} else {
-				maxKeys < 1000 || typeof maxKeys === 'string'
-					? (params.MaxKeys = maxKeys)
-					: (params.MaxKeys = 1000);
+				if (
+					pageSize &&
+					pageSize <= MAX_PAGE_SIZE &&
+					typeof pageSize === 'number'
+				)
+					params.MaxKeys = pageSize;
+				else logger.warn(`pageSize should be from 0 - ${MAX_PAGE_SIZE}.`);
 				listResult = await this._list(params, opt, prefix);
-				list.push(...listResult.contents);
-				if (maxKeys > 1000)
-					logger.warn(
-						"maxkeys can be from 0 - 1000 or 'ALL'. To list all files you can set maxKeys to 'ALL'."
-					);
+				list.results.push(...listResult.results);
+				list.hasNextToken = listResult.hasNextToken;
+				list.nextToken = null ?? listResult.nextToken;
 			}
 			dispatchStorageEvent(
 				track,
 				'list',
 				{ method: 'list', result: 'success' },
 				null,
-				`${list.length} items returned from list operation`
+				`${list.results.length} items returned from list operation`
 			);
 			logger.debug('list', list);
 			return list;
 		} catch (error) {
-			logger.warn('list error', error);
+			logger.error('list InvalidArgument', error);
 			dispatchStorageEvent(
 				track,
 				'list',
@@ -1005,8 +1002,3 @@ export class AWSS3Provider implements StorageProvider {
 		return s3client;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AWSS3Provider;

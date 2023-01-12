@@ -13,6 +13,7 @@ import {
 	NonModelTypeConstructor,
 	PersistentModel,
 	PersistentModelConstructor,
+	ModelInit,
 } from '../src/types';
 import {
 	Comment,
@@ -32,7 +33,10 @@ import {
 	Profile,
 	testSchema,
 	User,
+	ModelWithBoolean,
 } from './helpers';
+
+type T = ModelInit<Model>;
 
 let initSchema: typeof initSchemaType;
 
@@ -55,20 +59,48 @@ process.on('unhandledRejection', reason => {
 });
 
 describe('DataStore sanity testing checks', () => {
-	// TODO: This is present day behavior.
-	test('multiple DataStore imports are identical', async () => {
-		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
-		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
-
-		expect(DataStoreA).toBe(DataStoreB);
-		expect(PostA).toBe(PostB);
-
-		await DataStoreA.clear();
+	beforeEach(async () => {
+		jest.resetAllMocks();
+		jest.resetModules();
 	});
 
 	afterEach(async () => {
 		await DataStore.clear();
 		await unconfigureSync(DataStore);
+	});
+
+	test('getDataStore() returns fully fresh instances of DataStore and models', async () => {
+		/**
+		 * Simulating connect/disconnect and/or `isNode` required the `getDataStore()`
+		 * to reset modules. Hence, the returned DataStore instances should be different.
+		 */
+
+		const { DataStore: DataStoreA, Post: PostA } = getDataStore();
+		const { DataStore: DataStoreB, Post: PostB } = getDataStore();
+
+		expect(DataStoreA).not.toBe(DataStoreB);
+		expect(PostA).not.toBe(PostB);
+
+		await DataStoreA.clear();
+		await DataStoreB.clear();
+	});
+
+	// HAS_MANY does not contain a FK. no constraint to validate.
+	test('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
+		const { DataStore, Post, Comment } = getDataStore();
+
+		await expect(
+			DataStore.save(
+				new Comment({
+					content: 'newly created comment',
+					post: new Post({
+						title: 'newly created post',
+					}),
+				})
+			)
+		).rejects.toThrow(
+			`Data integrity error. You tried to save a Comment` // instructions specific to the instance follow
+		);
 	});
 
 	describe('cleans up after itself', () => {
@@ -139,6 +171,174 @@ describe('DataStore sanity testing checks', () => {
 			expect(lastCycle).toBe(numberOfCycles);
 		});
 
+		describe('during lifecycle events', () => {
+			let { DataStore, Post } = getDataStore();
+
+			beforeAll(async () => {
+				await DataStore.clear();
+			});
+
+			afterEach(async () => {
+				await DataStore.clear();
+			});
+
+			describe('simple cases', () => {
+				for (const online of [true, false]) {
+					for (const isNode of [true, false]) {
+						const connectedState = online ? 'online' : 'offline';
+						const environment = isNode ? 'node' : 'browser';
+
+						test(`clearing after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.clear();
+							await DataStore.start();
+						});
+
+						test(`clearing after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.clear();
+							await DataStore.start();
+						});
+
+						test(`clearing after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.clear();
+							await DataStore.start();
+						});
+
+						test(`stopping after awaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							await DataStore.stop();
+							await DataStore.start();
+						});
+
+						test(`stopping after unawaited start (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await DataStore.stop();
+							await DataStore.start();
+						});
+
+						test(`stopping after unawaited start, then a small pause (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							DataStore.start();
+							await pause(1);
+							await DataStore.stop();
+							await DataStore.start();
+						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							const clearing = DataStore.clear();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
+							);
+
+							await clearing;
+						});
+
+						// tslint:disable-next-line: max-line-length
+						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
+							({ DataStore, Post } = getDataStore({ online, isNode }));
+							await DataStore.start();
+							const stopping = DataStore.stop();
+
+							// At minimum: looking for top-level error, operation that failed, state while in failure.
+							expect(DataStore.start()).rejects.toThrow(
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
+							);
+
+							await stopping;
+						});
+					}
+				}
+			});
+
+			/**
+			 * When fuzzing discovers issues, recreate them here to prevent regressions.
+			 */
+			describe('edges discovered by fuzz', () => {
+				/**
+				 * As explained below, DataStore can't actually handle the fuzz yet. :(
+				 */
+			});
+
+			/**
+			 * We're not fuzzable yet ... also, these fuzz tests may need to accumulate
+			 * assertions along the way as well, because some of the behavior will
+			 * likely change from "everything is happy, DataStore figures it out" to
+			 * predictable error cases.
+			 */
+			describe.skip('fuzz', () => {
+				function fuzz() {
+					const steps = [] as any[];
+
+					// increase when we can actually deal with the fuzz.
+					const stepsToProduce = 3; //  + Math.random() * 10;
+					for (let i = 0; i < stepsToProduce; i++) {
+						let awaited = true;
+						if (Math.random() > 0.5) {
+							awaited = false;
+						}
+						const methods = ['start', 'stop', 'clear', 'query', 'save'];
+						const action = {
+							method: methods.sort(() => Math.random() - 0.5)[0],
+							awaited,
+						};
+						steps.push(action);
+					}
+					return steps;
+				}
+
+				// increase when we can actually deal efficiently with the fuzz
+				for (let i = 0; i < 3; i++) {
+					const steps = fuzz();
+					const name = steps
+						.map(s => `${s.awaited ? 'awaited' : 'unawaited'} ${s.method}`)
+						.join(', ');
+
+					for (const online of [true, false]) {
+						for (const isNode of [true, false]) {
+							const connectedState = online ? 'online' : 'offline';
+							const environment = isNode ? 'node' : 'browser';
+							const testName = `${name} (${connectedState}, ${environment})`;
+
+							test(testName, async () => {
+								({ DataStore, Post } = getDataStore({ online, isNode }));
+								for (const step of steps) {
+									const f = {
+										start: () => DataStore.start(),
+										stop: () => DataStore.stop(),
+										clear: () => DataStore.clear(),
+										save: () => DataStore.save(new Post({ title: testName })),
+										query: () => DataStore.query(Post),
+									}[step.method];
+
+									if (step.awaited) {
+										await f();
+									} else {
+										f();
+									}
+
+									// no explicit assertions for now. at this point, we just
+									// want things NOT to blow up. :)
+								}
+							});
+						}
+					}
+				}
+			});
+		});
+
 		test('awaited save', async () => {
 			await expectIsolation(
 				async ({ DataStore, Post }) =>
@@ -172,7 +372,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.query(Post))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.query\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -200,7 +401,8 @@ describe('DataStore sanity testing checks', () => {
 			await expect(
 				DataStore.save(new Post({ title: 'title that should fail' }))
 			)
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.save\(\).+Clearing/i)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -226,7 +428,8 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(DataStore.delete(Post, Predicates.ALL))
-				.rejects.toThrow('closed')
+				// looking top-level error name, operation that failed, state DS was in
+				.rejects.toThrow(/DataStoreStateError.+DataStore\.delete\(\).+Clearing/)
 				.finally(async () => {
 					unblock();
 					await clearing;
@@ -256,7 +459,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observe()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});
@@ -287,7 +492,9 @@ describe('DataStore sanity testing checks', () => {
 					expect(true).toBe(false);
 				},
 				error(error) {
-					expect(error.message).toContain('closed');
+					expect(error.message).toContain('DataStoreStateError');
+					expect(error.message).toContain('DataStore.observeQuery()');
+					expect(error.message).toContain('Clearing');
 					unblock();
 				},
 			});
@@ -671,79 +878,158 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	});
 
 	test('subscribe with criteria', async done => {
-		try {
-			const original = await DataStore.save(
-				new Model({
-					field1: 'somevalue',
-					optionalField1: 'additional value',
-					dateCreated: new Date().toISOString(),
-				})
-			);
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
 
-			const sub = DataStore.observe(Model, m =>
-				m.field1('contains', 'new field 1')
-			).subscribe(({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('UPDATE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('new field 1 value');
-				expect(element.optionalField1).toEqual('additional value');
-				sub.unsubscribe();
-				done();
-			});
+		const sub = DataStore.observe(Model, m =>
+			m.field1.contains('new field 1')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('UPDATE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('new field 1 value');
+			sub.unsubscribe();
+			done();
+		});
 
-			// decoy
-			await DataStore.save(
-				new Model({
-					field1: "This one's a decoy! (sfqpjzja)",
-					dateCreated: new Date().toISOString(),
-				})
-			);
+		// decoy
+		await DataStore.save(
+			new Model({
+				field1: "This one's a decoy! (sfqpjzja)",
+				dateCreated: new Date().toISOString(),
+			})
+		);
 
-			await DataStore.save(
-				Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
-			);
-		} catch (error) {
-			done(error);
-		}
+		await DataStore.save(
+			Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+		);
 	});
 
 	test('subscribe with criteria on deletes', async done => {
-		try {
-			const original = await DataStore.save(
-				new Model({
-					field1: 'somevalue',
-					optionalField1: 'additional value',
-					dateCreated: new Date().toISOString(),
-				})
-			);
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
 
-			const sub = DataStore.observe(Model, m =>
-				m.field1('eq', 'somevalue')
-			).subscribe(({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('DELETE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('somevalue');
-				expect(element.optionalField1).toEqual('additional value');
-				sub.unsubscribe();
-				done();
-			});
+		const sub = DataStore.observe(Model, m =>
+			m.field1.contains('value')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('DELETE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('somevalue');
+			sub.unsubscribe();
+			done();
+		});
 
-			// decoy
-			await DataStore.save(
-				new Model({
-					field1: "This one's a decoy! (xgxbubyd)",
-					dateCreated: new Date().toISOString(),
-				})
-			);
+		// decoy
+		await DataStore.save(
+			new Model({
+				field1: "This one's a decoy! (xgxbubyd)",
+				dateCreated: new Date().toISOString(),
+			})
+		);
 
-			await DataStore.delete(original);
-		} catch (error) {
-			done(error);
-		}
+		await DataStore.delete(original);
+	});
+
+	test('subscribe with belongsTo criteria', async done => {
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		const sub = DataStore.observe(Comment, comment =>
+			comment.post.title.eq(targetPost.title)
+		).subscribe(({ element: comment, opType, model }) => {
+			expect(comment.content).toEqual('good comment');
+			sub.unsubscribe();
+			done();
+		});
+
+		await DataStore.save(
+			new Comment({
+				content: 'bad comment',
+				post: nonTargetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+	});
+
+	test('subscribe with hasMany criteria', async done => {
+		// want to set up a few posts and a few "non-target" comments
+		// to ensure we can observe post based on a single comment that's
+		// somewhat "buried" alongside other comments.
+
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'bad comment', post: nonTargetPost })
+		);
+		await DataStore.save(
+			new Comment({ content: 'pre good comment', post: targetPost })
+		);
+
+		const targetComment = await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'post good comment', post: targetPost })
+		);
+
+		const sub = DataStore.observe(Post, post =>
+			post.comments.content.eq(targetComment.content)
+		).subscribe(async ({ element: post, opType, model }) => {
+			expect(post.title).toEqual('expected update');
+			sub.unsubscribe();
+			done();
+		});
+
+		// should not see this one come through the subscription.
+		await DataStore.save(
+			Post.copyOf(nonTargetPost, p => (p.title = 'decoy update'))
+		);
+
+		// this is the update we expect to see come through, as it has
+		// 'good comment' in its `comments` field.
+		await DataStore.save(
+			Post.copyOf(targetPost, p => (p.title = 'expected update'))
+		);
 	});
 });
 
@@ -853,7 +1139,6 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 
 			const sub = DataStore.observeQuery(Post).subscribe(
 				({ items, isSynced }) => {
-					// console.log('received', items);
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
@@ -887,7 +1172,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			const expecteds = [0, 5];
 
 			const sub = DataStore.observeQuery(Post, p =>
-				p.title('contains', 'include')
+				p.title.contains('include')
 			).subscribe(({ items }) => {
 				const expected = expecteds.shift() || 0;
 				expect(items.length).toBe(expected);
@@ -926,7 +1211,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			const expecteds = [0, 4, 3];
 
 			const sub = DataStore.observeQuery(Post, p =>
-				p.title('contains', 'include')
+				p.title.contains('include')
 			).subscribe(async ({ items }) => {
 				const expected = expecteds.shift() || 0;
 				expect(items.length).toBe(expected);
@@ -951,8 +1236,8 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					await pause(100);
 
 					const itemToEdit = (
-						await DataStore.query(Post, p => p.title('contains', 'include'))
-					).pop();
+						await DataStore.query(Post, p => p.title.contains('include'))
+					).pop()!;
 					await fullSave(
 						Post.copyOf(itemToEdit, draft => {
 							draft.title = 'second edited post - omit';
@@ -995,8 +1280,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				true;
 
 			const itemToEdit = (
-				await DataStore.query(Post, p => p.title('contains', 'include'))
-			).pop();
+				await DataStore.query(Post, p => p.title.contains('include'))
+			).pop()!;
+
 			await fullSave(
 				Post.copyOf(itemToEdit, draft => {
 					draft.title = 'first edited post - omit';
@@ -1076,7 +1362,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						sub.unsubscribe();
 						done();
 					} else {
-						const itemToDelete = (await DataStore.query(Post)).pop();
+						const itemToDelete = (await DataStore.query(Post)).pop()!;
 						await DataStore.delete(itemToDelete);
 						jest.advanceTimersByTime(2000);
 					}
@@ -1101,7 +1387,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				}
 
 				const sub = DataStore.observeQuery(Post, p =>
-					p.title('beginsWith', 'the post')
+					p.title.beginsWith('the post')
 				).subscribe(({ items, isSynced }) => {
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
@@ -1116,7 +1402,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					}
 				});
 
-				const itemToDelete = (await DataStore.query(Post)).pop();
+				const itemToDelete = (await DataStore.query(Post)).pop()!;
 				await DataStore.delete(itemToDelete);
 				jest.advanceTimersByTime(2000);
 			} catch (error) {
@@ -1143,13 +1429,13 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			}
 
 			const sub = DataStore.observeQuery(Comment).subscribe(
-				({ items, isSynced }) => {
+				async ({ items, isSynced }) => {
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
 					for (let i = 0; i < expected; i++) {
 						expect(items[i].content).toEqual(`comment content ${i}`);
-						expect(items[i].post.title).toEqual(`new post ${i}`);
+						expect((await items[i].post).title).toEqual(`new post ${i}`);
 					}
 
 					if (expecteds.length === 0) {
@@ -1197,14 +1483,16 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			}
 
 			const sub = DataStore.observeQuery(User).subscribe(
-				({ items, isSynced }) => {
+				async ({ items, isSynced }) => {
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
 
 					for (let i = 0; i < expected; i++) {
 						expect(items[i].name).toEqual(`user ${i}`);
-						expect(items[i].profile.firstName).toEqual(`firstName ${i}`);
-						expect(items[i].profile.lastName).toEqual(`lastName ${i}`);
+						expect((await items[i].profile)!.firstName).toEqual(
+							`firstName ${i}`
+						);
+						expect((await items[i].profile)!.lastName).toEqual(`lastName ${i}`);
 					}
 
 					if (expecteds.length === 0) {
@@ -1255,13 +1543,13 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			}
 
 			const sub = DataStore.observeQuery(Comment).subscribe(
-				({ items, isSynced }) => {
+				async ({ items, isSynced }) => {
 					const expected = expecteds.shift() || [];
 					expect(items.length).toBe(expected.length);
 
 					for (let i = 0; i < expected.length; i++) {
 						expect(items[i].content).toContain(`comment content ${i}`);
-						expect(items[i].post.title).toEqual(expected[i]);
+						expect((await items[i].post).title).toEqual(expected[i]);
 					}
 
 					if (expecteds.length === 0) {
@@ -1328,13 +1616,13 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			}
 
 			const sub = DataStore.observeQuery(User).subscribe(
-				({ items, isSynced }) => {
+				async ({ items, isSynced }) => {
 					const expected = expecteds.shift() || [];
 					expect(items.length).toBe(expected.length);
 
 					for (let i = 0; i < expected.length; i++) {
 						expect(items[i].name).toContain(`user ${i}`);
-						expect(items[i].profile.firstName).toEqual(expected[i]);
+						expect((await items[i].profile)!.firstName).toEqual(expected[i]);
 					}
 
 					if (expecteds.length === 0) {
@@ -1366,6 +1654,185 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		} catch (error) {
 			done(error);
 		}
+	});
+});
+
+describe('Model behavior', () => {
+	test('newly instantiated models do not lazy load belongsTo', async () => {
+		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
+
+		const parent = await DataStore.save(
+			new DefaultPKParent({
+				content: 'this is a decoy!',
+			})
+		);
+
+		const comment = await DataStore.save(
+			new DefaultPKChild({
+				id: "not such a random id, but it's ok",
+				content: 'here is some content',
+				parent,
+			})
+		);
+
+		const detachedComment = new DefaultPKChild({
+			id: "not such a random id, but it's ok",
+			content: 'here is some content',
+			defaultPKParentChildrenId: parent.id,
+		});
+
+		expect(detachedComment.defaultPKParentChildrenId).toEqual(
+			comment.defaultPKParentChildrenId
+		);
+		expect(await detachedComment.parent).toBeUndefined();
+	});
+
+	test('newly instantiated models do not lazy load hasMany', async () => {
+		const { DataStore, DefaultPKChild, DefaultPKParent } = getDataStore();
+
+		const parent = await DataStore.save(
+			new DefaultPKParent({
+				content: 'this is a decoy!',
+			})
+		);
+
+		const comment = await DataStore.save(
+			new DefaultPKChild({
+				id: "not such a random id, but it's ok",
+				content: 'here is some content',
+				parent,
+			})
+		);
+
+		const detachedParent = new DefaultPKParent({
+			id: parent.id,
+			content: parent.content,
+		});
+
+		expect(detachedParent.id).toEqual(parent.id);
+		expect(await detachedParent.children.toArray()).toEqual([]);
+	});
+
+	test('newly instantiated models do not lazy load hasOne', async () => {
+		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
+
+		const child = await DataStore.save(new HasOneChild({}));
+		const parent = await DataStore.save(
+			new HasOneParent({
+				child,
+			})
+		);
+
+		const disconnectedParent = new HasOneParent({
+			id: parent.id,
+			hasOneParentChildId: child.id,
+		});
+
+		expect(disconnectedParent.id).toEqual(parent.id);
+		expect(disconnectedParent.hasOneParentChildId).toEqual(child.id);
+		expect(await disconnectedParent.child).toBeUndefined();
+	});
+
+	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				// the number of records we expect in each snapshot
+				const expecteds = [5, 4];
+
+				// initial data set, 5 records that will match our predicate.
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.eq(true)
+				).subscribe(({ items, isSynced }) => {
+					// we don't actually expect 0 records in our snapshots after our list runs out.
+					// we just want to make TS happy.
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				// update an item to no longer match our criteria.
+				// we want to see a snapshot come through WITHOUT this item.
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+
+				// advance time to trigger another snapshot.
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes no-longer-matching items from the snapshot when using an ne() predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				// the number of records we expect in each snapshot
+				const expecteds = [5, 4];
+
+				// initial data set, 5 records that will match our predicate.
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.ne(false)
+				).subscribe(({ items, isSynced }) => {
+					// we don't actually expect 0 records in our snapshots after our list runs out.
+					// we just want to make TS happy.
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				// update an item to no longer match our criteria.
+				// we want to see a snapshot come through WITHOUT this item.
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+
+				// advance time to trigger another snapshot.
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
 	});
 });
 
@@ -1402,6 +1869,12 @@ describe('DataStore tests', () => {
 		}
 	});
 
+	/**
+	 * The following two "error on schema not initialized" tests enforce that
+	 * DataStore starts and clears alert customers that they may have multiple
+	 * versions of DataStore installed.
+	 */
+
 	test('error on schema not initialized on start', async () => {
 		const errorLog = jest.spyOn(console, 'error');
 		const errorRegex = /Schema is not initialized/;
@@ -1410,13 +1883,7 @@ describe('DataStore tests', () => {
 		expect(errorLog).toHaveBeenCalledWith(expect.stringMatching(errorRegex));
 	});
 
-	/**
-	 * I can't figure out why this is a requirement. Everything gets
-	 * easier and more stable without this. Can we not?
-	 *
-	 * TODO: Investigate.
-	 */
-	test.skip('error on schema not initialized on clear', async () => {
+	test('error on schema not initialized on clear', async () => {
 		const errorLog = jest.spyOn(console, 'error');
 		const errorRegex = /Schema is not initialized/;
 		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
@@ -1540,6 +2007,53 @@ describe('DataStore tests', () => {
 
 			expect(metadata).not.toHaveProperty('id');
 		});
+
+		describe('Check codegenVersion', () => {
+			const invalidcodegenVersion = [
+				'1.2.0',
+				'4.0.0',
+				'3.0',
+				'3.1.9999',
+				'5.4.1',
+				'3',
+				'unknown',
+			];
+			const validcodegenVersion = [
+				'3.2.0',
+				'3.2.4',
+				'3.4.0',
+				'3.5.6',
+				'3.5.0-beta',
+				'3.5.0-beta.1',
+				'3.8.1-tagged-release',
+				'3.8.1-tagged-release.1',
+				'3.9.4+alpha',
+			];
+
+			describe('Invalid codegenVersion', () => {
+				invalidcodegenVersion.forEach(codegenVersion => {
+					test(`fails on codegenVersion = ${codegenVersion}`, () => {
+						expect(() => {
+							initSchema({ ...testSchema(), codegenVersion });
+						}).toThrow(
+							'Models were generated with an unsupported version of codegen.'
+						);
+					});
+				});
+			});
+
+			describe('Valid codegenVersion', () => {
+				validcodegenVersion.forEach(codegenVersion => {
+					test(`passes on codegenVersion = ${codegenVersion}`, () => {
+						expect(() => {
+							initSchema({ ...testSchema(), codegenVersion });
+						}).not.toThrow(
+							'Models were generated with an unsupported version of codegen.'
+						);
+					});
+				});
+			});
+		});
 	});
 
 	describe('Immutability', () => {
@@ -1582,6 +2096,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('Id cannot be changed inside copyOf', () => {
+			const consoleWarn = jest.spyOn(console, 'warn');
+
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};
@@ -1597,6 +2113,16 @@ describe('DataStore tests', () => {
 
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
+
+			// we should always be told *in some way* when an "update" will not actually
+			// be applied. for now, this is a warning, because throwing an error, updating
+			// the record's PK, or creating a new record are all breaking changes.
+			expect(consoleWarn).toHaveBeenCalledWith(
+				expect.stringContaining(
+					"copyOf() does not update PK fields. The 'id' update is being ignored."
+				),
+				expect.objectContaining({ source: model1 })
+			);
 		});
 
 		test('Optional field can be initialized with undefined', () => {
@@ -1621,9 +2147,16 @@ describe('DataStore tests', () => {
 			const model1 = new Model({
 				field1: 'something',
 				dateCreated: new Date().toISOString(),
-				optionalField1: null,
+
+				// strict mode actually forbids assigning null to optional field **as we've defined them.**
+				// but, for customers not using strict TS and for JS developers, we need to ensure `null`
+				// is accepted and handled as expected.
+				optionalField1: null as unknown as undefined,
 			});
 
+			// strictly speaking (pun intended), the signature for optional fields is `type | undefined`.
+			// AFAIK, customers compiling exclusively in strict mode shouldn't ever see a `null` here.
+			// but, JS customers might explicitly set it to `null`.
 			expect(model1.optionalField1).toBeNull();
 		});
 
@@ -1971,7 +2504,7 @@ describe('DataStore tests', () => {
 			await DataStore.save(model);
 
 			model = Model.copyOf(model, draft => {
-				draft.emails = [...draft.emails, 'joe@doe.com'];
+				draft.emails = [...model.emails!, 'joe@doe.com'];
 			});
 
 			let result = await DataStore.save(model);
@@ -1979,7 +2512,7 @@ describe('DataStore tests', () => {
 			expect(result).toMatchObject(model);
 
 			model = Model.copyOf(model, draft => {
-				draft.emails.push('joe@doe.com');
+				draft.emails?.push('joe@doe.com');
 			});
 
 			result = await DataStore.save(model);
@@ -2075,7 +2608,7 @@ describe('DataStore tests', () => {
 			test('required field (undefined)', () => {
 				expect(() => {
 					new Model({
-						field1: undefined,
+						field1: undefined!,
 						dateCreated: new Date().toISOString(),
 					});
 				}).toThrowError('Field field1 is required');
@@ -2084,7 +2617,7 @@ describe('DataStore tests', () => {
 			test('required field (null)', () => {
 				expect(() => {
 					new Model({
-						field1: null,
+						field1: null!,
 						dateCreated: new Date().toISOString(),
 					});
 				}).toThrowError('Field field1 is required');
@@ -2114,6 +2647,7 @@ describe('DataStore tests', () => {
 
 			test('set nested non model field as undefined', () => {
 				expect(
+					// @ts-ignore
 					new Model({
 						field1: 'someField',
 						dateCreated: new Date().toISOString(),
@@ -2136,7 +2670,7 @@ describe('DataStore tests', () => {
 						metadata: new Metadata({
 							author: 'Some author',
 							tags: undefined,
-							rewards: [null],
+							rewards: [null!],
 							penNames: [],
 							nominations: [],
 						}),
@@ -2155,7 +2689,7 @@ describe('DataStore tests', () => {
 						metadata: {
 							author: 'Some author',
 							tags: undefined,
-							rewards: [null],
+							rewards: [null!],
 							penNames: [],
 							nominations: [],
 						},
@@ -2181,7 +2715,7 @@ describe('DataStore tests', () => {
 					new Model({
 						field1: 'someField',
 						dateCreated: new Date().toISOString(),
-						emails: [null],
+						emails: [null!],
 					});
 				}).toThrowError(
 					'All elements in the emails array should be of type string, [null] received. '
@@ -2275,7 +2809,7 @@ describe('DataStore tests', () => {
 							tags: undefined,
 							rewards: [],
 							penNames: [],
-							nominations: null,
+							nominations: null!,
 						}),
 					});
 				}).toThrowError('Field nominations is required');
@@ -2291,7 +2825,7 @@ describe('DataStore tests', () => {
 							tags: undefined,
 							rewards: [],
 							penNames: [],
-							nominations: null,
+							nominations: null!,
 						},
 					});
 				}).toThrowError('Field nominations is required');
@@ -2306,7 +2840,7 @@ describe('DataStore tests', () => {
 							author: 'Some author',
 							tags: undefined,
 							rewards: [],
-							penNames: [undefined],
+							penNames: [undefined!],
 							nominations: [],
 						}),
 					});
@@ -2325,7 +2859,7 @@ describe('DataStore tests', () => {
 							author: 'Some author',
 							tags: undefined,
 							rewards: [],
-							penNames: [undefined],
+							penNames: [undefined!],
 							nominations: [],
 						},
 					});
@@ -2413,7 +2947,7 @@ describe('DataStore tests', () => {
 							rewards: [],
 							penNames: [],
 							nominations: [],
-							misc: [undefined],
+							misc: [undefined!],
 						}),
 					});
 				}).not.toThrow();
@@ -2429,7 +2963,7 @@ describe('DataStore tests', () => {
 							rewards: [],
 							penNames: [],
 							nominations: [],
-							misc: [undefined],
+							misc: [undefined!],
 						},
 					});
 				}).not.toThrow();
@@ -2445,7 +2979,7 @@ describe('DataStore tests', () => {
 							rewards: [],
 							penNames: [],
 							nominations: [],
-							misc: [undefined, null],
+							misc: [undefined!, null],
 						}),
 					});
 				}).not.toThrow();
@@ -2461,7 +2995,7 @@ describe('DataStore tests', () => {
 							rewards: [],
 							penNames: [],
 							nominations: [],
-							misc: [undefined, null],
+							misc: [undefined!, null],
 						},
 					});
 				}).not.toThrow();
@@ -2634,7 +3168,7 @@ describe('DataStore tests', () => {
 					new Model({
 						field1: 'someField',
 						dateCreated: new Date().toISOString(),
-						logins: [null, { username: 'user' }],
+						logins: [null!, { username: 'user' }],
 					});
 				}).not.toThrowError();
 			});
@@ -2673,11 +3207,7 @@ describe('DataStore tests', () => {
 			);
 
 			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
-			);
-
-			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+				"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
 			);
 
 			await expect(DataStore.delete(<any>{})).rejects.toThrow(
@@ -2748,7 +3278,7 @@ describe('DataStore tests', () => {
 			}
 
 			const deleted = await DataStore.delete(Model, m =>
-				m.field1('eq', 'someField')
+				m.field1.eq('someField')
 			);
 
 			expect(deleted.length).toEqual(10);
@@ -2758,7 +3288,7 @@ describe('DataStore tests', () => {
 		});
 
 		test('Delete one returns one', async () => {
-			let model: Model;
+			let model: Model | undefined;
 			const save = jest.fn(saved => (model = saved));
 			const query = jest.fn(() => [model]);
 			const _delete = jest.fn(() => [[model], [model]]);
@@ -2886,14 +3416,21 @@ describe('DataStore tests', () => {
 			});
 			test('one by id', async () => {
 				const oneModelById = await DataStore.query(Model, 'someid');
-				expectType<Model>(oneModelById);
-				expect(oneModelById.field1).toBeDefined();
+				expectType<Model | undefined>(oneModelById);
+				expect(oneModelById?.field1).toBeDefined();
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {
 				const multiModelWithCriteria = await DataStore.query(Model, c =>
-					c.field1('contains', 'something')
+					c.field1.contains('something')
 				);
+				expectType<Model[]>(multiModelWithCriteria);
+				const [one] = multiModelWithCriteria;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+			test('with identity function criteria', async () => {
+				const multiModelWithCriteria = await DataStore.query(Model, c => c);
 				expectType<Model[]>(multiModelWithCriteria);
 				const [one] = multiModelWithCriteria;
 				expect(one.field1).toBeDefined();
@@ -2922,13 +3459,13 @@ describe('DataStore tests', () => {
 			});
 			test('one by id', async () => {
 				const oneModelById = await DataStore.query<Model>(Model, 'someid');
-				expectType<Model>(oneModelById);
-				expect(oneModelById.field1).toBeDefined();
+				expectType<Model | undefined>(oneModelById);
+				expect(oneModelById?.field1).toBeDefined();
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {
 				const multiModelWithCriteria = await DataStore.query<Model>(Model, c =>
-					c.field1('contains', 'something')
+					c.field1.contains('something')
 				);
 				expectType<Model[]>(multiModelWithCriteria);
 				const [one] = multiModelWithCriteria;
@@ -2979,7 +3516,7 @@ describe('DataStore tests', () => {
 				});
 			});
 			test('subscribe to model with criteria', async () => {
-				DataStore.observe(Model, c => c.field1('ne', 'somevalue')).subscribe(
+				DataStore.observe(Model, c => c.field1.ne('somevalue')).subscribe(
 					({ element, model }) => {
 						expectType<PersistentModelConstructor<Model>>(model);
 						expectType<Model>(element);
@@ -3016,7 +3553,7 @@ describe('DataStore tests', () => {
 			});
 			test('subscribe to model with criteria', async () => {
 				DataStore.observe<Model>(Model, c =>
-					c.field1('ne', 'somevalue')
+					c.field1.ne('somevalue')
 				).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
@@ -3104,6 +3641,8 @@ describe('DataStore tests', () => {
 			});
 
 			test('postId cannot be changed inside copyOf', () => {
+				const consoleWarn = jest.spyOn(console, 'warn');
+
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
@@ -3120,6 +3659,16 @@ describe('DataStore tests', () => {
 
 				// postId should be kept the same
 				expect(model1.postId).toBe(model2.postId);
+
+				// we should always be told *in some way* when an "update" will not actually
+				// be applied. for now, this is a warning, because throwing an error, updating
+				// the record's PK, or creating a new record are all breaking changes.
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"copyOf() does not update PK fields. The 'postId' update is being ignored."
+					),
+					expect.objectContaining({ source: model1 })
+				);
 			});
 
 			test('Optional field can be initialized with undefined', () => {
@@ -3430,7 +3979,7 @@ describe('DataStore tests', () => {
 				await DataStore.save(model);
 
 				model = PostCustomPK.copyOf(model, draft => {
-					draft.emails = [...draft.emails, 'joe@doe.com'];
+					draft.emails = [...draft.emails!, 'joe@doe.com'];
 				});
 
 				let result = await DataStore.save(model);
@@ -3438,7 +3987,7 @@ describe('DataStore tests', () => {
 				expect(result).toMatchObject(model);
 
 				model = PostCustomPK.copyOf(model, draft => {
-					draft.emails.push('joe@doe.com');
+					draft.emails!.push('joe@doe.com');
 				});
 
 				result = await DataStore.save(model);
@@ -3541,7 +4090,7 @@ describe('DataStore tests', () => {
 				expect(() => {
 					new PostCustomPK({
 						postId: '12345',
-						title: undefined,
+						title: undefined as any, // because we're trying to trigger JS error
 						dateCreated: new Date().toISOString(),
 					});
 				}).toThrowError('Field title is required');
@@ -3549,7 +4098,7 @@ describe('DataStore tests', () => {
 				expect(() => {
 					new PostCustomPK({
 						postId: '12345',
-						title: null,
+						title: null as any, // because we're trying to trigger JS error
 						dateCreated: new Date().toISOString(),
 					});
 				}).toThrowError('Field title is required');
@@ -3579,7 +4128,7 @@ describe('DataStore tests', () => {
 						postId: '12345',
 						title: 'someField',
 						dateCreated: new Date().toISOString(),
-						emails: [null],
+						emails: [null as any], // because we're trying to trigger JS error
 					});
 				}).toThrowError(
 					'All elements in the emails array should be of type string, [null] received. '
@@ -3637,13 +4186,7 @@ describe('DataStore tests', () => {
 				await expect(
 					DataStore.delete(PostCustomPK, <any>(() => {}))
 				).rejects.toThrow(
-					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
-				);
-
-				await expect(
-					DataStore.delete(PostCustomPK, <any>(() => {}))
-				).rejects.toThrow(
-					'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+					"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
 				);
 
 				await expect(DataStore.delete(<any>{})).rejects.toThrow(
@@ -3711,7 +4254,7 @@ describe('DataStore tests', () => {
 				);
 
 				const deleted = await DataStore.delete(PostCustomPK, m =>
-					m.title('eq', 'someField')
+					m.title.eq('someField')
 				);
 
 				const sortedRecords = deleted.sort((a, b) =>
@@ -3772,7 +4315,7 @@ describe('DataStore tests', () => {
 				);
 
 				expect(deleted.length).toEqual(1);
-				expect(deleted[0]).toEqual(model);
+				expect(deleted[0]).toEqual(model!);
 			});
 
 			test('Delete one by Custom PK with predicate returns one', async () => {
@@ -3819,11 +4362,11 @@ describe('DataStore tests', () => {
 				const deleted: PostCustomPKType[] = await DataStore.delete(
 					PostCustomPK,
 
-					m => m.postId('eq', saved.postId)
+					m => m.postId.eq(saved.postId)
 				);
 
 				expect(deleted.length).toEqual(1);
-				expect(deleted[0]).toEqual(model);
+				expect(deleted[0]).toEqual(model!);
 			});
 
 			test('Query params', async () => {
@@ -3916,14 +4459,14 @@ describe('DataStore tests', () => {
 							'someid'
 						);
 
-						expectType<PostCustomPKType>(onePostCustomPKById);
-						expect(onePostCustomPKById.title).toBeDefined();
+						expectType<PostCustomPKType>(onePostCustomPKById!);
+						expect(onePostCustomPKById!.title).toBeDefined();
 						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
 					});
 					test('with criteria', async () => {
 						const multiPostCustomPKWithCriteria = await DataStore.query(
 							PostCustomPK,
-							c => c.title('contains', 'something')
+							c => c.title.contains('something')
 						);
 
 						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
@@ -3963,14 +4506,14 @@ describe('DataStore tests', () => {
 							PostCustomPK,
 							'someid'
 						);
-						expectType<PostCustomPKType>(onePostCustomPKById);
-						expect(onePostCustomPKById.title).toBeDefined();
+						expectType<PostCustomPKType>(onePostCustomPKById!);
+						expect(onePostCustomPKById!.title).toBeDefined();
 						expect(onePostCustomPKById).toBeInstanceOf(PostCustomPK);
 					});
 					test('with criteria', async () => {
 						const multiPostCustomPKWithCriteria =
 							await DataStore.query<PostCustomPKType>(PostCustomPK, c =>
-								c.title('contains', 'something')
+								c.title.contains('something')
 							);
 
 						expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
