@@ -8,19 +8,16 @@ import * as events from 'events';
 import {
 	S3Client,
 	AbortMultipartUploadCommand,
+	CompleteMultipartUploadCommand,
 	ListPartsCommand,
 	CreateMultipartUploadCommand,
 	ListObjectsV2Command,
-	CompleteMultipartUploadCommand,
 	UploadPartCommand,
-	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
 
-afterEach(() => {
-	jest.clearAllMocks();
-});
+const MB = 1024 * 1024;
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -115,7 +112,7 @@ describe('resumable upload task test', () => {
 		expect(cancelled).toBe(true);
 		uploadTask._cancel().then(cancelled => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-			expect(cancelled).toBe(true);
+			expect(cancelled).toBe(false);
 		});
 	});
 
@@ -140,7 +137,7 @@ describe('resumable upload task test', () => {
 				return Promise.resolve({ Key: input.params.Key });
 			} else if (command instanceof ListObjectsV2Command) {
 				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 15048576 }],
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 15048576 }],
 				});
 			} else if (command instanceof CompleteMultipartUploadCommand) {
 				return Promise.resolve();
@@ -205,7 +202,7 @@ describe('resumable upload task test', () => {
 				});
 			} else if (command instanceof ListObjectsV2Command) {
 				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
 				});
 			}
 		});
@@ -256,5 +253,84 @@ describe('resumable upload task test', () => {
 			UPLOADS_STORAGE_KEY,
 			'{}'
 		);
+	});
+
+	test('upload a body that exceeds the size of default part size and parts count', done => {
+		const testUploadId = 'testUploadId';
+		let buffer: ArrayBuffer;
+		const file = {
+			size: 100_000 * MB,
+			slice: jest.fn().mockImplementation((start, end) => {
+				if (end - start !== buffer?.byteLength) {
+					buffer = new ArrayBuffer(end - start);
+				}
+				return buffer;
+			}),
+		} as any as File;
+		const key = 'key';
+
+		const s3ServiceCallSpy = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async command => {
+				if (command instanceof CreateMultipartUploadCommand) {
+					return Promise.resolve({ UploadId: testUploadId });
+				} else if (command instanceof UploadPartCommand) {
+					return Promise.resolve({
+						ETag: 'test_etag_' + command.input.PartNumber,
+					});
+				} else if (command instanceof CompleteMultipartUploadCommand) {
+					return Promise.resolve({ Key: key });
+				} else if (command instanceof ListObjectsV2Command) {
+					return Promise.resolve({
+						Contents: [{ Key: 'prefix' + key, Size: file.size }],
+					});
+				}
+			});
+
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			s3Client: new S3Client(testOpts),
+			emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		const uploadTask = new AWSS3UploadTask(input);
+		uploadTask.resume();
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			expect(file.slice).toBeCalledTimes(10000); // S3 limit of parts count.
+			expect(s3ServiceCallSpy).toBeCalledTimes(10000 + 3);
+			done();
+		});
+	});
+
+	test('error case: throw if body size exceeds the size limit of S3 object(5TB)', async () => {
+		const GB = 1024 * MB;
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file: { size: 5 * 1024 * GB + 1 } as File,
+			s3Client: new S3Client(testOpts),
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		try {
+			new AWSS3UploadTask(input);
+			fail('expect test to fail');
+		} catch (error) {
+			expect(error.message).toEqual(
+				expect.stringContaining('File size bigger than S3 Object limit of 5TB')
+			);
+		}
 	});
 });
