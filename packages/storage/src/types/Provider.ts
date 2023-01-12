@@ -23,6 +23,19 @@ export interface StorageProvider {
 	// upload storage object
 	put(key: string, object, options?): Promise<Object> | UploadTask;
 
+	//generate PreSignedUrl for uploads
+	getPresignedUploadUrl(
+		key: string,
+		object,
+		options?
+	): Promise<Object> | String;
+
+	uploadFile?(
+		key: string,
+		filePath: string,
+		options?
+	): Promise<UploadFileTask> | UploadFileTask;
+
 	// remove object
 	remove(key: string, options?): Promise<any>;
 
@@ -43,6 +56,11 @@ export interface UploadTask {
 	isInProgress: boolean;
 }
 
+export interface UploadFileTask {
+	uploadId: String;
+	cancel(): any;
+}
+
 export interface StorageProviderWithCopy extends StorageProvider {
 	// copy object from src to dest
 	copy(
@@ -52,4 +70,10 @@ export interface StorageProviderWithCopy extends StorageProvider {
 	): Promise<any>;
 }
 
-export type StorageProviderApi = 'copy' | 'get' | 'put' | 'remove' | 'list';
+export type StorageProviderApi =
+	| 'copy'
+	| 'get'
+	| 'put'
+	| 'remove'
+	| 'list'
+	| 'uploadFile';

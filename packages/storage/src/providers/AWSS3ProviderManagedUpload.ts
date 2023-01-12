@@ -27,6 +27,9 @@ import {
 	autoAdjustClockskewMiddlewareOptions,
 	createS3Client,
 } from '../common/S3ClientUtils';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { UploadFileTask } from '../types';
+import RNUpload from './RNUploadService';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -56,9 +59,18 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter = null;
 
-	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
+	//callbacks
+	private uploadFileConfigs: any;
+
+	constructor(
+		params: PutObjectRequest,
+		opts,
+		emitter: events.EventEmitter,
+		uploadFileConfigs?
+	) {
 		this.params = params;
 		this.opts = opts;
+		this.uploadFileConfigs = uploadFileConfigs;
 		this.emitter = emitter;
 		this.s3client = this._createNewS3Client(opts, emitter);
 	}
@@ -87,7 +99,6 @@ export class AWSS3ProviderManagedUpload {
 					start < numberOfPartsToUpload;
 					start += this.queueSize
 				) {
-
 					// Upload as many as `queueSize` parts simultaneously
 					await this.uploadParts(
 						this.uploadId,
@@ -107,6 +118,99 @@ export class AWSS3ProviderManagedUpload {
 			await this.cleanup(this.uploadId);
 			logger.error('Error. Cancelling the multipart upload.');
 			throw error;
+		}
+	}
+
+	public async uploadFile(): Promise<UploadFileTask> {
+		try {
+			if (Object.keys(RNUpload).length === 0) {
+				return {} as UploadFileTask;
+			}
+
+			//To-do : Calculate MD5 Checksum and Use the checksum to generate the PreSignedUrl. At the time of upload set content-md5 header to confirm file integrity.
+			/* 			const FileCheckSum = await RNUpload.getMD5CheckSumFromFilePath(
+				this.params.Body
+			);
+			console.log('MD5 CheckSum: ', FileCheckSum);
+ 			*/
+			const preSignedUrl = await this.getPreSignedUrl();
+			//console.log('generated preSignedUrl: ', preSignedUrl);
+			const {
+				progressCallback,
+				successCallback,
+				errorCallback,
+				cancelCallback,
+				notifications,
+			} = this.uploadFileConfigs;
+
+			const options = {
+				url: preSignedUrl,
+				path: this.params.Body as any,
+				method: 'PUT',
+				type: 'raw',
+				maxRetries: 2,
+				/* headers: {
+					'Content-Length': 'application/octet-stream', // Customize content-type
+				}, */
+				notification: {
+					enabled: notifications?.enabled,
+					onProgressTitle:
+						notifications?.progressMsg?.title || 'Uploading ' + this.params.Key,
+					onProgressMessage: notifications?.progressMsg?.message,
+					onCompleteTitle:
+						notifications?.successMsg?.title ||
+						'Upload finished ' + this.params.Key,
+					onCompleteMessage: notifications?.successMsg?.message,
+					onErrorTitle:
+						notifications?.errorMsg?.title ||
+						'Error uploading ' + this.params.Key,
+					onErrorMessage: notifications?.errorMsg?.message,
+					onCancelledTitle:
+						notifications?.cancelledMsg?.title ||
+						'Upload cancelled: ' + this.params.Key,
+					onCancelledMessage: notifications?.cancelledMsg?.message,
+				},
+				useUtf8Charset: true,
+			};
+
+			const uploadId = await RNUpload.startUpload(options);
+			console.log('Upload happening', uploadId);
+			RNUpload.addListener('progress', uploadId, progressCallback);
+			RNUpload.addListener('error', uploadId, errorCallback);
+			RNUpload.addListener('cancelled', uploadId, cancelCallback);
+			RNUpload.addListener('completed', uploadId, successCallback);
+
+			return {
+				uploadId: uploadId,
+				cancel: function () {
+					RNUpload.cancelUpload(uploadId);
+				},
+			};
+		} catch (error) {
+			// if any error is thrown, call cleanup
+			console.log('Inside Catch block error: ', error);
+
+			logger.error('Error. Cancelling the  upload.');
+			throw error;
+		}
+	}
+
+	private async getPreSignedUrl() {
+		try {
+			// Create a command to put the object in the S3 bucket.
+			const command = new PutObjectCommand(this.params);
+			console.log('Chintan');
+			console.log(this.params);
+			// Create the presigned URL.
+			const signedUrl = await getSignedUrl(this.s3client, command, {
+				expiresIn: 3600,
+			});
+			console.log(
+				`\nPutting "${this.params.Key}" using signedUrl with body in v3`
+			);
+			return signedUrl;
+		} catch (err) {
+			console.log('Error creating presigned URL', err);
 		}
 	}
 
