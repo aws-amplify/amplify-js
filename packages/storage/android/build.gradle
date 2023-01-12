@@ -6,16 +6,8 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/chintann/uploadservice')
-            storePassword '123456789'
-            keyAlias 'key0'
-            keyPassword '123456789'
         }
         release {
-            storeFile file('/Users/chintann/uploadservice')
-            storePassword '123456789'
-            keyAlias 'key0'
-            keyPassword '123456789'
         }
     }
     compileSdk 32
