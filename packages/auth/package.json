@@ -10,7 +10,9 @@
   },
   "sideEffects": [
     "./lib/Auth.js",
-    "./lib-esm/Auth.js"
+    "./lib-esm/Auth.js",
+    "./lib/cognito/commands/signInWithOAuth.js",
+    "./lib-esm/cognito/commands/signInWithOAuth.js"
   ],
   "publishConfig": {
     "access": "public"

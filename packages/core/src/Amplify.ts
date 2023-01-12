@@ -6,6 +6,7 @@ export class AmplifyClass {
 	// Everything that is `register`ed is tracked here
 	private _components = [];
 	private _config = {};
+	private _configListeners: Function[] = [];
 
 	// All modules (with `getModuleName()`) are stored here for dependency injection
 	private _modules = {};
@@ -90,6 +91,9 @@ export class AmplifyClass {
 			comp.configure(this._config);
 		});
 
+		this._configListeners.forEach(listener =>
+			listener(JSON.parse(JSON.stringify(this._config)))
+		);
 		return this._config;
 	}
 
@@ -98,6 +102,10 @@ export class AmplifyClass {
 			return JSON.parse(JSON.stringify(this._config));
 		}
 		return null;
+	}
+
+	configChange(callback) {
+		this._configListeners.push(callback);
 	}
 
 	addPluggable(pluggable) {

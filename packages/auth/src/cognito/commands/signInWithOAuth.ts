@@ -5,6 +5,8 @@ import {
 	AwsCognitoOAuthOpts,
 	CognitoHostedUIIdentityProvider,
 } from '../../types';
+import { oauthSessionListener } from './oauthSessionListener';
+
 export function isCognitoHostedOpts(
 	oauth: OAuthOpts
 ): oauth is AwsCognitoOAuthOpts {
@@ -74,4 +76,13 @@ export function signInWithOAuth() {
 	}
 
 	console.log('no config....');
+}
+
+try {
+	Amplify.configChange(config => {
+		console.log('config change', config);
+		oauthSessionListener();
+	});
+} catch (err) {
+	console.warn('oauth error', err);
 }

@@ -32,9 +32,7 @@ export async function oauthSessionListener() {
 			} = amplifyConfig.Auth as any;
 
 			if (!userPoolId) {
-				throw new Error(
-					`OAuth responses require a User Pool defined in config`
-				);
+				return;
 			}
 
 			const { oauth } = Amplify.getConfig();
