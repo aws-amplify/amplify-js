@@ -3,6 +3,29 @@ import { parse } from 'url';
 import OAuth from '../../OAuth/OAuth';
 import { AwsCognitoOAuthOpts, isCognitoHostedOpts } from '../../types';
 
+function cacheTokens({
+	idToken,
+	accessToken,
+	refreshToken,
+	clockDrift,
+	username,
+	userPoolClientID,
+}) {
+	const keyPrefix = `CognitoIdentityServiceProvider.${userPoolClientID}`;
+	const idTokenKey = `${keyPrefix}.${username}.idToken`;
+	const accessTokenKey = `${keyPrefix}.${username}.accessToken`;
+	const refreshTokenKey = `${keyPrefix}.${username}.refreshToken`;
+	const clockDriftKey = `${keyPrefix}.${username}.clockDrift`;
+	const lastUserKey = `${keyPrefix}.LastAuthUser`;
+	const _storage = new StorageHelper().getStorage();
+
+	_storage.setItem(idTokenKey, idToken);
+	_storage.setItem(accessTokenKey, accessToken);
+	_storage.setItem(refreshTokenKey, refreshToken);
+	_storage.setItem(clockDriftKey, `${clockDrift}`);
+	_storage.setItem(lastUserKey, username);
+}
+
 export async function oauthSessionListener() {
 	const URL = window.location.href;
 	const _storage = new StorageHelper().getStorage();
@@ -83,7 +106,14 @@ export async function oauthSessionListener() {
 				try {
 					const { accessToken, idToken, refreshToken, state } =
 						(await _oAuthHandler.handleAuthResponse(currentUrl)) as any;
-
+					cacheTokens({
+						accessToken,
+						idToken,
+						refreshToken,
+						clockDrift: 0,
+						username: 'username',
+						userPoolClientID: userPoolWebClientId,
+					});
 					/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained

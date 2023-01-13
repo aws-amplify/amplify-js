@@ -14,7 +14,6 @@ export function isCognitoHostedOpts(
 }
 
 export function signInWithOAuth() {
-	debugger;
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
 	if (amplifyConfig && amplifyConfig.Auth) {
 		console.log('hostedUI redirect...');
