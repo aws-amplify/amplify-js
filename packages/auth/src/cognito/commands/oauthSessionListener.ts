@@ -2,29 +2,7 @@ import { Amplify, parseAWSExports, StorageHelper } from '@aws-amplify/core';
 import { parse } from 'url';
 import OAuth from '../../OAuth/OAuth';
 import { AwsCognitoOAuthOpts, isCognitoHostedOpts } from '../../types';
-
-function cacheTokens({
-	idToken,
-	accessToken,
-	refreshToken,
-	clockDrift,
-	username,
-	userPoolClientID,
-}) {
-	const keyPrefix = `CognitoIdentityServiceProvider.${userPoolClientID}`;
-	const idTokenKey = `${keyPrefix}.${username}.idToken`;
-	const accessTokenKey = `${keyPrefix}.${username}.accessToken`;
-	const refreshTokenKey = `${keyPrefix}.${username}.refreshToken`;
-	const clockDriftKey = `${keyPrefix}.${username}.clockDrift`;
-	const lastUserKey = `${keyPrefix}.LastAuthUser`;
-	const _storage = new StorageHelper().getStorage();
-
-	_storage.setItem(idTokenKey, idToken);
-	_storage.setItem(accessTokenKey, accessToken);
-	_storage.setItem(refreshTokenKey, refreshToken);
-	_storage.setItem(clockDriftKey, `${clockDrift}`);
-	_storage.setItem(lastUserKey, username);
-}
+import { cacheTokens } from '../storage';
 
 export async function oauthSessionListener() {
 	const URL = window.location.href;
