@@ -1,63 +1,44 @@
 import { StorageHelper, Amplify, parseAWSExports } from '@aws-amplify/core';
+import { request } from '../client';
+import { Buffer } from 'buffer';
+import { cacheTokens, readTokens } from '../storage';
 
 export async function fetchSession() {
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
 	if (amplifyConfig && amplifyConfig.Auth) {
 		// load credentials from storage
-		const tokens = readTokens({
+		let tokens = readTokens({
 			userPoolCliendId: amplifyConfig.Auth.userPoolWebClientId,
 		});
 
 		if (tokens) {
 			const { accessToken, idToken, refreshToken } = tokens;
-			if (!isTokenValid(accessToken) || !isTokenValid(idToken)) {
+			if (
+				!isTokenValid({ token: accessToken }) ||
+				!isTokenValid({ token: idToken })
+			) {
+				const refreshedUser = await refreshTokens({
+					refreshToken,
+					clientId: amplifyConfig.Auth.userPoolWebClientId,
+					region: amplifyConfig.Auth.region,
+				});
+
+				tokens = { ...refreshedUser, clockDrift: 0 };
 			}
-			Amplify.setUser({
-				accessToken,
-				idToken,
-				refreshToken,
-			});
 		}
-		// update Amplify user object
+		if (tokens) {
+			Amplify.setUser({ ...tokens });
+		}
 		return tokens;
 	}
-}
-
-function readTokens({ userPoolCliendId }) {
-	const username = 'username';
-
-	const keyPrefix = `CognitoIdentityServiceProvider.${userPoolCliendId}.${username}`;
-	const idTokenKey = `${keyPrefix}.idToken`;
-	const accessTokenKey = `${keyPrefix}.accessToken`;
-	const refreshTokenKey = `${keyPrefix}.refreshToken`;
-	const clockDriftKey = `${keyPrefix}.clockDrift`;
-
-	const _storage = new StorageHelper().getStorage();
-
-	if (_storage.getItem(idTokenKey)) {
-		const idToken = _storage.getItem(idTokenKey);
-		const accessToken = _storage.getItem(accessTokenKey);
-		const refreshToken = _storage.getItem(refreshTokenKey);
-		const clockDrift = Number.parseInt(_storage.getItem(clockDriftKey), 0);
-
-		return {
-			accessToken,
-			idToken,
-			refreshToken,
-			clockDrift,
-		};
-	}
-
-	return undefined;
 }
 
 function getTokenClaim({ token, claim }) {
 	const payload = token.split('.')[1];
 	if (!payload) return null;
 	try {
-		const payloadObj = JSON.parse(
-			Buffer.from(payload, 'base64').toString('utf8')
-		);
+		const payloadDecoded = Buffer.from(payload, 'base64').toString('utf8');
+		const payloadObj = JSON.parse(payloadDecoded);
 		if (payloadObj && payloadObj[claim]) {
 			return payloadObj[claim];
 		}
@@ -73,4 +54,37 @@ function isTokenValid({ token }) {
 	const expiration = getTokenClaim({ token, claim: EXPIRATION_CLAIM });
 
 	return Number.isInteger(expiration) && expiration > now;
+}
+
+async function refreshTokens({ refreshToken, clientId, region }) {
+	const jsonReq = {
+		ClientId: clientId,
+		AuthFlow: 'REFRESH_TOKEN_AUTH',
+		AuthParameters: {
+			REFRESH_TOKEN: refreshToken,
+		},
+	};
+
+	const response = await request({
+		operation: 'InitiateAuth',
+		region,
+		params: jsonReq,
+	});
+
+	const { AuthenticationResult } = response;
+
+	cacheTokens({
+		idToken: AuthenticationResult.IdToken,
+		accessToken: AuthenticationResult.AccessToken,
+		clockDrift: 0,
+		refreshToken,
+		username: 'username',
+		userPoolClientID: clientId,
+	});
+
+	return {
+		accessToken: AuthenticationResult.AccessToken,
+		idToken: AuthenticationResult.IdToken,
+		refreshToken,
+	};
 }
