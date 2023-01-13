@@ -4,7 +4,7 @@ import { RestClient } from './RestClient';
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Credentials,
+	//	Credentials,
 } from '@aws-amplify/core';
 import { ApiInfo } from './types';
 
@@ -20,7 +20,7 @@ export class RestAPIClass {
 	private _options;
 	private _api: RestClient = null;
 
-	Credentials = Credentials;
+	//Credentials = Credentials;
 
 	/**
 	 * Initialize Rest API with AWS configuration
@@ -93,7 +93,7 @@ export class RestAPIClass {
 		this._api = new RestClient(this._options);
 
 		// Share Amplify instance with client for SSR
-		this._api.Credentials = this.Credentials;
+		//this._api.Credentials = this.Credentials;
 		return true;
 	}
 

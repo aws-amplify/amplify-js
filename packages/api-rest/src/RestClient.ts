@@ -3,7 +3,6 @@
 
 import {
 	ConsoleLogger as Logger,
-	Credentials,
 	DateUtils,
 	Signer,
 	Platform,
@@ -50,7 +49,7 @@ export class RestClient {
 	 */
 	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
 
-	Credentials = Credentials;
+	//Credentials = Credentials;
 
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
@@ -181,7 +180,7 @@ export class RestClient {
 		}
 
 		// Signing the request in case there credentials are available
-		return this.Credentials.get().then(
+		/*return this.Credentials.get().then(
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse, {
 					region,
@@ -212,7 +211,8 @@ export class RestClient {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
 			}
-		);
+		);*/
+		return this._request(params, isAllResponse);
 	}
 
 	/**
