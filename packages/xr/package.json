@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "4.0.9",
+  "version": "4.0.10",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -45,17 +45,17 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.9",
+    "@aws-amplify/core": "5.0.10",
     "tslib": "^1.8.0"
   },
-	"size-limit": [
-		{
-			"name": "XR (top-level class)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, XR }",
-			"limit": "42.5 kB"
-		}
-	],
+  "size-limit": [
+    {
+      "name": "XR (top-level class)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Amplify, XR }",
+      "limit": "42.5 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

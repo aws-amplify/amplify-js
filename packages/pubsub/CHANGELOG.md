@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.9...@aws-amplify/pubsub@5.0.10) (2023-01-13)
+
+
+### Bug Fixes
+
+* **pubsub:** Apply localStorage fix for error when cookies are disabled ([8f74aea](https://github.com/aws-amplify/amplify-js/commit/8f74aea9afedb341d48ffc156bf84b27eca046d4))
+* Pull paho-mqtt code in to allow patching ([51a1418](https://github.com/aws-amplify/amplify-js/commit/51a1418f9654becb9854904f5baeefceac78f577))
+
+
+
+
+
 ## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.8...@aws-amplify/pubsub@5.0.9) (2023-01-10)
 
 

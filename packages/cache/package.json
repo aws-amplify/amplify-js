@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -47,23 +47,23 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.9",
+    "@aws-amplify/core": "5.0.10",
     "tslib": "^1.8.0"
   },
-	"size-limit": [
-		{
-			"name": "Cache (default browser storage)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Cache }",
-			"limit": "4 kB"
-		},
-		{
-			"name": "Cache (in-memory)",
-			"path": "./lib-esm/index.js",
-			"import": "{ InMemoryCache }",
-			"limit": "3.75 kB"
-		}
-	],
+  "size-limit": [
+    {
+      "name": "Cache (default browser storage)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Cache }",
+      "limit": "4 kB"
+    },
+    {
+      "name": "Cache (in-memory)",
+      "path": "./lib-esm/index.js",
+      "import": "{ InMemoryCache }",
+      "limit": "3.75 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {
