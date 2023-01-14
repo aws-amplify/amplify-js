@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
 import { Buffer } from 'buffer';
@@ -108,16 +107,13 @@ export default class OAuth {
 	}
 
 	private async _handleCodeFlow(currentUrl: string) {
+		const urlObj = new URL(currentUrl);
 		/* Convert URL into an object with parameters as keys
     { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
-		const { code } = (parse(currentUrl).query || '')
-			.split('&')
-			.map(pairings => pairings.split('='))
-			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
-
-		const currentUrlPathname = parse(currentUrl).pathname || '/';
+		const code = urlObj.searchParams.get('code');
+		const currentUrlPathname = urlObj.pathname || '/';
 		const redirectSignInPathname =
-			parse(this._config.redirectSignIn).pathname || '/';
+			new URL(this._config.redirectSignIn).pathname || '/';
 
 		if (!code || currentUrlPathname !== redirectSignInPathname) {
 			return;
@@ -182,7 +178,7 @@ export default class OAuth {
 
 	private async _handleImplicitFlow(currentUrl: string) {
 		// hash is `null` if `#` doesn't exist on URL
-		const { id_token, access_token } = (parse(currentUrl).hash || '#')
+		const { id_token, access_token } = (new URL(currentUrl).hash || '#')
 			.substr(1) // Remove # from returned code
 			.split('&')
 			.map(pairings => pairings.split('='))
@@ -203,19 +199,12 @@ export default class OAuth {
 
 	public async handleAuthResponse(currentUrl?: string) {
 		try {
-			const urlParams = currentUrl
-				? ({
-						...(parse(currentUrl).hash || '#')
-							.substr(1)
-							.split('&')
-							.map(entry => entry.split('='))
-							.reduce((acc, [k, v]) => ((acc[k] = v), acc), {}),
-						...(parse(currentUrl).query || '')
-							.split('&')
-							.map(entry => entry.split('='))
-							.reduce((acc, [k, v]) => ((acc[k] = v), acc), {}),
-				  } as any)
-				: {};
+			const urlObj = new URL(currentUrl || '');
+			const urlParams = {
+				error: urlObj.searchParams.get('error'),
+				error_description: urlObj.searchParams.get('error_description') || '',
+				state: urlObj.searchParams.get('state'),
+			};
 			const { error, error_description } = urlParams;
 
 			if (error) {
@@ -228,9 +217,9 @@ export default class OAuth {
 				`Starting ${this._config.responseType} flow with ${currentUrl}`
 			);
 			if (this._config.responseType === 'code') {
-				return { ...(await this._handleCodeFlow(currentUrl)), state };
+				return { ...(await this._handleCodeFlow(currentUrl || '')), state };
 			} else {
-				return { ...(await this._handleImplicitFlow(currentUrl)), state };
+				return { ...(await this._handleImplicitFlow(currentUrl || '')), state };
 			}
 		} catch (e) {
 			logger.error(`Error handling auth response.`, e);

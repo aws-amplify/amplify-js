@@ -1,14 +1,13 @@
 import { Amplify, parseAWSExports, StorageHelper } from '@aws-amplify/core';
-import { parse } from 'url';
 import OAuth from '../../OAuth/OAuth';
 import { AwsCognitoOAuthOpts, isCognitoHostedOpts } from '../../types';
 import { cacheTokens } from '../storage';
 
 export async function oauthSessionListener() {
-	const URL = window.location.href;
+	const uRL = window.location.href;
 	const _storage = new StorageHelper().getStorage();
 
-	console.log('listening for url', URL);
+	console.log('listening for url', uRL);
 	// if (this.oAuthFlowInProgress) {
 	// 	console.info(`Skipping URL ${URL} current flow in progress`);
 	// 	return;
@@ -66,18 +65,14 @@ export async function oauthSessionListener() {
 				cognitoClientId: cognitoAuthParams.cognitoClientId,
 			});
 
-			const currentUrl = URL || '';
+			const currentUrl = uRL || '';
 
-			const hasCodeOrError = !!(parse(currentUrl).query || '')
-				.split('&')
-				.map(entry => entry.split('='))
-				.find(([k]) => k === 'code' || k === 'error');
+			const urlObj = new URL(currentUrl);
 
-			const hasTokenOrError = !!(parse(currentUrl).hash || '#')
-				.substr(1)
-				.split('&')
-				.map(entry => entry.split('='))
-				.find(([k]) => k === 'access_token' || k === 'error');
+			const hasCodeOrError =
+				urlObj.search.includes('code') || urlObj.search.includes('error');
+			const hasTokenOrError =
+				urlObj.hash.includes('access_token') || urlObj.hash.includes('error');
 
 			if (hasCodeOrError || hasTokenOrError) {
 				_storage.setItem('amplify-redirected-from-hosted-ui', 'true');
