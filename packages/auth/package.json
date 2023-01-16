@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "5.1.1",
+  "version": "5.1.4",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -17,13 +17,14 @@
   },
   "scripts": {
     "test": "yarn lint --fix && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "rimraf lib-esm lib dist dual-publish-tmp",
     "format": "echo \"Not implemented\"",
     "lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
@@ -44,13 +45,21 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.7",
-    "amazon-cognito-identity-js": "6.1.1",
+    "@aws-amplify/core": "5.0.10",
+    "amazon-cognito-identity-js": "6.1.2",
     "tslib": "^1.8.0"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
   },
+  "size-limit": [
+    {
+      "name": "Auth (top-level class)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Amplify, Auth }",
+      "limit": "73 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

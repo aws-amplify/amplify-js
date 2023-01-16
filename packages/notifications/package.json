@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.0.7",
+	"version": "1.0.10",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -15,13 +15,14 @@
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "node ./build es6 --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
+		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
@@ -45,12 +46,26 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.0.7",
-		"@aws-amplify/core": "5.0.7",
+		"@aws-amplify/cache": "5.0.10",
+		"@aws-amplify/core": "5.0.10",
 		"@aws-sdk/client-pinpoint": "3.186.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},
+	"size-limit": [
+		{
+			"name": "Notifications (top-level class)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Notifications }",
+			"limit": "70 kB"
+		},
+		{
+			"name": "Notifications (with Analytics)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Notifications, Analytics }",
+			"limit": "70 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
