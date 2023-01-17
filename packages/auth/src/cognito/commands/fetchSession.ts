@@ -1,6 +1,5 @@
-import { StorageHelper, Amplify, parseAWSExports } from '@aws-amplify/core';
+import { Amplify, parseAWSExports } from '@aws-amplify/core';
 import { request } from '../client';
-import { Buffer } from 'buffer';
 import { cacheTokens, readTokens } from '../storage';
 
 export async function fetchSession() {
@@ -37,7 +36,8 @@ function getTokenClaim({ token, claim }) {
 	const payload = token.split('.')[1];
 	if (!payload) return null;
 	try {
-		const payloadDecoded = Buffer.from(payload, 'base64').toString('utf8');
+		const payloadDecoded = window.atob(payload);
+
 		const payloadObj = JSON.parse(payloadDecoded);
 		if (payloadObj && payloadObj[claim]) {
 			return payloadObj[claim];

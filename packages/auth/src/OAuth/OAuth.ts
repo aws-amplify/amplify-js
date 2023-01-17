@@ -3,7 +3,6 @@
 
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
-import { Buffer } from 'buffer';
 
 import {
 	OAuthOpts,
@@ -283,12 +282,19 @@ export default class OAuth {
 	private _generateChallenge(code: string) {
 		const awsCryptoHash = new Sha256();
 		awsCryptoHash.update(code);
-
 		const resultFromAWSCrypto = awsCryptoHash.digestSync();
-		const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
-		const base64URLFromAWSCrypto = this._base64URL(b64);
+
+		const base64URLFromAWSCrypto = this._base64URL(
+			this._encodeBase64Bytes(resultFromAWSCrypto)
+		);
 
 		return base64URLFromAWSCrypto;
+	}
+
+	private _encodeBase64Bytes(bytes) {
+		return window.btoa(
+			bytes.reduce((acc, current) => acc + String.fromCharCode(current), '')
+		);
 	}
 
 	private _base64URL(string) {
