@@ -387,7 +387,9 @@ jobs:
           at: /root
       - run:
           name: 'Run Amplify JS bundle size checks'
-          command: yarn test:size
+          command: |
+            node -v
+            yarn test:size
 
   integ_setup:
     executor: build-executor
