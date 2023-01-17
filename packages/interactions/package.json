@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "5.0.9",
+	"version": "5.0.10",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -17,13 +17,14 @@
 	},
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "node ./build es6 --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
+		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.6"
@@ -44,7 +45,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.0.9",
+		"@aws-amplify/core": "5.0.10",
 		"@aws-sdk/client-lex-runtime-service": "3.186.0",
 		"@aws-sdk/client-lex-runtime-v2": "3.186.0",
 		"base-64": "1.0.0",
@@ -52,6 +53,14 @@
 		"pako": "2.0.4",
 		"tslib": "^1.8.0"
 	},
+	"size-limit": [
+		{
+			"name": "Interactions (top-level class with Lex v2)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Interactions, AWSLexV2Provider }",
+			"limit": "86.5 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
