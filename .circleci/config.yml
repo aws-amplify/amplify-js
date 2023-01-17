@@ -373,7 +373,7 @@ jobs:
           # https://github.com/TryGhost/node-sqlite3#source-install
           command: |
             cd packages/datastore-storage-adapter
-            npm install sqlite3 --build-from-source
+            npm install sqlite3
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
@@ -387,9 +387,7 @@ jobs:
           at: /root
       - run:
           name: 'Run Amplify JS bundle size checks'
-          command: |
-            node -v
-            yarn test:size
+          command: yarn test:size
 
   integ_setup:
     executor: build-executor
