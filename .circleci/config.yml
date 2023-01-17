@@ -5,7 +5,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:12.22.8
+      - image: cypress/base:14.20.1
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/included:14.20.1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
