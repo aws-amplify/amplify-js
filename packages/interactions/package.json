@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "5.0.9",
+	"version": "5.0.10",
 	"description": "Interactions category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -45,7 +45,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.0.9",
+		"@aws-amplify/core": "5.0.10",
 		"@aws-sdk/client-lex-runtime-service": "3.186.0",
 		"@aws-sdk/client-lex-runtime-v2": "3.186.0",
 		"base-64": "1.0.0",
