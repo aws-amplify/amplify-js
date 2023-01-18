@@ -592,8 +592,6 @@ class IndexedDBAdapter implements Adapter {
 			indexedQueries: (() => Promise<T[]>)[];
 		};
 
-		// console.log({ type, storeName, fieldPredicates });
-
 		// `or` conditions, if usable, need to generate multiple queries. this is unlike
 		// `and` conditions, which should just be combined.
 		if (type === 'or') {
@@ -633,8 +631,6 @@ class IndexedDBAdapter implements Adapter {
 			const indexedQueries = [...groupQueries, ...objectQueries]
 				.map(q => q[0])
 				.filter(i => i);
-
-			// console.log({ groupQueries, objectQueries, indexedQueries });
 
 			// if, after hunting for base queries, we don't have exactly 1 base query
 			// for each child group + object, stop trying to optimize. we're not dealing
@@ -704,8 +700,6 @@ class IndexedDBAdapter implements Adapter {
 			indexedQueries.length > 0 &&
 			indexedQueries.length <= MULTI_OR_CONDITION_SCAN_BREAKPOINT
 		) {
-			// console.log('optimized OR thing', { indexedQueries });
-
 			// NOTE: each condition implies a potentially distinct set. we only benefit
 			// from using indexes here if EVERY condition uses an index. if any one
 			// index requires a table scan, we gain nothing from the indexes.
@@ -713,7 +707,6 @@ class IndexedDBAdapter implements Adapter {
 			const distinctResults = new Map<string, T>();
 			for (const query of indexedQueries) {
 				const resultGroup = await query();
-				// console.log({ query: query.toString(), resultGroup });
 				for (const item of resultGroup) {
 					const distinctificationString = JSON.stringify(item);
 					distinctResults.set(distinctificationString, item);
