@@ -197,12 +197,13 @@ describe('Predicates', () => {
 			},
 			{
 				name: 'storage predicates',
-				execute: async <T>(query: any) =>
-					(await internals(query).fetch(
+				execute: async <T>(query: any) => {
+					return (await internals(query).fetch(
 						getStorageFake({
 							[Author.name]: getFlatAuthorsArrayFixture(),
 						}) as any
-					)) as T[],
+					)) as T[];
+				},
 			},
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
@@ -1098,14 +1099,15 @@ describe('Predicates', () => {
 			},
 			{
 				name: 'storage predicates',
-				execute: async <T>(query: any) =>
-					(await internals(query).fetch(
+				execute: async <T>(query: any) => {
+					return (await internals(query).fetch(
 						getStorageFake({
 							[BlogOwner.name]: owners,
 							[Blog.name]: blogs,
 							[Post.name]: posts,
 						}) as any
-					)) as T[],
+					)) as T[];
+				},
 			},
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
