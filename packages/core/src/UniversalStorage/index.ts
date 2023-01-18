@@ -110,7 +110,8 @@ export class UniversalStorage implements Storage {
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
 			sameSite: true,
 			// Allow unsecure requests to http://localhost:3000/ when in development.
-			secure: window.location.hostname === 'localhost' ? false : true,
+			secure:
+				isBrowser && window.location.hostname === 'localhost' ? false : true,
 		});
 	}
 }
