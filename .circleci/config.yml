@@ -1468,7 +1468,6 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
-      - feature/circle-bs-tests
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
