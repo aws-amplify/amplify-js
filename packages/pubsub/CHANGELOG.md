@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.8...@aws-amplify/pubsub@5.0.9) (2023-01-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** Removes old AppSyncProvider to load automatically on PubSub ([#10840](https://github.com/aws-amplify/amplify-js/issues/10840)) ([8c797cd](https://github.com/aws-amplify/amplify-js/commit/8c797cd41635ccc8f81fb352ea74f819a58b71d7))
+
+
+
+
+
 ## [5.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.0.7...@aws-amplify/pubsub@5.0.8) (2022-12-27)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
