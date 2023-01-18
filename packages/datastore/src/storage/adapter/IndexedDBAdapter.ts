@@ -37,6 +37,29 @@ import { Adapter } from './index';
 
 const logger = new Logger('DataStore');
 
+/**
+ * The point after which queries composed of multiple simple OR conditions
+ * should scan-and-filter instead of individual queries for each condition.
+ *
+ * At some point, this should be configurable and/or dynamic based on table
+ * size and possibly even on observed average seek latency. For now, it's
+ * based on an manual "binary search" for the breakpoint as measured in the
+ * unit test suite. This isn't necessarily optimal. But, it's at least derived
+ * empirically, rather than theoretically and without any verification!
+ *
+ * REMEMBER! If you run more realistic benchmarks and update this value, update
+ * this comment so the validity and accuracy of future query tuning exercises
+ * can be compared to the methods used to derive the current value. E.g.,
+ *
+ * 1. In browser benchmark > unit test benchmark
+ * 2. Multi-browser benchmark > single browser benchmark
+ * 3. Benchmarks of various table sizes > static table size benchmark
+ *
+ * etc...
+ *
+ */
+const MULTI_OR_CONDITION_SCAN_BREAKPOINT = 7;
+
 const DB_NAME = 'amplify-datastore';
 class IndexedDBAdapter implements Adapter {
 	private schema!: InternalSchema;
@@ -538,7 +561,8 @@ class IndexedDBAdapter implements Adapter {
 
 	private async baseQueryIndex<T extends PersistentModel>(
 		storeName: string,
-		predicates: PredicatesGroup<T>
+		predicates: PredicatesGroup<T>,
+		transaction?: idb.IDBPTransaction<unknown, [string]> | undefined
 	) {
 		let { predicates: predicateObjs, type } = predicates;
 
@@ -561,20 +585,61 @@ class IndexedDBAdapter implements Adapter {
 
 		// several sub-queries could occur here. explicitly start a txn here to avoid
 		// opening/closing multiple txns.
-		const txn = this.db.transaction(storeName);
+		const txn = transaction || this.db.transaction(storeName);
 
 		let result = {} as {
 			groupType: typeof type | null;
 			indexedQueries: (() => Promise<T[]>)[];
 		};
 
+		// console.log({ type, storeName, fieldPredicates });
+
 		// `or` conditions, if usable, need to generate multiple queries. this is unlike
 		// `and` conditions, which should just be combined.
 		if (type === 'or') {
 			// EARLY RETURN: if we have an OR group and ALL child predicates are not
-			// field level `eq` predicate objects, we will not try to optimize any further
-			// for now. it's higher complexity than is worth tackling for now.
-			if (predicateObjs.length > fieldPredicates.length) {
+			// field level `eq` predicate objects or very simple/shallow AND groups,
+			// we will not try to optimize any further at this time. the purpose of this
+			// branch is to ensure joins leverage indexes when possible. that's it.
+
+			/**
+			 * Base queries for each child group.
+			 *
+			 * For each child group, if it's an AND condition that results in a single
+			 * subordinate "base query", we can use it. if it's any more complicated
+			 * than that, it's not a simple join condition we want to use.
+			 */
+			const groupQueries = await Promise.all(
+				predicateObjs
+					.filter(o => isPredicateGroup(o) && o.type === 'and')
+					.map(o =>
+						this.baseQueryIndex(storeName, o as PredicatesGroup<T>, txn)
+					)
+			).then(queries =>
+				queries
+					.filter(q => q.indexedQueries.length === 1)
+					.map(i => i.indexedQueries)
+			);
+
+			/**
+			 * Base queries fro each simple child "object" (field condition).
+			 */
+			const objectQueries = predicateObjs
+				.filter(o => isPredicateObj(o))
+				.map(o =>
+					this.matchingIndexQueries(storeName, [o as PredicateObject<T>], txn)
+				);
+
+			const indexedQueries = [...groupQueries, ...objectQueries]
+				.map(q => q[0])
+				.filter(i => i);
+
+			// console.log({ groupQueries, objectQueries, indexedQueries });
+
+			// if, after hunting for base queries, we don't have exactly 1 base query
+			// for each child group + object, stop trying to optimize. we're not dealing
+			// with a simple query that fits the intended optimization path.
+			if (predicateObjs.length > indexedQueries.length) {
 				result = {
 					groupType: null,
 					indexedQueries: [] as (() => Promise<T[]>)[],
@@ -582,9 +647,10 @@ class IndexedDBAdapter implements Adapter {
 			} else {
 				result = {
 					groupType: 'or',
-					indexedQueries: fieldPredicates.reduce((agg, p) => {
-						return agg.concat(this.matchingIndexQueries(storeName, [p], txn));
-					}, [] as (() => Promise<T[]>)[]),
+					indexedQueries,
+					// indexedQueries: fieldPredicates.reduce((agg, p) => {
+					// 	return agg.concat(this.matchingIndexQueries(storeName, [p], txn));
+					// }, [] as (() => Promise<T[]>)[]),
 				};
 			}
 		} else if (type === 'and') {
@@ -608,7 +674,8 @@ class IndexedDBAdapter implements Adapter {
 		// Explicitly wait for txns from index queries to complete before proceding.
 		// This helps ensure IndexedDB is in a stable, ready state. Else, subseqeuent
 		// qeuries can sometimes appear to deadlock (at least in FakeIndexedDB).
-		await txn.done;
+		// (Unless we were *given* the transaction -- we'll assume the parent handles it.)
+		if (!transaction) await txn.done;
 
 		return result;
 	}
@@ -632,7 +699,13 @@ class IndexedDBAdapter implements Adapter {
 			// each condition must be satsified, we can form a base set with any
 			// ONE of those conditions and then filter.
 			candidateResults = await indexedQueries[0]();
-		} else if (groupType === 'or' && indexedQueries.length > 0) {
+		} else if (
+			groupType === 'or' &&
+			indexedQueries.length > 0 &&
+			indexedQueries.length <= MULTI_OR_CONDITION_SCAN_BREAKPOINT
+		) {
+			// console.log('optimized OR thing', { indexedQueries });
+
 			// NOTE: each condition implies a potentially distinct set. we only benefit
 			// from using indexes here if EVERY condition uses an index. if any one
 			// index requires a table scan, we gain nothing from the indexes.
@@ -640,6 +713,7 @@ class IndexedDBAdapter implements Adapter {
 			const distinctResults = new Map<string, T>();
 			for (const query of indexedQueries) {
 				const resultGroup = await query();
+				// console.log({ query: query.toString(), resultGroup });
 				for (const item of resultGroup) {
 					const distinctificationString = JSON.stringify(item);
 					distinctResults.set(distinctificationString, item);

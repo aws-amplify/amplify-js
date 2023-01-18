@@ -324,12 +324,12 @@ describe('IndexedDB benchmarks', () => {
 	});
 
 	const benchmark = async (f, iterations = 100) => {
-		const start = new Date();
+		const start = performance.now();
 		for (let i = 0; i < iterations; i++) {
 			await f();
 		}
-		const end = new Date();
-		return end.getTime() - start.getTime();
+		const end = performance.now();
+		return end - start;
 	};
 
 	/**
@@ -552,6 +552,104 @@ describe('IndexedDB benchmarks', () => {
 
 		// actual time on a decent dev machine is around 20ms, compared
 		// to over 150ms when the optimization is disabled.
+		expect(time).toBeLessThan(50);
+	});
+
+	test('wide joins operate within expeted time limits', async () => {
+		const parents: CompositePKParent[] = [];
+		await sideloadIDBData(100, 'CompositePKParent', i => {
+			const parent = new CompositePKParent({
+				customId: `id ${i}`,
+				content: `content ${i}`,
+			});
+			parents.push(parent);
+			return parent;
+		});
+
+		let child: CompositePKChild;
+		await sideloadIDBData(100, 'CompositePKChild', i => {
+			child = new CompositePKChild({
+				childId: `id ${i}`,
+				content: `content ${i}`,
+				parent: parents[i],
+			});
+			return child;
+		});
+
+		const time = await benchmark(async () => {
+			const fetched = await DataStore.query(CompositePKParent, p =>
+				p.children.content.beginsWith('content')
+			);
+			expect(fetched.length).toBe(100);
+		}, 1);
+
+		expect(time).toBeLessThan(50);
+	});
+
+	test('wide joins with outer level ORs operate within expected time limits', async () => {
+		const parents: CompositePKParent[] = [];
+		await sideloadIDBData(100, 'CompositePKParent', i => {
+			const parent = new CompositePKParent({
+				customId: `id ${i}`,
+				content: `content ${i}`,
+			});
+			parents.push(parent);
+			return parent;
+		});
+
+		let children: CompositePKChild[] = [];
+		await sideloadIDBData(100, 'CompositePKChild', i => {
+			const child = new CompositePKChild({
+				childId: `id ${i}`,
+				content: `content ${i}`,
+				parent: parents[i],
+			});
+			children.push(child);
+			return child;
+		});
+
+		const time = await benchmark(async () => {
+			const fetched = await DataStore.query(CompositePKParent, p =>
+				p.children.or(child => children.map(c => child.childId.eq(c.childId)))
+			);
+			expect(fetched.length).toBe(100);
+		}, 1);
+
+		expect(time).toBeLessThan(50);
+	});
+
+	test('semi-wide joins (limit 7) with outer level ORs operate within expected time limits', async () => {
+		const parents: CompositePKParent[] = [];
+		await sideloadIDBData(250, 'CompositePKParent', i => {
+			const parent = new CompositePKParent({
+				customId: `id ${i}`,
+				content: `content ${i}`,
+			});
+			parents.push(parent);
+			return parent;
+		});
+
+		let children: CompositePKChild[] = [];
+		await sideloadIDBData(250, 'CompositePKChild', i => {
+			const child = new CompositePKChild({
+				childId: `id ${i}`,
+				content: `content ${i}`,
+				parent: parents[i],
+			});
+			children.push(child);
+			return child;
+		});
+
+		const size = 7;
+		const time = await benchmark(async () => {
+			const fetched = await DataStore.query(CompositePKParent, p =>
+				p.children.or(child =>
+					children.slice(200, 200 + size).map(c => child.childId.eq(c.childId))
+				)
+			);
+			expect(fetched.length).toBe(size);
+		}, 1);
+
 		expect(time).toBeLessThan(50);
 	});
 });
