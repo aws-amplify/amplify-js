@@ -5,7 +5,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:16.18.1
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -15,7 +15,7 @@ executors:
 
   unit-test-executor:
     docker:
-      - image: cypress/base:16.18.1
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
