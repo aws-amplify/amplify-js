@@ -595,11 +595,6 @@ class IndexedDBAdapter implements Adapter {
 		// `or` conditions, if usable, need to generate multiple queries. this is unlike
 		// `and` conditions, which should just be combined.
 		if (type === 'or') {
-			// EARLY RETURN: if we have an OR group and ALL child predicates are not
-			// field level `eq` predicate objects or very simple/shallow AND groups,
-			// we will not try to optimize any further at this time. the purpose of this
-			// branch is to ensure joins leverage indexes when possible. that's it.
-
 			/**
 			 * Base queries for each child group.
 			 *
@@ -620,7 +615,7 @@ class IndexedDBAdapter implements Adapter {
 			);
 
 			/**
-			 * Base queries fro each simple child "object" (field condition).
+			 * Base queries for each simple child "object" (field condition).
 			 */
 			const objectQueries = predicateObjs
 				.filter(o => isPredicateObj(o))
