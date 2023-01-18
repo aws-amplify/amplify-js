@@ -374,6 +374,15 @@ jobs:
             yarn test
             yarn coverage
 
+  bundle_test:
+    executor: unit-test-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - run:
+          name: 'Run Amplify JS bundle size checks'
+          command: yarn test:size
+
   integ_setup:
     executor: build-executor
     working_directory: ~/
@@ -1459,6 +1468,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - feature/circle-bs-tests
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -2003,6 +2013,7 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
+            - bundle_test
             - integ_react_delete_user
             - integ_react_predictions
             - integ_react_datastore
