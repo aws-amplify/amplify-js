@@ -145,27 +145,37 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
+				let token;
+				let federatedInfo;
+
 				try {
-					let token;
 					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
-					if (federatedInfo) {
-						token = federatedInfo.token;
-					} else {
+					federatedInfo = await Cache.getItem('federatedInfo');
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
+
+				if (federatedInfo) {
+					token = federatedInfo.token;
+				} else {
+					try {
 						const currentUser = await Auth.currentAuthenticatedUser();
 						if (currentUser) {
 							token = currentUser.token;
 						}
+					} catch (e) {
+						logger.debug('No currently authenticated user.');
 					}
-					if (!token) {
-						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
-					}
-					headers = {
-						Authorization: token,
-					};
-				} catch (e) {
-					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
+
+				if (!token) {
+					throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
+				}
+
+				headers = {
+					Authorization: token,
+				};
+
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
 				try {
