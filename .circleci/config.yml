@@ -374,15 +374,6 @@ jobs:
             yarn test
             yarn coverage
 
-  bundle_test:
-    executor: unit-test-executor
-    steps:
-      - attach_workspace:
-          at: /root
-      - run:
-          name: 'Run Amplify JS bundle size checks'
-          command: yarn test:size
-
   integ_setup:
     executor: build-executor
     working_directory: ~/
