@@ -541,7 +541,7 @@ class IndexedDBAdapter implements Adapter {
 				}
 			}
 
-			// if we have a matchind predicate field for each component of this index,
+			// if we have a matching predicate field for each component of this index,
 			// we can build a query for it. otherwise, we can't.
 			if (matchingPredicateValues.length === keypath.length) {
 				// re-create a transaction, because the transaction used to fetch the
@@ -644,9 +644,6 @@ class IndexedDBAdapter implements Adapter {
 				result = {
 					groupType: 'or',
 					indexedQueries,
-					// indexedQueries: fieldPredicates.reduce((agg, p) => {
-					// 	return agg.concat(this.matchingIndexQueries(storeName, [p], txn));
-					// }, [] as (() => Promise<T[]>)[]),
 				};
 			}
 		} else if (type === 'and') {
