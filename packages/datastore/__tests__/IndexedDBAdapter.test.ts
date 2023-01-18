@@ -597,7 +597,7 @@ describe('IndexedDB benchmarks', () => {
 			return parent;
 		});
 
-		let children: CompositePKChild[] = [];
+		const children: CompositePKChild[] = [];
 		await sideloadIDBData(100, 'CompositePKChild', i => {
 			const child = new CompositePKChild({
 				childId: `id ${i}`,
@@ -629,7 +629,7 @@ describe('IndexedDB benchmarks', () => {
 			return parent;
 		});
 
-		let children: CompositePKChild[] = [];
+		const children: CompositePKChild[] = [];
 		await sideloadIDBData(250, 'CompositePKChild', i => {
 			const child = new CompositePKChild({
 				childId: `id ${i}`,
