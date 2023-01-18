@@ -203,7 +203,7 @@ export class AuthClass {
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
-			identityPoolRegion
+			identityPoolRegion,
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -237,16 +237,22 @@ export class AuthClass {
 				cognitoClientId: cognitoAuthParams.cognitoClientId,
 			});
 
+			const isLoginEndPointResponse = (url: string) => {
+				return (
+					oauth &&
+					isCognitoHostedOpts(oauth) &&
+					url.startsWith(oauth.redirectSignIn) &&
+					url.includes('code') &&
+					url.includes('state')
+				);
+			};
+
 			// **NOTE** - Remove this in a future major release as it is a breaking change
 			// Prevents _handleAuthResponse from being called multiple times in Expo
 			// See https://github.com/aws-amplify/amplify-js/issues/4388
 			const usedResponseUrls = {};
 			urlListener(({ url }) => {
-				if (
-					oauth &&
-					isCognitoHostedOpts(oauth) &&
-					!url.startsWith(oauth.redirectSignIn)
-				) {
+				if (!isLoginEndPointResponse(url)) {
 					return;
 				}
 
@@ -1147,7 +1153,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
-					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					dispatchAuthEvent(
 						'verify',
 						user,
@@ -1436,15 +1446,23 @@ export class AuthClass {
 				user.updateAttributes(
 					attributeList,
 					(err, result, details) => {
-						
 						if (err) {
-							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
+							dispatchAuthEvent(
+								'updateUserAttributes_failure',
+								err,
+								'Failed to update attributes'
+							);
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
-								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
+								attributes as Record<string, string>,
+								details?.CodeDeliveryDetailsList
 							);
-							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
+							dispatchAuthEvent(
+								'updateUserAttributes',
+								attrs,
+								'Attributes successfully updated'
+							);
 							return resolve(result);
 						}
 					},
@@ -1455,15 +1473,17 @@ export class AuthClass {
 	}
 
 	private createUpdateAttributesResultList(
-		attributes: Record<string, string>, 
-		codeDeliveryDetailsList?: CodeDeliveryDetails []
+		attributes: Record<string, string>,
+		codeDeliveryDetailsList?: CodeDeliveryDetails[]
 	): Record<string, string> {
 		const attrs = {};
 		Object.keys(attributes).forEach(key => {
 			attrs[key] = {
-				isUpdated: true
+				isUpdated: true,
 			};
-			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(
+				value => value.AttributeName === key
+			);
 			if (codeDeliveryDetails) {
 				attrs[key].isUpdated = false;
 				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
