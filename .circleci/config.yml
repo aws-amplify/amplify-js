@@ -1428,7 +1428,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            # yarn publish:$CIRCLE_BRANCH
+            yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1466,7 +1466,6 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
-      - cypress-12-upgrade
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
