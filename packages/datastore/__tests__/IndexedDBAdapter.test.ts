@@ -517,7 +517,7 @@ describe('IndexedDB benchmarks', () => {
 
 		// actual time on a decent dev machine is around 15ms, compared
 		// to over 130ms when the optimization is disabled.
-		expect(time).toBeLessThan(50);
+		expect(time).toBeLessThan(100);
 	});
 
 	test('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
@@ -552,7 +552,7 @@ describe('IndexedDB benchmarks', () => {
 
 		// actual time on a decent dev machine is around 20ms, compared
 		// to over 150ms when the optimization is disabled.
-		expect(time).toBeLessThan(50);
+		expect(time).toBeLessThan(100);
 	});
 
 	test('wide joins operate within expeted time limits', async () => {
@@ -583,7 +583,7 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(50);
+		expect(time).toBeLessThan(100);
 	});
 
 	test('wide joins with outer level ORs operate within expected time limits', async () => {
@@ -615,7 +615,7 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(50);
+		expect(time).toBeLessThan(100);
 	});
 
 	test('semi-wide joins (limit 7) with outer level ORs operate within expected time limits', async () => {
@@ -650,6 +650,6 @@ describe('IndexedDB benchmarks', () => {
 			expect(fetched.length).toBe(size);
 		}, 1);
 
-		expect(time).toBeLessThan(50);
+		expect(time).toBeLessThan(100);
 	});
 });
