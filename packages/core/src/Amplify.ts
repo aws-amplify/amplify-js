@@ -2,6 +2,21 @@ import { ConsoleLogger as LoggerClass } from './Logger';
 
 const logger = new LoggerClass('Amplify');
 
+export type AmplifyUser = {
+	accessToken?: string;
+	idToken?: string;
+	refreshToken?: string;
+	awsCreds?: {
+		accessKey: string;
+		secretKey: string;
+		sessionToken: string;
+		identityId: string;
+	};
+	isSignedIn: boolean;
+};
+
+type AmplifyUserCallback = (user: AmplifyUser) => void;
+
 export class AmplifyClass {
 	// Everything that is `register`ed is tracked here
 	private _components = [];
@@ -11,10 +26,13 @@ export class AmplifyClass {
 	// All modules (with `getModuleName()`) are stored here for dependency injection
 	private _modules = {};
 
-	private _user = {
+	private _userCallbacks: AmplifyUserCallback[] = [];
+
+	private _user: AmplifyUser = {
 		accessToken: '',
 		idToken: '',
 		refreshToken: '',
+		isSignedIn: false,
 	};
 
 	// for backward compatibility to avoid breaking change
@@ -39,14 +57,32 @@ export class AmplifyClass {
 	Logger = LoggerClass;
 	ServiceWorker = null;
 
-	setUser({ accessToken, idToken, refreshToken }) {
-		this._user.accessToken = accessToken;
-		this._user.idToken = idToken;
-		this._user.refreshToken = refreshToken;
+	setUser(user: AmplifyUser) {
+		this._user.accessToken = user.accessToken;
+		this._user.idToken = user.idToken;
+		this._user.refreshToken = user.refreshToken;
+		this._user.isSignedIn = true;
+		this._user.awsCreds = user.awsCreds;
+
+		this._userCallbacks.forEach(callback => callback(this._user));
 	}
 
-	getUser() {
-		return { ...this._user };
+	getUser(): AmplifyUser {
+		if (this._user.awsCreds) {
+			const awsCreds = { ...this._user.awsCreds };
+			return {
+				...this._user,
+				awsCreds,
+			};
+		} else {
+			return {
+				...this._user,
+			};
+		}
+	}
+
+	observeUser(callback: AmplifyUserCallback) {
+		this._userCallbacks.push(callback);
 	}
 
 	register(comp) {

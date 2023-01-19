@@ -117,6 +117,7 @@ export async function oauthSessionListener() {
 						accessToken,
 						idToken,
 						refreshToken,
+						isSignedIn: true,
 					});
 					return;
 				} catch (err) {

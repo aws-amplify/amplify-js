@@ -1,8 +1,16 @@
 import { Amplify, parseAWSExports } from '@aws-amplify/core';
-import { request } from '../client';
+import { requestCognitoUserPool } from '../client';
 import { cacheTokens, readTokens } from '../storage';
 
-export async function fetchSession() {
+export type SessionParams = {
+	credentialsProvider: (token: string) => {
+		accessKey: string;
+		secretKey: string;
+		sessionToken: string;
+	};
+};
+
+export async function fetchSession(sessionParams?: SessionParams) {
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
 	if (amplifyConfig && amplifyConfig.Auth) {
 		// load credentials from storage
@@ -25,8 +33,38 @@ export async function fetchSession() {
 				tokens = { ...refreshedUser, clockDrift: 0 };
 			}
 		}
+
 		if (tokens) {
-			Amplify.setUser({ ...tokens });
+			let credentials;
+			if (
+				sessionParams &&
+				typeof sessionParams.credentialsProvider === 'function'
+			) {
+				credentials = await sessionParams.credentialsProvider(tokens.idToken);
+			}
+			const { accessToken, idToken, refreshToken } = tokens;
+
+			if (credentials) {
+				Amplify.setUser({
+					isSignedIn: true,
+					accessToken,
+					idToken,
+					refreshToken,
+					awsCreds: {
+						accessKey: credentials.accessKey,
+						secretKey: credentials.secretKey,
+						sessionToken: credentials.sessionToken,
+						identityId: credentials.identityId,
+					},
+				});
+			} else {
+				Amplify.setUser({
+					isSignedIn: true,
+					accessToken,
+					idToken,
+					refreshToken,
+				});
+			}
 		}
 		return tokens;
 	}
@@ -65,7 +103,7 @@ async function refreshTokens({ refreshToken, clientId, region }) {
 		},
 	};
 
-	const response = await request({
+	const response = await requestCognitoUserPool({
 		operation: 'InitiateAuth',
 		region,
 		params: jsonReq,
