@@ -19,10 +19,10 @@ import {
 	Model,
 	User,
 	Profile,
+	Blog,
 	Post,
 	Comment,
 	testSchema,
-	CompositePKParent,
 	HasOneParent,
 	HasOneChild,
 	MtmLeft,
@@ -377,6 +377,7 @@ export function addCommonQueryTests({
 
 	describe('common `delete()` cases', () => {
 		let Comment: PersistentModelConstructor<Comment>;
+		let Blog: PersistentModelConstructor<Blog>;
 		let Post: PersistentModelConstructor<Post>;
 		let HasOneParent: PersistentModelConstructor<HasOneParent>;
 		let HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -387,6 +388,7 @@ export function addCommonQueryTests({
 			const classes = initSchema(testSchema());
 			({
 				Comment,
+				Blog,
 				Post,
 				HasOneParent,
 				HasOneChild,
@@ -394,6 +396,7 @@ export function addCommonQueryTests({
 				DefaultPKHasOneChild,
 			} = classes as {
 				Comment: PersistentModelConstructor<Comment>;
+				Blog: PersistentModelConstructor<Blog>;
 				Post: PersistentModelConstructor<Post>;
 				HasOneParent: PersistentModelConstructor<HasOneParent>;
 				HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -500,6 +503,35 @@ export function addCommonQueryTests({
 					comment.id
 				);
 				expect(retrievedDeletedComment).toBeUndefined();
+			}
+		);
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting nested hasMany cascades',
+			async () => {
+				const blog = await DataStore.save(
+					new Blog({
+						title: 'my blog',
+					})
+				);
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my post',
+						blogId: blog.id,
+					})
+				);
+
+				const retrievedBlog = await DataStore.query(Blog, blog.id);
+				expect(retrievedBlog!.id).toEqual(blog.id);
+
+				const posts = await retrievedBlog!.posts.toArray();
+				expect(posts.length).toEqual(1);
+				expect(posts[0].id).toEqual(post.id);
+
+				await DataStore.delete(Blog, blog.id);
+
+				expect(await DataStore.query(Post, post.id)).toBeUndefined();
 			}
 		);
 
