@@ -1428,7 +1428,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1466,9 +1466,13 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - webkit-testing
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
+
+test_browsers_webkit: &test_browsers_webkit
+  browser: [chrome, firefox, webkit]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1917,7 +1921,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_webkit
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
