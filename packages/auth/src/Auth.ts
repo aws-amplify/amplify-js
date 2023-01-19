@@ -242,8 +242,7 @@ export class AuthClass {
 					oauth &&
 					isCognitoHostedOpts(oauth) &&
 					url.startsWith(oauth.redirectSignIn) &&
-					url.includes('code') &&
-					url.includes('state')
+					(this.hasCodeOrError(url) || this.hasTokenOrError(url))
 				);
 			};
 
@@ -2449,6 +2448,21 @@ export class AuthClass {
 		}
 	}
 
+	private hasCodeOrError(url: string) {
+		return !!(parse(url).query || '')
+			.split('&')
+			.map(entry => entry.split('='))
+			.find(([k]) => k === 'code' || k === 'error');
+	}
+
+	private hasTokenOrError(url: string) {
+		return !!(parse(url).hash || '#')
+			.substring(1)
+			.split('&')
+			.map(entry => entry.split('='))
+			.find(([k]) => k === 'access_token' || k === 'error');
+	}
+
 	/**
 	 * Used to complete the OAuth flow with or without the Cognito Hosted UI
 	 * @param {String} URL - optional parameter for customers to pass in the response URL
@@ -2476,16 +2490,8 @@ export class AuthClass {
 			const currentUrl =
 				URL || (browserOrNode().isBrowser ? window.location.href : '');
 
-			const hasCodeOrError = !!(parse(currentUrl).query || '')
-				.split('&')
-				.map(entry => entry.split('='))
-				.find(([k]) => k === 'code' || k === 'error');
-
-			const hasTokenOrError = !!(parse(currentUrl).hash || '#')
-				.substr(1)
-				.split('&')
-				.map(entry => entry.split('='))
-				.find(([k]) => k === 'access_token' || k === 'error');
+			const hasCodeOrError = this.hasCodeOrError(currentUrl);
+			const hasTokenOrError = this.hasTokenOrError(currentUrl);
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');

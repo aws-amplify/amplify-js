@@ -62,7 +62,7 @@ describe('configure test', () => {
 		);
 	});
 
-	test('invoked _handleAuthResponse method when current url is redirectSignUrl', () => {
+	test('invoked _handleAuthResponse method when current url is redirectSignUrl on Authorization Code Flow', () => {
 		const url = 'http://localhost:4200/redirectSignIn?code=123&state=STATE';
 		window.location.href = url;
 
@@ -122,8 +122,10 @@ describe('configure test', () => {
 		expect((auth as any)._handleAuthResponse).not.toBeCalled();
 	});
 
-	test('no invoked _handleAuthResponse method when current url does not contain state parameter', () => {
-		const url = 'http://localhost:4200/redirectSignIn?code=123';
+	test('invoked _handleAuthResponse method when current url is redirectSignUrl on Implicit Flow', () => {
+		const url =
+			'http://localhost:4200/redirectSignIn#access_token=1234&state=STATE';
+		window.location.href = url;
 
 		const opts: AuthOptions = {
 			userPoolId: 'us-east-1_awdasd',
@@ -136,7 +138,7 @@ describe('configure test', () => {
 				scope: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
 				redirectSignIn: 'http://localhost:4200/redirectSignIn',
 				redirectSignOut: 'http://localhost:4200/redirectSignOut',
-				responseType: 'code',
+				responseType: 'token',
 			},
 		};
 
@@ -147,34 +149,8 @@ describe('configure test', () => {
 			.mockResolvedValueOnce(auth.Credentials);
 
 		auth.configure(opts);
-		expect((auth as any)._handleAuthResponse).not.toBeCalled();
-	});
 
-	test('no invoked _handleAuthResponse method when current url does not contain code parameter', () => {
-		const url = 'http://localhost:4200/redirectSignIn?state=STATE';
-
-		const opts: AuthOptions = {
-			userPoolId: 'us-east-1_awdasd',
-			userPoolWebClientId: 'awsUserPoolsWebClientId',
-			region: 'us-east-1',
-			identityPoolId: 'awsCognitoIdentityPoolId',
-			mandatorySignIn: false,
-			oauth: {
-				domain: 'xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com',
-				scope: ['openid', 'email', 'profile', 'aws.cognito.signin.user.admin'],
-				redirectSignIn: 'http://localhost:4200/redirectSignIn',
-				redirectSignOut: 'http://localhost:4200/redirectSignOut',
-				responseType: 'code',
-			},
-		};
-
-		const auth = new Auth(null);
-
-		jest
-			.spyOn(auth as any, '_handleAuthResponse')
-			.mockResolvedValueOnce(auth.Credentials);
-
-		auth.configure(opts);
-		expect((auth as any)._handleAuthResponse).not.toBeCalled();
+		expect((auth as any)._handleAuthResponse).toBeCalledTimes(1);
+		expect((auth as any)._handleAuthResponse).toBeCalledWith(url);
 	});
 });
