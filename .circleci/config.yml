@@ -1472,8 +1472,8 @@ releasable_branches: &releasable_branches
 test_browsers: &test_browsers
   browser: [chrome, firefox]
 
-test_browsers_webkit: &test_browsers_webkit
-  browser: [chrome, firefox, webkit]
+test_browsers_all: &test_browsers_all
+  browser: [chrome, firefox, webkit, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1922,7 +1922,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers_webkit
+              <<: *test_browsers_all
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
@@ -1931,7 +1931,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
@@ -1940,7 +1940,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup
@@ -1949,7 +1949,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_related_models:
           requires:
             - integ_setup
