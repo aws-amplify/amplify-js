@@ -894,9 +894,15 @@ class FakeGraphQLService {
 /**
  * Re-requries DataStore, initializes the test schema.
  *
+ * Clears ALL mocks and modules in doing so.
+ *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({ online = false, isNode = true } = {}) {
+export function getDataStore({
+	online = false,
+	isNode = true,
+	storageAdapterFactory = () => undefined as any,
+} = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -974,6 +980,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
 
+	DataStore.configure({
+		storageAdapter: storageAdapterFactory(),
+	});
+
 	// private, test-only DI's.
 	if (online) {
 		(DataStore as any).amplifyContext.API = graphqlService;
@@ -983,6 +993,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	}
 
 	const classes = initSchema(testSchema());
+
 	const {
 		ModelWithBoolean,
 		Post,
@@ -997,11 +1008,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Post: PersistentModelConstructor<Post>;
@@ -1016,11 +1030,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		Model: PersistentModelConstructor<Model>;
 		MtmLeft: PersistentModelConstructor<MtmLeft>;
 		MtmRight: PersistentModelConstructor<MtmRight>;
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
+		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
 
 	return {
@@ -1042,11 +1059,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	};
 }
 
