@@ -62,7 +62,7 @@ export class APIClass {
 		this._options = Object.assign({}, this._options, options);
 
 		// Share Amplify instance with client for SSR
-		this._restApi.Credentials = this.Credentials;
+		//this._restApi.Credentials = this.Credentials;
 
 		this._graphqlApi.Auth = this.Auth;
 		this._graphqlApi.Cache = this.Cache;
