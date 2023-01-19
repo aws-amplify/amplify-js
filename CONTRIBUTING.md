@@ -188,6 +188,20 @@ Once you are done with Verdaccio, you can reset to the default registry by doing
 yarn config set registry https://registry.yarnpkg.com
 ```
 
+#### Bundle Size Checks
+
+Amplify JS enforces bundle size checks against incoming PRs. It uses the [size-limit](https://github.com/ai/size-limit) utility to test the Webpack tree-shaken footprint of common import patterns for a given category.
+
+The configuration for each category can be found in the associated package's `package.json` file under the `size-limit` key.
+
+##### Local Invocation & Regression Debugging
+
+The bundle size test can be performed locally (after building) by invoking the `test:size` build target in each package or in the mono-repo package. Bundle size regressions associated with a given change can be debugged by specifying the `--why` flag, e.g. `yarn test:size --why`, which will open a Statoscope instance to permit analysis of the generated bundle.
+
+To dump the generated `stats.json` for analysis in different tools: `yarn test:size --save-bundle test_bundle` (bundle will be saved to `test_bundle` directory)
+
+To compare & diff one build with another: `yarn test:size --why --compare-with test_bundle/stats.json`
+
 ## Bug Reports
 
 Bug reports and feature requests are always welcome. Good bug reports are extremely helpful, so thanks in advance!
