@@ -1039,10 +1039,16 @@ class IndexedDBAdapter implements Adapter {
 									.get(this.canonicalKeyPath(values))
 							);
 
+							// instantiate models before passing to deleteTraverse
+							// necessary for extracting PK values via getIndexKeyValuesFromModel
+							const modelsToDelete = recordToDelete
+								? await this.load(nameSpace, modelName, [recordToDelete])
+								: [];
+
 							await this.deleteTraverse(
 								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
-								recordToDelete ? [recordToDelete] : [],
+								modelsToDelete,
 								modelName,
 								nameSpace,
 								deleteQueue
@@ -1067,16 +1073,24 @@ class IndexedDBAdapter implements Adapter {
 							);
 						const keyValues = this.getIndexKeyValuesFromModel(model);
 
-						const childrenArray = await this.db
+						const childRecords = await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
 							.index(index as string)
 							.getAll(this.canonicalKeyPath(keyValues));
 
+						// instantiate models before passing to deleteTraverse
+						// necessary for extracting PK values via getIndexKeyValuesFromModel
+						const childModels = await this.load(
+							nameSpace,
+							modelName,
+							childRecords
+						);
+
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships![modelName]
 								.relationTypes,
-							childrenArray,
+							childModels,
 							modelName,
 							nameSpace,
 							deleteQueue
