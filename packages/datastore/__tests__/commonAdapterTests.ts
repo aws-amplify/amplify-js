@@ -506,6 +506,13 @@ export function addCommonQueryTests({
 			}
 		);
 
+		/**
+		 * Distinct from other hasMany delete cascade tests in that the model
+		 * being deleted has *potential* grandchildren. Hence, delete traversals need
+		 * to be capable of successfully querying the child for its children,
+		 * which has seen a regression at least once!
+		 * See: https://github.com/aws-amplify/amplify-js/issues/10866
+		 */
 		(isSQLiteAdapter() ? test.skip : test)(
 			'deleting nested hasMany cascades',
 			async () => {
