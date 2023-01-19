@@ -1429,7 +1429,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            # yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH # remove prior to merging PR
 
   post_release:
     executor: build-executor
