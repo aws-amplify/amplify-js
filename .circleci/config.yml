@@ -1257,9 +1257,6 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_datastore_custom_pk_unconnected_models_webkit:
-    parameters:
-      browser:
-        type: string
     executor: webkit-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
@@ -1271,7 +1268,7 @@ jobs:
           category: datastore
           sample_name: v2/custom-pk-unconnected-models
           spec: custom-pk-unconnected-models
-          browser: << parameters.browser >>
+          browser: webkit
 
   integ_react_datastore_custom_pk_has_one:
     parameters:
@@ -1325,9 +1322,6 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_datastore_background_process_manager_webkit:
-    parameters:
-      browser:
-        type: string
     executor: webkit-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/background-process-manager
@@ -1339,7 +1333,7 @@ jobs:
           category: datastore
           sample_name: v2/background-process-manager
           spec: background-process-manager
-          browser: << parameters.browser >>
+          browser: webkit
 
   integ_react_datastore_related_models:
     parameters:
@@ -1512,9 +1506,6 @@ releasable_branches: &releasable_branches
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
-
-test_browser_webkit: &test_browser_webkit
-  browser: [webkit]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1973,9 +1964,6 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browser_webkit
       - integ_react_datastore_custom_pk_has_one:
           requires:
             - integ_setup
@@ -2009,9 +1997,6 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browser_webkit
       - integ_react_datastore_related_models:
           requires:
             - integ_setup
