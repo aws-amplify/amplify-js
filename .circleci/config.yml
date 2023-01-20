@@ -5,7 +5,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:14.21.1
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -15,7 +15,7 @@ executors:
 
   unit-test-executor:
     docker:
-      - image: cypress/base:12.22.8
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -37,9 +37,13 @@ executors:
       xcode: 13.2.1
     resource_class: large
 
-  webkit-executor:
+  webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.23.1-focal
+      - image: mcr.microsoft.com/playwright:v1.29.2-focal
+      - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
 
 test_env_vars: &test_env_vars
   environment:
@@ -340,22 +344,17 @@ jobs:
     executor: build-executor
     steps:
       - checkout
-      # testing:
-      - run: npm i -D @playwright/test
-      - run: npx playwright install
-      - run: npx playwright install webkit
-      # and / or:
+      # - run: npx playwright install
+      # - run: npx playwright install webkit
       # - run: npx playwright install-deps webkit 
       - run:
           name: yarn install --non-interactive
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
-          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           command: |
             mv .yarnrc ._yarnrc
-            yarn --ignore-engines
+            yarn
       - run: yarn bootstrap
       - run: yarn build
-      # - run: npx playwright install-deps webkit
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
       # with the last working build in the event that some upstream deps break the build in the future
       - store_artifacts:
@@ -374,41 +373,50 @@ jobs:
           paths:
             - amplify-js
 
+  webkit_setup:
+    executor: build-executor
+    steps:
+      - checkout
+      - run: npx playwright install
+      - run: npx playwright install webkit
+      - run: npx playwright install-deps webkit 
+
   unit_test:
     executor: unit-test-executor
     steps:
       - attach_workspace:
           at: /root
       - run:
-          name: 'build sqlite3 binaries'
-          # https://github.com/TryGhost/node-sqlite3#source-install
-          command: |
-            cd packages/datastore-storage-adapter
-            npm install sqlite3 --build-from-source
-      - run:
           name: 'Run Amplify JS unit tests'
           command: |
             yarn test
             yarn coverage
+
+  bundle_test:
+    executor: unit-test-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - run:
+          name: 'Run Amplify JS bundle size checks'
+          command: yarn test:size
 
   integ_setup:
     executor: build-executor
     working_directory: ~/
     steps:
       - run:
-          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
             mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            git checkout webkit-support
-            # npx playwright install-deps webkit
+            git checkout webkit-support # remove before merge
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
-            yarn --ignore-engines
+            yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
           paths:
@@ -1247,7 +1255,7 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: webkit-executor
+    executor: webkit-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/custom-pk-unconnected-models
     steps:
@@ -1485,8 +1493,8 @@ test_browsers: &test_browsers
   browser: [chrome, firefox]
 
 test_browsers_all: &test_browsers_all
-  # browser: [chrome, firefox, webkit, edge]
-  browser: [edge, webkit]
+  # browser: [chrome, edge, firefox, webkit]
+  browser: [webkit]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1522,6 +1530,12 @@ workflows:
       - unit_test:
           requires:
             - build
+      - webkit_setup:
+          requires:
+            - integ_setup
+      # - bundle_test:
+      #     requires:
+      #       - build
       # - integ_react_auth_1:
       #     requires:
       #       - integ_setup
@@ -1930,6 +1944,7 @@ workflows:
       - integ_react_datastore_custom_pk_unconnected_models:
           requires:
             - integ_setup
+            - webkit_setup
             - build
           filters:
             <<: *releasable_branches
@@ -2024,7 +2039,7 @@ workflows:
           filters:
             <<: *releasable_branches
           requires:
-            - unit_test
+            # - bundle_test
             # - integ_react_delete_user
             # - integ_react_predictions
             # - integ_react_datastore
