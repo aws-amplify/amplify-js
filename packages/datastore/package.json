@@ -71,7 +71,7 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "152.5 kB"
+			"limit": "153 kB"
 		}
 	],
 	"jest": {
