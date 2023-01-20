@@ -63,7 +63,8 @@ describe('configure test', () => {
 	});
 
 	test('invoked _handleAuthResponse method when current url is redirectSignUrl on Authorization Code Flow', () => {
-		const url = 'http://localhost:4200/redirectSignIn?code=123&state=STATE';
+		const url =
+			'http://localhost:4200/redirectSignIn?code=AUTHORIZATION_CODE&state=STATE';
 		window.location.href = url;
 
 		const opts: AuthOptions = {
@@ -95,7 +96,7 @@ describe('configure test', () => {
 
 	test('no invoked _handleAuthResponse method when current url is not redirectSignUrl', () => {
 		window.location.href =
-			'http://localhost:4200/othercallback?code=123&state=STATE';
+			'http://localhost:4200/othercallback?code=AUTHORIZATION_CODE&state=STATE';
 
 		const opts: AuthOptions = {
 			userPoolId: 'us-east-1_awdasd',
@@ -124,7 +125,7 @@ describe('configure test', () => {
 
 	test('invoked _handleAuthResponse method when current url is redirectSignUrl on Implicit Flow', () => {
 		const url =
-			'http://localhost:4200/redirectSignIn#access_token=1234&state=STATE';
+			'http://localhost:4200/redirectSignIn#id_token=ID_TOKEN&access_token=ACCESS_TOKEN&token_type=bearer&expires_in=3600&state=STATE';
 		window.location.href = url;
 
 		const opts: AuthOptions = {
@@ -153,4 +154,49 @@ describe('configure test', () => {
 		expect((auth as any)._handleAuthResponse).toBeCalledTimes(1);
 		expect((auth as any)._handleAuthResponse).toBeCalledWith(url);
 	});
+
+	test.only.each([
+		['invalid_request'],
+		['unauthorized_client'],
+		['invalid_scope'],
+		['server_error'],
+	])(
+		'invoked _handleAuthResponse method when current url is redirectSignUrl with error=%s',
+		error => {
+			const url = `http://localhost:4200/redirectSignIn?error=${error}`;
+			console.log(url);
+			window.location.href = url;
+
+			const opts: AuthOptions = {
+				userPoolId: 'us-east-1_awdasd',
+				userPoolWebClientId: 'awsUserPoolsWebClientId',
+				region: 'us-east-1',
+				identityPoolId: 'awsCognitoIdentityPoolId',
+				mandatorySignIn: false,
+				oauth: {
+					domain: 'xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com',
+					scope: [
+						'openid',
+						'email',
+						'profile',
+						'aws.cognito.signin.user.admin',
+					],
+					redirectSignIn: 'http://localhost:4200/redirectSignIn',
+					redirectSignOut: 'http://localhost:4200/redirectSignOut',
+					responseType: 'code',
+				},
+			};
+
+			const auth = new Auth(null);
+
+			jest
+				.spyOn(auth as any, '_handleAuthResponse')
+				.mockResolvedValueOnce(auth.Credentials);
+
+			auth.configure(opts);
+
+			expect((auth as any)._handleAuthResponse).toBeCalledTimes(1);
+			expect((auth as any)._handleAuthResponse).toBeCalledWith(url);
+		}
+	);
 });
