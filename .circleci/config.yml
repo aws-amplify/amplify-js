@@ -370,14 +370,6 @@ jobs:
           paths:
             - amplify-js
 
-  webkit_setup:
-    executor: build-executor
-    steps:
-      - checkout
-      - run: npx playwright install
-      - run: npx playwright install webkit
-      - run: npx playwright install-deps webkit 
-
   unit_test:
     executor: unit-test-executor
     steps:
@@ -1558,9 +1550,6 @@ workflows:
       - unit_test:
           requires:
             - build
-      - webkit_setup:
-          requires:
-            - integ_setup
       - bundle_test:
           requires:
             - build
@@ -1981,7 +1970,6 @@ workflows:
       - integ_react_datastore_custom_pk_unconnected_models_webkit:
           requires:
             - integ_setup
-            - webkit_setup
             - build
           filters:
             <<: *releasable_branches
@@ -2018,7 +2006,6 @@ workflows:
       - integ_react_datastore_background_process_manager_webkit:
           requires:
             - integ_setup
-            - webkit_setup
             - build
           filters:
             <<: *releasable_branches
