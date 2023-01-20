@@ -52,6 +52,7 @@ export const TestPlacePascalCase = {
 	Geometry: {
 		Point: [2345, 6789],
 	},
+	Interpolated: false,
 	Label: "don't try to label me",
 	Municipality: 'Muni',
 	Neighborhood: 'hay',
