@@ -5,7 +5,7 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:12.22.8
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -15,7 +15,7 @@ executors:
 
   unit-test-executor:
     docker:
-      - image: cypress/base:12.22.8
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -339,10 +339,9 @@ jobs:
       - run:
           name: yarn install --non-interactive
           # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
-          # TODO: upgrade image with newer Node.js and remove --ignore-engines
           command: |
             mv .yarnrc ._yarnrc
-            yarn --ignore-engines
+            yarn
       - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
@@ -369,16 +368,19 @@ jobs:
       - attach_workspace:
           at: /root
       - run:
-          name: 'build sqlite3 binaries'
-          # https://github.com/TryGhost/node-sqlite3#source-install
-          command: |
-            cd packages/datastore-storage-adapter
-            npm install sqlite3 --build-from-source
-      - run:
           name: 'Run Amplify JS unit tests'
           command: |
             yarn test
             yarn coverage
+
+  bundle_test:
+    executor: unit-test-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - run:
+          name: 'Run Amplify JS bundle size checks'
+          command: yarn test:size
 
   integ_setup:
     executor: build-executor
@@ -1503,6 +1505,9 @@ workflows:
       - unit_test:
           requires:
             - build
+      - bundle_test:
+          requires:
+            - build
       - integ_react_auth_1:
           requires:
             - integ_setup
@@ -2006,6 +2011,7 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
+            - bundle_test
             - integ_react_delete_user
             - integ_react_predictions
             - integ_react_datastore
