@@ -1556,226 +1556,13 @@ workflows:
       - integ_setup:
           filters:
             <<: *releasable_branches
-      - unit_test:
-          requires:
-            - build
-      - bundle_test:
-          requires:
-            - build
-      - integ_react_auth_1:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_auth_2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_auth_test_cypress_no_ui:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_graphql_api:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_angular_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_vue_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_next_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_predictions:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_interactions:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_vue_interactions:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_angular_interactions:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_javascript_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_one_rule:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_one_rule_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_two_rules:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_two_rules_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_three_plus_rules:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_three_plus_rules_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_subs_disabled:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_subs_disabled_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_consecutive_saves:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_consecutive_saves_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      # - integ_react_datastore_observe_query:
+      # - unit_test:
+      #     requires:
+      #       - build
+      # - bundle_test:
+      #     requires:
+      #       - build
+      # - integ_react_auth_1:
       #     requires:
       #       - integ_setup
       #       - build
@@ -1784,7 +1571,7 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      # - integ_react_datastore_observe_query_v2:
+      # - integ_react_auth_2:
       #     requires:
       #       - integ_setup
       #       - build
@@ -1793,145 +1580,13 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      - integ_react_datastore_schema_drift:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_storage_copy:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_amazon_cognito_identity_js_cookie_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_amazon_cognito_identity_js:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_node_amazon_cognito_identity_js:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_device_tracking:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_delete_user:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_rn_ios_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_push_notifications:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_device_tracking:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      # - integ_rn_android_storage:
+      # - integ_auth_test_cypress_no_ui:
       #     requires:
       #       - integ_setup
       #       - build
       #     filters:
       #       <<: *releasable_branches
-      # - integ_rn_android_storage_multipart_progress:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_datastore_sqlite_adapter:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      - integ_datastore_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *datastore_auth_scenarios
-      - integ_datastore_auth_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *datastore_auth_scenarios
-      # - integ_duplicate_packages:
+      # - integ_react_graphql_api:
       #     requires:
       #       - integ_setup
       #       - build
@@ -1940,138 +1595,483 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      - integ_javascript_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              browser: [chrome]
-      - integ_react_geo:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_next_datastore_owner_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_custom_pk_unconnected_models:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_custom_pk_unconnected_models_webkit:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_datastore_custom_pk_has_one:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_custom_pk_has_many_many_to_many:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_background_process_manager:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_background_process_manager_webkit:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_datastore_related_models:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_iot_reconnect:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_api_reconnect:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_datastore_selective_sync:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_nested_predicate:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_next_datastore_13_basic:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_next_datastore_13_js:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_angular_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_vue_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_next_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_predictions:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_interactions:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_vue_interactions:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_angular_interactions:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_javascript_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_one_rule:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_one_rule_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_two_rules:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_two_rules_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_three_plus_rules:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_multi_auth_three_plus_rules_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_subs_disabled:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_subs_disabled_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_consecutive_saves:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_consecutive_saves_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # # - integ_react_datastore_observe_query:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # #     matrix:
+      # #       parameters:
+      # #         <<: *test_browsers
+      # # - integ_react_datastore_observe_query_v2:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # #     matrix:
+      # #       parameters:
+      # #         <<: *test_browsers
+      # - integ_react_datastore_schema_drift:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_storage_copy:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_amazon_cognito_identity_js_cookie_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_amazon_cognito_identity_js:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_node_amazon_cognito_identity_js:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_device_tracking:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_delete_user:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_rn_ios_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_push_notifications:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_device_tracking:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # # - integ_rn_android_storage:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # # - integ_rn_android_storage_multipart_progress:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # # - integ_rn_ios_datastore_sqlite_adapter:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # - integ_datastore_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *datastore_auth_scenarios
+      # - integ_datastore_auth_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *datastore_auth_scenarios
+      # # - integ_duplicate_packages:
+      # #     requires:
+      # #       - integ_setup
+      # #       - build
+      # #     filters:
+      # #       <<: *releasable_branches
+      # #     matrix:
+      # #       parameters:
+      # #         <<: *test_browsers
+      # - integ_javascript_geo:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         browser: [chrome]
+      # - integ_react_geo:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_next_datastore_owner_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_custom_pk_unconnected_models:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_custom_pk_unconnected_models_webkit:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_datastore_custom_pk_has_one:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_custom_pk_has_many_many_to_many:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_background_process_manager:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_background_process_manager_webkit:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_datastore_related_models:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_iot_reconnect:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_api_reconnect:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_datastore_selective_sync:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_datastore_nested_predicate:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_next_datastore_13_basic:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_next_datastore_13_js:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - integ_vite_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2085,68 +2085,68 @@ workflows:
           filters:
             <<: *releasable_branches
           requires:
-            - unit_test
-            - bundle_test
-            - integ_react_delete_user
-            - integ_react_predictions
-            - integ_react_datastore
-            - integ_react_datastore_v2
-            - integ_react_datastore_multi_auth_one_rule
-            - integ_react_datastore_multi_auth_one_rule_v2
-            - integ_react_datastore_multi_auth_two_rules
-            - integ_react_datastore_multi_auth_two_rules_v2
-            - integ_react_datastore_multi_auth_three_plus_rules
-            - integ_react_datastore_multi_auth_three_plus_rules_v2
-            - integ_react_datastore_subs_disabled
-            - integ_react_datastore_subs_disabled_v2
-            - integ_react_datastore_consecutive_saves
-            - integ_react_datastore_consecutive_saves_v2
-            # - integ_react_datastore_observe_query
-            # - integ_react_datastore_observe_query_v2
-            - integ_react_datastore_schema_drift
-            - integ_react_storage
-            - integ_react_storage_multipart_progress
-            - integ_react_storage_copy
-            - integ_react_interactions
-            - integ_angular_interactions
-            - integ_vue_interactions
-            - integ_react_amazon_cognito_identity_js_cookie_storage
-            - integ_react_amazon_cognito_identity_js
-            - integ_node_amazon_cognito_identity_js
-            - integ_react_auth_1
-            - integ_react_auth_2
-            - integ_angular_auth
-            # - integ_javascript_auth # TODO: enable it when CDN deployment is automated
-            - integ_vue_auth
-            - integ_next_auth
-            - integ_rn_ios_storage
-            - integ_rn_ios_storage_multipart_progress
-            # - integ_rn_android_storage_multipart_progress
-            - integ_rn_ios_push_notifications
-            - integ_rn_ios_device_tracking
-            # - integ_rn_android_storage
-            # - integ_rn_ios_datastore_sqlite_adapter
-            - integ_datastore_auth
-            - integ_datastore_auth_v2
-              # - integ_duplicate_packages
-            - integ_auth_test_cypress_no_ui
-            - integ_react_graphql_api
-            # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
-            - integ_react_geo
-            - integ_next_datastore_owner_auth
-            - integ_react_datastore_custom_pk_unconnected_models
-            - integ_react_datastore_custom_pk_unconnected_models_webkit
-            - integ_react_datastore_custom_pk_has_one
-            - integ_react_datastore_custom_pk_has_many_many_to_many
-            - integ_react_datastore_background_process_manager
-            - integ_react_datastore_background_process_manager_webkit
-            - integ_react_datastore_related_models
-            - integ_react_iot_reconnect
-            - integ_react_api_reconnect
-            - integ_react_datastore_selective_sync
-            - integ_react_datastore_nested_predicate
-            - integ_next_datastore_13_basic
-            - integ_next_datastore_13_js
+            # - unit_test
+            # - bundle_test
+            # - integ_react_delete_user
+            # - integ_react_predictions
+            # - integ_react_datastore
+            # - integ_react_datastore_v2
+            # - integ_react_datastore_multi_auth_one_rule
+            # - integ_react_datastore_multi_auth_one_rule_v2
+            # - integ_react_datastore_multi_auth_two_rules
+            # - integ_react_datastore_multi_auth_two_rules_v2
+            # - integ_react_datastore_multi_auth_three_plus_rules
+            # - integ_react_datastore_multi_auth_three_plus_rules_v2
+            # - integ_react_datastore_subs_disabled
+            # - integ_react_datastore_subs_disabled_v2
+            # - integ_react_datastore_consecutive_saves
+            # - integ_react_datastore_consecutive_saves_v2
+            # # - integ_react_datastore_observe_query
+            # # - integ_react_datastore_observe_query_v2
+            # - integ_react_datastore_schema_drift
+            # - integ_react_storage
+            # - integ_react_storage_multipart_progress
+            # - integ_react_storage_copy
+            # - integ_react_interactions
+            # - integ_angular_interactions
+            # - integ_vue_interactions
+            # - integ_react_amazon_cognito_identity_js_cookie_storage
+            # - integ_react_amazon_cognito_identity_js
+            # - integ_node_amazon_cognito_identity_js
+            # - integ_react_auth_1
+            # - integ_react_auth_2
+            # - integ_angular_auth
+            # # - integ_javascript_auth # TODO: enable it when CDN deployment is automated
+            # - integ_vue_auth
+            # - integ_next_auth
+            # - integ_rn_ios_storage
+            # - integ_rn_ios_storage_multipart_progress
+            # # - integ_rn_android_storage_multipart_progress
+            # - integ_rn_ios_push_notifications
+            # - integ_rn_ios_device_tracking
+            # # - integ_rn_android_storage
+            # # - integ_rn_ios_datastore_sqlite_adapter
+            # - integ_datastore_auth
+            # - integ_datastore_auth_v2
+            #   # - integ_duplicate_packages
+            # - integ_auth_test_cypress_no_ui
+            # - integ_react_graphql_api
+            # # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
+            # - integ_react_geo
+            # - integ_next_datastore_owner_auth
+            # - integ_react_datastore_custom_pk_unconnected_models
+            # - integ_react_datastore_custom_pk_unconnected_models_webkit
+            # - integ_react_datastore_custom_pk_has_one
+            # - integ_react_datastore_custom_pk_has_many_many_to_many
+            # - integ_react_datastore_background_process_manager
+            # - integ_react_datastore_background_process_manager_webkit
+            # - integ_react_datastore_related_models
+            # - integ_react_iot_reconnect
+            # - integ_react_api_reconnect
+            # - integ_react_datastore_selective_sync
+            # - integ_react_datastore_nested_predicate
+            # - integ_next_datastore_13_basic
+            # - integ_next_datastore_13_js
             - integ_vite_datastore_basic_crud
       - post_release:
           filters:
