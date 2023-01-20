@@ -88,6 +88,7 @@ export interface Place {
 	addressNumber?: string;
 	country?: string;
 	geometry: PlaceGeometry | undefined;
+	interpolated?: boolean;
 	label?: string;
 	municipality?: string;
 	neighborhood?: string;
