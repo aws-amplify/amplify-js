@@ -1,6 +1,12 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { parse } from 'graphql';
-import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
+import {
+	ModelInit,
+	Schema,
+	InternalSchema,
+	isModelAttributePrimaryKey,
+	__modelMeta__,
+} from '../src/types';
 import {
 	AsyncCollection,
 	MutableModel,
@@ -530,8 +536,7 @@ class FakeGraphQLService {
 			this.tables.set(model.name, new Map<string, any[]>());
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
-				// Pretty sure the first key is the PK.
-				if (attribute.type === 'key') {
+				if (isModelAttributePrimaryKey(attribute)) {
 					this.PKFields.set(model.name, attribute!.properties!.fields);
 					CPKFound = true;
 					break;
@@ -894,9 +899,15 @@ class FakeGraphQLService {
 /**
  * Re-requries DataStore, initializes the test schema.
  *
+ * Clears ALL mocks and modules in doing so.
+ *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({ online = false, isNode = true } = {}) {
+export function getDataStore({
+	online = false,
+	isNode = true,
+	storageAdapterFactory = () => undefined as any,
+} = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -974,6 +985,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
 
+	DataStore.configure({
+		storageAdapter: storageAdapterFactory(),
+	});
+
 	// private, test-only DI's.
 	if (online) {
 		(DataStore as any).amplifyContext.API = graphqlService;
@@ -983,8 +998,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	}
 
 	const classes = initSchema(testSchema());
+
 	const {
 		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -997,13 +1014,17 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
+		Blog: PersistentModelConstructor<Blog>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
 		User: PersistentModelConstructor<User>;
@@ -1016,11 +1037,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		Model: PersistentModelConstructor<Model>;
 		MtmLeft: PersistentModelConstructor<MtmLeft>;
 		MtmRight: PersistentModelConstructor<MtmRight>;
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
+		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
 
 	return {
@@ -1030,6 +1054,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		simulateConnect,
 		simulateDisconnect,
 		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -1042,11 +1067,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	};
 }
 
@@ -1109,10 +1137,24 @@ export declare class Login {
 	constructor(init: Login);
 }
 
+export declare class Blog {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly posts: AsyncCollection<Post>;
+
+	constructor(init: ModelInit<Blog>);
+
+	static copyOf(
+		src: Blog,
+		mutator: (draft: MutableModel<Blog>) => void | Blog
+	): Blog;
+}
+
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly comments: AsyncCollection<Comment>;
+	public readonly blogId?: string;
 
 	constructor(init: ModelInit<Post>);
 
@@ -1720,6 +1762,47 @@ export function testSchema(): Schema {
 					},
 				},
 			},
+			Blog: {
+				name: 'Blog',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					posts: {
+						name: 'posts',
+						isArray: true,
+						type: {
+							model: 'Post',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['blogId'],
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Blogs',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
 			Post: {
 				name: 'Post',
 				fields: {
@@ -1735,6 +1818,13 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+						attributes: [],
+					},
+					blogId: {
+						name: 'blogId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
 						attributes: [],
 					},
 					comments: {
@@ -1758,6 +1848,13 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byBlog',
+							fields: ['blogId'],
+						},
 					},
 				],
 			},

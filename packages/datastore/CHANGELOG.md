@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.10...@aws-amplify/datastore@4.0.11) (2023-01-19)
+
+
+### Bug Fixes
+
+* **datastore:** cascade deleted for nested Has Many ([#10880](https://github.com/aws-amplify/amplify-js/issues/10880)) ([4dd912e](https://github.com/aws-amplify/amplify-js/commit/4dd912e3e4873c0cc83cdd032005958f3eed3440))
+
+
+
+
+
+## [4.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.9...@aws-amplify/datastore@4.0.10) (2023-01-13)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.8...@aws-amplify/datastore@4.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.7...@aws-amplify/datastore@4.0.8) (2022-12-27)
 
 **Note:** Version bump only for package @aws-amplify/datastore

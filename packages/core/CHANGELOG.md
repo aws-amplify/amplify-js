@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.10...@aws-amplify/core@5.0.11) (2023-01-19)
+
+
+### Bug Fixes
+
+* **core:** undefined window bug with setItem on server ([#10871](https://github.com/aws-amplify/amplify-js/issues/10871)) ([9713a81](https://github.com/aws-amplify/amplify-js/commit/9713a81957733547102ad609464ecd69406ec45e))
+
+
+
+
+
+## [5.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.9...@aws-amplify/core@5.0.10) (2023-01-13)
+
+
+### Bug Fixes
+
+* session cookies when SSR config enabled ([#10831](https://github.com/aws-amplify/amplify-js/issues/10831)) ([d34c01a](https://github.com/aws-amplify/amplify-js/commit/d34c01aa04599508e9473d128779bc8212343ece))
+
+
+
+
+
+## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.8...@aws-amplify/core@5.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [5.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.7...@aws-amplify/core@5.0.8) (2022-12-27)
 
 **Note:** Version bump only for package @aws-amplify/core
