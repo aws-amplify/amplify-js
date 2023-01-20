@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
-  "version": "3.0.3",
+  "version": "3.0.11",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -17,13 +17,14 @@
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "rimraf lib-esm lib dist dual-publish-tmp",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 65.41"
@@ -44,10 +45,18 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.3",
+    "@aws-amplify/core": "5.0.11",
     "axios": "0.26.0",
     "tslib": "^1.8.0"
   },
+  "size-limit": [
+    {
+      "name": "API (rest client)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Amplify, RestAPI }",
+      "limit": "47.5 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

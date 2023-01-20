@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.0...@aws-amplify/storage@5.1.1) (2023-01-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.9...@aws-amplify/storage@5.1.0) (2023-01-13)
+
+
+### Bug Fixes
+
+* Remove unhandled promise rejection for _verifyFileSize() ([#9763](https://github.com/aws-amplify/amplify-js/issues/9763)) ([c9032bf](https://github.com/aws-amplify/amplify-js/commit/c9032bfdf7c15ab58cfa26654644a8fdaec899f7))
+
+
+### Features
+
+* **storage:** auto double part size when body exceeds 10k parts ([#10820](https://github.com/aws-amplify/amplify-js/issues/10820)) ([f895f78](https://github.com/aws-amplify/amplify-js/commit/f895f78360251cf13d063757d58b366563c7efc5))
+
+
+
+
+
+## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.8...@aws-amplify/storage@5.0.9) (2023-01-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.7...@aws-amplify/storage@5.0.8) (2022-12-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.6...@aws-amplify/storage@5.0.7) (2022-12-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.5...@aws-amplify/storage@5.0.6) (2022-12-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.4...@aws-amplify/storage@5.0.5) (2022-12-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.3...@aws-amplify/storage@5.0.4) (2022-11-23)
+
+
+### Bug Fixes
+
+* Storage interface types ([#10696](https://github.com/aws-amplify/amplify-js/issues/10696)) ([dbc44fb](https://github.com/aws-amplify/amplify-js/commit/dbc44fbcfe2fd83fd1927db8ca49d99a110f3f55))
+
+
+
+
+
 ## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.0.2...@aws-amplify/storage@5.0.3) (2022-11-19)
 
 **Note:** Version bump only for package @aws-amplify/storage

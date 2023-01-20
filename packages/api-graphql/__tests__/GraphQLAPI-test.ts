@@ -749,13 +749,13 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 				})
-			).rejects.toThrowError('No federated jwt');
+			).rejects.toThrowError('No current user');
 		});
 
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {
@@ -773,7 +773,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -796,7 +796,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -829,7 +829,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -855,7 +855,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,

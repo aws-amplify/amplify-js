@@ -2995,6 +2995,102 @@ describe('auth unit test', () => {
 			);
 			spyon.mockClear();
 		});
+
+		test('error hub event', async (done) => {
+			expect.assertions(3);
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+				.mockImplementationOnce((attrs, callback: any) => {
+					callback(new Error('Error'), null, null);
+			});
+
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			const attributes = {
+				email: 'email',
+				phone_number: 'phone_number',
+				sub: 'sub',
+			};
+
+			const listenToHub = Hub.listen('auth', ({ payload }) => {
+				const { event } = payload;
+				if (event === 'updateUserAttributes_failure') {
+					expect(payload.data.message).toBe('Error');
+					expect(payload.message).toBe('Failed to update attributes');
+					listenToHub();
+					done();
+				}
+			});
+
+			try {
+				await auth.updateUserAttributes(user, attributes);
+			} catch (e) {
+				expect(e).toEqual(new Error('Error'));
+			}
+			
+			spyon.mockClear();
+		});
+
+		test('happy case code delivery details hub event', async (done) => {
+			expect.assertions(2);
+			
+			const codeDeliverDetailsResult: any = {
+				'CodeDeliveryDetailsList': [ 
+				   { 
+					  'AttributeName': 'email',
+					  'DeliveryMedium': 'EMAIL',
+					  'Destination': 'e***@e***'
+				   }
+				]
+			};
+			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+				.mockImplementationOnce((attrs, callback: any) => {
+					callback(null, 'SUCCESS', codeDeliverDetailsResult);
+			});
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			const attributes = {
+				email: 'email',
+				phone_number: 'phone_number',
+				sub: 'sub',
+			};
+			const payloadData = {
+				'email': {
+					isUpdated: false,
+					codeDeliveryDetails: {
+						AttributeName: 'email',
+						DeliveryMedium: 'EMAIL',
+						Destination: 'e***@e***'
+					}
+				},
+				'phone_number': {
+					isUpdated: true
+				},
+				'sub': {
+					isUpdated: true
+				}
+			};
+			const listenToHub = Hub.listen('auth', ({ payload }) => {
+				const { event } = payload;
+				if (event === 'updateUserAttributes') {
+					expect(payload.data).toEqual(payloadData);
+					listenToHub();
+					done();
+				}
+			});
+
+			expect(await auth.updateUserAttributes(user, attributes)).toBe('SUCCESS');
+			spyon.mockClear();
+		});
 	});
 
 	describe('deleteUserAttributes test', () => {
