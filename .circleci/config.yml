@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -1465,7 +1465,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1503,9 +1503,10 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - microsoft-edge-testing
 
 test_browsers: &test_browsers
-  browser: [chrome, firefox]
+  browser: [edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
