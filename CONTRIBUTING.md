@@ -196,11 +196,15 @@ The configuration for each category can be found in the associated package's `pa
 
 ##### Local Invocation & Regression Debugging
 
-The bundle size test can be performed locally (after building) by invoking the `test:size` build target in each package or in the mono-repo package. Bundle size regressions associated with a given change can be debugged by specifying the `--why` flag, e.g. `yarn test:size --why`, which will open a Statoscope instance to permit analysis of the generated bundle.
+The bundle size test can be performed locally (after building) by invoking the `test:size` build target from either a specific category or from the mono-repo package. Bundle size regressions associated with a given change can be debugged by specifying the `--why` flag, e.g. `yarn test:size --why`, which will open a Statoscope instance to permit analysis of the generated bundle. Some specific techniques for digging into regressions are outlined below.
 
-To dump the generated `stats.json` for analysis in different tools: `yarn test:size --save-bundle test_bundle` (bundle will be saved to `test_bundle` directory)
+**Compare yarn.lock files**
+Comparing `yarn.lock` files for each build can be a useful way to determine if your dependency graph has changed (which may have trickle down effect on Amplify's bundle size). The easiest way to do this is to download the `yarn.lock` files from the `build` step in CircleCI (under the "Artifacts" tab) for the failing build and an older passing build. These files can then be diffed locally to see if your dependency graph has changed: `diff yarn-passing.lock yarn-failing.lock`.
 
-To compare & diff one build with another: `yarn test:size --why --compare-with test_bundle/stats.json`
+**Compare `stats.json` files**
+The Webpack `stats.json` file contains a [static analysis](https://webpack.js.org/api/stats/) for a particular bundle. To generate these files locally, checkout & build the failing change, navigate to the category that's failing, and execute the following command: `yarn test:size --save-bundle test_bundle`. The generated `stats.json` file can be found in the new `test_bundle` directory. Make sure to copy this file somewhere safe for analysis. Next rebuild your parent branch (typically `main`) and compare bundles using the following command: `yarn test:size --why --compare-with stats-failing.json`. This will open a Statoscope instance in your browser. The "Choose stats" & "Diff" buttons on the top right can be used to inspect & compare your bundles.
+
+`stats.json` files can also be plugged into other popular bundle analysis tools if desired.
 
 ## Bug Reports
 
