@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
+      - image: cypress-12.3.0-node-16.18.1-chrome-109.0.5414.74-1-ff-109.0-edge-109.0.1518.52-1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -1450,22 +1450,6 @@ jobs:
           spec: nextjs-13
           browser: << parameters.browser >>
 
-  integ_vite_datastore_basic_crud:
-    parameters:
-      browser:
-        type: string
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/vite/datastore/v2/basic-crud
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Vite + DataStore - Basic CRUD'
-          framework: vite
-          category: datastore
-          sample_name: v2/basic-crud
-          spec: vite-basic-crud
-
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1522,7 +1506,7 @@ releasable_branches: &releasable_branches
       - microsoft-edge-testing
 
 test_browsers: &test_browsers
-  browser: [edge]
+  browser: [chrome, firefox]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -2071,15 +2055,6 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_vite_datastore_basic_crud:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2146,7 +2121,6 @@ workflows:
             - integ_react_datastore_nested_predicate
             - integ_next_datastore_13_basic
             - integ_next_datastore_13_js
-            - integ_vite_datastore_basic_crud
       - post_release:
           filters:
             branches:
