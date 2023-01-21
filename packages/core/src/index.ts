@@ -25,6 +25,7 @@ export {
 	transferKeyToLowerCase,
 	transferKeyToUpperCase,
 } from './JS';
+export { AmplifyUser } from './Amplify';
 export { Signer } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
 export { AWSCloudWatchProvider } from './Providers';
