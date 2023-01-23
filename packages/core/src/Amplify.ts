@@ -17,6 +17,10 @@ export type AmplifyUser = {
 
 type AmplifyUserCallback = (user: AmplifyUser) => void;
 
+export type AmplifyContext = {
+	Auth?: any;
+};
+
 export class AmplifyClass {
 	// Everything that is `register`ed is tracked here
 	private _components = [];
@@ -34,6 +38,8 @@ export class AmplifyClass {
 		refreshToken: '',
 		isSignedIn: false,
 	};
+
+	private _context: AmplifyContext = {};
 
 	// for backward compatibility to avoid breaking change
 	// if someone is using like Amplify.Auth
@@ -56,6 +62,16 @@ export class AmplifyClass {
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
+
+	getContext() {
+		return this._context;
+	}
+
+	setContext(category: String, content) {
+		if (category === 'Auth') {
+			this._context.Auth = content;
+		}
+	}
 
 	setUser(user: AmplifyUser) {
 		this._user.accessToken = user.accessToken;

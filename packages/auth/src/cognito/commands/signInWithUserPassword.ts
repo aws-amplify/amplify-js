@@ -32,8 +32,6 @@ export async function signInWithUserPassword({ username, password }) {
 			userPoolClientID: clientId,
 		});
 
-		debugger;
-
 		Amplify.setUser({
 			idToken: AuthenticationResult.IdToken,
 			accessToken: AuthenticationResult.AccessToken,

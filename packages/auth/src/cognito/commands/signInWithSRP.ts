@@ -52,13 +52,12 @@ export async function signInWithSRP({ username, password }) {
 		const dateNow = getNowString();
 
 		const challengeResponses = {} as any;
-
-		challengeResponses.USERNAME = username;
+		challengeResponses.USERNAME = challengeParameters.USER_ID_FOR_SRP;
 		challengeResponses.PASSWORD_CLAIM_SECRET_BLOCK =
 			challengeParameters.SECRET_BLOCK;
 		challengeResponses.TIMESTAMP = dateNow;
 		challengeResponses.PASSWORD_CLAIM_SIGNATURE = getSignatureString({
-			username,
+			username: challengeParameters.USER_ID_FOR_SRP,
 			userPoolName,
 			challengeParameters,
 			dateNow,
@@ -72,11 +71,27 @@ export async function signInWithSRP({ username, password }) {
 			ClientMetadata: {},
 		};
 
-		const { AuthenticationResult } = await requestCognitoUserPool({
+		const {
+			AuthenticationResult,
+			ChallengeName,
+			Session,
+			ChallengeParameters,
+		} = await requestCognitoUserPool({
 			operation: 'RespondToAuthChallenge',
 			region: amplifyConfig.Auth.region,
 			params: jsonReqResponseChallenge,
 		});
+
+		if (ChallengeName) {
+			Amplify.setContext('Auth', {
+				confirmSignIn: { Session, username },
+			});
+
+			return {
+				...ChallengeParameters,
+				challenge: ChallengeName,
+			};
+		}
 
 		cacheTokens({
 			idToken: AuthenticationResult.IdToken,
