@@ -25,12 +25,12 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress-12.3.0-node-16.18.1-chrome-109.0.5414.74-1-ff-109.0-edge-109.0.1518.52-1
+      - image: cypress/browsers:node16.16.0-chrome107-ff107-edge
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
-    resource_class: large
+    resource_class: xlarge
 
   macos-executor:
     macos:
@@ -1542,6 +1542,9 @@ releasable_branches: &releasable_branches
 test_browsers: &test_browsers
   browser: [chrome, firefox]
 
+test_browsers_all: &test_browsers_all
+  browser: [chrome, firefox, edge]
+
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
       owner-based-default, # TODO: Add `owner-based-operations` when tests pass
@@ -1992,7 +1995,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_custom_pk_unconnected_models_webkit:
           requires:
             - integ_setup
@@ -2025,7 +2028,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *test_browsers_all
       - integ_react_datastore_background_process_manager_webkit:
           requires:
             - integ_setup
