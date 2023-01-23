@@ -1466,6 +1466,24 @@ jobs:
           sample_name: v2/basic-crud
           spec: vite-basic-crud
 
+  integ_vanilla_js_datastore_basic_crud:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
+          framework: javascript
+          category: datastore
+          sample_name: basic-crud
+          browser: << parameters.browser >>
+          spec: vanilla-js-basic-crud
+          amplifyjs_dir: ~/amplify-js
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -2079,6 +2097,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_vanilla_js_datastore_basic_crud:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2146,6 +2173,7 @@ workflows:
             - integ_next_datastore_13_basic
             - integ_next_datastore_13_js
             - integ_vite_datastore_basic_crud
+            - integ_vanilla_js_datastore_basic_crud
       - post_release:
           filters:
             branches:
