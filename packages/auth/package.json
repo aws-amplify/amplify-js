@@ -49,7 +49,7 @@
     "@aws-amplify/core": "5.0.11",
     "@aws-sdk/client-cognito-identity-provider": "3.6.1",
     "tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
@@ -60,6 +60,18 @@
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Auth }",
       "limit": "73 kB"
+    },
+    {
+      "name": "Machine class",
+      "path": "./lib-esm//stateMachine/index.js",
+      "import": "{ Machine }",
+      "limit": "2 kB"
+    },
+    {
+      "name": "MachineManager class",
+      "path": "./lib-esm//stateMachine/index.js",
+      "import": "{ MachineManager }",
+      "limit": "3 kB"
     }
   ],
   "jest": {

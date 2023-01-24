@@ -174,7 +174,7 @@ export class MachineManager {
 	private async _sendToMachine(event: MachineEvent) {
 		if (!event.toMachine) {
 			throw new Error(
-				`Event missing routing machine name. Event: ${JSON.stringify(event)}`
+				`Event missing routing machine name. Event id ${event.id}.`
 			);
 		}
 		const machine = this._machines[event.toMachine];

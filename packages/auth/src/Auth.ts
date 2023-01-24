@@ -1,20 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-} from '@aws-amplify/core';
-import { 
-	AuthPluginOptions, 
-	AuthPluginProvider, 
-	AuthSignUpResult, 
-	AuthUserAttributeKey, 
-	CognitoConfirmResetPasswordOptions, 
-	CognitoUserAttributeKey, 
-	ConfirmResetPasswordRequest, 
-	SignUpRequest 
+	AuthPluginOptions,
+	AuthPluginProvider,
+	AuthSignUpResult,
+	AuthUserAttributeKey,
+	CognitoConfirmResetPasswordOptions,
+	CognitoUserAttributeKey,
+	ConfirmResetPasswordRequest,
+	SignUpRequest,
 } from './types';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
@@ -55,7 +51,8 @@ export class AuthClass {
 
 	/* BEGIN LEGACY CLASS MEMBERS TO ALLOW LIBRARY BUILD */
 
-	/// TODO: These members are called from other libraries and can be uncommented temporarily to allow the library to build. Do not check-in uncommented member declarations to source.
+	// TODO: These members are called from other libraries and can be uncommented temporarily to allow the library to
+	// build. Do not check-in uncommented member declarations to source.
 
 	// public currentAuthenticatedUser;
 	// public currentSession;
@@ -161,9 +158,9 @@ export class AuthClass {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.resetPassword();
 	}
-	confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
-		req: ConfirmResetPasswordRequest<PluginOptions>
-	): Promise<void> {
+	confirmResetPassword<
+		PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions
+	>(req: ConfirmResetPasswordRequest<PluginOptions>): Promise<void> {
 		assertPluginAvailable(this._pluggable);
 		return this._pluggable.confirmResetPassword(req);
 	}
