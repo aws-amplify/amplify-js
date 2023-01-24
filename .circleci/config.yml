@@ -1537,6 +1537,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - chore/uuid-upgrade
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
