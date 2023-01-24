@@ -67,6 +67,7 @@
 		"@size-limit/dual-publish": "^8.1.0",
 		"@size-limit/file": "^8.1.0",
 		"@size-limit/webpack": "^8.1.0",
+		"@size-limit/webpack-why": "^8.1.0",
 		"@types/jest": "^24.0.18",
 		"@types/lodash": "4.14.182",
 		"@types/node": "^8.9.5",

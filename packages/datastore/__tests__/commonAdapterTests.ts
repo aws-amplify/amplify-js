@@ -19,10 +19,10 @@ import {
 	Model,
 	User,
 	Profile,
+	Blog,
 	Post,
 	Comment,
 	testSchema,
-	CompositePKParent,
 	HasOneParent,
 	HasOneChild,
 	MtmLeft,
@@ -60,7 +60,7 @@ export function addCommonQueryTests({
 	// ensure all down-the-line tests use the given adapter. It is otherwise
 	// VERY EASY to forgot to include this, which can cause some of these tests
 	// to run against a different adapter and thus test the wrong things.
-	beforeAll(() => {
+	beforeEach(() => {
 		DataStore.configure({ storageAdapter });
 	});
 
@@ -377,6 +377,7 @@ export function addCommonQueryTests({
 
 	describe('common `delete()` cases', () => {
 		let Comment: PersistentModelConstructor<Comment>;
+		let Blog: PersistentModelConstructor<Blog>;
 		let Post: PersistentModelConstructor<Post>;
 		let HasOneParent: PersistentModelConstructor<HasOneParent>;
 		let HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -387,6 +388,7 @@ export function addCommonQueryTests({
 			const classes = initSchema(testSchema());
 			({
 				Comment,
+				Blog,
 				Post,
 				HasOneParent,
 				HasOneChild,
@@ -394,6 +396,7 @@ export function addCommonQueryTests({
 				DefaultPKHasOneChild,
 			} = classes as {
 				Comment: PersistentModelConstructor<Comment>;
+				Blog: PersistentModelConstructor<Blog>;
 				Post: PersistentModelConstructor<Post>;
 				HasOneParent: PersistentModelConstructor<HasOneParent>;
 				HasOneChild: PersistentModelConstructor<HasOneChild>;
@@ -500,6 +503,42 @@ export function addCommonQueryTests({
 					comment.id
 				);
 				expect(retrievedDeletedComment).toBeUndefined();
+			}
+		);
+
+		/**
+		 * Distinct from other hasMany delete cascade tests in that the model
+		 * being deleted has *potential* grandchildren. Hence, delete traversals need
+		 * to be capable of successfully querying the child for its children,
+		 * which has seen a regression at least once!
+		 * See: https://github.com/aws-amplify/amplify-js/issues/10866
+		 */
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting nested hasMany cascades',
+			async () => {
+				const blog = await DataStore.save(
+					new Blog({
+						title: 'my blog',
+					})
+				);
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my post',
+						blogId: blog.id,
+					})
+				);
+
+				const retrievedBlog = await DataStore.query(Blog, blog.id);
+				expect(retrievedBlog!.id).toEqual(blog.id);
+
+				const posts = await retrievedBlog!.posts.toArray();
+				expect(posts.length).toEqual(1);
+				expect(posts[0].id).toEqual(post.id);
+
+				await DataStore.delete(Blog, blog.id);
+
+				expect(await DataStore.query(Post, post.id)).toBeUndefined();
 			}
 		);
 
@@ -1298,6 +1337,7 @@ export function addCommonQueryTests({
 			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
 				r.leftOnes.mtmLeft.content.contains('left content A')
 			);
+
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
 				expectedNamesARight
 			);
