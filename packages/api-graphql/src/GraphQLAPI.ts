@@ -248,7 +248,10 @@ export class GraphQLAPIClass {
 			case 'mutation':
 				this.createInstanceIfNotCreated();
 				const cancellableToken = this._api.getCancellableToken();
-				const initParams = { cancellableToken };
+				const initParams = {
+					cancellableToken,
+					withCredentials: this._options.withCredentials,
+				};
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode, userAgentSuffix },
 					headers,
