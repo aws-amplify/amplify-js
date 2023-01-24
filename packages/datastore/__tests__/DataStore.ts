@@ -33,6 +33,7 @@ import {
 	Profile,
 	testSchema,
 	User,
+	ModelWithBoolean,
 } from './helpers';
 
 type T = ModelInit<Model>;
@@ -1731,6 +1732,108 @@ describe('Model behavior', () => {
 		expect(disconnectedParent.hasOneParentChildId).toEqual(child.id);
 		expect(await disconnectedParent.child).toBeUndefined();
 	});
+
+	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				// the number of records we expect in each snapshot
+				const expecteds = [5, 4];
+
+				// initial data set, 5 records that will match our predicate.
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.eq(true)
+				).subscribe(({ items, isSynced }) => {
+					// we don't actually expect 0 records in our snapshots after our list runs out.
+					// we just want to make TS happy.
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				// update an item to no longer match our criteria.
+				// we want to see a snapshot come through WITHOUT this item.
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+
+				// advance time to trigger another snapshot.
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
+
+	test('removes no-longer-matching items from the snapshot when using an ne() predicate on boolean field', done => {
+		(async () => {
+			const { DataStore, ModelWithBoolean } = getDataStore();
+			try {
+				// the number of records we expect in each snapshot
+				const expecteds = [5, 4];
+
+				// initial data set, 5 records that will match our predicate.
+				for (let i = 0; i < 5; i++) {
+					await DataStore.save(
+						new ModelWithBoolean({
+							boolField: true,
+						})
+					);
+				}
+
+				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
+					m.boolField.ne(false)
+				).subscribe(({ items, isSynced }) => {
+					// we don't actually expect 0 records in our snapshots after our list runs out.
+					// we just want to make TS happy.
+					const expected = expecteds.shift() || 0;
+					expect(items.length).toBe(expected);
+
+					for (let i = 0; i < expected; i++) {
+						expect(items[i].boolField).toEqual(true);
+					}
+
+					if (expecteds.length === 0) {
+						sub.unsubscribe();
+						done();
+					}
+				});
+
+				// update an item to no longer match our criteria.
+				// we want to see a snapshot come through WITHOUT this item.
+				const itemToUpdate = (await DataStore.query(ModelWithBoolean)).pop()!;
+				await DataStore.save(
+					ModelWithBoolean.copyOf(itemToUpdate, m => {
+						m.boolField = false;
+					})
+				);
+
+				// advance time to trigger another snapshot.
+				jest.advanceTimersByTime(2000);
+			} catch (error) {
+				done(error);
+			}
+		})();
+	});
 });
 
 describe('DataStore tests', () => {
@@ -1993,6 +2096,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('Id cannot be changed inside copyOf', () => {
+			const consoleWarn = jest.spyOn(console, 'warn');
+
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};
@@ -2008,6 +2113,16 @@ describe('DataStore tests', () => {
 
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
+
+			// we should always be told *in some way* when an "update" will not actually
+			// be applied. for now, this is a warning, because throwing an error, updating
+			// the record's PK, or creating a new record are all breaking changes.
+			expect(consoleWarn).toHaveBeenCalledWith(
+				expect.stringContaining(
+					"copyOf() does not update PK fields. The 'id' update is being ignored."
+				),
+				expect.objectContaining({ source: model1 })
+			);
 		});
 
 		test('Optional field can be initialized with undefined', () => {
@@ -3526,6 +3641,8 @@ describe('DataStore tests', () => {
 			});
 
 			test('postId cannot be changed inside copyOf', () => {
+				const consoleWarn = jest.spyOn(console, 'warn');
+
 				const { PostCustomPK } = initSchema(testSchema()) as {
 					PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 				};
@@ -3542,6 +3659,16 @@ describe('DataStore tests', () => {
 
 				// postId should be kept the same
 				expect(model1.postId).toBe(model2.postId);
+
+				// we should always be told *in some way* when an "update" will not actually
+				// be applied. for now, this is a warning, because throwing an error, updating
+				// the record's PK, or creating a new record are all breaking changes.
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						"copyOf() does not update PK fields. The 'postId' update is being ignored."
+					),
+					expect.objectContaining({ source: model1 })
+				);
 			});
 
 			test('Optional field can be initialized with undefined', () => {

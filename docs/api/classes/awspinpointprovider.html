@@ -927,6 +927,9 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 				<a href="awspinpointprovider.html#providername" class="tsd-kind-icon">provider<wbr>Name</a>
 			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
+				<a href="awspinpointprovider.html#subcategory" class="tsd-kind-icon">sub<wbr>Category</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awspinpointprovider.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
@@ -934,7 +937,19 @@ img { max-width: 100%; }
 				<a href="awspinpointprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="awspinpointprovider.html#getinappmessages" class="tsd-kind-icon">get<wbr>InApp<wbr>Messages</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awspinpointprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="awspinpointprovider.html#getsubcategory" class="tsd-kind-icon">get<wbr>Sub<wbr>Category</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="awspinpointprovider.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="awspinpointprovider.html#processinappmessages" class="tsd-kind-icon">process<wbr>InApp<wbr>Messages</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awspinpointprovider.html#record" class="tsd-kind-icon">record</a>
@@ -957,6 +972,7 @@ img { max-width: 100%; }
 		<h3>Implements</h3>
 		<ul class="tsd-hierarchy">
 			<li><a href="../interfaces/analyticsprovider.html" class="tsd-signature-type">AnalyticsProvider</a></li>
+			<li><a href="../interfaces/inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -974,6 +990,7 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="awspinpointprovider.html#category" class="tsd-kind-icon">category</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="awspinpointprovider.html#providername" class="tsd-kind-icon">provider<wbr>Name</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="awspinpointprovider.html#subcategory" class="tsd-kind-icon">sub<wbr>Category</a></li>
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
@@ -981,7 +998,11 @@ img { max-width: 100%; }
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#configure" class="tsd-kind-icon">configure</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#getinappmessages" class="tsd-kind-icon">get<wbr>InApp<wbr>Messages</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#getsubcategory" class="tsd-kind-icon">get<wbr>Sub<wbr>Category</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#processinappmessages" class="tsd-kind-icon">process<wbr>InApp<wbr>Messages</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awspinpointprovider.html#record" class="tsd-kind-icon">record</a></li>
 					</ul>
 				</section>
@@ -1000,7 +1021,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L86">packages/analytics/src/Providers/AWSPinpointProvider.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L78">packages/analytics/src/Providers/AWSPinpointProvider.ts:78</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1019,10 +1040,11 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 			<a name="category" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> category</h3>
-			<div class="tsd-signature tsd-kind-icon">category<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;Analytics&quot;</span></div>
+			<div class="tsd-signature tsd-kind-icon">category<span class="tsd-signature-symbol">:</span> <a href="../globals.html#notificationscategory" class="tsd-signature-type">NotificationsCategory</a><span class="tsd-signature-symbol"> = &quot;Notifications&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L75">packages/analytics/src/Providers/AWSPinpointProvider.ts:75</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L67">packages/analytics/src/Providers/AWSPinpointProvider.ts:67</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L64">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:64</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1032,7 +1054,18 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">provider<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;AWSPinpoint&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L76">packages/analytics/src/Providers/AWSPinpointProvider.ts:76</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L68">packages/analytics/src/Providers/AWSPinpointProvider.ts:68</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L66">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:66</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
+			<a name="subcategory" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagStatic">Static</span> sub<wbr>Category</h3>
+			<div class="tsd-signature tsd-kind-icon">sub<wbr>Category<span class="tsd-signature-symbol">:</span> <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubcategory</a><span class="tsd-signature-symbol"> = &quot;InAppMessaging&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L65">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:65</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1044,12 +1077,13 @@ img { max-width: 100%; }
 			<h3>configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L117">packages/analytics/src/Providers/AWSPinpointProvider.ts:117</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L109">packages/analytics/src/Providers/AWSPinpointProvider.ts:109</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1068,6 +1102,22 @@ img { max-width: 100%; }
 					</ul>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L105">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:105</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = {}</span></h5>
+							<ul class="tsd-parameters">
+							</ul>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+				</li>
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
@@ -1079,9 +1129,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/analyticsprovider.html">AnalyticsProvider</a>.<a href="../interfaces/analyticsprovider.html#getcategory">getCategory</a></p>
+						<p>Implementation of <a href="../interfaces/inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="../interfaces/inappmessagingprovider.html#getcategory">getCategory</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L102">packages/analytics/src/Providers/AWSPinpointProvider.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L94">packages/analytics/src/Providers/AWSPinpointProvider.ts:94</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1094,6 +1144,24 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="getinappmessages" class="tsd-anchor"></a>
+			<h3>get<wbr>InApp<wbr>Messages</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>InApp<wbr>Messages<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="../interfaces/inappmessagingprovider.html#getinappmessages">getInAppMessages</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L140">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:140</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="getprovidername" class="tsd-anchor"></a>
 			<h3>get<wbr>Provider<wbr>Name</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1102,9 +1170,9 @@ img { max-width: 100%; }
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/analyticsprovider.html">AnalyticsProvider</a>.<a href="../interfaces/analyticsprovider.html#getprovidername">getProviderName</a></p>
+						<p>Implementation of <a href="../interfaces/inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="../interfaces/inappmessagingprovider.html#getprovidername">getProviderName</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L109">packages/analytics/src/Providers/AWSPinpointProvider.ts:109</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L101">packages/analytics/src/Providers/AWSPinpointProvider.ts:101</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1117,16 +1185,92 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="record" class="tsd-anchor"></a>
-			<h3>record</h3>
+			<a name="getsubcategory" class="tsd-anchor"></a>
+			<h3>get<wbr>Sub<wbr>Category</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">record<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../globals.html#eventparams" class="tsd-signature-type">EventParams</a>, handlers<span class="tsd-signature-symbol">: </span><a href="../interfaces/promisehandlers.html" class="tsd-signature-type">PromiseHandlers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Sub<wbr>Category<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"InAppMessaging"</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="../interfaces/inappmessagingprovider.html#getsubcategory">getSubCategory</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L94">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:94</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>get the sub-category of the plugin</p>
+						</div>
+					</div>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">"InAppMessaging"</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="identifyuser" class="tsd-anchor"></a>
+			<h3>identify<wbr>User</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/inappmessagingprovider.html">InAppMessagingProvider</a>.<a href="../interfaces/inappmessagingprovider.html#identifyuser">identifyUser</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L215">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:215</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>userId: <span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li>
+							<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="processinappmessages" class="tsd-anchor"></a>
+			<h3>process<wbr>InApp<wbr>Messages</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">process<wbr>InApp<wbr>Messages<span class="tsd-signature-symbol">(</span>messages<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, event<span class="tsd-signature-symbol">: </span><a href="../globals.html#inappmessagingevent" class="tsd-signature-type">InAppMessagingEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inappmessage.html" class="tsd-signature-type">InAppMessage</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/Providers/AWSPinpointProvider.ts#L151">packages/analytics/src/Providers/AWSPinpointProvider.ts:151</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts#L170">packages/notifications/src/InAppMessaging/Providers/AWSPinpointProvider/index.ts:170</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>messages: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+						</li>
+						<li>
+							<h5>event: <a href="../globals.html#inappmessagingevent" class="tsd-signature-type">InAppMessagingEvent</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/inappmessage.html" class="tsd-signature-type">InAppMessage</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="record" class="tsd-anchor"></a>
+			<h3>record</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">record<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../globals.html#eventparams" class="tsd-signature-type">EventParams</a>, handlers<span class="tsd-signature-symbol">: </span><a href="../interfaces/promisehandlers.html" class="tsd-signature-type">PromiseHandlers</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/Providers/AWSPinpointProvider.ts#L143">packages/analytics/src/Providers/AWSPinpointProvider.ts:143</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1146,7 +1290,7 @@ img { max-width: 100%; }
 							<h5>handlers: <a href="../interfaces/promisehandlers.html" class="tsd-signature-type">PromiseHandlers</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

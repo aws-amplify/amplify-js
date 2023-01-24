@@ -3,6 +3,7 @@ import { ulid } from 'ulid';
 import {
 	DataStore as DataStoreType,
 	PersistentModelConstructor,
+	PersistentModel,
 	initSchema as initSchemaType,
 } from '../src/';
 
@@ -18,12 +19,17 @@ import {
 	Model,
 	User,
 	Profile,
+	Blog,
 	Post,
 	Comment,
 	testSchema,
-	CompositePKParent,
 	HasOneParent,
 	HasOneChild,
+	MtmLeft,
+	MtmRight,
+	MtmJoin,
+	DefaultPKHasOneParent,
+	DefaultPKHasOneChild,
 } from './helpers';
 
 export { pause };
@@ -50,6 +56,14 @@ export function addCommonQueryTests({
 	getMutations: any;
 	clearOutbox: any;
 }) {
+	// This MUST be in a `beforeAll` or `beforeEach` scoped at this level to
+	// ensure all down-the-line tests use the given adapter. It is otherwise
+	// VERY EASY to forgot to include this, which can cause some of these tests
+	// to run against a different adapter and thus test the wrong things.
+	beforeEach(() => {
+		DataStore.configure({ storageAdapter });
+	});
+
 	describe('Common `query()` cases', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let Comment: PersistentModelConstructor<Comment>;
@@ -80,8 +94,6 @@ export function addCommonQueryTests({
 		}
 
 		beforeEach(async () => {
-			DataStore.configure({ storageAdapter });
-
 			// establishing a fake appsync endpoint tricks DataStore into attempting
 			// sync operations, which we'll leverage to monitor how DataStore manages
 			// the outbox.
@@ -241,8 +253,6 @@ export function addCommonQueryTests({
 		let adapter: any;
 
 		beforeEach(async () => {
-			DataStore.configure({ storageAdapter });
-
 			// establishing a fake appsync endpoint tricks DataStore into attempting
 			// sync operations, which we'll leverage to monitor how DataStore manages
 			// the outbox.
@@ -367,17 +377,31 @@ export function addCommonQueryTests({
 
 	describe('common `delete()` cases', () => {
 		let Comment: PersistentModelConstructor<Comment>;
+		let Blog: PersistentModelConstructor<Blog>;
 		let Post: PersistentModelConstructor<Post>;
 		let HasOneParent: PersistentModelConstructor<HasOneParent>;
 		let HasOneChild: PersistentModelConstructor<HasOneChild>;
+		let DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
+		let DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
 
 		beforeEach(async () => {
 			const classes = initSchema(testSchema());
-			({ Comment, Post, HasOneParent, HasOneChild } = classes as {
+			({
+				Comment,
+				Blog,
+				Post,
+				HasOneParent,
+				HasOneChild,
+				DefaultPKHasOneParent,
+				DefaultPKHasOneChild,
+			} = classes as {
 				Comment: PersistentModelConstructor<Comment>;
+				Blog: PersistentModelConstructor<Blog>;
 				Post: PersistentModelConstructor<Post>;
 				HasOneParent: PersistentModelConstructor<HasOneParent>;
 				HasOneChild: PersistentModelConstructor<HasOneChild>;
+				DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
+				DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
 			});
 		});
 
@@ -482,6 +506,42 @@ export function addCommonQueryTests({
 			}
 		);
 
+		/**
+		 * Distinct from other hasMany delete cascade tests in that the model
+		 * being deleted has *potential* grandchildren. Hence, delete traversals need
+		 * to be capable of successfully querying the child for its children,
+		 * which has seen a regression at least once!
+		 * See: https://github.com/aws-amplify/amplify-js/issues/10866
+		 */
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting nested hasMany cascades',
+			async () => {
+				const blog = await DataStore.save(
+					new Blog({
+						title: 'my blog',
+					})
+				);
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my post',
+						blogId: blog.id,
+					})
+				);
+
+				const retrievedBlog = await DataStore.query(Blog, blog.id);
+				expect(retrievedBlog!.id).toEqual(blog.id);
+
+				const posts = await retrievedBlog!.posts.toArray();
+				expect(posts.length).toEqual(1);
+				expect(posts[0].id).toEqual(post.id);
+
+				await DataStore.delete(Blog, blog.id);
+
+				expect(await DataStore.query(Post, post.id)).toBeUndefined();
+			}
+		);
+
 		test('deleting belongsTo side of relationship does not cascade', async () => {
 			const post = await DataStore.save(
 				new Post({
@@ -517,7 +577,7 @@ export function addCommonQueryTests({
 		});
 
 		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting disconnected hasOne',
+			'deleting disconnected hasOne with cpk',
 			async () => {
 				const hasOneParent = await DataStore.save(new HasOneParent({}));
 
@@ -530,7 +590,7 @@ export function addCommonQueryTests({
 		);
 
 		(isSQLiteAdapter() ? test.skip : test)(
-			'deleting connected hasOne',
+			'deleting connected hasOne with cpk',
 			async () => {
 				const hasOneChild = await DataStore.save(new HasOneChild({}));
 				const hasOneParent = await DataStore.save(
@@ -545,6 +605,41 @@ export function addCommonQueryTests({
 
 				expect(
 					await DataStore.query(HasOneChild, hasOneChild.id)
+				).toBeUndefined();
+			}
+		);
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting disconnected hasOne without cpk',
+			async () => {
+				const hasOneParent = await DataStore.save(
+					new DefaultPKHasOneParent({})
+				);
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+				).toBeUndefined();
+			}
+		);
+
+		(isSQLiteAdapter() ? test.skip : test)(
+			'deleting connected hasOne without cpk',
+			async () => {
+				const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
+				const hasOneParent = await DataStore.save(
+					new DefaultPKHasOneParent({ child: hasOneChild })
+				);
+
+				await DataStore.delete(hasOneParent);
+
+				expect(
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+				).toBeUndefined();
+
+				expect(
+					await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)
 				).toBeUndefined();
 			}
 		);
@@ -638,6 +733,12 @@ export function addCommonQueryTests({
 		let modelNamesToTest = Object.keys(schema.models);
 		if (isSQLiteAdapter()) {
 			modelNamesToTest = modelNamesToTest.filter(n => n.startsWith('Legacy'));
+		} else {
+			// Our manyToMany example requires both side of the relationship to be
+			// populated, so we need a different testing pattern.
+			// Originally thought to be "extra" testing, but showed that we were
+			// not previously testing *required* relationships.
+			modelNamesToTest = modelNamesToTest.filter(n => !n.startsWith('Mtm'));
 		}
 
 		test('SANITY TEST - basic model', async () => {
@@ -1010,5 +1111,243 @@ export function addCommonQueryTests({
 				}
 			}
 		}
+	});
+
+	/**
+	 * Given the way `manyToMany` works, these tests are *mostly* superfluous.
+	 * (They *do* however stress *required* relationship handling. A prior gap.)
+	 * `manyToMany` is just a helper to create `belongsTo`/`hasMany` models. So,
+	 * these don't dive as deep or expansively as other relationship tests.
+	 *
+	 * However, in addition to being abundantly cautious, these tests will help
+	 * clamp on deduping behavior. E.g., in an NxM relationship "bag", if we
+	 * query one left side by a property that matches many records on the other
+	 * side, we expect the returned instances to be unique.
+	 */
+	describe('many-to-many', () => {
+		let MtmLeft: PersistentModelConstructor<MtmLeft>;
+		let MtmRight: PersistentModelConstructor<MtmRight>;
+		let MtmJoin: PersistentModelConstructor<MtmJoin>;
+
+		beforeEach(async () => {
+			const classes = initSchema(testSchema());
+			({ MtmLeft, MtmRight, MtmJoin } = classes as {
+				MtmLeft: PersistentModelConstructor<MtmLeft>;
+				MtmRight: PersistentModelConstructor<MtmRight>;
+				MtmJoin: PersistentModelConstructor<MtmJoin>;
+			});
+		});
+
+		afterEach(async () => {
+			await DataStore.clear();
+		});
+
+		/**
+		 * Bag of `MtmLeft`, `MtmRight`, and `MtmJoin` Model instances.
+		 *
+		 * Just a convenience for passing bags of models around the test util
+		 * methods herein.
+		 */
+		type MtmBag = {
+			left: MtmLeft[];
+			right: MtmRight[];
+			join: MtmJoin[];
+		};
+
+		/**
+		 * Uses a pair of left/right names to create left/right children,
+		 * and associates them all together. Be careful how many items you pass
+		 * in here -- you'll get `left * right` join table records.
+		 *
+		 * Returns an object containing all created records as
+		 *
+		 * ```ts
+		 * {
+		 * 	left: MtmLeft[],
+		 * 	right: MtmRight[],
+		 * 	join: MtmJoin[]
+		 * }
+		 * ```
+		 *
+		 * @param leftOnes A list of content values to use on the side.
+		 * @param rightOnes A list of content values to use on the right side.
+		 */
+		const saveManyToManys = async (
+			leftOnes: string[],
+			rightOnes: string[]
+		): Promise<MtmBag> => {
+			const left = [] as MtmLeft[];
+			const right = [] as MtmRight[];
+			const join = [] as MtmJoin[];
+
+			for (const content of leftOnes) {
+				left.push(await DataStore.save(new MtmLeft({ content })));
+			}
+
+			for (const content of rightOnes) {
+				right.push(await DataStore.save(new MtmRight({ content })));
+			}
+
+			for (const mtmLeft of left) {
+				for (const mtmRight of right) {
+					join.push(await DataStore.save(new MtmJoin({ mtmLeft, mtmRight })));
+				}
+			}
+
+			return { left, right, join };
+		};
+
+		/**
+		 * Given an existing instance, re-fetches the item from DataStore
+		 * using the item's constructor and `id`. Throws an Error if the
+		 * item doesn't exist.
+		 *
+		 * @param item The item to re-fetch.
+		 */
+		const refetch = async <T extends PersistentModel>(item: T) => {
+			const fetched = await DataStore.query(
+				item.constructor as PersistentModelConstructor<T>,
+				item.id
+			);
+
+			if (!fetched) {
+				throw new Error(
+					`Instance of ${item.constructor.name} (${item?.id}) doesn't exist in DataStore!`
+				);
+			} else {
+				return fetched;
+			}
+		};
+
+		/**
+		 * Given a set of related MTM records, queries DataStore for each item
+		 * on the left and right and ensures the expected related members
+		 * are traversable from each with lazy loading.
+		 *
+		 * @param expected The expected collection of records.
+		 * @param actual The actual/retrieved collection of records.
+		 */
+		const expectMatchingMtmsInDataStore = async (expected: MtmBag) => {
+			for (const leftRecord of expected.left) {
+				const fetched = await refetch(leftRecord);
+				const fetchedJoins = await fetched.rightOnes.toArray();
+				const fetchedRight: MtmRight[] = [];
+				for (const join of fetchedJoins) {
+					fetchedRight.push(await join.mtmRight);
+				}
+				expect(new Set(fetchedRight)).toEqual(new Set(expected.right));
+			}
+
+			for (const rightRecord of expected.right) {
+				const fetched = await refetch(rightRecord);
+				const fetchedJoins = await fetched.leftOnes.toArray();
+				const fetchedLeft: MtmLeft[] = [];
+				for (const join of fetchedJoins) {
+					fetchedLeft.push(await join.mtmLeft);
+				}
+				expect(new Set(fetchedLeft)).toEqual(new Set(expected.left));
+			}
+		};
+
+		/**
+		 * Each of the following tests will create TWO groups of Left/Right M:M "bags".
+		 *
+		 * All of the left-right items in a bag are interrelated / cross-joined.
+		 *
+		 * TWO bags are created to ensure lazy loading and querying does not get confused
+		 * in any way and mix relationships up. E.g., a test without "decoy" data would
+		 * cause a highly broken LL implementation that selects ALL from a related table
+		 * to show as passing.
+		 */
+
+		test('sets can be established and traversed, cardinality 1x1', async () => {
+			const expectedGroupA = await saveManyToManys(
+				['left content A'],
+				['right content A']
+			);
+			const expectedGroupB = await saveManyToManys(
+				['left content B'],
+				['right content B']
+			);
+
+			await expectMatchingMtmsInDataStore(expectedGroupA);
+			await expectMatchingMtmsInDataStore(expectedGroupB);
+		});
+
+		test('sets can be established and traversed, cardinality 3x3', async () => {
+			const expectedGroupA = await saveManyToManys(
+				['left content A 1', 'left content A 2', 'left content A 3'],
+				['right content A 1', 'right content A 2', 'right content A 3']
+			);
+			const expectedGroupB = await saveManyToManys(
+				['left content B 1', 'left content B 2', 'left content B 3'],
+				['right content B 1', 'right content B 2', 'right content B 3']
+			);
+
+			await expectMatchingMtmsInDataStore(expectedGroupA);
+			await expectMatchingMtmsInDataStore(expectedGroupB);
+		});
+
+		test('sets can be queried by nested predicate, cardinality 1x1', async () => {
+			const expectedGroupA = await saveManyToManys(
+				['left content A'],
+				['right content A']
+			);
+			const expectedGroupB = await saveManyToManys(
+				['left content B'],
+				['right content B']
+			);
+
+			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
+				r.leftOnes.mtmLeft.content.eq('left content A')
+			);
+			expect(fetchedRightOnesA.map(r => r.content)).toEqual([
+				'right content A',
+			]);
+
+			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
+				r.leftOnes.mtmLeft.content.eq('left content B')
+			);
+			expect(fetchedRightOnesB.map(r => r.content)).toEqual([
+				'right content B',
+			]);
+		});
+
+		test('sets can be queried by nested predicate, cardinality 3x3', async () => {
+			const expectedNamesARight = [
+				'right content A 1',
+				'right content A 2',
+				'right content A 3',
+			];
+			const expectedNamesBRight = [
+				'right content B 1',
+				'right content B 2',
+				'right content B 3',
+			];
+
+			const expectedGroupA = await saveManyToManys(
+				['left content A 1', 'left content A 2', 'left content A 3'],
+				expectedNamesARight
+			);
+			const expectedGroupB = await saveManyToManys(
+				['left content B 1', 'left content B 2', 'left content B 3'],
+				expectedNamesBRight
+			);
+
+			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
+				r.leftOnes.mtmLeft.content.contains('left content A')
+			);
+
+			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
+				expectedNamesARight
+			);
+
+			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
+				r.leftOnes.mtmLeft.content.contains('left content B')
+			);
+			expect(fetchedRightOnesB.map(r => r.content)).toEqual(
+				expectedNamesBRight
+			);
+		});
 	});
 }

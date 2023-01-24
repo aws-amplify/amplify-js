@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "5.0.1",
+	"version": "5.0.11",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -14,13 +14,14 @@
 	],
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "node ./build es6 --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist",
+		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
@@ -43,8 +44,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.0.1",
-		"@aws-amplify/storage": "5.0.1",
+		"@aws-amplify/core": "5.0.11",
+		"@aws-amplify/storage": "5.1.1",
 		"@aws-sdk/client-comprehend": "3.6.1",
 		"@aws-sdk/client-polly": "3.6.1",
 		"@aws-sdk/client-rekognition": "3.6.1",
@@ -55,6 +56,32 @@
 		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
 	},
+	"size-limit": [
+		{
+			"name": "Predictions (all providers)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
+			"limit": "131.5 kB"
+		},
+		{
+			"name": "Predictions (Convert provider)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
+			"limit": "60 kB"
+		},
+		{
+			"name": "Predictions (Identify provider)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
+			"limit": "102 kB"
+		},
+		{
+			"name": "Predictions (Interpret provider)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
+			"limit": "44 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
