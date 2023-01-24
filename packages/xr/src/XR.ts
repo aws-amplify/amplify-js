@@ -9,7 +9,14 @@ const logger = new Logger('XR');
 
 const DEFAULT_PROVIDER_NAME = 'SumerianProvider';
 
+const DEPRECATION_MESSAGE = 'The XR feature has been deprecated and will be removed in a future version of AWS Amplify. Please see https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples on using AWS services with Babylon.js.';
+
+
 export class XRClass {
+	componentWillLoad() {
+		console.warn(DEPRECATION_MESSAGE);
+	}
+
 	private _options: XROptions;
 
 	private _pluggables: { [key: string]: XRProvider };
@@ -72,6 +79,7 @@ export class XRClass {
 		sceneOptions: SceneOptions = {},
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -87,6 +95,7 @@ export class XRClass {
 		sceneName: string,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -98,6 +107,7 @@ export class XRClass {
 		sceneName: string,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -109,6 +119,7 @@ export class XRClass {
 		sceneName: string,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -120,6 +131,7 @@ export class XRClass {
 		sceneName: string,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -128,6 +140,7 @@ export class XRClass {
 	}
 
 	public start(sceneName: string, provider: string = this._defaultProvider) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -136,6 +149,7 @@ export class XRClass {
 	}
 
 	public enterVR(sceneName: string, provider: string = this._defaultProvider) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -144,6 +158,7 @@ export class XRClass {
 	}
 
 	public exitVR(sceneName: string, provider: string = this._defaultProvider) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -152,6 +167,7 @@ export class XRClass {
 	}
 
 	public isMuted(sceneName: string, provider: string = this._defaultProvider) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -164,6 +180,7 @@ export class XRClass {
 		muted: boolean,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -177,6 +194,7 @@ export class XRClass {
 		eventHandler: Function,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
@@ -192,6 +210,7 @@ export class XRClass {
 		sceneName: string,
 		provider: string = this._defaultProvider
 	) {
+		console.warn(DEPRECATION_MESSAGE);
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
 				`Provider '${provider}' not configured`
