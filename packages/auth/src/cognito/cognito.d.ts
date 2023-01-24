@@ -7,3 +7,5 @@ export { signInWithSRP } from './commands/signInWithSRP';
 export { signUp } from './commands/signUp';
 export { confirmSignUp } from './commands/confirmSignUp';
 export { confirmSignIn } from './commands/confirmSignIn';
+export { setupTOTP } from './commands/setupTotp';
+export { verifyTOTP } from './commands/verifyTotp';

@@ -1,5 +1,6 @@
 import { Amplify, parseAWSExports } from '@aws-amplify/core';
 import { requestCognitoUserPool } from '../client';
+import { cacheTokens } from '../storage';
 
 export async function confirmSignIn({ code }) {
 	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
@@ -8,28 +9,50 @@ export async function confirmSignIn({ code }) {
 	if (amplifyConfig && amplifyConfig.Auth) {
 		let Session = '';
 		let username = '';
-		debugger;
+
 		if (context.Auth && context.Auth.confirmSignIn) {
-			Session = context.Auth.confirmSign.Session;
-			username = context.Auth.confirmSign.username;
+			Session = context.Auth.confirmSignIn.Session;
+			username = context.Auth.confirmSignIn.username;
 		}
 		const clientId = amplifyConfig.Auth.userPoolWebClientId;
+		const challengeName = context.Auth.confirmSignIn.challengeName;
 		const jsonReq = {
 			ClientId: clientId,
-			Username: username,
 			ValidationData: null,
 			ChallengeResponses: {
-				SMS_MFA_CODE: code,
+				USERNAME: username,
+				[`${challengeName}_CODE`]: code,
 			},
+			ChallengeName: challengeName,
 			Session,
 		};
 
-		const result = await requestCognitoUserPool({
+		const { AuthenticationResult } = await requestCognitoUserPool({
 			operation: 'RespondToAuthChallenge',
 			params: jsonReq,
 			region: amplifyConfig.Auth.region,
 		});
 
-		return result;
+		cacheTokens({
+			idToken: AuthenticationResult.IdToken,
+			accessToken: AuthenticationResult.AccessToken,
+			clockDrift: 0,
+			refreshToken: AuthenticationResult.RefreshToken,
+			username: 'username',
+			userPoolClientID: clientId,
+		});
+
+		Amplify.setUser({
+			idToken: AuthenticationResult.IdToken,
+			accessToken: AuthenticationResult.AccessToken,
+			isSignedIn: true,
+			refreshToken: AuthenticationResult.RefreshToken,
+		});
+
+		return {
+			accessToken: AuthenticationResult.AccessToken,
+			idToken: AuthenticationResult.IdToken,
+			refreshToken: AuthenticationResult.RefreshToken,
+		};
 	}
 }

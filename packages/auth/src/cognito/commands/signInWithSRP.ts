@@ -84,7 +84,7 @@ export async function signInWithSRP({ username, password }) {
 
 		if (ChallengeName) {
 			Amplify.setContext('Auth', {
-				confirmSignIn: { Session, username },
+				confirmSignIn: { Session, username, challengeName: ChallengeName },
 			});
 
 			return {
