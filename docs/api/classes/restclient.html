@@ -943,6 +943,9 @@ img { max-width: 100%; }
 				<a href="restclient.html#getcancellabletoken" class="tsd-kind-icon">get<wbr>Cancellable<wbr>Token</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="restclient.html#hascanceltoken" class="tsd-kind-icon">has<wbr>Cancel<wbr>Token</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="restclient.html#head" class="tsd-kind-icon">head</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1016,6 +1019,7 @@ console.log(data);
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#endpoint" class="tsd-kind-icon">endpoint</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#get" class="tsd-kind-icon">get</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#getcancellabletoken" class="tsd-kind-icon">get<wbr>Cancellable<wbr>Token</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#hascanceltoken" class="tsd-kind-icon">has<wbr>Cancel<wbr>Token</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#head" class="tsd-kind-icon">head</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#iscancel" class="tsd-kind-icon">is<wbr>Cancel</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="restclient.html#patch" class="tsd-kind-icon">patch</a></li>
@@ -1039,7 +1043,7 @@ console.log(data);
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L63">packages/api-rest/src/RestClient.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L53">packages/api-rest/src/RestClient.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1063,7 +1067,7 @@ console.log(data);
 			<div class="tsd-signature tsd-kind-icon">Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = Credentials</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L63">packages/api-rest/src/RestClient.ts:63</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L53">packages/api-rest/src/RestClient.ts:53</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1074,13 +1078,13 @@ console.log(data);
 			<a name="ajax" class="tsd-anchor"></a>
 			<h3>ajax</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">ajax<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">ajax<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L91">packages/api-rest/src/RestClient.ts:91</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L81">packages/api-rest/src/RestClient.ts:81</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1106,7 +1110,7 @@ console.log(data);
 							<h5>init: <span class="tsd-signature-type">any</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1117,13 +1121,13 @@ console.log(data);
 			<a name="cancel" class="tsd-anchor"></a>
 			<h3>cancel</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+				<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L293">packages/api-rest/src/RestClient.ts:293</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L283">packages/api-rest/src/RestClient.ts:283</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1134,7 +1138,7 @@ console.log(data);
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>request: <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							<h5>request: <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>The request promise to cancel</p>
 							</div>
@@ -1151,13 +1155,13 @@ console.log(data);
 			<a name="del" class="tsd-anchor"></a>
 			<h3>del</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">del<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">del<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L274">packages/api-rest/src/RestClient.ts:274</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L264">packages/api-rest/src/RestClient.ts:264</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1180,7 +1184,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1197,7 +1201,7 @@ console.log(data);
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L335">packages/api-rest/src/RestClient.ts:335</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L335">packages/api-rest/src/RestClient.ts:335</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1225,13 +1229,13 @@ console.log(data);
 			<a name="get" class="tsd-anchor"></a>
 			<h3>get</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L234">packages/api-rest/src/RestClient.ts:234</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L224">packages/api-rest/src/RestClient.ts:224</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1254,7 +1258,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1271,7 +1275,7 @@ console.log(data);
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L314">packages/api-rest/src/RestClient.ts:314</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L314">packages/api-rest/src/RestClient.ts:314</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1285,16 +1289,50 @@ console.log(data);
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="head" class="tsd-anchor"></a>
-			<h3>head</h3>
+			<a name="hascanceltoken" class="tsd-anchor"></a>
+			<h3>has<wbr>Cancel<wbr>Token</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">head<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">has<wbr>Cancel<wbr>Token<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L284">packages/api-rest/src/RestClient.ts:284</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L297">packages/api-rest/src/RestClient.ts:297</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Check if the request has a corresponding cancel token in the WeakMap.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>params</dt>
+							<dd><p>request - The request promise</p>
+							</dd>
+						</dl>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>request: <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					<p>if the request has a corresponding cancel token.</p>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="head" class="tsd-anchor"></a>
+			<h3>head</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">head<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L274">packages/api-rest/src/RestClient.ts:274</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1317,7 +1355,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1334,7 +1372,7 @@ console.log(data);
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L306">packages/api-rest/src/RestClient.ts:306</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L306">packages/api-rest/src/RestClient.ts:306</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1362,13 +1400,13 @@ console.log(data);
 			<a name="patch" class="tsd-anchor"></a>
 			<h3>patch</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">patch<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L254">packages/api-rest/src/RestClient.ts:254</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L244">packages/api-rest/src/RestClient.ts:244</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1391,7 +1429,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1402,13 +1440,13 @@ console.log(data);
 			<a name="post" class="tsd-anchor"></a>
 			<h3>post</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">post<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">post<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L264">packages/api-rest/src/RestClient.ts:264</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L254">packages/api-rest/src/RestClient.ts:254</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1431,7 +1469,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1442,13 +1480,13 @@ console.log(data);
 			<a name="put" class="tsd-anchor"></a>
 			<h3>put</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<span class="tsd-signature-symbol">(</span>urlOrApiInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#apiinfo" class="tsd-signature-type">ApiInfo</a>, init<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L244">packages/api-rest/src/RestClient.ts:244</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L234">packages/api-rest/src/RestClient.ts:234</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1471,7 +1509,7 @@ console.log(data);
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>A promise that resolves to an object with response status and JSON data, if successful.</li>
 					</ul>
@@ -1482,13 +1520,13 @@ console.log(data);
 			<a name="updaterequesttobecancellable" class="tsd-anchor"></a>
 			<h3>update<wbr>Request<wbr>ToBe<wbr>Cancellable</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">update<wbr>Request<wbr>ToBe<wbr>Cancellable<span class="tsd-signature-symbol">(</span>promise<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, cancelTokenSource<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CancelTokenSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">update<wbr>Request<wbr>ToBe<wbr>Cancellable<span class="tsd-signature-symbol">(</span>promise<span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, cancelTokenSource<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CancelTokenSource</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/api-rest/src/RestClient.ts#L323">packages/api-rest/src/RestClient.ts:323</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/api-rest/src/RestClient.ts#L323">packages/api-rest/src/RestClient.ts:323</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1501,7 +1539,7 @@ console.log(data);
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>promise: <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							<h5>promise: <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 						<li>
 							<h5>cancelTokenSource: <span class="tsd-signature-type">CancelTokenSource</span></h5>

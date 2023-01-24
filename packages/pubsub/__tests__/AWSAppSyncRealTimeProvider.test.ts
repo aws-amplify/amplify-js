@@ -40,6 +40,14 @@ describe('AWSAppSyncRealTimeProvider', () => {
 			);
 			expect(result).toBe(false);
 		});
+		
+		test('Non-custom domain in the amazonaws.com.cn subdomain space returns `false`', () => {
+			const provider = new AWSAppSyncRealTimeProvider();
+			const result = (provider as any).isCustomDomain(
+				'https://12345678901234567890123456.appsync-api.cn-north-1.amazonaws.com.cn/graphql'
+			);
+			expect(result).toBe(false);
+		});
 	});
 
 	describe('newClient()', () => {

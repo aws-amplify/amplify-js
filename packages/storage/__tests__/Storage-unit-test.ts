@@ -6,8 +6,6 @@ import {
 	StorageProvider,
 } from '../src';
 import axios, { CancelToken } from 'axios';
-import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
-import { S3Client } from '@aws-sdk/client-s3';
 
 type CustomProviderConfig = {
 	foo: boolean;

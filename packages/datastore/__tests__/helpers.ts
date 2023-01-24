@@ -1,6 +1,12 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { parse } from 'graphql';
-import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
+import {
+	ModelInit,
+	Schema,
+	InternalSchema,
+	isModelAttributePrimaryKey,
+	__modelMeta__,
+} from '../src/types';
 import {
 	AsyncCollection,
 	MutableModel,
@@ -11,6 +17,7 @@ import {
 	PersistentModel,
 	OptionallyManagedIdentifier,
 	PersistentModelConstructor,
+	AsyncItem,
 } from '../src';
 import { validatePredicate } from '../src/util';
 import { ModelPredicateCreator } from '../src/predicates';
@@ -529,8 +536,7 @@ class FakeGraphQLService {
 			this.tables.set(model.name, new Map<string, any[]>());
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
-				// Pretty sure the first key is the PK.
-				if (attribute.type === 'key') {
+				if (isModelAttributePrimaryKey(attribute)) {
 					this.PKFields.set(model.name, attribute!.properties!.fields);
 					CPKFound = true;
 					break;
@@ -893,9 +899,15 @@ class FakeGraphQLService {
 /**
  * Re-requries DataStore, initializes the test schema.
  *
+ * Clears ALL mocks and modules in doing so.
+ *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({ online = false, isNode = true } = {}) {
+export function getDataStore({
+	online = false,
+	isNode = true,
+	storageAdapterFactory = () => undefined as any,
+} = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -973,6 +985,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
 
+	DataStore.configure({
+		storageAdapter: storageAdapterFactory(),
+	});
+
 	// private, test-only DI's.
 	if (online) {
 		(DataStore as any).amplifyContext.API = graphqlService;
@@ -982,7 +998,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	}
 
 	const classes = initSchema(testSchema());
+
 	const {
+		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -995,7 +1014,17 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	} = classes as {
+		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
+		Blog: PersistentModelConstructor<Blog>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
 		User: PersistentModelConstructor<User>;
@@ -1008,6 +1037,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		Model: PersistentModelConstructor<Model>;
+		MtmLeft: PersistentModelConstructor<MtmLeft>;
+		MtmRight: PersistentModelConstructor<MtmRight>;
+		MtmJoin: PersistentModelConstructor<MtmJoin>;
+		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
+		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
+		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
 
 	return {
@@ -1016,6 +1053,8 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -1028,6 +1067,14 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
+		MtmLeft,
+		MtmRight,
+		MtmJoin,
+		DefaultPKHasOneParent,
+		DefaultPKHasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 	};
 }
 
@@ -1073,6 +1120,7 @@ export declare class Model {
 		mutator: (draft: MutableModel<Model>) => void | Model
 	): Model;
 }
+
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
@@ -1089,10 +1137,24 @@ export declare class Login {
 	constructor(init: Login);
 }
 
+export declare class Blog {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly posts: AsyncCollection<Post>;
+
+	constructor(init: ModelInit<Blog>);
+
+	static copyOf(
+		src: Blog,
+		mutator: (draft: MutableModel<Blog>) => void | Blog
+	): Blog;
+}
+
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly comments: AsyncCollection<Comment>;
+	public readonly blogId?: string;
 
 	constructor(init: ModelInit<Post>);
 
@@ -1270,6 +1332,62 @@ export declare class HasOneChild {
 	): HasOneChild;
 }
 
+export declare class MtmLeft {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmLeft, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly rightOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmLeft>);
+	static copyOf(
+		source: MtmLeft,
+		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void
+	): MtmLeft;
+}
+
+export declare class MtmRight {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<MtmRight, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly content?: string | null;
+	readonly leftOnes: AsyncCollection<MtmJoin>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmRight>);
+	static copyOf(
+		source: MtmRight,
+		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void
+	): MtmRight;
+}
+
+export declare class MtmJoin {
+	readonly [__modelMeta__]: {
+		identifier: ManagedIdentifier<MtmJoin, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly mtmLeftId?: string | null;
+	readonly mtmRightId?: string | null;
+	readonly mtmLeft: AsyncItem<MtmLeft>;
+	readonly mtmRight: AsyncItem<MtmRight>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+
+	constructor(init: ModelInit<MtmJoin>);
+	static copyOf(
+		source: MtmJoin,
+		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void
+	): MtmJoin;
+}
+
 export declare class DefaultPKParent {
 	readonly [__modelMeta__]: {
 		identifier: OptionallyManagedIdentifier<DefaultPKParent, 'id'>;
@@ -1307,6 +1425,36 @@ export declare class DefaultPKChild {
 			draft: MutableModel<DefaultPKChild>
 		) => MutableModel<DefaultPKChild> | void
 	): DefaultPKChild;
+}
+
+export declare class DefaultPKHasOneParent {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly child?: Promise<DefaultPKHasOneChild>;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<DefaultPKParent>);
+	static copyOf(
+		source: DefaultPKHasOneParent,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneParent>
+		) => MutableModel<DefaultPKHasOneParent> | void
+	): DefaultPKHasOneParent;
+}
+
+export declare class DefaultPKHasOneChild {
+	readonly id: string;
+	readonly content?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	readonly defaultPKHasOneParentChildrenId?: string | null;
+	constructor(init: ModelInit<DefaultPKHasOneChild>);
+	static copyOf(
+		source: DefaultPKHasOneChild,
+		mutator: (
+			draft: MutableModel<DefaultPKHasOneChild>
+		) => MutableModel<DefaultPKHasOneChild> | void
+	): DefaultPKHasOneChild;
 }
 
 /**
@@ -1478,6 +1626,20 @@ export declare class LegacyJSONComment {
 	): LegacyJSONComment;
 }
 
+export declare class ModelWithBoolean {
+	public readonly id: string;
+	public readonly boolField?: boolean;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<ModelWithBoolean>);
+
+	static copyOf(
+		src: ModelWithBoolean,
+		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
+	): ModelWithBoolean;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1565,6 +1727,82 @@ export function testSchema(): Schema {
 					},
 				},
 			},
+			ModelWithBoolean: {
+				name: 'ModelWithBoolean',
+				pluralName: 'ModelWithBooleans',
+				syncable: true,
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+					},
+					boolField: {
+						name: 'boolField',
+						isArray: false,
+						type: 'Boolean',
+						isRequired: false,
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+			},
+			Blog: {
+				name: 'Blog',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					posts: {
+						name: 'posts',
+						isArray: true,
+						type: {
+							model: 'Post',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['blogId'],
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Blogs',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
 			Post: {
 				name: 'Post',
 				fields: {
@@ -1580,6 +1818,13 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+						attributes: [],
+					},
+					blogId: {
+						name: 'blogId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
 						attributes: [],
 					},
 					comments: {
@@ -1603,6 +1848,13 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byBlog',
+							fields: ['blogId'],
+						},
 					},
 				],
 			},
@@ -2150,6 +2402,222 @@ export function testSchema(): Schema {
 					},
 				],
 			},
+			MtmLeft: {
+				name: 'MtmLeft',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					rightOnes: {
+						name: 'rightOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'mtmLeft',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmLefts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmRight: {
+				name: 'MtmRight',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					leftOnes: {
+						name: 'leftOnes',
+						isArray: true,
+						type: {
+							model: 'MtmJoin',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'mtmRight',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmRights',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			MtmJoin: {
+				name: 'MtmJoin',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					mtmLeftId: {
+						name: 'mtmLeftId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmRightId: {
+						name: 'mtmRightId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					mtmLeft: {
+						name: 'mtmLeft',
+						isArray: false,
+						type: {
+							model: 'MtmLeft',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'mtmLeftId',
+						},
+					},
+					mtmRight: {
+						name: 'mtmRight',
+						isArray: false,
+						type: {
+							model: 'MtmRight',
+						},
+						isRequired: true,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'mtmRightId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'MtmJoins',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmLeft',
+							fields: ['mtmLeftId'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byMtmRight',
+							fields: ['mtmRightId'],
+						},
+					},
+				],
+			},
 			DefaultPKParent: {
 				name: 'DefaultPKParent',
 				fields: {
@@ -2279,6 +2747,113 @@ export function testSchema(): Schema {
 						properties: {
 							fields: ['id'],
 						},
+					},
+				],
+			},
+			DefaultPKHasOneParent: {
+				name: 'DefaultPKHasOneParent',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					child: {
+						name: 'child',
+						isArray: false,
+						type: {
+							model: 'DefaultPKHasOneChild',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: 'id',
+							targetName: 'defaultPKHasOneParentChildId',
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					defaultPKHasOneParentChildId: {
+						name: 'defaultPKHasOneParentChildId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneParents',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			DefaultPKHasOneChild: {
+				name: 'DefaultPKHasOneChild',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'DefaultPKHasOneChildren',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
 					},
 				],
 			},

@@ -924,6 +924,12 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="sessiontracker.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="sessiontracker.html#end" class="tsd-kind-icon">end</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="sessiontracker.html#start" class="tsd-kind-icon">start</a>
+			</li>
 		</ul>
 	</li>
 </ul>
@@ -936,6 +942,13 @@ img { max-width: 100%; }
 			<li>
 				<span class="target">SessionTracker</span>
 			</li>
+		</ul>
+	</section>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><a href="../interfaces/sessiontrackerinterface.html" class="tsd-signature-type">SessionTrackerInterface</a></li>
+			<li><a href="../interfaces/sessiontrackerinterface.html" class="tsd-signature-type">SessionTrackerInterface</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -952,6 +965,8 @@ img { max-width: 100%; }
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sessiontracker.html#configure" class="tsd-kind-icon">configure</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sessiontracker.html#end" class="tsd-kind-icon">end</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="sessiontracker.html#start" class="tsd-kind-icon">start</a></li>
 					</ul>
 				</section>
 			</div>
@@ -969,7 +984,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/trackers/SessionTracker.ts#L34">packages/analytics/src/trackers/SessionTracker.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/trackers/SessionTracker.ts#L29">packages/analytics/src/trackers/SessionTracker.ts:29</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -998,7 +1013,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/analytics/src/trackers/SessionTracker.ts#L155">packages/analytics/src/trackers/SessionTracker.ts:155</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/analytics/src/trackers/SessionTracker.ts#L150">packages/analytics/src/trackers/SessionTracker.ts:150</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1008,6 +1023,58 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../interfaces/sessiontrackopts.html" class="tsd-signature-type">SessionTrackOpts</a></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="end" class="tsd-anchor"></a>
+			<h3>end</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></li>
+				<li class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.ts#L48">packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.ts:48</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.native.ts#L33">packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.native.ts:33</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="start" class="tsd-anchor"></a>
+			<h3>start</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></li>
+				<li class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.ts#L38">packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.ts:38</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></h4>
+				</li>
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.native.ts#L28">packages/notifications/src/InAppMessaging/SessionTracker/SessionTracker.native.ts:28</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <a href="../globals.html#sessionstate" class="tsd-signature-type">SessionState</a></h4>
 				</li>
 			</ul>
 		</section>

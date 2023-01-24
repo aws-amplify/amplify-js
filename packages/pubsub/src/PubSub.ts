@@ -7,11 +7,10 @@ import {
 	Amplify,
 	browserOrNode,
 	ConsoleLogger as Logger,
-	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
-import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
+import { AWSAppSyncRealTimeProvider } from './Providers';
 
 const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
@@ -22,24 +21,9 @@ export class PubSubClass {
 	private _pluggables: PubSubProvider[];
 
 	/**
-	 * Internal instance of AWSAppSyncProvider used by the API category to subscribe to AppSync
-	 */
-	private _awsAppSyncProvider?: AWSAppSyncProvider;
-
-	/**
 	 * Internal instance of AWSAppSyncRealTimeProvider used by the API category to subscribe to AppSync
 	 */
 	private _awsAppSyncRealTimeProvider?: AWSAppSyncRealTimeProvider;
-
-	/**
-	 * Lazy instantiate AWSAppSyncProvider when it is required by the API category
-	 */
-	private get awsAppSyncProvider() {
-		if (!this._awsAppSyncProvider) {
-			this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
-		}
-		return this._awsAppSyncProvider;
-	}
 
 	/**
 	 * Lazy instantiate AWSAppSyncRealTimeProvider when it is required by the API category
@@ -111,9 +95,6 @@ export class PubSubClass {
 	}
 
 	private getProviderByName(providerName: string | symbol) {
-		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
-			return this.awsAppSyncProvider;
-		}
 		if (providerName === INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER) {
 			return this.awsAppSyncRealTimeProvider;
 		}

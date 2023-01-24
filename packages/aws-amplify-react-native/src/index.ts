@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { default as AmplifyCore, I18n } from 'aws-amplify';
+import { Amplify as AmplifyCore, I18n } from 'aws-amplify';
 import dict from './AmplifyI18n';
 
 export { default as AmplifyTheme } from './AmplifyTheme';

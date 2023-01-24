@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@7.0.1...aws-amplify-react-native@7.0.2) (2022-12-06)
+
+
+### Bug Fixes
+
+* Fixed invalid `JS` imports ([#10716](https://github.com/aws-amplify/amplify-js/issues/10716)) ([49bdf81](https://github.com/aws-amplify/amplify-js/commit/49bdf81f59a8f5c5cb24fdb0bf17341daea10593))
+
+
+
+
+
 ## [7.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@7.0.0...aws-amplify-react-native@7.0.1) (2022-11-11)
 
 **Note:** Version bump only for package aws-amplify-react-native

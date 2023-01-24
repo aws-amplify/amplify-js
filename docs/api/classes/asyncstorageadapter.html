@@ -984,14 +984,14 @@ img { max-width: 100%; }
 			<a name="batchsave" class="tsd-anchor"></a>
 			<h3>batch<wbr>Save</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">batch<wbr>Save&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, items<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#batchsave">batchSave</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L575">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:575</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L667">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:667</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1009,7 +1009,7 @@ img { max-width: 100%; }
 							<h5>items: <a href="../globals.html#modelinstancemetadata" class="tsd-signature-type">ModelInstanceMetadata</a><span class="tsd-signature-symbol">[]</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html" class="tsd-signature-type">OpType</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1017,17 +1017,17 @@ img { max-width: 100%; }
 			<a name="clear" class="tsd-anchor"></a>
 			<h3>clear</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">clear<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#clear">clear</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L568">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:568</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L660">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:660</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1035,13 +1035,13 @@ img { max-width: 100%; }
 			<a name="delete" class="tsd-anchor"></a>
 			<h3>delete</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">delete&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelOrModelConstructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">delete&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelOrModelConstructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L343">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:343</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L337">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:337</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1059,7 +1059,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> condition: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1067,14 +1067,14 @@ img { max-width: 100%; }
 			<a name="query" class="tsd-anchor"></a>
 			<h3>query</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">query&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, predicate<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, pagination<span class="tsd-signature-symbol">?: </span><a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">query&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, predicate<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, pagination<span class="tsd-signature-symbol">?: </span><a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#query">query</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L231">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:231</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L222">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:222</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1095,7 +1095,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pagination: <a href="../globals.html#paginationinput" class="tsd-signature-type">PaginationInput</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1103,14 +1103,14 @@ img { max-width: 100%; }
 			<a name="queryone" class="tsd-anchor"></a>
 			<h3>query<wbr>One</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">query<wbr>One&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, firstOrLast<span class="tsd-signature-symbol">?: </span><a href="../enums/queryone.html" class="tsd-signature-type">QueryOne</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">query<wbr>One&lt;T&gt;<span class="tsd-signature-symbol">(</span>modelConstructor<span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span>, firstOrLast<span class="tsd-signature-symbol">?: </span><a href="../enums/queryone.html" class="tsd-signature-type">QueryOne</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#queryone">queryOne</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L334">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:334</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L327">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:327</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1128,7 +1128,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> firstOrLast: <a href="../enums/queryone.html" class="tsd-signature-type">QueryOne</a><span class="tsd-signature-symbol"> = QueryOne.FIRST</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1136,14 +1136,14 @@ img { max-width: 100%; }
 			<a name="save" class="tsd-anchor"></a>
 			<h3>save</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">save&lt;T&gt;<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">save&lt;T&gt;<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, condition<span class="tsd-signature-symbol">?: </span><a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/adapter.html">Adapter</a>.<a href="../interfaces/adapter.html#save">save</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L97">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L120">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:120</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -1161,7 +1161,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> condition: <a href="../globals.html#modelpredicate" class="tsd-signature-type">ModelPredicate</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><a href="../enums/optype.html#insert" class="tsd-signature-type">INSERT</a><span class="tsd-signature-symbol"> | </span><a href="../enums/optype.html#update" class="tsd-signature-type">UPDATE</a><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1169,13 +1169,13 @@ img { max-width: 100%; }
 			<a name="setup" class="tsd-anchor"></a>
 			<h3>set<wbr>Up</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">set<wbr>Up<span class="tsd-signature-symbol">(</span>theSchema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, getModelConstructorByModelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Up<span class="tsd-signature-symbol">(</span>theSchema<span class="tsd-signature-symbol">: </span><a href="../globals.html#internalschema" class="tsd-signature-type">InternalSchema</a>, namespaceResolver<span class="tsd-signature-symbol">: </span><a href="../globals.html#namespaceresolver" class="tsd-signature-type">NamespaceResolver</a>, modelInstanceCreator<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelinstancecreator" class="tsd-signature-type">ModelInstanceCreator</a>, getModelConstructorByModelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L64">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6caccc7b4/packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts#L87">packages/datastore/src/storage/adapter/AsyncStorageAdapter.ts:87</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1194,14 +1194,14 @@ img { max-width: 100%; }
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter-siganture">
 									<ul class="tsd-signatures tsd-kind-type-literal">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>namsespaceName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, modelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>namsespaceName<span class="tsd-signature-symbol">: </span><a href="../enums/namespaces.html" class="tsd-signature-type">NAMESPACES</a>, modelName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#persistentmodelconstructor" class="tsd-signature-type">PersistentModelConstructor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 									</ul>
 									<ul class="tsd-descriptions">
 										<li class="tsd-description">
 											<h4 class="tsd-parameters-title">Parameters</h4>
 											<ul class="tsd-parameters">
 												<li>
-													<h5>namsespaceName: <span class="tsd-signature-type">string</span></h5>
+													<h5>namsespaceName: <a href="../enums/namespaces.html" class="tsd-signature-type">NAMESPACES</a></h5>
 												</li>
 												<li>
 													<h5>modelName: <span class="tsd-signature-type">string</span></h5>
@@ -1214,7 +1214,7 @@ img { max-width: 100%; }
 							</ul>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
