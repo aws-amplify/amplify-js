@@ -28,7 +28,7 @@ import {
 	EventObject,
 	EndpointFailureData,
 } from '../types';
-import { v1 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
 const AMPLIFY_SYMBOL = (
