@@ -3,7 +3,6 @@
 
 import 'react-native-get-random-values';
 import { Predictions } from './Predictions';
-
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
@@ -12,7 +11,6 @@ import {
 } from './Providers';
 
 export * from './types';
-
 export {
 	Predictions,
 	AmazonAIIdentifyPredictionsProvider,
