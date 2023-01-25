@@ -26,7 +26,7 @@ export {
 	transferKeyToUpperCase,
 } from './JS';
 export { AmplifyUser } from './Amplify';
-export { Signer } from './Signer';
+export { Signer, sign as SigV4HTTPRequestSigner } from './Signer';
 export { parseAWSExports } from './parseAWSExports';
 export { AWSCloudWatchProvider } from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
@@ -68,6 +68,7 @@ export {
 	retry,
 	urlSafeDecode,
 	urlSafeEncode,
+	httpClient,
 } from './Util';
 
 /**

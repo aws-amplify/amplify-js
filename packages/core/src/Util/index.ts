@@ -23,3 +23,5 @@ export {
 	BackgroundManagerNotOpenError,
 	BackgroundProcessManagerState,
 } from './BackgroundProcessManager';
+
+export { httpClient } from './httpClient';
