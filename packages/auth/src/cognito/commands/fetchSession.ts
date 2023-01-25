@@ -111,15 +111,6 @@ async function refreshTokens({ refreshToken, clientId, region }) {
 
 	const { AuthenticationResult } = response;
 
-	cacheTokens({
-		idToken: AuthenticationResult.IdToken,
-		accessToken: AuthenticationResult.AccessToken,
-		clockDrift: 0,
-		refreshToken,
-		username: 'username',
-		userPoolClientID: clientId,
-	});
-
 	return {
 		accessToken: AuthenticationResult.AccessToken,
 		idToken: AuthenticationResult.IdToken,

@@ -34,12 +34,22 @@ export async function fetchCredentials(token: string) {
 		});
 
 		console.log({ responseCreds });
-		return {
-			accessKey: responseCreds.AccessKeyId,
-			secretKey: responseCreds.SecretKey,
-			sessionToken: responseCreds.SessionToken,
-			identityId: responseId.IdentityId,
-		};
+
+		if (responseCreds.Credentials) {
+			return {
+				accessKey: responseCreds.Credentials.AccessKeyId,
+				secretKey: responseCreds.Credentials.SecretKey,
+				sessionToken: responseCreds.Credentials.SessionToken,
+				identityId: responseId.IdentityId,
+			};
+		} else {
+			return {
+				accessKey: '',
+				secretKey: '',
+				sessionToken: '',
+				identityId: '',
+			};
+		}
 	} else {
 		return {
 			accessKey: '',
