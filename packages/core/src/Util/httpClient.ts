@@ -7,12 +7,16 @@ export async function httpClient({
 	method,
 	body,
 	headers,
+	service,
+	region,
 }: {
 	endpoint: string;
 	authMode: 'SigV4' | 'JWT' | 'None';
 	method: 'GET' | 'POST' | 'PUT';
 	body: any;
 	headers: Record<string, string>;
+	service: 'string';
+	region: 'string';
 }) {
 	let libHeaders = {
 		'Content-Type': 'application/x-amz-json-1.1',
@@ -21,9 +25,8 @@ export async function httpClient({
 	if (authMode === 'SigV4') {
 		const creds = Amplify.getUser();
 		// add headers
-
 		const signed_params = _signed({
-			region: null,
+			region,
 			params: {
 				method,
 				data: JSON.stringify(body),
@@ -33,13 +36,14 @@ export async function httpClient({
 			credentials: {
 				...creds.awsCreds,
 			},
-			service: null,
+			service,
 		});
 		libHeaders = { ...signed_params.headers };
 	}
 
-	if ((authMode = 'JWT')) {
-		libHeaders['Authorization'] = 'JWT';
+	if (authMode === 'JWT') {
+		const user = Amplify.getUser();
+		libHeaders['Authorization'] = user.idToken;
 	}
 
 	return callFetchWithRetry({
