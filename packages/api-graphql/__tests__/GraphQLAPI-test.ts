@@ -749,13 +749,13 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 				})
-			).rejects.toThrowError('No federated jwt');
+			).rejects.toThrowError('No current user');
 		});
 
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {
@@ -773,7 +773,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -796,7 +796,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -829,7 +829,7 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -855,7 +855,7 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			expect(
+			await expect(
 				api.graphql({
 					query: GetEvent,
 					variables,
@@ -1314,6 +1314,67 @@ describe('API test', () => {
 			const createInstanceMock = spyOn(API.prototype, 'createInstance');
 			api.createInstanceIfNotCreated();
 			expect(createInstanceMock).not.toHaveBeenCalled();
+		});
+
+		test('sends cookies with request', async () => {
+			const spyonAuth = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
+				userAgentSuffix = '/DataStore';
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+				withCredentials: true,
+			});
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
+			};
+
+			const body = {
+				query: getEventQuery,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+				withCredentials: true,
+			};
+			let authToken: undefined;
+
+			await api.graphql(
+				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
+			);
+
+			expect(spyon).toBeCalledWith(url, init);
 		});
 	});
 

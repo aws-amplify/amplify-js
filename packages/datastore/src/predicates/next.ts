@@ -321,7 +321,15 @@ export class GroupCondition {
 		/**
 		 *
 		 */
-		public operands: UntypedCondition[]
+		public operands: UntypedCondition[],
+
+		/**
+		 * Whether this GroupCondition is the result of an optimize call.
+		 *
+		 * This is used to guard against infinitely fetch -> optimize -> fetch
+		 * recursion.
+		 */
+		public isOptimized: boolean = false
 	) {}
 
 	/**
@@ -352,6 +360,82 @@ export class GroupCondition {
 	}
 
 	/**
+	 * Returns a version of the predicate tree with unnecessary logical groups
+	 * condensed and merged together. This is intended to create a dense tree
+	 * with leaf nodes (`FieldCondition`'s) aggregated under as few group conditions
+	 * as possible for the most efficient fetching possible -- it allows `fetch()`.
+	 *
+	 * E.g. a grouping like this:
+	 *
+	 * ```yaml
+	 * and:
+	 * 	and:
+	 * 		id:
+	 * 			eq: "abc"
+	 * 	and:
+	 * 		name:
+	 * 			eq: "xyz"
+	 * ```
+	 *
+	 * Will become this:
+	 *
+	 * ```yaml
+	 * and:
+	 * 	id:
+	 * 		eq: "abc"
+	 * 	name:
+	 * 		eq: "xyz"
+	 * ```
+	 *
+	 * This allows `fetch()` to pass both the `id` and `name` conditions to the adapter
+	 * together, which can then decide what index to use based on both fields together.
+	 *
+	 * @param preserveNode Whether to preserve the current node and to explicitly not eliminate
+	 * it during optimization. Used internally to preserve the root node and children of
+	 * `not` groups. `not` groups will always have a single child, so there's nothing to
+	 * optimize below a `not` (for now), and it makes the query logic simpler later.
+	 */
+	optimized(preserveNode = true): UntypedCondition {
+		const operands = this.operands.map(o =>
+			o instanceof GroupCondition ? o.optimized(this.operator === 'not') : o
+		);
+
+		// we're only collapsing and/or groups that contains a single child for now,
+		// because they're much more common and much more trivial to collapse. basically,
+		// an `and`/`or` that contains a single child doesn't require the layer of
+		// logical grouping.
+		if (
+			!preserveNode &&
+			['and', 'or'].includes(this.operator) &&
+			!this.field &&
+			operands.length === 1
+		) {
+			const operand = operands[0];
+			if (operand instanceof FieldCondition) {
+				// between conditions should NOT be passed up the chain. if they
+				// need to be *negated* later, it is important that they be properly
+				// contained in an AND group. when de morgan's law is applied, the
+				// conditions are reversed and the AND group flips to an OR. this
+				// doesn't work right if the a `between` doesn't live in an AND group.
+				if (operand.operator !== 'between') {
+					return operand;
+				}
+			} else {
+				return operand;
+			}
+		}
+
+		return new GroupCondition(
+			this.model,
+			this.field,
+			this.relationshipType,
+			this.operator,
+			operands,
+			true
+		);
+	}
+
+	/**
 	 * Fetches matching records from a given storage adapter using legacy predicates (for now).
 	 * @param storage The storage adapter this predicate will query against.
 	 * @param breadcrumb For debugging/troubleshooting. A list of the `groupId`'s this
@@ -364,6 +448,10 @@ export class GroupCondition {
 		breadcrumb: string[] = [],
 		negate = false
 	): Promise<Record<string, any>[]> {
+		if (!this.isOptimized) {
+			return this.optimized().fetch(storage);
+		}
+
 		const resultGroups: Array<Record<string, any>[]> = [];
 
 		const operator = (negate ? negations[this.operator] : this.operator) as
@@ -433,35 +521,26 @@ export class GroupCondition {
 
 				const relationship = ModelRelationship.from(this.model, g.field);
 
+				type JoinCondition = { [x: string]: { eq: any } };
 				if (relationship) {
-					const relativesPredicates: ((
-						p: RecursiveModelPredicate<any>
-					) => RecursiveModelPredicate<any>)[] = [];
+					const allJoinConditions: { and: JoinCondition[] }[] = [];
 					for (const relative of relatives) {
-						const individualRowJoinConditions: FieldCondition[] = [];
-
+						const relativeConditions: JoinCondition[] = [];
 						for (let i = 0; i < relationship.localJoinFields.length; i++) {
-							// rightHandValue
-							individualRowJoinConditions.push(
-								new FieldCondition(relationship.localJoinFields[i], 'eq', [
-									relative[relationship.remoteJoinFields[i]],
-								])
-							);
+							relativeConditions.push({
+								[relationship.localJoinFields[i]]: {
+									eq: relative[relationship.remoteJoinFields[i]],
+								},
+							});
 						}
-
-						const predicate = p =>
-							applyConditionsToV1Predicate(
-								p,
-								individualRowJoinConditions,
-								false
-							);
-						relativesPredicates.push(predicate as any);
+						allJoinConditions.push({ and: relativeConditions });
 					}
 
-					const predicate = FlatModelPredicateCreator.createGroupFromExisting(
+					const predicate = FlatModelPredicateCreator.createFromAST(
 						this.model.schema,
-						'or',
-						relativesPredicates as any
+						{
+							or: allJoinConditions,
+						}
 					);
 
 					resultGroups.push(
@@ -486,6 +565,7 @@ export class GroupCondition {
 						applyConditionsToV1Predicate(c, conditions, negateChildren)
 					)
 			);
+
 			resultGroups.push(
 				await storage.query(this.model.builder, predicate as any)
 			);
@@ -613,6 +693,16 @@ export class GroupCondition {
 			this.toAST()
 		) as unknown as StoragePredicate<T>;
 	}
+
+	/**
+	 * A JSON representation that's good for debugging.
+	 */
+	toJSON() {
+		return {
+			...this,
+			model: this.model.schema.name,
+		};
+	}
 }
 
 /**
@@ -665,6 +755,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// next steps will be to add or(), and(), not(), and field.op() methods.
 	const link = {} as any;
 
+	// so it can be looked up later with in the internals when processing conditions.
 	registerPredicateInternals(baseCondition, link);
 
 	const copyLink = () => {
