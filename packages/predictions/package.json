@@ -5,9 +5,6 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
 	"sideEffects": [
 		"./lib/Predictions.js",
 		"./lib-esm/Predictions.js"
@@ -54,7 +51,10 @@
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
 		"@aws-sdk/util-utf8-node": "3.6.1",
 		"tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+		"uuid": "9.0.0"
+	},
+	"devDependencies": {
+		"react-native-get-random-values": "1.8.0"
 	},
 	"size-limit": [
 		{
