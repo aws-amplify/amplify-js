@@ -162,7 +162,7 @@ let resolve = null;
 let reject = null;
 
 jest.mock('uuid', () => {
-	return { v1: () => 'uuid' };
+	return { v4: () => 'uuid' };
 });
 
 beforeEach(() => {
