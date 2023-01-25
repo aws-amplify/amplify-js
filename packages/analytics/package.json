@@ -27,10 +27,6 @@
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 69.26"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
-	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
@@ -56,7 +52,10 @@
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
 		"tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+		"uuid": "9.0.0"
+	},
+	"devDependencies": {
+		"react-native-get-random-values": "1.8.0"
 	},
 	"size-limit": [
 		{
