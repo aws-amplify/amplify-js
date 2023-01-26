@@ -797,7 +797,7 @@ export function addCommonQueryTests({
 
 								expect(lazyLoaded).toEqual(remote);
 							});
-							test(`lazy load does load aimlessly ${testname}`, async () => {
+							test(`lazy load does not load aimlessly ${testname}`, async () => {
 								/**
 								 * Basically, we want to ensure lazy loading never regresses and starts
 								 * loading related instances that are not actually related by FK.
@@ -821,6 +821,7 @@ export function addCommonQueryTests({
 									R.localConstructor,
 									extractPrimaryKeysAndValues(local, R.localPKFields)
 								);
+
 								const lazyLoaded = await fetched[field];
 
 								// HERE'S THE DIFFERENCE IN ASSERTION.

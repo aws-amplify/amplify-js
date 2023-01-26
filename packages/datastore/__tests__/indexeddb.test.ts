@@ -586,6 +586,14 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(p2);
 		await DataStore.save(p3);
 
+		// TEMP
+		await DataStore.save(
+			new Person({
+				firstName: 'Decoy first',
+				lastName: 'Decoy last',
+			})
+		);
+
 		const sortedPersons = await DataStore.query(
 			Person,
 			c => c.username.ne(undefined),
@@ -599,6 +607,8 @@ describe('Indexed db storage test', () => {
 						.username(SortDirection.ASCENDING),
 			}
 		);
+
+		console.log({ sortedPersons });
 
 		expect(sortedPersons[0].username).toEqual('johnsnow');
 		expect(sortedPersons[1].username).toEqual('greatjohnumber');

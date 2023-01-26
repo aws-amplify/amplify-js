@@ -521,8 +521,7 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
-	public logRequests = false;
-	public logAST = false;
+	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -551,7 +550,7 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
-		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+		this.log('RequestAST', JSON.stringify(q, null, 2));
 
 		const operation = q.operation;
 		const name = q.name.value;
@@ -581,17 +580,14 @@ class FakeGraphQLService {
 	}
 
 	public satisfiesCondition(tableName, item, condition) {
-		if (this.logRequests)
-			console.log('checking satisfiesCondition', {
-				tableName,
-				item,
-				condition: JSON.stringify(condition),
-			});
+		this.log('checking satisfiesCondition', {
+			tableName,
+			item,
+			condition: JSON.stringify(condition),
+		});
 
 		if (!condition) {
-			console.log(
-				'checking satisfiesCondition matches all for `null` conditions'
-			);
+			this.log('checking satisfiesCondition matches all for `null` conditions');
 			return true;
 		}
 
@@ -604,13 +600,12 @@ class FakeGraphQLService {
 			ModelPredicateCreator.getPredicates(predicate)!,
 		]);
 
-		this.logRequests &&
-			console.log('satisfiesCondition result', {
-				effectivePredicate: JSON.stringify(
-					ModelPredicateCreator.getPredicates(predicate)
-				),
-				isMatch,
-			});
+		this.log('satisfiesCondition result', {
+			effectivePredicate: JSON.stringify(
+				ModelPredicateCreator.getPredicates(predicate)
+			),
+			isMatch,
+		});
 
 		return isMatch;
 	}
@@ -745,14 +740,12 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		if (this.logRequests) {
-			console.log('API request', {
-				query,
-				variables: JSON.stringify(variables, null, 2),
-				authMode,
-				authToken,
-			});
-		}
+		this.log('API Request', {
+			query,
+			variables: JSON.stringify(variables, null, 2),
+			authMode,
+			authToken,
+		});
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
@@ -761,9 +754,7 @@ class FakeGraphQLService {
 		const parsed = this.parseQuery(query);
 		const { operation, selection, table: tableName, type } = parsed;
 
-		if (this.logRequests) {
-			console.log('Parsed request components', parsed);
-		}
+		this.log('Parsed Request', parsed);
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -824,7 +815,7 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (this.logRequests) console.log({ existing });
+				this.log('delete looking for existing', { existing });
 				if (!existing) {
 					data = {
 						[selection]: null,
@@ -858,11 +849,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
-					if (this.logRequests) console.log({ data });
+					this.log('delete applying to table', { data });
 				}
 			}
 
-			if (this.logRequests) console.log('response', { data, errors });
+			this.log('response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -1020,6 +1011,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONBlog,
+		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
 	} = classes as {
@@ -1043,6 +1036,8 @@ export function getDataStore({
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		LegacyJSONBlog: PersistentModelConstructor<LegacyJSONBlog>;
+		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
@@ -1073,6 +1068,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONBlog,
+		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
 	};
