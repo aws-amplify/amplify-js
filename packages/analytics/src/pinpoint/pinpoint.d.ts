@@ -1,0 +1,1 @@
+export { record } from './recordEvent';

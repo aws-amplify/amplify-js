@@ -12,6 +12,16 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"exports": {
+		".": {
+		  "import": "./lib-esm/index.js",
+		  "require": "./lib/index.js"
+		},
+		"./pinpoint": {
+		  "import": "./lib-esm/pinpoint/index.js",
+		  "require": "./lib/pinpoint/index.js"
+		}
+	  },
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",

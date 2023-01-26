@@ -252,6 +252,11 @@ export function sign(request, access_info, service_info = null) {
 	if (access_info.session_token) {
 		request.headers['X-Amz-Security-Token'] = access_info.session_token;
 	}
+	if (request.data) {
+		request.headers['x-amz-content-sha256'] = hash(request.data);
+		request.headers['content-length'] = `${request.data.length}`;
+		request.headers['content-type'] = 'application/json';
+	}
 
 	// Task 1: Create a Canonical Request
 	const request_str = canonical_request(request);
