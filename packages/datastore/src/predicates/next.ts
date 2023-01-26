@@ -180,9 +180,9 @@ export class FieldCondition {
 		return {
 			[this.field]: {
 				[this.operator]:
-					(this.operator === 'between'
+					this.operator === 'between'
 						? [this.operands[0], this.operands[1]]
-						: this.operands[0]) || null,
+						: this.operands[0],
 			},
 		};
 	}

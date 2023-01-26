@@ -483,6 +483,7 @@ class IndexedDBAdapter implements Adapter {
 		storeName: string,
 		keyValue: string[]
 	): Promise<T> {
+		console.log('get by key', { storeName, keyValue });
 		return <T>await this._get(storeName, keyValue);
 	}
 
