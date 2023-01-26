@@ -164,9 +164,9 @@ export class FieldCondition {
 		return {
 			[this.field]: {
 				[this.operator]:
-					(this.operator === 'between'
+					this.operator === 'between'
 						? [this.operands[0], this.operands[1]]
-						: this.operands[0]) || null,
+						: this.operands[0],
 			},
 		};
 	}
@@ -592,15 +592,28 @@ export class GroupCondition {
 		// if conditions is empty at this point, child predicates found no matches.
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
-			// const predicate = FlatModelPredicateCreator.createFromExisting(
-			// 	this.model.schema,
-			// 	p =>
-			// 		p[operator](c =>
-			// 			applyConditionsToV1Predicate(c, conditions, negateChildren)
-			// 		)
-			// );
-			const predicate =
+			const predicateA = FlatModelPredicateCreator.createFromExisting(
+				this.model.schema,
+				p =>
+					p[operator](c =>
+						applyConditionsToV1Predicate(c, conditions, negateChildren)
+					)
+			);
+
+			const predicateB =
 				this.withFieldConditionsOnly(negateChildren).toStoragePredicate();
+
+			// console.log(
+			// 	JSON.stringify(
+			// 		{
+			// 			predicateA: FlatModelPredicateCreator.getPredicates(predicateA!),
+			// 			predicateB: FlatModelPredicateCreator.getPredicates(predicateB!),
+			// 		},
+			// 		null,
+			// 		2
+			// 	)
+			// );
+
 			// console.log(
 			// 	JSON.stringify(
 			// 		{
@@ -613,7 +626,7 @@ export class GroupCondition {
 			// 		2
 			// 	)
 			// );
-			resultGroups.push(await storage.query(this.model.builder, predicate));
+			resultGroups.push(await storage.query(this.model.builder, predicateB));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
