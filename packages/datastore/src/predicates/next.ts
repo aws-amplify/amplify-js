@@ -143,7 +143,7 @@ export class FieldCondition {
 	constructor(
 		public field: string,
 		public operator: string,
-		public operands: string[]
+		public operands: any[]
 	) {
 		this.validate();
 	}
@@ -180,11 +180,26 @@ export class FieldCondition {
 		return {
 			[this.field]: {
 				[this.operator]:
-					this.operator === 'between'
+					(this.operator === 'between'
 						? [this.operands[0], this.operands[1]]
-						: this.operands[0],
+						: this.operands[0]) || null,
 			},
 		};
+	}
+
+	negated(model: ModelMeta<any>) {
+		if (this.operator === 'between') {
+			return new GroupCondition(model, undefined, undefined, 'or', [
+				new FieldCondition(this.field, 'lt', [this.operands[0]]),
+				new FieldCondition(this.field, 'gt', [this.operands[1]]),
+			]);
+		} else {
+			return new FieldCondition(
+				this.field,
+				negations[this.operator],
+				this.operands
+			);
+		}
 	}
 
 	/**
@@ -406,6 +421,24 @@ export class GroupCondition {
 		});
 
 		return [copied, extractedCopy];
+	}
+
+	withFieldConditionsOnly(negate: boolean) {
+		const negateChildren = negate !== (this.operator === 'not');
+		return new GroupCondition(
+			this.model,
+			undefined,
+			undefined,
+			(negate ? negations[this.operator] : this.operator) as
+				| 'or'
+				| 'and'
+				| 'not',
+			this.operands
+				.filter(o => o instanceof FieldCondition)
+				.map(o =>
+					negateChildren ? (o as FieldCondition).negated(this.model) : o
+				)
+		);
 	}
 
 	/**
