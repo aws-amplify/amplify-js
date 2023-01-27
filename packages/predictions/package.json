@@ -12,6 +12,16 @@
 		"./lib/Predictions.js",
 		"./lib-esm/Predictions.js"
 	],
+	"exports": {
+	".": {
+		"import": "./lib-esm/index.js",
+		"require": "./lib/index.js"
+	  },
+	  "./amazon-ai": {
+		"import": "./lib-esm/amazon-ai/index.js",
+		"require": "./lib/amazon-ai/index.js"
+	  }
+	},
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"test:size": "size-limit",

@@ -1,0 +1,1 @@
+export { translateText } from './translateText';

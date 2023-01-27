@@ -250,12 +250,12 @@ export function sign(request, access_info, service_info = null) {
 	request.headers['host'] = url_info.host;
 	request.headers['x-amz-date'] = dt_str;
 	if (access_info.session_token) {
-		request.headers['X-Amz-Security-Token'] = access_info.session_token;
+		request.headers['x-amz-security-token'] = access_info.session_token;
 	}
 	if (request.data) {
 		request.headers['x-amz-content-sha256'] = hash(request.data);
 		request.headers['content-length'] = `${request.data.length}`;
-		request.headers['content-type'] = 'application/json';
+		request.headers['content-type'] = 'application/x-amz-json-1.1';
 	} else {
 		request.headers['x-amz-content-sha256'] =
 			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
