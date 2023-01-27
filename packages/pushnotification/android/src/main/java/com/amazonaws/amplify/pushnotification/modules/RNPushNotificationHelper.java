@@ -74,17 +74,17 @@ public class RNPushNotificationHelper {
         return (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
-		private PendingIntent toScheduleNotificationIntent(Bundle bundle) {
+    private PendingIntent toScheduleNotificationIntent(Bundle bundle) {
         int notificationID = Integer.parseInt(bundle.getString("id"));
 
         Intent notificationIntent = new Intent(context, RNPushNotificationPublisher.class);
         notificationIntent.putExtra(RNPushNotificationPublisher.NOTIFICATION_ID, notificationID);
         notificationIntent.putExtras(bundle);
 
-				return PendingIntent.getBroadcast(context, notificationID, notificationIntent, getPendingIntentFlags());
+        return PendingIntent.getBroadcast(context, notificationID, notificationIntent, getPendingIntentFlags());
     }
 
-		public void sendNotificationScheduled(Bundle bundle) {
+    public void sendNotificationScheduled(Bundle bundle) {
         Class intentClass = getMainActivityClass();
         if (intentClass == null) {
             Log.e(LOG_TAG, "No activity class found for the scheduled notification");
@@ -316,7 +316,7 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-						PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent, getPendingIntentFlags());
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent, getPendingIntentFlags());
 
             notification.setContentIntent(pendingIntent);
 
@@ -353,7 +353,7 @@ public class RNPushNotificationHelper {
                     // Add "action" for later identifying which button gets pressed.
                     bundle.putString("action", action);
                     actionIntent.putExtra("notification", bundle);
-										PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent, getPendingIntentFlags());
+                    PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent, getPendingIntentFlags());
                     notification.addAction(icon, action, pendingActionIntent);
                 }
             }
@@ -462,10 +462,10 @@ public class RNPushNotificationHelper {
         }
     }
 
-		private int getPendingIntentFlags() {
-				if (SDK_INT >= Build.VERSION_CODES.M) {
-						return PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
-				}
-				return PendingIntent.FLAG_UPDATE_CURRENT;
-		}
+    private int getPendingIntentFlags() {
+        if (SDK_INT >= Build.VERSION_CODES.M) {
+            return PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+        }
+        return PendingIntent.FLAG_UPDATE_CURRENT;
+    }
 }
