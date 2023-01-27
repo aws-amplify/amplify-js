@@ -256,6 +256,9 @@ export function sign(request, access_info, service_info = null) {
 		request.headers['x-amz-content-sha256'] = hash(request.data);
 		request.headers['content-length'] = `${request.data.length}`;
 		request.headers['content-type'] = 'application/json';
+	} else {
+		request.headers['x-amz-content-sha256'] =
+			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 	}
 
 	// Task 1: Create a Canonical Request

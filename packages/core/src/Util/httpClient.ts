@@ -26,7 +26,7 @@ export async function httpClient({
 			region,
 			params: {
 				method,
-				data: JSON.stringify(body),
+				data: body ? JSON.stringify(body) : null,
 				url: endpoint,
 				headers,
 			},
