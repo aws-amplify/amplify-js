@@ -25,12 +25,12 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:8.7.0
+      - image: cypress/included:12.4.1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
-    resource_class: large
+    resource_class: xlarge
 
   macos-executor:
     macos:
@@ -47,11 +47,17 @@ executors:
 
   edge-test-executor:
     docker:
+      # - image: cypress/included:cypress-12.3.0-node-16.18.1-chrome-107.0.5304.121-1-ff-107.0-edge-100.0.1185.29-1
+      # - image: cypress/browsers:node14.10.1-edge88 - incompatible
+      # - image: cypress/browsers:node14.19.0-chrome100-ff99-edge - hangs
+      # - image: cypress/included:9.6.0
       - image: cypress/browsers:node16.14.0-edge
+      # - image: cypress/included:12.4.1
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
+    resource_class: xlarge
 
 test_env_vars: &test_env_vars
   environment:
@@ -134,6 +140,10 @@ commands:
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run: 
+          name: 'test adding missing dependencies'
+          command: |
+            apt-get update && apt-get -y install procps
       - run:
           name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
@@ -409,10 +419,15 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout microsoft-edge-testing
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
             yarn
+      - run: 
+          name: 'test adding missing dependencies'
+          command: |
+            apt-get update && apt-get -y install procps
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
           paths:
@@ -1748,15 +1763,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      # - integ_react_datastore_v2:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       # - integ_react_datastore_multi_auth_one_rule:
       #     requires:
       #       - integ_setup
@@ -2039,15 +2054,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      # - integ_react_datastore_custom_pk_unconnected_models:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_custom_pk_unconnected_models:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       # - integ_react_datastore_custom_pk_unconnected_models_webkit:
       #     requires:
       #       - integ_setup
@@ -2192,7 +2207,7 @@ workflows:
             # - integ_react_delete_user
             # - integ_react_predictions
             # - integ_react_datastore
-            # - integ_react_datastore_v2
+            - integ_react_datastore_v2
             # - integ_react_datastore_multi_auth_one_rule
             # - integ_react_datastore_multi_auth_one_rule_v2
             # - integ_react_datastore_multi_auth_two_rules
@@ -2236,7 +2251,7 @@ workflows:
             # # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
             # - integ_react_geo
             # - integ_next_datastore_owner_auth
-            # - integ_react_datastore_custom_pk_unconnected_models
+            - integ_react_datastore_custom_pk_unconnected_models
             # - integ_react_datastore_custom_pk_unconnected_models_webkit
             - integ_react_datastore_custom_pk_unconnected_models_edge
             # - integ_react_datastore_custom_pk_has_one
