@@ -21,3 +21,5 @@ package-lock.json
 packages/*/.watchmanconfig
 coverage-ts/
 dual-publish-tmp
+.gradle/
+local.properties
