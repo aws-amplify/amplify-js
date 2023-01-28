@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 
 public class RNPushNotificationModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
     private static final String LOG_TAG = "RNPushNotificationModule";
-		private boolean isInitialAppOpen = true;
+    private boolean isInitialAppOpen = true;
 
     public RNPushNotificationModule(ReactApplicationContext reactContext) {
         super(reactContext);
