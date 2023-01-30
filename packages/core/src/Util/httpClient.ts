@@ -22,7 +22,7 @@ export async function httpClient({
 	if (authMode === 'SigV4') {
 		const creds = Amplify.getUser();
 		// add headers
-		const signed_params = _signed({
+		const signed_params = getSignedParams({
 			region,
 			params: {
 				method,
@@ -57,13 +57,14 @@ async function callFetchWithRetry({ endpoint, options }) {
 	return await (await fetch(endpoint, options)).json();
 }
 
-function _signed({ params, credentials, service, region }) {
+export function getSignedParams({ params, credentials, service, region }) {
 	const { signerServiceInfo: signerServiceInfoParams, ...otherParams } = params;
 
 	const endpoint_region: string = region;
 	const endpoint_service: string = service;
 
 	const creds = {
+		access_key_id: credentials.accessKeyId,
 		secret_key: credentials.secretKey,
 		access_key: credentials.accessKey,
 		session_token: credentials.sessionToken,

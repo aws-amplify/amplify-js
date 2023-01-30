@@ -69,6 +69,7 @@ export {
 	urlSafeDecode,
 	urlSafeEncode,
 	httpClient,
+	getSignedParams,
 } from './Util';
 
 /**

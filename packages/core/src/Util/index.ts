@@ -24,4 +24,4 @@ export {
 	BackgroundProcessManagerState,
 } from './BackgroundProcessManager';
 
-export { httpClient } from './httpClient';
+export { httpClient, getSignedParams } from './httpClient';
