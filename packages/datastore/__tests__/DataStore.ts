@@ -2136,7 +2136,7 @@ describe('DataStore tests', () => {
 				optionalField1: undefined,
 			});
 
-			expect(model1.optionalField1).toBeUndefined();
+			expect(model1.optionalField1).toBeNull();
 		});
 
 		test('Optional field can be initialized with null', () => {
@@ -2179,7 +2179,7 @@ describe('DataStore tests', () => {
 			expect(model1.id).toBe(model2.id);
 
 			expect(model1.optionalField1).toBe('something-else');
-			expect(model2.optionalField1).toBeUndefined();
+			expect(model2.optionalField1).toBeNull();
 		});
 
 		test('Optional field can be set to null inside copyOf', () => {
@@ -2199,7 +2199,7 @@ describe('DataStore tests', () => {
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
 
-			expect(model1.optionalField1).toBeUndefined();
+			expect(model1.optionalField1).toBeNull();
 			expect(model2.optionalField1).toBeNull();
 		});
 
@@ -2699,15 +2699,41 @@ describe('DataStore tests', () => {
 				);
 			});
 
-			test('valid model with nulls', () => {
-				expect(() => {
-					new Model({
-						field1: 'someField',
-						dateCreated: new Date().toISOString(),
-						emails: null,
-						ips: null,
-					});
-				}).not.toThrow();
+			test('valid model with null optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: null,
+					ips: null,
+				});
+				expect(m.emails).toBe(null);
+				expect(m.ips).toBe(null);
+			});
+
+			test('valid model with `undefined` optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: undefined,
+					ips: undefined,
+				});
+				expect(m.emails).toBe(null);
+				expect(m.ips).toBe(null);
+			});
+
+			test('valid model with omitted optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					/**
+					 * Omitting these:
+					 *
+					 * emails: undefined,
+					 * ips: undefined,
+					 */
+				});
+				expect(m.emails).toBe(null);
+				expect(m.ips).toBe(null);
 			});
 
 			test('pass null to non nullable array field', () => {
@@ -3683,7 +3709,7 @@ describe('DataStore tests', () => {
 					dateCreated: new Date().toISOString(),
 				});
 
-				expect(model1.description).toBeUndefined();
+				expect(model1.description).toBeNull();
 			});
 
 			test('Optional field can be initialized with null', () => {
@@ -3721,7 +3747,7 @@ describe('DataStore tests', () => {
 				expect(model1.postId).toBe(model2.postId);
 
 				expect(model1.description).toBe('something-else');
-				expect(model2.description).toBeUndefined();
+				expect(model2.description).toBeNull();
 			});
 
 			test('Optional field can be set to null inside copyOf', () => {
@@ -3742,7 +3768,7 @@ describe('DataStore tests', () => {
 				// postId should be kept the same
 				expect(model1.postId).toBe(model2.postId);
 
-				expect(model1.description).toBeUndefined();
+				expect(model1.description).toBeNull();
 				expect(model2.description).toBeNull();
 			});
 

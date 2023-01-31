@@ -1057,15 +1057,6 @@ describe('Predicates', () => {
 					return new Person({
 						firstName: `${name} first name`,
 						lastName: `${name} last name`,
-
-						// TODO: determine whether we ever get `undefined` back from the adapter.
-						// if so ... that could confound things quite a bit ...
-						// FOR NOW: assume the underlying data sources will always return `null`
-						// when a property is null-ish.
-						//
-						// we need a few `null` values to test against. and some non-non values.
-						// these fields otherwise do not need to correlate with the names for our
-						// testing here.
 						username: name.includes('null') ? null : name,
 					});
 				}
@@ -1089,7 +1080,7 @@ describe('Predicates', () => {
 				},
 			},
 		].forEach(mechanism => {
-			describe('as ' + mechanism.name, () => {
+			describe(`as ${mechanism.name}`, () => {
 				test('can select non-null values by their defined values', async () => {
 					const query =
 						recursivePredicateFor(PersonMeta).username.eq('defined 01');
@@ -1696,19 +1687,30 @@ describe('Predicates', () => {
 				matches: [{ name: 'tim' }, { name: 'sam' }],
 				mismatches: [{ name: 'al' }, { name: 'fran' }],
 			},
+
+			// `undefined` in predicates should be treated as null for matching purposes.
+			// neither cloud storage nor do [all] adapters respond with `undefined` values
+			// in model instance fields. (adapters that DO respond with `undefined` values
+			// are erroneous and must be fixed!)
 			{
-				// undefined should be treated as null for matching purposes,
-				// because the adapters do not distinguish between the two.
-				predicate: p => p.name.eq(undefined),
-				matches: [{ name: null }, { name: undefined }],
+				predicate: p => p.name.eq(null),
+				matches: [{ name: null }],
 				mismatches: [{ name: '' }, { name: 'abc' }],
 			},
 			{
-				// undefined should be treated as null for matching purposes,
-				// because the adapters do not distinguish between the two.
+				predicate: p => p.name.ne(null),
+				matches: [{ name: '' }, { name: 'abc' }],
+				mismatches: [{ name: null }],
+			},
+			{
+				predicate: p => p.name.eq(undefined),
+				matches: [{ name: null }],
+				mismatches: [{ name: '' }, { name: 'abc' }],
+			},
+			{
 				predicate: p => p.name.ne(undefined),
 				matches: [{ name: '' }, { name: 'abc' }],
-				mismatches: [{ name: null }, { name: undefined }],
+				mismatches: [{ name: null }],
 			},
 		];
 		for (const [i, testCase] of predicateTestCases.entries()) {

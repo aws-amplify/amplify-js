@@ -114,7 +114,7 @@ export function errorsFrom<T extends Object>(
 
 /**
  * Checks to see if a given object contains any extra, unexpected properties.
- * If any are present, it returns the list of unexpectd fields.
+ * If any are present, it returns the list of unexpected fields.
  *
  * @param data the object that MIGHT contain extra fields.
  * @param template the authorative template object.
@@ -1668,7 +1668,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					emails: {
@@ -1949,7 +1949,7 @@ export function testSchema(): Schema {
 						name: 'profileID',
 						isArray: false,
 						type: 'ID',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					profile: {
@@ -2117,7 +2117,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 				},

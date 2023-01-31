@@ -30,6 +30,7 @@ import {
 	MtmJoin,
 	DefaultPKHasOneParent,
 	DefaultPKHasOneChild,
+	UUID_REGEX,
 } from './helpers';
 
 export { pause };
@@ -343,7 +344,7 @@ export function addCommonQueryTests({
 
 			// comment update should be smashed to together with post
 			expect(mutations.length).toBe(2);
-			expectMutation(mutations[0], { title: 'some post' });
+			expectMutation(mutations[0], { title: 'some post', blogId: null });
 			expectMutation(mutations[1], {
 				content: 'updated content',
 				postId: mutations[0].modelId,
