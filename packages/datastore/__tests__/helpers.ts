@@ -1862,7 +1862,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					emails: {
@@ -2311,7 +2311,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 				},
