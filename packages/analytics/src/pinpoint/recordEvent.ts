@@ -17,7 +17,7 @@ export function record(content: RecordContent) {
 			Analytics: {
 				AWSPinpoint: { appId, region },
 			},
-		} = config;
+		} = config as any;
 
 		const id = await getEndpoint({ userId, region, appId });
 		const eventId = v4();
