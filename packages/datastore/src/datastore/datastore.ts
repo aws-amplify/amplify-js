@@ -764,7 +764,8 @@ const initializeInstance = <T extends PersistentModel>(
 
 /**
  * Updates a draft to make its shape and values match consisten and predictable
- * view of data as it would look after having been synchronized from Cloud storage.
+ * view of data as it would look after having been synchronized from Cloud storage
+ * from the customer perspective. (This is not normalize [sync] metadata fields.)
  *
  * The "exception" to this are Cloud managed fields, which are expected to be
  * `null` until populated by Cloud storage.
