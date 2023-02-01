@@ -444,7 +444,7 @@ class IndexedDBAdapter implements Adapter {
 
 		const records: T[] = (await (async () => {
 			//
-			// NOTE: @wirej explored removing this and letting query() take care of automatic
+			// NOTE: @svidgen explored removing this and letting query() take care of automatic
 			// index leveraging. This would eliminate some amount of very similar code.
 			// But, getAll is slightly slower than get()
 			//
@@ -513,7 +513,7 @@ class IndexedDBAdapter implements Adapter {
 					p.field === key &&
 					p.operator === 'eq' &&
 					// it's only valid if it's not nullish.
-					// (IDB will throw a fit if it's nullist.)
+					// (IDB will throw a fit if it's nullish.)
 					p.operand !== null &&
 					p.operand !== undefined
 			) as PredicateObject<T>;

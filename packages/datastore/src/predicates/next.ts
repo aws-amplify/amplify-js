@@ -160,6 +160,22 @@ export class FieldCondition {
 		];
 	}
 
+	/**
+	 * Produces a tree structure similar to a graphql condition. The returned
+	 * structure is "dumb" and is intended for another query/condition
+	 * generation mechanism to interpret, such as the cloud or storage query
+	 * builders.
+	 *
+	 * E.g.,
+	 *
+	 * ```json
+	 * {
+	 * 	"name": {
+	 * 		"eq": "robert"
+	 * 	}
+	 * }
+	 * ```
+	 */
 	toAST() {
 		return {
 			[this.field]: {
@@ -171,6 +187,22 @@ export class FieldCondition {
 		};
 	}
 
+	/**
+	 * Produces a new condition (`FieldCondition` or `GroupCondition`) that
+	 * matches the opposite of this condition.
+	 *
+	 * Intended to be used when applying De Morgan's Law, which can be done to
+	 * produce more efficient queries against the storage layer if a negation
+	 * appears in the query tree.
+	 *
+	 * For example:
+	 *
+	 * 1. `name.eq('robert')` becomes `name.ne('robert')`
+	 * 2. `price.between(100, 200)` becomes `m => m.or(m => [m.price.lt(100), m.price.gt(200)])`
+	 *
+	 * @param model The model meta to use when construction a new `GroupCondition`
+	 * for cases where the negation requires multiple `FieldCondition`'s.
+	 */
 	negated(model: ModelMeta<any>) {
 		if (this.operator === 'between') {
 			return new GroupCondition(model, undefined, undefined, 'or', [
@@ -376,6 +408,15 @@ export class GroupCondition {
 		return [copied, extractedCopy];
 	}
 
+	/**
+	 * Creates a new `GroupCondition` that contains only the local field conditions,
+	 * omitting related model conditions. That resulting `GroupCondition` can be
+	 * used to produce predicates that are compatible with the storage adapters and
+	 * Cloud storage.
+	 *
+	 * @param negate Whether the condition tree should be negated according
+	 * to De Morgan's law.
+	 */
 	withFieldConditionsOnly(negate: boolean) {
 		const negateChildren = negate !== (this.operator === 'not');
 		return new GroupCondition(
@@ -592,41 +633,9 @@ export class GroupCondition {
 		// if conditions is empty at this point, child predicates found no matches.
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
-			const predicateA = FlatModelPredicateCreator.createFromExisting(
-				this.model.schema,
-				p =>
-					p[operator](c =>
-						applyConditionsToV1Predicate(c, conditions, negateChildren)
-					)
-			);
-
-			const predicateB =
+			const predicate =
 				this.withFieldConditionsOnly(negateChildren).toStoragePredicate();
-
-			// console.log(
-			// 	JSON.stringify(
-			// 		{
-			// 			predicateA: FlatModelPredicateCreator.getPredicates(predicateA!),
-			// 			predicateB: FlatModelPredicateCreator.getPredicates(predicateB!),
-			// 		},
-			// 		null,
-			// 		2
-			// 	)
-			// );
-
-			// console.log(
-			// 	JSON.stringify(
-			// 		{
-			// 			a: this,
-			// 			// b: this.toAST(),
-			// 			c: this.withFieldConditionsOnly(negateChildren),
-			// 			d: this.withFieldConditionsOnly(negateChildren).toAST(),
-			// 		},
-			// 		null,
-			// 		2
-			// 	)
-			// );
-			resultGroups.push(await storage.query(this.model.builder, predicateB));
+			resultGroups.push(await storage.query(this.model.builder, predicate));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
