@@ -24,6 +24,9 @@ type Context = {
 export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
 	const previousConfig = Amplify.configure();
+
+	console.log('+ previous config NF', previousConfig);
+
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
 

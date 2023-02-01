@@ -76,13 +76,37 @@ export function toHex(bytes) {
 	return out;
 }
 
+const getAtob = () => {
+	let atob;
+
+	if (typeof window !== 'undefined' && window.atob) {
+		atob = window.atob;
+	} else if (typeof global !== 'undefined' && (global as any).atob) {
+		atob = (global as any).atob;
+	}
+
+	return atob;
+};
+
+const getBtoa = () => {
+	let btoa;
+
+	if (typeof window !== 'undefined' && window.btoa) {
+		btoa = window.btoa;
+	} else if (typeof global !== 'undefined' && (global as any).btoa) {
+		btoa = (global as any).btoa;
+	}
+
+	return btoa;
+};
+
 export function _urlB64ToUint8Array(base64String) {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 	const base64 = (base64String + padding)
 		.replace(/\-/g, '+')
 		.replace(/_/g, '/');
 
-	const rawData = window.atob(base64);
+	const rawData = getAtob()(base64);
 	const outputArray = new Uint8Array(rawData.length);
 
 	for (let i = 0; i < rawData.length; ++i) {
@@ -92,7 +116,7 @@ export function _urlB64ToUint8Array(base64String) {
 }
 
 export function _encodeBase64Bytes(bytes) {
-	return window.btoa(
+	return getBtoa()(
 		bytes.reduce((acc, current) => acc + String.fromCharCode(current), '')
 	);
 }

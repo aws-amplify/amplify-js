@@ -1,15 +1,24 @@
-var crypto;
+const getCrypto = () => {
+	let crypto;
 
-// Native crypto from window (Browser)
-if (typeof window !== 'undefined' && window.crypto) {
-	crypto = window.crypto;
-}
+	if (typeof window !== 'undefined' && window.crypto) {
+		// Native crypto from window (Browser)
+		crypto = window.crypto;
+	} else if (typeof global !== 'undefined' && (global as any).crypto) {
+		// Native crypto from global (Node)
+		crypto = (global as any).crypto;
+	}
+
+	return crypto;
+};
 
 /*
  * Cryptographically secure pseudorandom number generator
  * As Math.random() is cryptographically not safe to use
  */
 export default function cryptoSecureRandomInt() {
+	const crypto = getCrypto();
+
 	if (crypto) {
 		// Use getRandomValues method (Browser)
 		if (typeof crypto.getRandomValues === 'function') {

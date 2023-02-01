@@ -4,6 +4,11 @@ import { AwsCognitoOAuthOpts, isCognitoHostedOpts } from '../../types';
 import { cacheTokens } from '../storage';
 
 export async function oauthSessionListener() {
+	// This flow only makes sense in a browser
+	if (typeof window === 'undefined') {
+		return;
+	}
+
 	const uRL = window.location.href;
 	const _storage = new StorageHelper().getStorage();
 

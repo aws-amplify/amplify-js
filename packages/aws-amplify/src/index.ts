@@ -36,4 +36,5 @@ export {
 	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
+export { withFunctionalSSRContext } from './withFunctionalSSRContext';
 export { Geo } from '@aws-amplify/geo';
