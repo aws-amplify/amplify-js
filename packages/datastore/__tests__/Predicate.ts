@@ -1688,10 +1688,9 @@ describe('Predicates', () => {
 				mismatches: [{ name: 'al' }, { name: 'fran' }],
 			},
 
-			// `undefined` in predicates should be treated as null for matching purposes.
-			// neither cloud storage nor do [all] adapters respond with `undefined` values
-			// in model instance fields. (adapters that DO respond with `undefined` values
-			// are erroneous and must be fixed!)
+			// `undefined` in predicates should be treated as `null` for matching purposes.
+			// neither cloud storage nor any correctly implemented adapters respond with
+			// `undefined` values in model instance fields.
 			{
 				predicate: p => p.name.eq(null),
 				matches: [{ name: null }],
