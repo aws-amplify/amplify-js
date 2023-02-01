@@ -206,6 +206,8 @@ describe('SQLiteUtils tests', () => {
 					model.field1,
 					model.dateCreated,
 					model.id,
+					// meta-data fields are not user-defined fields and therefore not
+					// part of normalization today. they are `undefined` by default.
 					undefined,
 					undefined,
 					undefined,
@@ -234,6 +236,8 @@ describe('SQLiteUtils tests', () => {
 				[
 					model.field1,
 					model.dateCreated,
+					// meta-data fields are not user-defined fields and therefore not
+					// part of normalization today. they are `undefined` by default.
 					undefined,
 					undefined,
 					undefined,
