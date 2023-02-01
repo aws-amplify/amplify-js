@@ -187,6 +187,22 @@ export class FieldCondition {
 		};
 	}
 
+	/**
+	 * Produces a new condition (`FieldCondition` or `GroupCondition`) that
+	 * matches the opposite of this condition.
+	 *
+	 * Intended to be used when applying De Morgan's Law, which can be done to
+	 * produce more efficient queries against the storage layer if a negation
+	 * appears in the query tree.
+	 *
+	 * For example:
+	 *
+	 * 1. `name.eq('robert')` becomes `name.ne('robert')`
+	 * 2. `price.between(100, 200)` becomes `m => m.or(m => [m.price.lt(100), m.price.gt(200)])`
+	 *
+	 * @param model The model meta to use when construction a new `GroupCondition`
+	 * for cases where the negation requires multiple `FieldCondition`'s.
+	 */
 	negated(model: ModelMeta<any>) {
 		if (this.operator === 'between') {
 			return new GroupCondition(model, undefined, undefined, 'or', [
@@ -423,6 +439,15 @@ export class GroupCondition {
 		return [copied, extractedCopy];
 	}
 
+	/**
+	 * Creates a new `GroupCondition` that contains only the local field conditions,
+	 * omitting related model conditions. That resulting `GroupCondition` can be
+	 * used to produce predicates that are compatible with the storage adapters and
+	 * Cloud storage.
+	 *
+	 * @param negate Whether the condition tree should be negated according
+	 * to De Morgan's law.
+	 */
 	withFieldConditionsOnly(negate: boolean) {
 		const negateChildren = negate !== (this.operator === 'not');
 		return new GroupCondition(
