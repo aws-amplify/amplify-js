@@ -25,6 +25,24 @@ executors:
 
   js-test-executor:
     docker:
+      - image: cypress/included:12.4.1
+      - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+    resource_class: large
+
+  # TODO: Update tests that use this image to use the updated `js-test-executor`
+  # After upgrading the Docker image to 12.4.1, we had to make several updates to our samples (see 
+  # https://github.com/aws-amplify/amplify-js-samples-staging/pull/522). 
+  # This is because our current implementation of setting network status in our E2E tests began to 
+  # fail (i.e. this is no longer supported). We updated our samples to instead use the Reachability 
+  # component's helper function for setting network status
+  # (see https://github.com/aws-amplify/amplify-js/blob/main/packages/core/src/Util/Reachability.ts#L42-L54).
+  # However, several JS tests were still failing after attempting to remediate. An item has been 
+  # added to the JS backlog for follow-up.
+  js-test-executor-prev:
+    docker:
       - image: cypress/included:8.7.0
       - image: verdaccio/verdaccio
         auth:
@@ -39,7 +57,7 @@ executors:
 
   webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.29.2-focal
+      - image: mcr.microsoft.com/playwright:v1.30.0-focal
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -401,6 +419,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
+            git checkout edge-testing-2
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
@@ -418,7 +437,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -448,7 +468,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -1353,7 +1374,8 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
     steps:
@@ -1368,7 +1390,8 @@ jobs:
           browser: chrome
 
   integ_react_api_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
     steps:
@@ -1515,7 +1538,7 @@ jobs:
             git config --global user.name $GITHUB_USER
             git status
             git --no-pager diff
-            yarn publish:$CIRCLE_BRANCH
+            # yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -1553,9 +1576,13 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - edge-testing-2
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
+
+all_test_browsers: &all_test_browsers
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -2007,7 +2034,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *all_test_browsers
       - integ_react_datastore_custom_pk_unconnected_models_webkit:
           requires:
             - integ_setup
@@ -2040,7 +2067,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *all_test_browsers
       - integ_react_datastore_background_process_manager_webkit:
           requires:
             - integ_setup
