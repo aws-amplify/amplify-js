@@ -13,7 +13,10 @@ describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
 		DataStore,
+		schema,
 		connectivityMonitor,
+		BasicModel,
+		BasicModelWritableTS,
 		Post,
 		Comment,
 		graphqlService,
@@ -24,7 +27,10 @@ describe('DataStore sync engine', () => {
 	beforeEach(async () => {
 		({
 			DataStore,
+			schema,
 			connectivityMonitor,
+			BasicModel,
+			BasicModelWritableTS,
 			Post,
 			Comment,
 			graphqlService,
@@ -43,13 +49,53 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 
 			// give thread control back to subscription event handlers.
-			await pause(1);
+			await waitForEmptyOutbox();
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
 			const savedItem = table.get(JSON.stringify([post.id])) as any;
 			expect(savedItem.title).toEqual(post.title);
+		});
+
+		test('omits readonly fields from mutation events on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.BasicModel.fields.createdAt.isReadOnly).toBe(true);
+
+			const m = await DataStore.save(
+				new BasicModel({
+					body: 'whatever and ever',
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModel')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.body).toEqual(m.body);
+		});
+
+		test('includes timestamp fields in mutation events when NOT readonly', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(
+				schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly
+			).toBe(false);
+
+			const m = await DataStore.save(
+				new BasicModelWritableTS({
+					body: 'whatever else',
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModelWritableTS')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.body).toEqual(m.body);
 		});
 
 		test('uses model create subscription event to populate sync protocol metadata', async () => {

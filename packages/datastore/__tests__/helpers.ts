@@ -3,6 +3,7 @@ import { parse } from 'graphql';
 import {
 	ModelInit,
 	Schema,
+	SchemaModel,
 	InternalSchema,
 	isModelAttributePrimaryKey,
 	__modelMeta__,
@@ -524,6 +525,7 @@ class FakeGraphQLService {
 	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
+	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
 	public observers = new Map<
 		string,
@@ -533,6 +535,7 @@ class FakeGraphQLService {
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
+			this.tableDefinitions.set(model.name, model);
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
@@ -685,6 +688,21 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeExtraFieldInputError(tableName, operation, fields) {
+		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
+			1
+		)}`;
+		const inputName = `${properOperationName}${tableName}Input`;
+		return {
+			data: null,
+			errors: fields.map(field => ({
+				path: null,
+				locations: null,
+				message: `The variables input contains a field name '${field}' that is not defined for input object type '${inputName}'`,
+			})),
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -694,6 +712,60 @@ class FakeGraphQLService {
 				},
 			],
 		};
+	}
+
+	private identifyExtraValues(expected, actual) {
+		const extraValues: string[] = [];
+		for (const v of actual) {
+			if (!expected.includes(v)) {
+				extraValues.push(v);
+			}
+		}
+
+		return extraValues;
+	}
+
+	private validate(tableName, operation, record) {
+		// very simple validation for an observed *near*-regression from a PR right now.
+		// https://github.com/aws-amplify/amplify-js/pull/10915
+		const def = this.tableDefinitions.get(tableName)!;
+		const writeableFields = Object.keys(def.fields).filter(
+			field => !def.fields[field]?.isReadOnly
+		);
+
+		let errors: any;
+
+		switch (operation) {
+			case 'create':
+			case 'update':
+				const unexpectedFields = this.identifyExtraValues(
+					[...writeableFields, '_version'],
+					Object.keys(record)
+				);
+				if (unexpectedFields.length > 0) {
+					errors = this.makeExtraFieldInputError(
+						tableName,
+						operation,
+						unexpectedFields
+					);
+				}
+				break;
+			case 'delete':
+				break;
+			default:
+				// this is not a GraphQL error. it likely indicates our fake graphql
+				// service is broken.
+				throw new Error('Invalid operation. Should be unreachable.');
+		}
+
+		this.log('validate', {
+			tableName,
+			operation,
+			record,
+			errors,
+		});
+
+		return errors;
 	}
 
 	private populatedFields(record) {
@@ -781,7 +853,13 @@ class FakeGraphQLService {
 			const record = variables.input;
 			if (type === 'create') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (existing) {
+				const validationError = this.validate(tableName, 'create', record);
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (existing) {
 					data = {
 						[selection]: null,
 					};
@@ -801,7 +879,13 @@ class FakeGraphQLService {
 				// Simulate update using the default (AUTO_MERGE) for now.
 				// NOTE: We're not doing list/set merging. :o
 				const existing = table.get(this.getPK(tableName, record));
-				if (!existing) {
+				const validationError = this.validate(tableName, 'update', record);
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -815,8 +899,15 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
+				const validationError = this.validate(tableName, 'delete', record);
 				this.log('delete looking for existing', { existing });
-				if (!existing) {
+
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -988,7 +1079,8 @@ export function getDataStore({
 			'https://0.0.0.0/graphql';
 	}
 
-	const classes = initSchema(testSchema());
+	const schema = testSchema();
+	const classes = initSchema(schema);
 
 	const {
 		ModelWithBoolean,
@@ -1015,6 +1107,8 @@ export function getDataStore({
 		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
+		BasicModel,
+		BasicModelWritableTS,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1040,10 +1134,13 @@ export function getDataStore({
 		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
+		BasicModel: PersistentModelConstructor<BasicModel>;
+		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
 	};
 
 	return {
 		DataStore,
+		schema,
 		connectivityMonitor,
 		graphqlService,
 		simulateConnect,
@@ -1072,6 +1169,8 @@ export function getDataStore({
 		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
+		BasicModel,
+		BasicModelWritableTS,
 	};
 }
 
@@ -1290,6 +1389,24 @@ export declare class BasicModel {
 			draft: MutableModel<BasicModel>
 		) => MutableModel<BasicModel> | void
 	): BasicModel;
+}
+
+export declare class BasicModelWritableTS {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<BasicModelWritableTS, 'id'>;
+		readOnlyFields: never;
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<BasicModelWritableTS>);
+	static copyOf(
+		source: BasicModelWritableTS,
+		mutator: (
+			draft: MutableModel<BasicModelWritableTS>
+		) => MutableModel<BasicModelWritableTS> | void
+	): BasicModelWritableTS;
 }
 
 export declare class HasOneParent {
@@ -1668,7 +1785,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: false,
+						isRequired: true,
 						attributes: [],
 					},
 					emails: {
@@ -2117,7 +2234,7 @@ export function testSchema(): Schema {
 						name: 'dateCreated',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: false,
+						isRequired: true,
 						attributes: [],
 					},
 				},
@@ -2274,6 +2391,55 @@ export function testSchema(): Schema {
 				},
 				syncable: true,
 				pluralName: 'BasicModels',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			BasicModelWritableTS: {
+				name: 'BasicModelWritableTS',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: false,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: false,
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModelWritableTimestampss',
 				attributes: [
 					{
 						type: 'model',
