@@ -8,6 +8,7 @@ export type SessionParams = {
 		secretKey: string;
 		sessionToken: string;
 	};
+	req?: any; // Request to fetch tokens from (in the case of SSR)
 };
 
 export async function fetchSession(sessionParams?: SessionParams) {
@@ -16,6 +17,7 @@ export async function fetchSession(sessionParams?: SessionParams) {
 		// load credentials from storage
 		let tokens = readTokens({
 			userPoolCliendId: amplifyConfig.Auth.userPoolWebClientId,
+			req: sessionParams?.req,
 		});
 
 		if (tokens) {

@@ -29,15 +29,11 @@ export async function signInWithSRP({ username, password }) {
 			},
 		};
 
-		console.log('+ INIT REQ', jsonReq);
-
 		const responseFromInitiateAuth = await requestCognitoUserPool({
 			operation: 'InitiateAuth',
 			region: amplifyConfig.Auth.region,
 			params: jsonReq,
 		});
-
-		console.log('+ INIT RESP', responseFromInitiateAuth);
 
 		const { ChallengeParameters: challengeParameters } =
 			responseFromInitiateAuth;
@@ -81,13 +77,9 @@ export async function signInWithSRP({ username, password }) {
 			params: jsonReqResponseChallenge,
 		};
 
-		console.log('+ USER POOL REQ', requestCognitoUserPoolRequest);
-
 		const responseFromRequestCognitoUserPool = await requestCognitoUserPool(
 			requestCognitoUserPoolRequest
 		);
-
-		console.log('+ USER POOL RESP', responseFromRequestCognitoUserPool);
 
 		const {
 			AuthenticationResult,

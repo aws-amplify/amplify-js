@@ -1,4 +1,4 @@
-import { StorageHelper } from '@aws-amplify/core';
+import { StorageHelper, Amplify, UniversalStorage } from '@aws-amplify/core';
 
 export function cacheTokens({
 	idToken,
@@ -8,13 +8,20 @@ export function cacheTokens({
 	username,
 	userPoolClientID,
 }) {
+	let _storage;
+	const amplifyConfig = Amplify.getConfig();
+	if (amplifyConfig?.ssr) {
+		_storage = new UniversalStorage();
+	} else {
+		_storage = new StorageHelper().getStorage();
+	}
+
 	const keyPrefix = `CognitoIdentityServiceProvider.${userPoolClientID}`;
 	const idTokenKey = `${keyPrefix}.${username}.idToken`;
 	const accessTokenKey = `${keyPrefix}.${username}.accessToken`;
 	const refreshTokenKey = `${keyPrefix}.${username}.refreshToken`;
 	const clockDriftKey = `${keyPrefix}.${username}.clockDrift`;
 	const lastUserKey = `${keyPrefix}.LastAuthUser`;
-	const _storage = new StorageHelper().getStorage();
 
 	_storage.setItem(idTokenKey, idToken);
 	_storage.setItem(accessTokenKey, accessToken);
@@ -23,7 +30,21 @@ export function cacheTokens({
 	_storage.setItem(lastUserKey, username);
 }
 
-export function readTokens({ userPoolCliendId }) {
+export function readTokens({
+	userPoolCliendId,
+	req,
+}: {
+	userPoolCliendId: string;
+	req?: any;
+}) {
+	let _storage;
+	const amplifyConfig = Amplify.getConfig();
+	if (amplifyConfig?.ssr) {
+		_storage = new UniversalStorage({ req });
+	} else {
+		_storage = new StorageHelper().getStorage();
+	}
+
 	const username = 'username';
 
 	const keyPrefix = `CognitoIdentityServiceProvider.${userPoolCliendId}.${username}`;
@@ -31,8 +52,6 @@ export function readTokens({ userPoolCliendId }) {
 	const accessTokenKey = `${keyPrefix}.accessToken`;
 	const refreshTokenKey = `${keyPrefix}.refreshToken`;
 	const clockDriftKey = `${keyPrefix}.clockDrift`;
-
-	const _storage = new StorageHelper().getStorage();
 
 	if (_storage.getItem(idTokenKey)) {
 		const idToken = _storage.getItem(idTokenKey);
