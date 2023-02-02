@@ -63,3 +63,24 @@ export interface CloudWatchDataTracker {
 	logEvents: InputLogEvent[];
 	verifiedLogGroup?: LogGroup;
 }
+
+export type Platform = {
+	userAgent: string;
+	product: string;
+	navigator: Navigator | null;
+	isReactNative: Boolean;
+};
+export type UserAgentSuffix = {
+	version?: string;
+	framework?: string;
+	category?: string;
+	action?: string;
+	component?: string;
+};
+export type CodedUserAgentSuffix = {
+	v?: string;
+	f?: string;
+	c?: string;
+	a?: string;
+	ui?: string;
+};

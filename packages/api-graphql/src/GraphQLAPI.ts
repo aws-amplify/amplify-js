@@ -15,6 +15,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	UserAgentSuffix,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Auth } from '@aws-amplify/auth';
@@ -34,7 +35,7 @@ export const graphqlOperation = (
 	query,
 	variables = {},
 	authToken?: string,
-	userAgentSuffix?: string
+	userAgentSuffix?: UserAgentSuffix
 ) => ({
 	query,
 	variables,

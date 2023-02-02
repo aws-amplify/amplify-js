@@ -293,7 +293,7 @@ describe('Sync', () => {
 
 			expect(mockGraphQl).toHaveBeenCalledWith(
 				expect.objectContaining({
-					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+					userAgentSuffix: { category: USER_AGENT_SUFFIX_DATASTORE },
 				})
 			);
 		});
