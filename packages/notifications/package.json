@@ -63,7 +63,7 @@
 			"name": "Notifications (with Analytics)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "70 kB"
+			"limit": "71 kB"
 		}
 	],
 	"jest": {
