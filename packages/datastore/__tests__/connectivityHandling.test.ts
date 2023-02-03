@@ -131,7 +131,7 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.title).toEqual(updated.title);
 		});
 
-		test.only('send model updates where field is nullified to the cloud', async () => {
+		test('send model updates where field is nullified to the cloud', async () => {
 			const original = await DataStore.save(
 				new Model({
 					field1: 'field 1 value',
