@@ -770,7 +770,7 @@ class FakeGraphQLService {
 
 	private populatedFields(record) {
 		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value)
+			Object.entries(record).filter(([key, value]) => value !== undefined)
 		);
 	}
 
@@ -791,6 +791,7 @@ class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
+		this.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -944,7 +945,7 @@ class FakeGraphQLService {
 				}
 			}
 
-			this.log('response', { data, errors });
+			this.log('API Response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -961,10 +962,12 @@ class FakeGraphQLService {
 						},
 					},
 				};
+				this.log('API subscription message', { observerMessageName, message });
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {
+				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
 				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
 			});
@@ -1200,14 +1203,14 @@ export const DataStore: typeof DS = (() => {
 export declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
-	public readonly optionalField1?: string;
+	public readonly optionalField1?: string | null;
 	public readonly dateCreated: string;
-	public readonly emails?: string[];
-	public readonly ips?: (string | null)[];
-	public readonly metadata?: Metadata;
-	public readonly logins?: Login[];
-	public readonly createdAt?: string;
-	public readonly updatedAt?: string;
+	public readonly emails?: string[] | null;
+	public readonly ips?: (string | null)[] | null;
+	public readonly metadata?: Metadata | null;
+	public readonly logins?: Login[] | null;
+	public readonly createdAt?: string | null;
+	public readonly updatedAt?: string | null;
 
 	constructor(init: ModelInit<Model>);
 

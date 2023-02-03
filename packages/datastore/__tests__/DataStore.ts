@@ -2703,22 +2703,18 @@ describe('DataStore tests', () => {
 				const m = new Model({
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
-					emails: null,
-					ips: null,
+					optionalField1: null,
 				});
-				expect(m.emails).toBe(null);
-				expect(m.ips).toBe(null);
+				expect(m.optionalField1).toBe(null);
 			});
 
 			test('valid model with `undefined` optional fields', () => {
 				const m = new Model({
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
-					emails: undefined,
-					ips: undefined,
+					optionalField1: undefined,
 				});
-				expect(m.emails).toBe(null);
-				expect(m.ips).toBe(null);
+				expect(m.optionalField1).toBe(null);
 			});
 
 			test('valid model with omitted optional fields', () => {
@@ -2726,14 +2722,35 @@ describe('DataStore tests', () => {
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
 					/**
-					 * Omitting these:
+					 * Omitting this:
 					 *
-					 * emails: undefined,
-					 * ips: undefined,
+					 * optionalField: undefined
 					 */
 				});
-				expect(m.emails).toBe(null);
-				expect(m.ips).toBe(null);
+				expect(m.optionalField1).toBe(null);
+			});
+
+			test('copyOf() setting optional field to null', () => {
+				const original = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'defined value',
+				});
+				const copied = Model.copyOf(original, d => (d.optionalField1 = null));
+				expect(copied.optionalField1).toBe(null);
+			});
+
+			test('copyOf() setting optional field to undefined', () => {
+				const original = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'defined value',
+				});
+				const copied = Model.copyOf(
+					original,
+					d => (d.optionalField1 = undefined)
+				);
+				expect(copied.optionalField1).toBe(null);
 			});
 
 			test('pass null to non nullable array field', () => {
