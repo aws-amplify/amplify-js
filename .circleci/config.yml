@@ -1554,7 +1554,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
-      - fix-ui-react-e2e
+      - test/fix-ui-authenticator-e2e
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
