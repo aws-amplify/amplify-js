@@ -12,6 +12,8 @@
  */
 package com.amazonaws.amplify.pushnotification.modules;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.Notification;
@@ -31,6 +33,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
@@ -78,7 +81,7 @@ public class RNPushNotificationHelper {
         notificationIntent.putExtra(RNPushNotificationPublisher.NOTIFICATION_ID, notificationID);
         notificationIntent.putExtras(bundle);
 
-        return PendingIntent.getBroadcast(context, notificationID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationID, notificationIntent, getPendingIntentFlags());
     }
 
     public void sendNotificationScheduled(Bundle bundle) {
@@ -130,7 +133,7 @@ public class RNPushNotificationHelper {
 
         Log.d(LOG_TAG, String.format("Setting a notification with id %s at time %s",
                 bundle.getString("id"), Long.toString(fireDate)));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getAlarmManager().setExact(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
         } else {
             getAlarmManager().set(AlarmManager.RTC_WAKEUP, fireDate, pendingIntent);
@@ -189,7 +192,7 @@ public class RNPushNotificationHelper {
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (SDK_INT >= Build.VERSION_CODES.O) {
                 notification.setChannelId(NOTIFICATION_CHANNEL_ID);
             }
 
@@ -240,7 +243,7 @@ public class RNPushNotificationHelper {
 
             Bitmap largeIconBitmap = BitmapFactory.decodeResource(res, largeIconResId);
 
-            if (largeIconResId != 0 && (largeIcon != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
+            if (largeIconResId != 0 && (largeIcon != null || SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
                 notification.setLargeIcon(largeIconBitmap);
             }
 
@@ -254,7 +257,7 @@ public class RNPushNotificationHelper {
 
             notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
 
-            Intent intent = new Intent(context, RNPushNotificationBroadcastReceiver.class);
+            Intent intent = new Intent(context, getMainActivityClass());
             intent.putExtra("notification", bundle);
 
             Log.i(LOG_TAG, "sendNotification: " + intent);
@@ -283,7 +286,7 @@ public class RNPushNotificationHelper {
                 notification.setSound(soundUri);
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (SDK_INT >= Build.VERSION_CODES.O) {
                 notification.setSound(null);
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -302,7 +305,7 @@ public class RNPushNotificationHelper {
                 notification.setOngoing(bundle.getBoolean("ongoing"));
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 notification.setCategory(NotificationCompat.CATEGORY_CALL);
 
                 String color = bundle.getString("color");
@@ -313,10 +316,7 @@ public class RNPushNotificationHelper {
 
             int notificationID = Integer.parseInt(notificationIdString);
 
-            // PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
-            //         PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent, getPendingIntentFlags());
 
             notification.setContentIntent(pendingIntent);
 
@@ -353,15 +353,10 @@ public class RNPushNotificationHelper {
                     // Add "action" for later identifying which button gets pressed.
                     bundle.putString("action", action);
                     actionIntent.putExtra("notification", bundle);
-                    PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingActionIntent = PendingIntent.getBroadcast(context, notificationID, actionIntent, getPendingIntentFlags());
                     notification.addAction(icon, action, pendingActionIntent);
                 }
             }
-
-            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationID, intent,
-            //         PendingIntent.FLAG_UPDATE_CURRENT);
-
 
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
@@ -460,30 +455,17 @@ public class RNPushNotificationHelper {
     }
 
     private static void commit(SharedPreferences.Editor editor) {
-        if (Build.VERSION.SDK_INT < 9) {
+        if (SDK_INT < 9) {
             editor.commit();
         } else {
             editor.apply();
         }
     }
 
-    public void handleNotificationOpen() {
-       // openApp();
-       return;
-    }
-
-    private boolean openApp() {
-        Class intentClass = getMainActivityClass();
-        final Intent launchIntent = new Intent(context, intentClass);
-
-        if (launchIntent == null) {
-            Log.e(LOG_TAG, "Couldn't get app launch intent for campaign notification.");
-            return false;
+    private int getPendingIntentFlags() {
+        if (SDK_INT >= Build.VERSION_CODES.M) {
+            return PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
         }
-        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-        launchIntent.setPackage(null);
-        context.startActivity(launchIntent);
-        return true;
+        return PendingIntent.FLAG_UPDATE_CURRENT;
     }
-
 }
