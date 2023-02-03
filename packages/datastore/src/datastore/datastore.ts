@@ -763,18 +763,20 @@ const initializeInstance = <T extends PersistentModel>(
 };
 
 /**
- * Updates a draft to make its shape and values match consisten and predictable
- * view of data as it would look after having been synchronized from Cloud storage
- * from the customer perspective. (This is not normalize [sync] metadata fields.)
+ * Updates a draft to standardize its customer-defined fields so that they are
+ * consistent with the data as it would look after having been synchronized from
+ * Cloud storage.
  *
- * The "exception" to this are Cloud managed fields, which are expected to be
- * `null` until populated by Cloud storage.
+ * The exceptions to this are:
+ *
+ * 1. Non-schema/Internal [sync] metadata fields.
+ * 2. Cloud-managed fields, which are `null` until set by cloud storage.
  *
  * This function should be expanded if/when deviations between canonical Cloud
  * storage data and locally managed data are found. For now, the known areas
  * that require normalization are:
  *
- * 1. Ensuring all fields are *defined*. (I.e., turn `undefined` -> `null`.)
+ * 1. Ensuring all non-metadata fields are *defined*. (I.e., turn `undefined` -> `null`.)
  *
  * @param modelDefinition Definition for the draft. Used to discover all fields.
  * @param draft The instance draft to apply normalizations to.
