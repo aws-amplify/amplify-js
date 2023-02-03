@@ -721,10 +721,15 @@ export class SyncEngine {
 							});
 						});
 
+						// null is cast to 0 resulting in unexpected behavior
+						// If newestFullSyncStartedAt is null this is the first sync.
+						// Assume newestStartedAt is is also newest full sync.
 						const msNextFullSync =
-							newestFullSyncStartedAt! +
-							theInterval! -
-							(newestStartedAt! + duration!);
+							newestFullSyncStartedAt! === null
+								? theInterval! - duration!
+								: newestFullSyncStartedAt! +
+								  theInterval! -
+								  (newestStartedAt! + duration!);
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
