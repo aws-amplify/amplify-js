@@ -143,7 +143,7 @@ export class FieldCondition {
 	constructor(
 		public field: string,
 		public operator: string,
-		public operands: any[]
+		public operands: string[]
 	) {
 		this.validate();
 	}
