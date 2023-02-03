@@ -8,14 +8,14 @@ export type MachineContext = {};
 
 /**
  * The type accepted by Machine's send method
- * @param name - The name of the event.
+ * @param type - The type of the event.
  * @param paylaod - The payload of the event.
  * @param id - Optional id of the event to track an individual event.
  * @param toMachine - Optional name of machine the event is sent to.
  */
 export type MachineEvent = {
-	name: string;
-	payload: unknown;
+	type: string;
+	payload?: unknown;
 	id?: string;
 	toMachine?: string;
 };
@@ -96,9 +96,9 @@ export type StateTransitions<
 	EventTypes extends MachineEvent,
 	StateNames extends string
 > = {
-	[event in EventTypes['name']]?: StateTransition<
+	[event in EventTypes['type']]?: StateTransition<
 		ContextType,
-		Extract<EventTypes, { name: event }>,
+		Extract<EventTypes, { type: event }>,
 		StateNames
 	>[];
 };
@@ -110,9 +110,11 @@ export type StateTransitions<
  * @typeParam StateNames - The type of all the state names. Expecting a union of strings.
  * @param nextState - The name of the State which will become the current State of the enclosing Machine, if the
  * 			transition is triggered.
- * @param guards - An array of {@link TransitionGuard}, to be invoked before the transition is completed.
- * @param reducers - An array of {@link TransitionReducer}, to be invoked when the transition is completed.
- * @param effects - An array of {@link TransitionEffect}, to be invoked when the transition is completed.
+ * @param guards - An array of {@link TransitionGuard}, to be invoked before transition is started. If any guard returns
+ * 			false, the reducers or actions will not be invoked.
+ * @param reducers - An array of {@link TransitionReducer}, to be invoked before actions are invoked.
+ * @param actions - An array of {@link TransitionAction}, to be invoked when the transition is completed. If more than
+ * 			one action returns updated context, later action's result takes precedence.
  */
 export type StateTransition<
 	ContextType extends MachineContext,
@@ -122,7 +124,7 @@ export type StateTransition<
 	nextState: StateNames;
 	guards?: TransitionGuard<ContextType, EventType>[];
 	reducers?: TransitionReducer<ContextType, EventType>[];
-	effects?: TransitionEffect<ContextType, EventType>[];
+	actions?: TransitionAction<ContextType, EventType>[];
 };
 
 /**
@@ -132,15 +134,16 @@ export type StateTransition<
  * @param context - The context of the Machine.
  * @param event - The event being handled.
  * @param eventBroker - The event broker handling events may emitted from effect.
+ * @return Promise of optional updated machine context.
  */
-export type TransitionEffect<
+export type TransitionAction<
 	ContextType extends MachineContext,
 	EventType extends MachineEvent
 > = (
 	context: ContextType,
 	event: EventType,
 	eventBroker: EventBroker<MachineEvent>
-) => Promise<void>;
+) => Promise<Partial<ContextType> | void>;
 
 /**
  * Type for a TransitionGuard, which can prevent the enclosing Transition from completing
@@ -148,7 +151,7 @@ export type TransitionEffect<
  * @typeParam EventType - The type of event being handled.
  * @param context - The context of the Machine.
  * @param event - The event being handled.
- * @returns If `true`, the transition will be prevented.
+ * @returns If `false`, the transition will be prevented.
  */
 export type TransitionGuard<
 	ContextType extends MachineContext,
@@ -194,8 +197,6 @@ export type CurrentStateAndContext<
  * @typeParam ContextType - The type of the enclosing Machine's context
  * @param nextState - The name of next state. It can be the same of current state,
  * indicating no state transit happens.
- * @param effectsPromise - The promise resolves when all the assciated state
- * transit effects are resolved. {@link StateTransition.effects}
  * @param newContext - The updated machine context after running the associated
  * state transit reducers. {@link StateTransition.reducers}
  *
@@ -204,7 +205,6 @@ export type CurrentStateAndContext<
 export interface MachineStateEventResponse<ContextType extends MachineContext> {
 	nextState: string;
 	newContext?: ContextType;
-	effectsPromise?: Promise<unknown>;
 }
 
 /**
@@ -217,5 +217,5 @@ export interface MachineState<
 	EventType extends MachineEvent
 > {
 	name: string;
-	accept: (event: EventType) => MachineStateEventResponse<ContextType>;
+	accept: (event: EventType) => Promise<MachineStateEventResponse<ContextType>>;
 }

@@ -14,8 +14,8 @@ import {
 
 let machine: Machine<DummyContext, Events, StateNames>;
 const testSource = 'state-machine-single-tests';
-const goodEvent1: Event1 = { name: 'event1', payload: { p1: 'good' } };
-const badEvent1: Event1 = { name: 'event1', payload: { p1: 'bad' } };
+const goodEvent1: Event1 = { type: 'event1', payload: { p1: 'good' } };
+const badEvent1: Event1 = { type: 'event1', payload: { p1: 'bad' } };
 
 describe('State machine instantiation tests...', () => {
 	beforeEach(() => {
@@ -59,7 +59,7 @@ describe('State machine guard tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctxt, event1) => event1.payload.p1 === 'bad'],
+						guards: [(ctxt, event1) => event1.payload.p1 !== 'bad'],
 					},
 				],
 			},
@@ -72,7 +72,7 @@ describe('State machine guard tests...', () => {
 	});
 
 	test('...the state transitions does not transition if guard fails', async () => {
-		await machine?.accept({ name: 'event1', payload: { p1: 'bad' } });
+		await machine?.accept({ type: 'event1', payload: { p1: 'bad' } });
 		expect(machine?.getCurrentState().currentState).toEqual('State1');
 	});
 });
@@ -80,7 +80,7 @@ describe('State machine guard tests...', () => {
 describe('State machine effect tests...', () => {
 	const mockDispatch = jest.fn();
 	const goodEvent2: Event2 = {
-		name: 'event2',
+		type: 'event2',
 		payload: { p2: 'good' },
 	};
 
@@ -92,8 +92,8 @@ describe('State machine effect tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctx, event1) => event1.payload.p1 === 'bad'],
-						effects: [
+						guards: [(ctx, event1) => event1.payload.p1 !== 'bad'],
+						actions: [
 							async (ctx, even1, broker) => {
 								ctx?.testFn ? ctx.testFn() : noop;
 								broker.dispatch(goodEvent2);
@@ -104,7 +104,7 @@ describe('State machine effect tests...', () => {
 				event2: [
 					{
 						nextState: 'State2',
-						effects: [
+						actions: [
 							async (ctx, event1, broker) => {
 								broker.dispatch({
 									...goodEvent2,
@@ -170,7 +170,7 @@ describe('State machine reducer tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						guards: [(ctx, event1) => event1.payload.p1 === 'bad'],
+						guards: [(ctx, event1) => event1.payload.p1 !== 'bad'],
 						reducers: [
 							(ctx, even1) => {
 								ctx.optional1 = even1.payload.p1;
@@ -184,10 +184,10 @@ describe('State machine reducer tests...', () => {
 				event1: [
 					{
 						nextState: 'State2',
-						effects: [
+						actions: [
 							async (ctx, event1, broker) => {
 								broker.dispatch({
-									name: 'CurrentContext',
+									type: 'CurrentContext',
 									payload: {
 										context: ctx,
 									},
@@ -231,7 +231,7 @@ describe('State machine reducer tests...', () => {
 		expect(mockDispatch).toBeCalledTimes(1);
 		expect(mockDispatch).toBeCalledWith(
 			expect.objectContaining({
-				name: 'CurrentContext',
+				type: 'CurrentContext',
 				payload: {
 					context: expect.objectContaining({ optional1: 'good' }),
 				},

@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import { Logger } from '@aws-amplify/core';
 import { v4 } from 'uuid';
 import {
@@ -16,13 +17,13 @@ type MachineState = CurrentStateAndContext<MachineContext, string>;
 type MachineType = Machine<any, any, any>;
 
 const CURRENT_STATES_EVENT_SYMBOL = Symbol('CURRENT_STATES_EVENT_PAYLOAD');
-interface CurrentStateEventType extends Omit<MachineManagerEvent, 'name'> {
-	name: typeof CURRENT_STATES_EVENT_SYMBOL;
+interface CurrentStateEventType extends Omit<MachineManagerEvent, 'type'> {
+	type: typeof CURRENT_STATES_EVENT_SYMBOL;
 }
 
 const ADD_MACHINE_EVENT_SYMBOL = Symbol('ADD_MACHINE_EVENT_PAYLOAD');
-interface AddMachineEventType extends Omit<MachineManagerEvent, 'name'> {
-	name: typeof ADD_MACHINE_EVENT_SYMBOL;
+interface AddMachineEventType extends Omit<MachineManagerEvent, 'type'> {
+	type: typeof ADD_MACHINE_EVENT_SYMBOL;
 	payload: { machine: MachineType };
 }
 
@@ -75,7 +76,7 @@ export class MachineManager {
 		machineName: string
 	): Promise<CurrentStateAndContext<MachineContext, string>> {
 		return await this._enqueueEvent({
-			name: CURRENT_STATES_EVENT_SYMBOL,
+			type: CURRENT_STATES_EVENT_SYMBOL,
 			payload: {},
 			toMachine: machineName,
 		});
@@ -90,7 +91,7 @@ export class MachineManager {
 	 */
 	public async addMachineIfAbsent(machine: MachineType) {
 		await this._enqueueEvent({
-			name: ADD_MACHINE_EVENT_SYMBOL,
+			type: ADD_MACHINE_EVENT_SYMBOL,
 			payload: { machine },
 			toMachine: machine.name,
 		});
@@ -144,9 +145,9 @@ export class MachineManager {
 				promiseContext: [resolve, reject],
 			} = this._apiQueue.shift()!;
 			try {
-				if (event.name === CURRENT_STATES_EVENT_SYMBOL) {
+				if (event.type === CURRENT_STATES_EVENT_SYMBOL) {
 					// Skip.
-				} else if (event.name === ADD_MACHINE_EVENT_SYMBOL) {
+				} else if (event.type === ADD_MACHINE_EVENT_SYMBOL) {
 					const newMachine = event.payload.machine;
 					await this._addMachineIfAbsent(newMachine);
 				} else {
@@ -180,7 +181,7 @@ export class MachineManager {
 		const machine = this._machines[event.toMachine];
 		if (!machine) {
 			this.logger.debug(
-				`Cannot route event name ${event.name} to machine ${event.toMachine}. Event id ${event.id}.`
+				`Cannot route event name ${event.type} to machine ${event.toMachine}. Event id ${event.id}.`
 			);
 			return;
 			// Skip.
