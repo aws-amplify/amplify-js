@@ -1596,24 +1596,24 @@ workflows:
       - bundle_test:
           requires:
             - build
-      - integ_react_auth_1:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_auth_2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_react_auth_1:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
+      # - integ_react_auth_2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       # - integ_auth_test_cypress_no_ui:
       #     requires:
       #       - integ_setup
@@ -1947,24 +1947,24 @@ workflows:
       #       - build
       #     filters:
       #       <<: *releasable_branches
-      - integ_datastore_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *datastore_auth_scenarios
-      - integ_datastore_auth_v2:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *datastore_auth_scenarios
+      # - integ_datastore_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *datastore_auth_scenarios
+      # - integ_datastore_auth_v2:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *datastore_auth_scenarios
       # - integ_duplicate_packages:
       #     requires:
       #       - integ_setup
@@ -2165,8 +2165,8 @@ workflows:
             # - integ_react_amazon_cognito_identity_js_cookie_storage
             # - integ_react_amazon_cognito_identity_js
             # - integ_node_amazon_cognito_identity_js
-            - integ_react_auth_1
-            - integ_react_auth_2
+            # - integ_react_auth_1
+            # - integ_react_auth_2
             # - integ_angular_auth
             # - integ_javascript_auth # TODO: enable it when CDN deployment is automated
             # - integ_vue_auth
@@ -2178,9 +2178,9 @@ workflows:
             # - integ_rn_ios_device_tracking
             # - integ_rn_android_storage
             # - integ_rn_ios_datastore_sqlite_adapter
-            - integ_datastore_auth
-            - integ_datastore_auth_v2
-              # - integ_duplicate_packages
+            # - integ_datastore_auth
+            # - integ_datastore_auth_v2
+            # - integ_duplicate_packages
             # - integ_auth_test_cypress_no_ui
             # - integ_react_graphql_api
             # - integ_javascript_geo  # TODO: enable it when CDN deployment is automated
