@@ -1,10 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { LoggingProvider } from '../types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
+
+export interface InputLogEvent {
+	/**
+	 * <p>The time the event occurred, expressed as the number of milliseconds after Jan 1, 1970
+	 *       00:00:00 UTC.</p>
+	 */
+	timestamp: number | undefined;
+	/**
+	 * <p>The raw event message.</p>
+	 */
+	message: string | undefined;
+}
 
 const LOG_LEVELS = {
 	VERBOSE: 1,
