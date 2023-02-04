@@ -8,7 +8,11 @@ export {
 export { default as Mutex } from './Mutex';
 export { default as Reachability } from './Reachability';
 export { DateUtils } from './DateUtils';
-export { urlSafeDecode, urlSafeEncode } from './StringUtils';
+export {
+	urlSafeDecode,
+	urlSafeEncode,
+	decodeTokenPayload,
+} from './StringUtils';
 export {
 	AWS_CLOUDWATCH_BASE_BUFFER_SIZE,
 	AWS_CLOUDWATCH_CATEGORY,

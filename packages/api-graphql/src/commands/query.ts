@@ -1,17 +1,11 @@
 import {
-	DocumentNode,
-	OperationDefinitionNode,
-	print,
-	parse,
-	GraphQLError,
-} from 'graphql';
-import {
 	Amplify,
 	parseAWSExports,
 	getAmplifyUserAgent,
+	httpClient,
 } from '@aws-amplify/core';
-import { GraphQLOptions, GraphQLResult } from '../types';
-import { restClient, USER_AGENT_HEADER } from '../utils';
+import type { GraphQLOptions, GraphQLResult } from '../types';
+export const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 /**
  * Handles AppSync GraphQL queries, including mutations.
@@ -24,13 +18,6 @@ export const query = async (
 	options: GraphQLOptions,
 	additionalHeaders?: { [key: string]: string }
 ): Promise<GraphQLResult> => {
-	const amplifyConfig = parseAWSExports(Amplify.getConfig()) as any;
-	const storageConfig = amplifyConfig.Storage;
-	const appSyncRegion = storageConfig.aws_appsync_region;
-	const appSyncGraphQLEndpoint = storageConfig.aws_appsync_graphqlEndpoint;
-	const customGraphQLEndpoint = storageConfig.graphql_endpoint;
-	const customGraphQLRegion = storageConfig.graphql_endpoint_iam_region;
-
 	const {
 		query: paramQuery,
 		variables = {},
@@ -38,36 +25,29 @@ export const query = async (
 		authToken,
 		userAgentSuffix,
 	} = options;
-
-	// Basic POC request validation
-	if (authMode !== 'AMAZON_COGNITO_USER_POOLS') {
-		throw new Error('Unsupported authentication mode.');
-	}
+	const config = Amplify.getConfig();
+	const amplifyConfig = parseAWSExports(config) as any;
+	const storageConfig = amplifyConfig.Storage;
+	const appSyncRegion = config.aws_appsync_region;
+	const appSyncAuthMode = authMode || config.aws_appsync_authenticationType;
+	const apiKey = config.aws_appsync_apiKey;
+	const appSyncGraphQLEndpoint = config.aws_appsync_graphqlEndpoint;
+	const customGraphQLEndpoint = amplifyConfig.graphql_endpoint;
+	const customGraphQLRegion = amplifyConfig.graphql_endpoint_iam_region;
 
 	// Process query
 	// TODO: Extract this as a utility
-	const query =
-		typeof paramQuery === 'string'
-			? parse(paramQuery)
-			: parse(print(paramQuery));
-	const [operationDef = {}] = query.definitions.filter(
-		def => def.kind === 'OperationDefinition'
-	);
-	const { operation: operationType } = operationDef as OperationDefinitionNode;
+	const query = paramQuery;
+
 	const customHeaders = additionalHeaders || {};
 	if (authToken) {
 		customHeaders.Authorization = authToken;
 	}
-	const cancellableToken = restClient.getCancellableToken();
-	const payloadParams = { cancellableToken };
 
-	if (operationType !== 'mutation' && operationType !== 'query') {
-		throw new Error('Unsupported operation type for this API.');
-	}
+	const payloadParams = {};
 
 	// Construct query headers
 	// TODO: Extract this as a utility, expand to cover auth modes not currently covered by POC
-	let session;
 	let authorizationHeaders = {};
 	if (!authToken) {
 		const userSession = Amplify.getUser();
@@ -99,7 +79,7 @@ export const query = async (
 		{
 			headers: queryHeaders,
 			body: {
-				query: print(query as DocumentNode),
+				query,
 				variables,
 			},
 			signerServiceInfo: {
@@ -111,32 +91,55 @@ export const query = async (
 	);
 
 	if (!endpoint) {
-		throw new GraphQLError('No graphql endpoint provided.');
+		throw new Error('No graphql endpoint provided.');
 	}
 
 	// Submit query
 	let response;
+	let requestAuthMode: 'JWT' | 'SigV4' | 'None' = 'None';
+	let customHeader = {};
+
+	if (
+		appSyncAuthMode === 'AMAZON_COGNITO_USER_POOLS' ||
+		appSyncAuthMode === 'AWS_LAMBDA' ||
+		appSyncAuthMode === 'OPENID_CONNECT'
+	) {
+		requestAuthMode = 'JWT';
+	}
+
+	if (appSyncAuthMode === 'AWS_IAM') {
+		requestAuthMode = 'SigV4';
+	}
+
+	if (appSyncAuthMode === 'API_KEY') {
+		customHeader['x-api-key'] = apiKey;
+	}
+
 	try {
-		response = await restClient.post(endpoint, payload);
+		response = await httpClient({
+			endpoint,
+			method: 'POST',
+			body: payload.body,
+			region: payload.signerServiceInfo.region,
+			service: payload.signerServiceInfo.service,
+			authMode: requestAuthMode,
+			headers: { ...customHeader },
+		});
+
+		// response = await restClient.post(endpoint, payload);
 	} catch (err) {
 		// If the exception is because user intentionally
 		// cancelled the request, do not modify the exception
 		// so that clients can identify the exception correctly.
-		if (restClient.isCancel(err)) {
-			throw err;
-		}
 
 		response = {
 			data: {},
-			errors: [new GraphQLError(err.message, null, null, null, null, err)],
+			errors: [err],
 		};
 
 		// Reject the promise with an empty response containing the errors
 		throw response;
 	}
-
-	// Mark the request as "cancellable"
-	restClient.updateRequestToBeCancellable(response, cancellableToken);
 
 	return response;
 };
