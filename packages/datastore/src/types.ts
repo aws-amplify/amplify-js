@@ -14,8 +14,6 @@ import {
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { Auth } from '@aws-amplify/auth';
-import { API } from '@aws-amplify/api';
 import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
@@ -1087,9 +1085,9 @@ export enum LimitTimerRaceResolvedValues {
 //#endregion
 
 export type AmplifyContext = {
-	Auth: typeof Auth;
-	API: typeof API;
-	Cache: typeof Cache;
+	Auth?: any;
+	API?: any;
+	Cache?: typeof Cache;
 };
 
 // #region V5 predicate types

@@ -1,4 +1,4 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { query as GraphQLQuery } from '@aws-amplify/api-graphql';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -36,6 +36,30 @@ const opResultDefaults = {
 	startedAt: null,
 };
 
+export interface GraphQLResult<T = object> {
+	data?: T;
+	errors?: Error[];
+	extensions?: {
+		[key: string]: any;
+	};
+}
+
+export enum GraphQLAuthError {
+	NO_API_KEY = 'No api-key configured',
+	NO_CURRENT_USER = 'No current user',
+	NO_CREDENTIALS = 'No credentials',
+	NO_FEDERATED_JWT = 'No federated jwt',
+	NO_AUTH_TOKEN = 'No auth token specified',
+}
+
+export declare enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
+}
+
 const logger = new Logger('DataStore');
 
 class SyncProcessor {
@@ -51,7 +75,7 @@ class SyncProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		amplifyContext.API = amplifyContext.API || API;
+		amplifyContext.API = amplifyContext.API;
 		this.generateQueries();
 	}
 
@@ -211,7 +235,7 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					return await this.amplifyContext.API.graphql({
+					return await GraphQLQuery({
 						query,
 						variables,
 						authMode,

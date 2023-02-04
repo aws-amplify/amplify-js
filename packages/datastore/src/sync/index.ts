@@ -3,7 +3,6 @@ import {
 	ConsoleLogger as Logger,
 	BackgroundProcessManager,
 } from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -37,14 +36,25 @@ import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
 import { MutationProcessor } from './processors/mutation';
-import { CONTROL_MSG, SubscriptionProcessor } from './processors/subscription';
-import { SyncProcessor } from './processors/sync';
 import {
 	createMutationInstanceFromModelOperation,
 	getIdentifierValue,
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
+import { SyncProcessor } from './processors/sync';
+
+enum CONTROL_MSG {
+	CONNECTED = 'CONNECTED',
+}
+
+enum PUBSUB_CONTROL_MSG {
+	CONNECTION_CLOSED = 'Connection closed',
+	CONNECTION_FAILED = 'Connection failed',
+	REALTIME_SUBSCRIPTION_INIT_ERROR = 'AppSync Realtime subscription init error',
+	SUBSCRIPTION_ACK = 'Subscription ack',
+	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+}
 
 const { isNode } = browserOrNode();
 const logger = new Logger('DataStore');
@@ -106,8 +116,8 @@ export enum ControlMessage {
 export class SyncEngine {
 	private online = false;
 
-	private readonly syncQueriesProcessor: SyncProcessor;
-	private readonly subscriptionsProcessor: SubscriptionProcessor;
+	private readonly syncQueriesProcessor: any;
+	// private readonly subscriptionsProcessor:
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
@@ -138,7 +148,8 @@ export class SyncEngine {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
-		private readonly connectivityMonitor?: DataStoreConnectivity
+		private readonly connectivityMonitor?: DataStoreConnectivity,
+		private readonly subscriptionsProcessor?: any
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
 
@@ -156,15 +167,6 @@ export class SyncEngine {
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
 
 		this.syncQueriesProcessor = new SyncProcessor(
-			this.schema,
-			this.syncPredicates,
-			this.amplifyConfig,
-			this.authModeStrategy,
-			errorHandler,
-			this.amplifyContext
-		);
-
-		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
 			this.amplifyConfig,
@@ -235,42 +237,38 @@ export class SyncEngine {
 										);
 									} else {
 										//#region GraphQL Subscriptions
-										[ctlSubsObservable, dataSubsObservable] =
-											this.subscriptionsProcessor.start();
-
-										try {
-											await new Promise((resolve, reject) => {
-												onTerminate.then(reject);
-												const ctlSubsSubscription = ctlSubsObservable.subscribe(
-													{
-														next: msg => {
-															if (msg === CONTROL_MSG.CONNECTED) {
-																resolve();
-															}
-														},
-														error: err => {
-															reject(err);
-															const handleDisconnect =
-																this.disconnectionHandler();
-															handleDisconnect(err);
-														},
-													}
-												);
-
-												subscriptions.push(ctlSubsSubscription);
+										if (this.subscriptionsProcessor) {
+											[ctlSubsObservable, dataSubsObservable] =
+												this.subscriptionsProcessor.start();
+											try {
+												await new Promise((resolve, reject) => {
+													onTerminate.then(reject);
+													const ctlSubsSubscription =
+														ctlSubsObservable.subscribe({
+															next: msg => {
+																if (msg === CONTROL_MSG.CONNECTED) {
+																	resolve();
+																}
+															},
+															error: err => {
+																reject(err);
+																const handleDisconnect =
+																	this.disconnectionHandler();
+																handleDisconnect(err);
+															},
+														});
+													subscriptions.push(ctlSubsSubscription);
+												});
+											} catch (err) {
+												observer.error(err);
+												failedStarting();
+												return;
+											}
+											logger.log('Realtime ready');
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
 											});
-										} catch (err) {
-											observer.error(err);
-											failedStarting();
-											return;
 										}
-
-										logger.log('Realtime ready');
-
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
-										});
-
 										//#endregion
 									}
 
@@ -355,29 +353,29 @@ export class SyncEngine {
 									//#region Merge subscriptions buffer
 									// TODO: extract to function
 									if (!isNode) {
-										subscriptions.push(
-											dataSubsObservable!.subscribe(
-												([_transformerMutationType, modelDefinition, item]) =>
-													this.runningProcesses.add(async () => {
-														const modelConstructor = this.userModelClasses[
-															modelDefinition.name
-														] as PersistentModelConstructor<any>;
-
-														const model = this.modelInstanceCreator(
-															modelConstructor,
-															item
-														);
-
-														await this.storage.runExclusive(storage =>
-															this.modelMerger.merge(
-																storage,
-																model,
-																modelDefinition
-															)
-														);
-													}, 'subscription dataSubsObservable event')
-											)
-										);
+										if (this.subscriptionsProcessor) {
+											subscriptions.push(
+												dataSubsObservable!.subscribe(
+													([_transformerMutationType, modelDefinition, item]) =>
+														this.runningProcesses.add(async () => {
+															const modelConstructor = this.userModelClasses[
+																modelDefinition.name
+															] as PersistentModelConstructor<any>;
+															const model = this.modelInstanceCreator(
+																modelConstructor,
+																item
+															);
+															await this.storage.runExclusive(storage =>
+																this.modelMerger.merge(
+																	storage,
+																	model,
+																	modelDefinition
+																)
+															);
+														}, 'subscription dataSubsObservable event')
+												)
+											);
+										}
 									}
 									//#endregion
 								} else if (!online) {
@@ -803,7 +801,9 @@ export class SyncEngine {
 		 */
 
 		await this.mutationsProcessor.stop();
-		await this.subscriptionsProcessor.stop();
+		if (this.subscriptionsProcessor) {
+			await this.subscriptionsProcessor.stop();
+		}
 		await this.datastoreConnectivity.stop();
 		await this.syncQueriesProcessor.stop();
 		await this.runningProcesses.close();

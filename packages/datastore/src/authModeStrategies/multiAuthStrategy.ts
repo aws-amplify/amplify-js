@@ -1,4 +1,3 @@
-import { Auth } from '@aws-amplify/auth';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	AuthModeStrategy,
@@ -7,6 +6,7 @@ import {
 	ModelAttributeAuthAllow,
 	AmplifyContext,
 } from '../types';
+import { Amplify } from '@aws-amplify/core';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty
@@ -138,10 +138,10 @@ export const multiAuthStrategy: (
 ) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
 	async ({ schema, modelName }) => {
-		amplifyContext.Auth = amplifyContext.Auth || Auth;
+		amplifyContext.Auth = amplifyContext.Auth;
 		let currentUser;
 		try {
-			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
+			currentUser = Amplify.getUser();
 		} catch (e) {
 			// No current user
 		}

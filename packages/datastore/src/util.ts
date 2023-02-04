@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { produce, applyPatches, Patch } from 'immer';
@@ -31,8 +30,20 @@ import {
 	IndexesType,
 	ModelAssociation,
 } from './types';
-import { WordArray } from 'amazon-cognito-identity-js';
+import { WordArray } from './WordArray';
 import { ModelSortPredicateCreator } from './predicates';
+
+const SHORT_TO_HEX = {};
+const HEX_TO_SHORT = {};
+for (let i = 0; i < 256; i++) {
+	let encodedByte = i.toString(16).toLowerCase();
+	if (encodedByte.length === 1) {
+		encodedByte = `0${encodedByte}`;
+	}
+
+	SHORT_TO_HEX[i] = encodedByte;
+	HEX_TO_SHORT[encodedByte] = i;
+}
 
 export const ID = 'id';
 
@@ -374,10 +385,36 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	return safariCompatabilityModeResult;
 };
 
-const randomBytes = (nBytes: number): Buffer => {
-	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
-};
-const prng = () => randomBytes(1).readUInt8(0) / 0xff;
+function randomBytes(nBytes) {
+	return fromHex(new WordArray().random(nBytes).toString());
+}
+
+/**
+ * Converts a hexadecimal encoded string to a Uint8Array of bytes.
+ *
+ * @param encoded The hexadecimal encoded string
+ */
+export function fromHex(encoded) {
+	if (encoded.length % 2 !== 0) {
+		throw new Error('Hex encoded strings must have an even number length');
+	}
+
+	const out = new Uint8Array(encoded.length / 2);
+	for (let i = 0; i < encoded.length; i += 2) {
+		const encodedByte = encoded.slice(i, i + 2).toLowerCase();
+		if (encodedByte in HEX_TO_SHORT) {
+			out[i / 2] = HEX_TO_SHORT[encodedByte];
+		} else {
+			throw new Error(
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+			);
+		}
+	}
+
+	return out;
+}
+
+const prng = () => randomBytes(1)[0] / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
 

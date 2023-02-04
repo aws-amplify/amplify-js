@@ -1,4 +1,4 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { query as GraphQLQuery } from '@aws-amplify/api-graphql';
 import {
 	ConsoleLogger as Logger,
 	jitteredBackoff,
@@ -44,6 +44,21 @@ import {
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
 
+export interface GraphQLResult<T = object> {
+	data?: T;
+	errors?: Error[];
+	extensions?: {
+		[key: string]: any;
+	};
+}
+
+export declare enum GRAPHQL_AUTH_MODE {
+	API_KEY = 'API_KEY',
+	AWS_IAM = 'AWS_IAM',
+	OPENID_CONNECT = 'OPENID_CONNECT',
+	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
+}
 const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
@@ -78,7 +93,6 @@ class MutationProcessor {
 		private readonly conflictHandler: ConflictHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.amplifyContext.API = this.amplifyContext.API || API;
 		this.generateQueries();
 	}
 
@@ -321,7 +335,7 @@ class MutationProcessor {
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(tryWith)
+							await GraphQLQuery(tryWith)
 						);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
@@ -391,7 +405,7 @@ class MutationProcessor {
 
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql({
+									>await GraphQLQuery({
 										query,
 										variables: { id: variables.input.id },
 										authMode,

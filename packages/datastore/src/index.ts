@@ -1,5 +1,6 @@
 export {
-	DataStore,
+	// DataStore,
+	DataStoreConstructor,
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
@@ -31,5 +32,7 @@ export const utils = {
 	isNonModelConstructor,
 	isModelConstructor,
 };
+
+export { createSubscriptionProcessor as subscriptionsProcessor } from './sync/processors/subscription';
 
 export * from './types';

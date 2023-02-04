@@ -55,6 +55,7 @@
 	],
 	"dependencies": {
 		"@aws-amplify/api": "5.0.9",
+		"@aws-amplify/api-graphql": "3.0.9",
 		"@aws-amplify/auth": "5.1.3",
 		"@aws-amplify/core": "5.0.9",
 		"@aws-amplify/pubsub": "5.0.9",

@@ -1,5 +1,3 @@
-import { API } from '@aws-amplify/api';
-import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
 	Amplify,
@@ -958,7 +956,7 @@ const createModelClass = <T extends PersistentModel>(
 
 				if (!instanceMemos.hasOwnProperty(field)) {
 					if (getAttachment(this) === ModelAttachment.DataStore) {
-						const resultPromise = instance.query(
+						const resultPromise = this.instance.query(
 							relationship.remoteModelConstructor as PersistentModelConstructor<T>,
 							base =>
 								base.and(q => {
@@ -1256,8 +1254,8 @@ enum DataStoreState {
 
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private Auth = Auth;
-	private API = API;
+	private Auth = null;
+	private API = null;
 	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
@@ -1287,12 +1285,12 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		Auth: this.Auth,
-		API: this.API,
+		Auth: null,
+		API: null,
 		Cache: this.Cache,
 	};
 	private connectivityMonitor?: DataStoreConnectivity;
-
+	private subscriptionsProcessor?: any;
 	/**
 	 * **IMPORTANT!**
 	 *
@@ -1326,6 +1324,21 @@ class DataStore {
 	 */
 	private runningProcesses = new BackgroundProcessManager();
 
+	constructor({ subscriptionsProcessor }: { subscriptionsProcessor?: any }) {
+		if (
+			subscriptionsProcessor &&
+			typeof subscriptionsProcessor === 'function'
+		) {
+			this.subscriptionsProcessor = subscriptionsProcessor(
+				schema,
+				this.syncPredicates,
+				this.amplifyConfig,
+				this.authModeStrategy,
+				this.errorHandler,
+				this.amplifyContext
+			);
+		}
+	}
 	/**
 	 * Indicates what state DataStore is in.
 	 *
@@ -1427,7 +1440,8 @@ class DataStore {
 						this.amplifyConfig,
 						this.authModeStrategy,
 						this.amplifyContext,
-						this.connectivityMonitor
+						this.connectivityMonitor,
+						this.subscriptionsProcessor
 					);
 
 					const fullSyncIntervalInMilliseconds =
@@ -2621,7 +2635,16 @@ class DataStore {
 	}
 }
 
-const instance = new DataStore();
-Amplify.register(instance);
+const DataStoreConstructor = ({ subscriptionsProcessor }) => {
+	const dataStoreInstance = new DataStore({ subscriptionsProcessor });
+	Amplify.register(dataStoreInstance);
 
-export { DataStore as DataStoreClass, initSchema, instance as DataStore };
+	return dataStoreInstance;
+};
+
+export {
+	DataStore as DataStoreClass,
+	initSchema,
+	DataStoreConstructor,
+	// dataStoreInstance as DataStore,
+};
