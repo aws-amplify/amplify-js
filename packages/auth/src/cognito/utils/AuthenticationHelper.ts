@@ -67,7 +67,6 @@ export function toHex(bytes) {
  */
 
 function randomBytes(nBytes) {
-	console.log('getting randomBytes...');
 	return fromHex(new WordArray().random(nBytes).toString());
 }
 
