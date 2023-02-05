@@ -158,6 +158,8 @@ const getModelDefinition = (
 	// compatibility with legacy/pre-PK codegen for lazy loading to inject
 	// index fields into the model definition.
 	if (definition) {
+		// definition.cloudFields = { ...definition.fields };
+
 		const indexes =
 			schema.namespaces[namespace].relationships![modelConstructor.name]
 				.indexes;
@@ -169,19 +171,16 @@ const getModelDefinition = (
 			}
 		}
 
-		definition.fields = {
+		definition.allFields = {
 			...Object.fromEntries(
-				[...indexFields.values()].map(
-					name => [
+				[...indexFields.values()].map(name => [
+					name,
+					{
 						name,
-						{
-							name,
-							type: 'ID',
-							isArray: false,
-						},
-					],
-					[]
-				)
+						type: 'ID',
+						isArray: false,
+					},
+				])
 			),
 			...definition.fields,
 		};

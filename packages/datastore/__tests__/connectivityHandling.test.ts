@@ -31,6 +31,7 @@ describe('DataStore sync engine', () => {
 		DataStore,
 		schema,
 		connectivityMonitor,
+		LegacyJSONPost,
 		Model,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
@@ -48,6 +49,7 @@ describe('DataStore sync engine', () => {
 			DataStore,
 			schema,
 			connectivityMonitor,
+			LegacyJSONPost,
 			Model,
 			ModelWithExplicitOwner,
 			ModelWithExplicitCustomOwner,
@@ -465,6 +467,17 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('basic contains() filtering', async () => {
+			graphqlService.log = (message, query) => {
+				if (message === 'Parsed Request' && query.selection === 'syncPosts') {
+					console.log(query);
+				} else if (
+					message === 'API Request' &&
+					JSON.stringify(query).includes('syncPosts')
+				) {
+					console.log(query);
+				}
+			};
+
 			await resyncWith([
 				syncExpression(Post, post => post?.title.contains('cleaning')),
 			]);
@@ -492,6 +505,41 @@ describe('DataStore sync engine', () => {
 
 			const records = await DataStore.query(Post);
 			expect(records.length).toBe(2);
+		});
+
+		test('omits implicit FK fields in selection set', async () => {
+			// regression: old codegen + amplify V5 + sync expressions
+			// resulted in broken sync queries, where FK/connection keys were
+			// suddenly included in the sync queries, *sometimes* resulting in
+			// incorrect sync queries that would fail.
+
+			let selectionSet: string[];
+			graphqlService.log = (message, query) => {
+				if (
+					message === 'Parsed Request' &&
+					query.selection === 'syncLegacyJSONPosts'
+				) {
+					selectionSet = query.items;
+				}
+			};
+
+			await resyncWith([
+				syncExpression(LegacyJSONPost, p =>
+					p?.title.eq("whatever, it doesn't matter.")
+				),
+			]);
+
+			expect(selectionSet!).toBeDefined();
+			expect(selectionSet!).toEqual([
+				'id',
+				'title',
+				'createdAt',
+				'updatedAt',
+				'_version',
+				'_lastChangedAt',
+				'_deleted',
+				'blog',
+			]);
 		});
 	});
 });
