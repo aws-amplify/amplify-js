@@ -48,16 +48,7 @@ export type SchemaModel = {
 	name: string;
 	pluralName: string;
 	attributes?: ModelAttributes;
-
-	/**
-	 * Explicitly defined fields.
-	 */
 	fields: ModelFields;
-
-	/**
-	 * Explicitly defined fields plus implied fields. (E.g., foreign keys.)
-	 */
-	allFields?: ModelFields;
 	syncable?: boolean;
 };
 
