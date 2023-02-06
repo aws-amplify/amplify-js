@@ -3,7 +3,6 @@ import { parse } from 'graphql';
 import {
 	ModelInit,
 	Schema,
-	SchemaModel,
 	InternalSchema,
 	isModelAttributePrimaryKey,
 	__modelMeta__,
@@ -115,7 +114,7 @@ export function errorsFrom<T extends Object>(
 
 /**
  * Checks to see if a given object contains any extra, unexpected properties.
- * If any are present, it returns the list of unexpected fields.
+ * If any are present, it returns the list of unexpectd fields.
  *
  * @param data the object that MIGHT contain extra fields.
  * @param template the authorative template object.
@@ -522,10 +521,10 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
-	public log: (channel: string, ...etc: any) => void = s => undefined;
+	public logRequests = false;
+	public logAST = false;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
-	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
 	public observers = new Map<
 		string,
@@ -535,7 +534,6 @@ class FakeGraphQLService {
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
-			this.tableDefinitions.set(model.name, model);
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
@@ -553,7 +551,7 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
-		this.log('RequestAST', JSON.stringify(q, null, 2));
+		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
 
 		const operation = q.operation;
 		const name = q.name.value;
@@ -583,14 +581,17 @@ class FakeGraphQLService {
 	}
 
 	public satisfiesCondition(tableName, item, condition) {
-		this.log('checking satisfiesCondition', {
-			tableName,
-			item,
-			condition: JSON.stringify(condition),
-		});
+		if (this.logRequests)
+			console.log('checking satisfiesCondition', {
+				tableName,
+				item,
+				condition: JSON.stringify(condition),
+			});
 
 		if (!condition) {
-			this.log('checking satisfiesCondition matches all for `null` conditions');
+			console.log(
+				'checking satisfiesCondition matches all for `null` conditions'
+			);
 			return true;
 		}
 
@@ -603,12 +604,13 @@ class FakeGraphQLService {
 			ModelPredicateCreator.getPredicates(predicate)!,
 		]);
 
-		this.log('satisfiesCondition result', {
-			effectivePredicate: JSON.stringify(
-				ModelPredicateCreator.getPredicates(predicate)
-			),
-			isMatch,
-		});
+		this.logRequests &&
+			console.log('satisfiesCondition result', {
+				effectivePredicate: JSON.stringify(
+					ModelPredicateCreator.getPredicates(predicate)
+				),
+				isMatch,
+			});
 
 		return isMatch;
 	}
@@ -688,21 +690,6 @@ class FakeGraphQLService {
 		};
 	}
 
-	private makeExtraFieldInputError(tableName, operation, fields) {
-		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
-			1
-		)}`;
-		const inputName = `${properOperationName}${tableName}Input`;
-		return {
-			data: null,
-			errors: fields.map(field => ({
-				path: null,
-				locations: null,
-				message: `The variables input contains a field name '${field}' that is not defined for input object type '${inputName}'`,
-			})),
-		};
-	}
-
 	private disconnectedError() {
 		return {
 			data: {},
@@ -714,63 +701,9 @@ class FakeGraphQLService {
 		};
 	}
 
-	private identifyExtraValues(expected, actual) {
-		const extraValues: string[] = [];
-		for (const v of actual) {
-			if (!expected.includes(v)) {
-				extraValues.push(v);
-			}
-		}
-
-		return extraValues;
-	}
-
-	private validate(tableName, operation, record) {
-		// very simple validation for an observed *near*-regression from a PR right now.
-		// https://github.com/aws-amplify/amplify-js/pull/10915
-		const def = this.tableDefinitions.get(tableName)!;
-		const writeableFields = Object.keys(def.fields).filter(
-			field => !def.fields[field]?.isReadOnly
-		);
-
-		let errors: any;
-
-		switch (operation) {
-			case 'create':
-			case 'update':
-				const unexpectedFields = this.identifyExtraValues(
-					[...writeableFields, '_version'],
-					Object.keys(record)
-				);
-				if (unexpectedFields.length > 0) {
-					errors = this.makeExtraFieldInputError(
-						tableName,
-						operation,
-						unexpectedFields
-					);
-				}
-				break;
-			case 'delete':
-				break;
-			default:
-				// this is not a GraphQL error. it likely indicates our fake graphql
-				// service is broken.
-				throw new Error('Invalid operation. Should be unreachable.');
-		}
-
-		this.log('validate', {
-			tableName,
-			operation,
-			record,
-			errors,
-		});
-
-		return errors;
-	}
-
 	private populatedFields(record) {
 		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value !== undefined)
+			Object.entries(record).filter(([key, value]) => value)
 		);
 	}
 
@@ -791,7 +724,6 @@ class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
-		this.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -813,12 +745,14 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		this.log('API Request', {
-			query,
-			variables: JSON.stringify(variables, null, 2),
-			authMode,
-			authToken,
-		});
+		if (this.logRequests) {
+			console.log('API request', {
+				query,
+				variables: JSON.stringify(variables, null, 2),
+				authMode,
+				authToken,
+			});
+		}
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
@@ -827,7 +761,9 @@ class FakeGraphQLService {
 		const parsed = this.parseQuery(query);
 		const { operation, selection, table: tableName, type } = parsed;
 
-		this.log('Parsed Request', parsed);
+		if (this.logRequests) {
+			console.log('Parsed request components', parsed);
+		}
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -854,13 +790,7 @@ class FakeGraphQLService {
 			const record = variables.input;
 			if (type === 'create') {
 				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'create', record);
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (existing) {
+				if (existing) {
 					data = {
 						[selection]: null,
 					};
@@ -880,13 +810,7 @@ class FakeGraphQLService {
 				// Simulate update using the default (AUTO_MERGE) for now.
 				// NOTE: We're not doing list/set merging. :o
 				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'update', record);
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
+				if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -900,15 +824,8 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'delete', record);
-				this.log('delete looking for existing', { existing });
-
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
+				if (this.logRequests) console.log({ existing });
+				if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -941,11 +858,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
-					this.log('delete applying to table', { data });
+					if (this.logRequests) console.log({ data });
 				}
 			}
 
-			this.log('API Response', { data, errors });
+			if (this.logRequests) console.log('response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -962,12 +879,10 @@ class FakeGraphQLService {
 						},
 					},
 				};
-				this.log('API subscription message', { observerMessageName, message });
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {
-				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
 				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
 			});
@@ -1082,8 +997,7 @@ export function getDataStore({
 			'https://0.0.0.0/graphql';
 	}
 
-	const schema = testSchema();
-	const classes = initSchema(schema);
+	const classes = initSchema(testSchema());
 
 	const {
 		ModelWithBoolean,
@@ -1106,12 +1020,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
-		LegacyJSONBlog,
-		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
-		BasicModel,
-		BasicModelWritableTS,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1133,17 +1043,12 @@ export function getDataStore({
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
-		LegacyJSONBlog: PersistentModelConstructor<LegacyJSONBlog>;
-		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
-		BasicModel: PersistentModelConstructor<BasicModel>;
-		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
 	};
 
 	return {
 		DataStore,
-		schema,
 		connectivityMonitor,
 		graphqlService,
 		simulateConnect,
@@ -1168,12 +1073,8 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
-		LegacyJSONBlog,
-		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
-		BasicModel,
-		BasicModelWritableTS,
 	};
 }
 
@@ -1203,14 +1104,14 @@ export const DataStore: typeof DS = (() => {
 export declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
-	public readonly optionalField1?: string | null;
+	public readonly optionalField1?: string;
 	public readonly dateCreated: string;
-	public readonly emails?: string[] | null;
-	public readonly ips?: (string | null)[] | null;
-	public readonly metadata?: Metadata | null;
-	public readonly logins?: Login[] | null;
-	public readonly createdAt?: string | null;
-	public readonly updatedAt?: string | null;
+	public readonly emails?: string[];
+	public readonly ips?: (string | null)[];
+	public readonly metadata?: Metadata;
+	public readonly logins?: Login[];
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
 
 	constructor(init: ModelInit<Model>);
 
@@ -1392,24 +1293,6 @@ export declare class BasicModel {
 			draft: MutableModel<BasicModel>
 		) => MutableModel<BasicModel> | void
 	): BasicModel;
-}
-
-export declare class BasicModelWritableTS {
-	readonly [__modelMeta__]: {
-		identifier: OptionallyManagedIdentifier<BasicModelWritableTS, 'id'>;
-		readOnlyFields: never;
-	};
-	readonly id: string;
-	readonly body: string;
-	readonly createdAt?: string | null;
-	readonly updatedAt?: string | null;
-	constructor(init: ModelInit<BasicModelWritableTS>);
-	static copyOf(
-		source: BasicModelWritableTS,
-		mutator: (
-			draft: MutableModel<BasicModelWritableTS>
-		) => MutableModel<BasicModelWritableTS> | void
-	): BasicModelWritableTS;
 }
 
 export declare class HasOneParent {
@@ -2069,7 +1952,7 @@ export function testSchema(): Schema {
 						name: 'profileID',
 						isArray: false,
 						type: 'ID',
-						isRequired: false,
+						isRequired: true,
 						attributes: [],
 					},
 					profile: {
@@ -2394,55 +2277,6 @@ export function testSchema(): Schema {
 				},
 				syncable: true,
 				pluralName: 'BasicModels',
-				attributes: [
-					{
-						type: 'model',
-						properties: {},
-					},
-					{
-						type: 'key',
-						properties: {
-							fields: ['id'],
-						},
-					},
-				],
-			},
-			BasicModelWritableTS: {
-				name: 'BasicModelWritableTS',
-				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-						attributes: [],
-					},
-					body: {
-						name: 'body',
-						isArray: false,
-						type: 'String',
-						isRequired: true,
-						attributes: [],
-					},
-					createdAt: {
-						name: 'createdAt',
-						isArray: false,
-						type: 'AWSDateTime',
-						isRequired: false,
-						attributes: [],
-						isReadOnly: false,
-					},
-					updatedAt: {
-						name: 'updatedAt',
-						isArray: false,
-						type: 'AWSDateTime',
-						isRequired: false,
-						attributes: [],
-						isReadOnly: false,
-					},
-				},
-				syncable: true,
-				pluralName: 'BasicModelWritableTimestampss',
 				attributes: [
 					{
 						type: 'model',
