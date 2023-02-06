@@ -508,10 +508,9 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('omits implicit FK fields in selection set', async () => {
-			// regression: old codegen + amplify V5 + sync expressions
-			// resulted in broken sync queries, where FK/connection keys were
-			// suddenly included in the sync queries, *sometimes* resulting in
-			// incorrect sync queries that would fail.
+			// old CLI + amplify V5 + sync expressions resulted in broken sync queries,
+			// where FK/connection keys were included in the sync queries, *sometimes*
+			// resulting in incorrect sync queries.
 
 			let selectionSet: string[];
 			graphqlService.log = (message, query) => {
