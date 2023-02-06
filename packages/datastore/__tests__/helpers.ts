@@ -703,6 +703,24 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeOwnerFieldNullInputError(tableName, operation) {
+		// Response from AppSync console on non-existent model.
+		return {
+			path: [operation],
+			data: null,
+			errorType: 'Unauthorized',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: `Not Authorized to access ${operation} on type ${tableName}`,
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -712,6 +730,15 @@ class FakeGraphQLService {
 				},
 			],
 		};
+	}
+
+	private ownerField(tableName) {
+		const def = this.tableDefinitions.get(tableName)!;
+		const auth = def.attributes?.find(a => a.type === 'auth');
+		const ownerField = auth?.properties?.rules.find(
+			rule => rule.ownerField
+		)?.ownerField;
+		return ownerField || 'owner';
 	}
 
 	private identifyExtraValues(expected, actual) {
@@ -733,7 +760,7 @@ class FakeGraphQLService {
 			field => !def.fields[field]?.isReadOnly
 		);
 
-		let errors: any;
+		let error: any;
 
 		switch (operation) {
 			case 'create':
@@ -743,11 +770,14 @@ class FakeGraphQLService {
 					Object.keys(record)
 				);
 				if (unexpectedFields.length > 0) {
-					errors = this.makeExtraFieldInputError(
+					error = this.makeExtraFieldInputError(
 						tableName,
 						operation,
 						unexpectedFields
 					);
+				}
+				if (record[this.ownerField(tableName)] === null) {
+					error = this.makeOwnerFieldNullInputError(tableName, operation);
 				}
 				break;
 			case 'delete':
@@ -762,10 +792,10 @@ class FakeGraphQLService {
 			tableName,
 			operation,
 			record,
-			errors,
+			error,
 		});
 
-		return errors;
+		return error;
 	}
 
 	private populatedFields(record) {
@@ -1112,6 +1142,7 @@ export function getDataStore({
 		CompositePKChild,
 		BasicModel,
 		BasicModelWritableTS,
+		ModelWithExplicitOwner,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1139,6 +1170,7 @@ export function getDataStore({
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 		BasicModel: PersistentModelConstructor<BasicModel>;
 		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
+		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
 	};
 
 	return {
@@ -1174,6 +1206,7 @@ export function getDataStore({
 		CompositePKChild,
 		BasicModel,
 		BasicModelWritableTS,
+		ModelWithExplicitOwner,
 	};
 }
 
@@ -1755,6 +1788,25 @@ export declare class ModelWithBoolean {
 		src: ModelWithBoolean,
 		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
 	): ModelWithBoolean;
+}
+
+export declare class ModelWithExplicitOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithExplicitOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly owner?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithExplicitOwner>);
+	static copyOf(
+		source: ModelWithExplicitOwner,
+		mutator: (
+			draft: MutableModel<ModelWithExplicitOwner>
+		) => MutableModel<ModelWithExplicitOwner> | void
+	): ModelWithExplicitOwner;
 }
 
 export function testSchema(): Schema {
@@ -3632,6 +3684,70 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+				],
+			},
+			ModelWithExplicitOwner: {
+				name: 'ModelWithExplicitOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithExplicitOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
 					},
 				],
 			},

@@ -9,6 +9,22 @@ import {
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
 
+/**
+ * Surfaces errors sooner and outputs them more clearly if/when
+ * a test begins to fail.
+ */
+async function waitForEmptyOutboxOrError(service) {
+	const pendingError = new Promise((resolve, reject) => {
+		service.log = (channel, message) => {
+			if (channel.includes('API Response')) {
+				if (message.errors?.length > 0) reject(message);
+			}
+		};
+	});
+
+	return await Promise.race([waitForEmptyOutbox(), pendingError]);
+}
+
 describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
@@ -16,6 +32,7 @@ describe('DataStore sync engine', () => {
 		schema,
 		connectivityMonitor,
 		Model,
+		ModelWithExplicitOwner,
 		BasicModel,
 		BasicModelWritableTS,
 		Post,
@@ -31,6 +48,7 @@ describe('DataStore sync engine', () => {
 			schema,
 			connectivityMonitor,
 			Model,
+			ModelWithExplicitOwner,
 			BasicModel,
 			BasicModelWritableTS,
 			Post,
@@ -77,6 +95,23 @@ describe('DataStore sync engine', () => {
 
 			const savedItem = table.get(JSON.stringify([m.id])) as any;
 			expect(savedItem.body).toEqual(m.body);
+		});
+
+		test('omits null owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitOwner({
+					title: 'very clever title',
+					owner: null,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
 		});
 
 		test('includes timestamp fields in mutation events when NOT readonly', async () => {
