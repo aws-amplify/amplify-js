@@ -64,7 +64,7 @@ export class MediaAutoTrack {
 				this.listeners.push(callback);
 
 				if (this.loaded) {
-					setTimeout(function() {
+					setTimeout(function () {
 						_this.done();
 					});
 					return;
@@ -76,7 +76,7 @@ export class MediaAutoTrack {
 
 				this.loading = true;
 
-				window['onYouTubeIframeAPIReady'] = function() {
+				window['onYouTubeIframeAPIReady'] = function () {
 					_this.loaded = true;
 					_this.done();
 				};
@@ -99,12 +99,12 @@ export class MediaAutoTrack {
 
 	private _iframeMediaTracker(): void {
 		const that = this;
-		setInterval(function() {
+		setInterval(function () {
 			if (that._started) {
 				that.recordEvent(MEDIA_TYPE.IFRAME, EVENT_TYPE.TIME_WATCHED);
 			}
 		}, 3 * 1000);
-		this._youTubeIframeLoader.load(function(YT) {
+		this._youTubeIframeLoader.load(function (YT) {
 			that._iframePlayer = new YT.Player(that._mediaElement.id, {
 				events: { onStateChange: that._onPlayerStateChange.bind(that) },
 			});
@@ -125,7 +125,7 @@ export class MediaAutoTrack {
 
 	private _html5MediaTracker(): void {
 		const that = this;
-		setInterval(function() {
+		setInterval(function () {
 			if (that._started) {
 				that.recordEvent(MEDIA_TYPE.VIDEO, EVENT_TYPE.TIME_WATCHED);
 			}
@@ -173,20 +173,18 @@ export class MediaAutoTrack {
 		const newParams = Object.assign({}, this._params);
 		const { eventData } = newParams;
 		eventData.eventType = eventType;
+		let currentPlayTime;
 		if (mediaType === MEDIA_TYPE.VIDEO) {
-			eventData.properties.timeStamp = this._mediaElement.currentTime;
+			currentPlayTime = this._mediaElement.currentTime;
 			eventData.properties.duration = this._mediaElement.duration;
 		} else {
-			eventData.properties.timeStamp = this._financial(
-				this._iframePlayer.getCurrentTime()
-			);
+			currentPlayTime = this._financial(this._iframePlayer.getCurrentTime());
 			eventData.properties.duration = this._financial(
 				this._iframePlayer.getDuration()
 			);
 		}
 		const percentage =
-			parseFloat(eventData.properties.timeStamp) /
-			parseFloat(eventData.properties.duration);
+			parseFloat(currentPlayTime) / parseFloat(eventData.properties.duration);
 		eventData.properties.eventValue = Number(percentage.toFixed(4));
 		delete eventData.properties.domElementId;
 		this._provider.putToBuffer(newParams);
