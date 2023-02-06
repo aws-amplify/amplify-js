@@ -2285,20 +2285,20 @@ workflows:
       - getting-started-smoke-test/rn-ios:
           name: RN iOS - latest
           framework: rn_ios
-          main-file-path: ./App.js
+          main-file-path: ./App.tsx
       - getting-started-smoke-test/rn-android:
           name: RN Android - latest
           framework: rn_android
-          main-file-path: ./App.js
+          main-file-path: ./App.tsx
       - getting-started-smoke-test/rn-ios:
           name: RN iOS - next
           framework: rn_ios
-          main-file-path: ./App.js
+          main-file-path: ./App.tsx
           tag: next
       - getting-started-smoke-test/rn-android:
           name: RN Android - next
           framework: rn_android
-          main-file-path: ./App.js
+          main-file-path: ./App.tsx
           tag: next
       # Expo
       # - getting-started-smoke-test/expo:
@@ -2447,7 +2447,7 @@ orbs:
             default: latest
           xcode-version:
             type: string
-            default: 13.4.0
+            default: 13.4.1
           ios-device:
             type: string
             default: iPhone 13
@@ -2478,7 +2478,9 @@ orbs:
 
           - run-with-retry:
               label: Pod Install
-              command: npx pod-install
+              command: |
+                brew install ios-deploy
+                npx pod-install
           - run:
               name: Call Amplify library in code
               command: |
