@@ -2731,13 +2731,16 @@ describe('DataStore tests', () => {
 			});
 
 			test('copyOf() setting optional field to null', () => {
+				const emailsVal = ['test@test.test'];
 				const original = new Model({
 					field1: 'someField',
 					dateCreated: new Date().toISOString(),
 					optionalField1: 'defined value',
+					emails: emailsVal,
 				});
 				const copied = Model.copyOf(original, d => (d.optionalField1 = null));
 				expect(copied.optionalField1).toBe(null);
+				expect(copied.emails).toEqual(emailsVal);
 			});
 
 			test('copyOf() setting optional field to undefined', () => {
