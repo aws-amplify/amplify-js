@@ -467,17 +467,6 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('basic contains() filtering', async () => {
-			graphqlService.log = (message, query) => {
-				if (message === 'Parsed Request' && query.selection === 'syncPosts') {
-					console.log(query);
-				} else if (
-					message === 'API Request' &&
-					JSON.stringify(query).includes('syncPosts')
-				) {
-					console.log(query);
-				}
-			};
-
 			await resyncWith([
 				syncExpression(Post, post => post?.title.contains('cleaning')),
 			]);
