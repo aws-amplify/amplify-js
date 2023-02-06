@@ -24,7 +24,8 @@
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "npm run clean && npm run generate-version && npm run build:esm && npm run build:cjs",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi",
-		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 76.41"
