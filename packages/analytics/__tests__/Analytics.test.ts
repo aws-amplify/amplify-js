@@ -1,33 +1,17 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 jest.mock('../src/vendor/dom-utils', () => {
 	return {
 		delegate: jest.fn(),
 	};
 });
 
-import {
-	ClientDevice,
-	Parser,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
-import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
+import { ClientDevice, parseAWSExports, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
-import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
+import { AWSPinpointProvider as AWSAnalyticsProvider } from '../src/Providers/AWSPinpointProvider';
 
-const options: AnalyticsOptions = {
-	appId: 'appId',
-	platform: 'platform',
-	clientId: 'clientId',
-	region: 'region',
-};
-
-const credentials = {
-	accessKeyId: 'accessKeyId',
-	sessionToken: 'sessionToken',
-	secretAccessKey: 'secretAccessKey',
-	identityId: 'identityId',
-	authenticated: true,
-};
+jest.mock('@aws-amplify/core');
+const mockHubDispatch = Hub.dispatch as jest.Mock;
 
 jest.useFakeTimers();
 
@@ -38,26 +22,26 @@ const record_spyon = jest
 	});
 
 describe('Analytics test', () => {
+	beforeEach(() => {
+		(parseAWSExports as jest.Mock).mockReturnValueOnce({
+			Analytics: {
+				AWSPinpoint: {
+					appId: 'appId',
+				},
+			},
+		});
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('configure test', () => {
 		test('happy case with default parser', () => {
 			const analytics = new Analytics();
-			const spyon = jest
-				.spyOn(ClientDevice, 'clientInfo')
-				.mockImplementationOnce(() => {
-					return 'clientInfo';
-				});
-			const spyon2 = jest
-				.spyOn(Parser, 'parseMobilehubConfig')
-				.mockImplementationOnce(() => {
-					return {
-						Analytics: {
-							AWSPinpoint: {
-								appId: 'appId',
-							},
-						},
-					};
-				});
-			const spyon3 = jest
+			ClientDevice.clientInfo = jest.fn().mockReturnValueOnce('clientInfo');
+
+			const mockAWSAnalyticsProviderConfigure = jest
 				.spyOn(AWSAnalyticsProvider.prototype, 'configure')
 				.mockImplementationOnce(() => {
 					return;
@@ -69,9 +53,7 @@ describe('Analytics test', () => {
 				autoSessionRecord: true,
 			});
 
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
+			mockAWSAnalyticsProviderConfigure.mockClear();
 		});
 	});
 
@@ -83,6 +65,16 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.startSession();
+			expect(mockHubDispatch).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: { name: '_session.start' },
+					message: 'Recording Analytics session start event',
+				},
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});
@@ -95,6 +87,16 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.stopSession();
+			expect(mockHubDispatch).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: { name: '_session.stop' },
+					message: 'Recording Analytics session stop event',
+				},
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});
@@ -105,16 +107,23 @@ describe('Analytics test', () => {
 			const provider = new AWSAnalyticsProvider();
 			analytics.addPluggable(provider);
 			analytics.configure({ mock: 'value' });
-
-			await analytics.record({
+			const event = {
 				name: 'event',
-				attributes: {
-					key: 'value',
+				attributes: { key: 'value' },
+				metrics: { metric: 123 },
+			};
+
+			await analytics.record(event);
+			expect(mockHubDispatch).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: event,
+					message: 'Recording Analytics event',
 				},
-				metrics: {
-					metric: 123,
-				},
-			});
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});

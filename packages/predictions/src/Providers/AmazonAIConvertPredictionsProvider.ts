@@ -254,9 +254,10 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
-					const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-						message
-					);
+					const decodedMessage =
+						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
+							message
+						);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
@@ -427,8 +428,3 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return signedUrl;
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonAIConvertPredictionsProvider;

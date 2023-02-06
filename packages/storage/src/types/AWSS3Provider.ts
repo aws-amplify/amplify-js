@@ -95,18 +95,20 @@ export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 };
 
-export type S3ProviderListOutputWithToken = {
-	contents: S3ProviderListOutputItem[];
-	nextToken: string;
+export type S3ProviderListOutput = {
+	results: S3ProviderListOutputItem[];
+	nextToken?: string;
+	hasNextToken: boolean;
 };
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
-	maxKeys?: number | 'ALL';
+	pageSize?: number | 'ALL';
 	provider?: 'AWSS3';
 	identityId?: string;
+	nextToken?: string;
 };
 
 export type S3ClientOptions = StorageOptions & {
@@ -119,8 +121,6 @@ export interface S3ProviderListOutputItem {
 	lastModified: ListObjectsCommandOutputContent['LastModified'];
 	size: ListObjectsCommandOutputContent['Size'];
 }
-
-export type S3ProviderListOutput = S3ProviderListOutputItem[];
 
 export interface S3CopyTarget {
 	key: string;

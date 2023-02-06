@@ -1,6 +1,6 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
+import { Cache } from '@aws-amplify/cache';
 import {
 	ConsoleLogger as Logger,
 	Hub,
@@ -59,7 +59,7 @@ class SubscriptionProcessor {
 	>();
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
-	private dataObserver: ZenObservable.Observer<any>;
+	private dataObserver!: ZenObservable.Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
 
@@ -105,7 +105,7 @@ class SubscriptionProcessor {
 			model,
 			transformerMutationType,
 			isOwner,
-			ownerField
+			ownerField!
 		);
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
@@ -128,7 +128,7 @@ class SubscriptionProcessor {
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
-			return null;
+			return null!;
 		}
 
 		// Group auth should take precedence over owner auth, so we are checking
@@ -192,8 +192,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Owner auth needs additional values to be returned in order to create the subscription with
@@ -219,8 +219,8 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (ownerAuthInfo) {
-			return ownerAuthInfo;
+		if (ownerAuthInfo!) {
+			return ownerAuthInfo!;
 		}
 
 		// Fallback: return authMode or default auth type
@@ -244,6 +244,9 @@ class SubscriptionProcessor {
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
+		this.runningProcesses =
+			this.runningProcesses || new BackgroundProcessManager();
+
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
 
@@ -388,7 +391,7 @@ class SubscriptionProcessor {
 												return;
 											}
 
-											variables[ownerField] = ownerValue;
+											variables[ownerField!] = ownerValue;
 										}
 
 										logger.debug(
@@ -443,10 +446,11 @@ class SubscriptionProcessor {
 
 														const predicatesGroup =
 															ModelPredicateCreator.getPredicates(
-																this.syncPredicates.get(modelDefinition),
+																this.syncPredicates.get(modelDefinition)!,
 																false
 															);
 
+														// @ts-ignore
 														const { [opName]: record } = data;
 
 														// checking incoming subscription against syncPredicate.
@@ -456,7 +460,7 @@ class SubscriptionProcessor {
 														if (
 															this.passesPredicateValidation(
 																record,
-																predicatesGroup
+																predicatesGroup!
 															)
 														) {
 															this.pushToBuffer(
@@ -529,14 +533,14 @@ class SubscriptionProcessor {
 															await this.errorHandler({
 																recoverySuggestion:
 																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-																localModel: null,
+																localModel: null!,
 																message,
 																model: modelDefinition.name,
 																operation,
 																errorType:
 																	getSubscriptionErrorType(subscriptionError),
 																process: ProcessName.subscribe,
-																remoteModel: null,
+																remoteModel: null!,
 																cause: subscriptionError,
 															});
 														} catch (e) {
@@ -617,7 +621,7 @@ class SubscriptionProcessor {
 			this.drainBuffer();
 
 			return this.runningProcesses.addCleaner(async () => {
-				this.dataObserver = null;
+				this.dataObserver = null!;
 			});
 		});
 
@@ -652,7 +656,7 @@ class SubscriptionProcessor {
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next(data));
+			this.buffer.forEach(data => this.dataObserver.next!(data));
 			this.buffer = [];
 		}
 	}

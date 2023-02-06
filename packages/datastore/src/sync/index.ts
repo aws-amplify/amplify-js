@@ -32,7 +32,7 @@ import {
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
 
-import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
+import { getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -122,7 +122,7 @@ export class SyncEngine {
 	public getModelSyncedStatus(
 		modelConstructor: PersistentModelConstructor<any>
 	): boolean {
-		return this.modelSyncedStatus.get(modelConstructor);
+		return this.modelSyncedStatus.get(modelConstructor)!;
 	}
 
 	constructor(
@@ -235,14 +235,8 @@ export class SyncEngine {
 										);
 									} else {
 										//#region GraphQL Subscriptions
-										[
-											// const ctlObservable: Observable<CONTROL_MSG>
-											ctlSubsObservable,
-											// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
-											// id: string;
-											// } & Record<string, any>>]>
-											dataSubsObservable,
-										] = this.subscriptionsProcessor.start();
+										[ctlSubsObservable, dataSubsObservable] =
+											this.subscriptionsProcessor.start();
 
 										try {
 											await new Promise((resolve, reject) => {
@@ -362,7 +356,7 @@ export class SyncEngine {
 									// TODO: extract to function
 									if (!isNode) {
 										subscriptions.push(
-											dataSubsObservable.subscribe(
+											dataSubsObservable!.subscribe(
 												([_transformerMutationType, modelDefinition, item]) =>
 													this.runningProcesses.add(async () => {
 														const modelConstructor = this.userModelClasses[
@@ -421,11 +415,11 @@ export class SyncEngine {
 								] as PersistentModelConstructor<MutationEvent>;
 								const modelDefinition = this.getModelDefinition(model);
 								const graphQLCondition = predicateToGraphQLCondition(
-									condition,
+									condition!,
 									modelDefinition
 								);
 								const mutationEvent = createMutationInstanceFromModelOperation(
-									namespace.relationships,
+									namespace.relationships!,
 									this.getModelDefinition(model),
 									opType,
 									model,
@@ -500,7 +494,7 @@ export class SyncEngine {
 					fullSyncInterval,
 					lastSyncPredicate,
 				}) => {
-					const nextFullSync = lastFullSync + fullSyncInterval;
+					const nextFullSync = lastFullSync! + fullSyncInterval;
 					const syncFrom =
 						!lastFullSync || nextFullSync < currentTimeStamp
 							? 0 // perform full sync if expired
@@ -508,7 +502,7 @@ export class SyncEngine {
 
 					return [
 						this.schema.namespaces[namespace].models[model],
-						[namespace, syncFrom],
+						[namespace, syncFrom!],
 					];
 				}
 			)
@@ -631,7 +625,7 @@ export class SyncEngine {
 												))
 											);
 
-											const counts = count.get(modelConstructor);
+											const counts = count.get(modelConstructor)!;
 
 											opTypeCount.forEach(([, opType]) => {
 												switch (opType) {
@@ -645,7 +639,7 @@ export class SyncEngine {
 														counts.deleted++;
 														break;
 													default:
-														exhaustiveCheck(opType);
+														throw new Error(`Invalid opType ${opType}`);
 												}
 											});
 										});
@@ -665,10 +659,10 @@ export class SyncEngine {
 
 											newestFullSyncStartedAt =
 												newestFullSyncStartedAt === undefined
-													? lastFullSync
+													? lastFullSync!
 													: Math.max(
 															newestFullSyncStartedAt,
-															isFullSync ? startedAt : lastFullSync
+															isFullSync ? startedAt : lastFullSync!
 													  );
 
 											modelMetadata = (
@@ -728,9 +722,9 @@ export class SyncEngine {
 						});
 
 						const msNextFullSync =
-							newestFullSyncStartedAt +
-							theInterval -
-							(newestStartedAt + duration);
+							newestFullSyncStartedAt! +
+							theInterval! -
+							(newestStartedAt! + duration!);
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
@@ -843,7 +837,7 @@ export class SyncEngine {
 		const promises = models.map(async ([namespace, model]) => {
 			const modelMetadata = await this.getModelMetadata(namespace, model.name);
 			const syncPredicate = ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(model),
+				this.syncPredicates.get(model)!,
 				false
 			);
 			const lastSyncPredicate = syncPredicate
@@ -855,9 +849,9 @@ export class SyncEngine {
 					this.modelInstanceCreator(ModelMetadataConstructor, {
 						model: model.name,
 						namespace,
-						lastSync: null,
+						lastSync: null!,
 						fullSyncInterval,
-						lastFullSync: null,
+						lastFullSync: null!,
 						lastSyncPredicate,
 					}),
 					undefined,
@@ -875,9 +869,9 @@ export class SyncEngine {
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
 						if (syncPredicateUpdated) {
-							draft.lastSync = null;
-							draft.lastFullSync = null;
-							draft.lastSyncPredicate = lastSyncPredicate;
+							draft.lastSync = null!;
+							draft.lastFullSync = null!;
+							(draft.lastSyncPredicate as any) = lastSyncPredicate;
 						}
 					})
 				);

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cache",
-  "version": "4.0.62",
+  "version": "5.0.12",
   "description": "Cache category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,29 +9,28 @@
     "./lib/index": "./lib-esm/reactnative.js"
   },
   "sideEffects": [
-    "./src/reactnative.ts",
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib/reactnative.js",
-    "./lib-esm/index.js",
-    "./lib-esm/reactnative.js",
-    "./dist/aws-amplify-cache.js",
-    "./dist/aws-amplify-cache.min.js"
+    "./lib/BrowserStorageCache.js",
+    "./lib/AsyncStorageCache.js",
+    "./lib-esm/BrowserStorageCache.js",
+    "./lib-esm/AsyncStorageCache.js"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "npm run clean:size && rimraf lib-esm lib dist",
+    "clean:size": "rimraf dual-publish-tmp tmp*",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.74"
   },
   "repository": {
     "type": "git",
@@ -43,9 +42,29 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.7.11"
+    "@aws-amplify/core": "5.0.12",
+    "tslib": "^1.8.0"
   },
+  "size-limit": [
+    {
+      "name": "Cache (default browser storage)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Cache }",
+      "limit": "4 kB"
+    },
+    {
+      "name": "Cache (in-memory)",
+      "path": "./lib-esm/index.js",
+      "import": "{ InMemoryCache }",
+      "limit": "3.75 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

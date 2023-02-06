@@ -1,4 +1,4 @@
-import API from '@aws-amplify/api';
+import { API } from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 import { DataStore } from '@aws-amplify/datastore';

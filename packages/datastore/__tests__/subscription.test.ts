@@ -2,7 +2,7 @@ import Observable from 'zen-observable-ts';
 let mockObservable = new Observable(() => {});
 const mockGraphQL = jest.fn(() => mockObservable);
 
-import Amplify from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import {
@@ -23,9 +23,15 @@ import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
+	const actualAPIModule = jest.requireActual('@aws-amplify/api');
+	const actualAPIInstance = actualAPIModule.API;
+
 	return {
-		...jest.requireActual('@aws-amplify/api'),
-		graphql: mockGraphQL,
+		...actualAPIModule,
+		API: {
+			...actualAPIInstance,
+			graphql: mockGraphQL,
+		},
 	};
 });
 

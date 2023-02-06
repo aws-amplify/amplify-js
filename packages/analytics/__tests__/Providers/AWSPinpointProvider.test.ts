@@ -1,5 +1,5 @@
 import { Credentials, ClientDevice } from '@aws-amplify/core';
-import AnalyticsProvider from '../../src/Providers/AWSPinpointProvider';
+import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 import {
 	PinpointClient,
 	UpdateEndpointCommand,

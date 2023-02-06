@@ -49,15 +49,20 @@ export default class Client {
 	requestWithRetry(operation, params, callback) {
 		const MAX_DELAY_IN_MILLIS = 5 * 1000;
 
-		jitteredExponentialRetry((p) => new Promise((res, rej) => {
-			this.request(operation, p, (error, result) => {
-				if (error) {
-					rej(error);
-				} else {
-					res(result);
-				}
-			});
-		}), [params], MAX_DELAY_IN_MILLIS)
+		jitteredExponentialRetry(
+			p =>
+				new Promise((res, rej) => {
+					this.request(operation, p, (error, result) => {
+						if (error) {
+							rej(error);
+						} else {
+							res(result);
+						}
+					});
+				}),
+			[params],
+			MAX_DELAY_IN_MILLIS
+		)
 			.then(result => callback(null, result))
 			.catch(error => callback(error));
 	}
@@ -75,13 +80,13 @@ export default class Client {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
 			'X-Amz-User-Agent': UserAgent.prototype.userAgent,
+			'Cache-Control': 'no-store',
 		};
 
 		const options = Object.assign({}, this.fetchOptions, {
 			headers,
 			method: 'POST',
 			mode: 'cors',
-			cache: 'no-cache',
 			body: JSON.stringify(params),
 		});
 
@@ -112,9 +117,9 @@ export default class Client {
 				// Taken from aws-sdk-js/lib/protocol/json.js
 				// eslint-disable-next-line no-underscore-dangle
 				const code = (data.__type || data.code).split('#').pop();
-				const error = new Error(data.message || data.Message || null)
-				error.name = code
-				error.code = code
+				const error = new Error(data.message || data.Message || null);
+				error.name = code;
+				error.code = code;
 				return callback(error);
 			})
 			.catch(err => {
@@ -126,17 +131,19 @@ export default class Client {
 				) {
 					try {
 						const code = response.headers.get('x-amzn-errortype').split(':')[0];
-						const error = new Error(response.status ? response.status.toString() : null)
-						error.code = code
-						error.name = code
-						error.statusCode = response.status
+						const error = new Error(
+							response.status ? response.status.toString() : null
+						);
+						error.code = code;
+						error.name = code;
+						error.statusCode = response.status;
 						return callback(error);
 					} catch (ex) {
 						return callback(err);
 					}
 					// otherwise check if error is Network error
 				} else if (err instanceof Error && err.message === 'Network error') {
-					err.code = 'NetworkError'
+					err.code = 'NetworkError';
 				}
 				return callback(err);
 			});
@@ -146,7 +153,7 @@ export default class Client {
 const logger = {
 	debug: () => {
 		// Intentionally blank. This package doesn't have logging
-	}
+	},
 };
 
 /**
@@ -159,7 +166,7 @@ class NonRetryableError extends Error {
 	}
 }
 
-const isNonRetryableError = (obj) => {
+const isNonRetryableError = obj => {
 	const key = 'nonRetryable';
 	return obj && obj[key];
 };
@@ -169,9 +176,13 @@ function retry(functionToRetry, args, delayFn, attempt = 1) {
 		throw Error('functionToRetry must be a function');
 	}
 
-	logger.debug(`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(args)}`);
+	logger.debug(
+		`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(
+			args
+		)}`
+	);
 
-	return functionToRetry(...args).catch((err) => {
+	return functionToRetry(...args).catch(err => {
 		logger.debug(`error on ${functionToRetry.name}`, err);
 
 		if (isNonRetryableError(err)) {
@@ -184,12 +195,13 @@ function retry(functionToRetry, args, delayFn, attempt = 1) {
 		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
 
 		if (retryIn !== false) {
-			return new Promise(res => setTimeout(res, retryIn))
-					.then(() => retry(functionToRetry, args, delayFn, attempt + 1))
+			return new Promise(res => setTimeout(res, retryIn)).then(() =>
+				retry(functionToRetry, args, delayFn, attempt + 1)
+			);
 		} else {
 			throw err;
 		}
-	})
+	});
 }
 
 function jitteredBackoff(maxDelayMs) {
@@ -203,6 +215,10 @@ function jitteredBackoff(maxDelayMs) {
 }
 
 const MAX_DELAY_MS = 5 * 60 * 1000;
-function jitteredExponentialRetry(functionToRetry, args, maxDelayMs = MAX_DELAY_MS) {
-	return retry(functionToRetry, args, jitteredBackoff(maxDelayMs))
-};
+function jitteredExponentialRetry(
+	functionToRetry,
+	args,
+	maxDelayMs = MAX_DELAY_MS
+) {
+	return retry(functionToRetry, args, jitteredBackoff(maxDelayMs));
+}
