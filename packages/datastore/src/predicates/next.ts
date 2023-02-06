@@ -26,7 +26,9 @@ type GroupOperator = 'and' | 'or' | 'not';
 type UntypedCondition = {
 	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
 	matches: (item: Record<string, any>) => Promise<boolean>;
-	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
+	copy(
+		extract?: GroupCondition
+	): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
 };
 
@@ -151,13 +153,29 @@ export class FieldCondition {
 	 * @param extract Not used. Present only to fulfill the `UntypedCondition` interface.
 	 * @returns A new, identitical `FieldCondition`.
 	 */
-	copy(extract: GroupCondition): [FieldCondition, GroupCondition | undefined] {
+	copy(extract?: GroupCondition): [FieldCondition, GroupCondition | undefined] {
 		return [
 			new FieldCondition(this.field, this.operator, [...this.operands]),
 			undefined,
 		];
 	}
 
+	/**
+	 * Produces a tree structure similar to a graphql condition. The returned
+	 * structure is "dumb" and is intended for another query/condition
+	 * generation mechanism to interpret, such as the cloud or storage query
+	 * builders.
+	 *
+	 * E.g.,
+	 *
+	 * ```json
+	 * {
+	 * 	"name": {
+	 * 		"eq": "robert"
+	 * 	}
+	 * }
+	 * ```
+	 */
 	toAST() {
 		return {
 			[this.field]: {
@@ -167,6 +185,37 @@ export class FieldCondition {
 						: this.operands[0],
 			},
 		};
+	}
+
+	/**
+	 * Produces a new condition (`FieldCondition` or `GroupCondition`) that
+	 * matches the opposite of this condition.
+	 *
+	 * Intended to be used when applying De Morgan's Law, which can be done to
+	 * produce more efficient queries against the storage layer if a negation
+	 * appears in the query tree.
+	 *
+	 * For example:
+	 *
+	 * 1. `name.eq('robert')` becomes `name.ne('robert')`
+	 * 2. `price.between(100, 200)` becomes `m => m.or(m => [m.price.lt(100), m.price.gt(200)])`
+	 *
+	 * @param model The model meta to use when construction a new `GroupCondition`
+	 * for cases where the negation requires multiple `FieldCondition`'s.
+	 */
+	negated(model: ModelMeta<any>) {
+		if (this.operator === 'between') {
+			return new GroupCondition(model, undefined, undefined, 'or', [
+				new FieldCondition(this.field, 'lt', [this.operands[0]]),
+				new FieldCondition(this.field, 'gt', [this.operands[1]]),
+			]);
+		} else {
+			return new FieldCondition(
+				this.field,
+				negations[this.operator],
+				this.operands
+			);
+		}
 	}
 
 	/**
@@ -338,7 +387,7 @@ export class GroupCondition {
 	 * @param extract A node of interest. Its copy will *also* be returned if the node exists.
 	 * @returns [The full copy, the copy of `extract` | undefined]
 	 */
-	copy(extract: GroupCondition): [GroupCondition, GroupCondition | undefined] {
+	copy(extract?: GroupCondition): [GroupCondition, GroupCondition | undefined] {
 		const copied = new GroupCondition(
 			this.model,
 			this.field,
@@ -357,6 +406,33 @@ export class GroupCondition {
 		});
 
 		return [copied, extractedCopy];
+	}
+
+	/**
+	 * Creates a new `GroupCondition` that contains only the local field conditions,
+	 * omitting related model conditions. That resulting `GroupCondition` can be
+	 * used to produce predicates that are compatible with the storage adapters and
+	 * Cloud storage.
+	 *
+	 * @param negate Whether the condition tree should be negated according
+	 * to De Morgan's law.
+	 */
+	withFieldConditionsOnly(negate: boolean) {
+		const negateChildren = negate !== (this.operator === 'not');
+		return new GroupCondition(
+			this.model,
+			undefined,
+			undefined,
+			(negate ? negations[this.operator] : this.operator) as
+				| 'or'
+				| 'and'
+				| 'not',
+			this.operands
+				.filter(o => o instanceof FieldCondition)
+				.map(o =>
+					negateChildren ? (o as FieldCondition).negated(this.model) : o
+				)
+		);
 	}
 
 	/**
@@ -535,7 +611,6 @@ export class GroupCondition {
 						}
 						allJoinConditions.push({ and: relativeConditions });
 					}
-
 					const predicate = FlatModelPredicateCreator.createFromAST(
 						this.model.schema,
 						{
@@ -558,17 +633,9 @@ export class GroupCondition {
 		// if conditions is empty at this point, child predicates found no matches.
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
-			const predicate = FlatModelPredicateCreator.createFromExisting(
-				this.model.schema,
-				p =>
-					p[operator](c =>
-						applyConditionsToV1Predicate(c, conditions, negateChildren)
-					)
-			);
-
-			resultGroups.push(
-				await storage.query(this.model.builder, predicate as any)
-			);
+			const predicate =
+				this.withFieldConditionsOnly(negateChildren).toStoragePredicate();
+			resultGroups.push(await storage.query(this.model.builder, predicate));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
@@ -836,7 +903,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
 			get: () => {
-				const def = ModelType.schema.fields[fieldName];
+				const def = ModelType.schema.fields![fieldName];
 
 				if (!def.association) {
 					// we're looking at a value field. we need to return a
@@ -856,10 +923,16 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// the same link is being used elsewhere by the customer.
 								const { query, newTail } = copyLink();
 
+								// normalize operands. if any of the values are `undefiend`, use
+								// `null` instead, because that's what will be stored cross-platform.
+								const normalizedOperands = operands.map(o =>
+									o === undefined ? null : o
+								);
+
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
 								newTail?.operands.push(
-									new FieldCondition(fieldName, operator, operands)
+									new FieldCondition(fieldName, operator, normalizedOperands)
 								);
 
 								// A `FinalModelPredicate`.

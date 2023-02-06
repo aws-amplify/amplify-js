@@ -21,7 +21,8 @@
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "node ./build es6 --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
@@ -67,13 +68,13 @@
 			"name": "Predictions (Convert provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "60 kB"
+			"limit": "60.5 kB"
 		},
 		{
 			"name": "Predictions (Identify provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "102 kB"
+			"limit": "102.5 kB"
 		},
 		{
 			"name": "Predictions (Interpret provider)",
