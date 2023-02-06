@@ -1143,6 +1143,7 @@ export function getDataStore({
 		BasicModel,
 		BasicModelWritableTS,
 		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1171,6 +1172,7 @@ export function getDataStore({
 		BasicModel: PersistentModelConstructor<BasicModel>;
 		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
 		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
+		ModelWithExplicitCustomOwner: PersistentModelConstructor<ModelWithExplicitCustomOwner>;
 	};
 
 	return {
@@ -1207,6 +1209,7 @@ export function getDataStore({
 		BasicModel,
 		BasicModelWritableTS,
 		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
 	};
 }
 
@@ -1807,6 +1810,25 @@ export declare class ModelWithExplicitOwner {
 			draft: MutableModel<ModelWithExplicitOwner>
 		) => MutableModel<ModelWithExplicitOwner> | void
 	): ModelWithExplicitOwner;
+}
+
+export declare class ModelWithExplicitCustomOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithExplicitCustomOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly customowner?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithExplicitCustomOwner>);
+	static copyOf(
+		source: ModelWithExplicitCustomOwner,
+		mutator: (
+			draft: MutableModel<ModelWithExplicitCustomOwner>
+		) => MutableModel<ModelWithExplicitCustomOwner> | void
+	): ModelWithExplicitCustomOwner;
 }
 
 export function testSchema(): Schema {
@@ -3742,6 +3764,70 @@ export function testSchema(): Schema {
 								{
 									provider: 'userPools',
 									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			},
+			ModelWithExplicitCustomOwner: {
+				name: 'ModelWithExplicitCustomOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					customowner: {
+						name: 'customowner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithExplicitCustomOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customowner',
 									allow: 'owner',
 									identityClaim: 'cognito:username',
 									operations: ['create', 'update', 'delete', 'read'],

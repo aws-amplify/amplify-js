@@ -33,6 +33,7 @@ describe('DataStore sync engine', () => {
 		connectivityMonitor,
 		Model,
 		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
 		BasicModel,
 		BasicModelWritableTS,
 		Post,
@@ -49,6 +50,7 @@ describe('DataStore sync engine', () => {
 			connectivityMonitor,
 			Model,
 			ModelWithExplicitOwner,
+			ModelWithExplicitCustomOwner,
 			BasicModel,
 			BasicModelWritableTS,
 			Post,
@@ -108,6 +110,57 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutboxOrError(graphqlService);
 
 			const table = graphqlService.tables.get('ModelWithExplicitOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits undefined owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitOwner({
+					title: 'very clever title',
+					owner: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits null custom owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitCustomOwner({
+					title: 'very clever title',
+					customowner: null,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits undefined custom owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitCustomOwner({
+					title: 'very clever title',
+					customowner: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitCustomOwner')!;
 			expect(table.size).toEqual(1);
 
 			const savedItem = table.get(JSON.stringify([m.id])) as any;
