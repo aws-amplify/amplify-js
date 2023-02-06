@@ -30,6 +30,7 @@ import {
 	MtmJoin,
 	DefaultPKHasOneParent,
 	DefaultPKHasOneChild,
+	UUID_REGEX,
 } from './helpers';
 
 export { pause };
@@ -343,7 +344,7 @@ export function addCommonQueryTests({
 
 			// comment update should be smashed to together with post
 			expect(mutations.length).toBe(2);
-			expectMutation(mutations[0], { title: 'some post' });
+			expectMutation(mutations[0], { title: 'some post', blogId: null });
 			expectMutation(mutations[1], {
 				content: 'updated content',
 				postId: mutations[0].modelId,
@@ -797,7 +798,7 @@ export function addCommonQueryTests({
 
 								expect(lazyLoaded).toEqual(remote);
 							});
-							test(`lazy load does load aimlessly ${testname}`, async () => {
+							test(`lazy load does not load aimlessly ${testname}`, async () => {
 								/**
 								 * Basically, we want to ensure lazy loading never regresses and starts
 								 * loading related instances that are not actually related by FK.
@@ -821,6 +822,7 @@ export function addCommonQueryTests({
 									R.localConstructor,
 									extractPrimaryKeysAndValues(local, R.localPKFields)
 								);
+
 								const lazyLoaded = await fetched[field];
 
 								// HERE'S THE DIFFERENCE IN ASSERTION.
