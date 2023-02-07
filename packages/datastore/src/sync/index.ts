@@ -721,12 +721,12 @@ export class SyncEngine {
 							});
 						});
 
-						// null is cast to 0 resulting in unexpected behavior
+						// null is cast to 0 resulting in unexpected behavior.
+						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
 						// If lastFullSyncStartedAt is null this is the first sync.
 						// Assume lastStartedAt is is also newest full sync.
 						let msNextFullSync;
-
-						if (lastFullSyncStartedAt! === null) {
+						if (!lastFullSyncStartedAt!) {
 							msNextFullSync = syncInterval! - syncDuration!;
 						} else {
 							msNextFullSync =
