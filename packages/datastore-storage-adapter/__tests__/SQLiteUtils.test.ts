@@ -201,7 +201,7 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted", "optionalField1", "emails", "ips", "metadata", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted") VALUES (?, ?, ?, ?, ?, ?)',
 				[
 					model.field1,
 					model.dateCreated,
@@ -209,12 +209,6 @@ describe('SQLiteUtils tests', () => {
 					undefined,
 					undefined,
 					undefined,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
 				],
 			];
 
@@ -230,19 +224,13 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=?, "optionalField1"=?, "emails"=?, "ips"=?, "metadata"=?, "createdAt"=?, "updatedAt"=? WHERE id=?`,
+				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=? WHERE id=?`,
 				[
 					model.field1,
 					model.dateCreated,
 					undefined,
 					undefined,
 					undefined,
-					null,
-					null,
-					null,
-					null,
-					null,
-					null,
 					model.id,
 				],
 			];
