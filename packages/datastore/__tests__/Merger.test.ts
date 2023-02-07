@@ -44,6 +44,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Create',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -52,6 +53,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Create',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -75,6 +77,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Create',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -83,6 +86,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Update',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -91,6 +95,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Another Update',
+						dateCreated: new Date().toISOString(),
 						optionalField1: 'Optional',
 						_version: 2,
 						_lastChangedAt: 1619627621329,
@@ -115,6 +120,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Create',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -123,6 +129,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'Create',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -131,6 +138,7 @@ describe('Merger', () => {
 					{
 						id: modelId,
 						field1: 'New Create with the same id',
+						dateCreated: new Date().toISOString(),
 						optionalField1: null,
 						_version: 1,
 						_lastChangedAt: 1619627621329,
@@ -178,6 +186,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Create1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -186,6 +195,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Create1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -214,6 +224,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Create1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -222,6 +233,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Update1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -230,6 +242,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Another Update1',
+						dateCreated: new Date().toISOString(),
 						description: 'Optional1',
 						_version: 2,
 						_lastChangedAt: 1619627621329,
@@ -259,6 +272,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Create1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627611860,
@@ -267,6 +281,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'Create1',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 2,
 						_lastChangedAt: 1619627619017,
@@ -275,6 +290,7 @@ describe('Merger', () => {
 					{
 						postId: customPk,
 						title: 'New Create with the same custom pk',
+						dateCreated: new Date().toISOString(),
 						description: null,
 						_version: 1,
 						_lastChangedAt: 1619627621329,
