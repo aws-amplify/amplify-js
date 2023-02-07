@@ -3,7 +3,7 @@ import { v4 } from 'uuid';
 import { MachineManager } from '../src/stateMachine/stateMachineManager';
 import { Context, TickEvent, tickTockMachine } from './utils/tickTockMachine';
 import { Machine } from '../src/stateMachine/machine';
-import { TransitionEffect } from '../src/stateMachine/types';
+import { TransitionAction } from '../src/stateMachine/types';
 
 jest.mock('uuid');
 
@@ -35,7 +35,7 @@ describe(MachineManager.name, () => {
 			// @ts-ignore
 			const machine = manager._machines[machineName];
 			const mockAccept = jest.spyOn(machine, 'accept');
-			const tick = { toMachine: machineName, name: 'tick', payload: {} };
+			const tick = { toMachine: machineName, type: 'tick', payload: {} };
 			await manager.send(tick);
 			expect(mockAccept).toBeCalledWith(tick);
 		});
@@ -44,7 +44,7 @@ describe(MachineManager.name, () => {
 			expect.assertions(1);
 			const invalidEvent = {
 				toMachine: 'invalidMachine',
-				name: 'tick',
+				type: 'tick',
 				payload: {},
 			};
 			try {
@@ -60,7 +60,7 @@ describe(MachineManager.name, () => {
 
 		it('should handle concurrent events', async () => {
 			const tickEvent = {
-				name: 'tick',
+				type: 'tick',
 				payload: {},
 				toMachine: tickTockMachine().name,
 			};
@@ -85,7 +85,7 @@ describe(MachineManager.name, () => {
 			expect.assertions(1);
 			const mockUUID = 'MOCK_UUID';
 			(v4 as jest.Mock).mockReturnValue(mockUUID);
-			const sendToInvalidMacineEffect: TransitionEffect<
+			const sendToInvalidMacineEffect: TransitionAction<
 				Context,
 				TickEvent
 			> = async (ctxt, event, broker) => {
@@ -96,7 +96,7 @@ describe(MachineManager.name, () => {
 				});
 				broker.dispatch({
 					toMachine: 'AnotherMachine',
-					name: 'foo',
+					type: 'foo',
 					payload: 'bar',
 				});
 			};
@@ -115,7 +115,7 @@ describe(MachineManager.name, () => {
 			await manager.addMachineIfAbsent(machineSendingInvalidEvent);
 			await Promise.all([
 				manager.send({
-					name: 'tick',
+					type: 'tick',
 					payload: {},
 					toMachine: machineSendingInvalidEvent.name,
 				}),

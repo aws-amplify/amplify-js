@@ -11,14 +11,14 @@ import {
 export type StateNames = 'State1' | 'State2' | 'State3';
 
 export type Event1 = {
-	name: 'event1';
+	type: 'event1';
 	payload: {
 		p1: 'good' | 'bad';
 	};
 };
 
 export type Event2 = {
-	name: 'event2';
+	type: 'event2';
 	payload: {
 		p2: 'good' | 'bad';
 	};

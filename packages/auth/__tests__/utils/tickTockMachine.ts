@@ -1,5 +1,5 @@
 import { Machine } from '../../src/stateMachine/machine';
-import { TransitionEffect } from '../../src/stateMachine/types';
+import { TransitionAction } from '../../src/stateMachine/types';
 
 const wait = (ms: number) =>
 	new Promise<void>(resolve => {
@@ -8,13 +8,13 @@ const wait = (ms: number) =>
 		}, ms);
 	});
 export type TickEvent = {
-	name: 'tick';
+	type: 'tick';
 	payload: {
 		recordId: string;
 	};
 };
 export type TockEvent = {
-	name: 'tock';
+	type: 'tock';
 	payload: {
 		recordId: string;
 	};
@@ -26,8 +26,8 @@ export type Context = {
 type Machine1States = 'StateA' | 'StateB';
 
 export const tickTockMachine = (
-	tickEffect: TransitionEffect<Context, TickEvent> = async () => {},
-	tockEffect: TransitionEffect<Context, TockEvent> = async () => {}
+	tickEffect: TransitionAction<Context, TickEvent> = async () => {},
+	tockEffect: TransitionAction<Context, TockEvent> = async () => {}
 ) =>
 	new Machine<Context, Events, Machine1States>({
 		context: { events: [] },
@@ -38,12 +38,12 @@ export const tickTockMachine = (
 				tick: [
 					{
 						nextState: 'StateB',
-						effects: [
+						actions: [
 							tickEffect,
 							async (ctxt, event, broker) => {
 								await wait(1000);
 								broker.dispatch({
-									name: 'tock',
+									type: 'tock',
 									payload: 'tock',
 								});
 							},
@@ -55,7 +55,7 @@ export const tickTockMachine = (
 				tock: [
 					{
 						nextState: 'StateA',
-						effects: [
+						actions: [
 							tockEffect,
 							async (ctxt, event, broker) => {
 								await wait(1000);

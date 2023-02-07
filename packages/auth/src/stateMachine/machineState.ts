@@ -45,36 +45,44 @@ export class MachineState<
 		this.machineManager = props.machineManager;
 	}
 
-	accept(event: EventTypes): MachineStateEventResponse<ContextType> {
+	async accept(
+		event: EventTypes
+	): Promise<MachineStateEventResponse<ContextType>> {
+		// TODO: currently if reducers are invoked before actions, we use reducers;
+		// if context update happens after actions, we need to return new context
+		// from actions. This is confusing.
 		const validTransition = this.getValidTransition(event);
-		const nextState = validTransition?.nextState ?? this.name;
 		const oldContext = this.machineContextGetter();
 		let newContext = oldContext;
 		// validTransition can only be the one handling current event. Cast
 		// the event to make TSC happy.
 		const castedEvent = event as Extract<
 			EventTypes,
-			{ name: EventTypes['name'] }
+			{ type: EventTypes['type'] }
 		>;
 		validTransition?.reducers?.forEach(reducer => {
 			newContext = reducer(newContext, castedEvent);
 		});
-		const response: MachineStateEventResponse<ContextType> = {
-			nextState,
-		};
-		if (newContext !== oldContext) {
-			response.newContext = newContext;
-		}
-		if ((validTransition?.effects ?? []).length > 0) {
-			const promiseArr = validTransition!.effects!.map(effect =>
-				effect(newContext, castedEvent, this.machineManager)
+		const contextAfterReducers = newContext;
+
+		const promiseArr = validTransition?.actions?.map(async action => {
+			const contextFromAction = await action(
+				contextAfterReducers,
+				castedEvent,
+				this.machineManager
 			);
-			// TODO: Concurrently running effects causes new events emitted in
-			// undetermined order. Should we run them in order? Or implement Promise.allSettle
-			response.effectsPromise = Promise.all(
-				promiseArr
-			) as unknown as Promise<void>;
-		}
+			if (contextFromAction && contextFromAction !== contextAfterReducers) {
+				Object.assign(newContext, contextFromAction);
+			}
+		});
+		// TODO: Concurrently running actions causes new events emitted in
+		// undetermined order. Should we run them in order? Or implement Promise.allSettle
+		(await Promise.all(promiseArr ?? [])) as unknown as Promise<void>;
+
+		const response: MachineStateEventResponse<ContextType> = {
+			nextState: validTransition?.nextState ?? this.name,
+			newContext: newContext !== oldContext ? newContext : undefined,
+		};
 		return response;
 	}
 
@@ -83,20 +91,21 @@ export class MachineState<
 	):
 		| StateTransition<
 				ContextType,
-				Extract<EventTypes, { name: EventTypes['name'] }>,
+				Extract<EventTypes, { type: EventTypes['type'] }>,
 				StateNames
 		  >
 		| undefined {
 		const context = this.machineContextGetter();
 		const transitionsOnEvent =
-			this.transitions[event.name as EventTypes['name']];
+			this.transitions[event.type as EventTypes['type']];
 		const validTransitions =
 			transitionsOnEvent?.filter(transition => {
-				const blocked = transition?.guards?.some(guard =>
-					guard(
-						context,
-						event as Extract<EventTypes, { name: EventTypes['name'] }>
-					)
+				const blocked = transition?.guards?.some(
+					guard =>
+						guard(
+							context,
+							event as Extract<EventTypes, { type: EventTypes['type'] }>
+						) === false
 				);
 				return !blocked;
 			}) ?? [];
