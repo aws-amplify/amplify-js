@@ -1,10 +1,19 @@
-import JS from '../src/JS';
+import {
+	isEmpty,
+	sortByField,
+	objectLessAttributes,
+	filenameToContentType,
+	isTextFile,
+	transferKeyToLowerCase,
+	transferKeyToUpperCase,
+	isStrictObject,
+} from '../src/JS';
 
 describe('JS test', () => {
 	describe('isEmpty test', () => {
 		test('happy case', () => {
 			const obj = { a: 'a' };
-			expect(JS.isEmpty(obj)).toBe(false);
+			expect(isEmpty(obj)).toBe(false);
 		});
 	});
 
@@ -12,7 +21,7 @@ describe('JS test', () => {
 		test('happy case with ascending order', () => {
 			const arr = [{ a: 2 }, { a: 3 }, { a: 1 }];
 
-			JS.sortByField(arr, 'a', null);
+			sortByField(arr, 'a', null);
 
 			expect(arr).toEqual([{ a: 1 }, { a: 2 }, { a: 3 }]);
 		});
@@ -20,29 +29,35 @@ describe('JS test', () => {
 		test('happy case with descending order', () => {
 			const arr = [{ a: 2 }, { a: 3 }, { a: 1 }];
 
-			JS.sortByField(arr, 'a', 'desc');
+			sortByField(arr, 'a', 'desc');
 
 			expect(arr).toEqual([{ a: 3 }, { a: 2 }, { a: 1 }]);
 		});
 
 		test('no list do nothing', () => {
-			expect(JS.sortByField()).toEqual(false);
+			expect(sortByField()).toEqual(false);
 		});
 
 		test('undefined means less', () => {
 			const arr = [{ a: 2 }, {}, { a: 1 }, {}];
 
-			JS.sortByField(arr, 'a', 'desc');
+			sortByField(arr, 'a', 'desc');
 
 			expect(arr).toEqual([{ a: 2 }, { a: 1 }, {}, {}]);
 		});
 
 		test('equal no change', () => {
-			const arr = [{ a: 1, b: 1 }, { a: 1, b: 2 }];
+			const arr = [
+				{ a: 1, b: 1 },
+				{ a: 1, b: 2 },
+			];
 
-			JS.sortByField(arr, 'a', 'desc');
+			sortByField(arr, 'a', 'desc');
 
-			expect(arr).toEqual([{ a: 1, b: 1 }, { a: 1, b: 2 }]);
+			expect(arr).toEqual([
+				{ a: 1, b: 1 },
+				{ a: 1, b: 2 },
+			]);
 		});
 	});
 
@@ -50,53 +65,53 @@ describe('JS test', () => {
 		test('happy case with nothing', () => {
 			const obj = { a: 3, b: 2 };
 
-			expect(JS.objectLessAttributes(obj)).toEqual({ a: 3, b: 2 });
+			expect(objectLessAttributes(obj)).toEqual({ a: 3, b: 2 });
 		});
 
 		test('happy case with string', () => {
 			const obj = { a: 3, b: 2 };
 
-			expect(JS.objectLessAttributes(obj, 'a')).toEqual({ b: 2 });
+			expect(objectLessAttributes(obj, 'a')).toEqual({ b: 2 });
 		});
 
 		test('happy case with array', () => {
 			const obj = { a: 3, b: 2, c: 1 };
 
-			expect(JS.objectLessAttributes(obj, ['a', 'b'])).toEqual({ c: 1 });
+			expect(objectLessAttributes(obj, ['a', 'b'])).toEqual({ c: 1 });
 		});
 	});
 
 	describe('filenameToContentType test', () => {
 		test('.png file type is image/png', () => {
-			expect(JS.filenameToContentType('a.png')).toEqual('image/png');
+			expect(filenameToContentType('a.png')).toEqual('image/png');
 		});
 
 		test('unknown file type is application/octet-stream', () => {
-			expect(JS.filenameToContentType('a.xyz')).toEqual(
+			expect(filenameToContentType('a.xyz')).toEqual(
 				'application/octet-stream'
 			);
 		});
 
 		test('unknown file type is default', () => {
-			expect(JS.filenameToContentType('a.xyz', '*/*')).toEqual('*/*');
+			expect(filenameToContentType('a.xyz', '*/*')).toEqual('*/*');
 		});
 	});
 
 	describe('isTextFile test', () => {
 		test('application/json is text file', () => {
-			expect(JS.isTextFile('application/json')).toEqual(true);
+			expect(isTextFile('application/json')).toEqual(true);
 		});
 
 		test('application/xml is text file', () => {
-			expect(JS.isTextFile('application/xml')).toEqual(true);
+			expect(isTextFile('application/xml')).toEqual(true);
 		});
 
 		test('application/sh is text file', () => {
-			expect(JS.isTextFile('application/sh')).toEqual(true);
+			expect(isTextFile('application/sh')).toEqual(true);
 		});
 
 		test('text/* is text file', () => {
-			expect(JS.isTextFile('text/*')).toEqual(true);
+			expect(isTextFile('text/*')).toEqual(true);
 		});
 	});
 
@@ -113,7 +128,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToLowerCase(obj)).toEqual({
+			expect(transferKeyToLowerCase(obj)).toEqual({
 				a: {
 					a1: {
 						val: 'val',
@@ -137,7 +152,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToLowerCase(obj, ['A'])).toEqual({
+			expect(transferKeyToLowerCase(obj, ['A'])).toEqual({
 				A: {
 					a1: {
 						val: 'val',
@@ -161,7 +176,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToLowerCase(obj, [], ['A'])).toEqual({
+			expect(transferKeyToLowerCase(obj, [], ['A'])).toEqual({
 				a: {
 					A1: {
 						Val: 'val',
@@ -187,7 +202,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToUpperCase(obj)).toEqual({
+			expect(transferKeyToUpperCase(obj)).toEqual({
 				A: {
 					A1: {
 						Val: 'val',
@@ -211,7 +226,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToUpperCase(obj, ['a'])).toEqual({
+			expect(transferKeyToUpperCase(obj, ['a'])).toEqual({
 				a: {
 					A1: {
 						Val: 'val',
@@ -235,7 +250,7 @@ describe('JS test', () => {
 				},
 			};
 
-			expect(JS.transferKeyToUpperCase(obj, [], ['a'])).toEqual({
+			expect(transferKeyToUpperCase(obj, [], ['a'])).toEqual({
 				A: {
 					a1: {
 						val: 'val',
@@ -250,23 +265,23 @@ describe('JS test', () => {
 
 	describe('isStrictObject test', () => {
 		test('return true if the object is strict', () => {
-			expect(JS.isStrictObject({ a: '1' })).toBeTruthy();
+			expect(isStrictObject({ a: '1' })).toBeTruthy();
 		});
 
 		test('return false if the object is null or array', () => {
-			expect(JS.isStrictObject(null)).toBeFalsy();
-			expect(JS.isStrictObject([])).toBeFalsy();
+			expect(isStrictObject(null)).toBeFalsy();
+			expect(isStrictObject([])).toBeFalsy();
 		});
 
 		test('return false if the input is undefined, number, boolean or string', () => {
-			expect(JS.isStrictObject(undefined)).toBeFalsy();
-			expect(JS.isStrictObject(1)).toBeFalsy();
-			expect(JS.isStrictObject(false)).toBeFalsy();
-			expect(JS.isStrictObject('string')).toBeFalsy();
-			expect(JS.isStrictObject(new Number(1))).toBeFalsy();
-			expect(JS.isStrictObject(new Boolean(true))).toBeFalsy();
-			expect(JS.isStrictObject(new String('string'))).toBeFalsy();
-			expect(JS.isStrictObject(function() {})).toBeFalsy();
+			expect(isStrictObject(undefined)).toBeFalsy();
+			expect(isStrictObject(1)).toBeFalsy();
+			expect(isStrictObject(false)).toBeFalsy();
+			expect(isStrictObject('string')).toBeFalsy();
+			expect(isStrictObject(new Number(1))).toBeFalsy();
+			expect(isStrictObject(new Boolean(true))).toBeFalsy();
+			expect(isStrictObject(new String('string'))).toBeFalsy();
+			expect(isStrictObject(function () {})).toBeFalsy();
 		});
 	});
 });

@@ -31,7 +31,6 @@ var config = {
 		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.BannerPlugin({ banner, raw: true }),
 		new UglifyJsPlugin({
-			minimize: true,
 			sourceMap: true,
 			include: /\.min\.js$/,
 		}),

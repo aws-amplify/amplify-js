@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { Reachability } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -63,6 +53,7 @@ export class ConnectionStateMonitor {
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
 	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
 	private _networkMonitoringSubscription?: ZenObservable.Subscription;
+	private _initialNetworkStateSubscription?: ZenObservable.Subscription;
 
 	constructor() {
 		this._networkMonitoringSubscription = undefined;
@@ -72,6 +63,16 @@ export class ConnectionStateMonitor {
 			intendedConnectionState: 'disconnected',
 			keepAliveState: 'healthy',
 		};
+
+		// Attempt to update the state with the current actual network state
+		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(
+			({ online }) => {
+				this.record(
+					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+				);
+				this._initialNetworkStateSubscription?.unsubscribe();
+			}
+		);
 
 		this._linkedConnectionStateObservable =
 			new Observable<LinkedConnectionStates>(connectionStateObserver => {
@@ -84,6 +85,9 @@ export class ConnectionStateMonitor {
 	 * Turn network state monitoring on if it isn't on already
 	 */
 	private enableNetworkMonitoring() {
+		// If no initial network state was discovered, stop trying
+		this._initialNetworkStateSubscription?.unsubscribe();
+
 		// Maintain the network state based on the reachability monitor
 		if (this._networkMonitoringSubscription === undefined) {
 			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(

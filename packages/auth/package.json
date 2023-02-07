@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "4.6.13",
+  "version": "5.1.6",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,26 +9,26 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/Auth.ts",
     "./lib/Auth.js",
-    "./lib-esm/Auth.js",
-    "./dist/aws-amplify-auth.js",
-    "./dist/aws-amplify-auth.min.js"
+    "./lib-esm/Auth.js"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "yarn lint --fix && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "npm run clean:size && rimraf lib-esm lib dist",
+    "clean:size": "rimraf dual-publish-tmp tmp*",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
   },
   "repository": {
     "type": "git",
@@ -40,15 +40,27 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/cache": "4.0.62",
-    "@aws-amplify/core": "4.7.11",
-    "amazon-cognito-identity-js": "5.2.12",
-    "crypto-js": "^4.1.1"
+    "@aws-amplify/core": "5.0.12",
+    "amazon-cognito-identity-js": "6.1.2",
+    "tslib": "^1.8.0"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
   },
+  "size-limit": [
+    {
+      "name": "Auth (top-level class)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Amplify, Auth }",
+      "limit": "73 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

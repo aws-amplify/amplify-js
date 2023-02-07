@@ -1,5 +1,5 @@
 import { Credentials } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import { Storage } from '@aws-amplify/storage';
 import {
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
@@ -47,10 +47,11 @@ RekognitionClient.prototype.send = jest.fn(command => {
 		};
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
-		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput = {
-			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
-			$metadata: null,
-		};
+		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
+			{
+				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
+				$metadata: null,
+			};
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {

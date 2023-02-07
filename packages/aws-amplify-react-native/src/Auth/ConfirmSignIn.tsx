@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	AmplifyButton,
 	FormField,

@@ -44,7 +44,7 @@ class ModelMerger {
 			}
 		}
 
-		return result;
+		return result!;
 	}
 
 	public async mergePage(

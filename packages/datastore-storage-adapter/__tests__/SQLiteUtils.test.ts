@@ -201,14 +201,22 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted") VALUES (?, ?, ?, ?, ?, ?)',
+				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted", "optionalField1", "emails", "ips", "metadata", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				[
 					model.field1,
 					model.dateCreated,
 					model.id,
+					// meta-data fields are not user-defined fields and therefore not
+					// part of normalization today. they are `undefined` by default.
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 				],
 			];
 
@@ -224,13 +232,21 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=? WHERE id=?`,
+				'UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=?, "optionalField1"=?, "emails"=?, "ips"=?, "metadata"=?, "createdAt"=?, "updatedAt"=? WHERE id=?',
 				[
 					model.field1,
 					model.dateCreated,
+					// meta-data fields are not user-defined fields and therefore not
+					// part of normalization today. they are `undefined` by default.
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 					model.id,
 				],
 			];

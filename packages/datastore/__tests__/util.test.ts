@@ -167,7 +167,7 @@ describe('datastore util', () => {
 			},
 		];
 
-		let expected = [];
+		let expected: Set<string>[] = [];
 
 		expect(processCompositeKeys(attributes)).toEqual(expected);
 
@@ -603,6 +603,7 @@ describe('datastore util', () => {
 			expect(isAWSIPAddress(test)).toBe(false);
 		});
 	});
+
 	describe('mergePatches', () => {
 		enablePatches();
 		test('merge patches with no conflict', () => {
@@ -730,18 +731,18 @@ describe('datastore util', () => {
 		describe('extractKeyIfExists', () => {
 			const testUserSchema = testSchema();
 			test('model definition with custom pk', () => {
-				const result = extractKeyIfExists(testUserSchema.models.PostCustomPK);
-				expect(result.properties.fields.length).toBe(1);
-				expect(result.properties.fields[0]).toBe('postId');
+				const result = extractKeyIfExists(testUserSchema.models.PostCustomPK)!;
+				expect(result.properties!.fields.length).toBe(1);
+				expect(result.properties!.fields[0]).toBe('postId');
 				expect(result.type).toBe('key');
 			});
 			test('model definition with custom pk + sk', () => {
 				const result = extractKeyIfExists(
 					testUserSchema.models.PostCustomPKSort
-				);
-				expect(result.properties.fields.length).toBe(2);
-				expect(result.properties.fields[0]).toBe('id');
-				expect(result.properties.fields[1]).toBe('postId');
+				)!;
+				expect(result.properties!.fields.length).toBe(2);
+				expect(result.properties!.fields[0]).toBe('id');
+				expect(result.properties!.fields[1]).toBe('postId');
 				expect(result.type).toBe('key');
 			});
 			test('model definition with id', () => {

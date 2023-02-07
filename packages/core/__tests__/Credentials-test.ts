@@ -1,6 +1,14 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
-import Amplify from '../src/Amplify';
-
+import { Amplify } from '../src/Amplify';
+import { Hub } from '../src/Hub';
+import {
+	CognitoIdentityClient,
+	GetCredentialsForIdentityCommand,
+	GetIdCommand,
+} from '@aws-sdk/client-cognito-identity';
+jest.mock('@aws-sdk/client-cognito-identity');
+import { fromCognitoIdentity } from '@aws-sdk/credential-provider-cognito-identity';
+jest.mock('@aws-sdk/credential-provider-cognito-identity');
 const session = {};
 
 const user = {
@@ -52,7 +60,7 @@ describe('Credentials test', () => {
 			expect(credentials.Auth).toBeUndefined();
 
 			expect(credentials.get()).rejects.toMatchInlineSnapshot(
-				`"No Auth module registered in Amplify"`
+				`"No Cognito Identity pool provided for unauthenticated access"`
 			);
 		});
 
@@ -70,14 +78,155 @@ describe('Credentials test', () => {
 	});
 
 	describe('configure test', () => {
-		test('happy case', () => {
+		test('happy case', done => {
+			expect.assertions(1);
 			const config = {
 				attr: 'attr',
 			};
 
+			Hub.listen('core', ({ channel, payload, source }) => {
+				if (
+					channel === 'core' &&
+					payload?.event === 'credentials_configured' &&
+					source === 'Credentials'
+				) {
+					done();
+				}
+			});
+
 			const credentials = new Credentials(null);
 			expect(credentials.configure(config)).toEqual({
 				attr: 'attr',
+			});
+		});
+	});
+
+	describe('different regions', () => {
+		const userPoolId = 'us-west-2:aaaaaaaaa';
+		const identityPoolId = 'us-east-1:bbbbbbbb';
+		const identityPoolRegion = 'us-east-1';
+		const region = 'us-west-2';
+
+		beforeAll(() => {
+			CognitoIdentityClient.mockImplementation(params => {
+				return {
+					send: params => {
+						if (params instanceof GetIdCommand) {
+							return { IdentityId: '123' };
+						}
+						if (params instanceof GetCredentialsForIdentityCommand) {
+							return {
+								Credentials: {
+									AccessKeyId: 'accessKey',
+									Expiration: 0,
+									SecretKey: 'secretKey',
+									SessionToken: 'sessionToken',
+								},
+								IdentityId: '123',
+							};
+						}
+					},
+					middlewareStack: {
+						add: (next, _) => {},
+					},
+				};
+			});
+
+			fromCognitoIdentity.mockImplementation(params => {
+				return async () => {
+					return {};
+				};
+			});
+		});
+
+		test('should use identityPoolRegion param for credentials for federation', async () => {
+			expect.assertions(2);
+
+			const credentials = new Credentials(null);
+
+			credentials.configure({
+				userPoolId,
+				identityPoolId,
+				identityPoolRegion,
+				region,
+			});
+
+			await credentials._setCredentialsFromFederation({
+				provider: 'google',
+				token: 'token',
+				identity_id: '123',
+			});
+
+			expect(CognitoIdentityClient).toHaveBeenCalledWith(
+				expect.objectContaining({ region: identityPoolRegion })
+			);
+
+			expect(fromCognitoIdentity).toBeCalledWith(
+				expect.objectContaining({
+					identityId: '123',
+					logins: {
+						'accounts.google.com': 'token',
+					},
+				})
+			);
+		});
+
+		test('should use identityPoolRegion param for credentials from session', async () => {
+			expect.assertions(2);
+
+			const credentials = new Credentials(null);
+
+			credentials.configure({
+				userPoolId,
+				identityPoolId,
+				identityPoolRegion,
+				region,
+			});
+
+			const session = {
+				getIdToken: () => {
+					return {
+						getJwtToken: () => {
+							return 'token';
+						},
+					};
+				},
+			};
+
+			await credentials._setCredentialsFromSession(session);
+
+			expect(CognitoIdentityClient).toHaveBeenCalledWith(
+				expect.objectContaining({ region: identityPoolRegion })
+			);
+
+			expect(GetIdCommand).toBeCalledWith({
+				IdentityPoolId: identityPoolId,
+				Logins: {
+					[`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: 'token',
+				},
+			});
+		});
+
+		test('should use identityPoolRegion param for credentials for guest', async () => {
+			expect.assertions(2);
+
+			const credentials = new Credentials(null);
+
+			credentials.configure({
+				userPoolId,
+				identityPoolId,
+				identityPoolRegion,
+				region,
+			});
+
+			await credentials._setCredentialsForGuest();
+
+			expect(CognitoIdentityClient).toHaveBeenCalledWith(
+				expect.objectContaining({ region: identityPoolRegion })
+			);
+
+			expect(GetIdCommand).toBeCalledWith({
+				IdentityPoolId: identityPoolId,
 			});
 		});
 	});
