@@ -725,11 +725,16 @@ export class SyncEngine {
 						// If newestFullSyncStartedAt is null this is the first sync.
 						// Assume newestStartedAt is is also newest full sync.
 						const msNextFullSync =
-							newestFullSyncStartedAt! === null
-								? theInterval! - duration!
-								: newestFullSyncStartedAt! +
-								  theInterval! -
-								  (newestStartedAt! + duration!);
+						let msNextFullSync;
+
+						if (lastFullSyncStartedAt! === null) {
+							msNextFullSync = syncInterval! - syncDuration!;
+						} else {
+							msNextFullSync =
+								lastFullSyncStartedAt! +
+								syncInterval! -
+								(lastStartedAt! + syncDuration!);
+						}
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
