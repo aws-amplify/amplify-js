@@ -31,10 +31,10 @@ describe('DataStore sync engine', () => {
 		DataStore,
 		schema,
 		connectivityMonitor,
-		LegacyJSONPost,
 		Model,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
 		BasicModel,
 		BasicModelWritableTS,
 		Post,
@@ -49,10 +49,10 @@ describe('DataStore sync engine', () => {
 			DataStore,
 			schema,
 			connectivityMonitor,
-			LegacyJSONPost,
 			Model,
 			ModelWithExplicitOwner,
 			ModelWithExplicitCustomOwner,
+			ModelWithMultipleCustomOwner,
 			BasicModel,
 			BasicModelWritableTS,
 			Post,
@@ -163,6 +163,60 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutboxOrError(graphqlService);
 
 			const table = graphqlService.tables.get('ModelWithExplicitCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits empty owner fields (multi, both empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: undefined,
+					customownerTwo: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits empty owner fields (multi, owner 1 empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: undefined,
+					customownerTwo: 'bob',
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits null custom owner fields (multi, owner 2 empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: 'bob',
+					customownerTwo: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
 			expect(table.size).toEqual(1);
 
 			const savedItem = table.get(JSON.stringify([m.id])) as any;

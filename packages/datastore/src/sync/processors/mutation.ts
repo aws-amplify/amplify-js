@@ -485,9 +485,9 @@ class MutationProcessor {
 		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
 
 		const auth = modelDefinition.attributes?.find(a => a.type === 'auth');
-		const ownerField = auth?.properties?.rules.find(
-			rule => rule.ownerField
-		)?.ownerField;
+		const ownerFields: string[] = auth?.properties?.rules
+			.map(rule => rule.ownerField)
+			.filter(f => f) || ['owner'];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
@@ -523,8 +523,8 @@ class MutationProcessor {
 					continue;
 				}
 
-				// omit owner field if it's `null`. cloud storage doesn't allow it.
-				if (name === ownerField && parsedData[name] === null) {
+				// omit owner fields if it's `null`. cloud storage doesn't allow it.
+				if (ownerFields.includes(name) && parsedData[name] === null) {
 					continue;
 				}
 

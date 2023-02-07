@@ -732,13 +732,14 @@ class FakeGraphQLService {
 		};
 	}
 
-	private ownerField(tableName) {
+	private ownerFields(tableName) {
 		const def = this.tableDefinitions.get(tableName)!;
 		const auth = def.attributes?.find(a => a.type === 'auth');
-		const ownerField = auth?.properties?.rules.find(
-			rule => rule.ownerField
-		)?.ownerField;
-		return ownerField || 'owner';
+		const ownerFields = auth?.properties?.rules
+			.map(rule => rule.ownerField)
+			.filter(f => f);
+
+		return ownerFields || ['owner'];
 	}
 
 	private identifyExtraValues(expected, actual) {
@@ -776,8 +777,11 @@ class FakeGraphQLService {
 						unexpectedFields
 					);
 				}
-				if (record[this.ownerField(tableName)] === null) {
-					error = this.makeOwnerFieldNullInputError(tableName, operation);
+				for (const ownerField of this.ownerFields(tableName)) {
+					if (record[ownerField] === null) {
+						error = this.makeOwnerFieldNullInputError(tableName, operation);
+						break;
+					}
 				}
 				break;
 			case 'delete':
@@ -1144,6 +1148,7 @@ export function getDataStore({
 		BasicModelWritableTS,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1173,6 +1178,7 @@ export function getDataStore({
 		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
 		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
 		ModelWithExplicitCustomOwner: PersistentModelConstructor<ModelWithExplicitCustomOwner>;
+		ModelWithMultipleCustomOwner: PersistentModelConstructor<ModelWithMultipleCustomOwner>;
 	};
 
 	return {
@@ -1210,6 +1216,7 @@ export function getDataStore({
 		BasicModelWritableTS,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
 	};
 }
 
@@ -1829,6 +1836,26 @@ export declare class ModelWithExplicitCustomOwner {
 			draft: MutableModel<ModelWithExplicitCustomOwner>
 		) => MutableModel<ModelWithExplicitCustomOwner> | void
 	): ModelWithExplicitCustomOwner;
+}
+
+export declare class ModelWithMultipleCustomOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithMultipleCustomOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly customownerOne?: string | null;
+	readonly customownerTwo?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithMultipleCustomOwner>);
+	static copyOf(
+		source: ModelWithMultipleCustomOwner,
+		mutator: (
+			draft: MutableModel<ModelWithMultipleCustomOwner>
+		) => MutableModel<ModelWithMultipleCustomOwner> | void
+	): ModelWithMultipleCustomOwner;
 }
 
 export function testSchema(): Schema {
@@ -3831,6 +3858,84 @@ export function testSchema(): Schema {
 									allow: 'owner',
 									identityClaim: 'cognito:username',
 									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			},
+			ModelWithMultipleCustomOwner: {
+				name: 'ModelWithMultipleCustomOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					customownerOne: {
+						name: 'customownerOne',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					customownerTwo: {
+						name: 'customownerTwo',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithMultipleCustomOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customownerOne',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'customownerTwo',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'read'],
 								},
 							],
 						},
