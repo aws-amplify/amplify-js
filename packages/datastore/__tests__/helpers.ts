@@ -3,6 +3,7 @@ import { parse } from 'graphql';
 import {
 	ModelInit,
 	Schema,
+	SchemaModel,
 	InternalSchema,
 	isModelAttributePrimaryKey,
 	__modelMeta__,
@@ -114,7 +115,7 @@ export function errorsFrom<T extends Object>(
 
 /**
  * Checks to see if a given object contains any extra, unexpected properties.
- * If any are present, it returns the list of unexpectd fields.
+ * If any are present, it returns the list of unexpected fields.
  *
  * @param data the object that MIGHT contain extra fields.
  * @param template the authorative template object.
@@ -521,10 +522,10 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
-	public logRequests = false;
-	public logAST = false;
+	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
+	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
 	public observers = new Map<
 		string,
@@ -534,6 +535,7 @@ class FakeGraphQLService {
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
+			this.tableDefinitions.set(model.name, model);
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
@@ -551,7 +553,7 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
-		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+		this.log('RequestAST', JSON.stringify(q, null, 2));
 
 		const operation = q.operation;
 		const name = q.name.value;
@@ -581,17 +583,14 @@ class FakeGraphQLService {
 	}
 
 	public satisfiesCondition(tableName, item, condition) {
-		if (this.logRequests)
-			console.log('checking satisfiesCondition', {
-				tableName,
-				item,
-				condition: JSON.stringify(condition),
-			});
+		this.log('checking satisfiesCondition', {
+			tableName,
+			item,
+			condition: JSON.stringify(condition),
+		});
 
 		if (!condition) {
-			console.log(
-				'checking satisfiesCondition matches all for `null` conditions'
-			);
+			this.log('checking satisfiesCondition matches all for `null` conditions');
 			return true;
 		}
 
@@ -604,13 +603,12 @@ class FakeGraphQLService {
 			ModelPredicateCreator.getPredicates(predicate)!,
 		]);
 
-		this.logRequests &&
-			console.log('satisfiesCondition result', {
-				effectivePredicate: JSON.stringify(
-					ModelPredicateCreator.getPredicates(predicate)
-				),
-				isMatch,
-			});
+		this.log('satisfiesCondition result', {
+			effectivePredicate: JSON.stringify(
+				ModelPredicateCreator.getPredicates(predicate)
+			),
+			isMatch,
+		});
 
 		return isMatch;
 	}
@@ -690,6 +688,39 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeExtraFieldInputError(tableName, operation, fields) {
+		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
+			1
+		)}`;
+		const inputName = `${properOperationName}${tableName}Input`;
+		return {
+			data: null,
+			errors: fields.map(field => ({
+				path: null,
+				locations: null,
+				message: `The variables input contains a field name '${field}' that is not defined for input object type '${inputName}'`,
+			})),
+		};
+	}
+
+	private makeOwnerFieldNullInputError(tableName, operation) {
+		// Response from AppSync console on non-existent model.
+		return {
+			path: [operation],
+			data: null,
+			errorType: 'Unauthorized',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: `Not Authorized to access ${operation} on type ${tableName}`,
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -701,9 +732,79 @@ class FakeGraphQLService {
 		};
 	}
 
+	private ownerFields(tableName) {
+		const def = this.tableDefinitions.get(tableName)!;
+		const auth = def.attributes?.find(a => a.type === 'auth');
+		const ownerFields = auth?.properties?.rules
+			.map(rule => rule.ownerField)
+			.filter(f => f);
+
+		return ownerFields || ['owner'];
+	}
+
+	private identifyExtraValues(expected, actual) {
+		const extraValues: string[] = [];
+		for (const v of actual) {
+			if (!expected.includes(v)) {
+				extraValues.push(v);
+			}
+		}
+
+		return extraValues;
+	}
+
+	private validate(tableName, operation, record) {
+		// very simple validation for an observed *near*-regression from a PR right now.
+		// https://github.com/aws-amplify/amplify-js/pull/10915
+		const def = this.tableDefinitions.get(tableName)!;
+		const writeableFields = Object.keys(def.fields).filter(
+			field => !def.fields[field]?.isReadOnly
+		);
+
+		let error: any;
+
+		switch (operation) {
+			case 'create':
+			case 'update':
+				const unexpectedFields = this.identifyExtraValues(
+					[...writeableFields, '_version'],
+					Object.keys(record)
+				);
+				if (unexpectedFields.length > 0) {
+					error = this.makeExtraFieldInputError(
+						tableName,
+						operation,
+						unexpectedFields
+					);
+				}
+				for (const ownerField of this.ownerFields(tableName)) {
+					if (record[ownerField] === null) {
+						error = this.makeOwnerFieldNullInputError(tableName, operation);
+						break;
+					}
+				}
+				break;
+			case 'delete':
+				break;
+			default:
+				// this is not a GraphQL error. it likely indicates our fake graphql
+				// service is broken.
+				throw new Error('Invalid operation. Should be unreachable.');
+		}
+
+		this.log('validate', {
+			tableName,
+			operation,
+			record,
+			error,
+		});
+
+		return error;
+	}
+
 	private populatedFields(record) {
 		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value)
+			Object.entries(record).filter(([key, value]) => value !== undefined)
 		);
 	}
 
@@ -724,6 +825,7 @@ class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
+		this.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -745,14 +847,12 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		if (this.logRequests) {
-			console.log('API request', {
-				query,
-				variables: JSON.stringify(variables, null, 2),
-				authMode,
-				authToken,
-			});
-		}
+		this.log('API Request', {
+			query,
+			variables: JSON.stringify(variables, null, 2),
+			authMode,
+			authToken,
+		});
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
@@ -761,9 +861,7 @@ class FakeGraphQLService {
 		const parsed = this.parseQuery(query);
 		const { operation, selection, table: tableName, type } = parsed;
 
-		if (this.logRequests) {
-			console.log('Parsed request components', parsed);
-		}
+		this.log('Parsed Request', parsed);
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -790,7 +888,13 @@ class FakeGraphQLService {
 			const record = variables.input;
 			if (type === 'create') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (existing) {
+				const validationError = this.validate(tableName, 'create', record);
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (existing) {
 					data = {
 						[selection]: null,
 					};
@@ -810,7 +914,13 @@ class FakeGraphQLService {
 				// Simulate update using the default (AUTO_MERGE) for now.
 				// NOTE: We're not doing list/set merging. :o
 				const existing = table.get(this.getPK(tableName, record));
-				if (!existing) {
+				const validationError = this.validate(tableName, 'update', record);
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -824,8 +934,15 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (this.logRequests) console.log({ existing });
-				if (!existing) {
+				const validationError = this.validate(tableName, 'delete', record);
+				this.log('delete looking for existing', { existing });
+
+				if (validationError) {
+					data = {
+						[selection]: null,
+					};
+					errors = [validationError];
+				} else if (!existing) {
 					data = {
 						[selection]: null,
 					};
@@ -858,11 +975,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
-					if (this.logRequests) console.log({ data });
+					this.log('delete applying to table', { data });
 				}
 			}
 
-			if (this.logRequests) console.log('response', { data, errors });
+			this.log('API Response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -879,10 +996,12 @@ class FakeGraphQLService {
 						},
 					},
 				};
+				this.log('API subscription message', { observerMessageName, message });
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {
+				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
 				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
 			});
@@ -997,7 +1116,8 @@ export function getDataStore({
 			'https://0.0.0.0/graphql';
 	}
 
-	const classes = initSchema(testSchema());
+	const schema = testSchema();
+	const classes = initSchema(schema);
 
 	const {
 		ModelWithBoolean,
@@ -1020,8 +1140,15 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONBlog,
+		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
+		BasicModel,
+		BasicModelWritableTS,
+		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1043,12 +1170,20 @@ export function getDataStore({
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		LegacyJSONBlog: PersistentModelConstructor<LegacyJSONBlog>;
+		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
+		BasicModel: PersistentModelConstructor<BasicModel>;
+		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
+		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
+		ModelWithExplicitCustomOwner: PersistentModelConstructor<ModelWithExplicitCustomOwner>;
+		ModelWithMultipleCustomOwner: PersistentModelConstructor<ModelWithMultipleCustomOwner>;
 	};
 
 	return {
 		DataStore,
+		schema,
 		connectivityMonitor,
 		graphqlService,
 		simulateConnect,
@@ -1073,8 +1208,15 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONBlog,
+		LegacyJSONPost,
 		CompositePKParent,
 		CompositePKChild,
+		BasicModel,
+		BasicModelWritableTS,
+		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
 	};
 }
 
@@ -1104,14 +1246,14 @@ export const DataStore: typeof DS = (() => {
 export declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
-	public readonly optionalField1?: string;
+	public readonly optionalField1?: string | null;
 	public readonly dateCreated: string;
-	public readonly emails?: string[];
-	public readonly ips?: (string | null)[];
-	public readonly metadata?: Metadata;
-	public readonly logins?: Login[];
-	public readonly createdAt?: string;
-	public readonly updatedAt?: string;
+	public readonly emails?: string[] | null;
+	public readonly ips?: (string | null)[] | null;
+	public readonly metadata?: Metadata | null;
+	public readonly logins?: Login[] | null;
+	public readonly createdAt?: string | null;
+	public readonly updatedAt?: string | null;
 
 	constructor(init: ModelInit<Model>);
 
@@ -1293,6 +1435,24 @@ export declare class BasicModel {
 			draft: MutableModel<BasicModel>
 		) => MutableModel<BasicModel> | void
 	): BasicModel;
+}
+
+export declare class BasicModelWritableTS {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<BasicModelWritableTS, 'id'>;
+		readOnlyFields: never;
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<BasicModelWritableTS>);
+	static copyOf(
+		source: BasicModelWritableTS,
+		mutator: (
+			draft: MutableModel<BasicModelWritableTS>
+		) => MutableModel<BasicModelWritableTS> | void
+	): BasicModelWritableTS;
 }
 
 export declare class HasOneParent {
@@ -1640,6 +1800,64 @@ export declare class ModelWithBoolean {
 	): ModelWithBoolean;
 }
 
+export declare class ModelWithExplicitOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithExplicitOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly owner?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithExplicitOwner>);
+	static copyOf(
+		source: ModelWithExplicitOwner,
+		mutator: (
+			draft: MutableModel<ModelWithExplicitOwner>
+		) => MutableModel<ModelWithExplicitOwner> | void
+	): ModelWithExplicitOwner;
+}
+
+export declare class ModelWithExplicitCustomOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithExplicitCustomOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly customowner?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithExplicitCustomOwner>);
+	static copyOf(
+		source: ModelWithExplicitCustomOwner,
+		mutator: (
+			draft: MutableModel<ModelWithExplicitCustomOwner>
+		) => MutableModel<ModelWithExplicitCustomOwner> | void
+	): ModelWithExplicitCustomOwner;
+}
+
+export declare class ModelWithMultipleCustomOwner {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<ModelWithMultipleCustomOwner, 'id'>;
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	};
+	readonly id: string;
+	readonly title: string;
+	readonly customownerOne?: string | null;
+	readonly customownerTwo?: string | null;
+	readonly createdAt?: string | null;
+	readonly updatedAt?: string | null;
+	constructor(init: ModelInit<ModelWithMultipleCustomOwner>);
+	static copyOf(
+		source: ModelWithMultipleCustomOwner,
+		mutator: (
+			draft: MutableModel<ModelWithMultipleCustomOwner>
+		) => MutableModel<ModelWithMultipleCustomOwner> | void
+	): ModelWithMultipleCustomOwner;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -1952,7 +2170,7 @@ export function testSchema(): Schema {
 						name: 'profileID',
 						isArray: false,
 						type: 'ID',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					profile: {
@@ -2277,6 +2495,55 @@ export function testSchema(): Schema {
 				},
 				syncable: true,
 				pluralName: 'BasicModels',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+				],
+			},
+			BasicModelWritableTS: {
+				name: 'BasicModelWritableTS',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: false,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: false,
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModelWritableTimestampss',
 				attributes: [
 					{
 						type: 'model',
@@ -3466,6 +3733,212 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+				],
+			},
+			ModelWithExplicitOwner: {
+				name: 'ModelWithExplicitOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithExplicitOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			},
+			ModelWithExplicitCustomOwner: {
+				name: 'ModelWithExplicitCustomOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					customowner: {
+						name: 'customowner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithExplicitCustomOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customowner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			},
+			ModelWithMultipleCustomOwner: {
+				name: 'ModelWithMultipleCustomOwner',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					customownerOne: {
+						name: 'customownerOne',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					customownerTwo: {
+						name: 'customownerTwo',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithMultipleCustomOwners',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customownerOne',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'customownerTwo',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'read'],
+								},
+							],
+						},
 					},
 				],
 			},

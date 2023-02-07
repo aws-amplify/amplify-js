@@ -482,7 +482,6 @@ const checkSchemaInitialized = () => {
  * @param codegenVersion schema codegenVersion
  */
 const checkSchemaCodegenVersion = (codegenVersion: string) => {
-	// TODO: set to correct version when released in codegen
 	const majorVersion = 3;
 	const minorVersion = 2;
 	let isValid = false;
@@ -741,18 +740,54 @@ const castInstanceType = (
 	return v;
 };
 
+/**
+ * Attempts to apply type-aware, casted field values from a given `init`
+ * object to the given `draft`.
+ *
+ * @param init The initialization object to extract field values from.
+ * @param modelDefinition The definition describing the target object shape.
+ * @param draft The draft to apply field values to.
+ */
 const initializeInstance = <T extends PersistentModel>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
+
 	Object.entries(init).forEach(([k, v]) => {
 		const parsedValue = castInstanceType(modelDefinition, k, v);
-
 		modelValidator(k, parsedValue);
 		(<any>draft)[k] = parsedValue;
 	});
+};
+
+/**
+ * Updates a draft to standardize its customer-defined fields so that they are
+ * consistent with the data as it would look after having been synchronized from
+ * Cloud storage.
+ *
+ * The exceptions to this are:
+ *
+ * 1. Non-schema/Internal [sync] metadata fields.
+ * 2. Cloud-managed fields, which are `null` until set by cloud storage.
+ *
+ * This function should be expanded if/when deviations between canonical Cloud
+ * storage data and locally managed data are found. For now, the known areas
+ * that require normalization are:
+ *
+ * 1. Ensuring all non-metadata fields are *defined*. (I.e., turn `undefined` -> `null`.)
+ *
+ * @param modelDefinition Definition for the draft. Used to discover all fields.
+ * @param draft The instance draft to apply normalizations to.
+ */
+const normalize = <T extends PersistentModel>(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	draft: Draft<T>
+) => {
+	for (const k of Object.keys(modelDefinition.fields)) {
+		if (draft[k] === undefined) (<any>draft)[k] = null;
+	}
 };
 
 const createModelClass = <T extends PersistentModel>(
@@ -804,6 +839,8 @@ const createModelClass = <T extends PersistentModel>(
 						draft._lastChangedAt = _lastChangedAt;
 						draft._deleted = _deleted;
 					}
+
+					normalize(modelDefinition, draft);
 				}
 			);
 
@@ -839,9 +876,10 @@ const createModelClass = <T extends PersistentModel>(
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
 						const parsedValue = castInstanceType(modelDefinition, k, v);
-
 						modelValidator(k, parsedValue);
 					});
+
+					normalize(modelDefinition, draft);
 				},
 				p => (patches = p)
 			);
