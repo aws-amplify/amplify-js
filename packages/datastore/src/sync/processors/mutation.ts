@@ -484,11 +484,6 @@ class MutationProcessor {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
 		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
 
-		const auth = modelDefinition.attributes?.find(a => a.type === 'auth');
-		const ownerFields: string[] = auth?.properties?.rules
-			.map(rule => rule.ownerField)
-			.filter(f => f) || ['owner'];
-
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
 		const [, opName, query] = queriesTuples!.find(
@@ -517,17 +512,7 @@ class MutationProcessor {
 			mutationInput = {};
 			const modelFields = Object.values(modelDefinition.fields);
 
-			for (const { name, type, association, isReadOnly } of modelFields) {
-				// omit readonly fields. cloud storage doesn't need them and won't take them!
-				if (isReadOnly) {
-					continue;
-				}
-
-				// omit owner fields if it's `null`. cloud storage doesn't allow it.
-				if (ownerFields.includes(name) && parsedData[name] === null) {
-					continue;
-				}
-
+			for (const { name, type, association } of modelFields) {
 				// model fields should be stripped out from the input
 				if (isModelFieldType(type)) {
 					// except for belongs to relations - we need to replace them with the correct foreign key(s)
