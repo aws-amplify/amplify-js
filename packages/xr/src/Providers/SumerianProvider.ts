@@ -20,6 +20,8 @@ import {
 type SumerianSceneOptions = SceneOptions & { progressCallback: Function };
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
+const SUMERIAN_DEPRECATION_MESSAGE =
+	'The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible as of February 21, 2023. Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.';
 
 const logger = new Logger('SumerianProvider');
 
@@ -142,8 +144,19 @@ export class SumerianProvider extends AbstractXRProvider {
 			logger.debug('No credentials available, the request will be unsigned');
 		}
 
-		const apiResponse = await fetch(url, fetchOptions);
+		let apiResponse;
+		try {
+			apiResponse = await fetch(url, fetchOptions);
+		} catch (e) {
+			throw new XRSceneLoadFailure(SUMERIAN_DEPRECATION_MESSAGE);
+		}
+
 		const apiResponseJson = await apiResponse.json();
+
+		if (apiResponse.status === 404) {
+			throw new XRSceneLoadFailure(SUMERIAN_DEPRECATION_MESSAGE);
+		}
+
 		if (apiResponse.status === 403) {
 			if (apiResponseJson.message) {
 				logger.error(
