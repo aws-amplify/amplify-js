@@ -512,12 +512,7 @@ class MutationProcessor {
 			mutationInput = {};
 			const modelFields = Object.values(modelDefinition.fields);
 
-			for (const { name, type, association, isReadOnly } of modelFields) {
-				// omit readonly fields. cloud storage doesn't need them and won't take them!
-				if (isReadOnly) {
-					continue;
-				}
-
+			for (const { name, type, association } of modelFields) {
 				// model fields should be stripped out from the input
 				if (isModelFieldType(type)) {
 					// except for belongs to relations - we need to replace them with the correct foreign key(s)
