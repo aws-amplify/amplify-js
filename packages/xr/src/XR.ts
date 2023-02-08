@@ -19,9 +19,9 @@ export class XRClass {
 	 * Initialize XR with AWS configurations
 	 *
 	 * @param {XROptions} options - Configuration object for XR
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	constructor(options: XROptions) {
 		this._options = options;
@@ -38,9 +38,9 @@ export class XRClass {
 	 *
 	 * @param {XROptions} config - Configuration for XR
 	 * @return {Object} - The current configuration
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	configure(options: XROptions) {
 		const opt = options ? options.XR || options : {};
@@ -62,9 +62,9 @@ export class XRClass {
 	/**
 	 * add plugin into XR category
 	 * @param {Object} pluggable - an instance of the plugin
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public async addPluggable(pluggable: XRProvider) {
 		if (pluggable && pluggable.getCategory() === 'XR') {
@@ -76,9 +76,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public async loadScene(
 		sceneName: string,
@@ -98,9 +98,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public isSceneLoaded(
 		sceneName: string,
@@ -114,9 +114,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public getSceneController(
 		sceneName: string,
@@ -130,9 +130,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js. 
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public isVRCapable(
 		sceneName: string,
@@ -146,9 +146,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public isVRPresentationActive(
 		sceneName: string,
@@ -162,9 +162,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public start(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
@@ -175,9 +175,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public enterVR(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
@@ -188,9 +188,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public exitVR(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
@@ -201,9 +201,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public isMuted(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
@@ -214,9 +214,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public setMuted(
 		sceneName: string,
@@ -231,9 +231,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see 
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public onSceneEvent(
 		sceneName: string,
@@ -253,9 +253,9 @@ export class XRClass {
 	}
 
 	/**
-	 * @deprecated The XR category is on deprecation path. Please see
-	 * https://github.com/aws-samples/aws-tools-for-babylonjs-editor for examples 
-	 * on using AWS services with Babylon.js.
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public enableAudio(
 		sceneName: string,
