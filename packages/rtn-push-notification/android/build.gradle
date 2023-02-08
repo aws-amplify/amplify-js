@@ -6,7 +6,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        mavenLocal()
     }
 
     dependencies {
@@ -44,7 +43,6 @@ repositories {
     maven { url "$rootDir/../../../node_modules/react-native/android" }
     google()
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
