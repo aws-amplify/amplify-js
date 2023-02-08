@@ -1,0 +1,64 @@
+buildscript {
+    def kotlin_version = rootProject.ext.has('kotlinVersion')
+            ? rootProject.ext.get('kotlinVersion')
+            : project.properties['default_kotlinVersion']
+
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        if (project == rootProject) {
+            classpath 'com.android.tools.build:gradle:7.2.2'
+        }
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+def getExtOrDefault(prop) {
+    (rootProject.ext.has(prop) ? rootProject.ext.get(prop) : project.properties["default_$prop"]).toInteger()
+}
+
+android {
+    compileSdkVersion getExtOrDefault('compileSdkVersion')
+    defaultConfig {
+        minSdkVersion getExtOrDefault('minSdkVersion')
+        targetSdkVersion getExtOrDefault('targetSdkVersion')
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+repositories {
+    // React Native installed via NPM location in application
+    maven { url "$rootDir/../node_modules/react-native/android" }
+    // React Native installed via NPM location in Amplify monorepo
+    maven { url "$rootDir/../../../node_modules/react-native/android" }
+    google()
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    //noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+
+    // Import the Firebase BoM and cloud messaging dependency
+    implementation platform('com.google.firebase:firebase-bom:31.0.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // Import support library for build notifications
+    implementation 'androidx.core:core-ktx:1.8.0'
+
+    // Import support library for Amplify push utils
+    implementation 'com.amplifyframework:aws-push-notifications-pinpoint-utils:2.1.0'
+}
