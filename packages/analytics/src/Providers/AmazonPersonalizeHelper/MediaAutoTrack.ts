@@ -173,7 +173,7 @@ export class MediaAutoTrack {
 		const newParams = Object.assign({}, this._params);
 		const { eventData } = newParams;
 		eventData.eventType = eventType;
-		let currentPlayTime;
+		let currentPlayTime: string;
 		if (mediaType === MEDIA_TYPE.VIDEO) {
 			currentPlayTime = this._mediaElement.currentTime;
 			eventData.properties.duration = this._mediaElement.duration;
