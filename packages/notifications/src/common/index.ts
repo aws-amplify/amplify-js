@@ -2,5 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { default as AWSPinpointProviderCommon } from './AWSPinpointProviderCommon';
-export * from './eventListeners';
-export * from './eventListeners/types';
+export {
+	addEventListener,
+	notifyEventListeners,
+	notifyEventListenersAndAwaitHandlers,
+} from './eventListeners';
+export { EventListener, EventType } from './eventListeners/types';
