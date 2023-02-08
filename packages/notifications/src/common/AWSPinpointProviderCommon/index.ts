@@ -135,7 +135,7 @@ export default abstract class AWSPinpointProviderCommon
 				},
 			};
 			const command: PutEventsCommand = new PutEventsCommand(input);
-			this.logger.debug('recording analytics event', input);
+			this.logger.debug('recording analytics event');
 			await this.config.pinpointClient.send(command);
 		} catch (err) {
 			throw err;
@@ -221,7 +221,7 @@ export default abstract class AWSPinpointProviderCommon
 				},
 			};
 			const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
-			this.logger.debug('updating endpoint', input);
+			this.logger.debug('updating endpoint');
 			await this.config.pinpointClient.send(command);
 			this.endpointInitialized = true;
 		} catch (err) {
