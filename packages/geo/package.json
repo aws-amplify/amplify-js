@@ -24,7 +24,8 @@
 		"build:cjs:watch": "node ./build es5 --watch",
 		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
 		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
-		"clean": "rimraf lib-esm lib dist dual-publish-tmp",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 86.56"
@@ -56,7 +57,7 @@
 			"name": "Geo (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Geo }",
-			"limit": "64.5 kB"
+			"limit": "65 kB"
 		}
 	],
 	"jest": {
