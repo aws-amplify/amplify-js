@@ -155,38 +155,6 @@ const getModelDefinition = (
 		? schema.namespaces[namespace].models[modelConstructor.name]
 		: undefined;
 
-	// compatibility with legacy/pre-PK codegen for lazy loading to inject
-	// index fields into the model definition.
-	if (definition) {
-		const indexes =
-			schema.namespaces[namespace].relationships![modelConstructor.name]
-				.indexes;
-
-		const indexFields = new Set<string>();
-		for (const index of indexes) {
-			for (const indexField of index[1]) {
-				indexFields.add(indexField);
-			}
-		}
-
-		definition.fields = {
-			...Object.fromEntries(
-				[...indexFields.values()].map(
-					name => [
-						name,
-						{
-							name,
-							type: 'ID',
-							isArray: false,
-						},
-					],
-					[]
-				)
-			),
-			...definition.fields,
-		};
-	}
-
 	return definition;
 };
 
@@ -412,6 +380,34 @@ const initSchema = (userSchema: Schema) => {
 					});
 				}
 			});
+
+			// compatibility with legacy/pre-PK codegen for lazy loading to inject
+			// index fields into the model definition.
+			// definition.cloudFields = { ...definition.fields };
+
+			const indexes =
+				schema.namespaces[namespace].relationships![model.name].indexes;
+
+			const indexFields = new Set<string>();
+			for (const index of indexes) {
+				for (const indexField of index[1]) {
+					indexFields.add(indexField);
+				}
+			}
+
+			model.allFields = {
+				...Object.fromEntries(
+					[...indexFields.values()].map(name => [
+						name,
+						{
+							name,
+							type: 'ID',
+							isArray: false,
+						},
+					])
+				),
+				...model.fields,
+			};
 		});
 
 		const result = new Map<string, string[]>();
