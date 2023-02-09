@@ -203,7 +203,7 @@ export class AuthClass {
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
-			identityPoolRegion,
+			identityPoolRegion
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -1139,11 +1139,7 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
-					dispatchAuthEvent(
-						'signIn',
-						user,
-						`A user ${user.getUsername()} has been signed in`
-					);
+					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
 					dispatchAuthEvent(
 						'verify',
 						user,
@@ -1186,6 +1182,7 @@ export class AuthClass {
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
+							that.user = user;
 							let currentUser;
 							try {
 								currentUser = await this.currentUserPoolUser();
@@ -1440,16 +1437,11 @@ export class AuthClass {
 					attributeList,
 					(err, result, details) => {
 						if (err) {
-							dispatchAuthEvent(
-								'updateUserAttributes_failure',
-								err,
-								'Failed to update attributes'
-							);
+							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
-								attributes as Record<string, string>,
-								details?.CodeDeliveryDetailsList
+								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
 							);
 							dispatchAuthEvent(
 								'updateUserAttributes',
@@ -1472,11 +1464,9 @@ export class AuthClass {
 		const attrs = {};
 		Object.keys(attributes).forEach(key => {
 			attrs[key] = {
-				isUpdated: true,
+				isUpdated: true
 			};
-			const codeDeliveryDetails = codeDeliveryDetailsList?.find(
-				value => value.AttributeName === key
-			);
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
 			if (codeDeliveryDetails) {
 				attrs[key].isUpdated = false;
 				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
