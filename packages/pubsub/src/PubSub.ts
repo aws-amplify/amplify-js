@@ -7,7 +7,6 @@ import {
 	Amplify,
 	browserOrNode,
 	ConsoleLogger as Logger,
-	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
