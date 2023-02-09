@@ -19,6 +19,9 @@ export class XRClass {
 	 * Initialize XR with AWS configurations
 	 *
 	 * @param {XROptions} options - Configuration object for XR
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	constructor(options: XROptions) {
 		this._options = options;
@@ -35,6 +38,9 @@ export class XRClass {
 	 *
 	 * @param {XROptions} config - Configuration for XR
 	 * @return {Object} - The current configuration
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	configure(options: XROptions) {
 		const opt = options ? options.XR || options : {};
@@ -56,6 +62,9 @@ export class XRClass {
 	/**
 	 * add plugin into XR category
 	 * @param {Object} pluggable - an instance of the plugin
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
 	 */
 	public async addPluggable(pluggable: XRProvider) {
 		if (pluggable && pluggable.getCategory() === 'XR') {
@@ -66,6 +75,11 @@ export class XRClass {
 		}
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public async loadScene(
 		sceneName: string,
 		domElementId: string,
@@ -83,6 +97,11 @@ export class XRClass {
 		);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public isSceneLoaded(
 		sceneName: string,
 		provider: string = this._defaultProvider
@@ -94,6 +113,11 @@ export class XRClass {
 		return this._pluggables[provider].isSceneLoaded(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public getSceneController(
 		sceneName: string,
 		provider: string = this._defaultProvider
@@ -105,6 +129,11 @@ export class XRClass {
 		return this._pluggables[provider].getSceneController(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public isVRCapable(
 		sceneName: string,
 		provider: string = this._defaultProvider
@@ -116,6 +145,11 @@ export class XRClass {
 		return this._pluggables[provider].isVRCapable(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public isVRPresentationActive(
 		sceneName: string,
 		provider: string = this._defaultProvider
@@ -127,6 +161,11 @@ export class XRClass {
 		return this._pluggables[provider].isVRPresentationActive(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public start(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
@@ -135,6 +174,11 @@ export class XRClass {
 		return this._pluggables[provider].start(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public enterVR(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
@@ -143,6 +187,11 @@ export class XRClass {
 		return this._pluggables[provider].enterVR(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public exitVR(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
@@ -151,6 +200,11 @@ export class XRClass {
 		return this._pluggables[provider].exitVR(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public isMuted(sceneName: string, provider: string = this._defaultProvider) {
 		if (!this._pluggables[provider])
 			throw new XRProviderNotConfigured(
@@ -159,6 +213,11 @@ export class XRClass {
 		return this._pluggables[provider].isMuted(sceneName);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public setMuted(
 		sceneName: string,
 		muted: boolean,
@@ -171,6 +230,11 @@ export class XRClass {
 		return this._pluggables[provider].setMuted(sceneName, muted);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public onSceneEvent(
 		sceneName: string,
 		eventName: string,
@@ -188,6 +252,11 @@ export class XRClass {
 		);
 	}
 
+	/**
+	 * @deprecated The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible
+	 * as of February 21, 2023. Follow the documentation on this page
+	 * https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.
+	 */
 	public enableAudio(
 		sceneName: string,
 		provider: string = this._defaultProvider

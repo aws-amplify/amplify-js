@@ -1,4 +1,4 @@
-import Cookies from 'universal-cookie';
+import Cookies, { CookieSetOptions } from 'universal-cookie';
 import { browserOrNode } from '../JS';
 
 type Store = Record<string, string>;
@@ -7,6 +7,8 @@ const { isBrowser } = browserOrNode();
 
 // Avoid using @types/next because @aws-amplify/ui-angular's version of TypeScript is too old to support it
 type Context = { req?: any };
+
+const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
 
 export class UniversalStorage implements Storage {
 	cookies = new Cookies();
@@ -71,29 +73,25 @@ export class UniversalStorage implements Storage {
 		//  2. `${ProviderPrefix}.${userPoolClientId}.LastAuthUser
 		const tokenType = key.split('.').pop();
 
-		switch (tokenType) {
-			// LastAuthUser is needed for computing other key names
-			case 'LastAuthUser':
-
-			// accessToken is required for CognitoUserSession
-			case 'accessToken':
-
+		const sessionTokenTypes = [
+			'LastAuthUser',
+			'accessToken',
 			// refreshToken originates on the client, but SSR pages won't fail when this expires
 			// Note: the new `accessToken` will also be refreshed on the client (since Amplify doesn't set server-side cookies)
-			case 'refreshToken':
-
+			'refreshToken',
 			// Required for CognitoUserSession
-			case 'idToken':
-				isBrowser
-					? this.setUniversalItem(key, value)
-					: this.setLocalItem(key, value);
-
+			'idToken',
 			// userData is used when `Auth.currentAuthenticatedUser({ bypassCache: false })`.
 			// Can be persisted to speed up calls to `Auth.currentAuthenticatedUser()`
-			// case 'userData':
+			// 'userData',
 
 			// Ignoring clockDrift on the server for now, but needs testing
-			// case 'clockDrift':
+			// 'clockDrift',
+		];
+		if (sessionTokenTypes.includes(tokenType ?? '')) {
+			this.setUniversalItem(key, value, {
+				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
+			});
 		}
 	}
 
@@ -101,13 +99,19 @@ export class UniversalStorage implements Storage {
 		this.store[key] = value;
 	}
 
-	protected setUniversalItem(key: keyof Store, value: string) {
+	protected setUniversalItem(
+		key: keyof Store,
+		value: string,
+		options: CookieSetOptions = {}
+	) {
 		this.cookies.set(key, value, {
+			...options,
 			path: '/',
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
 			sameSite: true,
 			// Allow unsecure requests to http://localhost:3000/ when in development.
-			secure: window.location.hostname === 'localhost' ? false : true,
+			secure:
+				isBrowser && window.location.hostname === 'localhost' ? false : true,
 		});
 	}
 }

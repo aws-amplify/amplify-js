@@ -62,24 +62,24 @@ export const getPrefix = (config: {
 	}
 };
 
-export const createPrefixMiddleware = (
-	opt: Record<string, any>,
-	key: string
-): InitializeMiddleware<any, any> => (next, _context) => async args => {
-	const credentials = await Credentials.get();
-	const cred = Credentials.shear(credentials);
-	const prefix = getPrefix({ ...opt, credentials: cred });
-	const clonedInput = Object.assign({}, args.input);
-	if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
-		clonedInput.Key = prefix + key;
-		args.input = clonedInput;
-	} else if (Object.prototype.hasOwnProperty.call(args.input, 'Prefix')) {
-		clonedInput.Prefix = prefix + key;
-		args.input = clonedInput;
-	}
-	const result = next(args);
-	return result;
-};
+export const createPrefixMiddleware =
+	(opt: Record<string, any>, key: string): InitializeMiddleware<any, any> =>
+	(next, _context) =>
+	async args => {
+		const credentials = await Credentials.get();
+		const cred = Credentials.shear(credentials);
+		const prefix = getPrefix({ ...opt, credentials: cred });
+		const clonedInput = Object.assign({}, args.input);
+		if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
+			clonedInput.Key = prefix + key;
+			args.input = clonedInput;
+		} else if (Object.prototype.hasOwnProperty.call(args.input, 'Prefix')) {
+			clonedInput.Prefix = prefix + key;
+			args.input = clonedInput;
+		}
+		const result = next(args);
+		return result;
+	};
 
 const isTimeSkewedError = (err: any): boolean =>
 	err.ServerTime &&
@@ -87,27 +87,26 @@ const isTimeSkewedError = (err: any): boolean =>
 	err.Code === 'RequestTimeTooSkewed';
 
 // we want to take the S3Client config in parameter so we can modify it's systemClockOffset
-export const autoAdjustClockskewMiddleware = (
-	config: S3ClientConfig
-): FinalizeRequestMiddleware<any, any> => (
-	next,
-	_context: HandlerExecutionContext
-) => async args => {
-	try {
-		return await next(args);
-	} catch (err) {
-		if (isTimeSkewedError(err)) {
-			const serverDate = new Date(err.ServerTime);
-			config.systemClockOffset = serverDate.getTime() - Date.now();
+export const autoAdjustClockskewMiddleware =
+	(config: S3ClientConfig): FinalizeRequestMiddleware<any, any> =>
+	(next, _context: HandlerExecutionContext) =>
+	async args => {
+		try {
+			return await next(args);
+		} catch (err) {
+			if (isTimeSkewedError(err)) {
+				const serverDate = new Date(err.ServerTime);
+				config.systemClockOffset = serverDate.getTime() - Date.now();
+			}
+			throw err;
 		}
-		throw err;
-	}
-};
+	};
 
-export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions = {
-	step: 'finalizeRequest',
-	name: 'autoAdjustClockskewMiddleware',
-};
+export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions =
+	{
+		step: 'finalizeRequest',
+		name: 'autoAdjustClockskewMiddleware',
+	};
 
 export const prefixMiddlewareOptions: InitializeHandlerOptions = {
 	step: 'initialize',
@@ -165,4 +164,23 @@ export const createS3Client = (
 	});
 	s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 	return s3client;
+};
+
+const MB = 1024 * 1024;
+const GB = 1024 * MB;
+const TB = 1024 * GB;
+
+export const DEFAULT_PART_SIZE = 5 * MB;
+export const MAX_OBJECT_SIZE = 5 * TB;
+export const MAX_PARTS_COUNT = 10000;
+export const DEFAULT_QUEUE_SIZE = 4;
+
+export const calculatePartSize = (totalSize: number): number => {
+	let partSize = DEFAULT_PART_SIZE;
+	let partsCount = Math.ceil(totalSize / partSize);
+	while (partsCount > MAX_PARTS_COUNT) {
+		partSize *= 2;
+		partsCount = Math.ceil(totalSize / partSize);
+	}
+	return partSize;
 };

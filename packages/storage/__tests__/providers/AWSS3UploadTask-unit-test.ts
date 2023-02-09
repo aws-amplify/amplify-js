@@ -2,21 +2,22 @@ import {
 	AWSS3UploadTask,
 	AWSS3UploadTaskState,
 	AWSS3UploadTaskParams,
+	TaskEvents,
 } from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
 	S3Client,
 	AbortMultipartUploadCommand,
+	CompleteMultipartUploadCommand,
 	ListPartsCommand,
 	CreateMultipartUploadCommand,
 	ListObjectsV2Command,
+	UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
 
-afterEach(() => {
-	jest.clearAllMocks();
-});
+const MB = 1024 * 1024;
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -35,7 +36,7 @@ const testOpts: any = {
 
 let mockLocalStorageItems = {};
 
-const mockLocalStorage = ({
+const mockLocalStorage = {
 	getItem: jest.fn().mockImplementation(key => mockLocalStorageItems[key]),
 	setItem: jest.fn().mockImplementation((key, value) => {
 		mockLocalStorageItems[key] = value;
@@ -46,7 +47,7 @@ const mockLocalStorage = ({
 	removeItem: jest.fn().mockImplementation(key => {
 		mockLocalStorageItems[key] = undefined;
 	}),
-} as unknown) as Storage;
+} as unknown as Storage;
 
 describe('resumable upload task test', () => {
 	afterEach(() => {
@@ -111,8 +112,67 @@ describe('resumable upload task test', () => {
 		expect(cancelled).toBe(true);
 		uploadTask._cancel().then(cancelled => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-			expect(cancelled).toBe(true);
+			expect(cancelled).toBe(false);
 		});
+	});
+
+	test('should throw error when remote and local file sizes do not match upon completed upload', done => {
+		const file = new File(['TestFileContent'], 'testFileName');
+		Object.defineProperty(file, 'size', { value: 25048576 });
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			s3Client: new S3Client(testOpts),
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof AbortMultipartUploadCommand) {
+				return Promise.resolve({ Key: input.params.Key });
+			} else if (command instanceof ListObjectsV2Command) {
+				return Promise.resolve({
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 15048576 }],
+				});
+			} else if (command instanceof CompleteMultipartUploadCommand) {
+				return Promise.resolve();
+			} else if (command instanceof CreateMultipartUploadCommand) {
+				return Promise.resolve({
+					UploadId: 'test-upload-id',
+				});
+			} else if (command instanceof UploadPartCommand) {
+				return Promise.resolve({
+					ETag: 'test-upload-ETag',
+				});
+			}
+		});
+		const uploadTask = new AWSS3UploadTask(input);
+
+		Object.defineProperty(uploadTask, 'params', {
+			value: {
+				Bucket: 'test-bucket',
+				Key: 'test-key',
+			},
+		});
+		Object.defineProperty(uploadTask, 'uploadId', { value: 'test-upload-id' });
+		Object.defineProperty(uploadTask, 'completedParts', { value: [] });
+
+		function callback(err) {
+			expect(err?.message).toBe(
+				'File size does not match between local file and file on s3'
+			);
+			done();
+		}
+		emitter.addListener(TaskEvents.ERROR, callback);
+
+		// Only testing
+		// @ts-ignore
+		uploadTask._completeUpload();
 	});
 
 	test('should send listParts request if the upload task is cached', async () => {
@@ -138,7 +198,7 @@ describe('resumable upload task test', () => {
 				});
 			} else if (command instanceof ListObjectsV2Command) {
 				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
+					Contents: [{ Key: 'prefix' + input.params.Key, Size: 25048576 }],
 				});
 			}
 		});
@@ -150,7 +210,7 @@ describe('resumable upload task test', () => {
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
 			storage: mockLocalStorage,
-			level: 'public' as StorageAccessLevel,
+			level: 'public',
 			params: {
 				Bucket: 'bucket',
 				Key: 'key',
@@ -189,5 +249,84 @@ describe('resumable upload task test', () => {
 			UPLOADS_STORAGE_KEY,
 			'{}'
 		);
+	});
+
+	test('upload a body that exceeds the size of default part size and parts count', done => {
+		const testUploadId = 'testUploadId';
+		let buffer: ArrayBuffer;
+		const file = {
+			size: 100_000 * MB,
+			slice: jest.fn().mockImplementation((start, end) => {
+				if (end - start !== buffer?.byteLength) {
+					buffer = new ArrayBuffer(end - start);
+				}
+				return buffer;
+			}),
+		} as any as File;
+		const key = 'key';
+
+		const s3ServiceCallSpy = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async command => {
+				if (command instanceof CreateMultipartUploadCommand) {
+					return Promise.resolve({ UploadId: testUploadId });
+				} else if (command instanceof UploadPartCommand) {
+					return Promise.resolve({
+						ETag: 'test_etag_' + command.input.PartNumber,
+					});
+				} else if (command instanceof CompleteMultipartUploadCommand) {
+					return Promise.resolve({ Key: key });
+				} else if (command instanceof ListObjectsV2Command) {
+					return Promise.resolve({
+						Contents: [{ Key: 'prefix' + key, Size: file.size }],
+					});
+				}
+			});
+
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file,
+			s3Client: new S3Client(testOpts),
+			emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		const uploadTask = new AWSS3UploadTask(input);
+		uploadTask.resume();
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			expect(file.slice).toBeCalledTimes(10000); // S3 limit of parts count.
+			expect(s3ServiceCallSpy).toBeCalledTimes(10000 + 3);
+			done();
+		});
+	});
+
+	test('error case: throw if body size exceeds the size limit of S3 object(5TB)', async () => {
+		const GB = 1024 * MB;
+		const emitter = new events.EventEmitter();
+		const input: AWSS3UploadTaskParams = {
+			file: { size: 5 * 1024 * GB + 1 } as File,
+			s3Client: new S3Client(testOpts),
+			emitter: emitter,
+			storage: mockLocalStorage,
+			level: 'public' as StorageAccessLevel,
+			params: {
+				Bucket: 'bucket',
+				Key: 'key',
+			},
+			prefixPromise: Promise.resolve('prefix'),
+		};
+		try {
+			new AWSS3UploadTask(input);
+			fail('expect test to fail');
+		} catch (error) {
+			expect(error.message).toEqual(
+				expect.stringContaining('File size bigger than S3 Object limit of 5TB')
+			);
+		}
 	});
 });
