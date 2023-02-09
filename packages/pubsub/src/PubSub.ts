@@ -105,7 +105,7 @@ export class PubSubClass {
 	}
 
 	private getProviders(options: ProviderOptions = {}) {
-		const providerName = options?.provider;
+		const providerName = options.provider;
 		if (!providerName) {
 			return this._pluggables;
 		}
