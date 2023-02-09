@@ -1443,11 +1443,7 @@ export class AuthClass {
 							const attrs = this.createUpdateAttributesResultList(
 								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
 							);
-							dispatchAuthEvent(
-								'updateUserAttributes',
-								attrs,
-								'Attributes successfully updated'
-							);
+							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
 							return resolve(result);
 						}
 					},
