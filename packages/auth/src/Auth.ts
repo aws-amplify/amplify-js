@@ -1186,9 +1186,7 @@ export class AuthClass {
 							let currentUser;
 							try {
 								currentUser = await this.currentUserPoolUser();
-								const { attributes, preferredMFA } = currentUser;
-								user.attributes = attributes;
-								user.preferredMFA = preferredMFA;
+								user.attributes = currentUser.attributes;
 							} catch (e) {
 								logger.debug('cannot get updated Cognito User', e);
 							}
