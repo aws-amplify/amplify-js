@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.14.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.6...@aws-amplify/datastore@3.14.7) (2023-02-09)
+
+
+### Bug Fixes
+
+* **datastore:** optional hasOne (v4) ([#10689](https://github.com/aws-amplify/amplify-js/issues/10689)) ([4fa33a1](https://github.com/aws-amplify/amplify-js/commit/4fa33a1dc9b8334a61e420201a58ad95bc3d32df))
+
+
+
+
+
 ## [3.14.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.14.5...@aws-amplify/datastore@3.14.6) (2022-12-27)
 
 **Note:** Version bump only for package @aws-amplify/datastore
