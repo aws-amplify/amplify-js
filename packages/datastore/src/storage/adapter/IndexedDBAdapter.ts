@@ -443,17 +443,6 @@ class IndexedDBAdapter implements Adapter {
 		const hasPagination = pagination && pagination.limit;
 
 		const records: T[] = (await (async () => {
-			//
-			// NOTE: @svidgen explored removing this and letting query() take care of automatic
-			// index leveraging. This would eliminate some amount of very similar code.
-			// But, getAll is slightly slower than get()
-			//
-			// On Chrome:
-			//   ~700ms vs ~1175ms per 10k reads.
-			//
-			// You can (and should) check my work here:
-			// 	https://gist.github.com/svidgen/74e55d573b19c3e5432b1b5bdf0f4d96
-			//
 			if (queryByKey) {
 				const record = await this.getByKey(storeName, queryByKey);
 				return record ? [record] : [];
@@ -506,16 +495,7 @@ class IndexedDBAdapter implements Adapter {
 
 		for (const key of keyPath) {
 			const predicateObj = predicateObjs.find(
-				p =>
-					// it's a relevant predicate object only if it's an equality
-					// operation for a key field from the key:
-					isPredicateObj(p) &&
-					p.field === key &&
-					p.operator === 'eq' &&
-					// it's only valid if it's not nullish.
-					// (IDB will throw a fit if it's nullish.)
-					p.operand !== null &&
-					p.operand !== undefined
+				p => isPredicateObj(p) && p.field === key && p.operator === 'eq'
 			) as PredicateObject<T>;
 
 			predicateObj && keyValues.push(predicateObj.operand);
