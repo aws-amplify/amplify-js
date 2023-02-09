@@ -16,9 +16,15 @@ import {
 	mqttTopicMatch,
 } from '../src/Providers';
 
-import { Credentials, Reachability } from '@aws-amplify/core';
-import * as Paho from '../src/vendor/paho-mqtt';
-import { ConnectionState } from '../src';
+import {
+	Credentials,
+	Hub,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+	Logger,
+	Reachability,
+} from '@aws-amplify/core';
+import * as Paho from 'paho-mqtt';
+import { ConnectionState, CONNECTION_STATE_CHANGE } from '../src';
 import { HubConnectionListener } from './helpers';
 import Observable from 'zen-observable-ts';
 import * as constants from '../src/Providers/constants';
@@ -62,9 +68,17 @@ const credentials = {
 	authenticated: true,
 };
 
-const testPubSubAsync = (pubsub, topic, message, options?) =>
+const testPubSubAsync = (
+	pubsub,
+	topic,
+	message,
+	options?,
+	hubConnectionListener?
+) =>
 	new Promise(async (resolve, reject) => {
-		let hubConnectionListener = new HubConnectionListener('pubsub');
+		if (hubConnectionListener === undefined) {
+			hubConnectionListener = new HubConnectionListener('pubsub');
+		}
 		const obs = pubsub.subscribe(topic, options).subscribe({
 			next: data => {
 				expect(data.value).toEqual(message);
@@ -440,7 +454,7 @@ describe('PubSub', () => {
 				provider: 'MqttOverWSProvider',
 			});
 
-			expect(mqttOverWSProvider.isSSLEnabled).toBe(false);
+			expect(mqttOverWSProvider['isSSLEnabled']).toBe(false);
 			expect(mockConnect).toBeCalledWith({
 				useSSL: false,
 				mqttVersion: 3,
@@ -468,26 +482,26 @@ describe('PubSub', () => {
 			expect(awsIotProvider.getCategory()).toBe('PubSub');
 			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
 
-			await testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
-				provider: 'AWSIoTProvider',
-			});
+			let hubConnectionListener = new HubConnectionListener('pubsub');
+			await testPubSubAsync(
+				pubsub,
+				'topicA',
+				'my message AWSIoTProvider',
+				{
+					provider: 'AWSIoTProvider',
+				},
+				hubConnectionListener
+			);
 
-			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider', {
-				provider: 'MqttOverWSProvider',
-			});
-		});
-
-		test('subscribe and publish to MQTT provider while also using AppSync API subscriptions', async () => {
-			const pubsub = new PubSub();
-
-			const mqttOverWSProvider = new MqttOverWSProvider({
-				aws_pubsub_endpoint: 'wss://iot.eclipse.org:443/mqtt',
-			});
-			pubsub.addPluggable(mqttOverWSProvider);
-
-			expect(mqttOverWSProvider.getCategory()).toBe('PubSub');
-
-			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
+			await testPubSubAsync(
+				pubsub,
+				'topicA',
+				'my message MqttOverWSProvider',
+				{
+					provider: 'MqttOverWSProvider',
+				},
+				hubConnectionListener
+			);
 		});
 
 		test('error is thrown if provider name is not found', () => {
@@ -501,7 +515,9 @@ describe('PubSub', () => {
 			);
 
 			const subscribe = () => {
-				pubsub.subscribe('myTopic', { provider: testProviderName });
+				pubsub.subscribe('myTopic', {
+					provider: { providerName: testProviderName },
+				});
 			};
 
 			expect(subscribe).toThrow(

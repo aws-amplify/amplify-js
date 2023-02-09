@@ -4,10 +4,13 @@ import Observable from 'zen-observable-ts';
 
 export interface PubSubOptions {
 	[key: string]: any;
+	ssr?: boolean;
+	PubSub?: {};
 }
 
 export interface ProviderOptions {
 	[key: string]: any;
+	provider?: string | symbol;
 }
 
 export interface PubSubProvider {
@@ -20,7 +23,11 @@ export interface PubSubProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	publish(topics: string[] | string, msg: any, options?: ProviderOptions): void;
+	publish(
+		topics: string[] | string,
+		msg: object | string,
+		options?: ProviderOptions
+	): void;
 
 	subscribe(
 		topics: string[] | string,

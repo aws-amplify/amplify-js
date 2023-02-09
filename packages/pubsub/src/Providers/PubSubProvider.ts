@@ -6,14 +6,16 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('AbstractPubSubProvider');
 
-export abstract class AbstractPubSubProvider implements PubSubProvider {
-	private _config: ProviderOptions;
+export abstract class AbstractPubSubProvider<T extends ProviderOptions>
+	implements PubSubProvider
+{
+	private _config: T;
 
-	constructor(options: ProviderOptions = {}) {
+	constructor(options: T) {
 		this._config = options;
 	}
 
-	configure(config: ProviderOptions = {}): ProviderOptions {
+	configure(config: T): T {
 		this._config = { ...config, ...this._config };
 
 		logger.debug(`configure ${this.getProviderName()}`, this._config);
@@ -27,20 +29,20 @@ export abstract class AbstractPubSubProvider implements PubSubProvider {
 
 	abstract getProviderName(): string;
 
-	protected get options(): ProviderOptions {
+	protected get options(): T {
 		return { ...this._config };
 	}
 
-	public abstract newClient(clientOptions: ProviderOptions): Promise<any>;
+	public abstract newClient(clientOptions: T): Promise<any>;
 
 	public abstract publish(
 		topics: string[] | string,
-		msg: any,
-		options?: ProviderOptions
+		msg: object | string,
+		options?: T
 	): void;
 
 	public abstract subscribe(
 		topics: string[] | string,
-		options?: ProviderOptions
+		options?: T
 	): Observable<any>;
 }

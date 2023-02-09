@@ -7,6 +7,7 @@ import {
 	Amplify,
 	browserOrNode,
 	ConsoleLogger as Logger,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
@@ -60,7 +61,7 @@ export class PubSubClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options: PubSubOptions) {
-		const opt = options ? options.PubSub || options : {};
+		const opt: object = options ? options.PubSub || options : {};
 		logger.debug('configure PubSub', { opt });
 
 		this._options = Object.assign({}, this._options, opt);
@@ -105,14 +106,14 @@ export class PubSubClass {
 	}
 
 	private getProviders(options: ProviderOptions = {}) {
-		const { provider: providerName } = options;
+		const providerName = options?.provider;
 		if (!providerName) {
 			return this._pluggables;
 		}
 
 		const provider = this.getProviderByName(providerName);
 		if (!provider) {
-			throw new Error(`Could not find provider named ${providerName}`);
+			throw new Error(`Could not find provider named ${String(providerName)}`);
 		}
 
 		return [provider];
@@ -120,7 +121,7 @@ export class PubSubClass {
 
 	async publish(
 		topics: string[] | string,
-		msg: any,
+		msg: object | string,
 		options?: ProviderOptions
 	) {
 		return Promise.all(
@@ -144,7 +145,7 @@ export class PubSubClass {
 
 		const providers = this.getProviders(options);
 
-		return new Observable(observer => {
+		return new Observable<any>(observer => {
 			const observables = providers.map(provider => ({
 				provider,
 				observable: provider.subscribe(topics, options),
@@ -153,8 +154,8 @@ export class PubSubClass {
 			const subscriptions = observables.map(({ provider, observable }) =>
 				observable.subscribe({
 					start: console.error,
-					next: value => observer.next({ provider, value }),
-					error: error => observer.error({ provider, error }),
+					next: (value: object) => observer.next({ provider, value }),
+					error: (error: object) => observer.error({ provider, error }),
 					// complete: observer.complete, // TODO: when all completed, complete the outer one
 				})
 			);
