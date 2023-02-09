@@ -21,7 +21,7 @@ type SumerianSceneOptions = SceneOptions & { progressCallback: Function };
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
 const SUMERIAN_DEPRECATION_MESSAGE =
-	'The XR category depends on Amazon Sumerian to function. Amazon Sumerian scenes will not be accessible as of February 21, 2023. Follow the documentation on this page https://docs.amplify.aws/lib/xr/getting-started/q/platform/js/ to learn more about your migration options.';
+	'The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function and as a result, will no longer be available.';
 
 const logger = new Logger('SumerianProvider');
 
