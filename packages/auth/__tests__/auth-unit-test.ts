@@ -80,6 +80,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 	CognitoUserPool.prototype.getCurrentUser = () => {
 		return {
 			username: 'username',
+			attributes: { email: 'test@test.com' },
 			getSession: callback => {
 				// throw 3;
 				callback(null, {
@@ -109,7 +110,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = function() {
+	const CognitoUser = function () {
 		// mock private member
 		this.signInUserSession = null;
 	};
@@ -254,7 +255,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
 	};
-	CognitoUser.prototype.getSignInUserSession = function() {
+	CognitoUser.prototype.getSignInUserSession = function () {
 		return this.signInUserSession;
 	};
 
@@ -1332,6 +1333,34 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+		test('happy case attributes are appended', async () => {
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'sendMFACode')
+				.mockImplementationOnce((code, callback) => {
+					callback.onSuccess(session);
+				});
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const expectedUser = Object.assign(user, { email: 'test@test.com' });
+			const result = await auth.confirmSignIn(user, 'code', null);
+			expect(result.attributes.email).toEqual('test@test.com');
+			expect(hubSpy).toHaveBeenCalledWith(
+				'auth',
+				{
+					data: expectedUser,
+					event: 'signIn',
+					message: 'A user username has been signed in',
+				},
+				'Auth',
+				Symbol.for('amplify_default')
+			);
+			spyon.mockClear();
+		});
+
 		test('happy case clientMetadata default', async () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'sendMFACode');
 			const auth = new Auth(authOptionsWithClientMetadata);
@@ -1817,7 +1846,7 @@ describe('auth unit test', () => {
 			const concurrency = 10;
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
-				.mockImplementationOnce(function(callback: any) {
+				.mockImplementationOnce(function (callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
 				});
@@ -2996,12 +3025,13 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('error hub event', async (done) => {
+		test('error hub event', async done => {
 			expect.assertions(3);
-			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(new Error('Error'), null, null);
-			});
+				});
 
 			const auth = new Auth(authOptions);
 
@@ -3031,26 +3061,27 @@ describe('auth unit test', () => {
 			} catch (e) {
 				expect(e).toEqual(new Error('Error'));
 			}
-			
+
 			spyon.mockClear();
 		});
 
-		test('happy case code delivery details hub event', async (done) => {
+		test('happy case code delivery details hub event', async done => {
 			expect.assertions(2);
-			
+
 			const codeDeliverDetailsResult: any = {
-				'CodeDeliveryDetailsList': [ 
-				   { 
-					  'AttributeName': 'email',
-					  'DeliveryMedium': 'EMAIL',
-					  'Destination': 'e***@e***'
-				   }
-				]
+				CodeDeliveryDetailsList: [
+					{
+						AttributeName: 'email',
+						DeliveryMedium: 'EMAIL',
+						Destination: 'e***@e***',
+					},
+				],
 			};
-			const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'updateAttributes')
 				.mockImplementationOnce((attrs, callback: any) => {
 					callback(null, 'SUCCESS', codeDeliverDetailsResult);
-			});
+				});
 			const auth = new Auth(authOptions);
 
 			const user = new CognitoUser({
@@ -3064,20 +3095,20 @@ describe('auth unit test', () => {
 				sub: 'sub',
 			};
 			const payloadData = {
-				'email': {
+				email: {
 					isUpdated: false,
 					codeDeliveryDetails: {
 						AttributeName: 'email',
 						DeliveryMedium: 'EMAIL',
-						Destination: 'e***@e***'
-					}
+						Destination: 'e***@e***',
+					},
 				},
-				'phone_number': {
-					isUpdated: true
+				phone_number: {
+					isUpdated: true,
 				},
-				'sub': {
-					isUpdated: true
-				}
+				sub: {
+					isUpdated: true,
+				},
 			};
 			const listenToHub = Hub.listen('auth', ({ payload }) => {
 				const { event } = payload;

@@ -1186,13 +1186,21 @@ export class AuthClass {
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
-							const currentUser = await this.currentUserPoolUser();
+							let currentUser;
+							try {
+								currentUser = await this.currentUserPoolUser();
+								const { attributes, preferredMFA } = currentUser;
+								user.attributes = attributes;
+								user.preferredMFA = preferredMFA;
+							} catch (e) {
+								logger.debug('cannot get updated Cognito User', e);
+							}
 							dispatchAuthEvent(
 								'signIn',
-								currentUser,
-								`A user ${currentUser.getUsername()} has been signed in`
+								user,
+								`A user ${user.getUsername()} has been signed in`
 							);
-							resolve(currentUser);
+							resolve(user);
 						}
 					},
 					onFailure: err => {
