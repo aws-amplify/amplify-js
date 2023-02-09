@@ -67,6 +67,9 @@
 			"limit": "70.5 kB"
 		}
 	],
+	"devDependencies": {
+		"@aws-amplify/rtn-push-notification": "0.0.1"
+	},
 	"jest": {
 		"globals": {
 			"ts-jest": {
