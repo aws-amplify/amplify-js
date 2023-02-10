@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.13...@aws-amplify/datastore@4.0.14) (2023-02-09)
+
+
+### Bug Fixes
+
+* **datastore:** prevent double full sync at start ([#10923](https://github.com/aws-amplify/amplify-js/issues/10923)) ([99fe11a](https://github.com/aws-amplify/amplify-js/commit/99fe11a5004a436e68ea247bc92d00f6c1241701))
+
+
+
+
+
 ## [4.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.12...@aws-amplify/datastore@4.0.13) (2023-02-08)
 
 
