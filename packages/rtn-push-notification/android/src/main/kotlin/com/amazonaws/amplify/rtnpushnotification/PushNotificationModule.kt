@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 enum class PushNotificationPermissionStatus(val value: String) {
@@ -26,6 +27,7 @@ class PushNotificationModule(
 
     private var isAppLaunch: Boolean = true
     private var launchNotification: WritableMap? = null
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     init {
         reactContext.addActivityEventListener(this)
@@ -55,7 +57,7 @@ class PushNotificationModule(
 
     @ReactMethod
     fun requestMessagingPermission(promise: Promise) {
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             val permission = PushNotificationPermission(reactApplicationContext)
             val result = permission.requestPermission()
             if (result is PermissionRequestResult.Granted) {
@@ -104,7 +106,8 @@ class PushNotificationModule(
     }
 
     /**
-     * Store the app launching notification if app is in a quit state
+     * On every app resume (including launch), send the current device token to JS layer. Also
+     * store the app launching notification if app is in a quit state
      */
     override fun onHostResume() {
         val firebaseInstance = FirebaseMessaging.getInstance()
@@ -143,7 +146,7 @@ class PushNotificationModule(
     }
 
     override fun onHostDestroy() {
-        // noop - only overridden as this class implements LifecycleEventListener
+        scope.cancel()
     }
 
     companion object {
