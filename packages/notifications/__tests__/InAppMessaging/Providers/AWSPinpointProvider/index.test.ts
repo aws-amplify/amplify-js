@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import { Credentials, StorageHelper } from '@aws-amplify/core';
 import { PinpointClient } from '@aws-sdk/client-pinpoint';
 import cloneDeep from 'lodash/cloneDeep';
 
-import * as eventListeners from '../../../../src/InAppMessaging/eventListeners';
+import * as eventListeners from '../../../../src/common/eventListeners';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
@@ -15,6 +16,7 @@ import * as utils from '../../../../src/InAppMessaging/Providers/AWSPinpointProv
 import {
 	awsPinpointConfig,
 	credentials,
+	defaultConfig,
 	pinpointEndpointPayload,
 	pinpointInAppMessage,
 	simpleEvent,
@@ -25,7 +27,7 @@ import { mockStorage } from '../../../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-sdk/client-pinpoint');
-jest.mock('../../../../src/InAppMessaging/eventListeners');
+jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils');
 jest.mock(
 	'../../../../src/InAppMessaging/SessionTracker/SessionTracker',
@@ -44,10 +46,7 @@ const matchesEventTypeSpy = jest.spyOn(utils, 'matchesEventType');
 const matchesAttributesSpy = jest.spyOn(utils, 'matchesAttributes');
 const matchesMetricsSpy = jest.spyOn(utils, 'matchesMetrics');
 const isBeforeEndDateSpy = jest.spyOn(utils, 'isBeforeEndDate');
-const addListenerSpy = jest.spyOn(
-	eventListeners,
-	'addMessageInteractionEventListener'
-);
+const addListenerSpy = jest.spyOn(eventListeners, 'addEventListener');
 const clientSendSpy = jest.spyOn(PinpointClient.prototype, 'send') as jest.Mock;
 
 describe('AWSPinpoint InAppMessaging Provider', () => {
@@ -88,10 +87,17 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			expect(config).toMatchObject({});
 		});
 
+		test('attaches default channel info', () => {
+			const config = provider.configure();
+
+			expect(config).toMatchObject(defaultConfig);
+		});
+
 		test('attaches a storage helper to the config', () => {
 			const config = provider.configure(awsPinpointConfig);
 
 			expect(config).toStrictEqual({
+				...defaultConfig,
 				...awsPinpointConfig,
 				storage: mockStorage,
 			});
@@ -195,7 +201,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 			expect(logger.debug).toBeCalledWith(
 				'updating endpoint',
-				expect.objectContaining(pinpointEndpointPayload)
+				expect.objectContaining({ ApplicationId: 'pinpoint-project-id' })
 			);
 			expect(clientSendSpy).toBeCalled();
 		});
@@ -226,8 +232,8 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			matchesAttributesSpy.mockReturnValue(true);
 			matchesMetricsSpy.mockReturnValue(true);
 			isBeforeEndDateSpy.mockReturnValue(true);
-			addListenerSpy.mockImplementation((handleEvent, event) => {
-				if (event === InAppMessageInteractionEvent.MESSAGE_DISPLAYED) {
+			addListenerSpy.mockImplementation((type, handleEvent) => {
+				if (type === InAppMessageInteractionEvent.MESSAGE_DISPLAYED) {
 					notify = handleEvent;
 				}
 				return { handleEvent, remove: jest.fn() };

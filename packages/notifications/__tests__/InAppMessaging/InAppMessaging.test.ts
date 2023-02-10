@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import {
 	ConsoleLogger,
 	Hub,
@@ -12,9 +13,9 @@ import InAppMessaging, {
 	InAppMessageInteractionEvent,
 } from '../../src/InAppMessaging';
 import {
-	addMessageInteractionEventListener,
-	notifyMessageInteractionEventListeners,
-} from '../../src/InAppMessaging/eventListeners';
+	addEventListener,
+	notifyEventListeners,
+} from '../../src/common/eventListeners';
 
 import {
 	closestExpiryMessage,
@@ -29,7 +30,7 @@ import {
 import { mockInAppMessagingProvider, mockStorage } from '../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
-jest.mock('../../src/InAppMessaging/eventListeners');
+jest.mock('../../src/common/eventListeners');
 jest.mock('../../src/InAppMessaging/Providers', () => ({
 	AWSPinpointProvider: () => ({
 		getCategory: jest.fn,
@@ -248,9 +249,9 @@ describe('InAppMessaging', () => {
 				simpleMessages,
 				simpleEvent
 			);
-			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				message,
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			expect(notifyEventListeners).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				message
 			);
 		});
 
@@ -260,7 +261,7 @@ describe('InAppMessaging', () => {
 
 			await inAppMessaging.dispatchEvent(simpleEvent);
 
-			expect(notifyMessageInteractionEventListeners).not.toBeCalled();
+			expect(notifyEventListeners).not.toBeCalled();
 		});
 
 		test('logs error if storage retrieval fails', async () => {
@@ -303,36 +304,36 @@ describe('InAppMessaging', () => {
 		test('can be listened to by onMessageReceived', () => {
 			inAppMessaging.onMessageReceived(handler);
 
-			expect(addMessageInteractionEventListener).toBeCalledWith(
-				handler,
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			expect(addEventListener).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				handler
 			);
 		});
 
 		test('can be listened to by onMessageDisplayed', () => {
 			inAppMessaging.onMessageDisplayed(handler);
 
-			expect(addMessageInteractionEventListener).toBeCalledWith(
-				handler,
-				InAppMessageInteractionEvent.MESSAGE_DISPLAYED
+			expect(addEventListener).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_DISPLAYED,
+				handler
 			);
 		});
 
 		test('can be listened to by onMessageDismissed', () => {
 			inAppMessaging.onMessageDismissed(handler);
 
-			expect(addMessageInteractionEventListener).toBeCalledWith(
-				handler,
-				InAppMessageInteractionEvent.MESSAGE_DISMISSED
+			expect(addEventListener).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_DISMISSED,
+				handler
 			);
 		});
 
 		test('can be listened to by onMessageActionTaken', () => {
 			inAppMessaging.onMessageActionTaken(handler);
 
-			expect(addMessageInteractionEventListener).toBeCalledWith(
-				handler,
-				InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
+			expect(addEventListener).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN,
+				handler
 			);
 		});
 
@@ -344,9 +345,9 @@ describe('InAppMessaging', () => {
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
 
-			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				message,
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			expect(notifyEventListeners).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				message
 			);
 		});
 	});
@@ -359,9 +360,9 @@ describe('InAppMessaging', () => {
 
 			await inAppMessaging.dispatchEvent(simpleEvent);
 
-			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				closestExpiryMessage,
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			expect(notifyEventListeners).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				closestExpiryMessage
 			);
 		});
 
@@ -375,9 +376,9 @@ describe('InAppMessaging', () => {
 			inAppMessaging.setConflictHandler(customConflictHandler);
 			await inAppMessaging.dispatchEvent(simpleEvent);
 
-			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				customHandledMessage,
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			expect(notifyEventListeners).toBeCalledWith(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				customHandledMessage
 			);
 		});
 	});

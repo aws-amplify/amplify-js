@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import {
 	Alignment,
 	ButtonAction,
@@ -7,11 +8,8 @@ import {
 	FilterType,
 	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-sdk/client-pinpoint';
-import {
-	InAppMessage,
-	InAppMessagingEvent,
-	UserInfo,
-} from '../src/InAppMessaging';
+import { InAppMessage, InAppMessagingEvent } from '../src/InAppMessaging';
+import { UserInfo } from '../src';
 import { NotificationsConfig } from '../src';
 
 export const credentials = {
@@ -20,6 +18,10 @@ export const credentials = {
 	secretAccessKey: 'secret-access-key',
 	identityId: 'identity-id',
 	authenticated: true,
+};
+
+export const defaultConfig = {
+	endpointInfo: { channel: 'IN_APP' },
 };
 
 export const awsPinpointConfig = {
@@ -128,7 +130,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 						BackgroundColor: '#8888FF',
 						BorderRadius: 4,
 						ButtonAction: ButtonAction.CLOSE,
-						Link: null,
+						Link: undefined,
 						Text: 'Close button',
 						TextColor: '#FF88FF',
 					},
@@ -163,8 +165,8 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 			},
 		},
 		QuietTime: {
-			End: null,
-			Start: null,
+			End: undefined,
+			Start: undefined,
 		},
 	},
 	SessionCap: 0,
@@ -189,7 +191,7 @@ export const extractedContent = [
 			action: 'CLOSE',
 			style: { backgroundColor: '#8888FF', borderRadius: 4, color: '#FF88FF' },
 			title: 'Close button',
-			url: null,
+			url: undefined,
 		},
 		secondaryButton: {
 			action: 'LINK',
