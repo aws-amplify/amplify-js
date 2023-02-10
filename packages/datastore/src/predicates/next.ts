@@ -92,48 +92,6 @@ const negations = {
 };
 
 /**
- * Given a V1 predicate "seed", applies a list of V2 field-level conditions
- * to the predicate, returning a new/final V1 predicate chain link.
- * @param predicate The base/seed V1 predicate to build on
- * @param conditions The V2 conditions to add to the predicate chain.
- * @param negateChildren Whether the conditions should be negated first.
- * @returns A V1 predicate, with conditions incorporated.
- */
-function applyConditionsToV1Predicate<T>(
-	predicate: T,
-	conditions: FieldCondition[],
-	negateChildren: boolean
-): T {
-	let p = predicate;
-	const finalConditions: FieldCondition[] = [];
-
-	for (const c of conditions) {
-		if (negateChildren) {
-			if (c.operator === 'between') {
-				finalConditions.push(
-					new FieldCondition(c.field, 'lt', [c.operands[0]]),
-					new FieldCondition(c.field, 'gt', [c.operands[1]])
-				);
-			} else {
-				finalConditions.push(
-					new FieldCondition(c.field, negations[c.operator], c.operands)
-				);
-			}
-		} else {
-			finalConditions.push(c);
-		}
-	}
-
-	for (const c of finalConditions) {
-		p = p[c.field](
-			c.operator as never,
-			(c.operator === 'between' ? c.operands : c.operands[0]) as never
-		);
-	}
-	return p;
-}
-
-/**
  * A condition that can operate against a single "primitive" field of a model or item.
  * @member field The field of *some record* to test against.
  * @member operator The equality or comparison operator to use.
@@ -208,6 +166,13 @@ export class FieldCondition {
 			return new GroupCondition(model, undefined, undefined, 'or', [
 				new FieldCondition(this.field, 'lt', [this.operands[0]]),
 				new FieldCondition(this.field, 'gt', [this.operands[1]]),
+			]);
+		} else if (this.operator === 'beginsWith') {
+			// beginsWith negation doesn't have a good, safe optimation right now.
+			// just re-wrap it in negation. The adapter will have to scan-and-filter,
+			// as is likely optimal for negated beginsWith conditions *anyway*.
+			return new GroupCondition(model, undefined, undefined, 'not', [
+				new FieldCondition(this.field, 'beginsWith', [this.operands[0]]),
 			]);
 		} else {
 			return new FieldCondition(
