@@ -1,58 +1,51 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { NotificationsCategory } from '../types';
-import { AWSPinpointProviderConfig } from './Providers/AWSPinpointProvider/types';
 
-export type NotificationsSubcategory = 'InAppMessaging';
+import { EventListener } from '../common';
+import { AWSPinpointProviderConfig } from '../common/AWSPinpointProviderCommon/types';
+import {
+	NotificationsProvider,
+	NotificationsSubCategory as NotificationsSubCategories,
+	UserInfo,
+} from '../types';
 
-export type UserInfo = {
-	attributes?: Record<string, string[]>;
-	demographic?: {
-		appVersion?: string;
-		locale?: string;
-		make?: string;
-		model?: string;
-		modelVersion?: string;
-		platform?: string;
-		platformVersion?: string;
-		timezone?: string;
-	};
-	location?: {
-		city?: string;
-		country?: string;
-		latitude?: number;
-		longitude?: number;
-		postalCode?: string;
-		region?: string;
-	};
-	metrics?: Record<string, number>;
-};
+export type NotificationsSubCategory = Extract<
+	NotificationsSubCategories,
+	'InAppMessaging'
+>;
 
-export type InAppMessagingEvent = {
-	name: string;
-	attributes?: Record<string, string>;
-	metrics?: Record<string, number>;
-};
-
-export interface InAppMessagingConfig {
-	listenForAnalyticsEvents?: boolean;
-	AWSPinpoint?: AWSPinpointProviderConfig;
+export interface InAppMessagingInterface {
+	configure: (config: InAppMessagingConfig) => InAppMessagingConfig;
+	getModuleName: () => NotificationsSubCategory;
+	getPluggable: (providerName: string) => InAppMessagingProvider;
+	addPluggable: (pluggable: InAppMessagingProvider) => void;
+	removePluggable: (providerName: string) => void;
+	syncMessages: () => Promise<void[]>;
+	clearMessages: () => Promise<void[]>;
+	dispatchEvent: (event: InAppMessagingEvent) => Promise<void>;
+	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
+	onMessageReceived: (
+		handler: OnMessageInteractionEventHandler
+	) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageDisplayed: (
+		handler: OnMessageInteractionEventHandler
+	) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageDismissed: (
+		handler: OnMessageInteractionEventHandler
+	) => EventListener<OnMessageInteractionEventHandler>;
+	onMessageActionTaken: (
+		handler: OnMessageInteractionEventHandler
+	) => EventListener<OnMessageInteractionEventHandler>;
+	notifyMessageInteraction: (
+		message: InAppMessage,
+		type: InAppMessageInteractionEvent
+	) => void;
+	setConflictHandler: (handler: InAppMessageConflictHandler) => void;
 }
 
-export interface InAppMessagingProvider {
-	// you need to implement these methods
-
-	// configure your provider
-	configure(config: object): object;
-
-	// return category ('Notifications')
-	getCategory(): NotificationsCategory;
-
+export interface InAppMessagingProvider extends NotificationsProvider {
 	// return sub-category ('InAppMessaging')
-	getSubCategory(): NotificationsSubcategory;
-
-	// return the name of you provider
-	getProviderName(): string;
+	getSubCategory(): NotificationsSubCategory;
 
 	// get in-app messages from provider
 	getInAppMessages(): Promise<any>;
@@ -62,10 +55,18 @@ export interface InAppMessagingProvider {
 		messages: InAppMessage[],
 		event: InAppMessagingEvent
 	): Promise<InAppMessage[]>;
-
-	// identify the current user with the provider
-	identifyUser(userId: string, userInfo: UserInfo): Promise<void>;
 }
+
+export interface InAppMessagingConfig {
+	listenForAnalyticsEvents?: boolean;
+	AWSPinpoint?: AWSPinpointProviderConfig;
+}
+
+export type InAppMessagingEvent = {
+	name: string;
+	attributes?: Record<string, string>;
+	metrics?: Record<string, number>;
+};
 
 export type InAppMessageLayout =
 	| 'BOTTOM_BANNER'
@@ -128,11 +129,6 @@ export interface InAppMessage {
 }
 
 export type OnMessageInteractionEventHandler = (message: InAppMessage) => any;
-
-export interface OnMessageInteractionEventListener {
-	handleEvent: OnMessageInteractionEventHandler;
-	remove: () => void;
-}
 
 export enum InAppMessageInteractionEvent {
 	MESSAGE_RECEIVED = 'MESSAGE_RECEIVED_EVENT',

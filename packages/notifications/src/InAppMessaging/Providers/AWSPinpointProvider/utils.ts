@@ -15,6 +15,7 @@ import {
 	InAppMessageTextAlign,
 	InAppMessagingEvent,
 } from '../../types';
+
 import { AWSPinpointMessageEvent, MetricsComparator } from './types';
 
 const AMPLIFY_SYMBOL = (
@@ -28,7 +29,7 @@ let eventNameMemo = {};
 let eventAttributesMemo = {};
 let eventMetricsMemo = {};
 
-export const logger = new ConsoleLogger('AWSPinpointProvider');
+export const logger = new ConsoleLogger('InAppMessaging.AWSPinpointProvider');
 
 export const dispatchInAppMessagingEvent = (
 	event: string,
@@ -47,12 +48,6 @@ export const recordAnalyticsEvent = (
 	event: AWSPinpointMessageEvent,
 	message: InAppMessage
 ) => {
-	if (!message) {
-		logger.debug(
-			'Unable to record analytics event - no InAppMessage was received'
-		);
-		return;
-	}
 	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 		const { id, metadata } = message;
 		Amplify.Analytics.record({
