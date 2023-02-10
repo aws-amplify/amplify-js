@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import * as Paho from '../vendor/paho-mqtt';
+import { Client as PahoClient } from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
@@ -40,22 +41,6 @@ export interface MqttProviderOptions extends ProviderOptions {
 	aws_pubsub_endpoint?: string;
 }
 
-interface PahoClient {
-	onMessageArrived: (params: {
-		destinationName: string;
-		payloadString: string;
-	}) => void;
-	onConnectionLost: (params: { errorCode: number }) => void;
-	connect: (params: {
-		[k: string]: string | number | boolean | (() => void);
-	}) => void;
-	disconnect: () => void;
-	isConnected: () => boolean;
-	subscribe: (topic: string) => void;
-	unsubscribe: (topic: string) => void;
-	send(topic: string, message: string);
-}
-
 class ClientsQueue {
 	private promises: Map<string, Promise<PahoClient | undefined>> = new Map();
 
@@ -85,7 +70,11 @@ class ClientsQueue {
 	}
 }
 
-const dispatchPubSubEvent = (event: string, data: object, message: string) => {
+const dispatchPubSubEvent = (
+	event: string,
+	data: Record<string, unknown>,
+	message: string
+) => {
 	Hub.dispatch('pubsub', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
@@ -252,7 +241,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish(topics: string[] | string, msg: object) {
+	async publish(topics: string[] | string, msg: Record<string, unknown>) {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
@@ -290,10 +279,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 					matchedTopicObservers.push(observerForTopic);
 				}
 			});
-			const parsedMessage: object = JSON.parse(msg);
+			const parsedMessage: Record<string, unknown> = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
-				parsedMessage[topicSymbol] = topic;
+				parsedMessage.topicSymbol = topic;
 			}
 
 			matchedTopicObservers.forEach(observersForTopic => {
@@ -307,7 +296,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	subscribe(
 		topics: string[] | string,
 		options: MqttProviderOptions = {}
-	): Observable<any> {
+	): Observable<Record<string, unknown>> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: ZenObservable.Subscription;

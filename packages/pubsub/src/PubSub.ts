@@ -60,7 +60,9 @@ export class PubSubClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options: PubSubOptions) {
-		const opt: object = options ? options.PubSub || options : {};
+		const opt: Record<string, unknown> = options
+			? options.PubSub || options
+			: {};
 		logger.debug('configure PubSub', { opt });
 
 		this._options = Object.assign({}, this._options, opt);
@@ -120,7 +122,7 @@ export class PubSubClass {
 
 	async publish(
 		topics: string[] | string,
-		msg: object | string,
+		msg: Record<string, unknown> | string,
 		options?: ProviderOptions
 	) {
 		return Promise.all(
@@ -133,7 +135,7 @@ export class PubSubClass {
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<any> {
+	): Observable<Record<string, unknown>> {
 		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
 				'Subscriptions are not supported for Server-Side Rendering (SSR)'
@@ -144,7 +146,7 @@ export class PubSubClass {
 
 		const providers = this.getProviders(options);
 
-		return new Observable<any>(observer => {
+		return new Observable<Record<string, unknown>>(observer => {
 			const observables = providers.map(provider => ({
 				provider,
 				observable: provider.subscribe(topics, options),
@@ -153,8 +155,10 @@ export class PubSubClass {
 			const subscriptions = observables.map(({ provider, observable }) =>
 				observable.subscribe({
 					start: console.error,
-					next: (value: object) => observer.next({ provider, value }),
-					error: (error: object) => observer.error({ provider, error }),
+					next: (value: Record<string, unknown>) =>
+						observer.next({ provider, value }),
+					error: (error: Record<string, unknown>) =>
+						observer.error({ provider, error }),
 					// complete: observer.complete, // TODO: when all completed, complete the outer one
 				})
 			);

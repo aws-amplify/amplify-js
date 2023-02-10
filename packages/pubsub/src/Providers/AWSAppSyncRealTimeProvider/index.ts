@@ -48,14 +48,18 @@ import {
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
-const dispatchApiEvent = (event: string, data: {}, message: string) => {
+const dispatchApiEvent = (
+	event: string,
+	data: Record<string, unknown>,
+	message: string
+) => {
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
 export type ObserverQuery = {
 	observer: ZenObservable.SubscriptionObserver<any>;
 	query: string;
-	variables: object;
+	variables: Record<string, unknown>;
 	subscriptionState: SUBSCRIPTION_STATUS;
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
@@ -70,14 +74,28 @@ const customDomainPath = '/realtime';
 type GraphqlAuthModes = keyof typeof GRAPHQL_AUTH_MODE;
 
 type DataObject = {
-	data: object;
+	data: Record<string, unknown>;
+};
+
+type DataPayload = {
+	id: string;
+	payload: DataObject;
+	type: string;
+};
+
+type ParsedMessagePayload = {
+	type: string;
+	payload: {
+		connectionTimeoutMs: number;
+		errors?: [{ errorType: string; errorCode: number }];
+	};
 };
 
 export interface AWSAppSyncRealTimeProviderOptions extends ProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: GraphqlAuthModes;
 	query?: string;
-	variables?: object;
+	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
@@ -172,7 +190,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 	public async publish(
 		_topics: string[] | string,
-		_msg: object,
+		_msg: Record<string, unknown>,
 		_options?: AWSAppSyncRealTimeProviderOptions
 	) {
 		throw new Error('Operation not supported');
@@ -186,7 +204,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 	subscribe(
 		_topics: string[] | string,
 		options?: AWSAppSyncRealTimeProviderOptions
-	): Observable<any> {
+	): Observable<Record<string, unknown>> {
 		const appSyncGraphqlEndpoint = options?.appSyncGraphqlEndpoint;
 
 		return new Observable(observer => {
@@ -519,9 +537,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 			id = '',
 			payload,
 			type,
-		}: { id: string; payload: DataObject; type: string } = JSON.parse(
-			String(message.data)
-		);
+		}: DataPayload = JSON.parse(String(message.data));
 		const {
 			observer = null,
 			query = '',
@@ -677,17 +693,18 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 					this.socketStatus = SOCKET_STATUS.CONNECTING;
 
 					const payloadString = '{}';
-					const headerString = JSON.stringify(
-						(await this._awsRealTimeHeaderBasedAuth({
-							authenticationType,
-							payload: payloadString,
-							canonicalUri: '/connect',
-							apiKey,
-							appSyncGraphqlEndpoint,
-							region,
-							additionalHeaders,
-						})) ?? ''
-					);
+
+					const authHeader = await this._awsRealTimeHeaderBasedAuth({
+						authenticationType,
+						payload: payloadString,
+						canonicalUri: '/connect',
+						apiKey,
+						appSyncGraphqlEndpoint,
+						region,
+						additionalHeaders,
+					});
+
+					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					const headerQs = Buffer.from(headerString).toString('base64');
 
 					const payloadQs = Buffer.from(payloadString).toString('base64');
@@ -785,13 +802,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 							logger.debug(
 								`subscription message from AWS AppSyncRealTime: ${message.data} `
 							);
-							const data = JSON.parse(message.data) as {
-								type: string;
-								payload: {
-									connectionTimeoutMs: number;
-									errors?: [{ errorType: string; errorCode: number }];
-								};
-							};
+							const data = JSON.parse(message.data) as ParsedMessagePayload;
 							const {
 								type,
 								payload: {
@@ -874,7 +885,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		apiKey,
 		region,
 		additionalHeaders,
-	}: AWSAppSyncRealTimeAuthInput): Promise<object | undefined> {
+	}: AWSAppSyncRealTimeAuthInput): Promise<
+		Record<string, unknown> | undefined
+	> {
 		const headerHandler: {
 			[key in GraphqlAuthModes]: (AWSAppSyncRealTimeAuthInput) => {};
 		} = {

@@ -42,6 +42,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
     "@types/zen-observable": "^0.8.0",
+    "@types/paho-mqtt": "^1.0.6",
     "cpx": "^1.5.0"
   },
   "files": [

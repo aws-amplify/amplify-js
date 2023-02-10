@@ -15,7 +15,7 @@ export interface ProviderOptions {
 
 export interface PubSubProvider {
 	// configure your provider
-	configure(config: object): object;
+	configure(config: Record<string, unknown>): Record<string, unknown>;
 
 	// return 'Analytics';
 	getCategory(): string;
@@ -25,12 +25,12 @@ export interface PubSubProvider {
 
 	publish(
 		topics: string[] | string,
-		msg: object | string,
+		msg: Record<string, unknown> | string,
 		options?: ProviderOptions
 	): void;
 
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<any>;
+	): Observable<Record<string, unknown>>;
 }

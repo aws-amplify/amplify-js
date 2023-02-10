@@ -37,12 +37,12 @@ export abstract class AbstractPubSubProvider<T extends ProviderOptions>
 
 	public abstract publish(
 		topics: string[] | string,
-		msg: object | string,
+		msg: Record<string, unknown> | string,
 		options?: T
 	): void;
 
 	public abstract subscribe(
 		topics: string[] | string,
 		options?: T
-	): Observable<any>;
+	): Observable<Record<string, unknown>>;
 }
