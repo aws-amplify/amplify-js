@@ -10,7 +10,7 @@ import com.facebook.react.jstasks.HeadlessJsTaskConfig
 
 class PushNotificationHeadlessTaskService : HeadlessJsTaskService() {
 
-    private val defaultTimeout: Long = 10000
+    private val defaultTimeout: Long = 10000 // 10 seconds
 
     override fun getTaskConfig(intent: Intent): HeadlessJsTaskConfig? {
         return intent.extras?.let {
