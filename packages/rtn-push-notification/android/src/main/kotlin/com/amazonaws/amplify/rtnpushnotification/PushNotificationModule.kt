@@ -37,19 +37,6 @@ class PushNotificationModule(
     }
 
     @ReactMethod
-    fun getToken(promise: Promise) {
-        val firebaseInstance = FirebaseMessaging.getInstance()
-        firebaseInstance.token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed")
-                promise.reject(task.exception)
-                return@OnCompleteListener
-            }
-            promise.resolve(task.result)
-        })
-    }
-
-    @ReactMethod
     fun getLaunchNotification(promise: Promise) {
         launchNotification?.let {
             promise.resolve(launchNotification)
@@ -58,7 +45,7 @@ class PushNotificationModule(
     }
 
     @ReactMethod
-    fun requestMessagingPermission(promise: Promise) {
+    fun requestPermissions(permissions: ReadableMap, promise: Promise) {
         scope.launch {
             val permission = PushNotificationPermission(reactApplicationContext)
             val result = permission.requestPermission()
@@ -84,7 +71,7 @@ class PushNotificationModule(
 
     override fun getConstants(): MutableMap<String, Any> = hashMapOf(
         "NativeEvent" to PushNotificationEventType.values()
-            .associateBy({ it.toString() }, { it.name }),
+            .associateBy({ it.name }, { it.value }),
         "NativeHeadlessTaskKey" to PushNotificationHeadlessTaskService.HEADLESS_TASK_KEY
     )
 
@@ -101,7 +88,7 @@ class PushNotificationModule(
             if (payload != null) {
                 val params = Arguments.fromBundle(payload.bundle())
                 PushNotificationEventManager.sendEvent(
-                    PushNotificationEventType.NotificationOpened, params
+                    PushNotificationEventType.NOTIFICATION_OPENED, params
                 )
             }
         }
@@ -121,7 +108,7 @@ class PushNotificationModule(
             val params = Arguments.createMap()
             params.putString("token", task.result)
             Log.d(TAG, "Send device token event")
-            PushNotificationEventManager.sendEvent(PushNotificationEventType.TokenReceived, params)
+            PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
         })
         if (isAppLaunch) {
             isAppLaunch = false
@@ -133,7 +120,7 @@ class PushNotificationModule(
                     // Launch notification opened event is emitted for internal use only
                     val params = Arguments.fromBundle(payload.bundle())
                     PushNotificationEventManager.sendEvent(
-                        PushNotificationEventType.LaunchNotificationOpened, params
+                        PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED, params
                     )
                 }
             }

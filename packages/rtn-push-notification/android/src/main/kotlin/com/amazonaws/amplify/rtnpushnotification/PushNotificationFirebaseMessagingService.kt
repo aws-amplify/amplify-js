@@ -20,7 +20,7 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
         val params = Arguments.createMap()
         params.putString("token", token)
         Log.d(TAG, "Send device token event")
-        PushNotificationEventManager.sendEvent(PushNotificationEventType.TokenReceived, params)
+        PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
     }
 
     override fun handleIntent(intent: Intent) {
@@ -48,7 +48,7 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Send foreground message received event")
             val params = Arguments.fromBundle(payload.bundle())
             PushNotificationEventManager.sendEvent(
-                PushNotificationEventType.ForegroundMessageReceived, params
+                PushNotificationEventType.FOREGROUND_MESSAGE_RECEIVED, params
             )
         } else {
             Log.d(
