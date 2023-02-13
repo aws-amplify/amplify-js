@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
+private val TAG = PushNotificationModule::class.java.simpleName
+
 enum class PushNotificationPermissionStatus(val value: String) {
     GRANTED("Granted"),
     DENIED("Denied"),
@@ -82,7 +84,7 @@ class PushNotificationModule(
 
     override fun getConstants(): MutableMap<String, Any> = hashMapOf(
         "NativeEvent" to PushNotificationEventType.values()
-            .associateBy({ it.toString() }, { it.value }),
+            .associateBy({ it.toString() }, { it.name }),
         "NativeHeadlessTaskKey" to PushNotificationHeadlessTaskService.HEADLESS_TASK_KEY
     )
 
@@ -99,7 +101,7 @@ class PushNotificationModule(
             if (payload != null) {
                 val params = Arguments.fromBundle(payload.bundle())
                 PushNotificationEventManager.sendEvent(
-                    PushNotificationEventType.NOTIFICATION_OPENED, params
+                    PushNotificationEventType.NotificationOpened, params
                 )
             }
         }
@@ -119,7 +121,7 @@ class PushNotificationModule(
             val params = Arguments.createMap()
             params.putString("token", task.result)
             Log.d(TAG, "Send device token event")
-            PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
+            PushNotificationEventManager.sendEvent(PushNotificationEventType.TokenReceived, params)
         })
         if (isAppLaunch) {
             isAppLaunch = false
@@ -131,7 +133,7 @@ class PushNotificationModule(
                     // Launch notification opened event is emitted for internal use only
                     val params = Arguments.fromBundle(payload.bundle())
                     PushNotificationEventManager.sendEvent(
-                        PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED, params
+                        PushNotificationEventType.LaunchNotificationOpened, params
                     )
                 }
             }
@@ -147,9 +149,5 @@ class PushNotificationModule(
 
     override fun onHostDestroy() {
         scope.cancel()
-    }
-
-    companion object {
-        private val TAG = PushNotificationModule::class.java.simpleName
     }
 }

@@ -29,7 +29,7 @@ fun getPayloadFromRemoteMessage(remoteMessage: RemoteMessage): NotificationPaylo
     }
     data[PushNotificationsConstants.AWS_PINPOINT_URL]?.let {
         // force HTTPS URL scheme
-        val urlHttps = it.replaceFirst("http", "https")
+        val urlHttps = it.replaceFirst("http://", "https://")
         action.put(PushNotificationsConstants.AWS_PINPOINT_URL, urlHttps)
     }
     data[PushNotificationsConstants.AWS_PINPOINT_DEEPLINK]?.let {

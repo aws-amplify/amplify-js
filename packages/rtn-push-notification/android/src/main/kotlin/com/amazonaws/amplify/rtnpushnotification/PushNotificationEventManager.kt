@@ -7,11 +7,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
-enum class PushNotificationEventType(val value: String) {
-    FOREGROUND_MESSAGE_RECEIVED("ForegroundMessageReceived"),
-    LAUNCH_NOTIFICATION_OPENED("LaunchNotificationOpened"),
-    NOTIFICATION_OPENED("NotificationOpened"),
-    TOKEN_RECEIVED("TokenReceived")
+enum class PushNotificationEventType {
+    ForegroundMessageReceived,
+    LaunchNotificationOpened,
+    NotificationOpened,
+    TokenReceived
 }
 
 class PushNotificationEvent(val type: PushNotificationEventType, val params: WritableMap?)
@@ -37,7 +37,7 @@ object PushNotificationEventManager {
 
     private fun sendJSEvent(type: PushNotificationEventType, params: WritableMap?) {
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            ?.emit(type.value, params)
+            ?.emit(type.name, params)
     }
 
     private fun flushEventQueue() {

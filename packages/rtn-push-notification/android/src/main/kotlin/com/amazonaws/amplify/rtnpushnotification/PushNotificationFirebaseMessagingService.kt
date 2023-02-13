@@ -11,23 +11,26 @@ import com.facebook.react.bridge.Arguments
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
+private val TAG = PushNotificationFirebaseMessagingService::class.java.simpleName
+private const val ACTION_NEW_TOKEN = "com.google.firebase.messaging.NEW_TOKEN"
+
 class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         val params = Arguments.createMap()
         params.putString("token", token)
         Log.d(TAG, "Send device token event")
-        PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
+        PushNotificationEventManager.sendEvent(PushNotificationEventType.TokenReceived, params)
     }
 
-    override fun handleIntent(intent: Intent?) {
+    override fun handleIntent(intent: Intent) {
         // If the intent is for a new token, just forward intent to Firebase SDK
-        if (intent?.action == ACTION_NEW_TOKEN) {
+        if (intent.action == ACTION_NEW_TOKEN) {
             Log.d(TAG, "Received new token intent")
             super.handleIntent(intent)
             return
         }
-        val remoteMessage = RemoteMessage(intent?.extras)
+        val remoteMessage = RemoteMessage(intent.extras)
         // If we can't handle the message type coming in, just forward the intent to Firebase SDK
         if (!isRemoteMessageSupported(remoteMessage)) {
             Log.i(TAG, "Message payload is not supported")
@@ -45,7 +48,7 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Send foreground message received event")
             val params = Arguments.fromBundle(payload.bundle())
             PushNotificationEventManager.sendEvent(
-                PushNotificationEventType.FOREGROUND_MESSAGE_RECEIVED, params
+                PushNotificationEventType.ForegroundMessageReceived, params
             )
         } else {
             Log.d(
@@ -67,10 +70,5 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
                 )
             }
         }
-    }
-
-    companion object {
-        private val TAG = PushNotificationFirebaseMessagingService::class.java.simpleName
-        const val ACTION_NEW_TOKEN = "com.google.firebase.messaging.NEW_TOKEN"
     }
 }
