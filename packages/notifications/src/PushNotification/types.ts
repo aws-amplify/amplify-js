@@ -22,9 +22,10 @@ export interface PushNotificationInterface {
 	removePluggable: (providerName: string) => void;
 	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
 	getLaunchNotification: () => Promise<PushNotificationMessage>;
+	getPermissionStatus: () => Promise<PushNotificationPermissionStatus>;
 	requestPermissions: (
 		permissions?: PushNotificationPermissions
-	) => Promise<PushNotificationPermissionStatus>;
+	) => Promise<boolean>;
 	onBackgroundNotificationReceived: (
 		handler: OnPushNotificationMessageHandler
 	) => EventListener<OnPushNotificationMessageHandler>;
@@ -86,7 +87,8 @@ export interface PushNotificationPermissions extends Record<string, boolean> {
 export enum PushNotificationPermissionStatus {
 	DENIED = 'DENIED',
 	GRANTED = 'GRANTED',
-	UNDETERMINED = 'UNDETERMINED',
+	NOT_REQUESTED = 'NOT_REQUESTED',
+	SHOULD_REQUEST_WITH_RATIONALE = 'SHOULD_REQUEST_WITH_RATIONALE',
 }
 
 export type OnTokenReceivedHandler = (token: PushNotificationTokenMap) => any;

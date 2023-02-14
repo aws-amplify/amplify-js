@@ -18,8 +18,10 @@ export const normalizeNativePermissionStatus = (
 			return PushNotificationPermissionStatus.DENIED;
 		case 'Granted':
 			return PushNotificationPermissionStatus.GRANTED;
-		default:
-			return PushNotificationPermissionStatus.UNDETERMINED;
+		case 'NotRequested':
+			return PushNotificationPermissionStatus.NOT_REQUESTED;
+		case 'ShouldRequestWithRationale':
+			return PushNotificationPermissionStatus.SHOULD_REQUEST_WITH_RATIONALE;
 	}
 };
 

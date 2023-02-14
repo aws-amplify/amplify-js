@@ -274,18 +274,18 @@ export default class PushNotification implements PushNotificationInterface {
 		return normalizeNativeMessage(await getLaunchNotification?.());
 	};
 
+	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
+		const { getPermissionStatus } = this.nativeModule;
+		return normalizeNativePermissionStatus(await getPermissionStatus?.());
+	};
+
 	requestPermissions = async (
 		permissions: PushNotificationPermissions = {
 			alert: true,
 			badge: true,
 			sound: true,
 		}
-	): Promise<PushNotificationPermissionStatus> => {
-		const { requestPermissions } = this.nativeModule;
-		return normalizeNativePermissionStatus(
-			await requestPermissions?.(permissions)
-		);
-	};
+	): Promise<boolean> => this.nativeModule.requestPermissions?.(permissions);
 
 	/**
 	 * Background notifications on will start the app (as a headless JS instance running on a background service on
