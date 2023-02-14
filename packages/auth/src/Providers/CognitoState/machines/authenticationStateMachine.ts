@@ -1,3 +1,4 @@
+import { Logger } from '@aws-amplify/core';
 import { Auth } from '../../../Auth';
 import { Machine } from '../../../stateMachine/machine';
 import { AuthenticationStateEvents } from '../events/authenticationMachineEvents';
@@ -27,6 +28,10 @@ export const AuthenticationStateMachine = new Machine<
 	context: {},
 	name: 'AuthenticationStateMachine' as const,
 	initial: 'NotConfigured',
+	logger: new Logger(
+		'AmazonCognitoProvider.AuthenticationStateMachine',
+		'DEBUG'
+	),
 	states: {
 		NotConfigured: {
 			Configure: [

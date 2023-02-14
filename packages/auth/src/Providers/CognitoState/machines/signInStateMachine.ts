@@ -1,3 +1,4 @@
+import { Logger } from '@aws-amplify/core';
 import { Machine } from '../../../stateMachine/machine';
 import { SignInStateEvents } from '../events/signInStateMachineEvents';
 import {
@@ -26,6 +27,7 @@ export const SignInStateMachine = new Machine<
 	context: {},
 	name: 'SignInMachine' as const,
 	initial: 'NotStarted',
+	logger: new Logger('AmazonCognitoProvider.SignInMachine', 'DEBUG'),
 	finalStates: ['Error', 'SignedIn'],
 	states: {
 		NotStarted: {
