@@ -135,7 +135,7 @@ export class PubSubClass {
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<Record<string, unknown>> {
+	): Observable<Record<string, unknown> | string> {
 		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
 				'Subscriptions are not supported for Server-Side Rendering (SSR)'

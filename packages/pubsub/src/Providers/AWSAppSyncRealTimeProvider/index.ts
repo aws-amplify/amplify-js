@@ -190,7 +190,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 	public async publish(
 		_topics: string[] | string,
-		_msg: Record<string, unknown>,
+		_msg: Record<string, unknown> | string,
 		_options?: AWSAppSyncRealTimeProviderOptions
 	) {
 		throw new Error('Operation not supported');

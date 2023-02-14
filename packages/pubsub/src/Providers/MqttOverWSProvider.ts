@@ -241,7 +241,10 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish(topics: string[] | string, msg: Record<string, unknown>) {
+	async publish(
+		topics: string[] | string,
+		msg: Record<string, unknown> | string
+	) {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
@@ -279,7 +282,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 					matchedTopicObservers.push(observerForTopic);
 				}
 			});
-			const parsedMessage: Record<string, unknown> = JSON.parse(msg);
+			const parsedMessage: Record<string, unknown> | string = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
 				parsedMessage.topicSymbol = topic;
@@ -296,7 +299,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	subscribe(
 		topics: string[] | string,
 		options: MqttProviderOptions = {}
-	): Observable<Record<string, unknown>> {
+	): Observable<Record<string, unknown> | string> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: ZenObservable.Subscription;

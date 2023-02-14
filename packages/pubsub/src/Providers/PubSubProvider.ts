@@ -44,5 +44,5 @@ export abstract class AbstractPubSubProvider<T extends ProviderOptions>
 	public abstract subscribe(
 		topics: string[] | string,
 		options?: T
-	): Observable<Record<string, unknown>>;
+	): Observable<Record<string, unknown> | string>;
 }

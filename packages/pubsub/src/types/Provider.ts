@@ -32,5 +32,5 @@ export interface PubSubProvider {
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<Record<string, unknown>>;
+	): Observable<Record<string, unknown> | string>;
 }
