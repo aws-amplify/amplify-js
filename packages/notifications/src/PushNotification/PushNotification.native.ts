@@ -33,8 +33,9 @@ import {
 	normalizeNativeMessage,
 } from './utils';
 
-const RTN_MODULE = '@aws-amplify/rtn-push-notification';
 const logger = new Logger('Notifications.PushNotification');
+const RTN_MODULE = '@aws-amplify/rtn-push-notification';
+const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
 export default class PushNotification implements PushNotificationInterface {
 	private config: Record<string, any> = {};
@@ -101,14 +102,33 @@ export default class PushNotification implements PushNotificationInterface {
 					`${this.nativeEvent.BACKGROUND_MESSAGE_RECEIVED}`,
 					async message => {
 						// keep background task running until handlers have completed their work
-						await notifyEventListenersAndAwaitHandlers(
-							PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-							normalizeNativeMessage(message)
-						);
-						// notify native module handlers have completed their work
-						this.nativeModule.completeNotification?.(
-							message.completionHandlerId
-						);
+						try {
+							await Promise.race([
+								notifyEventListenersAndAwaitHandlers(
+									PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
+									normalizeNativeMessage(message)
+								),
+								// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
+								// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
+								// happening
+								new Promise((_, reject) => {
+									setTimeout(
+										() =>
+											reject(
+												`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
+											),
+										BACKGROUND_TASK_TIMEOUT * 1000
+									);
+								}),
+							]);
+						} catch (err) {
+							logger.error(err);
+						} finally {
+							// notify native module that handlers have completed their work (or timed out)
+							this.nativeModule.completeNotification?.(
+								message.completionHandlerId
+							);
+						}
 					}
 				);
 			}
