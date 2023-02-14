@@ -17,7 +17,7 @@ export interface AuthPluginProvider {
 
 	resendSignUpCode(): Promise<any>;
 
-	signIn(username: string, password: string): Promise<any>;
+	signIn(): Promise<any>;
 
 	confirmSignIn(): Promise<any>;
 

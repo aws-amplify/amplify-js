@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AttributeType,
-	ChallengeNameType,
+import { 
+	AttributeType, 
+	ChallengeNameType, 
 	CognitoIdentityProviderClient,
 	ConfirmForgotPasswordCommand,
 	ConfirmForgotPasswordCommandInput,
-	SignUpCommand,
-	SignUpCommandInput,
+	SignUpCommand, 
+	SignUpCommandInput
 } from '@aws-sdk/client-cognito-identity-provider';
 import { AuthSignInStep, AuthOptions } from '../types';
 import { AuthError } from '../Errors';
@@ -19,16 +19,12 @@ import { Command } from '../types/aws-plugins/cognito-plugin/commands/command';
 export const createCognitoIdentityProviderClient = (
 	config: AuthOptions
 ): CognitoIdentityProviderClient => {
-	return new CognitoIdentityProviderClient({
-		region: config.region,
-	}); // TODO: add other options to constructor
+	return new CognitoIdentityProviderClient({region: config.region}); // TODO: add other options to constructor
 };
 
-export const mapChallengeNames = (
-	challengeNameType: string
-): AuthSignInStep => {
+export const mapChallengeNames = (challengeNameType: string): AuthSignInStep => {
 	// TODO: cover all challenge name types when they are defined
-	switch (challengeNameType) {
+	switch(challengeNameType) {
 		// case ChallengeNameType.ADMIN_NO_SRP_AUTH:
 		case ChallengeNameType.CUSTOM_CHALLENGE:
 			return AuthSignInStep.CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE;
@@ -52,13 +48,13 @@ export const mapChallengeNames = (
 export const getUserPoolId = (config: AuthOptions) => {
 	if (!config.userPoolId) {
 		throw new AuthError(AuthErrorTypes.NoConfig); // TODO: change when AuthErrors are defined
-	}
+	} 
 	return config.userPoolId;
 };
 
 export const createSignUpCommand = (
-	clientId: string,
-	username: string,
+	clientId: string, 
+	username: string, 
 	password: string,
 	userAttributes?: AttributeType[],
 	validationData?: AttributeType[],
@@ -67,7 +63,7 @@ export const createSignUpCommand = (
 	const signUpCommandInput: SignUpCommandInput = {
 		ClientId: clientId,
 		Username: username,
-		Password: password,
+		Password: password
 	};
 	if (userAttributes) {
 		signUpCommandInput.UserAttributes = userAttributes;
@@ -100,12 +96,12 @@ export const createConfirmForgotPasswordCommand = (
 	return new ConfirmForgotPasswordCommand(confirmForgotPasswordCommandInput);
 };
 
-export const sendCommand = async <Output extends CommandOutput>(
-	client: CognitoIdentityProviderClient,
+export const sendCommand = async<Output extends CommandOutput> (
+	client:CognitoIdentityProviderClient, 
 	command: Command
 ): Promise<Output> => {
 	try {
-		return (await client.send(command as any)) as Output;
+		return await client.send(command as any) as Output;
 	} catch (error) {
 		throw error; // TODO: change when AuthErrors are defined
 	}

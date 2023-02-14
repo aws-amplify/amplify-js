@@ -17,10 +17,6 @@ import { Auth } from './Auth';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { GRAPHQL_AUTH_MODE } from './constants/GraphQLAuthMode';
 import { CognitoHostedUIIdentityProvider } from './constants/CognitoHostedUIIdentityProvider';
-import { AmazonCognitoProvider } from './Providers/AmazonCognitoProvider';
-
-// temp
-const appendToCognitoUserAgent = (content: string): void => {};
 
 /**
  * @deprecated use named import
@@ -31,6 +27,4 @@ export {
 	CognitoHostedUIIdentityProvider,
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,
-	AmazonCognitoProvider,
-	appendToCognitoUserAgent,
 };
