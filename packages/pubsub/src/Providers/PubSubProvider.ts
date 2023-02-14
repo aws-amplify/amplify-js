@@ -3,6 +3,7 @@
 import Observable from 'zen-observable-ts';
 import { PubSubProvider, ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('AbstractPubSubProvider');
 
@@ -37,12 +38,12 @@ export abstract class AbstractPubSubProvider<T extends ProviderOptions>
 
 	public abstract publish(
 		topics: string[] | string,
-		msg: Record<string, unknown> | string,
+		msg: PubSubContent,
 		options?: T
 	): void;
 
 	public abstract subscribe(
 		topics: string[] | string,
 		options?: T
-	): Observable<Record<string, unknown> | string>;
+	): Observable<PubSubContent>;
 }

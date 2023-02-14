@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ConnectionState } from '../types/PubSub';
+import { ConnectionState, PubSubContentObserver } from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
@@ -18,6 +18,7 @@ import {
 	ReconnectionMonitor,
 } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
+import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('MqttOverWSProvider');
 
@@ -241,10 +242,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish(
-		topics: string[] | string,
-		msg: Record<string, unknown> | string
-	) {
+	async publish(topics: string[] | string, msg: PubSubContent) {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
@@ -262,15 +260,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		}
 	}
 
-	protected _topicObservers: Map<
-		string,
-		Set<ZenObservable.SubscriptionObserver<any>>
-	> = new Map();
+	protected _topicObservers: Map<string, Set<PubSubContentObserver>> =
+		new Map();
 
-	protected _clientIdObservers: Map<
-		string,
-		Set<ZenObservable.SubscriptionObserver<any>>
-	> = new Map();
+	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> =
+		new Map();
 
 	private _onMessage(topic: string, msg: string) {
 		try {
@@ -282,7 +276,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 					matchedTopicObservers.push(observerForTopic);
 				}
 			});
-			const parsedMessage: Record<string, unknown> | string = JSON.parse(msg);
+			const parsedMessage: PubSubContent = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
 				parsedMessage.topicSymbol = topic;
@@ -299,7 +293,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 	subscribe(
 		topics: string[] | string,
 		options: MqttProviderOptions = {}
-	): Observable<Record<string, unknown> | string> {
+	): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: ZenObservable.Subscription;
@@ -323,10 +317,12 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 			// this._clientIdObservers is used to close observers when client gets disconnected
 			let observersForClientId = this._clientIdObservers.get(clientId);
 			if (!observersForClientId) {
-				observersForClientId = new Set();
+				observersForClientId = new Set<PubSubContentObserver>();
 			}
-			observersForClientId.add(observer);
-			this._clientIdObservers.set(clientId, observersForClientId);
+			if (observersForClientId) {
+				observersForClientId.add(observer);
+				this._clientIdObservers.set(clientId, observersForClientId);
+			}
 
 			(async () => {
 				const getClient = async () => {

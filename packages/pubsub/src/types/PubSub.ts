@@ -51,3 +51,7 @@ export enum ConnectionState {
 	 */
 	ConnectedPendingKeepAlive = 'ConnectedPendingKeepAlive',
 }
+
+export type PubSubContent = Record<string, unknown> | string;
+export type PubSubContentObserver =
+	ZenObservable.SubscriptionObserver<PubSubContent>;

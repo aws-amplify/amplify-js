@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import Observable from 'zen-observable-ts';
+import { PubSubContent } from './PubSub';
 
 export interface PubSubOptions {
 	[key: string]: any;
@@ -25,12 +26,12 @@ export interface PubSubProvider {
 
 	publish(
 		topics: string[] | string,
-		msg: Record<string, unknown> | string,
+		msg: PubSubContent,
 		options?: ProviderOptions
 	): void;
 
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<Record<string, unknown> | string>;
+	): Observable<PubSubContent>;
 }

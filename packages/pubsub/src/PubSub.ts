@@ -11,9 +11,15 @@ import {
 } from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
 import { AWSAppSyncRealTimeProvider } from './Providers';
+import { PubSubContent } from './types/PubSub';
 
 const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
+
+type PubSubObservable = {
+	provider: PubSubProvider;
+	value: string | Record<string, unknown>;
+};
 
 export class PubSubClass {
 	private _options: PubSubOptions;
@@ -122,7 +128,7 @@ export class PubSubClass {
 
 	async publish(
 		topics: string[] | string,
-		msg: Record<string, unknown> | string,
+		msg: PubSubContent,
 		options?: ProviderOptions
 	) {
 		return Promise.all(
@@ -135,7 +141,7 @@ export class PubSubClass {
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<Record<string, unknown> | string> {
+	): Observable<PubSubObservable> {
 		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
 				'Subscriptions are not supported for Server-Side Rendering (SSR)'
@@ -146,7 +152,7 @@ export class PubSubClass {
 
 		const providers = this.getProviders(options);
 
-		return new Observable<Record<string, unknown>>(observer => {
+		return new Observable<PubSubObservable>(observer => {
 			const observables = providers.map(provider => ({
 				provider,
 				observable: provider.subscribe(topics, options),
@@ -155,10 +161,8 @@ export class PubSubClass {
 			const subscriptions = observables.map(({ provider, observable }) =>
 				observable.subscribe({
 					start: console.error,
-					next: (value: Record<string, unknown>) =>
-						observer.next({ provider, value }),
-					error: (error: Record<string, unknown>) =>
-						observer.error({ provider, error }),
+					next: (value: PubSubContent) => observer.next({ provider, value }),
+					error: (error: unknown) => observer.error({ provider, error }),
 					// complete: observer.complete, // TODO: when all completed, complete the outer one
 				})
 			);

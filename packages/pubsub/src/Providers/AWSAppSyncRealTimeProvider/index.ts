@@ -21,7 +21,12 @@ import {
 import { Cache } from '@aws-amplify/cache';
 import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from '../PubSubProvider';
-import { CONTROL_MSG, ConnectionState } from '../../types/PubSub';
+import {
+	CONTROL_MSG,
+	ConnectionState,
+	PubSubContent,
+	PubSubContentObserver,
+} from '../../types/PubSub';
 
 import {
 	AMPLIFY_SYMBOL,
@@ -57,7 +62,7 @@ const dispatchApiEvent = (
 };
 
 export type ObserverQuery = {
-	observer: ZenObservable.SubscriptionObserver<any>;
+	observer: PubSubContentObserver;
 	query: string;
 	variables: Record<string, unknown>;
 	subscriptionState: SUBSCRIPTION_STATUS;
@@ -190,7 +195,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 	public async publish(
 		_topics: string[] | string,
-		_msg: Record<string, unknown> | string,
+		_msg: PubSubContent,
 		_options?: AWSAppSyncRealTimeProviderOptions
 	) {
 		throw new Error('Operation not supported');
@@ -298,7 +303,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		subscriptionId,
 	}: {
 		options: AWSAppSyncRealTimeProviderOptions;
-		observer: ZenObservable.SubscriptionObserver<any>;
+		observer: PubSubContentObserver;
 		subscriptionId: string;
 	}) {
 		const {
