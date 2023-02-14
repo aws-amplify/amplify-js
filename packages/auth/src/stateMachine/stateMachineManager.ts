@@ -9,6 +9,7 @@ import {
 	MachineContext,
 	MachineEvent,
 	MachineManagerEvent,
+	TransitionListener,
 } from './types';
 import { Machine } from './machine';
 
@@ -27,10 +28,26 @@ interface AddMachineEventType extends Omit<MachineManagerEvent, 'type'> {
 	payload: { machine: MachineType };
 }
 
+const ADD_LISTENER_EVENT_SYMBOL = Symbol('ADD_LISTENER_EVENT_PAYLOAD');
+interface ListenerEventType extends Omit<MachineManagerEvent, 'type'> {
+	type: typeof ADD_LISTENER_EVENT_SYMBOL;
+	payload: {
+		listener: TransitionListener<MachineContext, MachineEvent, string>;
+	};
+}
+
+const RESET_MACHINE_EVENT_SYMBOL = Symbol('RESET_MACHINE_EVENT_SYMBOL');
+interface ResetMachineEventType extends Omit<MachineManagerEvent, 'type'> {
+	type: typeof RESET_MACHINE_EVENT_SYMBOL;
+	payload: {};
+}
+
 type InternalEvent =
+	| ListenerEventType
 	| MachineManagerEvent
 	| CurrentStateEventType
-	| AddMachineEventType;
+	| AddMachineEventType
+	| ResetMachineEventType;
 
 type MachinePromiseContext = [
 	(value: MachineState | PromiseLike<MachineState>) => void,
@@ -40,6 +57,7 @@ type MachinePromiseContext = [
 export interface MachineManagerOptions {
 	name: string;
 	logger: Logger;
+	helpers?: { [key: string]: (() => {}) | (() => Promise<any>) };
 }
 
 /**
@@ -52,6 +70,7 @@ export interface MachineManagerOptions {
  */
 export class MachineManager {
 	public readonly name: string;
+	public helpers: { [key: string]: (() => {}) | (() => Promise<any>) };
 	private readonly logger: Logger;
 	private _apiQueue: {
 		event: InternalEvent;
@@ -70,7 +89,7 @@ export class MachineManager {
 	 * Get the state and context of the specified machine. If there are events
 	 * being processed, it returns in the state and context after queueing events.
 	 *
-	 * @param machineName - The name of the requesting macine.
+	 * @param machineName - The name of the requesting machine.
 	 */
 	public async getCurrentState(
 		machineName: string
@@ -107,14 +126,26 @@ export class MachineManager {
 		return this._enqueueEvent(event);
 	}
 
+	async addListener(
+		machineName: string,
+		listener: TransitionListener<MachineContext, MachineEvent, string>
+	) {
+		this._enqueueEvent({
+			type: ADD_LISTENER_EVENT_SYMBOL,
+			payload: { listener },
+			toMachine: machineName,
+		});
+	}
+
 	private async _addMachineIfAbsent(machine: MachineType) {
+		this.logger.debug('_addMachineIfAbsent', machine);
 		if (!this._machines[machine.name]) {
 			const managerEventBroker: EventBroker<MachineEvent> = {
 				dispatch: event => {
 					this._machineQueue.push(event);
 				},
 			};
-			machine.addListener(managerEventBroker);
+			machine.addBroker(managerEventBroker);
 			this._machines[machine.name] = machine;
 		} else {
 			this.logger.debug(
@@ -124,6 +155,7 @@ export class MachineManager {
 	}
 
 	private async _enqueueEvent(event: InternalEvent) {
+		this.logger.debug('_enqueueEvent', event);
 		let resolve;
 		let reject;
 		const res = new Promise<MachineState>((res, rej) => {
@@ -146,10 +178,17 @@ export class MachineManager {
 			} = this._apiQueue.shift()!;
 			try {
 				if (event.type === CURRENT_STATES_EVENT_SYMBOL) {
-					// Skip.
+					// no-op
 				} else if (event.type === ADD_MACHINE_EVENT_SYMBOL) {
 					const newMachine = event.payload.machine;
 					await this._addMachineIfAbsent(newMachine);
+				} else if (event.type === ADD_LISTENER_EVENT_SYMBOL) {
+					if (!this._machines[event.toMachine]) {
+						throw 'You are trying to listen to a non-existent machine.';
+					}
+					this._machines[event.toMachine].addListener(event.payload.listener);
+				} else if (event.type === RESET_MACHINE_EVENT_SYMBOL) {
+					// no-op
 				} else {
 					await this._processApiEvent(event);
 				}
@@ -162,6 +201,7 @@ export class MachineManager {
 	}
 
 	private async _processApiEvent(event: MachineEvent) {
+		this.logger.debug('_processApiEvent: pushing to _machineQueue', event);
 		this._machineQueue.push(event);
 		while (this._machineQueue.length > 0) {
 			// Get the first event of the machine queue. This cause a DFS-like manner
@@ -177,6 +217,11 @@ export class MachineManager {
 			throw new Error(
 				`Event missing routing machine name. Event id ${event.id}.`
 			);
+		}
+		if (event.type === 'RESET_MACHINE_EVENT_SYMBOL') {
+			this._machines[event.toMachine] =
+				this._machines[event.toMachine].restart();
+			return;
 		}
 		const machine = this._machines[event.toMachine];
 		if (!machine) {

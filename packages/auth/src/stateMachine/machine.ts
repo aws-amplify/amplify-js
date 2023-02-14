@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Logger } from '@aws-amplify/core';
 import { MachineState } from './machineState';
+
 import {
 	CurrentStateAndContext,
 	EventBroker,
@@ -12,6 +14,7 @@ import {
 	MachineManagerEvent,
 	StateMachineParams,
 	StateTransitions,
+	TransitionListener,
 } from './types';
 
 /**
@@ -26,20 +29,32 @@ export class Machine<
 	StateNames extends string
 > implements EventConsumer<EventTypes>, EventProducer
 {
+	private _logger: Logger;
 	private _states: Record<
 		StateNames,
 		MachineState<ContextType, EventTypes, StateNames>
 	>;
 	private _context: ContextType;
 	private _current: MachineState<ContextType, EventTypes, StateNames>;
-	private _eventBrokers: EventBroker<MachineManagerEvent>[];
-
+	private _eventBrokers: EventBroker<MachineEvent>[];
+	private _transitionListeners: TransitionListener<
+		ContextType,
+		EventTypes,
+		string
+	>[];
+	private _finalStates: StateNames[];
+	private _initialState: StateNames;
+	private _initialContext: ContextType;
 	public readonly name: string;
 
 	constructor(params: StateMachineParams<ContextType, EventTypes, StateNames>) {
 		this.name = params.name;
 		this._context = params.context;
 		this._eventBrokers = [];
+		this._transitionListeners = [];
+		this._finalStates = params.finalStates ?? [];
+		this._initialState = params.initial;
+		this._initialContext = params.context;
 
 		const dispatchToBrokers = (event: MachineEvent) => {
 			if (!event.toMachine) {
@@ -65,7 +80,7 @@ export class Machine<
 					name: castedStateName,
 					transitions,
 					machineContextGetter: () => this._context,
-					machineManager: {
+					machineManagerBrokers: {
 						dispatch: dispatchToBrokers,
 					},
 				});
@@ -82,14 +97,17 @@ export class Machine<
 	}
 
 	/**
-	 * Receives an event and make state transits accrodingly.
+	 * Receives an event and make state transits accordingly.
 	 * @param event - The dispatched Event.
 	 * @internal
 	 */
 	async accept(event: EventTypes) {
-		const { nextState: nextStateName, newContext } = await this._current.accept(
-			event
-		);
+		console.log(`${this.name} received event`, event);
+		const {
+			nextState: nextStateName,
+			newContext,
+			transition,
+		} = await this._current.accept(event);
 		const nextState = this._states[nextStateName];
 		if (!nextState) {
 			// TODO: handle invalid next state.
@@ -98,6 +116,19 @@ export class Machine<
 		this._current = nextState;
 		if (newContext) {
 			this._context = newContext;
+		}
+		for (const listener of this._transitionListeners) {
+			listener.notify(transition);
+		}
+
+		// If the machine arrives at a final state, dispatch an event reset.
+		if (this._finalStates.includes(this._current.name)) {
+			for (const broker of this._eventBrokers) {
+				broker.dispatch({
+					type: 'RESET_MACHINE_EVENT_SYMBOL',
+					toMachine: this.name,
+				});
+			}
 		}
 	}
 
@@ -119,7 +150,32 @@ export class Machine<
 	 * @param broker
 	 * @internal
 	 */
-	addListener(broker: EventBroker<MachineManagerEvent>): void {
+	addBroker(broker: EventBroker<MachineEvent>): void {
 		this._eventBrokers.push(broker);
+	}
+
+	/**
+	 * Add transition listeners to current machine that would be invoked with
+	 * events emitted from transition effects. These can be used to execute
+	 * arbitrary code upon state transition.
+	 * @param listener
+	 * @internal
+	 */
+	addListener(
+		listener: TransitionListener<ContextType, EventTypes, string>
+	): void {
+		console.log(`${this.name}.addListener`, listener);
+		this._transitionListeners.push(listener);
+	}
+
+	/**
+	 * Resets the machine to a pristine state, with it's initial state, context and
+	 * empty list of transition listeners.
+	 */
+	restart(): Machine<ContextType, EventTypes, StateNames> {
+		this._current = this._states[this._initialState] || this._states[0];
+		this._context = this._initialContext;
+		this._transitionListeners = [];
+		return this;
 	}
 }

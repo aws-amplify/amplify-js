@@ -9,6 +9,7 @@ import {
 	EventBroker,
 	StateTransition,
 	StateTransitions,
+	TransitionListener,
 } from './types';
 
 export interface MachineStateClassParams<
@@ -19,7 +20,7 @@ export interface MachineStateClassParams<
 	name: StateNames;
 	transitions: StateTransitions<ContextType, EventTypes, StateNames>;
 	machineContextGetter: () => ContextType;
-	machineManager: EventBroker<MachineEvent>;
+	machineManagerBrokers: EventBroker<MachineEvent>;
 }
 
 /**
@@ -35,19 +36,18 @@ export class MachineState<
 	transitions: StateTransitions<ContextType, EventTypes, StateNames>;
 	private readonly machineContextGetter: () => ContextType; // Use readonly to prevent re-assign of context reference
 	private readonly machineManager: EventBroker<MachineEvent>;
-
 	constructor(
 		props: MachineStateClassParams<ContextType, EventTypes, StateNames>
 	) {
 		this.name = props.name;
 		this.transitions = props.transitions ?? {};
 		this.machineContextGetter = props.machineContextGetter;
-		this.machineManager = props.machineManager;
+		this.machineManager = props.machineManagerBrokers;
 	}
 
 	async accept(
 		event: EventTypes
-	): Promise<MachineStateEventResponse<ContextType>> {
+	): Promise<MachineStateEventResponse<ContextType, EventTypes>> {
 		// TODO: currently if reducers are invoked before actions, we use reducers;
 		// if context update happens after actions, we need to return new context
 		// from actions. This is confusing.
@@ -79,7 +79,8 @@ export class MachineState<
 		// undetermined order. Should we run them in order? Or implement Promise.allSettle
 		(await Promise.all(promiseArr ?? [])) as unknown as Promise<void>;
 
-		const response: MachineStateEventResponse<ContextType> = {
+		const response: MachineStateEventResponse<ContextType, EventTypes> = {
+			transition: validTransition,
 			nextState: validTransition?.nextState ?? this.name,
 			newContext: newContext !== oldContext ? newContext : undefined,
 		};

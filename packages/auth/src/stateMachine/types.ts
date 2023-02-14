@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Logger } from '@aws-amplify/core';
+import { MachineManager } from './stateMachineManager';
+
 /**
  * Base type for a Machine's context
  */
@@ -31,7 +34,7 @@ export type MachineManagerEvent = MachineEvent & {
  * @internal
  */
 export type EventProducer = {
-	addListener: (broker: EventBroker<MachineEvent>) => void;
+	addBroker: (broker: EventBroker<MachineEvent>) => void;
 };
 
 /**
@@ -39,6 +42,25 @@ export type EventProducer = {
  */
 export type EventBroker<EventType extends MachineEvent> = {
 	dispatch: (event: EventType) => void;
+};
+
+/**
+ * @internal
+ */
+export type TransitionListener<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent,
+	StateNames extends string
+> = {
+	notify: (
+		transition:
+			| StateTransition<
+					ContextType,
+					Extract<EventTypes, { type: EventTypes['type'] }>,
+					StateNames
+			  >
+			| undefined
+	) => void;
 };
 
 /**
@@ -68,6 +90,8 @@ export type StateMachineParams<
 	states: MachineStateParams<ContextType, EventTypes, StateNames>;
 	context: ContextType;
 	initial: StateNames;
+	logger: Logger;
+	finalStates?: StateNames[];
 };
 
 /**
@@ -198,13 +222,23 @@ export type CurrentStateAndContext<
  * @param nextState - The name of next state. It can be the same of current state,
  * indicating no state transit happens.
  * @param newContext - The updated machine context after running the associated
- * state transit reducers. {@link StateTransition.reducers}
+ * state transit reducers. {@link StateTransition["reducers"]}
  *
  * @internal
  */
-export interface MachineStateEventResponse<ContextType extends MachineContext> {
+export interface MachineStateEventResponse<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent
+> {
 	nextState: string;
 	newContext?: ContextType;
+	transition:
+		| StateTransition<
+				ContextType,
+				Extract<EventTypes, { type: EventTypes['type'] }>,
+				string
+		  >
+		| undefined;
 }
 
 /**
@@ -217,5 +251,7 @@ export interface MachineState<
 	EventType extends MachineEvent
 > {
 	name: string;
-	accept: (event: EventType) => Promise<MachineStateEventResponse<ContextType>>;
+	accept: (
+		event: EventType
+	) => Promise<MachineStateEventResponse<ContextType, EventType>>;
 }
