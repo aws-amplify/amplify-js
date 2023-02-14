@@ -6,7 +6,11 @@ import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { ConnectionState, PubSubContentObserver } from '../types/PubSub';
+import {
+	ConnectionState,
+	PubSubContentObserver,
+	PubSubContent,
+} from '../types/PubSub';
 import { ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import {
@@ -18,7 +22,6 @@ import {
 	ReconnectionMonitor,
 } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
-import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('MqttOverWSProvider');
 
@@ -119,8 +122,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 		return this.options.clientId!;
 	}
 
-	protected get endpoint(): string | undefined | Promise<string> {
-		return this.options.aws_pubsub_endpoint;
+	protected get endpoint(): Promise<string | undefined> {
+		return Promise.resolve(this.options.aws_pubsub_endpoint);
 	}
 
 	protected get clientsQueue() {
