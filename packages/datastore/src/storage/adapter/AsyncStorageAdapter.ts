@@ -600,14 +600,20 @@ export class AsyncStorageAdapter implements Adapter {
 
 							const allRecords = await this.db.getAll(storeName);
 
-							const recordToDelete = allRecords.filter(
+							const recordsToDelete = allRecords.filter(
 								childItem => childItem[hasOneIndex as string] === value
 							) as T[];
+
+							// instantiate models before passing to deleteTraverse
+							// necessary for extracting PK values via getIndexKeyValuesFromModel
+							const modelsToDelete = recordsToDelete.length
+								? await this.load(nameSpace, modelName, recordsToDelete)
+								: [];
 
 							await this.deleteTraverse<T>(
 								this.schema.namespaces[nameSpace].relationships![modelName]
 									.relationTypes,
-								recordToDelete,
+								modelsToDelete,
 								modelName,
 								nameSpace,
 								deleteQueue
@@ -624,14 +630,22 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const indices = index!.split(IDENTIFIER_KEY_SEPARATOR);
 
-						const childrenArray = allRecords.filter(childItem =>
+						const childRecords = allRecords.filter(childItem =>
 							indices.every(index => keyValues.includes(childItem[index]))
 						) as T[];
+
+						// instantiate models before passing to deleteTraverse
+						// necessary for extracting PK values via getIndexKeyValuesFromModel
+						const childModels = await this.load(
+							nameSpace,
+							modelName,
+							childRecords
+						);
 
 						await this.deleteTraverse<T>(
 							this.schema.namespaces[nameSpace].relationships![modelName]
 								.relationTypes,
-							childrenArray,
+							childModels,
 							modelName,
 							nameSpace,
 							deleteQueue

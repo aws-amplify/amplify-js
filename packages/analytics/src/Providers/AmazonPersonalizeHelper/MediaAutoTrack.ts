@@ -173,20 +173,18 @@ export class MediaAutoTrack {
 		const newParams = Object.assign({}, this._params);
 		const { eventData } = newParams;
 		eventData.eventType = eventType;
+		let currentPlayTime: string;
 		if (mediaType === MEDIA_TYPE.VIDEO) {
-			eventData.properties.timestamp = this._mediaElement.currentTime;
+			currentPlayTime = this._mediaElement.currentTime;
 			eventData.properties.duration = this._mediaElement.duration;
 		} else {
-			eventData.properties.timestamp = this._financial(
-				this._iframePlayer.getCurrentTime()
-			);
+			currentPlayTime = this._financial(this._iframePlayer.getCurrentTime());
 			eventData.properties.duration = this._financial(
 				this._iframePlayer.getDuration()
 			);
 		}
 		const percentage =
-			parseFloat(eventData.properties.timestamp) /
-			parseFloat(eventData.properties.duration);
+			parseFloat(currentPlayTime) / parseFloat(eventData.properties.duration);
 		eventData.properties.eventValue = Number(percentage.toFixed(4));
 		delete eventData.properties.domElementId;
 		this._provider.putToBuffer(newParams);

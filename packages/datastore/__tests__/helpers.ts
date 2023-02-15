@@ -1,6 +1,12 @@
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { parse } from 'graphql';
-import { ModelInit, Schema, InternalSchema, __modelMeta__ } from '../src/types';
+import {
+	ModelInit,
+	Schema,
+	InternalSchema,
+	isModelAttributePrimaryKey,
+	__modelMeta__,
+} from '../src/types';
 import {
 	AsyncCollection,
 	MutableModel,
@@ -515,8 +521,7 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
-	public logRequests = false;
-	public logAST = false;
+	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -530,8 +535,7 @@ class FakeGraphQLService {
 			this.tables.set(model.name, new Map<string, any[]>());
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
-				// Pretty sure the first key is the PK.
-				if (attribute.type === 'key') {
+				if (isModelAttributePrimaryKey(attribute)) {
 					this.PKFields.set(model.name, attribute!.properties!.fields);
 					CPKFound = true;
 					break;
@@ -546,7 +550,7 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
-		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+		this.log('RequestAST', JSON.stringify(q, null, 2));
 
 		const operation = q.operation;
 		const name = q.name.value;
@@ -576,17 +580,14 @@ class FakeGraphQLService {
 	}
 
 	public satisfiesCondition(tableName, item, condition) {
-		if (this.logRequests)
-			console.log('checking satisfiesCondition', {
-				tableName,
-				item,
-				condition: JSON.stringify(condition),
-			});
+		this.log('checking satisfiesCondition', {
+			tableName,
+			item,
+			condition: JSON.stringify(condition),
+		});
 
 		if (!condition) {
-			console.log(
-				'checking satisfiesCondition matches all for `null` conditions'
-			);
+			this.log('checking satisfiesCondition matches all for `null` conditions');
 			return true;
 		}
 
@@ -599,13 +600,12 @@ class FakeGraphQLService {
 			ModelPredicateCreator.getPredicates(predicate)!,
 		]);
 
-		this.logRequests &&
-			console.log('satisfiesCondition result', {
-				effectivePredicate: JSON.stringify(
-					ModelPredicateCreator.getPredicates(predicate)
-				),
-				isMatch,
-			});
+		this.log('satisfiesCondition result', {
+			effectivePredicate: JSON.stringify(
+				ModelPredicateCreator.getPredicates(predicate)
+			),
+			isMatch,
+		});
 
 		return isMatch;
 	}
@@ -719,6 +719,7 @@ class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
+		this.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -740,14 +741,12 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		if (this.logRequests) {
-			console.log('API request', {
-				query,
-				variables: JSON.stringify(variables, null, 2),
-				authMode,
-				authToken,
-			});
-		}
+		this.log('API Request', {
+			query,
+			variables: JSON.stringify(variables, null, 2),
+			authMode,
+			authToken,
+		});
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
@@ -756,9 +755,7 @@ class FakeGraphQLService {
 		const parsed = this.parseQuery(query);
 		const { operation, selection, table: tableName, type } = parsed;
 
-		if (this.logRequests) {
-			console.log('Parsed request components', parsed);
-		}
+		this.log('Parsed Request', parsed);
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -819,7 +816,7 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (this.logRequests) console.log({ existing });
+				this.log('delete looking for existing', { existing });
 				if (!existing) {
 					data = {
 						[selection]: null,
@@ -853,11 +850,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
-					if (this.logRequests) console.log({ data });
+					this.log('delete applying to table', { data });
 				}
 			}
 
-			if (this.logRequests) console.log('response', { data, errors });
+			this.log('API Response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -874,10 +871,12 @@ class FakeGraphQLService {
 						},
 					},
 				};
+				this.log('API subscription message', { observerMessageName, message });
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {
+				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
 				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
 			});
@@ -894,9 +893,15 @@ class FakeGraphQLService {
 /**
  * Re-requries DataStore, initializes the test schema.
  *
+ * Clears ALL mocks and modules in doing so.
+ *
  * @returns The DataStore instance and models from `testSchema`.
  */
-export function getDataStore({ online = false, isNode = true } = {}) {
+export function getDataStore({
+	online = false,
+	isNode = true,
+	storageAdapterFactory = () => undefined as any,
+} = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
@@ -974,6 +979,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DataStore: DataStoreType;
 	} = require('../src/datastore/datastore');
 
+	DataStore.configure({
+		storageAdapter: storageAdapterFactory(),
+	});
+
 	// private, test-only DI's.
 	if (online) {
 		(DataStore as any).amplifyContext.API = graphqlService;
@@ -983,8 +992,10 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 	}
 
 	const classes = initSchema(testSchema());
+
 	const {
 		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -997,13 +1008,19 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONPost,
+		LegacyJSONComment,
+		CompositePKParent,
+		CompositePKChild,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
+		Blog: PersistentModelConstructor<Blog>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
 		User: PersistentModelConstructor<User>;
@@ -1016,11 +1033,16 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild: PersistentModelConstructor<DefaultPKChild>;
 		HasOneParent: PersistentModelConstructor<HasOneParent>;
 		HasOneChild: PersistentModelConstructor<HasOneChild>;
+		Model: PersistentModelConstructor<Model>;
 		MtmLeft: PersistentModelConstructor<MtmLeft>;
 		MtmRight: PersistentModelConstructor<MtmRight>;
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
+		LegacyJSONComment: PersistentModelConstructor<LegacyJSONComment>;
+		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
+		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 	};
 
 	return {
@@ -1030,6 +1052,7 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		simulateConnect,
 		simulateDisconnect,
 		ModelWithBoolean,
+		Blog,
 		Post,
 		Comment,
 		User,
@@ -1042,11 +1065,16 @@ export function getDataStore({ online = false, isNode = true } = {}) {
 		DefaultPKChild,
 		HasOneParent,
 		HasOneChild,
+		Model,
 		MtmLeft,
 		MtmRight,
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONPost,
+		LegacyJSONComment,
+		CompositePKParent,
+		CompositePKChild,
 	};
 }
 
@@ -1109,10 +1137,24 @@ export declare class Login {
 	constructor(init: Login);
 }
 
+export declare class Blog {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly posts: AsyncCollection<Post>;
+
+	constructor(init: ModelInit<Blog>);
+
+	static copyOf(
+		src: Blog,
+		mutator: (draft: MutableModel<Blog>) => void | Blog
+	): Blog;
+}
+
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly comments: AsyncCollection<Comment>;
+	public readonly blogId?: string;
 
 	constructor(init: ModelInit<Post>);
 
@@ -1720,6 +1762,47 @@ export function testSchema(): Schema {
 					},
 				},
 			},
+			Blog: {
+				name: 'Blog',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					posts: {
+						name: 'posts',
+						isArray: true,
+						type: {
+							model: 'Post',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['blogId'],
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Blogs',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
 			Post: {
 				name: 'Post',
 				fields: {
@@ -1735,6 +1818,13 @@ export function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+						attributes: [],
+					},
+					blogId: {
+						name: 'blogId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
 						attributes: [],
 					},
 					comments: {
@@ -1758,6 +1848,13 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byBlog',
+							fields: ['blogId'],
+						},
 					},
 				],
 			},
