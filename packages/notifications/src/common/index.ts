@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { default as AWSPinpointProviderCommon } from './AWSPinpointProviderCommon';
+export { AMPLIFY_SYMBOL } from './constants';
 export {
 	addEventListener,
 	notifyEventListeners,

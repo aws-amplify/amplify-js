@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ChannelType } from '@aws-sdk/client-pinpoint';
-
+import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import PlatformNotSupportedError from '../..';
 import { Platform } from '../../Platform';
-
-import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import {
 	PushNotificationEvent,
 	PushNotificationMessage,

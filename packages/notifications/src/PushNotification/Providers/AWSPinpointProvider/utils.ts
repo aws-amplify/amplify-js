@@ -3,17 +3,13 @@
 
 import { Event as AWSPinpointAnalyticsEvent } from '@aws-sdk/client-pinpoint';
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL } from '../../../common';
 import { PushNotificationMessage } from '../../types';
 import {
 	AWSPinpointMessageEventSource,
 	AWSPinpointMessageEvent,
 } from './types';
 
-const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
 const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
 	'pinpoint.campaign.campaign_activity_id';
