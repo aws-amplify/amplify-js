@@ -26,25 +26,25 @@ executors:
   js-test-executor:
     docker:
       - image: cypress/included:12.4.1
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
     resource_class: large
 
   # TODO: Update tests that use this image to use the updated `js-test-executor`
-  # After upgrading the Docker image to 12.4.1, we had to make several updates to our samples (see 
-  # https://github.com/aws-amplify/amplify-js-samples-staging/pull/522). 
-  # This is because our current implementation of setting network status in our E2E tests began to 
-  # fail (i.e. this is no longer supported). We updated our samples to instead use the Reachability 
+  # After upgrading the Docker image to 12.4.1, we had to make several updates to our samples (see
+  # https://github.com/aws-amplify/amplify-js-samples-staging/pull/522).
+  # This is because our current implementation of setting network status in our E2E tests began to
+  # fail (i.e. this is no longer supported). We updated our samples to instead use the Reachability
   # component's helper function for setting network status
   # (see https://github.com/aws-amplify/amplify-js/blob/main/packages/core/src/Util/Reachability.ts#L42-L54).
-  # However, several JS tests were still failing after attempting to remediate. An item has been 
+  # However, several JS tests were still failing after attempting to remediate. An item has been
   # added to the JS backlog for follow-up.
   js-test-executor-prev:
     docker:
       - image: cypress/included:8.7.0
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -58,7 +58,7 @@ executors:
   webkit-test-executor:
     docker:
       - image: mcr.microsoft.com/playwright:v1.30.0-focal
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -1590,10 +1590,10 @@ releasable_branches: &releasable_branches
 minimal_browser_list: &minimal_browser_list
   browser: [chrome, firefox]
 
-# List of test browsers that are used in E2E tests where we want to also test browser APIs. For functionality that 
-# interacts with browser APIs (e.g. IndexedDB), use `extended_browser_list`. Includes Microsoft Edge. Note: WebKit 
-# is not included in this list because WebKit requires a different Docker image. Any test that uses this browser 
-# list should also test against WebKit. 
+# List of test browsers that are used in E2E tests where we want to also test browser APIs. For functionality that
+# interacts with browser APIs (e.g. IndexedDB), use `extended_browser_list`. Includes Microsoft Edge. Note: WebKit
+# is not included in this list because WebKit requires a different Docker image. Any test that uses this browser
+# list should also test against WebKit.
 extended_browser_list: &extended_browser_list
   browser: [chrome, firefox, edge]
 
