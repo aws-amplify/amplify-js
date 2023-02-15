@@ -45,21 +45,19 @@ export default class AWSPinpointProvider
 			// wire up default Pinpoint message event handling
 			addEventListener(
 				PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-				async message => {
-					await this.recordMessageEvent(
+				message =>
+					this.recordMessageEvent(
 						message,
 						AWSPinpointMessageEvent.BACKGROUND_MESSAGE_RECEIVED
-					);
-				}
+					)
 			);
 			addEventListener(
 				PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-				message => {
+				message =>
 					this.recordMessageEvent(
 						message,
 						AWSPinpointMessageEvent.FOREGROUND_MESSAGE_RECEIVED
-					);
-				}
+					)
 			);
 			const launchNotificationOpenedListener = addEventListener(
 				PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -127,6 +125,6 @@ export default class AWSPinpointProvider
 		if (!this.initialized) {
 			await this.init();
 		}
-		this.recordAnalyticsEvent(getAnalyticsEvent(message, event));
+		return this.recordAnalyticsEvent(getAnalyticsEvent(message, event));
 	};
 }
