@@ -99,20 +99,20 @@ class PushNotificationModule(
      * store the app launching notification if app is in a quit state
      */
     override fun onHostResume() {
-        val firebaseInstance = FirebaseMessaging.getInstance()
-        firebaseInstance.token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w(TAG, "Fetching FCM registration token failed")
-                return@OnCompleteListener
-            }
-            val params = Arguments.createMap()
-            params.putString("token", task.result)
-            Log.d(TAG, "Send device token event")
-            PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
-        })
         if (isAppLaunch) {
             isAppLaunch = false
             PushNotificationEventManager.init(reactApplicationContext)
+            val firebaseInstance = FirebaseMessaging.getInstance()
+            firebaseInstance.token.addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w(TAG, "Fetching FCM registration token failed")
+                    return@OnCompleteListener
+                }
+                val params = Arguments.createMap()
+                params.putString("token", task.result)
+                Log.d(TAG, "Send device token event")
+                PushNotificationEventManager.sendEvent(PushNotificationEventType.TOKEN_RECEIVED, params)
+            })
             currentActivity?.intent?.let {
                 val payload = getPayloadFromTempExtras(it.extras)
                 if (payload != null) {
