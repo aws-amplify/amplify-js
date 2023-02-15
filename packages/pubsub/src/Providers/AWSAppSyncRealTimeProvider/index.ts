@@ -405,7 +405,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 	// Log logic for start subscription failures
 	private _logStartSubscriptionError(
 		subscriptionId: string,
-		observer: ZenObservable.SubscriptionObserver<any>,
+		observer: PubSubContentObserver,
 		err: { message?: string }
 	) {
 		logger.debug({ err });
