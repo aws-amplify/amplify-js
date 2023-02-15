@@ -82,6 +82,14 @@ export default class PushNotification implements PushNotificationInterface {
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
+			const { addListener } = this.nativeEventEmitter;
+			const {
+				BACKGROUND_MESSAGE_RECEIVED,
+				FOREGROUND_MESSAGE_RECEIVED,
+				LAUNCH_NOTIFICATION_OPENED,
+				NOTIFICATION_OPENED,
+				TOKEN_RECEIVED,
+			} = this.nativeEvent;
 			if (this.nativeHeadlessTaskKey) {
 				// on platforms that can handle headless tasks, register one to broadcast background message received to
 				// library listeners
@@ -95,47 +103,43 @@ export default class PushNotification implements PushNotificationInterface {
 						);
 					}
 				);
-			} else if (this.nativeEvent.BACKGROUND_MESSAGE_RECEIVED) {
+			} else if (BACKGROUND_MESSAGE_RECEIVED) {
 				// on platforms that can't handle headless tasks, listen for native background message received event and
 				// broadcast to library listeners
-				this.nativeEventEmitter.addListener(
-					`${this.nativeEvent.BACKGROUND_MESSAGE_RECEIVED}`,
-					async message => {
-						// keep background task running until handlers have completed their work
-						try {
-							await Promise.race([
-								notifyEventListenersAndAwaitHandlers(
-									PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-									normalizeNativeMessage(message)
-								),
-								// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
-								// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
-								// happening
-								new Promise((_, reject) => {
-									setTimeout(
-										() =>
-											reject(
-												`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
-											),
-										BACKGROUND_TASK_TIMEOUT * 1000
-									);
-								}),
-							]);
-						} catch (err) {
-							logger.error(err);
-						} finally {
-							// notify native module that handlers have completed their work (or timed out)
-							this.nativeModule.completeNotification?.(
-								message.completionHandlerId
-							);
-						}
+				addListener(BACKGROUND_MESSAGE_RECEIVED, async message => {
+					// keep background task running until handlers have completed their work
+					try {
+						await Promise.race([
+							notifyEventListenersAndAwaitHandlers(
+								PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
+								normalizeNativeMessage(message)
+							),
+							// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
+							// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
+							// happening
+							new Promise((_, reject) => {
+								setTimeout(
+									() =>
+										reject(
+											`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
+										),
+									BACKGROUND_TASK_TIMEOUT * 1000
+								);
+							}),
+						]);
+					} catch (err) {
+						logger.error(err);
+					} finally {
+						// notify native module that handlers have completed their work (or timed out)
+						const { completeNotification } = this.nativeModule;
+						completeNotification?.(message.completionHandlerId);
 					}
-				);
+				});
 			}
 
-			this.nativeEventEmitter.addListener(
+			addListener(
 				// listen for native foreground message received event and broadcast to library listeners
-				`${this.nativeEvent.FOREGROUND_MESSAGE_RECEIVED}`,
+				FOREGROUND_MESSAGE_RECEIVED,
 				message => {
 					notifyEventListeners(
 						PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
@@ -144,13 +148,12 @@ export default class PushNotification implements PushNotificationInterface {
 				}
 			);
 
-			const launchNotificationOpenedListener = this.nativeEvent
-				.LAUNCH_NOTIFICATION_OPENED
-				? this.nativeEventEmitter.addListener(
+			const launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
+				? addListener(
 						// listen for native notification opened app (user tapped on notification, opening the app from quit -
 						// not background - state) event. This is broadcasted to an internal listener only as it is not intended
 						// for use otherwise as it produces inconsistent results when used within React Native app context
-						`${this.nativeEvent.LAUNCH_NOTIFICATION_OPENED}`,
+						LAUNCH_NOTIFICATION_OPENED,
 						message => {
 							notifyEventListeners(
 								PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
@@ -162,10 +165,10 @@ export default class PushNotification implements PushNotificationInterface {
 				  )
 				: null;
 
-			this.nativeEventEmitter.addListener(
+			addListener(
 				// listen for native notification opened (user tapped on notification, opening the app from background -
 				// not quit - state) event and broadcast to library listeners
-				`${this.nativeEvent.NOTIFICATION_OPENED}`,
+				NOTIFICATION_OPENED,
 				message => {
 					notifyEventListeners(
 						PushNotificationEvent.NOTIFICATION_OPENED,
@@ -176,10 +179,10 @@ export default class PushNotification implements PushNotificationInterface {
 				}
 			);
 
-			this.nativeEventEmitter.addListener(
+			addListener(
 				// listen for native new token event, automatically re-register device with provider using new token and
 				// broadcast to library listeners
-				`${this.nativeEvent.TOKEN_RECEIVED}`,
+				TOKEN_RECEIVED,
 				({ token }) => {
 					this.token = token;
 					this.registerDevice();
