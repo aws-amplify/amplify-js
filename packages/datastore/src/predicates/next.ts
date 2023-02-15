@@ -111,7 +111,7 @@ export class FieldCondition {
 	 * @param extract Not used. Present only to fulfill the `UntypedCondition` interface.
 	 * @returns A new, identitical `FieldCondition`.
 	 */
-	copy(extract: GroupCondition): [FieldCondition, GroupCondition | undefined] {
+	copy(extract?: GroupCondition): [FieldCondition, GroupCondition | undefined] {
 		return [
 			new FieldCondition(this.field, this.operator, [...this.operands]),
 			undefined,
@@ -865,11 +865,11 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	// For each field on the model schema, we want to add a getter
 	// that creates the appropriate new `link` in the query chain.
 	// TODO: If revisiting, consider a proxy.
-	for (const fieldName in ModelType.schema.fields) {
+	for (const fieldName in ModelType.schema.allFields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
 			get: () => {
-				const def = ModelType.schema.fields[fieldName];
+				const def = ModelType.schema.allFields![fieldName];
 
 				if (!def.association) {
 					// we're looking at a value field. we need to return a
