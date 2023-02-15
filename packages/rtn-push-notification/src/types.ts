@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export interface PushNotificationNativeModule {
+	completeNotification?: (completionHandlerId: string) => void;
 	getConstants: () => {
 		NativeEvent: {
-			BACKGROUND_MESSAGE_RECEIVED: string;
+			BACKGROUND_MESSAGE_RECEIVED?: string;
 			FOREGROUND_MESSAGE_RECEIVED: string;
 			LAUNCH_NOTIFICATION_OPENED: string;
 			NOTIFICATION_OPENED: string;
@@ -13,6 +14,5 @@ export interface PushNotificationNativeModule {
 		NativeHeadlessTaskKey: string;
 	};
 	getLaunchNotification: () => Promise<Record<string, string>>;
-	getToken: () => Promise<string>;
-	requestMessagingPermission: () => Promise<string>;
+	requestPermissions: (permissions: Record<string, boolean>) => Promise<string>;
 }

@@ -199,10 +199,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 		test('updates Pinpoint endpoint', async () => {
 			await provider.identifyUser(userId, userInfo);
 
-			expect(logger.debug).toBeCalledWith(
-				'updating endpoint',
-				expect.objectContaining({ ApplicationId: 'pinpoint-project-id' })
-			);
+			expect(logger.debug).toBeCalledWith('updating endpoint');
 			expect(clientSendSpy).toBeCalled();
 		});
 

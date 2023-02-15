@@ -86,7 +86,7 @@ export default abstract class AWSPinpointProviderCommon
 		}
 	};
 
-	protected init = async () => {
+	protected init = async (): Promise<void> => {
 		const { endpointId, storage } = this.config;
 		const providerName = this.getProviderName();
 		try {
@@ -104,7 +104,9 @@ export default abstract class AWSPinpointProviderCommon
 		}
 	};
 
-	protected recordAnalyticsEvent = async (event: AWSPinpointAnalyticsEvent) => {
+	protected recordAnalyticsEvent = async (
+		event: AWSPinpointAnalyticsEvent
+	): Promise<void> => {
 		const { appId, credentials, endpointId, pinpointClient } = this.config;
 		const currentCredentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
@@ -145,7 +147,7 @@ export default abstract class AWSPinpointProviderCommon
 	protected updateEndpoint = async (
 		userId: string = null,
 		userInfo: AWSPinpointUserInfo = null
-	) => {
+	): Promise<void> => {
 		const {
 			appId,
 			credentials,
@@ -174,7 +176,7 @@ export default abstract class AWSPinpointProviderCommon
 		try {
 			// Initialize a new pinpoint client if one isn't already configured or if credentials changed
 			if (!pinpointClient || credentialsUpdated) {
-				await this.initPinpointClient();
+				this.initPinpointClient();
 			}
 			const { address, attributes, demographic, location, metrics, optOut } =
 				userInfo ?? {};
@@ -229,7 +231,7 @@ export default abstract class AWSPinpointProviderCommon
 		}
 	};
 
-	private initPinpointClient = async () => {
+	private initPinpointClient = (): void => {
 		const { appId, credentials, pinpointClient, region } = this.config;
 
 		if (!appId || !credentials || !region) {
@@ -249,7 +251,7 @@ export default abstract class AWSPinpointProviderCommon
 		});
 	};
 
-	private getEndpointId = async () => {
+	private getEndpointId = async (): Promise<string> => {
 		const { appId } = this.config;
 		// Each Pinpoint channel requires its own Endpoint ID
 		const cacheKey = `${this.getSubCategory()}:${this.getProviderName()}:${appId}`;

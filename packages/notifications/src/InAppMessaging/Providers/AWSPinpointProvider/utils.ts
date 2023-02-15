@@ -7,6 +7,7 @@ import {
 	Layout as PinpointInAppMessageLayout,
 } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
+import { AMPLIFY_SYMBOL } from '../../../common';
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -18,11 +19,6 @@ import {
 
 import { AWSPinpointMessageEvent, MetricsComparator } from './types';
 
-const AMPLIFY_SYMBOL = (
-	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
-		? Symbol.for('amplify_default')
-		: '@@amplify_default'
-) as Symbol;
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
 let eventNameMemo = {};

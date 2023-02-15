@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-import { NotificationsCategory, NotificationsConfig } from './types';
-import InAppMessaging from './InAppMessaging';
+
+import InAppMessagingClass from './InAppMessaging';
+import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
 import { PushNotificationInterface as PushNotification } from './PushNotification/types';
+import { NotificationsCategory, NotificationsConfig } from './types';
 
 const logger = new Logger('Notifications');
 
@@ -14,7 +16,7 @@ class NotificationsClass {
 	private pushNotification?: PushNotification;
 
 	constructor() {
-		this.inAppMessaging = new InAppMessaging();
+		this.inAppMessaging = new InAppMessagingClass();
 	}
 
 	/**
@@ -54,7 +56,7 @@ class NotificationsClass {
 		return this.inAppMessaging;
 	}
 
-	get PushNotification() {
+	get Push() {
 		return this.pushNotification;
 	}
 }
