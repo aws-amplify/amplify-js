@@ -1,9 +1,19 @@
 import { Logger } from '@aws-amplify/core';
 import { v4 } from 'uuid';
 import { MachineManager } from '../src/stateMachine/stateMachineManager';
-import { Context, TickEvent, tickTockMachine } from './utils/tickTockMachine';
+import {
+	Context,
+	TickEvent,
+	tickTockMachine,
+	Events,
+	Machine1States,
+} from './utils/tickTockMachine';
 import { Machine } from '../src/stateMachine/machine';
-import { TransitionAction } from '../src/stateMachine/types';
+import {
+	MachineEvent,
+	TransitionAction,
+	TransitionListener,
+} from '../src/stateMachine/types';
 
 jest.mock('uuid');
 
@@ -105,6 +115,7 @@ describe(MachineManager.name, () => {
 				sendToInvalidMacineEffect
 			);
 			const anothermachine = new Machine<{}, any, any>({
+				logger: new Logger('TestLogger'),
 				context: {},
 				name: 'AnotherMachine',
 				initial: 'StateA',
@@ -147,6 +158,25 @@ describe(MachineManager.name, () => {
 				context: { events: [] },
 				currentState: 'StateA',
 			});
+		});
+	});
+
+	describe('addListener', () => {
+		it('should return the state of specified machine', async () => {
+			let listener: boolean = false;
+			const testListener: TransitionListener<
+				Context,
+				MachineEvent,
+				Machine1States
+			> = {
+				notify: transition => {
+					console.log('SignInStateMachine transition', transition);
+				},
+			};
+
+			const machine = tickTockMachine();
+			await manager.addMachineIfAbsent(machine);
+			await manager.addListener('TickTock', testListener);
 		});
 	});
 });

@@ -1,3 +1,4 @@
+import { Logger } from '@aws-amplify/core';
 import { Machine } from '../../src/stateMachine/machine';
 import { TransitionAction } from '../../src/stateMachine/types';
 
@@ -23,7 +24,7 @@ export type Events = TickEvent | TockEvent;
 export type Context = {
 	events: Events[];
 };
-type Machine1States = 'StateA' | 'StateB';
+export type Machine1States = 'StateA' | 'StateB';
 
 export const tickTockMachine = (
 	tickEffect: TransitionAction<Context, TickEvent> = async () => {},
@@ -32,6 +33,7 @@ export const tickTockMachine = (
 	new Machine<Context, Events, Machine1States>({
 		context: { events: [] },
 		name: 'TickTock' as const,
+		logger: new Logger('TestLogger'),
 		initial: 'StateA',
 		states: {
 			StateA: {

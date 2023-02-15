@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Logger } from '@aws-amplify/core';
 import { Machine } from '../../src/stateMachine/machine';
 import {
 	EventBroker,
@@ -43,6 +44,7 @@ export function dummyMachine(params: {
 		name: 'DummyMachine',
 		context: params.initialContext,
 		initial: 'State1',
+		logger: new Logger('TestLogger'),
 		states: {
 			State1: params.stateOneTransitions ?? {},
 			State2: params.stateTwoTransitions ?? {},

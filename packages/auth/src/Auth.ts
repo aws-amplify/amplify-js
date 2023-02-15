@@ -14,6 +14,9 @@ import {
 } from './types';
 import { AuthErrorStrings } from './constants/AuthErrorStrings';
 import { assertPluginAvailable } from './utils/assertPluginAvailable';
+import { MachineManager } from './stateMachine/stateMachineManager';
+import { Machine } from './stateMachine/machine';
+import AmazonCognitoProvider from './Providers/AmazonCognitoProvider';
 
 const logger = new Logger('AuthClass');
 
@@ -89,6 +92,7 @@ export class AuthClass {
 	public addPluggable(pluggable: AuthPluginProvider) {
 		// TODO: Align on whether we need to allow multiple plugins for Auth in single instance
 		this._pluggable = pluggable;
+		this._pluggable.configure();
 	}
 
 	/**

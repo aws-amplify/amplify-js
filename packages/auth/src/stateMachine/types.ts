@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { Logger } from '@aws-amplify/core';
+import { MachineManager } from './stateMachineManager';
 
 /**
  * Base type for a Machine's context
@@ -31,7 +33,7 @@ export type MachineManagerEvent = MachineEvent & {
  * @internal
  */
 export type EventProducer = {
-	addListener: (broker: EventBroker<MachineEvent>) => void;
+	addBroker: (broker: EventBroker<MachineEvent>) => void;
 };
 
 /**
@@ -49,15 +51,39 @@ export type EventConsumer<EventType extends MachineEvent> = {
 };
 
 /**
+ * A type for listening to state transitions
+ * @typeParam ContextType - The type of the machine being listened to.
+ * @typeParam EventTypes - The type of all the possible events. Expecting a union of {@link MachineEvent} types.
+ * @typeParam StateNames - The type of all the state names. Expecting a union of strings.
+ */
+export type TransitionListener<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent,
+	StateNames extends string
+> = {
+	notify: (
+		transition:
+			| StateTransition<
+					ContextType,
+					Extract<EventTypes, { type: EventTypes['type'] }>,
+					StateNames
+			  >
+			| undefined
+	) => void;
+};
+
+/**
  * The type accepted by the Machine constructor
  * @typeParam ContextType - The type of the enclosing Machine's context.
  * @typeParam EventTypes - The type of all the possible events. Expecting a union of {@link MachineEvent} types.
  * @typeParam StateNames - The type of all the state names. Expecting a union of strings.
  * @param name - The name of the Machine.
  * @param states - A map of all possible states and their transitions.
- * @param context - Inital context of the Machine.
+ * @param context - Initial context of the Machine.
  * @param initial - The name of the initial state.
- * @param machineManager - The {@link EventBroker} that accept events emitted from state transitions.
+ * @param logger - The optional Amplify Logger instance
+ * @param finalStates - An optional array of states which, when entered, will cause the machine to be restarted
+ * with its initial context, state and empty array of transition listeners.
  */
 export type StateMachineParams<
 	ContextType extends MachineContext,
@@ -68,6 +94,8 @@ export type StateMachineParams<
 	states: MachineStateParams<ContextType, EventTypes, StateNames>;
 	context: ContextType;
 	initial: StateNames;
+	logger: Logger;
+	finalStates?: StateNames[];
 };
 
 /**
@@ -195,16 +223,28 @@ export type CurrentStateAndContext<
 /**
  * The response from sending an event to a machine state.
  * @typeParam ContextType - The type of the enclosing Machine's context
+ * @typeParam EventTypes - The type of all the possible events. Expecting a union of {@link MachineEvent} types.
  * @param nextState - The name of next state. It can be the same of current state,
  * indicating no state transit happens.
  * @param newContext - The updated machine context after running the associated
  * state transit reducers. {@link StateTransition.reducers}
+ * @param transition - The state transition yielded by the event.
  *
  * @internal
  */
-export interface MachineStateEventResponse<ContextType extends MachineContext> {
+export interface MachineStateEventResponse<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent
+> {
 	nextState: string;
 	newContext?: ContextType;
+	transition:
+		| StateTransition<
+				ContextType,
+				Extract<EventTypes, { type: EventTypes['type'] }>,
+				string
+		  >
+		| undefined;
 }
 
 /**
@@ -217,5 +257,7 @@ export interface MachineState<
 	EventType extends MachineEvent
 > {
 	name: string;
-	accept: (event: EventType) => Promise<MachineStateEventResponse<ContextType>>;
+	accept: (
+		event: EventType
+	) => Promise<MachineStateEventResponse<ContextType, EventType>>;
 }

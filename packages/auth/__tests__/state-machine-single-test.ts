@@ -116,7 +116,7 @@ describe('State machine effect tests...', () => {
 				],
 			},
 		});
-		machine.addListener({ dispatch: mockDispatch });
+		machine.addBroker({ dispatch: mockDispatch });
 	});
 
 	afterEach(() => {
@@ -199,7 +199,7 @@ describe('State machine reducer tests...', () => {
 			},
 		});
 
-		machine.addListener({ dispatch: mockDispatch });
+		machine.addBroker({ dispatch: mockDispatch });
 	});
 
 	afterEach(() => {
