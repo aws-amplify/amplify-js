@@ -25,8 +25,26 @@ executors:
 
   js-test-executor:
     docker:
+      - image: cypress/included:12.4.1
+      - image: verdaccio/verdaccio:5.20
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+    resource_class: large
+
+  # TODO: Update tests that use this image to use the updated `js-test-executor`
+  # After upgrading the Docker image to 12.4.1, we had to make several updates to our samples (see
+  # https://github.com/aws-amplify/amplify-js-samples-staging/pull/522).
+  # This is because our current implementation of setting network status in our E2E tests began to
+  # fail (i.e. this is no longer supported). We updated our samples to instead use the Reachability
+  # component's helper function for setting network status
+  # (see https://github.com/aws-amplify/amplify-js/blob/main/packages/core/src/Util/Reachability.ts#L42-L54).
+  # However, several JS tests were still failing after attempting to remediate. An item has been
+  # added to the JS backlog for follow-up.
+  js-test-executor-prev:
+    docker:
       - image: cypress/included:8.7.0
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -39,8 +57,8 @@ executors:
 
   webkit-test-executor:
     docker:
-      - image: mcr.microsoft.com/playwright:v1.29.2-focal
-      - image: verdaccio/verdaccio
+      - image: mcr.microsoft.com/playwright:v1.30.0-focal
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -418,7 +436,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -448,7 +467,8 @@ jobs:
     parameters:
       browser:
         type: string
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples
     steps:
@@ -1353,7 +1373,8 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_iot_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-iot
     steps:
@@ -1368,7 +1389,8 @@ jobs:
           browser: chrome
 
   integ_react_api_reconnect:
-    executor: js-test-executor
+    # TODO: see `js-test-executor` TODO above
+    executor: js-test-executor-prev
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/pubsub/reconnection-api
     steps:
@@ -1554,8 +1576,17 @@ releasable_branches: &releasable_branches
       - geo/main
       - in-app-messaging/main
 
-test_browsers: &test_browsers
+# List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
+# should use `minimal_browser_list` to keep test execution time low.
+minimal_browser_list: &minimal_browser_list
   browser: [chrome, firefox]
+
+# List of test browsers that are used in E2E tests where we want to also test browser APIs. For functionality that
+# interacts with browser APIs (e.g. IndexedDB), use `extended_browser_list`. Includes Microsoft Edge. Note: WebKit
+# is not included in this list because WebKit requires a different Docker image. Any test that uses this browser
+# list should also test against WebKit.
+extended_browser_list: &extended_browser_list
+  browser: [chrome, firefox, edge]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
@@ -1602,7 +1633,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_auth_2:
           requires:
             - integ_setup
@@ -1611,7 +1642,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_auth_test_cypress_no_ui:
           requires:
             - integ_setup
@@ -1626,7 +1657,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -1635,7 +1666,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vue_auth:
           requires:
             - integ_setup
@@ -1644,7 +1675,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_auth:
           requires:
             - integ_setup
@@ -1653,7 +1684,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_predictions:
           requires:
             - integ_setup
@@ -1662,7 +1693,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_interactions:
           requires:
             - integ_setup
@@ -1671,7 +1702,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vue_interactions:
           requires:
             - integ_setup
@@ -1680,7 +1711,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_angular_interactions:
           requires:
             - integ_setup
@@ -1689,7 +1720,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_javascript_auth:
           requires:
             - integ_setup
@@ -1698,7 +1729,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore:
           requires:
             - integ_setup
@@ -1707,7 +1738,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_v2:
           requires:
             - integ_setup
@@ -1716,7 +1747,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_one_rule:
           requires:
             - integ_setup
@@ -1725,7 +1756,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_one_rule_v2:
           requires:
             - integ_setup
@@ -1734,7 +1765,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_two_rules:
           requires:
             - integ_setup
@@ -1743,7 +1774,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_two_rules_v2:
           requires:
             - integ_setup
@@ -1752,7 +1783,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
@@ -1761,7 +1792,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_multi_auth_three_plus_rules_v2:
           requires:
             - integ_setup
@@ -1770,7 +1801,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_subs_disabled:
           requires:
             - integ_setup
@@ -1779,7 +1810,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_subs_disabled_v2:
           requires:
             - integ_setup
@@ -1788,7 +1819,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_consecutive_saves:
           requires:
             - integ_setup
@@ -1797,7 +1828,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_consecutive_saves_v2:
           requires:
             - integ_setup
@@ -1806,7 +1837,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       # - integ_react_datastore_observe_query:
       #     requires:
       #       - integ_setup
@@ -1815,7 +1846,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       # - integ_react_datastore_observe_query_v2:
       #     requires:
       #       - integ_setup
@@ -1824,7 +1855,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       - integ_react_datastore_schema_drift:
           requires:
             - integ_setup
@@ -1833,7 +1864,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage:
           requires:
             - integ_setup
@@ -1842,7 +1873,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage_multipart_progress:
           requires:
             - integ_setup
@@ -1851,7 +1882,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_storage_copy:
           requires:
             - integ_setup
@@ -1860,7 +1891,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_amazon_cognito_identity_js_cookie_storage:
           requires:
             - integ_setup
@@ -1869,7 +1900,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1878,7 +1909,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_node_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1893,7 +1924,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_delete_user:
           requires:
             - integ_setup
@@ -1902,7 +1933,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -1971,7 +2002,7 @@ workflows:
       #       <<: *releasable_branches
       #     matrix:
       #       parameters:
-      #         <<: *test_browsers
+      #         <<: *minimal_browser_list
       - integ_javascript_geo:
           requires:
             - integ_setup
@@ -1989,7 +2020,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_owner_auth:
           requires:
             - integ_setup
@@ -1998,7 +2029,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_custom_pk_unconnected_models:
           requires:
             - integ_setup
@@ -2007,7 +2038,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *extended_browser_list
       - integ_react_datastore_custom_pk_unconnected_models_webkit:
           requires:
             - integ_setup
@@ -2022,7 +2053,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_custom_pk_has_many_many_to_many:
           requires:
             - integ_setup
@@ -2031,7 +2062,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_background_process_manager:
           requires:
             - integ_setup
@@ -2040,7 +2071,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *extended_browser_list
       - integ_react_datastore_background_process_manager_webkit:
           requires:
             - integ_setup
@@ -2055,7 +2086,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_iot_reconnect:
           requires:
             - integ_setup
@@ -2076,7 +2107,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_react_datastore_nested_predicate:
           requires:
             - integ_setup
@@ -2085,7 +2116,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_13_basic:
           requires:
             - integ_setup
@@ -2094,7 +2125,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_next_datastore_13_js:
           requires:
             - integ_setup
@@ -2103,7 +2134,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vite_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2112,7 +2143,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_rollup_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2121,7 +2152,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - integ_vanilla_js_datastore_basic_crud:
           requires:
             - integ_setup
@@ -2130,7 +2161,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *test_browsers
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
