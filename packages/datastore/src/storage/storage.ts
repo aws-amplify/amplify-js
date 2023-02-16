@@ -25,7 +25,9 @@ import {
 	STORAGE,
 	validatePredicate,
 	valuesEqual,
+	NAMESPACES,
 } from '../util';
+import { getIdentifierValue } from '../sync/utils';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -39,7 +41,7 @@ export type Storage = InstanceType<typeof StorageClass>;
 
 const logger = new Logger('DataStore');
 class StorageClass implements StorageFacade {
-	private initialized: Promise<void>;
+	private initialized: Promise<void> | undefined;
 	private readonly pushStream: {
 		observable: Observable<StorageSubscriptionMessage<PersistentModel>>;
 	} & Required<
@@ -50,7 +52,7 @@ class StorageClass implements StorageFacade {
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
 		private readonly getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
@@ -58,7 +60,7 @@ class StorageClass implements StorageFacade {
 		private readonly sessionId?: string
 	) {
 		this.adapter = this.adapter || getDefaultAdapter();
-		this.pushStream = new PushStream();
+		this.pushStream = new PushStream() as any;
 	}
 
 	static getNamespace() {
@@ -88,15 +90,13 @@ class StorageClass implements StorageFacade {
 			reject = rej;
 		});
 
-		this.adapter
-			.setUp(
-				this.schema,
-				this.namespaceResolver,
-				this.modelInstanceCreator,
-				this.getModelConstructorByModelName,
-				this.sessionId
-			)
-			.then(resolve, reject);
+		this.adapter!.setUp(
+			this.schema,
+			this.namespaceResolver,
+			this.modelInstanceCreator,
+			this.getModelConstructorByModelName,
+			this.sessionId
+		).then(resolve!, reject!);
 
 		await this.initialized;
 	}
@@ -108,6 +108,9 @@ class StorageClass implements StorageFacade {
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
 		const result = await this.adapter.save(model, condition);
 
@@ -151,11 +154,14 @@ class StorageClass implements StorageFacade {
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
-				model: modelConstructor,
+				model: modelConstructor as any,
 				opType,
 				element,
 				mutator,
-				condition: ModelPredicateCreator.getPredicates(condition, false),
+				condition:
+					(condition &&
+						ModelPredicateCreator.getPredicates(condition, false)) ||
+					null,
 				savedElement,
 			});
 		});
@@ -179,16 +185,33 @@ class StorageClass implements StorageFacade {
 		mutator?: Symbol
 	): Promise<[T[], T[]]> {
 		await this.init();
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
-		let deleted: T[];
 		let models: T[];
+		let deleted: T[] | undefined;
 
 		[models, deleted] = await this.adapter.delete(
 			modelOrModelConstructor,
 			condition
 		);
 
-		const modelIds = new Set(models.map(({ id }) => id));
+		const modelConstructor = isModelConstructor(modelOrModelConstructor)
+			? modelOrModelConstructor
+			: (Object.getPrototypeOf(modelOrModelConstructor || {})
+					.constructor as PersistentModelConstructor<T>);
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
+
+		const modelIds = new Set(
+			models.map(model => {
+				const modelId = getIdentifierValue(modelDefinition, model);
+				return modelId;
+			})
+		);
 
 		if (
 			!isModelConstructor(modelOrModelConstructor) &&
@@ -201,20 +224,21 @@ class StorageClass implements StorageFacade {
 			const modelConstructor = (Object.getPrototypeOf(model) as Object)
 				.constructor as PersistentModelConstructor<T>;
 
-			let theCondition: PredicatesGroup<any>;
+			let theCondition: PredicatesGroup<any> | undefined;
 
 			if (!isModelConstructor(modelOrModelConstructor)) {
-				theCondition = modelIds.has(model.id)
-					? ModelPredicateCreator.getPredicates(condition, false)
+				const modelId = getIdentifierValue(modelDefinition, model);
+				theCondition = modelIds.has(modelId)
+					? ModelPredicateCreator.getPredicates(condition!, false)
 					: undefined;
 			}
 
 			this.pushStream.next({
-				model: modelConstructor,
+				model: modelConstructor as any,
 				opType: OpType.DELETE,
 				element: model,
 				mutator,
-				condition: theCondition,
+				condition: theCondition || null,
 			});
 		});
 
@@ -227,6 +251,9 @@ class StorageClass implements StorageFacade {
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		await this.init();
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
 		return await this.adapter.query(modelConstructor, predicate, pagination);
 	}
@@ -234,22 +261,24 @@ class StorageClass implements StorageFacade {
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
-	): Promise<T> {
+	): Promise<T | undefined> {
 		await this.init();
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
-		const record = await this.adapter.queryOne(modelConstructor, firstOrLast);
-		return record;
+		return await this.adapter.queryOne(modelConstructor, firstOrLast);
 	}
 
 	observe<T extends PersistentModel>(
-		modelConstructor?: PersistentModelConstructor<T>,
-		predicate?: ModelPredicate<T>,
+		modelConstructor?: PersistentModelConstructor<T> | null,
+		predicate?: ModelPredicate<T> | null,
 		skipOwn?: Symbol
 	): Observable<SubscriptionMessage<T>> {
 		const listenToAll = !modelConstructor;
 		const { predicates, type } =
-			ModelPredicateCreator.getPredicates(predicate, false) || {};
-		const hasPredicate = !!predicates;
+			(predicate && ModelPredicateCreator.getPredicates(predicate, false)) ||
+			{};
 
 		let result = this.pushStream.observable
 			.filter(({ mutator }) => {
@@ -265,7 +294,7 @@ class StorageClass implements StorageFacade {
 					return false;
 				}
 
-				if (hasPredicate) {
+				if (!!predicates && !!type) {
 					return validatePredicate(element, type, predicates);
 				}
 
@@ -278,6 +307,9 @@ class StorageClass implements StorageFacade {
 
 	async clear(completeObservable = true) {
 		this.initialized = undefined;
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
 		await this.adapter.clear();
 
@@ -292,6 +324,9 @@ class StorageClass implements StorageFacade {
 		mutator?: Symbol
 	): Promise<[T, OpType][]> {
 		await this.init();
+		if (!this.adapter) {
+			throw new Error('Storage adapter is missing');
+		}
 
 		const result = await this.adapter.batchSave(modelConstructor, items);
 
@@ -301,7 +336,7 @@ class StorageClass implements StorageFacade {
 				opType,
 				element,
 				mutator,
-				condition: undefined,
+				condition: null,
 			});
 		});
 
@@ -319,7 +354,7 @@ class StorageClass implements StorageFacade {
 			return null;
 		}
 
-		const [patches, source] = patchesTuple;
+		const [patches, source] = patchesTuple!;
 		const updatedElement = {};
 		// extract array of updated fields from patches
 		const updatedFields = <string[]>(
@@ -333,43 +368,74 @@ class StorageClass implements StorageFacade {
 		const { fields } =
 			this.schema.namespaces[namespace].models[modelConstructor.name];
 		const { primaryKey, compositeKeys = [] } =
-			this.schema.namespaces[namespace].keys[modelConstructor.name];
+			this.schema.namespaces[namespace].keys?.[modelConstructor.name] || {};
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
-			const targetName: any = isTargetNameAssociation(
+			const targetNames: any = isTargetNameAssociation(
 				fields[field]?.association
 			);
 
-			// if field refers to a belongsTo relation, use the target field instead
-			const key = targetName || field;
+			if (Array.isArray(targetNames)) {
+				// if field refers to a belongsTo relation, use the target field instead
 
-			// check field values by value. Ignore unchanged fields
-			if (!valuesEqual(source[key], originalElement[key])) {
-				// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
-				updatedElement[key] =
-					originalElement[key] === undefined ? null : originalElement[key];
+				for (const targetName of targetNames) {
+					// check field values by value. Ignore unchanged fields
+					if (!valuesEqual(source[targetName], originalElement[targetName])) {
+						// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
 
-				for (const fieldSet of compositeKeys) {
-					// include all of the fields that comprise the composite key
-					if (fieldSet.has(key)) {
-						for (const compositeField of fieldSet) {
-							updatedElement[compositeField] = originalElement[compositeField];
+						updatedElement[targetName] =
+							originalElement[targetName] === undefined
+								? null
+								: originalElement[targetName];
+
+						for (const fieldSet of compositeKeys) {
+							// include all of the fields that comprise the composite key
+							if (fieldSet.has(targetName)) {
+								for (const compositeField of fieldSet) {
+									updatedElement[compositeField] =
+										originalElement[compositeField];
+								}
+							}
+						}
+					}
+				}
+			} else {
+				// Backwards compatibility pre-CPK
+
+				// if field refers to a belongsTo relation, use the target field instead
+				const key = targetNames || field;
+
+				// check field values by value. Ignore unchanged fields
+				if (!valuesEqual(source[key], originalElement[key])) {
+					// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+
+					updatedElement[key] =
+						originalElement[key] === undefined ? null : originalElement[key];
+
+					for (const fieldSet of compositeKeys) {
+						// include all of the fields that comprise the composite key
+						if (fieldSet.has(key)) {
+							for (const compositeField of fieldSet) {
+								updatedElement[compositeField] =
+									originalElement[compositeField];
+							}
 						}
 					}
 				}
 			}
 		});
 
+		// Exit early when there are no changes introduced in the update mutation
+		if (Object.keys(updatedElement).length === 0) {
+			return null;
+		}
+
 		// include field(s) from custom PK if one is specified for the model
 		if (primaryKey && primaryKey.length) {
 			for (const pkField of primaryKey) {
 				updatedElement[pkField] = originalElement[pkField];
 			}
-		}
-
-		if (Object.keys(updatedElement).length === 0) {
-			return null;
 		}
 
 		const { id, _version, _lastChangedAt, _deleted } = originalElement;
@@ -393,7 +459,7 @@ class ExclusiveStorage implements StorageFacade {
 		schema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		modelInstanceCreator: ModelInstanceCreator,
@@ -421,7 +487,7 @@ class ExclusiveStorage implements StorageFacade {
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patchesTuple)
+			storage.save(model, condition, mutator, patchesTuple)
 		);
 	}
 
@@ -444,11 +510,11 @@ class ExclusiveStorage implements StorageFacade {
 			if (isModelConstructor(modelOrModelConstructor)) {
 				const modelConstructor = modelOrModelConstructor;
 
-				return storage.delete(modelConstructor, condition, mutator);
+				return storage.delete(modelConstructor as any, condition, mutator);
 			} else {
 				const model = modelOrModelConstructor;
 
-				return storage.delete(model, condition, mutator);
+				return storage.delete(model as any, condition, mutator);
 			}
 		});
 	}
@@ -466,8 +532,8 @@ class ExclusiveStorage implements StorageFacade {
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
-	): Promise<T> {
-		return this.runExclusive<T>(storage =>
+	): Promise<T | undefined> {
+		return this.runExclusive<T | undefined>(storage =>
 			storage.queryOne<T>(modelConstructor, firstOrLast)
 		);
 	}
@@ -477,19 +543,19 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	observe<T extends PersistentModel>(
-		modelConstructor?: PersistentModelConstructor<T>,
-		predicate?: ModelPredicate<T>,
+		modelConstructor?: PersistentModelConstructor<T> | null,
+		predicate?: ModelPredicate<T> | null,
 		skipOwn?: Symbol
 	): Observable<SubscriptionMessage<T>> {
 		return this.storage.observe(modelConstructor, predicate, skipOwn);
 	}
 
 	async clear() {
-		await this.storage.clear();
+		await this.runExclusive(storage => storage.clear());
 	}
 
 	batchSave<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<any>,
+		modelConstructor: PersistentModelConstructor<T>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		return this.storage.batchSave(modelConstructor, items);

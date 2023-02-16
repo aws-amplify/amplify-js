@@ -1,10 +1,14 @@
 module.exports = {
 	entry: {
 		'aws-amplify-datastore-storage-adapter.min': './lib-esm/index.js',
+		'aws-amplify-datastore-sqlite-adapter-expo.min':
+			'./lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
 	},
 	externals: [
 		'@aws-amplify/datastore',
 		'@aws-amplify/core',
+		'expo-file-system',
+		'expo-sqlite',
 		'react-native-sqlite-storage',
 	],
 	output: {

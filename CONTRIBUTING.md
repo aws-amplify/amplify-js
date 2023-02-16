@@ -89,7 +89,6 @@ yarn build --scope @aws-amplify/auth
 
 ```
 yarn run test --scope @aws-amplify/auth
-yarn run test --scope @aws-amplify/ui-components
 ```
 
 > Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests pass.
@@ -120,7 +119,7 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
-These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
+Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
 
 **Using the setup-dev:react-native script to work with React-Native apps**
 
@@ -139,7 +138,7 @@ To develop locally alongside a React-Native app, make sure to,
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 ```
 
-> Note: This script runs a continious job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
+> Note: This script runs a continuous job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
 
 The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
 Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
@@ -188,6 +187,24 @@ Once you are done with Verdaccio, you can reset to the default registry by doing
 ```
 yarn config set registry https://registry.yarnpkg.com
 ```
+
+#### Bundle Size Checks
+
+Amplify JS enforces bundle size checks against incoming PRs. It uses the [size-limit](https://github.com/ai/size-limit) utility to test the Webpack tree-shaken footprint of common import patterns for a given category.
+
+The configuration for each category can be found in the associated package's `package.json` file under the `size-limit` key.
+
+##### Local Invocation & Regression Debugging
+
+The bundle size test can be performed locally (after building) by invoking the `test:size` build target from either a specific category or from the mono-repo package. Bundle size regressions associated with a given change can be debugged by specifying the `--why` flag, e.g. `yarn test:size --why`, which will open a Statoscope instance to permit analysis of the generated bundle. Some specific techniques for digging into regressions are outlined below.
+
+**Compare yarn.lock files**
+Comparing `yarn.lock` files for each build can be a useful way to determine if your dependency graph has changed (which may have trickle down effect on Amplify's bundle size). The easiest way to do this is to download the `yarn.lock` files from the `build` step in CircleCI (under the "Artifacts" tab) for the failing build and an older passing build. These files can then be diffed locally to see if your dependency graph has changed: `diff yarn-passing.lock yarn-failing.lock`.
+
+**Compare `stats.json` files**
+The Webpack `stats.json` file contains a [static analysis](https://webpack.js.org/api/stats/) for a particular bundle. To generate these files locally, checkout & build the failing change, navigate to the category that's failing, and execute the following command: `yarn test:size --save-bundle test_bundle`. The generated `stats.json` file can be found in the new `test_bundle` directory. Make sure to copy this file somewhere safe for analysis. Next rebuild your parent branch (typically `main`) and compare bundles using the following command: `yarn test:size --why --compare-with stats-failing.json`. This will open a Statoscope instance in your browser. The "Choose stats" & "Diff" buttons on the top right can be used to inspect & compare your bundles.
+
+`stats.json` files can also be plugged into other popular bundle analysis tools if desired.
 
 ## Bug Reports
 

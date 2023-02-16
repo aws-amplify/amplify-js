@@ -1,15 +1,5 @@
-/*
- * Copyright 2019-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { RequestParams } from './DataType';
 
 enum HTML5_MEDIA_EVENT {
@@ -183,20 +173,18 @@ export class MediaAutoTrack {
 		const newParams = Object.assign({}, this._params);
 		const { eventData } = newParams;
 		eventData.eventType = eventType;
+		let currentPlayTime: string;
 		if (mediaType === MEDIA_TYPE.VIDEO) {
-			eventData.properties.timestamp = this._mediaElement.currentTime;
+			currentPlayTime = this._mediaElement.currentTime;
 			eventData.properties.duration = this._mediaElement.duration;
 		} else {
-			eventData.properties.timestamp = this._financial(
-				this._iframePlayer.getCurrentTime()
-			);
+			currentPlayTime = this._financial(this._iframePlayer.getCurrentTime());
 			eventData.properties.duration = this._financial(
 				this._iframePlayer.getDuration()
 			);
 		}
 		const percentage =
-			parseFloat(eventData.properties.timestamp) /
-			parseFloat(eventData.properties.duration);
+			parseFloat(currentPlayTime) / parseFloat(eventData.properties.duration);
 		eventData.properties.eventValue = Number(percentage.toFixed(4));
 		delete eventData.properties.domElementId;
 		this._provider.putToBuffer(newParams);

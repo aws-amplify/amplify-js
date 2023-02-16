@@ -1,19 +1,10 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { parse } from 'url'; // Used for OAuth parsing of Cognito Hosted UI
 import { launchUri } from './urlOpener';
 import * as oAuthStorage from './oauthStorage';
+import { Buffer } from 'buffer';
 
 import {
 	OAuthOpts,
@@ -23,13 +14,12 @@ import {
 
 import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 
-import sha256 from 'crypto-js/sha256';
-import Base64 from 'crypto-js/enc-base64';
-
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+import { Sha256 } from '@aws-crypto/sha256-js';
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -169,18 +159,15 @@ export default class OAuth {
 			.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 			.join('&');
 
-		const {
-			access_token,
-			refresh_token,
-			id_token,
-			error,
-		} = await ((await fetch(oAuthTokenEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body,
-		})) as any).json();
+		const { access_token, refresh_token, id_token, error } = await (
+			(await fetch(oAuthTokenEndpoint, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+				body,
+			})) as any
+		).json();
 
 		if (error) {
 			throw new Error(error);
@@ -305,15 +292,18 @@ export default class OAuth {
 	}
 
 	private _generateChallenge(code: string) {
-		return this._base64URL(sha256(code));
+		const awsCryptoHash = new Sha256();
+		awsCryptoHash.update(code);
+
+		const resultFromAWSCrypto = awsCryptoHash.digestSync();
+		const b64 = Buffer.from(resultFromAWSCrypto).toString('base64');
+		const base64URLFromAWSCrypto = this._base64URL(b64);
+
+		return base64URLFromAWSCrypto;
 	}
 
 	private _base64URL(string) {
-		return string
-			.toString(Base64)
-			.replace(/=/g, '')
-			.replace(/\+/g, '-')
-			.replace(/\//g, '_');
+		return string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 	}
 
 	private _generateRandom(size: number) {

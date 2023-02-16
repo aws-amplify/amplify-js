@@ -1,15 +1,5 @@
-/*
- * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	ConsoleLogger as Logger,
 	Signer,
@@ -30,10 +20,22 @@ import {
 type SumerianSceneOptions = SceneOptions & { progressCallback: Function };
 
 const SUMERIAN_SERVICE_NAME = 'sumerian';
+const SUMERIAN_DEPRECATION_MESSAGE =
+	'The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function and as a result, will no longer be available.';
 
 const logger = new Logger('SumerianProvider');
 
+/**
+ * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+ * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+ * and as a result, will no longer be available.
+ */
 export class SumerianProvider extends AbstractXRProvider {
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	constructor(options: ProviderOptions = {}) {
 		super(options);
 	}
@@ -59,6 +61,11 @@ export class SumerianProvider extends AbstractXRProvider {
 		});
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public async loadScene(
 		sceneName: string,
 		domElementId: string,
@@ -152,8 +159,19 @@ export class SumerianProvider extends AbstractXRProvider {
 			logger.debug('No credentials available, the request will be unsigned');
 		}
 
-		const apiResponse = await fetch(url, fetchOptions);
+		let apiResponse;
+		try {
+			apiResponse = await fetch(url, fetchOptions);
+		} catch (e) {
+			throw new XRSceneLoadFailure(SUMERIAN_DEPRECATION_MESSAGE);
+		}
+
 		const apiResponseJson = await apiResponse.json();
+
+		if (apiResponse.status === 404) {
+			throw new XRSceneLoadFailure(SUMERIAN_DEPRECATION_MESSAGE);
+		}
+
 		if (apiResponse.status === 403) {
 			if (apiResponseJson.message) {
 				logger.error(
@@ -213,6 +231,11 @@ export class SumerianProvider extends AbstractXRProvider {
 		}
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public isSceneLoaded(sceneName: string) {
 		const scene = this.getScene(sceneName);
 		return scene.isLoaded || false;
@@ -240,6 +263,11 @@ export class SumerianProvider extends AbstractXRProvider {
 		return this.options.scenes[sceneName];
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public getSceneController(sceneName: string) {
 		if (!this.options.scenes) {
 			const errorMsg = 'No scenes were defined in the configuration';
@@ -264,41 +292,81 @@ export class SumerianProvider extends AbstractXRProvider {
 		return sceneController;
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public isVRCapable(sceneName: string): boolean {
 		const sceneController = this.getSceneController(sceneName);
 		return sceneController.vrCapable;
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public isVRPresentationActive(sceneName: string): boolean {
 		const sceneController = this.getSceneController(sceneName);
 		return sceneController.vrPresentationActive;
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public start(sceneName: string) {
 		const sceneController = this.getSceneController(sceneName);
 		sceneController.start();
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public enterVR(sceneName: string) {
 		const sceneController = this.getSceneController(sceneName);
 		sceneController.enterVR();
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public exitVR(sceneName: string) {
 		const sceneController = this.getSceneController(sceneName);
 		sceneController.exitVR();
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public isMuted(sceneName: string): boolean {
 		const sceneController = this.getSceneController(sceneName);
 		return sceneController.muted;
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public setMuted(sceneName: string, muted: boolean) {
 		const sceneController = this.getSceneController(sceneName);
 		sceneController.muted = muted;
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public onSceneEvent(
 		sceneName: string,
 		eventName: string,
@@ -308,6 +376,11 @@ export class SumerianProvider extends AbstractXRProvider {
 		sceneController.on(eventName, eventHandler);
 	}
 
+	/**
+	 * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+	 * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+	 * and as a result, will no longer be available.
+	 */
 	public enableAudio(sceneName: string) {
 		const sceneController = this.getSceneController(sceneName);
 		sceneController.enableAudio();

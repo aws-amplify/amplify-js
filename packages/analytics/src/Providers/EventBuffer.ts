@@ -43,7 +43,8 @@ export default class EventsBuffer {
 	}
 
 	public push(event: EventObject) {
-		if (this._buffer > this._config.bufferSize) {
+		// if the buffer is currently at the configured limit, pushing would exceed it
+		if (this._buffer.length >= this._config.bufferSize) {
 			logger.debug('Exceeded analytics events buffer size');
 			return event.handlers.reject(
 				new Error('Exceeded the size of analytics events buffer')

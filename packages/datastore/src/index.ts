@@ -3,6 +3,8 @@ export {
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
+	AsyncCollection,
+	AsyncItem,
 } from './datastore/datastore';
 
 export {
@@ -19,6 +21,8 @@ import {
 	isNonModelConstructor,
 	isModelConstructor,
 } from './util';
+
+export { NAMESPACES } from './util';
 
 export const utils = {
 	USER,

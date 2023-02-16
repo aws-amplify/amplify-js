@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
@@ -31,11 +21,15 @@ import {
 } from './axios-http-handler';
 import * as events from 'events';
 import {
-	createPrefixMiddleware,
-	prefixMiddlewareOptions,
 	autoAdjustClockskewMiddleware,
 	autoAdjustClockskewMiddlewareOptions,
+	calculatePartSize,
+	createPrefixMiddleware,
 	createS3Client,
+	prefixMiddlewareOptions,
+	DEFAULT_PART_SIZE,
+	DEFAULT_QUEUE_SIZE,
+	MAX_OBJECT_SIZE,
 } from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -49,22 +43,19 @@ export declare interface Part {
 }
 
 export class AWSS3ProviderManagedUpload {
-	// Defaults
-	protected minPartSize = 5 * 1024 * 1024; // in MB
-	private queueSize = 4;
-
 	// Data for current upload
-	private body = null;
-	private params: PutObjectRequest = null;
+	private body;
+	private params: PutObjectRequest;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private cancel = false;
 	private s3client: S3Client;
+	private uploadId: string | undefined;
+	private partSize = DEFAULT_PART_SIZE;
 
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter: events.EventEmitter = null;
+	private emitter: events.EventEmitter | null = null;
 
 	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
@@ -74,79 +65,88 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	public async upload() {
-		this.body = await this.validateAndSanitizeBody(this.params.Body);
-		this.totalBytesToUpload = this.byteLength(this.body);
-		if (this.totalBytesToUpload <= this.minPartSize) {
-			// Multipart upload is not required. Upload the sanitized body as is
-			this.params.Body = this.body;
-			const putObjectCommand = new PutObjectCommand(this.params);
-			return this.s3client.send(putObjectCommand);
-		} else {
-			// Step 1: Initiate the multi part upload
-			const uploadId = await this.createMultiPartUpload();
+		try {
+			this.body = this.validateAndSanitizeBody(this.params.Body);
+			this.totalBytesToUpload = this.byteLength(this.body);
+			if (this.totalBytesToUpload <= DEFAULT_PART_SIZE) {
+				// Multipart upload is not required. Upload the sanitized body as is
+				this.params.Body = this.body;
+				const putObjectCommand = new PutObjectCommand(this.params);
+				return this.s3client.send(putObjectCommand);
+			} else {
+				// Step 1: Determine appropriate part size.
+				this.partSize = calculatePartSize(this.totalBytesToUpload);
+				// Step 2: Initiate the multi part upload
+				this.uploadId = await this.createMultiPartUpload();
 
-			// Step 2: Upload chunks in parallel as requested
-			const numberOfPartsToUpload = Math.ceil(
-				this.totalBytesToUpload / this.minPartSize
-			);
-
-			const parts: Part[] = this.createParts();
-			for (
-				let start = 0;
-				start < numberOfPartsToUpload;
-				start += this.queueSize
-			) {
-				/** This first block will try to cancel the upload if the cancel
-				 *	request came before any parts uploads have started.
-				 **/
-				await this.checkIfUploadCancelled(uploadId);
-
-				// Upload as many as `queueSize` parts simultaneously
-				await this.uploadParts(
-					uploadId,
-					parts.slice(start, start + this.queueSize)
+				// Step 3: Upload chunks in parallel as requested
+				const numberOfPartsToUpload = Math.ceil(
+					this.totalBytesToUpload / this.partSize
 				);
 
-				/** Call cleanup a second time in case there were part upload requests
-				 *  in flight. This is to ensure that all parts are cleaned up.
-				 */
-				await this.checkIfUploadCancelled(uploadId);
+				const parts: Part[] = this.createParts();
+				for (
+					let start = 0;
+					start < numberOfPartsToUpload;
+					start += DEFAULT_QUEUE_SIZE
+				) {
+					// Upload as many as `queueSize` parts simultaneously
+					await this.uploadParts(
+						this.uploadId!,
+						parts.slice(start, start + DEFAULT_QUEUE_SIZE)
+					);
+				}
+
+				parts.map(part => {
+					this.removeEventListener(part);
+				});
+
+				// Step 3: Finalize the upload such that S3 can recreate the file
+				return await this.finishMultiPartUpload(this.uploadId!);
 			}
-
-			parts.map(part => {
-				this.removeEventListener(part);
-			});
-
-			// Step 3: Finalize the upload such that S3 can recreate the file
-			return await this.finishMultiPartUpload(uploadId);
+		} catch (error) {
+			// if any error is thrown, call cleanup
+			await this.cleanup(this.uploadId);
+			logger.error('Error. Cancelling the multipart upload.');
+			throw error;
 		}
 	}
 
 	private createParts(): Part[] {
-		const parts: Part[] = [];
-		for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
-			const bodyEnd = Math.min(
-				bodyStart + this.minPartSize,
-				this.totalBytesToUpload
-			);
-			parts.push({
-				bodyPart: this.body.slice(bodyStart, bodyEnd),
-				partNumber: parts.length + 1,
-				emitter: new events.EventEmitter(),
-				_lastUploadedBytes: 0,
-			});
-			bodyStart += this.minPartSize;
+		try {
+			const parts: Part[] = [];
+			for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
+				const bodyEnd = Math.min(
+					bodyStart + this.partSize,
+					this.totalBytesToUpload
+				);
+				parts.push({
+					bodyPart: this.body.slice(bodyStart, bodyEnd),
+					partNumber: parts.length + 1,
+					emitter: new events.EventEmitter(),
+					_lastUploadedBytes: 0,
+				});
+				bodyStart += this.partSize;
+			}
+			return parts;
+		} catch (error) {
+			logger.error(error);
+			throw error;
 		}
-		return parts;
 	}
 
 	private async createMultiPartUpload() {
-		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
-			this.params
-		);
-		const response = await this.s3client.send(createMultiPartUploadCommand);
-		logger.debug(response.UploadId);
-		return response.UploadId;
+		try {
+			const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
+				this.params
+			);
+			const response = await this.s3client.send(createMultiPartUploadCommand);
+			logger.debug(response.UploadId);
+			return response.UploadId;
+		} catch (error) {
+			logger.error(error);
+			throw error;
+		}
 	}
 
 	/**
@@ -191,11 +191,9 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			logger.error(
-				'error happened while uploading a part. Cancelling the multipart upload',
-				error
+				'Error happened while uploading a part. Cancelling the multipart upload'
 			);
-			this.cancelUpload();
-			return;
+			throw error;
 		}
 	}
 
@@ -211,37 +209,22 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-			logger.error(
-				'error happened while finishing the upload. Cancelling the multipart upload',
-				error
-			);
-			this.cancelUpload();
-			return;
+			logger.error('Error happened while finishing the upload.');
+			throw error;
 		}
 	}
 
-	private async checkIfUploadCancelled(uploadId: string) {
-		if (this.cancel) {
-			let errorMessage = 'Upload was cancelled.';
-			try {
-				await this.cleanup(uploadId);
-			} catch (error) {
-				errorMessage += ` ${error.message}`;
-			}
-			throw new Error(errorMessage);
-		}
-	}
-
-	public cancelUpload() {
-		this.cancel = true;
-	}
-
-	private async cleanup(uploadId: string) {
+	private async cleanup(uploadId: string | undefined) {
 		// Reset this's state
 		this.body = null;
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.totalBytesToUpload = 0;
+
+		if (!uploadId) {
+			// This is a single part upload;
+			return;
+		}
 
 		const input = {
 			Bucket: this.params.Bucket,
@@ -255,7 +238,7 @@ export class AWSS3ProviderManagedUpload {
 		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
-			throw new Error('Multi Part upload clean up failed');
+			throw new Error('Multipart upload clean up failed.');
 		}
 	}
 
@@ -301,21 +284,23 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private async validateAndSanitizeBody(body: any): Promise<any> {
-		if (this.isGenericObject(body)) {
-			// Any javascript object
-			return JSON.stringify(body);
-		} else {
-			// Files, arrayBuffer etc
-			return body;
-		}
+	private validateAndSanitizeBody(body: any): any {
+		const sanitizedBody = this.isGenericObject(body)
+			? JSON.stringify(body)
+			: body;
 		/* TODO: streams and files for nodejs 
 		if (
 			typeof body.path === 'string' &&
 			require('fs').lstatSync(body.path).size > 0
 		) {
-			return body;
+			sanitizedBody = body;
 		} */
+		if (this.byteLength(sanitizedBody) > MAX_OBJECT_SIZE) {
+			throw new Error(
+				`File size bigger than S3 Object limit of 5TB, got ${this.totalBytesToUpload} Bytes`
+			);
+		}
+		return sanitizedBody;
 	}
 
 	private isGenericObject(body: any): body is Object {

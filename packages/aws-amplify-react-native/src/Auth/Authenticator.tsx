@@ -12,7 +12,9 @@
  */
 
 import React, { FC, ReactNode } from 'react';
-import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
+import { Auth, Analytics, Logger, Hub } from 'aws-amplify';
+import { isEmpty } from '@aws-amplify/core';
+
 import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import { Container } from '../AmplifyUI';
@@ -157,7 +159,7 @@ export default class Authenticator extends React.Component<IAuthenticatorProps, 
 		try {
 			const data = await Auth.verifiedContact(user);
 			logger.debug('verified user attributes', data);
-			if (!JS.isEmpty(data.verified)) {
+			if (!isEmpty(data.verified)) {
 				this.handleStateChange('signedIn', user);
 			} else {
 				user = Object.assign(user, data);

@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "4.4.21",
+  "version": "5.1.4",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -9,26 +9,26 @@
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": [
-    "./src/index.ts",
-    "./lib/index.js",
-    "./lib-esm/index.js",
-    "./dist/aws-amplify-storage.min.js",
-    "./dist/aws-amplify-storage.js"
+    "./lib/Storage.js",
+    "./lib-esm/Storage.js"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
+    "clean": "npm run clean:size && rimraf lib-esm lib dist",
+    "clean:size": "rimraf dual-publish-tmp tmp*",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
   },
   "repository": {
     "type": "git",
@@ -40,15 +40,29 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
   "dependencies": {
-    "@aws-amplify/core": "4.5.2",
+    "@aws-amplify/core": "5.0.14",
     "@aws-sdk/client-s3": "3.6.1",
     "@aws-sdk/s3-request-presigner": "3.6.1",
     "@aws-sdk/util-create-request": "3.6.1",
     "@aws-sdk/util-format-url": "3.6.1",
-    "axios": "0.21.4",
-    "events": "^3.1.0"
+    "axios": "0.26.0",
+    "events": "^3.1.0",
+    "tslib": "^1.8.0"
   },
+  "size-limit": [
+    {
+      "name": "Storage (top-level class)",
+      "path": "./lib-esm/index.js",
+      "import": "{ Amplify, Storage }",
+      "limit": "84.5 kB"
+    }
+  ],
   "jest": {
     "globals": {
       "ts-jest": {

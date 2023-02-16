@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
@@ -18,12 +8,23 @@ import axios, {
 	AxiosRequestConfig,
 	Method,
 	CancelTokenSource,
-	AxiosTransformer,
+	AxiosRequestHeaders,
+	AxiosRequestTransformer,
 } from 'axios';
 import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
+
+/**
+Extending the axios interface here to make headers required, (previously, 
+they were not required on the type we were using, but our implementation
+does not currently account for missing headers. This worked previously, 
+because the previous `headers` type was `any`.
+*/
+interface AxiosTransformer extends Partial<AxiosRequestTransformer> {
+	(data: any, headers: AxiosRequestHeaders): any;
+}
 
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
@@ -48,7 +49,7 @@ function hasErrorResponse(error: any): error is ErrorWithResponse {
 }
 
 const normalizeHeaders = (
-	headers: Record<string, string>,
+	headers: AxiosRequestHeaders,
 	normalizedName: string
 ) => {
 	for (const [k, v] of Object.entries(headers)) {
@@ -63,7 +64,7 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function(data, headers) {
+	(data: any, headers: AxiosRequestHeaders): any => {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -151,10 +152,12 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
+			// TODO: Unify linting rules across JS repo
 			axiosRequest.onUploadProgress = function(event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
+			// TODO: Unify linting rules across JS repo
 			axiosRequest.onDownloadProgress = function(event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);

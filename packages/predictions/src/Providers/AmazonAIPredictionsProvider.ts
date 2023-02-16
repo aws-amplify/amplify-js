@@ -65,8 +65,3 @@ export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 		return this.identifyProvider.identify(input);
 	}
 }
-
-/**
- * @deprecated use named import
- */
-export default AmazonAIPredictionsProvider;

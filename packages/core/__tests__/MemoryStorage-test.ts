@@ -1,7 +1,4 @@
-import StorageHelperDefault, {
-	MemoryStorage,
-	StorageHelper,
-} from '../src/StorageHelper';
+import { MemoryStorage, StorageHelper } from '../src/StorageHelper';
 
 describe('StorageHelper', () => {
 	test('MemoryStorage', () => {
@@ -15,7 +12,7 @@ describe('StorageHelper', () => {
 	});
 
 	test('StorageHelper', () => {
-		const helperA = new StorageHelperDefault().getStorage();
+		const helperA = new StorageHelper().getStorage();
 		expect(helperA instanceof Storage).toBeTruthy();
 		const helperB = new StorageHelper().getStorage();
 		expect(helperB instanceof Storage).toBeTruthy();

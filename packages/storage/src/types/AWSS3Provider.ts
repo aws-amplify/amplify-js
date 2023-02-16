@@ -12,6 +12,7 @@ import {
 	UploadTaskProgressEvent,
 } from '../providers/AWSS3UploadTask';
 import { UploadTask } from './Provider';
+import { ICredentials } from '@aws-amplify/core';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -94,14 +95,25 @@ export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 };
 
+export type S3ProviderListOutput = {
+	results: S3ProviderListOutputItem[];
+	nextToken?: string;
+	hasNextToken: boolean;
+};
+
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
-	maxKeys?: number;
+	pageSize?: number | 'ALL';
 	provider?: 'AWSS3';
 	identityId?: string;
+	nextToken?: string;
 };
+
+export type S3ClientOptions = StorageOptions & {
+	credentials: ICredentials;
+} & S3ProviderListConfig;
 
 export interface S3ProviderListOutputItem {
 	key: ListObjectsCommandOutputContent['Key'];
@@ -109,8 +121,6 @@ export interface S3ProviderListOutputItem {
 	lastModified: ListObjectsCommandOutputContent['LastModified'];
 	size: ListObjectsCommandOutputContent['Size'];
 }
-
-export type S3ProviderListOutput = S3ProviderListOutputItem[];
 
 export interface S3CopyTarget {
 	key: string;

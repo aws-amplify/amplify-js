@@ -28,18 +28,6 @@ depending on your project setup and experience with modern JavaScript build tool
 
 - Install the dependencies with npm and use a bundler like webpack.
 
-**Note:** This library uses the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API). For [older browsers](https://caniuse.com/#feat=fetch) or in Node.js, you may need to include a polyfill. For example.
-
-```javascript
-// Using ES6 modules
-import 'cross-fetch/polyfill';
-import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-
-// Or, using CommonJS modules
-require('cross-fetch/polyfill');
-var AmazonCognitoIdentity = require('amazon-cognito-identity-js');
-```
-
 Note: We removed the build files in the github repo. You can use npm to download the whole package and extract the build files from it.
 
 ## Install using separate JavaScript file
@@ -478,7 +466,7 @@ cognitoUser.forgotPassword({
 	//Optional automatic callback
 	inputVerificationCode: function(data) {
 		console.log('Code sent to: ' + data);
-		var code = document.getElementById('code').value;
+		var verificationCode = document.getElementById('code').value;
 		var newPassword = document.getElementById('new_password').value;
 		cognitoUser.confirmPassword(verificationCode, newPassword, {
 			onSuccess() {

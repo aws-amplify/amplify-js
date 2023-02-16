@@ -4,11 +4,8 @@
  */
 
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
-import 'crypto-js/lib-typedarrays'; // necessary for crypto js
-import SHA256 from 'crypto-js/sha256';
-import HmacSHA256 from 'crypto-js/hmac-sha256';
 import WordArray from './utils/WordArray';
+import { Sha256 } from '@aws-crypto/sha256-js';
 
 /**
  * Returns a Buffer with a sequence of random nBytes
@@ -216,9 +213,11 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	hash(buf) {
-		const str =
-			buf instanceof Buffer ? CryptoJS.lib.WordArray.create(buf) : buf;
-		const hashHex = SHA256(str).toString();
+		const awsCryptoHash = new Sha256();
+		awsCryptoHash.update(buf);
+
+		const resultFromAWSCrypto = awsCryptoHash.digestSync();
+		const hashHex = Buffer.from(resultFromAWSCrypto).toString('hex');
 
 		return new Array(64 - hashHex.length).join('0') + hashHex;
 	}
@@ -241,20 +240,23 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	computehkdf(ikm, salt) {
-		const infoBitsWordArray = CryptoJS.lib.WordArray.create(
-			Buffer.concat([
-				this.infoBits,
-				Buffer.from(String.fromCharCode(1), 'utf8'),
-			])
-		);
-		const ikmWordArray =
-			ikm instanceof Buffer ? CryptoJS.lib.WordArray.create(ikm) : ikm;
-		const saltWordArray =
-			salt instanceof Buffer ? CryptoJS.lib.WordArray.create(salt) : salt;
+		const infoBitsBuffer = Buffer.concat([
+			this.infoBits,
+			Buffer.from(String.fromCharCode(1), 'utf8'),
+		]);
 
-		const prk = HmacSHA256(ikmWordArray, saltWordArray);
-		const hmac = HmacSHA256(infoBitsWordArray, prk);
-		return Buffer.from(hmac.toString(), 'hex').slice(0, 16);
+		const awsCryptoHash = new Sha256(salt);
+		awsCryptoHash.update(ikm);
+
+		const resultFromAWSCryptoPrk = awsCryptoHash.digestSync();
+		const awsCryptoHashHmac = new Sha256(resultFromAWSCryptoPrk);
+		awsCryptoHashHmac.update(infoBitsBuffer);
+
+		const resultFromAWSCryptoHmac = awsCryptoHashHmac.digestSync();
+		const hashHexFromAWSCrypto = resultFromAWSCryptoHmac;
+		const currentHex = hashHexFromAWSCrypto.slice(0, 16);
+
+		return currentHex;
 	}
 
 	/**
