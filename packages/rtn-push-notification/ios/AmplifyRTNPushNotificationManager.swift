@@ -6,6 +6,25 @@ import Foundation
 private let isBackgroundModeKey = "isBackgroundMode"
 private let completionHandlerIdKey = "completionHandlerId"
 
+extension UNAuthorizationStatus {
+    var description : String {
+        switch self {
+        case .notDetermined:
+            return "NotDetermined"
+        case .denied:
+            return "Denied"
+        case .authorized:
+            return "Authorized"
+        case .provisional:
+            return "Provisional"
+        case .ephemeral:
+            return "Ephemeral"
+        @unknown default:
+            return "NotDetermined"
+        }
+    }
+}
+
 class AmplifyRTNPushNotificationManager  {
     static let shared = AmplifyRTNPushNotificationManager()
 
@@ -233,7 +252,7 @@ class AmplifyRTNPushNotificationManager  {
         reject: @escaping RCTPromiseRejectBlock
     ) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
-            resolve(settings.authorizationStatus.rawValue)
+            resolve(settings.authorizationStatus.description)
         }
     }
 
