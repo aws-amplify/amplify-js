@@ -137,14 +137,12 @@ class AmplifyRTNPushNotificationManager  {
             options.insert(.sound)
         }
 
-        if #available(iOS 12, *) {
-            if (permissions["criticalAlert"]) as? Bool == true {
-                options.insert(.criticalAlert)
-            }
+        if (permissions["criticalAlert"]) as? Bool == true {
+            options.insert(.criticalAlert)
+        }
 
-            if (permissions["provisional"]) as? Bool == true {
-                options.insert(.provisional)
-            }
+        if (permissions["provisional"]) as? Bool == true {
+            options.insert(.provisional)
         }
 
         notificationCenter.requestAuthorization(options: options) { _, error in
