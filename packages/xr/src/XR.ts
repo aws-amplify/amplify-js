@@ -9,6 +9,11 @@ const logger = new Logger('XR');
 
 const DEFAULT_PROVIDER_NAME = 'SumerianProvider';
 
+/**
+ * @deprecated The Amazon Sumerian service is no longer accepting new customers. Existing customer scenes will not be
+ * available after February 21, 2023. The AWS Amplify XR features depend on the Amazon Sumerian service to function
+ * and as a result, will no longer be available.
+ */
 export class XRClass {
 	private _options: XROptions;
 
