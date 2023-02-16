@@ -818,11 +818,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					console.log('before');
-					console.log(Object.entries(draft));
 					fn(<MutableModel<T>>draft);
-					console.log('directly after');
-					console.log(Object.entries(draft));
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -837,8 +833,6 @@ const createModelClass = <T extends PersistentModel>(
 					});
 
 					const modelValidator = validateModelFields(modelDefinition);
-					console.log('after');
-					console.log(Object.entries(draft));
 					Object.entries(draft).forEach(([k, v]) => {
 						const parsedValue = castInstanceType(modelDefinition, k, v);
 
