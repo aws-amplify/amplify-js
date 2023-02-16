@@ -29,10 +29,14 @@ interface AddMachineEventType extends Omit<MachineManagerEvent, 'type'> {
 }
 
 const ADD_LISTENER_EVENT_SYMBOL = Symbol('ADD_LISTENER_EVENT_PAYLOAD');
-interface ListenerEventType extends Omit<MachineManagerEvent, 'type'> {
+interface ListenerEventType<
+	ContextType extends MachineContext,
+	EventTypes extends MachineEvent,
+	StateNames extends string
+> extends Omit<MachineManagerEvent, 'type'> {
 	type: typeof ADD_LISTENER_EVENT_SYMBOL;
 	payload: {
-		listener: TransitionListener<MachineContext, MachineEvent, string>;
+		listener: TransitionListener<ContextType, EventTypes, StateNames>;
 	};
 }
 
@@ -43,7 +47,7 @@ interface ResetMachineEventType extends Omit<MachineManagerEvent, 'type'> {
 }
 
 type InternalEvent =
-	| ListenerEventType
+	| ListenerEventType<any, any, any>
 	| MachineManagerEvent
 	| CurrentStateEventType
 	| AddMachineEventType
@@ -105,9 +109,13 @@ export class MachineManager {
 	 * @param machineName - The name of the machine to which a listener will be attached.
 	 * @param listener - The listener function.
 	 */
-	async addListener(
+	async addListener<
+		ContextType extends MachineContext,
+		EventTypes extends MachineEvent,
+		StateNames extends string
+	>(
 		machineName: string,
-		listener: TransitionListener<MachineContext, MachineEvent, string>
+		listener: TransitionListener<ContextType, EventTypes, StateNames>
 	) {
 		this._enqueueEvent({
 			type: ADD_LISTENER_EVENT_SYMBOL,

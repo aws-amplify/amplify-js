@@ -12,6 +12,7 @@ import {
 	MachineEvent,
 	MachineManagerEvent,
 	StateMachineParams,
+	StateTransition,
 	StateTransitions,
 	TransitionListener,
 } from './types';

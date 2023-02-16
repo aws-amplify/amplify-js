@@ -10,10 +10,12 @@ import {
 } from './utils/tickTockMachine';
 import { Machine } from '../src/stateMachine/machine';
 import {
+	MachineContext,
 	MachineEvent,
 	TransitionAction,
 	TransitionListener,
 } from '../src/stateMachine/types';
+import { transcode } from 'buffer';
 
 jest.mock('uuid');
 
@@ -162,21 +164,22 @@ describe(MachineManager.name, () => {
 	});
 
 	describe('addListener', () => {
-		it('should return the state of specified machine', async () => {
+		it('should be invoked upon a state transition', async () => {
 			let listener: boolean = false;
-			const testListener: TransitionListener<
-				Context,
-				MachineEvent,
-				Machine1States
-			> = {
-				notify: transition => {
-					console.log('SignInStateMachine transition', transition);
-				},
-			};
-
 			const machine = tickTockMachine();
+
+			const testListener: TransitionListener<Context, Events, Machine1States> =
+				{
+					notify: transition => {
+						transition?.nextState;
+						listener = true;
+					},
+				};
 			await manager.addMachineIfAbsent(machine);
-			await manager.addListener('TickTock', testListener);
+			await manager.addListener(machine.name, testListener);
+			const tick = { toMachine: machine.name, type: 'tick', payload: {} };
+			await manager.send(tick);
+			expect(listener).toBe(true);
 		});
 	});
 });
