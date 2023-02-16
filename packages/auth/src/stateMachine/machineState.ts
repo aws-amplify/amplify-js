@@ -63,25 +63,31 @@ export class MachineState<
 		validTransition?.reducers?.forEach(reducer => {
 			newContext = reducer(newContext, castedEvent);
 		});
+
 		const contextAfterReducers = newContext;
 
-		const promiseArr = validTransition?.actions?.map(async action => {
-			const contextFromAction = await action(
-				contextAfterReducers,
-				castedEvent,
-				this.machineManager
+		const actionsExecutor = async () => {
+			const newContextFromAllActions = {};
+			const promiseArr = validTransition?.actions?.map(action =>
+				action(contextAfterReducers, castedEvent, this.machineManager)
 			);
-			if (contextFromAction && contextFromAction !== contextAfterReducers) {
-				Object.assign(newContext, contextFromAction);
+			// TODO: Concurrently running actions causes new events emitted in
+			// undetermined order. Should we run them in order? Or implement Promise.allSettle
+			const contextArr: (Partial<ContextType> | void)[] = await Promise.all(
+				promiseArr ?? []
+			);
+			for (const contextFromAction of contextArr) {
+				if (contextFromAction && contextFromAction !== contextAfterReducers) {
+					Object.assign(newContextFromAllActions, contextFromAction);
+				}
 			}
-		});
-		// TODO: Concurrently running actions causes new events emitted in
-		// undetermined order. Should we run them in order? Or implement Promise.allSettle
-		(await Promise.all(promiseArr ?? [])) as unknown as Promise<void>;
+			return newContextFromAllActions;
+		};
 
 		const response: MachineStateEventResponse<ContextType> = {
 			nextState: validTransition?.nextState ?? this.name,
 			newContext: newContext !== oldContext ? newContext : undefined,
+			actionsPromise: actionsExecutor(),
 		};
 		return response;
 	}

@@ -85,7 +85,7 @@ describe(MachineManager.name, () => {
 			expect.assertions(1);
 			const mockUUID = 'MOCK_UUID';
 			(v4 as jest.Mock).mockReturnValue(mockUUID);
-			const sendToInvalidMacineEffect: TransitionAction<
+			const sendToInvalidMachineAction: TransitionAction<
 				Context,
 				TickEvent
 			> = async (ctxt, event, broker) => {
@@ -102,7 +102,7 @@ describe(MachineManager.name, () => {
 			};
 			// This machine should fail if 'AnotherMachine' hasn't been added to manager.
 			const machineSendingInvalidEvent = tickTockMachine(
-				sendToInvalidMacineEffect
+				sendToInvalidMachineAction
 			);
 			const anothermachine = new Machine<{}, any, any>({
 				context: {},

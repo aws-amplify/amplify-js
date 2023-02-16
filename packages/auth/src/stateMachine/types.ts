@@ -205,6 +205,7 @@ export type CurrentStateAndContext<
 export interface MachineStateEventResponse<ContextType extends MachineContext> {
 	nextState: string;
 	newContext?: ContextType;
+	actionsPromise?: Promise<Partial<ContextType> | void>;
 }
 
 /**

@@ -87,17 +87,27 @@ export class Machine<
 	 * @internal
 	 */
 	async accept(event: EventTypes) {
-		const { nextState: nextStateName, newContext } = await this._current.accept(
-			event
-		);
+		const {
+			nextState: nextStateName,
+			newContext,
+			actionsPromise,
+		} = await this._current.accept(event);
+		// 1. Immediately mutate context from reducers;
+		if (newContext) {
+			this._context = newContext;
+		}
+		// 2. Immediately start executing async actions, implicitly in `this._current.accept()`.
+		// 3. Immediately change the state.
 		const nextState = this._states[nextStateName];
 		if (!nextState) {
 			// TODO: handle invalid next state.
 			throw new Error('TODO: handle invalid next state.');
 		}
 		this._current = nextState;
-		if (newContext) {
-			this._context = newContext;
+		// 4. Wait for async actions execution to complete, and update context accordingly.
+		const newContextAfterActions = await actionsPromise;
+		if (newContextAfterActions && newContextAfterActions !== this._context) {
+			this._context = Object.assign(this._context, newContextAfterActions);
 		}
 	}
 
