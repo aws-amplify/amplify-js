@@ -15,7 +15,6 @@ import {
 	TransitionAction,
 	TransitionListener,
 } from '../src/stateMachine/types';
-import { transcode } from 'buffer';
 
 jest.mock('uuid');
 

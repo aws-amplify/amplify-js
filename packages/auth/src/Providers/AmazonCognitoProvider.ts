@@ -16,38 +16,37 @@ import {
 	Hub,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import {
-	AuthPluginOptions,
-	AuthSignUpStep,
-	DeliveryMedium,
-	CognitoSignUpOptions,
-	SignUpRequest,
-	AuthSignUpResult,
-	CognitoUserAttributeKey,
-	ValidationData,
+import { 
+	AuthPluginOptions, 
+	AuthSignUpStep, 
+	DeliveryMedium, 
+	CognitoSignUpOptions, 
+	SignUpRequest, 
+	AuthSignUpResult, 
+	CognitoUserAttributeKey, 
+	ValidationData, 
 	AuthPluginProvider,
 	AuthUserAttribute,
 	CognitoConfirmResetPasswordOptions,
-	ConfirmResetPasswordRequest,
+	ConfirmResetPasswordRequest
 } from '../types';
-import {
-	AttributeType,
-	CodeDeliveryDetailsType,
-	CognitoIdentityProviderClient,
-	ConfirmForgotPasswordCommandOutput,
-	SignUpCommand,
-	SignUpCommandOutput,
+import { 
+	AttributeType, 
+	CodeDeliveryDetailsType, 
+	CognitoIdentityProviderClient, 
+	ConfirmForgotPasswordCommandOutput, 
+	SignUpCommand, 
+	SignUpCommandOutput 
 } from '@aws-sdk/client-cognito-identity-provider';
-import {
-	createCognitoIdentityProviderClient,
-	createConfirmForgotPasswordCommand,
-	createSignUpCommand,
-	getUserPoolId,
-	sendCommand,
+import { 
+	createCognitoIdentityProviderClient, 
+	createConfirmForgotPasswordCommand, 
+	createSignUpCommand, 
+	getUserPoolId, 
+	sendCommand 
 } from '../utils/CognitoIdentityProviderClientUtils';
 import { AuthError } from '../Errors';
 import { AuthErrorTypes } from '../constants/AuthErrorTypes';
-import { MachineManager } from '../stateMachine/stateMachineManager';
 
 const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
@@ -63,10 +62,6 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 
 	private _config;
 	private _client: CognitoIdentityProviderClient;
-	private _machineManager = new MachineManager({
-		name: 'AuthMachineManager',
-		logger,
-	});
 
 	constructor(config?) {
 		this._config = config ? config : {};
@@ -94,88 +89,71 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 			throw new AuthError(AuthErrorTypes.EmptyPassword); // TODO: change when errors are defined
 		}
 
-		const userAttr: AttributeType[] | undefined = this.mapAttributes(
-			req.options?.userAttributes
-		);
+		const userAttr: AttributeType[] | undefined = this.mapAttributes(req.options?.userAttributes);
 
 		let validationData: AttributeType[] | undefined;
-		let clientMetadata: Record<string, string> | undefined =
-			this._config.clientMetadata;
+		let clientMetadata: Record<string, string> | undefined = this._config.clientMetadata;
 		const pluginOptions = req.options?.pluginOptions;
 		if (pluginOptions) {
 			// TODO: change to pluginOptions.ValidationData if type of PluginOptions is mapped
-			validationData = this.convertValidationDataObjectToArray(
-				pluginOptions['validationData']
-			);
-			// TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped
-			clientMetadata = pluginOptions['clientMetadata'];
+			validationData = this.convertValidationDataObjectToArray(pluginOptions['validationData']);
+			// TODO: change to pluginOptions.ClientMetadata if type of PluginOptions is mapped 
+			clientMetadata = pluginOptions['clientMetadata']; 
 		}
 
 		const signUpCommand: SignUpCommand = createSignUpCommand(
-			clientId,
-			username,
-			password,
-			userAttr,
-			validationData,
-			clientMetadata
-		);
+			clientId, username, password, userAttr, validationData, clientMetadata);
 
-		const signUpCommandOutput = await sendCommand<SignUpCommandOutput>(
-			this._client,
-			signUpCommand
-		);
-
+		const signUpCommandOutput = await sendCommand<SignUpCommandOutput>(this._client, signUpCommand);
+		
 		return this.createSignUpResultObject(signUpCommandOutput);
 	}
 
 	private mapAttributes(
 		attrs?: AuthUserAttribute<CognitoUserAttributeKey>[]
-	): AttributeType[] | undefined {
+	):AttributeType[] | undefined {
 		if (attrs) {
 			return attrs.map(obj => ({
 				Name: obj.userAttributeKey as string,
-				Value: obj.value,
+				Value: obj.value
 			}));
-		}
+		}	
 	}
 
 	private convertValidationDataObjectToArray(
 		validationDataObject?: ValidationData
-	): AttributeType[] | undefined {
+	): AttributeType[] | undefined  {
 		if (validationDataObject) {
 			return Object.entries(validationDataObject).map(([key, value]) => ({
 				Name: key,
-				Value: value,
+				Value: value
 			}));
-		}
+		}	
 	}
 
 	private createSignUpResultObject(
 		signUpCommandOutput: SignUpCommandOutput
-	): AuthSignUpResult<CognitoUserAttributeKey> {
+	):AuthSignUpResult<CognitoUserAttributeKey> {
 		let result;
 		if (signUpCommandOutput.UserConfirmed) {
 			result = {
 				isSignUpComplete: true,
 				nextStep: {
-					signUpStep: AuthSignUpStep.DONE,
-				},
+					signUpStep: AuthSignUpStep.DONE
+				}
 			};
 		} else {
-			const codeDeliveryDetails: CodeDeliveryDetailsType | undefined =
-				signUpCommandOutput.CodeDeliveryDetails;
+			const codeDeliveryDetails: CodeDeliveryDetailsType | undefined = signUpCommandOutput.CodeDeliveryDetails;
 			result = {
 				isSignUpComplete: false,
 				nextStep: {
 					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 					codeDeliveryDetails: {
-						deliveryMedium:
-							codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
+						deliveryMedium: codeDeliveryDetails?.DeliveryMedium as DeliveryMedium,
 						destination: codeDeliveryDetails?.Destination as string,
-						attributeName:
-							codeDeliveryDetails?.AttributeName as CognitoUserAttributeKey,
-					},
-				},
+						attributeName: codeDeliveryDetails?.AttributeName as CognitoUserAttributeKey
+					}
+				}
 			};
 		}
 		// TODO: dispatch successful sign up hub event once it is defined
@@ -207,9 +185,9 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 		throw new Error('Method not implemented.');
 	}
 
-	async confirmResetPassword<
-		PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions
-	>(req: ConfirmResetPasswordRequest<PluginOptions>): Promise<void> {
+	async confirmResetPassword<PluginOptions extends AuthPluginOptions = CognitoConfirmResetPasswordOptions>(
+		req: ConfirmResetPasswordRequest<PluginOptions>
+	): Promise<void> {
 		const clientId: string = getUserPoolId(this._config);
 
 		const username: string = req.username;
@@ -228,21 +206,14 @@ export class AmazonCognitoProvider implements AuthPluginProvider {
 		}
 
 		const pluginOptions = req.options?.pluginOptions;
-		let clientMetadata: Record<string, string> | undefined =
-			this._config.clientMetadata;
+		let clientMetadata: Record<string, string> | undefined = this._config.clientMetadata;
 		if (pluginOptions) {
 			clientMetadata = pluginOptions['clientMetadata'];
 		}
 
 		await sendCommand<ConfirmForgotPasswordCommandOutput>(
-			this._client,
-			createConfirmForgotPasswordCommand(
-				clientId,
-				username,
-				code,
-				password,
-				clientMetadata
-			)
+			this._client, 
+			createConfirmForgotPasswordCommand(clientId, username, code, password, clientMetadata)
 		);
 	}
 	updatePassword(): Promise<void> {
