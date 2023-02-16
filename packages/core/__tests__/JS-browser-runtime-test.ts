@@ -9,6 +9,19 @@
 import { browserOrNode } from '../dist/aws-amplify-core.js';
 
 describe('JS browserOrNode build test', () => {
+	// Prevent Jest test resolves Node.js version from the global `process` of the
+	// testing the Node.js process.
+	const originalVersions = process.versions;
+	beforeEach(() => {
+		//@ts-ignore
+		delete global.process.versions;
+	});
+
+	afterEach(() => {
+		//@ts-ignore
+		global.process.versions = originalVersions;
+	});
+
 	test('when its browser ', () => {
 		expect(browserOrNode()).toStrictEqual({
 			isBrowser: true,
