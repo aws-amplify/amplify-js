@@ -908,7 +908,7 @@ const createModelClass = <T extends PersistentModel>(
 		);
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
-			set(model: PersistentModel | undefined | null) {
+			set(model: PersistentModel | undefined) {
 				if (!(typeof model === 'object' || typeof model === 'undefined'))
 					return;
 
