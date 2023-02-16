@@ -818,7 +818,11 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
+					console.log('before');
+					console.log(Object.entries(draft));
 					fn(<MutableModel<T>>draft);
+					console.log('directly after');
+					console.log(Object.entries(draft));
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -833,6 +837,8 @@ const createModelClass = <T extends PersistentModel>(
 					});
 
 					const modelValidator = validateModelFields(modelDefinition);
+					console.log('after');
+					console.log(Object.entries(draft));
 					Object.entries(draft).forEach(([k, v]) => {
 						const parsedValue = castInstanceType(modelDefinition, k, v);
 
@@ -908,43 +914,46 @@ const createModelClass = <T extends PersistentModel>(
 		);
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
-			set(model: PersistentModel) {
-				if (!model || !(typeof model === 'object')) return;
+			set(model: PersistentModel | undefined | null) {
+				if (!(typeof model === 'object' || typeof model === 'undefined'))
+					return;
 
-				// Avoid validation error when processing AppSync response with nested
-				// selection set. Nested entitites lack version field and can not be validated
-				// TODO: explore a more reliable method to solve this
-				if (model.hasOwnProperty('_version')) {
-					const modelConstructor = Object.getPrototypeOf(model || {})
-						.constructor as PersistentModelConstructor<T>;
+				if (model) {
+					// Avoid validation error when processing AppSync response with nested
+					// selection set. Nested entitites lack version field and can not be validated
+					// TODO: explore a more reliable method to solve this
+					if (model.hasOwnProperty('_version')) {
+						const modelConstructor = Object.getPrototypeOf(model || {})
+							.constructor as PersistentModelConstructor<T>;
 
-					if (!isValidModelConstructor(modelConstructor)) {
-						const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
-						logger.error(msg, { model });
+						if (!isValidModelConstructor(modelConstructor)) {
+							const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
+							logger.error(msg, { model });
 
-						throw new Error(msg);
-					}
+							throw new Error(msg);
+						}
 
-					if (
-						modelConstructor.name.toLowerCase() !==
-						relationship.remoteModelConstructor.name.toLowerCase()
-					) {
-						const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relationship.remoteModelConstructor.name}`;
-						logger.error(msg, { model });
+						if (
+							modelConstructor.name.toLowerCase() !==
+							relationship.remoteModelConstructor.name.toLowerCase()
+						) {
+							const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relationship.remoteModelConstructor.name}`;
+							logger.error(msg, { model });
 
-						throw new Error(msg);
+							throw new Error(msg);
+						}
 					}
 				}
 
 				if (relationship.isComplete) {
 					for (let i = 0; i < relationship.localJoinFields.length; i++) {
 						this[relationship.localJoinFields[i]] =
-							model[relationship.remoteJoinFields[i]];
+							model?.[relationship.remoteJoinFields[i]];
 					}
 					const instanceMemos = modelInstanceAssociationsMap.has(this)
 						? modelInstanceAssociationsMap.get(this)!
 						: modelInstanceAssociationsMap.set(this, {}).get(this)!;
-					instanceMemos[field] = model;
+					instanceMemos[field] = model || undefined;
 				}
 			},
 			get() {
