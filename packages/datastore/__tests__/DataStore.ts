@@ -1733,6 +1733,23 @@ describe('Model behavior', () => {
 		expect(await disconnectedParent.child).toBeUndefined();
 	});
 
+	test('model field can be set to undefined to remove connection', async () => {
+		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
+
+		const child = await DataStore.save(new HasOneChild({}));
+		const parent = await DataStore.save(
+			new HasOneParent({
+				child,
+			})
+		);
+
+		const parentWithoutChild = HasOneParent.copyOf(parent, draft => {
+			draft.child = undefined;
+		});
+
+		expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
+	});
+
 	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
 		(async () => {
 			const { DataStore, ModelWithBoolean } = getDataStore();
