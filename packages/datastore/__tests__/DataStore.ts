@@ -1750,7 +1750,7 @@ describe('Model behavior', () => {
 		expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
 	});
 
-	test.only('model field can be set to null to remove connection hasOne', async () => {
+	test('model field can be set to null to remove connection hasOne', async () => {
 		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
 
 		const child = await DataStore.save(new HasOneChild({}));
@@ -1785,7 +1785,7 @@ describe('Model behavior', () => {
 		expect(await blogWithoutPosts.posts.toArray()).toEqual([]);
 	});
 
-	test.only('model field can be set to null to remove connection on parent hasMany', async () => {
+	test('model field can be set to null to remove connection on parent hasMany', async () => {
 		const { DataStore, Blog, Post } = getDataStore();
 
 		const post: Post = await DataStore.save(new Post({ title: 'Post title' }));
