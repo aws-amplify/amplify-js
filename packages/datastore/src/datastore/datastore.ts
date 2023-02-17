@@ -912,6 +912,7 @@ const createModelClass = <T extends PersistentModel>(
 				if (!(typeof model === 'object' || typeof model === 'undefined'))
 					return;
 
+				// if model is undefined then the connection should be removed
 				if (model) {
 					// Avoid validation error when processing AppSync response with nested
 					// selection set. Nested entitites lack version field and can not be validated
