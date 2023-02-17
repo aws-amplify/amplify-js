@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.14...@aws-amplify/datastore@4.0.15) (2023-02-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** extra fields in selective sync selection set on API's from older CLI ([#10949](https://github.com/aws-amplify/amplify-js/issues/10949)) ([9d34523](https://github.com/aws-amplify/amplify-js/commit/9d34523f9d2f9a682fabfe698a697fc8774b6abe))
+* **@aws-amplify/datastore:** Fix beginsWith() negation ([#10962](https://github.com/aws-amplify/amplify-js/issues/10962)) ([f6dfaac](https://github.com/aws-amplify/amplify-js/commit/f6dfaac7a2b9c66fa8e69560cbd5489a42ef938c))
+
+
+
+
+
+## [4.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.13...@aws-amplify/datastore@4.0.14) (2023-02-09)
+
+
+### Bug Fixes
+
+* **datastore:** prevent double full sync at start ([#10923](https://github.com/aws-amplify/amplify-js/issues/10923)) ([99fe11a](https://github.com/aws-amplify/amplify-js/commit/99fe11a5004a436e68ea247bc92d00f6c1241701))
+
+
+
+
+
+## [4.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.12...@aws-amplify/datastore@4.0.13) (2023-02-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** strictly define `null` vs `undefined` behavior on models ([#10915](https://github.com/aws-amplify/amplify-js/issues/10915)) ([6f0c354](https://github.com/aws-amplify/amplify-js/commit/6f0c354594baa3cc0ed458d9dd07240125d5244a))
+* **@aws-amplify/datastore:** strictly define null vs undefined behavior on models ([#10932](https://github.com/aws-amplify/amplify-js/issues/10932)) ([c18876a](https://github.com/aws-amplify/amplify-js/commit/c18876a0762f86dafbc36bade2db61597fe08e5f))
+
+
+### Reverts
+
+* Revert "fix(@aws-amplify/datastore): strictly define null vs undefined behavior on models" (#10939) ([1791880](https://github.com/aws-amplify/amplify-js/commit/179188053f46641e4272df8674d291727678372c)), closes [#10939](https://github.com/aws-amplify/amplify-js/issues/10939) [#10932](https://github.com/aws-amplify/amplify-js/issues/10932)
+* Revert "fix(@aws-amplify/datastore): strictly define `null` vs `undefined` behavior on models" (#10931) ([a7d3c2c](https://github.com/aws-amplify/amplify-js/commit/a7d3c2c4223d6877e71fe5fd286f24104a7a8cc0)), closes [#10931](https://github.com/aws-amplify/amplify-js/issues/10931) [#10915](https://github.com/aws-amplify/amplify-js/issues/10915)
+
+
+
+
+
+## [4.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.11...@aws-amplify/datastore@4.0.12) (2023-01-30)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [4.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.10...@aws-amplify/datastore@4.0.11) (2023-01-19)
 
 
