@@ -51,37 +51,37 @@ const detectFrameworks = () => {
 	let frameworks = '';
 
 	if (
-		Array.from(document.querySelectorAll('*')).some(
-			e => e._reactRootContainer !== undefined
+		Array.from(document.querySelectorAll('*')).some(e =>
+			e.hasOwnProperty('_reactRootContainer')
 		)
 	) {
-		console.log('React.js');
+		frameworks += 'React.js|';
 	}
 
-	if (!!document.querySelector('script[id=__NEXT_DATA__]')) {
+	if (document.querySelector('script[id=__NEXT_DATA__]')) {
 		frameworks += 'Next.js|';
 	}
 
 	if (
-		!!window.angular ||
-		!!document.querySelector(
+		window.hasOwnProperty('angular') ||
+		document.querySelector(
 			'.ng-binding, [ng-app], [data-ng-app], [ng-controller], [data-ng-controller], [ng-repeat], [data-ng-repeat]'
 		) ||
-		!!document.querySelector(
+		document.querySelector(
 			'script[src*="angular.js"], script[src*="angular.min.js"]'
 		)
 	) {
 		frameworks += 'Angular.js|';
 	}
 
-	if (!!window.getAllAngularRootElements || !!window.ng?.coreTokens?.NgZone) {
+	if (window.hasOwnProperty('getAllAngularRootElements') || windowHasNgZone()) {
 		frameworks += 'Angular 2+|';
 	}
 
-	if (!!window.Vue) {
+	if (window.hasOwnProperty('Vue')) {
 		frameworks += 'Vue.js';
 	}
-	if (!!window.jQuery) {
+	if (window.hasOwnProperty('jQuery')) {
 		frameworks += 'jQuery.js';
 	}
 
@@ -89,4 +89,12 @@ const detectFrameworks = () => {
 		return 'JS';
 	}
 	return frameworks;
+};
+
+const windowHasNgZone = () => {
+	return (
+		window.hasOwnProperty('ng') &&
+		window['ng'].hasOwnProperty('coreTokens') &&
+		window['ng']['coreTokens'].hasOwnProperty('NgZone')
+	);
 };
