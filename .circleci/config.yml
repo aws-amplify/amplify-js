@@ -419,7 +419,6 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            git checkout test/nextjs-auth
             branchExists=true
             git ls-remote --heads origin <<pipeline.git.branch>> | grep <<pipeline.git.branch>> >/dev/null || branchExists=false
             if [ "$branchExists" = true ]; then git checkout <<pipeline.git.branch>>; fi
@@ -1583,7 +1582,6 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
-      - test-next-js-auth
 
 # List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
 # should use `minimal_browser_list` to keep test execution time low.
