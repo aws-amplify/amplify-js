@@ -27,8 +27,6 @@
 		"publish:next": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=next --preid=next --exact --no-verify-access",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access",
-		"publish:in-app-messaging/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=in-app-messaging --preid=in-app-messaging --exact --no-verify-access",
 		"ts-coverage": "lerna run ts-coverage"
 	},
 	"husky": {
