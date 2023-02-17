@@ -37,10 +37,10 @@ export const getAmplifyUserAgent = (userAgentSuffix?: UserAgentSuffix) => {
 const buildUserAgentSuffix = (userAgentSuffix?: UserAgentSuffix) => {
 	let codedSuffix: CodedUserAgentSuffix = {
 		v: version,
-		f: detectFramework(),
 	};
 	if (userAgentSuffix) {
 		codedSuffix.c = userAgentSuffix.component;
+		codedSuffix.f = userAgentSuffix.framework || detectFrameworks();
 		codedSuffix.a = userAgentSuffix.action;
 		codedSuffix.ui = userAgentSuffix.component;
 	}
