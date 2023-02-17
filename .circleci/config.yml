@@ -1571,8 +1571,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/main
-      - 1.0-stable
+      - next
       - geo/main
       - in-app-messaging/main
 
