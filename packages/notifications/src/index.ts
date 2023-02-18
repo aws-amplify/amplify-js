@@ -18,4 +18,9 @@ export {
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 } from './InAppMessaging';
+export {
+	PushNotificationMessage,
+	PushNotificationPermissions,
+	PushNotificationPermissionStatus,
+} from './PushNotification/types';
 export { NotificationsConfig, UserInfo } from './types';
