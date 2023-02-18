@@ -16,6 +16,13 @@ private const val ACTION_NEW_TOKEN = "com.google.firebase.messaging.NEW_TOKEN"
 
 class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
 
+    private lateinit var utils: PushNotificationsUtils
+
+    override fun onCreate() {
+        super.onCreate()
+        utils = PushNotificationsUtils(baseContext)
+    }
+
     override fun onNewToken(token: String) {
         val params = Arguments.createMap()
         params.putString("token", token)
@@ -42,7 +49,6 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        val utils = PushNotificationsUtils(baseContext)
         val payload = getPayloadFromRemoteMessage(remoteMessage)
         if (utils.isAppInForeground()) {
             Log.d(TAG, "Send foreground message received event")

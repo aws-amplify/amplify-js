@@ -14,5 +14,8 @@ export interface PushNotificationNativeModule {
 		NativeHeadlessTaskKey: string;
 	};
 	getLaunchNotification: () => Promise<Record<string, string>>;
-	requestPermissions: (permissions: Record<string, boolean>) => Promise<string>;
+	getPermissionStatus: () => Promise<string>;
+	requestPermissions: (
+		permissions: Record<string, boolean>
+	) => Promise<boolean>;
 }

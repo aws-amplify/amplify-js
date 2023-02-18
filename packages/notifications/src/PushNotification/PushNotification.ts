@@ -62,9 +62,11 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
-	requestPermissions = (
-		_?: PushNotificationPermissions
-	): Promise<PushNotificationPermissionStatus> => {
+	getPermissionStatus = (): Promise<PushNotificationPermissionStatus> => {
+		throw new PlatformNotSupportedError();
+	};
+
+	requestPermissions = (_?: PushNotificationPermissions): Promise<boolean> => {
 		throw new PlatformNotSupportedError();
 	};
 

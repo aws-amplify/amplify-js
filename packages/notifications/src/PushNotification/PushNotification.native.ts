@@ -132,8 +132,9 @@ export default class PushNotification implements PushNotificationInterface {
 							logger.error(err);
 						} finally {
 							// notify native module that handlers have completed their work (or timed out)
-							const { completeNotification } = this.nativeModule;
-							completeNotification?.(message.completionHandlerId);
+							this.nativeModule.completeNotification?.(
+								message.completionHandlerId
+							);
 						}
 					}
 				);
@@ -269,10 +270,13 @@ export default class PushNotification implements PushNotificationInterface {
 			})
 		);
 
-	getLaunchNotification = async (): Promise<PushNotificationMessage | null> => {
-		const { getLaunchNotification } = this.nativeModule;
-		return normalizeNativeMessage(await getLaunchNotification?.());
-	};
+	getLaunchNotification = async (): Promise<PushNotificationMessage | null> =>
+		normalizeNativeMessage(await this.nativeModule.getLaunchNotification?.());
+
+	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> =>
+		normalizeNativePermissionStatus(
+			await this.nativeModule.getPermissionStatus?.()
+		);
 
 	requestPermissions = async (
 		permissions: PushNotificationPermissions = {
@@ -280,12 +284,7 @@ export default class PushNotification implements PushNotificationInterface {
 			badge: true,
 			sound: true,
 		}
-	): Promise<PushNotificationPermissionStatus> => {
-		const { requestPermissions } = this.nativeModule;
-		return normalizeNativePermissionStatus(
-			await requestPermissions?.(permissions)
-		);
-	};
+	): Promise<boolean> => this.nativeModule.requestPermissions?.(permissions);
 
 	/**
 	 * Background notifications on will start the app (as a headless JS instance running on a background service on
