@@ -132,8 +132,9 @@ export default class PushNotification implements PushNotificationInterface {
 							logger.error(err);
 						} finally {
 							// notify native module that handlers have completed their work (or timed out)
-							const { completeNotification } = this.nativeModule;
-							completeNotification?.(message.completionHandlerId);
+							this.nativeModule.completeNotification?.(
+								message.completionHandlerId
+							);
 						}
 					}
 				);
@@ -269,15 +270,13 @@ export default class PushNotification implements PushNotificationInterface {
 			})
 		);
 
-	getLaunchNotification = async (): Promise<PushNotificationMessage | null> => {
-		const { getLaunchNotification } = this.nativeModule;
-		return normalizeNativeMessage(await getLaunchNotification?.());
-	};
+	getLaunchNotification = async (): Promise<PushNotificationMessage | null> =>
+		normalizeNativeMessage(await this.nativeModule.getLaunchNotification?.());
 
-	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
-		const { getPermissionStatus } = this.nativeModule;
-		return normalizeNativePermissionStatus(await getPermissionStatus?.());
-	};
+	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> =>
+		normalizeNativePermissionStatus(
+			await this.nativeModule.getPermissionStatus?.()
+		);
 
 	requestPermissions = async (
 		permissions: PushNotificationPermissions = {
