@@ -742,6 +742,24 @@ class FakeGraphQLService {
 		return ownerFields || ['owner'];
 	}
 
+	private timestampFields(tableName) {
+		const def = this.tableDefinitions.get(tableName)!;
+		const modelAttributes = def.attributes?.find(attr => attr.type === 'model');
+		const timestampFieldsMap = modelAttributes?.properties?.timestamps;
+
+		const defaultFields = {
+			createdAt: 'createdAt',
+			updatedAt: 'updatedAt',
+		};
+
+		const customFields = timestampFieldsMap || {};
+
+		return Object.keys({
+			...defaultFields,
+			...customFields,
+		});
+	}
+
 	private identifyExtraValues(expected, actual) {
 		const extraValues: string[] = [];
 		for (const v of actual) {
