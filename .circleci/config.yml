@@ -26,7 +26,7 @@ executors:
   js-test-executor:
     docker:
       - image: cypress/included:12.4.1
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -44,7 +44,7 @@ executors:
   js-test-executor-prev:
     docker:
       - image: cypress/included:8.7.0
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
@@ -58,7 +58,7 @@ executors:
   webkit-test-executor:
     docker:
       - image: mcr.microsoft.com/playwright:v1.30.0-focal
-      - image: verdaccio/verdaccio
+      - image: verdaccio/verdaccio:5.20
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
