@@ -940,6 +940,9 @@ img { max-width: 100%; }
 				<a href="fieldcondition.html#matches" class="tsd-kind-icon">matches</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="fieldcondition.html#negated" class="tsd-kind-icon">negated</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="fieldcondition.html#toast" class="tsd-kind-icon">toAST</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1001,6 +1004,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#copy" class="tsd-kind-icon">copy</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#fetch" class="tsd-kind-icon">fetch</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#matches" class="tsd-kind-icon">matches</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#negated" class="tsd-kind-icon">negated</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#toast" class="tsd-kind-icon">toAST</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="fieldcondition.html#validate" class="tsd-kind-icon">validate</a></li>
 					</ul>
@@ -1020,7 +1024,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L140">packages/datastore/src/predicates/next.ts:140</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L100">packages/datastore/src/predicates/next.ts:100</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1048,7 +1052,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">field<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L142">packages/datastore/src/predicates/next.ts:142</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L102">packages/datastore/src/predicates/next.ts:102</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1058,7 +1062,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">operands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L144">packages/datastore/src/predicates/next.ts:144</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L104">packages/datastore/src/predicates/next.ts:104</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1068,7 +1072,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">operator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L143">packages/datastore/src/predicates/next.ts:143</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L103">packages/datastore/src/predicates/next.ts:103</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1079,13 +1083,13 @@ img { max-width: 100%; }
 			<a name="copy" class="tsd-anchor"></a>
 			<h3>copy</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>extract<span class="tsd-signature-symbol">: </span><a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="fieldcondition.html" class="tsd-signature-type">FieldCondition</a><span class="tsd-signature-symbol">, </span><a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">]</span></li>
+				<li class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">(</span>extract<span class="tsd-signature-symbol">?: </span><a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="fieldcondition.html" class="tsd-signature-type">FieldCondition</a><span class="tsd-signature-symbol">, </span><a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">]</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L154">packages/datastore/src/predicates/next.ts:154</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L114">packages/datastore/src/predicates/next.ts:114</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1096,7 +1100,7 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>extract: <a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> extract: <a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Not used. Present only to fulfill the <code>UntypedCondition</code> interface.</p>
 							</div>
@@ -1117,7 +1121,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L178">packages/datastore/src/predicates/next.ts:178</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L192">packages/datastore/src/predicates/next.ts:192</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1150,7 +1154,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L187">packages/datastore/src/predicates/next.ts:187</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L201">packages/datastore/src/predicates/next.ts:201</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1173,6 +1177,50 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="negated" class="tsd-anchor"></a>
+			<h3>negated</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">negated<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><a href="../globals.html#modelmeta" class="tsd-signature-type">ModelMeta</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="fieldcondition.html" class="tsd-signature-type">FieldCondition</a><span class="tsd-signature-symbol"> | </span><a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L164">packages/datastore/src/predicates/next.ts:164</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Produces a new condition (<code>FieldCondition</code> or <code>GroupCondition</code>) that
+							matches the opposite of this condition.</p>
+						</div>
+						<p>Intended to be used when applying De Morgan&#39;s Law, which can be done to
+							produce more efficient queries against the storage layer if a negation
+						appears in the query tree.</p>
+						<p>For example:</p>
+						<ol>
+							<li><code>name.eq(&#39;robert&#39;)</code> becomes <code>name.ne(&#39;robert&#39;)</code></li>
+							<li><code>price.between(100, 200)</code> becomes <code>m =&gt; m.or(m =&gt; [m.price.lt(100), m.price.gt(200)])</code></li>
+						</ol>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>model: <a href="../globals.html#modelmeta" class="tsd-signature-type">ModelMeta</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The model meta to use when construction a new <code>GroupCondition</code>
+								for cases where the negation requires multiple <code>FieldCondition</code>&#39;s.</p>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="fieldcondition.html" class="tsd-signature-type">FieldCondition</a>
+						<span class="tsd-signature-symbol"> | </span>
+						<a href="groupcondition.html" class="tsd-signature-type">GroupCondition</a>
+					</h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="toast" class="tsd-anchor"></a>
 			<h3>toAST</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1182,9 +1230,23 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L161">packages/datastore/src/predicates/next.ts:161</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L137">packages/datastore/src/predicates/next.ts:137</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Produces a tree structure similar to a graphql condition. The returned
+								structure is &quot;dumb&quot; and is intended for another query/condition
+								generation mechanism to interpret, such as the cloud or storage query
+							builders.</p>
+						</div>
+						<p>E.g.,</p>
+						<pre><code class="language-json">{
+    <span class="hljs-attr">"name"</span>: {
+        <span class="hljs-attr">"eq"</span>: <span class="hljs-string">"robert"</span>
+    }
+}</code></pre>
+					</div>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter">
@@ -1209,7 +1271,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/171151434/packages/datastore/src/predicates/next.ts#L213">packages/datastore/src/predicates/next.ts:213</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/df016d0f8/packages/datastore/src/predicates/next.ts#L227">packages/datastore/src/predicates/next.ts:227</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
