@@ -1,12 +1,15 @@
 {
 	"npmClient": "yarn",
 	"useWorkspaces": true,
-	"packages": ["packages/*", "!packages/xr"],
+	"packages": ["packages/*"],
 	"exact": true,
 	"version": "independent",
 	"command": {
 		"run": {
 			"private": false
+		},
+		"bootstrap": {
+			"ignore": "@aws-amplify/xr"
 		}
 	}
 }

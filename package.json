@@ -42,8 +42,7 @@
 	},
 	"workspaces": {
 		"packages": [
-			"packages/*",
-			"!packages/xr"
+			"packages/*"
 		],
 		"nohoist": [
 			"**/@types/react-native",
