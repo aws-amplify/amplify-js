@@ -1571,7 +1571,6 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - chore/xr-private
       - ui-components/main
       - 1.0-stable
       - geo/main
