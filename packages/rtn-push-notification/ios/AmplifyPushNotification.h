@@ -11,7 +11,6 @@
 + (void) didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
 + (void) didFailToRegisterForRemoteNotificationsWithError:(NSError*)error;
 + (void) didReceiveRemoteNotification:(NSDictionary *)userInfo withCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
-+ (NSDictionary*) attachInitialProps:(NSDictionary *)launchOptions;
 
 @end
 

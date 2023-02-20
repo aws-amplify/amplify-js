@@ -28,9 +28,4 @@ public class AmplifyPushNotificationAppDelegateHelper: NSObject {
             .shared
             .didReceiveRemoteNotification(userInfo: userInfo, completionHandler: completionHandler)
     }
-
-    @objc
-    static public func attachInitialProps(launchOptions: [AnyHashable: Any]) -> [AnyHashable: Any] {
-        return AmplifyRTNPushNotificationManager.shared.attachInitialProps(launchOptions: launchOptions)
-    }
 }

@@ -18,8 +18,4 @@
     [AmplifyPushNotificationAppDelegateHelper didReceiveRemoteNotificationWithUserInfo:userInfo completionHandler:completionHandler];
 }
 
-+ (NSDictionary*) attachInitialProps:(NSDictionary*)launchOptions {
-    return [AmplifyPushNotificationAppDelegateHelper attachInitialPropsWithLaunchOptions:launchOptions];
-}
-
 @end

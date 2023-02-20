@@ -91,25 +91,16 @@ class AmplifyRTNPushNotificationManager  {
     func handleLaunchOptions(launchOptions: [AnyHashable: Any]) {
         // to ge the launch notification when the app is laucnhed from the "killed" state
         if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification],
-           let application = RCTSharedApplication(),
-           application.applicationState != .background {
-            launchNotification = remoteNotification
+           let application = RCTSharedApplication() {
+            if application.applicationState != .background {
+                launchNotification = remoteNotification
+            }
+
+            if application.applicationState == .background {
+                // App woke up in the background by a remote notification
+                isBackgroundMode = true
+            }
         }
-    }
-
-    func attachInitialProps(launchOptions: [AnyHashable: Any]) -> [AnyHashable: Any] {
-        var props: [AnyHashable: Any] = [isBackgroundModeKey: isBackgroundMode]
-
-        // if the App is waking up by a remote notification in the background
-        // set the initial prop isBackgroundMode as true
-        if launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] != nil,
-           let application = RCTSharedApplication(),
-           application.applicationState == .background {
-            isBackgroundMode = true
-            props[isBackgroundModeKey] = isBackgroundMode
-        }
-
-        return props;
     }
 
     func requestPermissions(
@@ -282,36 +273,9 @@ class AmplifyRTNPushNotificationManager  {
     }
 
     private func exitBackgroundMode() {
-        if let rctRootView = UIApplication.shared.delegate?.window??.rootViewController?.view as? RCTRootView,
-           let appProperties = rctRootView.appProperties,
-           let wasHeadless = appProperties[isBackgroundModeKey] as? Bool,
-           wasHeadless == true {
+        if isBackgroundMode {
             isBackgroundMode = false
             justExitedBackgroundMode = true
-            var appPropertiesCopy = appProperties
-            appPropertiesCopy[isBackgroundModeKey] = isBackgroundMode
-
-            if (rctContentHasAppeared) {
-                rctRootView.appProperties = appPropertiesCopy
-            } else {
-                // If the react App hasn't been rendered wait to set the appProperties
-                // to ensure the react App can pick up updated props (isBackgroundMode)
-                // and re-render
-                var observer: NSObjectProtocol?
-                let setAppProperties: (Notification) -> Void = { _ in
-                    rctRootView.appProperties = appPropertiesCopy
-                    if (observer != nil) {
-                        NotificationCenter.default.removeObserver(observer!)
-                    }
-                }
-
-                observer = NotificationCenter.default.addObserver(
-                    forName: Notification.Name.RCTContentDidAppear,
-                    object: nil,
-                    queue: nil,
-                    using: setAppProperties
-                )
-            }
         }
     }
 
