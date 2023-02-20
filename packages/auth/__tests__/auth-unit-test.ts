@@ -1407,6 +1407,39 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
+        test('currentUserPoolUser fails but hub event still dispatches', async () => {
+            const auth = new Auth(authOptions);
+            const spyon = jest
+                .spyOn(CognitoUser.prototype, 'sendMFACode')
+                .mockImplementationOnce((code, callback) => {
+                    callback.onSuccess(session);
+                });
+
+            const spyon2 = jest
+                .spyOn(auth, 'currentUserPoolUser')
+                .mockImplementationOnce(() => {
+                    return Promise.reject('Could not get current user.');
+                });
+            const hubSpy = jest.spyOn(Hub, 'dispatch');
+            const user = new CognitoUser({
+                Username: 'username',
+                Pool: userPool,
+            });
+            const result = await auth.confirmSignIn(user, 'code', null);
+            expect(result).toEqual(user);
+            expect(hubSpy).toHaveBeenCalledWith(
+                'auth',
+                {
+                    data: user,
+                    event: 'signIn',
+                    message: 'A user username has been signed in',
+                },
+                'Auth',
+                Symbol.for('amplify_default')
+            );
+            spyon.mockClear();
+        });
+
 		test('onFailure', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'sendMFACode')
