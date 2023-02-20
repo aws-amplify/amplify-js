@@ -136,11 +136,11 @@ class AmplifyRTNPushNotificationManager  {
             options.insert(.provisional)
         }
 
-        notificationCenter.requestAuthorization(options: options) { _, error in
+        notificationCenter.requestAuthorization(options: options) { granted, error in
             if error != nil {
                 reject("ERROR", error?.localizedDescription, error)
             } else {
-                self.resolvePermissionStatus(resolve: resolve, reject: reject)
+                resolve(granted)
             }
         }
     }
