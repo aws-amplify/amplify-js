@@ -97,7 +97,7 @@ export type OnPushNotificationMessageHandler = (
 	message: PushNotificationMessage
 ) => any;
 
-export enum PushNotificationEvent {
+export const enum PushNotificationEvent {
 	BACKGROUND_MESSAGE_RECEIVED,
 	FOREGROUND_MESSAGE_RECEIVED,
 	LAUNCH_NOTIFICATION_OPENED,
