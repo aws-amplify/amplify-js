@@ -530,8 +530,6 @@ export function predicateToGraphQLFilter(
 	const isList = type === 'and' || type === 'or';
 
 	result[type] = isList ? [] : {};
-	const appendToFilter = value =>
-		isList ? result[type].push(value) : (result[type] = value);
 
 	const children: GraphQLFilter[] = [];
 
@@ -568,7 +566,9 @@ export function predicateToGraphQLFilter(
 		}
 	}
 
-	children.forEach(child => appendToFilter(child));
+	children.forEach(child => {
+		isList ? result[type].push(child) : (result[type] = child);
+	});
 
 	if (isList) {
 		if (result[type].length === 0) return {};

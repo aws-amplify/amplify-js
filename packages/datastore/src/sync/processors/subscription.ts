@@ -822,7 +822,7 @@ class SubscriptionProcessor {
 			let warningContent =
 				`${HEADER}\n` +
 				`Your selective sync expression for ${modelDefinition.name} contains ${filterFields} different model fields.\n\n` +
-				`In order for serverside subscription filtering to succeed, you can apply a selective sync expression with at most ${
+				`Serverside subscription filtering supports a selective sync expression with a maximum of ${
 					FILTER_FIELD_SERVICE_LIMIT - dynamicAuthModes
 				} different fields for this model.`;
 
@@ -841,7 +841,7 @@ class SubscriptionProcessor {
 			let warningContent =
 				`${HEADER}\n` +
 				`Your selective sync expression for ${modelDefinition.name} contains ${filterCombinations} field combinations (total number of predicates in an OR expression).\n\n` +
-				`In order for serverside subscription filtering to succeed, you can apply a selective sync expression with at most ${Math.floor(
+				`Serverside subscription filtering supports a selective sync expression with a maximum of ${Math.floor(
 					FILTER_COMBINATION_SERVICE_LIMIT / Math.max(dynamicAuthModes, 1)
 				)} field combinations for this model.`;
 
