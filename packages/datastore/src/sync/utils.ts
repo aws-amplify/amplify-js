@@ -20,6 +20,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicatesGroup,
+	PredicateObject,
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
@@ -28,6 +29,7 @@ import {
 	InternalSchema,
 	AuthModeStrategy,
 	ModelAttributes,
+	isPredicateGroup,
 } from '../types';
 import {
 	extractPrimaryKeyFieldNames,
@@ -247,6 +249,7 @@ export function getAuthorizationRules(
 			groupClaim = 'cognito:groups',
 			allow: authStrategy = 'iam',
 			groups = [],
+			groupsField = '',
 		} = rule;
 
 		const isReadAuthorized = operations.includes('read');
@@ -263,6 +266,7 @@ export function getAuthorizationRules(
 			groupClaim,
 			authStrategy,
 			groups,
+			groupsField,
 			areSubscriptionsPublic: false,
 		};
 
@@ -300,19 +304,39 @@ export function buildSubscriptionGraphQLOperation(
 	modelDefinition: SchemaModel,
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
-	ownerField: string
+	ownerField: string,
+	filterArg: boolean = false
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
 	const opName = `on${transformerMutationType}${typeName}`;
+
 	let docArgs = '';
 	let opArgs = '';
 
-	if (isOwnerAuthorization) {
-		docArgs = `($${ownerField}: String!)`;
-		opArgs = `(${ownerField}: $${ownerField})`;
+	if (filterArg || isOwnerAuthorization) {
+		docArgs += '(';
+		opArgs += '(';
+
+		if (filterArg) {
+			docArgs += `$filter: ModelSubscription${typeName}FilterInput`;
+			opArgs += 'filter: $filter';
+		}
+
+		if (isOwnerAuthorization) {
+			if (filterArg) {
+				docArgs += ', ';
+				opArgs += ', ';
+			}
+
+			docArgs += `$${ownerField}: String!`;
+			opArgs += `${ownerField}: $${ownerField}`;
+		}
+
+		docArgs += ')';
+		opArgs += ')';
 	}
 
 	return [
@@ -476,10 +500,25 @@ export function predicateToGraphQLCondition(
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
+/**
+ * @param predicatesGroup - Predicate Group
+	@returns GQL Filter Expression from Predicate Group
+	
+	@remarks Flattens redundant list predicates
+	@example
 
+	```js
+	{ and:[{ and:[{ username:  { eq: 'bob' }}] }] }
+	```
+	Becomes
+	```js
+	{ and:[{ username: { eq: 'bob' }}] }
+	```
+	*/
 export function predicateToGraphQLFilter(
 	predicatesGroup: PredicatesGroup<any>,
-	fieldsToOmit: string[] = []
+	fieldsToOmit: string[] = [],
+	root = true
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -491,9 +530,10 @@ export function predicateToGraphQLFilter(
 	const isList = type === 'and' || type === 'or';
 
 	result[type] = isList ? [] : {};
-
 	const appendToFilter = value =>
 		isList ? result[type].push(value) : (result[type] = value);
+
+	const children: GraphQLFilter[] = [];
 
 	predicates.forEach(predicate => {
 		if (isPredicateObj(predicate)) {
@@ -505,13 +545,30 @@ export function predicateToGraphQLFilter(
 				[field]: { [operator]: operand },
 			};
 
-			appendToFilter(gqlField);
+			children.push(gqlField);
 			return;
 		}
 
-		const child = predicateToGraphQLFilter(predicate, fieldsToOmit);
-		Object.keys(child).length > 0 && appendToFilter(child);
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit, false);
+		Object.keys(child).length > 0 && children.push(child);
 	});
+
+	// flatten redundant list predicates
+	if (children.length === 1) {
+		const [child] = children;
+		if (
+			// any nested list node
+			(isList && !root) ||
+			// root list node where the only child is also a list node
+			(isList && root && ('and' in child || 'or' in child))
+		) {
+			delete result[type];
+			Object.assign(result, child);
+			return result;
+		}
+	}
+
+	children.forEach(child => appendToFilter(child));
 
 	if (isList) {
 		if (result[type].length === 0) return {};
@@ -520,6 +577,176 @@ export function predicateToGraphQLFilter(
 	}
 
 	return result;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns the total number of distinct fields in the filter group
+ */
+export function countFilterFields(group?: PredicatesGroup<any>): number {
+	if (!group || !Array.isArray(group.predicates)) return 0;
+
+	const fields = new Set();
+
+	const { predicates } = group;
+	const stack = [...predicates];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (isPredicateObj(current)) {
+			fields.add(current.field);
+		} else if (isPredicateGroup(current)) {
+			stack.push(...current.predicates);
+		}
+	}
+
+	return fields.size;
+}
+
+/**
+ *
+ * @param modelDefinition
+ * @returns the total number of dynamic auth modes configured for this model
+ */
+export function countDynamicAuthModes(modelDefinition: SchemaModel): number {
+	const rules = getAuthorizationRules(modelDefinition);
+
+	const dynamicAuthModes = rules.reduce((sum, rule) => {
+		if ('ownerField' in rule) {
+			return sum + 1;
+		} // only count dynamic group auth
+		else if ('groupsField' in rule && !('groups' in rule)) {
+			return sum + 1;
+		}
+		return sum;
+	}, 0);
+
+	return dynamicAuthModes;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns the total number of OR'd predicates in the filter group
+ */
+export function countFilterCombinations(group?: PredicatesGroup<any>): number {
+	if (!group || !Array.isArray(group.predicates)) return 0;
+
+	let count = 0;
+	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		if (isPredicateGroup(current)) {
+			const { predicates, type } = current;
+			// ignore length = 1; combination implies > 1
+			if (type === 'or' && predicates.length > 1) {
+				count += predicates.length;
+			}
+			stack.push(...predicates);
+		}
+	}
+
+	return count;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns name of repeated field | null
+ *
+ * @example returns "username"
+ * ```js
+ * { type: "and", predicates: [
+ * 		{ field: "username", operator: "beginsWith", operand: "a" },
+ * 		{ field: "username", operator: "contains", operand: "abc" },
+ * ] }
+ * ```
+ */
+export function repeatedFieldInGroup(
+	group?: PredicatesGroup<any>
+): string | null {
+	if (!group || !Array.isArray(group.predicates)) return null;
+
+	// convert to filter in order to flatten redundant groups
+	const gqlFilter = predicateToGraphQLFilter(group);
+
+	const stack: GraphQLFilter[] = [gqlFilter];
+
+	const hasGroupRepeatedFields = (fields: GraphQLFilter[]): string | null => {
+		const seen = {};
+
+		for (const f of fields) {
+			const [fieldName] = Object.keys(f);
+			if (seen[fieldName]) {
+				return fieldName;
+			}
+			seen[fieldName] = true;
+		}
+		return null;
+	};
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		const [key] = Object.keys(current!);
+		const values = current![key];
+
+		if (!Array.isArray(values)) {
+			return null;
+		}
+
+		// field value will be single object
+		const predicateObjects = values.filter(
+			v => !Array.isArray(Object.values(v)[0])
+		);
+
+		// group value will be an array
+		const predicateGroups = values.filter(v =>
+			Array.isArray(Object.values(v)[0])
+		);
+
+		if (key === 'and') {
+			const repeatedField = hasGroupRepeatedFields(predicateObjects);
+			if (repeatedField) {
+				return repeatedField;
+			}
+		}
+
+		stack.push(...predicateGroups);
+	}
+
+	return null;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns true if a `not` group is present in the expr.
+ *
+ * @remarks - the service only supports `and` and `or` groups.
+ * `not` should be re-written using negation operators, e.g. `ne` and `notContains`
+ */
+export function notPredicateGroupUsed(group?: PredicatesGroup<any>): boolean {
+	if (!group || !Array.isArray(group.predicates)) return false;
+
+	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		if (isPredicateGroup(current)) {
+			const { predicates, type } = current;
+			if (type === 'not') {
+				return true;
+			}
+			stack.push(...predicates);
+		}
+	}
+
+	return false;
 }
 
 export function getUserGroupsFromToken(

@@ -40,6 +40,7 @@ describe('DataStore sync engine', () => {
 		LegacyJSONPost,
 		Post,
 		Comment,
+		Model,
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
@@ -59,6 +60,7 @@ describe('DataStore sync engine', () => {
 			LegacyJSONPost,
 			Post,
 			Comment,
+			Model,
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
@@ -584,6 +586,265 @@ describe('DataStore sync engine', () => {
 				'_deleted',
 				'blog',
 			]);
+		});
+
+		test('subscription query receives expected filter variable', async () => {
+			await resyncWith([
+				syncExpression(
+					Post,
+					async () => post => post.title.contains('cleaning')
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Post')
+				.map(req => req.variables.filter);
+
+			const expectedFilter = {
+				and: [
+					{
+						title: {
+							contains: 'cleaning',
+						},
+					},
+				],
+			};
+
+			expect(onCreate).toEqual(expectedFilter);
+			expect(onUpdate).toEqual(expectedFilter);
+			expect(onDelete).toEqual(expectedFilter);
+		});
+
+		test('subscription query receives expected filter variable - nested', async () => {
+			await resyncWith([
+				syncExpression(
+					Model,
+					async () => m =>
+						m.or(or => [
+							or.and(and => [
+								and.field1.eq('field'),
+								and.createdAt.gt('1/1/2023'),
+							]),
+							or.and(and => [
+								and.or(or => [
+									or.optionalField1.beginsWith('a'),
+									or.optionalField1.notContains('z'),
+								]),
+								and.emails.ne('-'),
+							]),
+						])
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Model')
+				.map(req => req.variables.filter);
+
+			expect(onCreate).toEqual(onUpdate);
+			expect(onCreate).toEqual(onDelete);
+			expect(onCreate).toMatchInlineSnapshot(`
+			Object {
+			  "or": Array [
+			    Object {
+			      "and": Array [
+			        Object {
+			          "field1": Object {
+			            "eq": "field",
+			          },
+			        },
+			        Object {
+			          "createdAt": Object {
+			            "gt": "1/1/2023",
+			          },
+			        },
+			      ],
+			    },
+			    Object {
+			      "and": Array [
+			        Object {
+			          "or": Array [
+			            Object {
+			              "optionalField1": Object {
+			                "beginsWith": "a",
+			              },
+			            },
+			            Object {
+			              "optionalField1": Object {
+			                "notContains": "z",
+			              },
+			            },
+			          ],
+			        },
+			        Object {
+			          "emails": Object {
+			            "ne": "-",
+			          },
+			        },
+			      ],
+			    },
+			  ],
+			}
+		`);
+		});
+
+		describe('subscription filtering clientside fallback', () => {
+			let consoleWarn;
+
+			beforeEach(() => {
+				consoleWarn = jest.spyOn(console, 'warn');
+			});
+
+			afterEach(() => {
+				consoleWarn.mockClear();
+				consoleWarn.mockReset();
+			});
+
+			test('subscription query receives expected filter variable - repeated field in group', async () => {
+				// service requires distinct fields names in each AND expr.
+
+				await resyncWith([
+					syncExpression(
+						Model,
+						async () => m =>
+							m.and(and => [
+								and.createdAt.gt('1/1/2023'),
+								and.createdAt.lt('1/1/2033'),
+							])
+					),
+				]);
+
+				// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+				const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+					.filter(
+						r => r.operation === 'subscription' && r.tableName === 'Model'
+					)
+					.map(req => req.variables.filter);
+
+				// no filter arg should be set; we fall back to clientside filtering
+				expect(onCreate).toBeUndefined();
+				expect(onUpdate).toBeUndefined();
+				expect(onDelete).toBeUndefined();
+
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Backend subscriptions filtering limit exceeded.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Subscriptions filtering will be applied clientside.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						`Your selective sync expression for Model contains multiple entries for createdAt in the same AND group.`
+					)
+				);
+			});
+
+			test('subscription query receives expected filter variable - filter field limit exceeded', async () => {
+				// service limit for distinct RTF fields is 5, but we're setting a selective sync expression with 6 fields
+				const filterFieldsCount = 6;
+
+				await resyncWith([
+					syncExpression(
+						Model,
+						async () => m =>
+							m.and(and => [
+								and.id.eq('123'),
+								and.field1.beginsWith('a'),
+								and.optionalField1.gt('b'),
+								and.emails.contains('bob@aol.com'),
+								and.ips.contains('10.0.0.1'),
+								and.createdAt.gt('1/1/2023'),
+							])
+					),
+				]);
+
+				// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+				const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+					.filter(
+						r => r.operation === 'subscription' && r.tableName === 'Model'
+					)
+					.map(req => req.variables.filter);
+
+				// no filter arg should be set; we fall back to clientside filtering
+				expect(onCreate).toBeUndefined();
+				expect(onUpdate).toBeUndefined();
+				expect(onDelete).toBeUndefined();
+
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Backend subscriptions filtering limit exceeded.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Subscriptions filtering will be applied clientside.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						`Your selective sync expression for Model contains ${filterFieldsCount} different model fields.`
+					)
+				);
+			});
+
+			test('subscription query receives expected filter variable - filter combinations exceeded', async () => {
+				// service limit for RTF filter combinations is 10, but we're setting a selective sync expression
+				// with 11 or conditions
+				const filterCombinationsCount = 11;
+
+				await resyncWith([
+					syncExpression(
+						Model,
+						async () => m =>
+							m.or(or => [
+								or.id.eq('123'),
+								or.field1.beginsWith('a'),
+								or.optionalField1.gt('b'),
+								or.emails.contains('bob@aol.com'),
+								or.createdAt.gt('1/1/2023'),
+								or.createdAt.gt('1/2/2023'),
+								or.createdAt.gt('1/3/2023'),
+								or.createdAt.gt('1/4/2023'),
+								or.createdAt.gt('1/5/2023'),
+								or.createdAt.gt('1/6/2023'),
+								or.createdAt.gt('1/7/2023'),
+							])
+					),
+				]);
+
+				// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+				const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+					.filter(
+						r => r.operation === 'subscription' && r.tableName === 'Model'
+					)
+					.map(req => req.variables.filter);
+
+				// no filter arg should be set; we fall back to clientside filtering
+				expect(onCreate).toBeUndefined();
+				expect(onUpdate).toBeUndefined();
+				expect(onDelete).toBeUndefined();
+
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Backend subscriptions filtering limit exceeded.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						'Subscriptions filtering will be applied clientside.'
+					)
+				);
+				expect(consoleWarn).toHaveBeenCalledWith(
+					expect.stringContaining(
+						`Your selective sync expression for Model contains ${filterCombinationsCount} field combinations`
+					)
+				);
+			});
 		});
 	});
 });

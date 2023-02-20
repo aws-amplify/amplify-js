@@ -28,12 +28,21 @@ import {
 	getUserGroupsFromToken,
 	TransformerMutationType,
 	getTokenForCustomAuth,
+	predicateToGraphQLFilter,
+	countDynamicAuthModes,
+	countFilterFields,
+	repeatedFieldInGroup,
+	countFilterCombinations,
+	notPredicateGroupUsed,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new Logger('DataStore');
+
+const FILTER_FIELD_SERVICE_LIMIT = 5;
+const FILTER_COMBINATION_SERVICE_LIMIT = 10;
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
@@ -79,7 +88,8 @@ class SubscriptionProcessor {
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } | undefined,
 		oidcTokenPayload: { [field: string]: any } | undefined,
-		authMode: GRAPHQL_AUTH_MODE
+		authMode: GRAPHQL_AUTH_MODE,
+		filterArg: boolean = false
 	): {
 		opType: TransformerMutationType;
 		opName: string;
@@ -105,7 +115,8 @@ class SubscriptionProcessor {
 			model,
 			transformerMutationType,
 			isOwner,
-			ownerField!
+			ownerField!,
+			filterArg
 		);
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
@@ -182,10 +193,18 @@ class SubscriptionProcessor {
 		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
 
+			// AuthZ for "list of owners" is handled dynamically in the subscription auth request
+			// resolver. It doesn't rely on a subscription arg.
+			// Only pass a subscription arg for single owner auth
+			const singleOwner =
+				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+			const isOwnerArgRequired =
+				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
+
 			if (ownerValue) {
 				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
+					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -209,10 +228,15 @@ class SubscriptionProcessor {
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
+			const singleOwner =
+				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+			const isOwnerArgRequired =
+				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
+
 			if (ownerValue) {
 				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
+					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -356,8 +380,26 @@ class SubscriptionProcessor {
 										[TransformerMutationType.DELETE]: 0,
 									};
 
-									// Retry failed subscriptions with next auth mode (if available)
-									const authModeRetry = async operation => {
+									const predicatesGroup = ModelPredicateCreator.getPredicates(
+										this.syncPredicates.get(modelDefinition)!,
+										false
+									);
+
+									const addFilterArg = this.canUseRTF(
+										modelDefinition,
+										predicatesGroup
+									);
+
+									// Retry subscriptions that failed for one of the following reasons:
+									// 1. unauthorized - retry with next auth mode (if available)
+									// 2. RTF error - retry without sending filter arg. (filtering will fall back to clientside)
+									// 		`this.canUseRTF()` will validate the expr. and prevent sending one we know will fail
+									// 		but this is an additional safety measure to ensure this is a non-breaking change
+									//    we can remove this in the next major version of the library
+									const subscriptionRetry = async (
+										operation,
+										addFilter = addFilterArg
+									) => {
 										const {
 											opType: transformerMutationType,
 											opName,
@@ -373,7 +415,8 @@ class SubscriptionProcessor {
 											userCredentials,
 											cognitoTokenPayload,
 											oidcTokenPayload,
-											readAuthModes[operationAuthModeAttempts[operation]]
+											readAuthModes[operationAuthModeAttempts[operation]],
+											addFilter
 										);
 
 										const authToken = await getTokenForCustomAuth(
@@ -382,6 +425,11 @@ class SubscriptionProcessor {
 										);
 
 										const variables = {};
+
+										if (addFilter && predicatesGroup) {
+											variables['filter'] =
+												predicateToGraphQLFilter(predicatesGroup);
+										}
 
 										if (isOwner) {
 											if (!ownerValue) {
@@ -478,6 +526,40 @@ class SubscriptionProcessor {
 															},
 														} = subscriptionError;
 
+														// Catch RTF errors
+														if (
+															message.includes(
+																'Filters exceed maximum attributes limit'
+															) ||
+															message.includes(
+																'Filters combination exceed maximum limit'
+															) ||
+															message.includes(
+																'subscription filter uses same fieldName multiple time'
+															)
+														) {
+															// Unsubscribe and clear subscription array for model/operation
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															].forEach(subscription =>
+																subscription.unsubscribe()
+															);
+
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															] = [];
+
+															const warning =
+																'Backend subscriptions filtering error.\n' +
+																'Subscriptions filtering will be applied clientside.\n\n' +
+																message;
+
+															logger.warn(warning);
+
+															subscriptionRetry(operation, false);
+															return;
+														}
+
 														if (
 															message.includes(
 																PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
@@ -523,10 +605,11 @@ class SubscriptionProcessor {
 																		]
 																	}`
 																);
-																authModeRetry(operation);
+																subscriptionRetry(operation);
 																return;
 															}
 														}
+
 														logger.warn('subscriptionError', message);
 
 														try {
@@ -586,7 +669,7 @@ class SubscriptionProcessor {
 										);
 									};
 
-									operations.forEach(op => authModeRetry(op));
+									operations.forEach(op => subscriptionRetry(op));
 								})
 						);
 				});
@@ -659,6 +742,117 @@ class SubscriptionProcessor {
 			this.buffer.forEach(data => this.dataObserver.next!(data));
 			this.buffer = [];
 		}
+	}
+
+	/**
+	 * @returns true if we can filter subscriptions in the service based on the
+	 * specified selective sync expression and the configured auth modes for a given model
+	 *
+	 * @remarks RTF Service Limits:
+	 * 1. Can't use the same field more than once in the same group, i.e. in an AND expr.
+	 * 2. Can use up to 5 distinct fields total
+	 * 3. Can use up to 10 combinations of fields, i.e. 10 OR expr.
+	 * 4. `not` group is not supported
+	 *
+	 * Dynamic auth modes count towards these limits:
+	 *
+	 * for 2. -> add number of dynamic auth modes to total filter fields to determine if limit is exceeded
+	 *
+	 * for 3. -> each auth rules is combined into each existing filter group. Multiply the number of dynamic auth modes
+	 * by the total number of OR expressions to determine if limit is exceeded
+	 */
+	private canUseRTF(
+		modelDefinition: SchemaModel,
+		predicatesGroup: PredicatesGroup<any> | undefined
+	): boolean {
+		if (!predicatesGroup) {
+			return false;
+		}
+
+		const warningMsg = this.warningMessage(modelDefinition, predicatesGroup);
+
+		if (warningMsg) {
+			logger.warn(warningMsg);
+			return false;
+		}
+
+		return true;
+	}
+
+	private warningMessage(
+		modelDefinition: SchemaModel,
+		predicatesGroup: PredicatesGroup<any> | undefined
+	): string | null {
+		const HEADER =
+			'Backend subscriptions filtering limit exceeded.\n' +
+			'Subscriptions filtering will be applied clientside.\n';
+
+		const isNotGroupUsed = notPredicateGroupUsed(predicatesGroup);
+		const repeatedField = repeatedFieldInGroup(predicatesGroup);
+		const filterFields = countFilterFields(predicatesGroup);
+		const dynamicAuthModes = countDynamicAuthModes(modelDefinition);
+		const filterCombinations = countFilterCombinations(predicatesGroup);
+
+		const totalFiltersFields = filterFields + dynamicAuthModes;
+		const combinedFilterFields =
+			filterCombinations * Math.max(dynamicAuthModes, 1);
+
+		// @PR reviewers: is this messaging clear?
+
+		if (isNotGroupUsed) {
+			return (
+				`${HEADER}\n` +
+				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
+				`please re-write your expression using \`ne\` or \`notContains\` operators.`
+			);
+		}
+
+		if (repeatedField) {
+			return (
+				`${HEADER}\n` +
+				`Your selective sync expression for ${modelDefinition.name} contains multiple entries for ${repeatedField} in the same AND group.`
+			);
+		}
+
+		if (totalFiltersFields > FILTER_FIELD_SERVICE_LIMIT) {
+			let warningContent =
+				`${HEADER}\n` +
+				`Your selective sync expression for ${modelDefinition.name} contains ${filterFields} different model fields.\n\n` +
+				`In order for serverside subscription filtering to succeed, you can apply a selective sync expression with at most ${
+					FILTER_FIELD_SERVICE_LIMIT - dynamicAuthModes
+				} different fields for this model.`;
+
+			if (dynamicAuthModes > 0) {
+				warningContent +=
+					`\n\nNote: the service limit for the number of fields you can use for enhanced subscription filtering is ${FILTER_FIELD_SERVICE_LIMIT},\n` +
+					`but the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth each utilize 1 field.\n` +
+					`You currently have ${dynamicAuthModes} dynamic auth modes configured on this model.`;
+			}
+
+			return warningContent;
+		}
+
+		if (combinedFilterFields > FILTER_COMBINATION_SERVICE_LIMIT) {
+			let warningContent =
+				`${HEADER}\n` +
+				`Your selective sync expression for ${modelDefinition.name} contains ${filterCombinations} field combinations (total number of predicates in an OR expression).\n\n` +
+				`In order for serverside subscription filtering to succeed, you can apply a selective sync expression with at most ${Math.floor(
+					FILTER_COMBINATION_SERVICE_LIMIT / Math.max(dynamicAuthModes, 1)
+				)} field combinations for this model.`;
+
+			if (dynamicAuthModes > 0) {
+				warningContent +=
+					`\n\nNote: the service limit for the number of field combinations you can use for enhanced subscription filtering is ${FILTER_COMBINATION_SERVICE_LIMIT},\n` +
+					`but the number of combinations you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
+					`You currently have ${dynamicAuthModes} dynamic auth modes configured on this model.`;
+			}
+
+			return warningContent;
+		}
+
+		return null;
 	}
 }
 

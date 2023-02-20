@@ -5,7 +5,6 @@
 	"jsRules": {},
 	"rules": {
 		"prefer-const": true,
-		"max-line-length": [true, 120],
 		"no-empty-interface": true,
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
