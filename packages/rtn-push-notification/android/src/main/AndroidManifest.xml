@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application>
+        <activity
+            android:name=".PushNotificationLaunchActivity"
+            android:exported="false" />
+
         <service android:name=".PushNotificationHeadlessTaskService" />
 
         <service
