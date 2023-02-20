@@ -1183,9 +1183,8 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-							let currentUser;
 							try {
-								currentUser = await this.currentUserPoolUser();
+								const currentUser = await this.currentUserPoolUser();
 								user.attributes = currentUser.attributes;
 							} catch (e) {
 								logger.debug('cannot get updated Cognito User', e);
