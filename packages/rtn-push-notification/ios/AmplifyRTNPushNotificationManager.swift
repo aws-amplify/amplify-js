@@ -116,23 +116,23 @@ class AmplifyRTNPushNotificationManager  {
         let notificationCenter = UNUserNotificationCenter.current()
         var options: UNAuthorizationOptions = []
 
-        if (permissions["alert"]) as? Bool == true {
+        if permissions["alert"] as? Bool == true {
             options.insert(.alert)
         }
 
-        if (permissions["badge"]) as? Bool == true {
+        if permissions["badge"] as? Bool == true {
             options.insert(.badge)
         }
 
-        if (permissions["sound"]) as? Bool == true {
+        if permissions["sound"] as? Bool == true {
             options.insert(.sound)
         }
 
-        if (permissions["criticalAlert"]) as? Bool == true {
+        if permissions["criticalAlert"] as? Bool == true {
             options.insert(.criticalAlert)
         }
 
-        if (permissions["provisional"]) as? Bool == true {
+        if permissions["provisional"] as? Bool == true {
             options.insert(.provisional)
         }
 
@@ -205,10 +205,10 @@ class AmplifyRTNPushNotificationManager  {
         if let application = RCTSharedApplication() {
             if (application.applicationState == .inactive) {
                 if justExitedBackgroundMode {
-                    // When an end user taps on a notification to bring the App to the foregroundand
+                    // When an end user taps on a notification to bring the App to the foreground
                     // and the App just exited from the background mode, we treat the tapped notification
                     // as the "launch notification."
-                    launchNotification = userInfo
+                    setLaunchNotification(notification: userInfo)
                 } else {
                     sharedEventManager.sendEventToJS(
                         AmplifyRTNEvent(type: NativeEvent.notificationOpened, payload: userInfo)
