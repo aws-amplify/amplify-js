@@ -196,12 +196,6 @@ class AmplifyRTNPushNotificationManager  {
         userInfo: [AnyHashable: Any],
         completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        let completionHandlerId = UUID().uuidString
-        var userInfoCopy = userInfo
-
-        remoteNotificationCompletionHandlers[completionHandlerIdKey] = completionHandler
-        userInfoCopy[completionHandlerIdKey] = completionHandlerId
-
         if let application = RCTSharedApplication() {
             if (application.applicationState == .inactive) {
                 if justExitedBackgroundMode {
@@ -215,8 +209,14 @@ class AmplifyRTNPushNotificationManager  {
                     )
                 }
             } else if (application.applicationState == .background) {
+                let completionHandlerId = UUID().uuidString
+                var userInfoCopy = userInfo
+
+                remoteNotificationCompletionHandlers[completionHandlerIdKey] = completionHandler
+                userInfoCopy[completionHandlerIdKey] = completionHandlerId
+
                 sharedEventManager.sendEventToJS(
-                    AmplifyRTNEvent(type: NativeEvent.backgroundMessageReceived, payload: userInfo)
+                    AmplifyRTNEvent(type: NativeEvent.backgroundMessageReceived, payload: userInfoCopy)
                 )
             } else {
                 sharedEventManager.sendEventToJS(
