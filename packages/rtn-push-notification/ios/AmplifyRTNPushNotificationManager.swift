@@ -118,7 +118,7 @@ class AmplifyRTNPushNotificationManager  {
         reject: @escaping RCTPromiseRejectBlock
     ) {
         if RCTRunningInAppExtension() {
-            reject("ERROR", "requestMessagingPermission can not be called in App Extensions", nil)
+            reject("ERROR", "requestPermissions can not be called in App Extensions", nil)
             return
         }
 

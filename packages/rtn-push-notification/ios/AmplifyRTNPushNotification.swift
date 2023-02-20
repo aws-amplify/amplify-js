@@ -39,10 +39,6 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
         sendEvent(withName: event.type.name, body: event.payload)
     }
 
-    override func sendEvent(withName name: String!, body: Any!) {
-        super.sendEvent(withName: name, body: body)
-    }
-
     override func addListener(_ eventName: String!) {
         super.addListener(eventName)
         registeredEventNames.insert(eventName)
