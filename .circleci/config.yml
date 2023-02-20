@@ -2258,7 +2258,10 @@ workflows:
             - integ_vite_datastore_basic_crud
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
+<<<<<<< HEAD
             - integ_react_datastore_docs_examples
+=======
+>>>>>>> 63efed791 (undo CCI config changes after successful e2e test run)
       - post_release:
           filters:
             branches:
