@@ -535,6 +535,7 @@ class FakeGraphQLService {
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
+			this.tableDefinitions.set(model.name, model);
 			let CPKFound = false;
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
