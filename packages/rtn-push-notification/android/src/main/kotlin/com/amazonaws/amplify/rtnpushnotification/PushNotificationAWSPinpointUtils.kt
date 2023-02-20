@@ -3,7 +3,11 @@
 
 package com.amazonaws.amplify.rtnpushnotification
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import com.amplifyframework.pushnotifications.pinpoint.utils.NotificationPayload
 import com.amplifyframework.pushnotifications.pinpoint.utils.PushNotificationsConstants
 import com.amplifyframework.pushnotifications.pinpoint.utils.toNotificationsPayload
@@ -12,7 +16,8 @@ import com.google.firebase.messaging.RemoteMessage
 private const val PAYLOAD_KEY = "payload"
 
 fun isRemoteMessageSupported(remoteMessage: RemoteMessage): Boolean {
-    return !remoteMessage.data["pinpoint.campaign.campaign_id"].isNullOrEmpty()
+    return !remoteMessage.data[PushNotificationsConstants.PINPOINT_CAMPAIGN_CAMPAIGN_ID].isNullOrEmpty() or
+            !remoteMessage.data[PushNotificationsConstants.JOURNEY_ID].isNullOrEmpty()
 }
 
 fun getPayloadFromRemoteMessage(remoteMessage: RemoteMessage): NotificationPayload {
@@ -50,6 +55,25 @@ fun getPayloadFromRemoteMessage(remoteMessage: RemoteMessage): NotificationPaylo
         silentPush = data[PushNotificationsConstants.PINPOINT_NOTIFICATION_SILENTPUSH].equals("1")
         rawData = HashMap(remoteMessage.data)
     }
+}
+
+fun processNotificationIntent(context: Context, payload: NotificationPayload?): Intent? {
+    // Always launch app
+    val notificationIntent: Intent? =
+        context.packageManager.getLaunchIntentForPackage(context.packageName)
+    payload?.action?.let {
+        // Attach action to open url
+        if (it.containsKey(PushNotificationsConstants.PINPOINT_URL)) {
+            notificationIntent?.action = Intent.ACTION_VIEW
+            notificationIntent?.data = Uri.parse(it[PushNotificationsConstants.PINPOINT_URL])
+        }
+        // Attach action to open deep link
+        else if (it.containsKey(PushNotificationsConstants.PINPOINT_DEEPLINK)) {
+            notificationIntent?.action = Intent.ACTION_VIEW
+            notificationIntent?.data = Uri.parse(it[PushNotificationsConstants.PINPOINT_DEEPLINK])
+        }
+    }
+    return notificationIntent
 }
 
 fun getPayloadFromExtras(extras: Bundle?): NotificationPayload? {

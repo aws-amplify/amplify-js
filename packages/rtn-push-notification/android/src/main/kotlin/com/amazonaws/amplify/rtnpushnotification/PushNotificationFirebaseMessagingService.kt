@@ -60,7 +60,8 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(
                 TAG, "App is in background, try to create notification and start headless service"
             )
-            utils.showNotification(payload, getLaunchActivityClass(baseContext))
+
+            utils.showNotification(payload, PushNotificationLaunchActivity::class.java)
 
             try {
                 val serviceIntent =
