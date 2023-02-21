@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.14...@aws-amplify/datastore@4.0.15) (2023-02-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** extra fields in selective sync selection set on API's from older CLI ([#10949](https://github.com/aws-amplify/amplify-js/issues/10949)) ([9d34523](https://github.com/aws-amplify/amplify-js/commit/9d34523f9d2f9a682fabfe698a697fc8774b6abe))
+* **@aws-amplify/datastore:** Fix beginsWith() negation ([#10962](https://github.com/aws-amplify/amplify-js/issues/10962)) ([f6dfaac](https://github.com/aws-amplify/amplify-js/commit/f6dfaac7a2b9c66fa8e69560cbd5489a42ef938c))
+
+
+
+
+
 ## [4.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.13...@aws-amplify/datastore@4.0.14) (2023-02-09)
 
 
