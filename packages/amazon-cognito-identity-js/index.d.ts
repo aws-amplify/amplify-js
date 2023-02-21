@@ -399,7 +399,7 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export interface ICookieStorageData {
-		domain: string;
+		domain?: string;
 		path?: string;
 		expires?: number;
 		secure?: boolean;
