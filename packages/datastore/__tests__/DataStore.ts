@@ -19,6 +19,7 @@ import {
 	Comment,
 	Metadata,
 	Model,
+	BasicModelRequiredTS,
 	getDataStore,
 	logDate,
 	expectIsolation,
@@ -2201,6 +2202,34 @@ describe('DataStore tests', () => {
 
 			expect(model1.optionalField1).toBeNull();
 			expect(model2.optionalField1).toBeNull();
+		});
+
+		test.only('Required timestamp field can be omitted', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			expect(m.createdAt).toBeNull();
+			expect(m.updatedOn).toBeNull();
+		});
+
+		test.only('Required timestamp field can be null during a copyOf', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			const copied = BasicModelRequiredTS.copyOf(m, d => (d.body = 'new body'));
+
+			expect(copied.createdAt).toBeNull();
+			expect(copied.updatedOn).toBeNull();
 		});
 
 		test('multiple copyOf operations carry all changes on save', async () => {

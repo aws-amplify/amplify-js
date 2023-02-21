@@ -721,6 +721,23 @@ class FakeGraphQLService {
 		};
 	}
 
+	private makeRequiredManagedFieldSetToNullError(tableName, operation, field) {
+		return {
+			path: [operation],
+			data: null,
+			errorType: 'Unauthorized',
+			errorInfo: null,
+			locations: [
+				{
+					line: 12,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			message: `Not Authorized to access ${operation} on type ${tableName}`,
+		};
+	}
+
 	private disconnectedError() {
 		return {
 			data: {},
@@ -740,6 +757,13 @@ class FakeGraphQLService {
 			.filter(f => f);
 
 		return ownerFields || ['owner'];
+	}
+
+	private writeableFields(tableName) {
+		const def = this.tableDefinitions.get(tableName)!;
+		return Object.keys(def.fields).filter(
+			field => !def.fields[field]?.isReadOnly
+		);
 	}
 
 	private timestampFields(tableName) {
@@ -774,10 +798,8 @@ class FakeGraphQLService {
 	private validate(tableName, operation, record) {
 		// very simple validation for an observed *near*-regression from a PR right now.
 		// https://github.com/aws-amplify/amplify-js/pull/10915
-		const def = this.tableDefinitions.get(tableName)!;
-		const writeableFields = Object.keys(def.fields).filter(
-			field => !def.fields[field]?.isReadOnly
-		);
+		const writeableFields = this.writeableFields(tableName);
+		const timestampFields = this.timestampFields(tableName);
 
 		let error: any;
 
@@ -795,12 +817,27 @@ class FakeGraphQLService {
 						unexpectedFields
 					);
 				}
+
 				for (const ownerField of this.ownerFields(tableName)) {
 					if (record[ownerField] === null) {
 						error = this.makeOwnerFieldNullInputError(tableName, operation);
 						break;
 					}
 				}
+
+				// ok. nevermind. i think this is not actually enforced by appsync.
+				// the issue is actually failing *local* validation. >:(
+				//
+				// for (const timestampField of timestampFields) {
+				// 	if (record[timestampField] === null) {
+				// 		error = this.makeRequiredManagedFieldSetToNullError(
+				// 			tableName,
+				// 			operation,
+				// 			timestampField
+				// 		);
+				// 	}
+				// 	break;
+				// }
 				break;
 			case 'delete':
 				break;
@@ -1164,6 +1201,7 @@ export function getDataStore({
 		CompositePKChild,
 		BasicModel,
 		BasicModelWritableTS,
+		BasicModelRequiredTS,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
 		ModelWithMultipleCustomOwner,
@@ -1194,6 +1232,7 @@ export function getDataStore({
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
 		BasicModel: PersistentModelConstructor<BasicModel>;
 		BasicModelWritableTS: PersistentModelConstructor<BasicModelWritableTS>;
+		BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
 		ModelWithExplicitOwner: PersistentModelConstructor<ModelWithExplicitOwner>;
 		ModelWithExplicitCustomOwner: PersistentModelConstructor<ModelWithExplicitCustomOwner>;
 		ModelWithMultipleCustomOwner: PersistentModelConstructor<ModelWithMultipleCustomOwner>;
@@ -1232,6 +1271,7 @@ export function getDataStore({
 		CompositePKChild,
 		BasicModel,
 		BasicModelWritableTS,
+		BasicModelRequiredTS,
 		ModelWithExplicitOwner,
 		ModelWithExplicitCustomOwner,
 		ModelWithMultipleCustomOwner,
@@ -1471,6 +1511,24 @@ export declare class BasicModelWritableTS {
 			draft: MutableModel<BasicModelWritableTS>
 		) => MutableModel<BasicModelWritableTS> | void
 	): BasicModelWritableTS;
+}
+
+export declare class BasicModelRequiredTS {
+	readonly [__modelMeta__]: {
+		identifier: OptionallyManagedIdentifier<BasicModelRequiredTS, 'id'>;
+		readOnlyFields: never;
+	};
+	readonly id: string;
+	readonly body: string;
+	readonly createdAt: string;
+	readonly updatedOn?: string | null;
+	constructor(init: ModelInit<BasicModelRequiredTS>);
+	static copyOf(
+		source: BasicModelRequiredTS,
+		mutator: (
+			draft: MutableModel<BasicModelRequiredTS>
+		) => MutableModel<BasicModelRequiredTS> | void
+	): BasicModelRequiredTS;
 }
 
 export declare class HasOneParent {
@@ -2571,6 +2629,70 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							fields: ['id'],
+						},
+					},
+				],
+			},
+			/**
+			 * timestamps: {
+			 * 	updatedAt: "updatedOn"
+			 * }
+			 */
+			BasicModelRequiredTS: {
+				name: 'BasicModelRequiredTS',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					body: {
+						name: 'body',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true, // `AWSDateTime!` (intentionally required)
+						attributes: [],
+					},
+					updatedOn: {
+						name: 'updatedOn', //
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false, // `AWSDateTime` (intentionally optional)
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'BasicModelRequiredTS',
+				attributes: [
+					{
+						type: 'model',
+						properties: {
+							timestamps: {
+								updatedAt: 'updatedOn',
+							},
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
 						},
 					},
 				],
