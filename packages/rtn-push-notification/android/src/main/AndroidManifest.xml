@@ -6,6 +6,7 @@
     <application>
         <activity
             android:name=".PushNotificationLaunchActivity"
+            android:launchMode="singleInstance"
             android:exported="false" />
 
         <service android:name=".PushNotificationHeadlessTaskService" />
