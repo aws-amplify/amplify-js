@@ -5,7 +5,6 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
 	PutObjectCommandInput,
 	PutObjectCommand,
-	PutObjectRequest,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
