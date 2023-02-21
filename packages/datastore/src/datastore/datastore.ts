@@ -169,6 +169,25 @@ const getModelPKFieldName = (
 	);
 };
 
+const getTimestampFields = (definition: SchemaModel) => {
+	const modelAttributes = definition.attributes?.find(
+		attr => attr.type === 'model'
+	);
+	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
+
+	const defaultFields = {
+		createdAt: 'createdAt',
+		updatedAt: 'updatedAt',
+	};
+
+	const customFields = timestampFieldsMap || {};
+
+	return {
+		...defaultFields,
+		...customFields,
+	};
+};
+
 const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
@@ -558,8 +577,14 @@ const validateModelFields =
 			const { type, isRequired, isArrayNullable, name, isArray } =
 				fieldDefinition;
 
+			const timestamps = isSchemaModelWithAttributes(modelDefinition)
+				? getTimestampFields(modelDefinition)
+				: {};
+			const isTimestampField = !!timestamps[name];
+
 			if (
 				((!isArray && isRequired) || (isArray && !isArrayNullable)) &&
+				!isTimestampField &&
 				(v === null || v === undefined)
 			) {
 				throw new Error(`Field ${name} is required`);
