@@ -721,23 +721,6 @@ class FakeGraphQLService {
 		};
 	}
 
-	private makeRequiredManagedFieldSetToNullError(tableName, operation, field) {
-		return {
-			path: [operation],
-			data: null,
-			errorType: 'Unauthorized',
-			errorInfo: null,
-			locations: [
-				{
-					line: 12,
-					column: 3,
-					sourceName: null,
-				},
-			],
-			message: `Not Authorized to access ${operation} on type ${tableName}`,
-		};
-	}
-
 	private disconnectedError() {
 		return {
 			data: {},
@@ -766,24 +749,6 @@ class FakeGraphQLService {
 		);
 	}
 
-	private timestampFields(tableName) {
-		const def = this.tableDefinitions.get(tableName)!;
-		const modelAttributes = def.attributes?.find(attr => attr.type === 'model');
-		const timestampFieldsMap = modelAttributes?.properties?.timestamps;
-
-		const defaultFields = {
-			createdAt: 'createdAt',
-			updatedAt: 'updatedAt',
-		};
-
-		const customFields = timestampFieldsMap || {};
-
-		return Object.keys({
-			...defaultFields,
-			...customFields,
-		});
-	}
-
 	private identifyExtraValues(expected, actual) {
 		const extraValues: string[] = [];
 		for (const v of actual) {
@@ -799,7 +764,6 @@ class FakeGraphQLService {
 		// very simple validation for an observed *near*-regression from a PR right now.
 		// https://github.com/aws-amplify/amplify-js/pull/10915
 		const writeableFields = this.writeableFields(tableName);
-		const timestampFields = this.timestampFields(tableName);
 
 		let error: any;
 
@@ -817,27 +781,12 @@ class FakeGraphQLService {
 						unexpectedFields
 					);
 				}
-
 				for (const ownerField of this.ownerFields(tableName)) {
 					if (record[ownerField] === null) {
 						error = this.makeOwnerFieldNullInputError(tableName, operation);
 						break;
 					}
 				}
-
-				// ok. nevermind. i think this is not actually enforced by appsync.
-				// the issue is actually failing *local* validation. >:(
-				//
-				// for (const timestampField of timestampFields) {
-				// 	if (record[timestampField] === null) {
-				// 		error = this.makeRequiredManagedFieldSetToNullError(
-				// 			tableName,
-				// 			operation,
-				// 			timestampField
-				// 		);
-				// 	}
-				// 	break;
-				// }
 				break;
 			case 'delete':
 				break;
