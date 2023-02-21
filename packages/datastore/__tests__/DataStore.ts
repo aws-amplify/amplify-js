@@ -2204,7 +2204,7 @@ describe('DataStore tests', () => {
 			expect(model2.optionalField1).toBeNull();
 		});
 
-		test.only('Required timestamp field can be omitted', async () => {
+		test('Required timestamp field can be omitted', async () => {
 			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
 				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
 			};
@@ -2217,7 +2217,7 @@ describe('DataStore tests', () => {
 			expect(m.updatedOn).toBeNull();
 		});
 
-		test.only('Required timestamp field can be null during a copyOf', async () => {
+		test('Required timestamp field can be null during a copyOf', async () => {
 			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
 				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
 			};
