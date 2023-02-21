@@ -1183,7 +1183,12 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-
+							try {
+								const currentUser = await this.currentUserPoolUser();
+								user.attributes = currentUser.attributes;
+							} catch (e) {
+								logger.debug('cannot get updated Cognito User', e);
+							}
 							dispatchAuthEvent(
 								'signIn',
 								user,
@@ -1428,7 +1433,6 @@ export class AuthClass {
 				user.updateAttributes(
 					attributeList,
 					(err, result, details) => {
-						
 						if (err) {
 							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
 							return reject(err);
@@ -1447,8 +1451,8 @@ export class AuthClass {
 	}
 
 	private createUpdateAttributesResultList(
-		attributes: Record<string, string>, 
-		codeDeliveryDetailsList?: CodeDeliveryDetails []
+		attributes: Record<string, string>,
+		codeDeliveryDetailsList?: CodeDeliveryDetails[]
 	): Record<string, string> {
 		const attrs = {};
 		Object.keys(attributes).forEach(key => {
