@@ -53,15 +53,6 @@ export interface PushNotificationConfig {
 }
 
 export interface PushNotificationMessage {
-	messageId: string;
-	senderId?: string;
-	sendTime: Date;
-	collapseKey?: string;
-	content?: PushNotificationMessageContent;
-	data?: Record<string, any>;
-}
-
-interface PushNotificationMessageContent {
 	title?: string;
 	body?: string;
 	imageUrl?: string;
@@ -69,10 +60,14 @@ interface PushNotificationMessageContent {
 	goToUrl?: string;
 	fcmOptions?: FcmPlatformOptions;
 	apnsOptions?: ApnsPlatformOptions;
+	data?: Record<string, unknown>;
 }
 
 interface FcmPlatformOptions {
 	channelId: string;
+	messageId: string;
+	senderId: string;
+	sendTime: Date;
 }
 
 interface ApnsPlatformOptions {
@@ -108,4 +103,13 @@ export const enum PushNotificationEvent {
 
 export interface PushNotificationTokenMap {
 	token: string;
+}
+
+export interface NormalizedValues {
+	body?: string;
+	imageUrl?: string;
+	title?: string;
+	action?: Pick<PushNotificationMessage, 'goToUrl' | 'deeplinkUrl'>;
+	options?: Pick<PushNotificationMessage, 'apnsOptions' | 'fcmOptions'>;
+	data?: Record<string, unknown>;
 }
