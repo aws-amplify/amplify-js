@@ -173,7 +173,7 @@ const getModelPKFieldName = (
  * Determine what the managed timestamp field names are for the given model definition
  * and return the mapping.
  *
- * All timestamp fields are in cluded in the mapping, regardless of whether the final field
+ * All timestamp fields are included in the mapping, regardless of whether the final field
  * names are the defaults or customized in the `@model` directive.
  *
  * @see https://docs.amplify.aws/cli/graphql/data-modeling/#customize-creation-and-update-timestamps
