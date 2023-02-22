@@ -53,9 +53,9 @@ export interface PushNotificationConfig {
 }
 
 export interface PushNotificationMessage {
-	messageId?: string;
+	messageId: string;
 	senderId?: string;
-	sendTime?: Date;
+	sendTime: Date;
 	collapseKey?: string;
 	content?: PushNotificationMessageContent;
 	data?: Record<string, any>;
@@ -67,7 +67,8 @@ interface PushNotificationMessageContent {
 	imageUrl?: string;
 	deeplinkUrl?: string;
 	goToUrl?: string;
-	platformOptions?: FcmPlatformOptions | ApnsPlatformOptions;
+	fcmOptions?: FcmPlatformOptions;
+	apnsOptions?: ApnsPlatformOptions;
 }
 
 interface FcmPlatformOptions {
