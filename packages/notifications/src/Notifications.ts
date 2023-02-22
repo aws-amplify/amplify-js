@@ -6,7 +6,7 @@ import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import InAppMessagingClass from './InAppMessaging';
 import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
 import { PushNotificationInterface as PushNotification } from './PushNotification/types';
-import { NotificationsCategory, NotificationsConfig } from './types';
+import { NotificationsCategory, NotificationsConfig, UserInfo } from './types';
 
 const logger = new Logger('Notifications');
 
@@ -59,6 +59,17 @@ class NotificationsClass {
 	get Push() {
 		return this.pushNotification;
 	}
+
+	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[][]> => {
+		const promises: Promise<void[]>[] = [];
+		if (this.InAppMessaging) {
+			promises.push(this.InAppMessaging.identifyUser(userId, userInfo));
+		}
+		if (this.Push) {
+			promises.push(this.Push.identifyUser(userId, userInfo));
+		}
+		return Promise.all<void[]>(promises);
+	};
 }
 
 const Notifications = new NotificationsClass();
