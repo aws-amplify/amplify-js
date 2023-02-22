@@ -68,6 +68,14 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
     }
 
     @objc
+    func getPermissionStatus(
+        _ resolve: @escaping RCTPromiseResolveBlock,
+        reject: @escaping RCTPromiseRejectBlock
+    ) {
+        sharedNotificationManager.getPermissionStatus(resolve, reject: reject)
+    }
+
+    @objc
     func getLaunchNotification(
         _ resolve: RCTPromiseResolveBlock,
         reject: RCTPromiseRejectBlock
