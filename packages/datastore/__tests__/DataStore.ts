@@ -1733,7 +1733,7 @@ describe('Model behavior', () => {
 		expect(await disconnectedParent.child).toBeUndefined();
 	});
 
-	test('model field can be set to undefined to remove connection hasOne', async () => {
+	test('model field can be set to undefined to remove connection hasOne parent', async () => {
 		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
 
 		const child = await DataStore.save(new HasOneChild({}));
@@ -1750,7 +1750,7 @@ describe('Model behavior', () => {
 		expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
 	});
 
-	test('model field can be set to null to remove connection hasOne', async () => {
+	test('model field can be set to null to remove connection hasOne parent', async () => {
 		const { DataStore, HasOneChild, HasOneParent } = getDataStore();
 
 		const child = await DataStore.save(new HasOneChild({}));
@@ -1767,40 +1767,44 @@ describe('Model behavior', () => {
 		expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
 	});
 
-	test('model field can be set to undefined to remove connection on parent hasMany', async () => {
-		const { DataStore, Blog, Post } = getDataStore();
+	test('model field can be set to undefined to remove connection on child hasMany', async () => {
+		const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
 
-		const post: Post = await DataStore.save(new Post({ title: 'Post title' }));
-		const blog = await DataStore.save(
-			new Blog({
-				title: 'Blog title',
-				posts: [post],
+		const parent = await DataStore.save(
+			new CompositePKParent({
+				customId: 'customId',
+				content: 'content',
 			})
 		);
+		const child = await DataStore.save(
+			new CompositePKChild({ childId: 'childId', content: 'content', parent })
+		);
 
-		const blogWithoutPosts = Blog.copyOf(blog, draft => {
-			draft.posts = undefined;
+		const childWithoutParent = CompositePKChild.copyOf(child, draft => {
+			draft.parent = undefined;
 		});
 
-		expect(await blogWithoutPosts.posts.toArray()).toEqual([]);
+		expect(await childWithoutParent.parent).toBeUndefined();
 	});
 
-	test('model field can be set to null to remove connection on parent hasMany', async () => {
-		const { DataStore, Blog, Post } = getDataStore();
+	test('model field can be set to undefined to remove connection on child hasMany', async () => {
+		const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
 
-		const post: Post = await DataStore.save(new Post({ title: 'Post title' }));
-		const blog = await DataStore.save(
-			new Blog({
-				title: 'Blog title',
-				posts: [post],
+		const parent = await DataStore.save(
+			new CompositePKParent({
+				customId: 'customId',
+				content: 'content',
 			})
 		);
+		const child = await DataStore.save(
+			new CompositePKChild({ childId: 'childId', content: 'content', parent })
+		);
 
-		const blogWithoutPosts = Blog.copyOf(blog, draft => {
-			draft.posts = null;
+		const childWithoutParent = CompositePKChild.copyOf(child, draft => {
+			draft.parent = null;
 		});
 
-		expect(await blogWithoutPosts.posts.toArray()).toEqual([]);
+		expect(await childWithoutParent.parent).toBeUndefined();
 	});
 
 	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
