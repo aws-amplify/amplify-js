@@ -32,7 +32,6 @@ class AmplifyRTNPushNotificationManager  {
     private var launchNotification: Any?
     private var isBackgroundMode = false
     private var justExitedBackgroundMode = false
-    private var rctContentHasAppeared = false
     private var remoteNotificationCompletionHandlers: [String: (UIBackgroundFetchResult) -> Void] = [:]
     private let sharedEventManager: AmplifyRTNEventManager
 
@@ -57,12 +56,8 @@ class AmplifyRTNPushNotificationManager  {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(rctContentDidAppear),
-            name: Notification.Name.RCTContentDidAppear,
-            object: nil
-        )
+
+        registerForRemoteNotifications()
     }
 
     deinit {
@@ -79,11 +74,6 @@ class AmplifyRTNPushNotificationManager  {
         NotificationCenter.default.removeObserver(
             self,
             name: UIApplication.didBecomeActiveNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: Notification.Name.RCTContentDidAppear,
             object: nil
         )
     }
@@ -260,11 +250,6 @@ class AmplifyRTNPushNotificationManager  {
         registerForRemoteNotifications()
     }
 
-    @objc
-    private func rctContentDidAppear() {
-        rctContentHasAppeared = true
-    }
-
     private func setLaunchNotification(notification: Any) {
         launchNotification = notification
         AmplifyRTNEventManager.shared.sendEventToJS(
@@ -284,6 +269,8 @@ class AmplifyRTNPushNotificationManager  {
             return
         }
 
-        RCTSharedApplication()?.registerForRemoteNotifications()
+        DispatchQueue.main.async {
+            RCTSharedApplication()?.registerForRemoteNotifications()
+        }
     }
 }
