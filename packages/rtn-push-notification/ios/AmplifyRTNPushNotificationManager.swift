@@ -37,45 +37,11 @@ class AmplifyRTNPushNotificationManager  {
 
     init() {
         sharedEventManager = AmplifyRTNEventManager.shared
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationWillEnterForeground),
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil
-        )
-
-        registerForRemoteNotifications()
+        setUpObservers()
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil
-        )
+        removeObservers()
     }
 
     func handleLaunchOptions(launchOptions: [AnyHashable: Any]) {
@@ -224,6 +190,45 @@ class AmplifyRTNPushNotificationManager  {
             completionHandler(.noData)
             remoteNotificationCompletionHandlers.removeValue(forKey: completionHandlerId)
         }
+    }
+
+    private func setUpObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+
+    private func removeObservers() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
     }
 
     private func resolvePermissionStatus(

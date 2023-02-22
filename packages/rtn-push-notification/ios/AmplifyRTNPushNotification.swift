@@ -16,6 +16,7 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
 
     var registeredEventNames: Set<String> = []
     var hasListeners = false
+    private let sharedNotificationManager: AmplifyRTNPushNotificationManager
 
     // Override the bridge setter and getter to capture the launch options
     override var bridge: RCTBridge! {
@@ -23,12 +24,17 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
             super.bridge = bridge
 
             if let launchOptions = bridge.launchOptions {
-                AmplifyRTNPushNotificationManager.shared.handleLaunchOptions(launchOptions: launchOptions)
+                sharedNotificationManager.handleLaunchOptions(launchOptions: launchOptions)
             }
         }
         get {
             return super.bridge
         }
+    }
+
+    override init() {
+        sharedNotificationManager = AmplifyRTNPushNotificationManager.shared
+        super.init()
     }
 
     func notifyFlushQueuedEvents() {
@@ -58,7 +64,7 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
         resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
-        AmplifyRTNPushNotificationManager.shared.requestPermissions(permissions, resolve: resolve, reject: reject)
+        sharedNotificationManager.requestPermissions(permissions, resolve: resolve, reject: reject)
     }
 
     @objc
@@ -66,12 +72,12 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
         _ resolve: RCTPromiseResolveBlock,
         reject: RCTPromiseRejectBlock
     ) {
-        AmplifyRTNPushNotificationManager.shared.getLaunchNotification(resolve, reject: reject)
+        sharedNotificationManager.getLaunchNotification(resolve, reject: reject)
     }
 
     @objc
     func setBadgeCount(_ count: Int) {
-        AmplifyRTNPushNotificationManager.shared.setBadgeCount(count)
+        sharedNotificationManager.setBadgeCount(count)
     }
 
     @objc
@@ -79,12 +85,12 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject: RCTPromiseRejectBlock
     ) {
-        AmplifyRTNPushNotificationManager.shared.getBadgeCount(resolve, reject: reject)
+        sharedNotificationManager.getBadgeCount(resolve, reject: reject)
     }
 
     @objc
     func completeNotification(_ completionHandlerId: String) {
-        AmplifyRTNPushNotificationManager.shared.completeNotification(completionHandlerId)
+        sharedNotificationManager.completeNotification(completionHandlerId)
     }
 
     @objc
