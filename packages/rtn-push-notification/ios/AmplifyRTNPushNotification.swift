@@ -99,7 +99,7 @@ class AmplifyRTNPushNotification: RCTEventEmitter {
                 NativeEvent.backgroundMessageReceived.key: NativeEvent.backgroundMessageReceived.name,
                 NativeEvent.foregroundMessageReceived.key: NativeEvent.foregroundMessageReceived.name,
                 NativeEvent.notificationOpened.key: NativeEvent.notificationOpened.name,
-                NativeEvent.launchNotificationOpened.key: NativeEvent.notificationOpened.name,
+                NativeEvent.launchNotificationOpened.key: NativeEvent.launchNotificationOpened.name,
                 NativeEvent.tokenReceived.key: NativeEvent.tokenReceived.name,
             ],
         ]

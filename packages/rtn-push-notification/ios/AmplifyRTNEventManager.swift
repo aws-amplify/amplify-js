@@ -28,15 +28,15 @@ enum NativeEvent {
     var name: String {
         switch(self) {
         case .tokenReceived:
-            return "AmplifyRTNPushNotification_TokenReceived"
+            return "TokenReceived"
         case .notificationOpened:
-            return "AmplifyRTNPushNotification_NotificationOpened"
+            return "NotificationOpened"
         case .launchNotificationOpened:
-            return "AmplifyRTNPushNotification_LaunchNotificationOpened"
+            return "LaunchNotificationOpened"
         case .foregroundMessageReceived:
-            return "AmplifyRTNPushNotification_ForegroundMessageReceived"
+            return "ForegroundMessageReceived"
         case .backgroundMessageReceived:
-            return "AmplifyRTNPushNotification_BackgroundMessageReceived"
+            return "BackgroundMessageReceived"
         }
     }
 }
