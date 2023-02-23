@@ -1787,7 +1787,7 @@ describe('Model behavior', () => {
 		expect(await childWithoutParent.parent).toBeUndefined();
 	});
 
-	test('model field can be set to undefined to remove connection on child hasMany', async () => {
+	test('model field can be set to null to remove connection on child hasMany', async () => {
 		const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
 
 		const parent = await DataStore.save(
