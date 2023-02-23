@@ -14,6 +14,7 @@ describe('DataStore sync engine', () => {
 	let {
 		DataStore,
 		connectivityMonitor,
+		LegacyJSONPost,
 		Post,
 		Comment,
 		graphqlService,
@@ -25,6 +26,7 @@ describe('DataStore sync engine', () => {
 		({
 			DataStore,
 			connectivityMonitor,
+			LegacyJSONPost,
 			Post,
 			Comment,
 			graphqlService,
@@ -327,6 +329,40 @@ describe('DataStore sync engine', () => {
 
 			const records = await DataStore.query(Post);
 			expect(records.length).toBe(2);
+		});
+
+		test('omits implicit FK fields in selection set', async () => {
+			// old CLI + amplify V5 + sync expressions resulted in broken sync queries,
+			// where FK/connection keys were included in the sync queries, *sometimes*
+			// resulting in incorrect sync queries.
+
+			let selectionSet: string[];
+			graphqlService.log = (message, query) => {
+				if (
+					message === 'Parsed Request' &&
+					query.selection === 'syncLegacyJSONPosts'
+				) {
+					selectionSet = query.items;
+				}
+			};
+
+			await resyncWith([
+				syncExpression(LegacyJSONPost, p =>
+					p?.title.eq("whatever, it doesn't matter.")
+				),
+			]);
+
+			expect(selectionSet!).toBeDefined();
+			expect(selectionSet!).toEqual([
+				'id',
+				'title',
+				'createdAt',
+				'updatedAt',
+				'_version',
+				'_lastChangedAt',
+				'_deleted',
+				'blog',
+			]);
 		});
 	});
 });
