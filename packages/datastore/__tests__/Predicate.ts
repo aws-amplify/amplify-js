@@ -2323,6 +2323,26 @@ describe('Predicates', () => {
 				matches: [{ name: 'tim' }, { name: 'sam' }],
 				mismatches: [{ name: 'al' }, { name: 'fran' }],
 			},
+			{
+				gql: {
+					and: [{ rating: { gt: 123 } }],
+				},
+				expectedRegeneration: {
+					and: [{ rating: { gt: 123 } }],
+				},
+				matches: [{ rating: 124 }, { rating: 125 }],
+				mismatches: [{ rating: 122 }, { rating: 123 }],
+			},
+			{
+				gql: {
+					and: [{ rating: { eq: 123 } }],
+				},
+				expectedRegeneration: {
+					and: [{ rating: { eq: 123 } }],
+				},
+				matches: [{ rating: 123 }],
+				mismatches: [{ rating: 122 }, { rating: 124 }],
+			},
 		];
 
 		for (const [i, testCase] of ASTTransalationTestCases.entries()) {
@@ -2331,14 +2351,14 @@ describe('Predicates', () => {
 			)}`, () => {
 				const condition = testCase.gql;
 				const builder = ModelPredicateCreator.createFromAST(
-					BlogMeta.schema,
+					AuthorMeta.schema,
 					condition
 				);
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
 				const regeneratedCondition = predicateToGraphQLCondition(
 					predicate,
-					BlogMeta.schema
+					AuthorMeta.schema
 				);
 				const regeneratedFilter = predicateToGraphQLFilter(predicate);
 
@@ -2374,6 +2394,11 @@ describe('Predicates', () => {
 				matches: [{ name: 'tim' }, { name: 'sam' }],
 				mismatches: [{ name: 'al' }, { name: 'fran' }],
 			},
+			{
+				predicate: p => p.rating.eq(123),
+				matches: [{ rating: 123 }],
+				mismatches: [{ rating: 122 }, { rating: 124 }],
+			},
 
 			// `undefined` in predicates should be treated as `null` for matching purposes.
 			// neither cloud storage nor any correctly implemented adapters respond with
@@ -2402,7 +2427,7 @@ describe('Predicates', () => {
 		for (const [i, testCase] of predicateTestCases.entries()) {
 			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
 				const builder = internals(
-					testCase.predicate(predicateFor(BlogMeta))
+					testCase.predicate(predicateFor(AuthorMeta))
 				).toStoragePredicate();
 
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;

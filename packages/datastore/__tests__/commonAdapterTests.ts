@@ -30,6 +30,7 @@ import {
 	MtmJoin,
 	DefaultPKHasOneParent,
 	DefaultPKHasOneChild,
+	ModelWithIndexes,
 } from './helpers';
 
 export { pause };
@@ -68,6 +69,7 @@ export function addCommonQueryTests({
 		let Model: PersistentModelConstructor<Model>;
 		let Comment: PersistentModelConstructor<Comment>;
 		let Post: PersistentModelConstructor<Post>;
+		let ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 
 		/**
 		 * Creates the given number of models, with `field1` populated to
@@ -101,10 +103,11 @@ export function addCommonQueryTests({
 				'https://0.0.0.0/does/not/exist/graphql';
 
 			const classes = initSchema(testSchema());
-			({ Comment, Model, Post } = classes as {
+			({ Comment, Model, Post, ModelWithIndexes } = classes as {
 				Comment: PersistentModelConstructor<Comment>;
 				Model: PersistentModelConstructor<Model>;
 				Post: PersistentModelConstructor<Post>;
+				ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 			});
 
 			// start() ensures storageAdapter is set
@@ -242,6 +245,55 @@ export function addCommonQueryTests({
 				m.field1.ne('field1 value 1')
 			);
 			expect(results.length).toEqual(2);
+		});
+
+		it('should match eq on indexed string', async () => {
+			const saved = await DataStore.save(
+				new ModelWithIndexes({
+					stringField: 'expected value',
+				})
+			);
+
+			await DataStore.save(
+				new ModelWithIndexes({
+					stringField: 'decoy value',
+				})
+			);
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.stringField.eq('expected value')
+			);
+			expect(retrieved.map(m => m.stringField)).toEqual(['expected value']);
+		});
+
+		it('should match eq on indexed int', async () => {
+			for (const intField of [1, 2, 3]) {
+				await DataStore.save(
+					new ModelWithIndexes({
+						intField,
+					})
+				);
+			}
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.intField.eq(2)
+			);
+			expect(retrieved.map(m => m.intField)).toEqual([2]);
+		});
+
+		it('should match eq on indexed float', async () => {
+			for (const floatField of [1.25, 1.5, 1.75]) {
+				await DataStore.save(
+					new ModelWithIndexes({
+						floatField,
+					})
+				);
+			}
+
+			const retrieved = await DataStore.query(ModelWithIndexes, m =>
+				m.floatField.eq(1.5)
+			);
+			expect(retrieved.map(m => m.floatField)).toEqual([1.5]);
 		});
 	});
 
