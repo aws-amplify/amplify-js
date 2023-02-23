@@ -3502,7 +3502,7 @@ export function testSchema(): Schema {
 						name: 'stringField',
 						isArray: false,
 						type: 'String',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
 					},
 					floatField: {
