@@ -1018,6 +1018,7 @@ export function getDataStore({
 		LegacyJSONComment,
 		CompositePKParent,
 		CompositePKChild,
+		ModelWithIndexes,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1043,6 +1044,7 @@ export function getDataStore({
 		LegacyJSONComment: PersistentModelConstructor<LegacyJSONComment>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
+		ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 	};
 
 	return {
@@ -1075,6 +1077,7 @@ export function getDataStore({
 		LegacyJSONComment,
 		CompositePKParent,
 		CompositePKChild,
+		ModelWithIndexes,
 	};
 }
 
@@ -1638,6 +1641,22 @@ export declare class ModelWithBoolean {
 		src: ModelWithBoolean,
 		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
 	): ModelWithBoolean;
+}
+
+export declare class ModelWithIndexes {
+	public readonly id: string;
+	public readonly stringField?: string;
+	public readonly intField?: number;
+	public readonly floatField?: number;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<ModelWithIndexes>);
+
+	static copyOf(
+		src: ModelWithIndexes,
+		mutator: (draft: MutableModel<ModelWithIndexes>) => void | ModelWithIndexes
+	): ModelWithIndexes;
 }
 
 export function testSchema(): Schema {
@@ -3466,6 +3485,84 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+				],
+			},
+			ModelWithIndexes: {
+				name: 'ModelWithIndexes',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					stringField: {
+						name: 'stringField',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					floatField: {
+						name: 'floatField',
+						isArray: false,
+						type: 'Float',
+						isRequired: false,
+						attributes: [],
+					},
+					intField: {
+						name: 'intField',
+						isArray: false,
+						type: 'Int',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithIndexess',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byStringField',
+							fields: ['stringField'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byIntField',
+							fields: ['intField'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byFloatField',
+							fields: ['floatField'],
+						},
 					},
 				],
 			},
