@@ -1734,7 +1734,7 @@ describe('Model behavior', () => {
 	});
 
 	[null, undefined].forEach(value => {
-		test.only(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+		test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
 			const { DataStore, HasOneChild, HasOneParent } = getDataStore();
 
 			const child = await DataStore.save(
@@ -1759,7 +1759,7 @@ describe('Model behavior', () => {
 			).toBeUndefined();
 		});
 
-		test.only(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
 			const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
 
 			const parent = await DataStore.save(
