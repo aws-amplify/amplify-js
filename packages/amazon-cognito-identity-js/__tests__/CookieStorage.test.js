@@ -11,7 +11,7 @@ describe('Cookie Storage Unit Tests', () => {
 
 	describe('Constructor methods', () => {
 		test('Domain not supplied', () => {
-			const storage = new CookieStorage({});
+			const storage = new CookieStorage();
 			expect(storage.setItem('key', 'value')).toBe('value');
 			expect(storage.getItem('key')).toBe('value');
 		});
