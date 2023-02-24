@@ -209,7 +209,7 @@ describe('SQLite SPK Enabled', () => {
 		});
 		await DataStore.start();
 		expect((console.error as any).mock.calls[0][0]).toMatch(
-			'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in amplify/cli.json to disable custom primary key. Then, to properly regenerate your API, add an empty newline to your GraphQL schema and run `amplify push`.'
+			'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in amplify/cli.json to false to disable custom primary key. Then, to properly regenerate your API, add an empty newline to your GraphQL schema and run `amplify push`.'
 		);
 	});
 });
