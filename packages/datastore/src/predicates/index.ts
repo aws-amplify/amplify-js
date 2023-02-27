@@ -241,6 +241,7 @@ export class ModelPredicateCreator {
 		return predicate;
 	}
 
+	// TODO: docstring
 	static createGroupFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		group: 'and' | 'or' | 'not',
@@ -270,6 +271,7 @@ export class ModelPredicateCreator {
 		return outer;
 	}
 
+	// TODO: docstring
 	static transformGraphQLtoPredicateAST(gql: any) {
 		if (!isValid(gql)) {
 			throw new Error('Invalid QGL AST: ' + gql);
@@ -301,6 +303,7 @@ export class ModelPredicateCreator {
 		}
 	}
 
+	// TODO: docstring
 	static createFromAST(
 		modelDefinition: SchemaModel,
 		ast: any

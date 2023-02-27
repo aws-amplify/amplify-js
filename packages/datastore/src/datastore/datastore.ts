@@ -158,6 +158,8 @@ const getModelDefinition = (
 	return definition;
 };
 
+// TODO: Revisit. Import helper method from CPK utils that provide the right canonical result.
+// From: https://github.com/aws-amplify/amplify-js/pull/10477/files#r1005014293
 const getModelPKFieldName = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => {
@@ -169,6 +171,8 @@ const getModelPKFieldName = (
 	);
 };
 
+// TODO: Re-condense. I think this was expanded to inject logging lines for troubleshooting.
+// From: https://github.com/aws-amplify/amplify-js/pull/10477/files#r1005014597
 const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
@@ -189,6 +193,8 @@ const namespaceResolver: NamespaceResolver = modelConstructor => {
 	return resolver;
 };
 
+// TODO: docstring
+// from: https://github.com/aws-amplify/amplify-js/pull/10477/files#r1005014716
 const buildSeedPredicate = <T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>
 ) => {
@@ -354,6 +360,8 @@ const initSchema = (userSchema: Schema) => {
 
 			modelAssociations.set(model.name, connectedModels);
 
+			// TODO: docstring
+			// from: https://github.com/aws-amplify/amplify-js/pull/10477/files#r1005120920
 			Object.values(model.fields).forEach(field => {
 				if (
 					typeof field.type === 'object' &&
@@ -516,6 +524,7 @@ const createTypeClasses: (
 
 	Object.entries(namespace.nonModels || {}).forEach(
 		([typeName, typeDefinition]) => {
+			// TODO: can we remove `any`?
 			const clazz = createNonModelClass(typeDefinition) as any;
 			classes[typeName] = clazz;
 		}
@@ -887,6 +896,7 @@ const createModelClass = <T extends PersistentModel>(
 
 	Object.defineProperty(clazz, 'name', { value: modelDefinition.name });
 
+	// TODO: decompose and/or docstrings throughout
 	for (const field in modelDefinition.fields) {
 		if (!isFieldAssociation(modelDefinition, field)) {
 			continue;
@@ -959,6 +969,7 @@ const createModelClass = <T extends PersistentModel>(
 							base =>
 								base.and(q => {
 									return relationship.remoteJoinFields.map((field, index) => {
+										// TODO: anything we can use instead of `any` here?
 										return (q[field] as any).eq(
 											this[relationship.localJoinFields[index]]
 										);
@@ -1250,6 +1261,8 @@ enum DataStoreState {
 	Clearing = 'Clearing',
 }
 
+// TODO: can we get rid of the non-null assertions?
+// https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
 	private Auth = Auth;
