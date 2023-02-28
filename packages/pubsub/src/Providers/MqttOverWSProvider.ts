@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import * as Paho from '../vendor/paho-mqtt';
-import { Client as PahoClient } from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
@@ -43,6 +42,22 @@ export interface MqttProviderOptions extends ProviderOptions {
 	clientId?: string;
 	url?: string;
 	aws_pubsub_endpoint?: string;
+}
+
+interface PahoClient {
+	onMessageArrived: (params: {
+		destinationName: string;
+		payloadString: string;
+	}) => void;
+	onConnectionLost: (params: { errorCode: number }) => void;
+	connect: (params: {
+		[k: string]: string | number | boolean | (() => void);
+	}) => void;
+	disconnect: () => void;
+	isConnected: () => boolean;
+	subscribe: (topic: string) => void;
+	unsubscribe: (topic: string) => void;
+	send(topic: string, message: string);
 }
 
 class ClientsQueue {
