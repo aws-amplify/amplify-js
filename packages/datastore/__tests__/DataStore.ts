@@ -1747,7 +1747,7 @@ describe('Model behavior', () => {
 			);
 
 			const parentWithoutChild = HasOneParent.copyOf(parent, draft => {
-				draft.child = undefined;
+				draft.child = value;
 			});
 
 			expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
