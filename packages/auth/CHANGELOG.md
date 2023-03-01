@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.9...@aws-amplify/auth@5.1.10) (2023-02-24)
+
+
+### Bug Fixes
+
+* **auth:** sends current user with attributes to hub ([#10947](https://github.com/aws-amplify/amplify-js/issues/10947)) ([4a9a71d](https://github.com/aws-amplify/amplify-js/commit/4a9a71d2299ff70591040cb481ec9e574ece5a60))
+
+
+
+
+
+## [5.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.8...@aws-amplify/auth@5.1.9) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
 ## [5.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.7...@aws-amplify/auth@5.1.8) (2023-02-09)
 
 **Note:** Version bump only for package @aws-amplify/auth
