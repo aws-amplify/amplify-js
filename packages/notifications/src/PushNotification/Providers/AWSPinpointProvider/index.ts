@@ -110,7 +110,8 @@ export default class AWSPinpointProvider
 				return ChannelType.GCM;
 			}
 			case 'ios': {
-				return ChannelType.APNS;
+				// If building in debug mode, use the APNs sandbox
+				return global['__DEV__'] ? ChannelType.APNS_SANDBOX : ChannelType.APNS;
 			}
 			default: {
 				throw new PlatformNotSupportedError();
@@ -122,9 +123,14 @@ export default class AWSPinpointProvider
 		message: PushNotificationMessage,
 		event: AWSPinpointMessageEvent
 	): Promise<void> => {
+		const analyticsEvent = getAnalyticsEvent(message, event);
+		if (!analyticsEvent) {
+			logger.debug('A notification missing event information was not recorded');
+			return;
+		}
 		if (!this.initialized) {
 			await this.init();
 		}
-		return this.recordAnalyticsEvent(getAnalyticsEvent(message, event));
+		return this.recordAnalyticsEvent(analyticsEvent);
 	};
 }

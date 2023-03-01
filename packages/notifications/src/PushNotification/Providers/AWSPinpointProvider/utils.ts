@@ -37,7 +37,11 @@ export const getAnalyticsEvent = (
 	if (!data) {
 		return null;
 	}
-	const { source, attributes } = getAnalyticsEventAttributes(data);
+	const eventAttributes = getAnalyticsEventAttributes(data);
+	if (!eventAttributes) {
+		return null;
+	}
+	const { source, attributes } = eventAttributes;
 	return {
 		Attributes: attributes,
 		EventType: `${source}.${event}`,
