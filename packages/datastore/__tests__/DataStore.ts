@@ -1751,13 +1751,13 @@ describe('Model behavior', () => {
 				draft.child = value;
 			});
 
-			expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
+			expect(parentWithoutChild.hasOneParentChildId).toBeNull();
 			expect(
 				(await DataStore.save(parentWithoutChild)).hasOneParentChildId
-			).toBeUndefined();
+			).toBeNull();
 			expect(
 				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
-			).toBeUndefined();
+			).toBeNull();
 		});
 
 		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
