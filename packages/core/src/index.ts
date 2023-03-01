@@ -32,7 +32,7 @@ export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export { AppState, AsyncStorage, Linking } from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
-export { ICredentials, UserAgentSuffix } from './types';
+export { ICredentials, CustomUserAgent } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export { Platform, getAmplifyUserAgent } from './Platform';
@@ -40,6 +40,10 @@ export {
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
+	Category,
+	CategoryAction,
+	UIComponent,
+	Framework,
 } from './constants';
 
 export const Constants = {

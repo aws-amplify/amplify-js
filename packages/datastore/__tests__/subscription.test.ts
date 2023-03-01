@@ -19,7 +19,7 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+import { Category } from '@aws-amplify/core';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
@@ -661,7 +661,7 @@ describe('error handler', () => {
 
 					expect(mockGraphQL).toHaveBeenCalledWith(
 						expect.objectContaining({
-							userAgentSuffix: { category: USER_AGENT_SUFFIX_DATASTORE },
+							customUserAgent: { category: Category.DataStore },
 						})
 					);
 				});

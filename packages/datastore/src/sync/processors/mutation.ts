@@ -5,7 +5,8 @@ import {
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-	UserAgentSuffix,
+	CustomUserAgent,
+	Category,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -29,12 +30,7 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import {
-	extractTargetNamesFromSrc,
-	USER,
-	USER_AGENT_SUFFIX_DATASTORE,
-	ID,
-} from '../../util';
+import { extractTargetNamesFromSrc, USER, ID } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -280,7 +276,8 @@ class MutationProcessor {
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GRAPHQL_AUTH_MODE,
-		onTerminate: Promise<void>
+		onTerminate: Promise<void>,
+		customUserAgent?: CustomUserAgent
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
@@ -308,16 +305,19 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				let userAgentSuffix: UserAgentSuffix = {
-					category: USER_AGENT_SUFFIX_DATASTORE,
-				};
+				if (!customUserAgent) {
+					customUserAgent = { category: Category.DataStore };
+				} else {
+					customUserAgent.category =
+						customUserAgent.category ?? Category.DataStore;
+				}
 
 				const tryWith = {
 					query,
 					variables,
 					authMode,
 					authToken,
-					userAgentSuffix,
+					customUserAgent,
 				};
 				let attempt = 0;
 
@@ -401,7 +401,7 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
-										userAgentSuffix,
+										customUserAgent,
 									});
 
 									// onTerminate cancel graphql()

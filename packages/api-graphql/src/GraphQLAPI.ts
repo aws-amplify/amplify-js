@@ -15,7 +15,8 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	UserAgentSuffix,
+	CustomUserAgent,
+	Category,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Auth } from '@aws-amplify/auth';
@@ -35,12 +36,12 @@ export const graphqlOperation = (
 	query,
 	variables = {},
 	authToken?: string,
-	userAgentSuffix?: UserAgentSuffix
+	customUserAgent?: CustomUserAgent
 ) => ({
 	query,
 	variables,
 	authToken,
-	userAgentSuffix,
+	customUserAgent,
 });
 
 /**
@@ -222,7 +223,7 @@ export class GraphQLAPIClass {
 			variables = {},
 			authMode,
 			authToken,
-			userAgentSuffix,
+			customUserAgent,
 		}: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -254,7 +255,7 @@ export class GraphQLAPIClass {
 					withCredentials: this._options.withCredentials,
 				};
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode, userAgentSuffix },
+					{ query, variables, authMode, customUserAgent },
 					headers,
 					initParams
 				);
@@ -271,7 +272,7 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode, userAgentSuffix }: GraphQLOptions,
+		{ query, variables, authMode, customUserAgent }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
@@ -284,6 +285,12 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
+		if (!customUserAgent) {
+			customUserAgent = { category: Category.API };
+		} else {
+			customUserAgent.category = customUserAgent.category ?? Category.API;
+		}
+
 		const headers = {
 			...(!customGraphqlEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -294,7 +301,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentSuffix),
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgent),
 			}),
 		};
 
