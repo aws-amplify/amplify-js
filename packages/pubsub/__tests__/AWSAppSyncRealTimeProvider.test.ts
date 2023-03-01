@@ -40,7 +40,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 			);
 			expect(result).toBe(false);
 		});
-		
+
 		test('Non-custom domain in the amazonaws.com.cn subdomain space returns `false`', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			const result = (provider as any).isCustomDomain(
@@ -67,9 +67,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 	describe('publish()', () => {
 		test("rejects raising an error indicating publish isn't supported", async () => {
 			const provider = new AWSAppSyncRealTimeProvider();
-			await expect(provider.publish('test', 'test')).rejects.toThrow(
-				Error('Operation not supported')
-			);
+			await expect(
+				provider.publish('test', { content: 'test' })
+			).rejects.toThrow(Error('Operation not supported'));
 		});
 	});
 
@@ -221,7 +221,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'ws://localhost:8080/realtime?header=IiI=&payload=e30=',
+						'ws://localhost:8080/realtime?header=&payload=e30=',
 						'graphql-ws'
 					);
 				});
@@ -247,7 +247,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'wss://localhost:8080/realtime?header=IiI=&payload=e30=',
+						'wss://localhost:8080/realtime?header=&payload=e30=',
 						'graphql-ws'
 					);
 				});
@@ -274,7 +274,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=IiI=&payload=e30=',
+						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=&payload=e30=',
 						'graphql-ws'
 					);
 				});
