@@ -38,7 +38,7 @@ export const normalizeNativePermissionStatus = (
 export const normalizeNativeMessage = (
 	nativeMessage?
 ): PushNotificationMessage | null => {
-	let normalized: NormalizedValues = null;
+	let normalized: NormalizedValues;
 	if (nativeMessage?.aps) {
 		normalized = normalizeApnsMessage(nativeMessage);
 	}
