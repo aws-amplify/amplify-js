@@ -1733,6 +1733,69 @@ describe('Model behavior', () => {
 		expect(await disconnectedParent.child).toBeUndefined();
 	});
 
+	[null, undefined].forEach(value => {
+		test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+			const { DataStore, HasOneChild, HasOneParent } = getDataStore();
+
+			const child = await DataStore.save(
+				new HasOneChild({ content: 'child content' })
+			);
+			const parent = await DataStore.save(
+				new HasOneParent({
+					child,
+				})
+			);
+
+			const parentWithoutChild = HasOneParent.copyOf(parent, draft => {
+				draft.child = value;
+			});
+
+			expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
+			expect(
+				(await DataStore.save(parentWithoutChild)).hasOneParentChildId
+			).toBeUndefined();
+			expect(
+				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
+			).toBeUndefined();
+		});
+
+		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+			const { DataStore, CompositePKParent, CompositePKChild } = getDataStore();
+
+			const parent = await DataStore.save(
+				new CompositePKParent({
+					customId: 'customId',
+					content: 'content',
+				})
+			);
+
+			const child = await DataStore.save(
+				new CompositePKChild({ childId: 'childId', content: 'content', parent })
+			);
+
+			const childWithoutParent = CompositePKChild.copyOf(child, draft => {
+				draft.parent = value;
+			});
+
+			expect(await childWithoutParent.parent).toBeUndefined();
+			expect(
+				await DataStore.save(childWithoutParent).then(c => c.parent)
+			).toBeUndefined();
+			expect(
+				await DataStore.query(CompositePKChild, {
+					childId: child.childId,
+					content: child.content,
+				}).then(c => c!.parent)
+			).toBeUndefined();
+			expect(
+				await DataStore.query(CompositePKParent, {
+					customId: parent.customId,
+					content: parent.content,
+				}).then(c => c!.children.toArray())
+			).toEqual([]);
+		});
+	});
+
 	test('removes no-longer-matching items from the snapshot when using an eq() predicate on boolean field', done => {
 		(async () => {
 			const { DataStore, ModelWithBoolean } = getDataStore();

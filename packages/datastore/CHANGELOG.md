@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.15...@aws-amplify/datastore@4.0.16) (2023-02-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix for queries against numeric indexes in IDB ([#11019](https://github.com/aws-amplify/amplify-js/issues/11019)) ([2c5ff37](https://github.com/aws-amplify/amplify-js/commit/2c5ff375bded209bfb3624545dbde1ef56272647))
+
+
+
+
+
 ## [4.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.14...@aws-amplify/datastore@4.0.15) (2023-02-16)
 
 
