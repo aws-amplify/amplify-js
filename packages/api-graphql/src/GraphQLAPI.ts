@@ -285,10 +285,11 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
-		if (!customUserAgent) {
-			customUserAgent = { category: Category.API };
+		let userAgentDetails = customUserAgent;
+		if (!userAgentDetails) {
+			userAgentDetails = { category: Category.API };
 		} else {
-			customUserAgent.category = customUserAgent.category ?? Category.API;
+			userAgentDetails.category = userAgentDetails.category ?? Category.API;
 		}
 
 		const headers = {
@@ -301,7 +302,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgent),
+				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentDetails),
 			}),
 		};
 

@@ -161,7 +161,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API}${Framework.JS})`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.JS})`,
 			};
 
 			const body = {
@@ -1278,7 +1278,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"c":${Category.DataStore},"f":${Framework.JS}}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.JS})`,
 			};
 
 			const body = {
