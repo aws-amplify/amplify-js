@@ -62,6 +62,14 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
+	getBadgeCount = async (): Promise<number | null> => {
+		throw new PlatformNotSupportedError();
+	};
+
+	setBadgeCount = (_: number): void => {
+		throw new PlatformNotSupportedError();
+	};
+
 	getPermissionStatus = (): Promise<PushNotificationPermissionStatus> => {
 		throw new PlatformNotSupportedError();
 	};

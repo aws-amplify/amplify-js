@@ -22,6 +22,8 @@ export interface PushNotificationInterface {
 	removePluggable: (providerName: string) => void;
 	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
 	getLaunchNotification: () => Promise<PushNotificationMessage>;
+	getBadgeCount: () => Promise<number>;
+	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<PushNotificationPermissionStatus>;
 	requestPermissions: (
 		permissions?: PushNotificationPermissions

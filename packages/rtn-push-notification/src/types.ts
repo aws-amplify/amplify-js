@@ -14,6 +14,8 @@ export interface PushNotificationNativeModule {
 		NativeHeadlessTaskKey: string;
 	};
 	getLaunchNotification: () => Promise<Record<string, string>>;
+	getBadgeCount: () => Promise<number>;
+	setBadgeCount: (count: number) => void;
 	getPermissionStatus: () => Promise<string>;
 	requestPermissions: (
 		permissions: Record<string, boolean>
