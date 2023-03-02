@@ -3,8 +3,8 @@
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
+	PutObjectCommandInput,
 	PutObjectCommand,
-	PutObjectRequest,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
@@ -45,7 +45,7 @@ export declare interface Part {
 export class AWSS3ProviderManagedUpload {
 	// Data for current upload
 	private body;
-	private params: PutObjectRequest;
+	private params: PutObjectCommandInput;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private s3client: S3Client;
@@ -57,7 +57,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter | null = null;
 
-	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
+	constructor(params: PutObjectCommandInput, opts, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;

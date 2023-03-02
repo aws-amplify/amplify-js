@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.15...@aws-amplify/analytics@6.0.16) (2023-02-24)
+
+
+### Bug Fixes
+
+* **analytics:** personalize typo ([#10965](https://github.com/aws-amplify/amplify-js/issues/10965)) ([4901f55](https://github.com/aws-amplify/amplify-js/commit/4901f556ec2bfecaa38713ab20552a20f724dfa2))
+
+
+
+
+
+## [6.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.14...@aws-amplify/analytics@6.0.15) (2023-02-16)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [6.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.13...@aws-amplify/analytics@6.0.14) (2023-02-09)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [6.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.12...@aws-amplify/analytics@6.0.13) (2023-02-08)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [6.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.0.11...@aws-amplify/analytics@6.0.12) (2023-01-30)
 
 **Note:** Version bump only for package @aws-amplify/analytics

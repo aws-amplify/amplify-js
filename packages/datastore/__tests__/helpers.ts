@@ -521,8 +521,7 @@ class FakeDataStoreConnectivity {
  */
 class FakeGraphQLService {
 	public isConnected = true;
-	public logRequests = false;
-	public logAST = false;
+	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
 	public tables = new Map<string, Map<string, any[]>>();
 	public PKFields = new Map<string, string[]>();
@@ -551,7 +550,7 @@ class FakeGraphQLService {
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
 
-		if (this.logAST) console.log('graphqlAST', JSON.stringify(q, null, 2));
+		this.log('RequestAST', JSON.stringify(q, null, 2));
 
 		const operation = q.operation;
 		const name = q.name.value;
@@ -581,17 +580,14 @@ class FakeGraphQLService {
 	}
 
 	public satisfiesCondition(tableName, item, condition) {
-		if (this.logRequests)
-			console.log('checking satisfiesCondition', {
-				tableName,
-				item,
-				condition: JSON.stringify(condition),
-			});
+		this.log('checking satisfiesCondition', {
+			tableName,
+			item,
+			condition: JSON.stringify(condition),
+		});
 
 		if (!condition) {
-			console.log(
-				'checking satisfiesCondition matches all for `null` conditions'
-			);
+			this.log('checking satisfiesCondition matches all for `null` conditions');
 			return true;
 		}
 
@@ -604,13 +600,12 @@ class FakeGraphQLService {
 			ModelPredicateCreator.getPredicates(predicate)!,
 		]);
 
-		this.logRequests &&
-			console.log('satisfiesCondition result', {
-				effectivePredicate: JSON.stringify(
-					ModelPredicateCreator.getPredicates(predicate)
-				),
-				isMatch,
-			});
+		this.log('satisfiesCondition result', {
+			effectivePredicate: JSON.stringify(
+				ModelPredicateCreator.getPredicates(predicate)
+			),
+			isMatch,
+		});
 
 		return isMatch;
 	}
@@ -724,6 +719,7 @@ class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
+		this.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -745,14 +741,12 @@ class FakeGraphQLService {
 	}
 
 	public request({ query, variables, authMode, authToken }) {
-		if (this.logRequests) {
-			console.log('API request', {
-				query,
-				variables: JSON.stringify(variables, null, 2),
-				authMode,
-				authToken,
-			});
-		}
+		this.log('API Request', {
+			query,
+			variables: JSON.stringify(variables, null, 2),
+			authMode,
+			authToken,
+		});
 
 		if (!this.isConnected) {
 			return this.disconnectedError();
@@ -761,9 +755,7 @@ class FakeGraphQLService {
 		const parsed = this.parseQuery(query);
 		const { operation, selection, table: tableName, type } = parsed;
 
-		if (this.logRequests) {
-			console.log('Parsed request components', parsed);
-		}
+		this.log('Parsed Request', parsed);
 
 		this.requests.push({ query, variables, authMode, authToken });
 		let data;
@@ -824,7 +816,7 @@ class FakeGraphQLService {
 				}
 			} else if (type === 'delete') {
 				const existing = table.get(this.getPK(tableName, record));
-				if (this.logRequests) console.log({ existing });
+				this.log('delete looking for existing', { existing });
 				if (!existing) {
 					data = {
 						[selection]: null,
@@ -858,11 +850,11 @@ class FakeGraphQLService {
 						},
 					};
 					table.set(this.getPK(tableName, record), data[selection]);
-					if (this.logRequests) console.log({ data });
+					this.log('delete applying to table', { data });
 				}
 			}
 
-			if (this.logRequests) console.log('response', { data, errors });
+			this.log('API Response', { data, errors });
 
 			const observers = this.getObservers(tableName, type);
 			const typeName = {
@@ -879,10 +871,12 @@ class FakeGraphQLService {
 						},
 					},
 				};
+				this.log('API subscription message', { observerMessageName, message });
 				observer.next(message);
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {
+				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
 				// needs to send messages like `{ value: { data: { [opname]: record }, errors: [] } }`
 			});
@@ -1020,8 +1014,11 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONPost,
+		LegacyJSONComment,
 		CompositePKParent,
 		CompositePKChild,
+		ModelWithIndexes,
 	} = classes as {
 		ModelWithBoolean: PersistentModelConstructor<ModelWithBoolean>;
 		Blog: PersistentModelConstructor<Blog>;
@@ -1043,8 +1040,11 @@ export function getDataStore({
 		MtmJoin: PersistentModelConstructor<MtmJoin>;
 		DefaultPKHasOneParent: PersistentModelConstructor<DefaultPKHasOneParent>;
 		DefaultPKHasOneChild: PersistentModelConstructor<DefaultPKHasOneChild>;
+		LegacyJSONPost: PersistentModelConstructor<LegacyJSONPost>;
+		LegacyJSONComment: PersistentModelConstructor<LegacyJSONComment>;
 		CompositePKParent: PersistentModelConstructor<CompositePKParent>;
 		CompositePKChild: PersistentModelConstructor<CompositePKChild>;
+		ModelWithIndexes: PersistentModelConstructor<ModelWithIndexes>;
 	};
 
 	return {
@@ -1073,8 +1073,11 @@ export function getDataStore({
 		MtmJoin,
 		DefaultPKHasOneParent,
 		DefaultPKHasOneChild,
+		LegacyJSONPost,
+		LegacyJSONComment,
 		CompositePKParent,
 		CompositePKChild,
+		ModelWithIndexes,
 	};
 }
 
@@ -1638,6 +1641,22 @@ export declare class ModelWithBoolean {
 		src: ModelWithBoolean,
 		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
 	): ModelWithBoolean;
+}
+
+export declare class ModelWithIndexes {
+	public readonly id: string;
+	public readonly stringField?: string;
+	public readonly intField?: number;
+	public readonly floatField?: number;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<ModelWithIndexes>);
+
+	static copyOf(
+		src: ModelWithIndexes,
+		mutator: (draft: MutableModel<ModelWithIndexes>) => void | ModelWithIndexes
+	): ModelWithIndexes;
 }
 
 export function testSchema(): Schema {
@@ -3466,6 +3485,84 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+				],
+			},
+			ModelWithIndexes: {
+				name: 'ModelWithIndexes',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					stringField: {
+						name: 'stringField',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					floatField: {
+						name: 'floatField',
+						isArray: false,
+						type: 'Float',
+						isRequired: false,
+						attributes: [],
+					},
+					intField: {
+						name: 'intField',
+						isArray: false,
+						type: 'Int',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelWithIndexess',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byStringField',
+							fields: ['stringField'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byIntField',
+							fields: ['intField'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byFloatField',
+							fields: ['floatField'],
+						},
 					},
 				],
 			},

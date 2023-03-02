@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.15...@aws-amplify/core@5.0.16) (2023-02-24)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [5.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.14...@aws-amplify/core@5.0.15) (2023-02-16)
+
+
+### Reverts
+
+* Revert "test: prepare integration test over dist folder" ([0508ab3](https://github.com/aws-amplify/amplify-js/commit/0508ab3809045ae20a921d75b4acec77da9dc55c))
+
+
+
+
+
+## [5.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.13...@aws-amplify/core@5.0.14) (2023-02-09)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [5.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.12...@aws-amplify/core@5.0.13) (2023-02-08)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [5.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.0.11...@aws-amplify/core@5.0.12) (2023-01-30)
 
 **Note:** Version bump only for package @aws-amplify/core
