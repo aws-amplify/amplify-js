@@ -15,7 +15,7 @@ export const Platform: PlatformType = {
 if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.product = navigator.product || '';
 	Platform.navigator = navigator || null;
-	if (navigator.product == 'ReactNative') {
+	if (navigator.product === 'ReactNative') {
 		Platform.isReactNative = true;
 	}
 }
@@ -25,10 +25,13 @@ export const getAmplifyUserAgent = (customUserAgent?: CustomUserAgent) => {
 };
 
 const buildUserAgentDetails = (customUserAgent?: CustomUserAgent) => {
-	if (customUserAgent) {
-		customUserAgent.framework = customUserAgent.framework ?? detectFramework();
+	let userAgentDetails = customUserAgent;
+
+	if (userAgentDetails) {
+		userAgentDetails.framework =
+			userAgentDetails.framework ?? detectFramework();
 	} else {
-		customUserAgent = { framework: detectFramework() };
+		userAgentDetails = { framework: detectFramework() };
 	}
-	return `(${Object.values(customUserAgent).sort().toString()})`;
+	return `(${Object.values(userAgentDetails).sort().toString()})`;
 };
