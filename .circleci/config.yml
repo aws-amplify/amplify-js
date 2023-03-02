@@ -1522,6 +1522,23 @@ jobs:
           spec: vanilla-js-basic-crud
           amplifyjs_dir: ~/amplify-js
 
+  integ_react_datastore_docs_examples:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/amplify-docs-examples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Docs Examples'
+          framework: react
+          category: datastore
+          sample_name: v2/amplify-docs-examples
+          spec: amplify-docs-examples
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1571,10 +1588,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/main
-      - 1.0-stable
-      - geo/main
-      - in-app-messaging/main
+      - next
 
 # List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
 # should use `minimal_browser_list` to keep test execution time low.
@@ -2162,6 +2176,15 @@ workflows:
           matrix:
             parameters:
               <<: *minimal_browser_list
+      - integ_react_datastore_docs_examples:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2231,6 +2254,7 @@ workflows:
             - integ_vite_datastore_basic_crud
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
+            - integ_react_datastore_docs_examples
       - post_release:
           filters:
             branches:
