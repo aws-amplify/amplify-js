@@ -582,12 +582,12 @@ export function predicateToGraphQLFilter(
 /**
  *
  * @param group - selective sync predicate group
- * @returns the total number of distinct fields in the filter group
+ * @returns set of distinct field names in the filter group
  */
-export function countFilterFields(group?: PredicatesGroup<any>): number {
-	if (!group || !Array.isArray(group.predicates)) return 0;
+export function filterFields(group?: PredicatesGroup<any>): Set<string> {
+	const fields = new Set<string>();
 
-	const fields = new Set();
+	if (!group || !Array.isArray(group.predicates)) return fields;
 
 	const { predicates } = group;
 	const stack = [...predicates];
@@ -595,34 +595,34 @@ export function countFilterFields(group?: PredicatesGroup<any>): number {
 	while (stack.length > 0) {
 		const current = stack.pop();
 		if (isPredicateObj(current)) {
-			fields.add(current.field);
+			fields.add(current.field as string);
 		} else if (isPredicateGroup(current)) {
 			stack.push(...current.predicates);
 		}
 	}
 
-	return fields.size;
+	return fields;
 }
 
 /**
  *
  * @param modelDefinition
- * @returns the total number of dynamic auth modes configured for this model
+ * @returns set of field names used with dynamic auth modes configured for the provided model definition
  */
-export function countDynamicAuthModes(modelDefinition: SchemaModel): number {
+export function dynamicAuthFields(modelDefinition: SchemaModel): Set<string> {
 	const rules = getAuthorizationRules(modelDefinition);
+	const fields = new Set<string>();
 
-	const dynamicAuthModes = rules.reduce((sum, rule) => {
-		if ('ownerField' in rule) {
-			return sum + 1;
-		} // only count dynamic group auth
-		else if ('groupsField' in rule && !('groups' in rule)) {
-			return sum + 1;
+	for (const rule of rules) {
+		if (rule.groupsField && !rule.groups.length) {
+			// dynamic group rule will have no values in `rule.groups`
+			fields.add((rule as AuthorizationRule).groupsField);
+		} else if (rule.ownerField) {
+			fields.add(rule.ownerField);
 		}
-		return sum;
-	}, 0);
+	}
 
-	return dynamicAuthModes;
+	return fields;
 }
 
 /**
@@ -641,7 +641,7 @@ export function countFilterCombinations(group?: PredicatesGroup<any>): number {
 
 		if (isPredicateGroup(current)) {
 			const { predicates, type } = current;
-			// ignore length = 1; combination implies > 1
+			// ignore length = 1; groups with 1 predicate will get flattened when converted to gqlFilter
 			if (type === 'or' && predicates.length > 1) {
 				count += predicates.length;
 			}
@@ -649,7 +649,8 @@ export function countFilterCombinations(group?: PredicatesGroup<any>): number {
 		}
 	}
 
-	return count;
+	// if we didn't encounter any OR groups, default to 1
+	return count || 1;
 }
 
 /**
@@ -729,7 +730,7 @@ export function repeatedFieldInGroup(
  * @remarks - the service only supports `and` and `or` groups.
  * `not` should be re-written using negation operators, e.g. `ne` and `notContains`
  */
-export function notPredicateGroupUsed(group?: PredicatesGroup<any>): boolean {
+export function notGroupPredicateUsed(group?: PredicatesGroup<any>): boolean {
 	if (!group || !Array.isArray(group.predicates)) return false;
 
 	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
