@@ -1593,6 +1593,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - ds-sub-filtering
 
 # List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
 # should use `minimal_browser_list` to keep test execution time low.
