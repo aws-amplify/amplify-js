@@ -48,7 +48,7 @@ Our work is done directly on Github and PR's are sent to the GitHub repo by core
 
 ## Setting up for local development
 
-This project works best on Node JS version [`16.19.0`](https://nodejs.org/en/blog/release/v16.19.0/) with Yarn version [`1.22.x`](https://github.com/yarnpkg/yarn/blob/master/CHANGELOG.md).
+The recommended version of Node JS to work with this project is [`16.19.0`](https://nodejs.org/en/blog/release/v16.19.0/) with Yarn version [`1.22.x`](https://github.com/yarnpkg/yarn/blob/master/CHANGELOG.md).
 
 > Note: newer versions of Yarn (2+) remove support for lerna's `--mutex` flag
 > so be sure to use Yarn v1.22.x
