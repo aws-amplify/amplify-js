@@ -37,7 +37,6 @@ export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
 export { Platform, getAmplifyUserAgent } from './Platform';
 export {
-	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,
 } from './constants';
