@@ -13,7 +13,6 @@ import {
 	dynamicAuthFields,
 	countFilterCombinations,
 	repeatedFieldInGroup,
-	notGroupPredicateUsed,
 } from '../src/sync/utils';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { DeferredCallbackResolver } from '../src/util';
@@ -598,62 +597,6 @@ _deleted`;
 	});
 
 	describe('RTF helper utils', () => {
-		test('notGroupPredicateUsed', () => {
-			const group1: PredicatesGroup<any> = {
-				type: 'not',
-				predicates: [
-					{
-						field: 'field',
-						operator: 'eq',
-						operand: 'something',
-					},
-				],
-			};
-
-			expect(notGroupPredicateUsed(group1)).toEqual(true);
-
-			const group2: PredicatesGroup<any> = {
-				type: 'and',
-				predicates: [
-					{
-						type: 'not',
-						predicates: [
-							{
-								field: 'field',
-								operator: 'eq',
-								operand: 'something',
-							},
-						],
-					},
-					{
-						type: 'and',
-						predicates: [
-							{
-								field: 'field',
-								operator: 'eq',
-								operand: 'something',
-							},
-						],
-					},
-				],
-			};
-
-			expect(notGroupPredicateUsed(group2)).toEqual(true);
-
-			const group3: PredicatesGroup<any> = {
-				type: 'and',
-				predicates: [
-					{
-						field: 'field',
-						operator: 'eq',
-						operand: 'something',
-					},
-				],
-			};
-
-			expect(notGroupPredicateUsed(group3)).toEqual(false);
-		});
-
 		test('repeatedFieldInGroup', () => {
 			const group1: PredicatesGroup<any> = {
 				type: 'and',

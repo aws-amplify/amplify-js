@@ -722,32 +722,66 @@ export function repeatedFieldInGroup(
 	return null;
 }
 
-/**
- *
- * @param group - selective sync predicate group
- * @returns true if a `not` group is present in the expr.
- *
- * @remarks - the service only supports `and` and `or` groups.
- * `not` should be re-written using negation operators, e.g. `ne` and `notContains`
- */
-export function notGroupPredicateUsed(group?: PredicatesGroup<any>): boolean {
-	if (!group || !Array.isArray(group.predicates)) return false;
+export enum RTFError {
+	UnknownField,
+	MaxAttributes,
+	MaxCombinations,
+	RepeatedFieldname,
+	NotGroup,
+}
 
-	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
+export function generateRTFRemediation(
+	errorType: RTFError,
+	modelDefinition: SchemaModel,
+	predicatesGroup: PredicatesGroup<any> | undefined
+): string {
+	const selSyncFields = filterFields(predicatesGroup);
+	const selSyncFieldStr = [...selSyncFields].join(', ');
+	const dynamicAuthModeFields = dynamicAuthFields(modelDefinition);
+	const dynamicAuthFieldsStr = [...dynamicAuthModeFields].join(', ');
+	const filterCombinations = countFilterCombinations(predicatesGroup);
+	const repeatedField = repeatedFieldInGroup(predicatesGroup);
 
-	while (stack.length > 0) {
-		const current = stack.pop();
+	switch (errorType) {
+		case RTFError.UnknownField:
+			return (
+				`Your API was generated with an older version of the CLI that doesn't support backend subscription filtering.` +
+				'To enable backend subscription filtering: upgrade your Amplify CLI to the latest version and run `amplify push`'
+			);
 
-		if (isPredicateGroup(current)) {
-			const { predicates, type } = current;
-			if (type === 'not') {
-				return true;
+		case RTFError.MaxAttributes: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${selSyncFields.size} different model fields: ${selSyncFieldStr}.\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth each utilize 1 field.\n` +
+					`You c	urrently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
 			}
-			stack.push(...predicates);
-		}
-	}
 
-	return false;
+			return message;
+		}
+
+		case RTFError.MaxCombinations: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${filterCombinations} field combinations (total number of predicates in an OR expression).\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+			}
+			return message;
+		}
+
+		case RTFError.RepeatedFieldname:
+			return `Your selective sync expression for ${modelDefinition.name} contains multiple entries for ${repeatedField} in the same AND group.`;
+		case RTFError.NotGroup:
+			return (
+				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
+				`please re-write your expression using \`ne\` or \`notContains\` operators.`
+			);
+	}
 }
 
 export function getUserGroupsFromToken(

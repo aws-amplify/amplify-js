@@ -40,7 +40,6 @@ describe('DataStore sync engine', () => {
 		LegacyJSONPost,
 		Post,
 		Comment,
-		Model,
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
@@ -687,103 +686,6 @@ describe('DataStore sync engine', () => {
 			  ],
 			}
 		`);
-		});
-
-		describe('subscription filtering clientside fallback', () => {
-			let consoleWarn;
-
-			beforeEach(() => {
-				consoleWarn = jest.spyOn(console, 'warn');
-			});
-
-			afterEach(() => {
-				consoleWarn.mockClear();
-				consoleWarn.mockReset();
-			});
-
-			test('subscription query receives expected filter variable - repeated field in group', async () => {
-				// service requires distinct fields names in each AND expr.
-
-				await resyncWith([
-					syncExpression(
-						Model,
-						async () => m =>
-							m.and(and => [
-								and.createdAt.gt('1/1/2023'),
-								and.createdAt.lt('1/1/2033'),
-							])
-					),
-				]);
-
-				// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
-				const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
-					.filter(
-						r => r.operation === 'subscription' && r.tableName === 'Model'
-					)
-					.map(req => req.variables.filter);
-
-				// no filter arg should be set; we fall back to clientside filtering
-				expect(onCreate).toBeUndefined();
-				expect(onUpdate).toBeUndefined();
-				expect(onDelete).toBeUndefined();
-
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						'Selective sync expression is incompatible with backend subscription filtering.'
-					)
-				);
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						'Subscriptions filtering will be applied clientside.'
-					)
-				);
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						`Your selective sync expression for Model contains multiple entries for createdAt in the same AND group.`
-					)
-				);
-			});
-
-			test('subscription query receives expected filter variable - `not` group in filter', async () => {
-				await resyncWith([
-					syncExpression(
-						Model,
-						async () => m =>
-							m.and(and => [
-								and.id.eq('123'),
-								and.not(not => not.createdAt.gt('1/1/2023')),
-							])
-					),
-				]);
-
-				// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
-				const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
-					.filter(
-						r => r.operation === 'subscription' && r.tableName === 'Model'
-					)
-					.map(req => req.variables.filter);
-
-				// no filter arg should be set; we fall back to clientside filtering
-				expect(onCreate).toBeUndefined();
-				expect(onUpdate).toBeUndefined();
-				expect(onDelete).toBeUndefined();
-
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						'Selective sync expression is incompatible with backend subscription filtering.'
-					)
-				);
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						'Subscriptions filtering will be applied clientside.'
-					)
-				);
-				expect(consoleWarn).toHaveBeenCalledWith(
-					expect.stringContaining(
-						`Your selective sync expression for Model uses a \`not\` group.`
-					)
-				);
-			});
 		});
 	});
 });
