@@ -889,10 +889,16 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// the same link is being used elsewhere by the customer.
 								const { query, newTail } = copyLink();
 
+								// normalize operands. if any of the values are `undefiend`, use
+								// `null` instead, because that's what will be stored cross-platform.
+								const normalizedOperands = operands.map(o =>
+									o === undefined ? null : o
+								);
+
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
 								newTail?.operands.push(
-									new FieldCondition(fieldName, operator, operands)
+									new FieldCondition(fieldName, operator, normalizedOperands)
 								);
 
 								// A `FinalModelPredicate`.
