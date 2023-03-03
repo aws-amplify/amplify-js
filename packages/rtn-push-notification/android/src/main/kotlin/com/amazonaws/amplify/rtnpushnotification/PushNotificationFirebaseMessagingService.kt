@@ -4,7 +4,9 @@
 package com.amazonaws.amplify.rtnpushnotification
 
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
+import com.amplifyframework.pushnotifications.pinpoint.utils.processRemoteMessage
 import com.amplifyframework.pushnotifications.pinpoint.utils.PushNotificationsUtils
 import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.Arguments
@@ -37,19 +39,23 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
             super.handleIntent(intent)
             return
         }
-        val remoteMessage = RemoteMessage(intent.extras)
+
+        val extras = intent.extras ?: Bundle()
+
         // If we can't handle the message type coming in, just forward the intent to Firebase SDK
-        if (!isRemoteMessageSupported(remoteMessage)) {
+        if (!isExtrasSupported(extras)) {
             Log.i(TAG, "Message payload is not supported")
             super.handleIntent(intent)
             return
         }
+
         // Otherwise, try to handle the message
-        onMessageReceived(remoteMessage)
+        onMessageReceived(RemoteMessage(extras))
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        val payload = getPayloadFromRemoteMessage(remoteMessage)
+        val payload = processRemoteMessage(remoteMessage)
+
         if (utils.isAppInForeground()) {
             Log.d(TAG, "Send foreground message received event")
             val params = Arguments.fromBundle(payload.bundle())
