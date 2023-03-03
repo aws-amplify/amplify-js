@@ -1299,7 +1299,7 @@ enum DataStoreState {
 	Clearing = 'Clearing',
 }
 
-// TODO: can we get rid of the non-null assertions?
+// TODO: How can we get rid of the non-null assertions?
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
