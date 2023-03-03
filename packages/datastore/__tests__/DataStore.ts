@@ -19,6 +19,7 @@ import {
 	Comment,
 	Metadata,
 	Model,
+	BasicModelRequiredTS,
 	getDataStore,
 	logDate,
 	expectIsolation,
@@ -1750,13 +1751,13 @@ describe('Model behavior', () => {
 				draft.child = value;
 			});
 
-			expect(parentWithoutChild.hasOneParentChildId).toBeUndefined();
+			expect(parentWithoutChild.hasOneParentChildId).toBeNull();
 			expect(
 				(await DataStore.save(parentWithoutChild)).hasOneParentChildId
-			).toBeUndefined();
+			).toBeNull();
 			expect(
 				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
-			).toBeUndefined();
+			).toBeNull();
 		});
 
 		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
@@ -2199,7 +2200,7 @@ describe('DataStore tests', () => {
 				optionalField1: undefined,
 			});
 
-			expect(model1.optionalField1).toBeUndefined();
+			expect(model1.optionalField1).toBeNull();
 		});
 
 		test('Optional field can be initialized with null', () => {
@@ -2242,7 +2243,7 @@ describe('DataStore tests', () => {
 			expect(model1.id).toBe(model2.id);
 
 			expect(model1.optionalField1).toBe('something-else');
-			expect(model2.optionalField1).toBeUndefined();
+			expect(model2.optionalField1).toBeNull();
 		});
 
 		test('Optional field can be set to null inside copyOf', () => {
@@ -2262,8 +2263,36 @@ describe('DataStore tests', () => {
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
 
-			expect(model1.optionalField1).toBeUndefined();
+			expect(model1.optionalField1).toBeNull();
 			expect(model2.optionalField1).toBeNull();
+		});
+
+		test('Required timestamp field can be omitted', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			expect(m.createdAt).toBeNull();
+			expect(m.updatedOn).toBeNull();
+		});
+
+		test('Required timestamp field can be null during a copyOf', async () => {
+			const { BasicModelRequiredTS } = initSchema(testSchema()) as {
+				BasicModelRequiredTS: PersistentModelConstructor<BasicModelRequiredTS>;
+			};
+
+			const m = new BasicModelRequiredTS({
+				body: 'something',
+			} as any);
+
+			const copied = BasicModelRequiredTS.copyOf(m, d => (d.body = 'new body'));
+
+			expect(copied.createdAt).toBeNull();
+			expect(copied.updatedOn).toBeNull();
 		});
 
 		test('multiple copyOf operations carry all changes on save', async () => {
@@ -2762,15 +2791,61 @@ describe('DataStore tests', () => {
 				);
 			});
 
-			test('valid model with nulls', () => {
-				expect(() => {
-					new Model({
-						field1: 'someField',
-						dateCreated: new Date().toISOString(),
-						emails: null,
-						ips: null,
-					});
-				}).not.toThrow();
+			test('valid model with null optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: null,
+				});
+				expect(m.optionalField1).toBe(null);
+			});
+
+			test('valid model with `undefined` optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: undefined,
+				});
+				expect(m.optionalField1).toBe(null);
+			});
+
+			test('valid model with omitted optional fields', () => {
+				const m = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					/**
+					 * Omitting this:
+					 *
+					 * optionalField: undefined
+					 */
+				});
+				expect(m.optionalField1).toBe(null);
+			});
+
+			test('copyOf() setting optional field to null', () => {
+				const emailsVal = ['test@test.test'];
+				const original = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'defined value',
+					emails: emailsVal,
+				});
+				const copied = Model.copyOf(original, d => (d.optionalField1 = null));
+				expect(copied.optionalField1).toBe(null);
+				expect(copied.emails).toEqual(emailsVal);
+			});
+
+			test('copyOf() setting optional field to undefined', () => {
+				const original = new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'defined value',
+				});
+				const copied = Model.copyOf(
+					original,
+					d => (d.optionalField1 = undefined)
+				);
+				expect(copied.optionalField1).toBe(null);
 			});
 
 			test('pass null to non nullable array field', () => {
@@ -3746,7 +3821,7 @@ describe('DataStore tests', () => {
 					dateCreated: new Date().toISOString(),
 				});
 
-				expect(model1.description).toBeUndefined();
+				expect(model1.description).toBeNull();
 			});
 
 			test('Optional field can be initialized with null', () => {
@@ -3784,7 +3859,7 @@ describe('DataStore tests', () => {
 				expect(model1.postId).toBe(model2.postId);
 
 				expect(model1.description).toBe('something-else');
-				expect(model2.description).toBeUndefined();
+				expect(model2.description).toBeNull();
 			});
 
 			test('Optional field can be set to null inside copyOf', () => {
@@ -3805,7 +3880,7 @@ describe('DataStore tests', () => {
 				// postId should be kept the same
 				expect(model1.postId).toBe(model2.postId);
 
-				expect(model1.description).toBeUndefined();
+				expect(model1.description).toBeNull();
 				expect(model2.description).toBeNull();
 			});
 
