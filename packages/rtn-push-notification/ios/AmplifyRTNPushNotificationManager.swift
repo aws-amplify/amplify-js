@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Foundation
+import AmplifyUtilsNotifications
 
 private let isBackgroundModeKey = "isBackgroundMode"
 private let completionHandlerIdKey = "completionHandlerId"
@@ -45,7 +46,7 @@ class AmplifyRTNPushNotificationManager  {
     }
 
     func handleLaunchOptions(launchOptions: [AnyHashable: Any]) {
-        // to ge the launch notification when the app is laucnhed from the "killed" state
+        // to get the launch notification when the app is launched from the "killed" state
         if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification],
            let application = RCTSharedApplication() {
             if application.applicationState != .background {
@@ -69,34 +70,34 @@ class AmplifyRTNPushNotificationManager  {
             return
         }
 
-        let notificationCenter = UNUserNotificationCenter.current()
-        var options: UNAuthorizationOptions = []
+        Task {
+            var options: UNAuthorizationOptions = []
 
-        if permissions["alert"] as? Bool == true {
-            options.insert(.alert)
-        }
+            if permissions["alert"] as? Bool == true {
+                options.insert(.alert)
+            }
 
-        if permissions["badge"] as? Bool == true {
-            options.insert(.badge)
-        }
+            if permissions["badge"] as? Bool == true {
+                options.insert(.badge)
+            }
 
-        if permissions["sound"] as? Bool == true {
-            options.insert(.sound)
-        }
+            if permissions["sound"] as? Bool == true {
+                options.insert(.sound)
+            }
 
-        if permissions["criticalAlert"] as? Bool == true {
-            options.insert(.criticalAlert)
-        }
+            if permissions["criticalAlert"] as? Bool == true {
+                options.insert(.criticalAlert)
+            }
 
-        if permissions["provisional"] as? Bool == true {
-            options.insert(.provisional)
-        }
+            if permissions["provisional"] as? Bool == true {
+                options.insert(.provisional)
+            }
 
-        notificationCenter.requestAuthorization(options: options) { granted, error in
-            if error != nil {
-                reject("ERROR", error?.localizedDescription, error)
-            } else {
+            do {
+                let granted = try await AUNotificationPermissions.request(options)
                 resolve(granted)
+            } catch {
+                reject("ERROR", error.localizedDescription, error)
             }
         }
     }
@@ -105,7 +106,10 @@ class AmplifyRTNPushNotificationManager  {
         _ resolve: @escaping RCTPromiseResolveBlock,
         reject: @escaping RCTPromiseRejectBlock
     ) {
-        resolvePermissionStatus(resolve: resolve, reject: reject)
+        Task {
+            let status = await AmplifyUtilsNotifications.AUNotificationPermissions.status
+            resolve(status.description)
+        }
     }
 
     func getLaunchNotification(
@@ -229,15 +233,6 @@ class AmplifyRTNPushNotificationManager  {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
-    }
-
-    private func resolvePermissionStatus(
-        resolve: @escaping RCTPromiseResolveBlock,
-        reject: @escaping RCTPromiseRejectBlock
-    ) {
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            resolve(settings.authorizationStatus.description)
-        }
     }
 
     @objc
