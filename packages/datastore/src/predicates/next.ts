@@ -718,13 +718,15 @@ export class GroupCondition {
 		};
 	}
 
-	toStoragePredicate<T>(
-		baseCondition?: StoragePredicate<T>
-	): StoragePredicate<T> {
-		return FlatModelPredicateCreator.createFromAST(
+	/**
+	 * Turn this predicate group into something a storage adapter
+	 * understands how to use.
+	 */
+	toStoragePredicate<T>(): StoragePredicate<T> {
+		return FlatModelPredicateCreator.createFromAST<T>(
 			this.model.schema,
 			this.toAST()
-		) as unknown as StoragePredicate<T>;
+		) as StoragePredicate<T>;
 	}
 
 	/**

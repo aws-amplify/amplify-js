@@ -202,6 +202,18 @@ export class ModelPredicateCreator {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
 
+	/**
+	 * Looks for the storage predicate AST that corresponds to a given
+	 * storage predicate key.
+	 *
+	 * The key must have been created internally by a DataStore utility
+	 * method, such as `ModelPredicate.createPredicateBuilder` for the express
+	 * purpose of being associated with an internal storage predicate AST.
+	 *
+	 * @param predicate The predicate reference to look up.
+	 * @param throwOnInvalid Whether to throw an exception if the predicate
+	 * isn't a valid DataStore predicate.
+	 */
 	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
 		throwOnInvalid: boolean = true
@@ -213,28 +225,20 @@ export class ModelPredicateCreator {
 		return ModelPredicateCreator.predicateGroupsMap.get(predicate as any);
 	}
 
-	// transforms cb-style predicate into Proxy
-	static createFromExisting<T extends PersistentModel>(
-		modelDefinition?: SchemaModel,
-		existing?: ProducerModelPredicate<T>
-	) {
-		if (!existing || !modelDefinition) {
-			return undefined;
-		}
-
-		return existing(
-			ModelPredicateCreator.createPredicateBuilder(modelDefinition)
-		);
-	}
-
+	/**
+	 *
+	 * @param modelDefinition The model definition to validate the
+	 * @param fieldName
+	 * @param value
+	 */
 	static createForSingleField<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		fieldName: string,
 		value: string
 	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
-			fieldName
-		](<any>'eq', <any>value);
+		return this.createFromAST<T>(modelDefinition, {
+			and: { [fieldName]: { eq: value } },
+		});
 	}
 
 	static createForPk<T extends PersistentModel>(
@@ -350,12 +354,12 @@ export class ModelPredicateCreator {
 	 * @param modelDefinition The model that the AST/predicate must be compatible with.
 	 * @param ast The graphQL style AST that should specify conditions for `modelDefinition`.
 	 */
-	static createFromAST(
+	static createFromAST<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		ast: any
-	): ModelPredicate<any> {
+	): ModelPredicate<T> {
 		const predicate =
-			ModelPredicateCreator.createPredicateBuilder(modelDefinition);
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
 
 		ModelPredicateCreator.predicateGroupsMap.set(
 			predicate,

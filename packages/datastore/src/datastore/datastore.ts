@@ -1304,9 +1304,9 @@ async function checkSchemaVersion(
 	await storage.runExclusive(async s => {
 		const [schemaVersionSetting] = await s.query(
 			Setting,
-			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				c.key('eq', SETTING_SCHEMA_VERSION)
-			),
+			ModelPredicateCreator.createFromAST(modelDefinition, {
+				and: { key: { eq: SETTING_SCHEMA_VERSION } },
+			}),
 			{ page: 0, limit: 1 }
 		);
 
@@ -2672,21 +2672,6 @@ class DataStore {
 		);
 
 		return this.weakMapFromEntries(syncPredicates);
-	}
-
-	private createFromCondition(
-		modelDefinition: SchemaModel,
-		condition: ProducerModelPredicate<PersistentModel>
-	) {
-		try {
-			return ModelPredicateCreator.createFromExisting(
-				modelDefinition,
-				condition
-			);
-		} catch (error) {
-			logger.error('Error creating Sync Predicate');
-			throw error;
-		}
 	}
 
 	private async unwrapPromise<T extends PersistentModel>(
