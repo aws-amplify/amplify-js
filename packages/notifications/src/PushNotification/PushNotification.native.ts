@@ -273,6 +273,12 @@ export default class PushNotification implements PushNotificationInterface {
 	getLaunchNotification = async (): Promise<PushNotificationMessage | null> =>
 		normalizeNativeMessage(await this.nativeModule.getLaunchNotification?.());
 
+	getBadgeCount = async (): Promise<number | null> =>
+		this.nativeModule.getBadgeCount?.();
+
+	setBadgeCount = (count: number): void =>
+		this.nativeModule.setBadgeCount?.(count);
+
 	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> =>
 		normalizeNativePermissionStatus(
 			await this.nativeModule.getPermissionStatus?.()
