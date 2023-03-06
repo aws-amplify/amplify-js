@@ -15,6 +15,7 @@ import {
 	notifyEventListenersAndAwaitHandlers,
 } from '../common';
 import { UserInfo } from '../types';
+import NotEnabledError from './NotEnabledError';
 import { AWSPinpointProvider } from './Providers';
 import {
 	NotificationsSubCategory,
@@ -38,8 +39,8 @@ const RTN_MODULE = '@aws-amplify/rtn-push-notification';
 const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 
 export default class PushNotification implements PushNotificationInterface {
+	private isEnabled = false;
 	private config: Record<string, any> = {};
-	private configured = false;
 	private nativeEvent: Record<string, string>;
 	private nativeEventEmitter: NativeEventEmitter;
 	private nativeHeadlessTaskKey: string;
@@ -80,121 +81,6 @@ export default class PushNotification implements PushNotificationInterface {
 			this.addPluggable(new AWSPinpointProvider());
 		}
 
-		// some configuration steps should not be re-run even if provider is re-configured for some reason
-		if (!this.configured) {
-			const {
-				BACKGROUND_MESSAGE_RECEIVED,
-				FOREGROUND_MESSAGE_RECEIVED,
-				LAUNCH_NOTIFICATION_OPENED,
-				NOTIFICATION_OPENED,
-				TOKEN_RECEIVED,
-			} = this.nativeEvent;
-			if (this.nativeHeadlessTaskKey) {
-				// on platforms that can handle headless tasks, register one to broadcast background message received to
-				// library listeners
-				AppRegistry.registerHeadlessTask(
-					this.nativeHeadlessTaskKey,
-					() => async message => {
-						// keep headless task running until handlers have completed their work
-						await notifyEventListenersAndAwaitHandlers(
-							PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-							normalizeNativeMessage(message)
-						);
-					}
-				);
-			} else if (BACKGROUND_MESSAGE_RECEIVED) {
-				// on platforms that can't handle headless tasks, listen for native background message received event and
-				// broadcast to library listeners
-				this.nativeEventEmitter.addListener(
-					BACKGROUND_MESSAGE_RECEIVED,
-					async message => {
-						// keep background task running until handlers have completed their work
-						try {
-							await Promise.race([
-								notifyEventListenersAndAwaitHandlers(
-									PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
-									normalizeNativeMessage(message)
-								),
-								// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
-								// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
-								// happening
-								new Promise((_, reject) => {
-									setTimeout(
-										() =>
-											reject(
-												`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
-											),
-										BACKGROUND_TASK_TIMEOUT * 1000
-									);
-								}),
-							]);
-						} catch (err) {
-							logger.error(err);
-						} finally {
-							// notify native module that handlers have completed their work (or timed out)
-							this.nativeModule.completeNotification?.(
-								message.completionHandlerId
-							);
-						}
-					}
-				);
-			}
-
-			this.nativeEventEmitter.addListener(
-				// listen for native foreground message received event and broadcast to library listeners
-				FOREGROUND_MESSAGE_RECEIVED,
-				message => {
-					notifyEventListeners(
-						PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
-						normalizeNativeMessage(message)
-					);
-				}
-			);
-
-			const launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
-				? this.nativeEventEmitter.addListener(
-						// listen for native notification opened app (user tapped on notification, opening the app from quit -
-						// not background - state) event. This is broadcasted to an internal listener only as it is not intended
-						// for use otherwise as it produces inconsistent results when used within React Native app context
-						LAUNCH_NOTIFICATION_OPENED,
-						message => {
-							notifyEventListeners(
-								PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
-								normalizeNativeMessage(message)
-							);
-							// once we are done with it we can remove the listener
-							launchNotificationOpenedListener?.remove();
-						}
-				  )
-				: null;
-
-			this.nativeEventEmitter.addListener(
-				// listen for native notification opened (user tapped on notification, opening the app from background -
-				// not quit - state) event and broadcast to library listeners
-				NOTIFICATION_OPENED,
-				message => {
-					notifyEventListeners(
-						PushNotificationEvent.NOTIFICATION_OPENED,
-						normalizeNativeMessage(message)
-					);
-					// if we are in this state, we no longer need the listener as the app was launched via some other means
-					launchNotificationOpenedListener?.remove();
-				}
-			);
-
-			this.nativeEventEmitter.addListener(
-				// listen for native new token event, automatically re-register device with provider using new token and
-				// broadcast to library listeners
-				TOKEN_RECEIVED,
-				({ token }) => {
-					this.token = token;
-					this.registerDevice();
-					notifyEventListeners(PushNotificationEvent.TOKEN_RECEIVED, token);
-				}
-			);
-		}
-
-		this.configured = true;
 		return this.config;
 	};
 
@@ -258,8 +144,129 @@ export default class PushNotification implements PushNotificationInterface {
 		}
 	};
 
-	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
-		Promise.all<void>(
+	enable = (): void => {
+		if (this.isEnabled) {
+			logger.info('Notification listeners have already been enabled');
+			return;
+		}
+		const {
+			BACKGROUND_MESSAGE_RECEIVED,
+			FOREGROUND_MESSAGE_RECEIVED,
+			LAUNCH_NOTIFICATION_OPENED,
+			NOTIFICATION_OPENED,
+			TOKEN_RECEIVED,
+		} = this.nativeEvent;
+		if (this.nativeHeadlessTaskKey) {
+			// on platforms that can handle headless tasks, register one to broadcast background message received to
+			// library listeners
+			AppRegistry.registerHeadlessTask(
+				this.nativeHeadlessTaskKey,
+				() => async message => {
+					// keep headless task running until handlers have completed their work
+					await notifyEventListenersAndAwaitHandlers(
+						PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
+						normalizeNativeMessage(message)
+					);
+				}
+			);
+		} else if (BACKGROUND_MESSAGE_RECEIVED) {
+			// on platforms that can't handle headless tasks, listen for native background message received event and
+			// broadcast to library listeners
+			this.nativeEventEmitter.addListener(
+				BACKGROUND_MESSAGE_RECEIVED,
+				async message => {
+					// keep background task running until handlers have completed their work
+					try {
+						await Promise.race([
+							notifyEventListenersAndAwaitHandlers(
+								PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
+								normalizeNativeMessage(message)
+							),
+							// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
+							// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
+							// happening
+							new Promise((_, reject) => {
+								setTimeout(
+									() =>
+										reject(
+											`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
+										),
+									BACKGROUND_TASK_TIMEOUT * 1000
+								);
+							}),
+						]);
+					} catch (err) {
+						logger.error(err);
+					} finally {
+						// notify native module that handlers have completed their work (or timed out)
+						this.nativeModule.completeNotification?.(
+							message.completionHandlerId
+						);
+					}
+				}
+			);
+		}
+
+		this.nativeEventEmitter.addListener(
+			// listen for native foreground message received event and broadcast to library listeners
+			FOREGROUND_MESSAGE_RECEIVED,
+			message => {
+				notifyEventListeners(
+					PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
+					normalizeNativeMessage(message)
+				);
+			}
+		);
+
+		const launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
+			? this.nativeEventEmitter.addListener(
+					// listen for native notification opened app (user tapped on notification, opening the app from quit -
+					// not background - state) event. This is broadcasted to an internal listener only as it is not intended
+					// for use otherwise as it produces inconsistent results when used within React Native app context
+					LAUNCH_NOTIFICATION_OPENED,
+					message => {
+						notifyEventListeners(
+							PushNotificationEvent.LAUNCH_NOTIFICATION_OPENED,
+							normalizeNativeMessage(message)
+						);
+						// once we are done with it we can remove the listener
+						launchNotificationOpenedListener?.remove();
+					}
+			  )
+			: null;
+
+		this.nativeEventEmitter.addListener(
+			// listen for native notification opened (user tapped on notification, opening the app from background -
+			// not quit - state) event and broadcast to library listeners
+			NOTIFICATION_OPENED,
+			message => {
+				notifyEventListeners(
+					PushNotificationEvent.NOTIFICATION_OPENED,
+					normalizeNativeMessage(message)
+				);
+				// if we are in this state, we no longer need the listener as the app was launched via some other means
+				launchNotificationOpenedListener?.remove();
+			}
+		);
+
+		this.nativeEventEmitter.addListener(
+			// listen for native new token event, automatically re-register device with provider using new token and
+			// broadcast to library listeners
+			TOKEN_RECEIVED,
+			({ token }) => {
+				this.token = token;
+				this.registerDevice();
+				notifyEventListeners(PushNotificationEvent.TOKEN_RECEIVED, token);
+			}
+		);
+		this.isEnabled = true;
+	};
+
+	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
 					await pluggable.identifyUser(userId, userInfo);
@@ -269,20 +276,39 @@ export default class PushNotification implements PushNotificationInterface {
 				}
 			})
 		);
+	};
 
-	getLaunchNotification = async (): Promise<PushNotificationMessage | null> =>
-		normalizeNativeMessage(await this.nativeModule.getLaunchNotification?.());
+	getLaunchNotification = async (): Promise<PushNotificationMessage | null> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return normalizeNativeMessage(
+			await this.nativeModule.getLaunchNotification?.()
+		);
+	};
 
-	getBadgeCount = async (): Promise<number | null> =>
-		this.nativeModule.getBadgeCount?.();
+	getBadgeCount = async (): Promise<number | null> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return this.nativeModule.getBadgeCount?.();
+	};
 
-	setBadgeCount = (count: number): void =>
-		this.nativeModule.setBadgeCount?.(count);
+	setBadgeCount = (count: number): void => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return this.nativeModule.setBadgeCount?.(count);
+	};
 
-	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> =>
-		normalizeNativePermissionStatus(
+	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return normalizeNativePermissionStatus(
 			await this.nativeModule.getPermissionStatus?.()
 		);
+	};
 
 	requestPermissions = async (
 		permissions: PushNotificationPermissions = {
@@ -290,7 +316,12 @@ export default class PushNotification implements PushNotificationInterface {
 			badge: true,
 			sound: true,
 		}
-	): Promise<boolean> => this.nativeModule.requestPermissions?.(permissions);
+	): Promise<boolean> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return this.nativeModule.requestPermissions?.(permissions);
+	};
 
 	/**
 	 * Background notifications on will start the app (as a headless JS instance running on a background service on
@@ -305,29 +336,45 @@ export default class PushNotification implements PushNotificationInterface {
 	 */
 	onBackgroundNotificationReceived = (
 		handler: OnPushNotificationMessageHandler
-	): EventListener<OnPushNotificationMessageHandler> =>
-		addEventListener(
+	): EventListener<OnPushNotificationMessageHandler> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return addEventListener(
 			PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
 			handler
 		);
+	};
 
 	onForegroundNotificationReceived = (
 		handler: OnPushNotificationMessageHandler
-	): EventListener<OnPushNotificationMessageHandler> =>
-		addEventListener(
+	): EventListener<OnPushNotificationMessageHandler> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return addEventListener(
 			PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
 			handler
 		);
+	};
 
 	onNotificationOpened = (
 		handler: OnPushNotificationMessageHandler
-	): EventListener<OnPushNotificationMessageHandler> =>
-		addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, handler);
+	): EventListener<OnPushNotificationMessageHandler> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, handler);
+	};
 
 	onTokenReceived = (
 		handler: OnTokenReceivedHandler
-	): EventListener<OnTokenReceivedHandler> =>
-		addEventListener(PushNotificationEvent.TOKEN_RECEIVED, handler);
+	): EventListener<OnTokenReceivedHandler> => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
+		return addEventListener(PushNotificationEvent.TOKEN_RECEIVED, handler);
+	};
 
 	private registerDevice = async (): Promise<void[]> => {
 		return Promise.all<void>(

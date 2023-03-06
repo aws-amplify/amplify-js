@@ -3,7 +3,7 @@
 
 import { ChannelType } from '@aws-sdk/client-pinpoint';
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
-import PlatformNotSupportedError from '../..';
+import PlatformNotSupportedError from '../../PlatformNotSupportedError';
 import { Platform } from '../../Platform';
 import {
 	PushNotificationEvent,

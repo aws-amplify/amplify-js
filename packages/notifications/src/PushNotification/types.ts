@@ -20,6 +20,7 @@ export interface PushNotificationInterface {
 	getPluggable: (providerName: string) => PushNotificationProvider;
 	addPluggable: (pluggable: PushNotificationProvider) => void;
 	removePluggable: (providerName: string) => void;
+	enable: () => void;
 	identifyUser: (userId: string, userInfo: UserInfo) => Promise<void[]>;
 	getLaunchNotification: () => Promise<PushNotificationMessage>;
 	getBadgeCount: () => Promise<number>;
