@@ -125,15 +125,13 @@ class PushNotificationModule(
     /**
      * Send notification opened app event to JS layer if the app is in a background state
      */
-    override fun onNewIntent(intent: Intent?) {
-        intent?.let {
-            val payload = getPayloadFromExtras(it.extras)
-            if (payload != null) {
-                val params = Arguments.fromBundle(payload.bundle())
-                PushNotificationEventManager.sendEvent(
-                    PushNotificationEventType.NOTIFICATION_OPENED, params
-                )
-            }
+    override fun onNewIntent(intent: Intent) {
+        val payload = getPayloadFromExtras(intent.extras)
+        if (payload != null) {
+            val params = Arguments.fromBundle(payload.bundle())
+            PushNotificationEventManager.sendEvent(
+                PushNotificationEventType.NOTIFICATION_OPENED, params
+            )
         }
     }
 
