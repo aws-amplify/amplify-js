@@ -629,6 +629,14 @@ export function dynamicAuthFields(modelDefinition: SchemaModel): Set<string> {
  *
  * @param group - selective sync predicate group
  * @returns the total number of OR'd predicates in the filter group
+ *
+ * @example returns 2
+ * ```js
+ * { type: "or", predicates: [
+ * { field: "username", operator: "beginsWith", operand: "a" },
+ * { field: "title", operator: "contains", operand: "abc" },
+ * ]}
+ * ```
  */
 export function countFilterCombinations(group?: PredicatesGroup<any>): number {
 	if (!group || !Array.isArray(group.predicates)) return 0;
@@ -746,7 +754,7 @@ export function generateRTFRemediation(
 		case RTFError.UnknownField:
 			return (
 				`Your API was generated with an older version of the CLI that doesn't support backend subscription filtering.` +
-				'To enable backend subscription filtering: upgrade your Amplify CLI to the latest version and run `amplify push`'
+				'To enable backend subscription filtering, upgrade your Amplify CLI to the latest version and push your app by running `amplify upgrade` followed by `amplify push`'
 			);
 
 		case RTFError.MaxAttributes: {
@@ -756,7 +764,7 @@ export function generateRTFRemediation(
 				message +=
 					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
 					`Dynamic auth modes, such as owner auth and dynamic group auth each utilize 1 field.\n` +
-					`You c	urrently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
 			}
 
 			return message;
@@ -779,7 +787,7 @@ export function generateRTFRemediation(
 		case RTFError.NotGroup:
 			return (
 				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
-				`please re-write your expression using \`ne\` or \`notContains\` operators.`
+				`rewrite your expression using \`ne\` or \`notContains\` operators.`
 			);
 	}
 }
