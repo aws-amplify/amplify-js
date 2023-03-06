@@ -169,6 +169,39 @@ const getModelPKFieldName = (
 	);
 };
 
+/**
+ * Determine what the managed timestamp field names are for the given model definition
+ * and return the mapping.
+ *
+ * All timestamp fields are included in the mapping, regardless of whether the final field
+ * names are the defaults or customized in the `@model` directive.
+ *
+ * @see https://docs.amplify.aws/cli/graphql/data-modeling/#customize-creation-and-update-timestamps
+ *
+ * @param definition modelDefinition to inspect.
+ * @returns An object mapping `createdAt` and `updatedAt` to their field names.
+ */
+const getTimestampFields = (
+	definition: SchemaModel
+): { createdAt: string; updatedAt: string } => {
+	const modelAttributes = definition.attributes?.find(
+		attr => attr.type === 'model'
+	);
+	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
+
+	const defaultFields = {
+		createdAt: 'createdAt',
+		updatedAt: 'updatedAt',
+	};
+
+	const customFields = timestampFieldsMap || {};
+
+	return {
+		...defaultFields,
+		...customFields,
+	};
+};
+
 const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
@@ -478,7 +511,6 @@ const checkSchemaInitialized = () => {
  * @param codegenVersion schema codegenVersion
  */
 const checkSchemaCodegenVersion = (codegenVersion: string) => {
-	// TODO: set to correct version when released in codegen
 	const majorVersion = 3;
 	const minorVersion = 2;
 	let isValid = false;
@@ -559,8 +591,14 @@ const validateModelFields =
 			const { type, isRequired, isArrayNullable, name, isArray } =
 				fieldDefinition;
 
+			const timestamps = isSchemaModelWithAttributes(modelDefinition)
+				? getTimestampFields(modelDefinition)
+				: {};
+			const isTimestampField = !!timestamps[name];
+
 			if (
 				((!isArray && isRequired) || (isArray && !isArrayNullable)) &&
+				!isTimestampField &&
 				(v === null || v === undefined)
 			) {
 				throw new Error(`Field ${name} is required`);
@@ -737,6 +775,14 @@ const castInstanceType = (
 	return v;
 };
 
+/**
+ * Attempts to apply type-aware, casted field values from a given `init`
+ * object to the given `draft`.
+ *
+ * @param init The initialization object to extract field values from.
+ * @param modelDefinition The definition describing the target object shape.
+ * @param draft The draft to apply field values to.
+ */
 const initializeInstance = <T extends PersistentModel>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
@@ -749,6 +795,34 @@ const initializeInstance = <T extends PersistentModel>(
 		modelValidator(k, parsedValue);
 		(<any>draft)[k] = parsedValue;
 	});
+};
+
+/**
+ * Updates a draft to standardize its customer-defined fields so that they are
+ * consistent with the data as it would look after having been synchronized from
+ * Cloud storage.
+ *
+ * The exceptions to this are:
+ *
+ * 1. Non-schema/Internal [sync] metadata fields.
+ * 2. Cloud-managed fields, which are `null` until set by cloud storage.
+ *
+ * This function should be expanded if/when deviations between canonical Cloud
+ * storage data and locally managed data are found. For now, the known areas
+ * that require normalization are:
+ *
+ * 1. Ensuring all non-metadata fields are *defined*. (I.e., turn `undefined` -> `null`.)
+ *
+ * @param modelDefinition Definition for the draft. Used to discover all fields.
+ * @param draft The instance draft to apply normalizations to.
+ */
+const normalize = <T extends PersistentModel>(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	draft: Draft<T>
+) => {
+	for (const k of Object.keys(modelDefinition.fields)) {
+		if (draft[k] === undefined) (<any>draft)[k] = null;
+	}
 };
 
 const createModelClass = <T extends PersistentModel>(
@@ -800,6 +874,8 @@ const createModelClass = <T extends PersistentModel>(
 						draft._lastChangedAt = _lastChangedAt;
 						draft._deleted = _deleted;
 					}
+
+					normalize(modelDefinition, draft);
 				}
 			);
 
@@ -838,6 +914,8 @@ const createModelClass = <T extends PersistentModel>(
 
 						modelValidator(k, parsedValue);
 					});
+
+					normalize(modelDefinition, draft);
 				},
 				p => (patches = p)
 			);
@@ -908,43 +986,47 @@ const createModelClass = <T extends PersistentModel>(
 		);
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
-			set(model: PersistentModel) {
-				if (!model || !(typeof model === 'object')) return;
+			set(model: PersistentModel | undefined | null) {
+				if (!(typeof model === 'object' || typeof model === 'undefined'))
+					return;
 
-				// Avoid validation error when processing AppSync response with nested
-				// selection set. Nested entitites lack version field and can not be validated
-				// TODO: explore a more reliable method to solve this
-				if (model.hasOwnProperty('_version')) {
-					const modelConstructor = Object.getPrototypeOf(model || {})
-						.constructor as PersistentModelConstructor<T>;
+				// if model is undefined or null, the connection should be removed
+				if (model) {
+					// Avoid validation error when processing AppSync response with nested
+					// selection set. Nested entitites lack version field and can not be validated
+					// TODO: explore a more reliable method to solve this
+					if (model.hasOwnProperty('_version')) {
+						const modelConstructor = Object.getPrototypeOf(model || {})
+							.constructor as PersistentModelConstructor<T>;
 
-					if (!isValidModelConstructor(modelConstructor)) {
-						const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
-						logger.error(msg, { model });
+						if (!isValidModelConstructor(modelConstructor)) {
+							const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
+							logger.error(msg, { model });
 
-						throw new Error(msg);
-					}
+							throw new Error(msg);
+						}
 
-					if (
-						modelConstructor.name.toLowerCase() !==
-						relationship.remoteModelConstructor.name.toLowerCase()
-					) {
-						const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relationship.remoteModelConstructor.name}`;
-						logger.error(msg, { model });
+						if (
+							modelConstructor.name.toLowerCase() !==
+							relationship.remoteModelConstructor.name.toLowerCase()
+						) {
+							const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relationship.remoteModelConstructor.name}`;
+							logger.error(msg, { model });
 
-						throw new Error(msg);
+							throw new Error(msg);
+						}
 					}
 				}
 
 				if (relationship.isComplete) {
 					for (let i = 0; i < relationship.localJoinFields.length; i++) {
 						this[relationship.localJoinFields[i]] =
-							model[relationship.remoteJoinFields[i]];
+							model?.[relationship.remoteJoinFields[i]];
 					}
 					const instanceMemos = modelInstanceAssociationsMap.has(this)
 						? modelInstanceAssociationsMap.get(this)!
 						: modelInstanceAssociationsMap.set(this, {}).get(this)!;
-					instanceMemos[field] = model;
+					instanceMemos[field] = model || undefined;
 				}
 			},
 			get() {
