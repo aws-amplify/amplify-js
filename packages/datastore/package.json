@@ -27,7 +27,7 @@
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
-		"lint": "tslint '{__tests__,src}/**/*.ts'",
+		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
