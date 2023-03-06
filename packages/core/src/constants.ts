@@ -21,7 +21,7 @@ export const INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER = hasSymbol
 
 export const USER_AGENT_HEADER = 'x-amz-user-agent';
 
-export enum Category {
+export const enum Category {
 	Auth = '1:1',
 	API = '1:2',
 	DataStore = '1:3',
@@ -34,21 +34,21 @@ export enum Category {
 	Storage = '1:10',
 }
 
-export enum CategoryAction {
+export const enum CategoryAction {
 	AuthSignUp = '2:1',
 	AuthSignIn = '2:2',
 	APIQuery = '2:3',
 	DataStoreJitteredRetry = '2:4',
 }
 
-export enum UIComponent {
+export const enum UIComponent {
 	Authenticator = '3:1',
 	AccountSettings = '3:2',
 	MapView = '3:3',
 	FileUploader = '3:4',
 }
 
-export enum Framework {
+export const enum Framework {
 	JS = '4:0',
 	React = '4:1',
 	Next = '4:2',
