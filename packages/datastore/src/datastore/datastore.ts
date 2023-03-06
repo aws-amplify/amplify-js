@@ -1668,10 +1668,9 @@ class DataStore {
 						throw new Error(msg);
 					}
 
-					const predicate = ModelPredicateCreator.createForSingleField<T>(
+					const predicate = ModelPredicateCreator.createFromFlatEqualities<T>(
 						modelDefinition,
-						keyFields[0],
-						identifierOrCriteria
+						{ [keyFields[0]]: identifierOrCriteria }
 					);
 
 					result = await this.storage.query<T>(
@@ -1924,10 +1923,9 @@ class DataStore {
 							throw new Error(msg);
 						}
 
-						condition = ModelPredicateCreator.createForSingleField<T>(
+						condition = ModelPredicateCreator.createFromFlatEqualities<T>(
 							modelDefinition,
-							keyFields[0],
-							identifierOrCriteria
+							{ [keyFields[0]]: identifierOrCriteria }
 						);
 					} else {
 						if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
@@ -2006,7 +2004,7 @@ class DataStore {
 									pkField: extractPrimaryKeyFieldNames(modelDefinition),
 								})
 							)
-						).toStoragePredicate<T>(pkPredicate);
+						).toStoragePredicate<T>();
 					} else {
 						condition = pkPredicate;
 					}

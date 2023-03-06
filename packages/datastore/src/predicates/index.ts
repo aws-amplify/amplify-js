@@ -107,92 +107,8 @@ export class ModelPredicateCreator {
 		PredicatesGroup<any>
 	>();
 
-	static createPredicateBuilder<T extends PersistentModel>(
-		modelDefinition: SchemaModel
-	) {
-		const { name: modelName } = modelDefinition;
-		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
-
-		let handler: ProxyHandler<ModelPredicate<T>>;
-
-		const predicate = new Proxy(
-			{} as ModelPredicate<T>,
-			(handler = {
-				get(
-					_,
-					propertyKey,
-					self: ModelPredicate<T>
-				): PredicateExpression<T, any> {
-					const groupType = propertyKey as keyof PredicateGroups<T>;
-
-					switch (groupType) {
-						case 'and':
-						case 'or':
-						case 'not':
-							const result: PredicateExpression<T, any> = (
-								newPredicate: (criteria: ModelPredicate<T>) => ModelPredicate<T>
-							) => {
-								const group: PredicatesGroup<T> = {
-									type: groupType,
-									predicates: [],
-								};
-
-								// Create a new recorder
-								const tmpPredicateRecorder = new Proxy(
-									{} as ModelPredicate<T>,
-									handler
-								);
-
-								// Set the recorder group
-								ModelPredicateCreator.predicateGroupsMap.set(
-									tmpPredicateRecorder as any,
-									group
-								);
-
-								// Apply the predicates to the recorder (this is the step that records the changes)
-								newPredicate(tmpPredicateRecorder);
-
-								// Push the group to the top-level recorder
-								ModelPredicateCreator.predicateGroupsMap
-									.get(self as any)!
-									.predicates.push(group);
-
-								return self;
-							};
-
-							return result;
-						default:
-						// intentionally blank.
-					}
-
-					const field = propertyKey as keyof T;
-
-					if (!fieldNames.has(field)) {
-						throw new Error(
-							`Invalid field for model. field: ${field}, model: ${modelName}`
-						);
-					}
-
-					const result: PredicateExpression<T, any> = (
-						operator: keyof AllOperators,
-						operand: any
-					) => {
-						ModelPredicateCreator.predicateGroupsMap
-							.get(self as any)!
-							.predicates.push({ field, operator, operand });
-						return self;
-					};
-					return result;
-				},
-			})
-		);
-
-		const group: PredicatesGroup<T> = {
-			type: 'and',
-			predicates: [],
-		};
-		ModelPredicateCreator.predicateGroupsMap.set(predicate as any, group);
-
+	static createPredicate<T extends PersistentModel>() {
+		const predicate = {} as ModelPredicate<T>;
 		return predicate;
 	}
 
@@ -226,21 +142,13 @@ export class ModelPredicateCreator {
 	}
 
 	/**
+	 * Creates a predicate that matches an instance described by `modelDefinition`
+	 * using the PK values from the given `model` (which can be a partial of T
+	 * that contains only PK field values.)
 	 *
-	 * @param modelDefinition The model definition to validate the
-	 * @param fieldName
-	 * @param value
+	 * @param modelDefinition The model definition to create a predicate for.
+	 * @param model The model instance to extract value equalities from.
 	 */
-	static createForSingleField<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		fieldName: string,
-		value: string
-	) {
-		return this.createFromAST<T>(modelDefinition, {
-			and: { [fieldName]: { eq: value } },
-		});
-	}
-
 	static createForPk<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		model: T
@@ -248,15 +156,14 @@ export class ModelPredicateCreator {
 		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 		const keyValues = extractPrimaryKeyValues(model, keyFields);
 
-		let modelPredicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		keyFields.forEach((field, idx) => {
-			const operand = keyValues[idx];
-			modelPredicate = modelPredicate[field](<any>'eq', <any>operand);
+		const predicate = this.createFromAST<T>(modelDefinition, {
+			and: keyFields.map((field, idx) => {
+				const operand = keyValues[idx];
+				return { [field]: { eq: operand } };
+			}),
 		});
 
-		return modelPredicate;
+		return predicate;
 	}
 
 	/**
@@ -275,7 +182,7 @@ export class ModelPredicateCreator {
 		const ast = {
 			and: Object.entries(flatEqualities).map(([k, v]) => ({ [k]: { eq: v } })),
 		};
-		return this.createFromAST(modelDefinition, ast);
+		return this.createFromAST<T>(modelDefinition, ast);
 	}
 
 	/**
@@ -358,14 +265,13 @@ export class ModelPredicateCreator {
 		modelDefinition: SchemaModel,
 		ast: any
 	): ModelPredicate<T> {
-		const predicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+		const key = ModelPredicateCreator.createPredicate<T>();
 
 		ModelPredicateCreator.predicateGroupsMap.set(
-			predicate,
+			key,
 			this.transformGraphQLFilterNodeToPredicateAST(ast)
 		);
 
-		return predicate;
+		return key;
 	}
 }
