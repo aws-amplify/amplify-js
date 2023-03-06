@@ -20,12 +20,32 @@ export function isPredicatesAll(
 	return predicatesAllSet.has(predicate);
 }
 
+/**
+ * The valid logical grouping keys for a predicate group.
+ */
 const groupKeys = new Set(['and', 'or', 'not']);
+
+/**
+ * Determines whether an object is a GraphQL style predicate "group", which must be an
+ * object containing a single "group key", which then contains the child condition(s).
+ *
+ * E.g.,
+ *
+ * ```
+ * { and: [ ... ] }
+ * { not: { ... } }
+ * ```
+ *
+ * @param o The object to test.
+ */
 const isGroup = o => {
 	const keys = [...Object.keys(o)];
 	return keys.length === 1 && groupKeys.has(keys[0]);
 };
 
+/**
+ * The valid comparison operators that can be used as keys in a predicate comparison object.
+ */
 export const comparisonKeys = new Set([
 	'eq',
 	'ne',
@@ -38,11 +58,28 @@ export const comparisonKeys = new Set([
 	'beginsWith',
 	'between',
 ]);
+
+/**
+ * Determines whether an object is a GraphQL style predicate comparison node, which must
+ * be an object containing a single "comparison operator" key, which then contains the
+ * operand or operands to compare against.
+ *
+ * @param o The object to test.
+ */
 const isComparison = o => {
 	const keys = [...Object.keys(o)];
 	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
 };
 
+const isComparisonArray = o => {
+	return Array.isArray(o) && isComparison(o[0]);
+};
+
+/**
+ * A light check to determine whether an object is a valid GraphQL Condition AST.
+ *
+ * @param o The object to test.
+ */
 const isValid = o => {
 	if (Array.isArray(o)) {
 		return o.every(v => isValid(v));
@@ -231,53 +268,43 @@ export class ModelPredicateCreator {
 		modelDefinition: SchemaModel,
 		flatEqualities: Record<string, any>
 	) {
-		let predicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		for (const [field, value] of Object.entries(flatEqualities)) {
-			predicate = predicate[field]('eq' as any, value);
-		}
-
-		return predicate;
+		const ast = {
+			and: Object.entries(flatEqualities).map(([k, v]) => ({ [k]: { eq: v } })),
+		};
+		return this.createFromAST(modelDefinition, ast);
 	}
 
-	static createGroupFromExisting<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		group: 'and' | 'or' | 'not',
-		existingPredicates: (ProducerModelPredicate<T> | ModelPredicate<T>)[]
-	) {
-		let outer =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		outer = outer[group](seed => {
-			let inner = seed;
-			for (const existing of existingPredicates) {
-				if (typeof existing === 'function') {
-					inner = existing(inner);
-				} else {
-					ModelPredicateCreator.predicateGroupsMap
-						.get(inner)
-						?.predicates.push(
-							ModelPredicateCreator.predicateGroupsMap.get(
-								existing as ModelPredicate<T>
-							)!
-						);
-				}
-			}
-			return inner;
-		});
-
-		return outer;
-	}
-
-	static transformGraphQLtoPredicateAST(gql: any) {
+	/**
+	 * Accepts a GraphQL style filter predicate tree and transforms it into an
+	 * AST that can be used for a storage adapter predicate. Example input:
+	 *
+	 * ```js
+	 * {
+	 * 	and: [
+	 * 		{ name: { eq: "Bob Jones" } },
+	 * 		{ age: { between: [32, 64] } },
+	 * 		{ not: {
+	 * 			or: [
+	 * 				{ favoriteFood: { eq: 'pizza' } },
+	 * 				{ favoriteFood: { eq: 'tacos' } },
+	 * 			]
+	 * 		}}
+	 * 	]
+	 * }
+	 * ```
+	 *
+	 * @param gql GraphQL style filter node.
+	 */
+	static transformGraphQLFilterNodeToPredicateAST(gql: any) {
 		if (!isValid(gql)) {
-			throw new Error('Invalid QGL AST: ' + gql);
+			throw new Error('Invalid GraphQL Condition or subtree: ' + gql);
 		}
 
 		if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
-			const children = this.transformGraphQLtoPredicateAST(gql[groupkey]);
+			const children = this.transformGraphQLFilterNodeToPredicateAST(
+				gql[groupkey]
+			);
 			return {
 				type: groupkey,
 				predicates: Array.isArray(children) ? children : [children],
@@ -290,17 +317,39 @@ export class ModelPredicateCreator {
 			};
 		} else {
 			if (Array.isArray(gql)) {
-				return gql.map(o => this.transformGraphQLtoPredicateAST(o));
+				return gql.map(o => this.transformGraphQLFilterNodeToPredicateAST(o));
 			} else {
 				const fieldKey = Object.keys(gql)[0];
 				return {
 					field: fieldKey,
-					...this.transformGraphQLtoPredicateAST(gql[fieldKey]),
+					...this.transformGraphQLFilterNodeToPredicateAST(gql[fieldKey]),
 				};
 			}
 		}
 	}
 
+	/**
+	 * Accepts a GraphQL style filter predicate tree and transforms it into a predicate
+	 * that storage adapters understand. Example input:
+	 *
+	 * ```js
+	 * {
+	 * 	and: [
+	 * 		{ name: { eq: "Bob Jones" } },
+	 * 		{ age: { between: [32, 64] } },
+	 * 		{ not: {
+	 * 			or: [
+	 * 				{ favoriteFood: { eq: 'pizza' } },
+	 * 				{ favoriteFood: { eq: 'tacos' } },
+	 * 			]
+	 * 		}}
+	 * 	]
+	 * }
+	 * ```
+	 *
+	 * @param modelDefinition The model that the AST/predicate must be compatible with.
+	 * @param ast The graphQL style AST that should specify conditions for `modelDefinition`.
+	 */
 	static createFromAST(
 		modelDefinition: SchemaModel,
 		ast: any
@@ -310,7 +359,7 @@ export class ModelPredicateCreator {
 
 		ModelPredicateCreator.predicateGroupsMap.set(
 			predicate,
-			this.transformGraphQLtoPredicateAST(ast)
+			this.transformGraphQLFilterNodeToPredicateAST(ast)
 		);
 
 		return predicate;
