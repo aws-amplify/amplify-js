@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.16...@aws-amplify/datastore@4.0.17) (2023-03-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** strictly define null vs undefined behavior on models ([#11009](https://github.com/aws-amplify/amplify-js/issues/11009)) ([eb8b05f](https://github.com/aws-amplify/amplify-js/commit/eb8b05f844f089e4810b986df9420832c6b68cca)), closes [#10932](https://github.com/aws-amplify/amplify-js/issues/10932)
+* **datastore:** remove connections with model field as undefined ([#10983](https://github.com/aws-amplify/amplify-js/issues/10983)) ([91e0c8f](https://github.com/aws-amplify/amplify-js/commit/91e0c8fa335280259f2634a48f586058eba5d789))
+
+
+
+
+
 ## [4.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.15...@aws-amplify/datastore@4.0.16) (2023-02-24)
 
 
