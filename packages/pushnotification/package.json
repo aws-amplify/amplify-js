@@ -16,7 +16,7 @@
     "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\"",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 55"
   },
   "repository": {
