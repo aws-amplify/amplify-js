@@ -1,3 +1,5 @@
+/* tslint:disable:max-line-length */
+
 /**
  * Base types
  */
