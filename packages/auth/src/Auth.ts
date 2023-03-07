@@ -203,7 +203,7 @@ export class AuthClass {
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
-			identityPoolRegion
+			identityPoolRegion,
 		});
 
 		// initialize cognitoauth client if hosted ui options provided
@@ -1131,8 +1131,13 @@ export class AuthClass {
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
-		const signInUserSession = (user as CognitoUser).getSignInUserSession();
+
+		let signInUserSession;
+		if (user && typeof user.getSignInUserSession === 'function') {
+			signInUserSession = (user as CognitoUser).getSignInUserSession();
+		}
 		const isLoggedIn = signInUserSession?.isValid();
+
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -1442,13 +1447,22 @@ export class AuthClass {
 					attributeList,
 					(err, result, details) => {
 						if (err) {
-							dispatchAuthEvent('updateUserAttributes_failure', err, 'Failed to update attributes');
+							dispatchAuthEvent(
+								'updateUserAttributes_failure',
+								err,
+								'Failed to update attributes'
+							);
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
-								attributes as Record<string, string>, details?.CodeDeliveryDetailsList
+								attributes as Record<string, string>,
+								details?.CodeDeliveryDetailsList
 							);
-							dispatchAuthEvent('updateUserAttributes', attrs, 'Attributes successfully updated');
+							dispatchAuthEvent(
+								'updateUserAttributes',
+								attrs,
+								'Attributes successfully updated'
+							);
 							return resolve(result);
 						}
 					},
@@ -1465,9 +1479,11 @@ export class AuthClass {
 		const attrs = {};
 		Object.keys(attributes).forEach(key => {
 			attrs[key] = {
-				isUpdated: true
+				isUpdated: true,
 			};
-			const codeDeliveryDetails = codeDeliveryDetailsList?.find(value => value.AttributeName === key);
+			const codeDeliveryDetails = codeDeliveryDetailsList?.find(
+				value => value.AttributeName === key
+			);
 			if (codeDeliveryDetails) {
 				attrs[key].isUpdated = false;
 				attrs[key].codeDeliveryDetails = codeDeliveryDetails;
