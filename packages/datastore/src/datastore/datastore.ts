@@ -1499,8 +1499,8 @@ class DataStore {
 	/**
 	 * If not already done:
 	 * 1. Attaches and initializes storage.
-	 * 1. Loads the schema and records metadata.
-	 * 1. If `this.amplifyConfig.aws_appsync_graphqlEndpoint` contains a URL,
+	 * 2. Loads the schema and records metadata.
+	 * 3. If `this.amplifyConfig.aws_appsync_graphqlEndpoint` contains a URL,
 	 * attaches a sync engine, starts it, and subscribes.
 	 */
 	start = async (): Promise<void> => {
