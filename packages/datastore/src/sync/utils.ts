@@ -309,41 +309,31 @@ export function buildSubscriptionGraphQLOperation(
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
-	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
+	const { name: typeName } = modelDefinition;
 
 	const opName = `on${transformerMutationType}${typeName}`;
 
-	let docArgs = '';
-	let opArgs = '';
+	const docArgs: string[] = [];
+	const opArgs: string[] = [];
 
-	if (filterArg || isOwnerAuthorization) {
-		docArgs += '(';
-		opArgs += '(';
-
-		if (filterArg) {
-			docArgs += `$filter: ModelSubscription${typeName}FilterInput`;
-			opArgs += 'filter: $filter';
-		}
-
-		if (isOwnerAuthorization) {
-			if (filterArg) {
-				docArgs += ', ';
-				opArgs += ', ';
-			}
-
-			docArgs += `$${ownerField}: String!`;
-			opArgs += `${ownerField}: $${ownerField}`;
-		}
-
-		docArgs += ')';
-		opArgs += ')';
+	if (filterArg) {
+		docArgs.push(`$filter: ModelSubscription${typeName}FilterInput`);
+		opArgs.push('filter: $filter');
 	}
+
+	if (isOwnerAuthorization) {
+		docArgs.push(`$${ownerField}: String!`);
+		opArgs.push(`${ownerField}: $${ownerField}`);
+	}
+
+	const docStr = docArgs.length ? `(${docArgs.join(',')})` : '';
+	const opStr = opArgs.length ? `(${opArgs.join(',')})` : '';
 
 	return [
 		transformerMutationType,
 		opName,
-		`subscription operation${docArgs}{
-			${opName}${opArgs}{
+		`subscription operation${docStr}{
+			${opName}${opStr}{
 				${selectionSet}
 			}
 		}`,
@@ -548,7 +538,9 @@ export function predicateToGraphQLFilter(
 		}
 
 		const child = predicateToGraphQLFilter(predicate, fieldsToOmit, false);
-		Object.keys(child).length > 0 && children.push(child);
+		if (Object.keys(child).length > 0) {
+			children.push(child);
+		}
 	});
 
 	// flatten redundant list predicates
@@ -567,7 +559,11 @@ export function predicateToGraphQLFilter(
 	}
 
 	children.forEach(child => {
-		isList ? result[type].push(child) : (result[type] = child);
+		if (isList) {
+			result[type].push(child);
+		} else {
+			result[type] = child;
+		}
 	});
 
 	if (isList) {
