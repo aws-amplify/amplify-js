@@ -756,7 +756,7 @@ class SubscriptionProcessor {
 				message.includes(errorMsg)
 			) || [];
 
-		if (errorType) {
+		if (errorType !== undefined) {
 			const remediationMessage = generateRTFRemediation(
 				errorType,
 				modelDefinition,
