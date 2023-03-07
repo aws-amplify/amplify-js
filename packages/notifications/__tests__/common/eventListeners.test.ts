@@ -4,12 +4,15 @@
 describe('Event listeners', () => {
 	const fooType = 'foo';
 	const fooHandler = jest.fn();
-	let addEventListener, notifyEventListeners;
+	let addEventListener,
+		notifyEventListeners,
+		notifyEventListenersAndAwaitHandlers;
 	beforeEach(() => {
 		({
 			addEventListener,
 			notifyEventListeners,
-		} = require('../src/common/eventListeners'));
+			notifyEventListenersAndAwaitHandlers,
+		} = require('../../src/common/eventListeners'));
 	});
 	afterEach(() => {
 		jest.resetModules();
@@ -27,6 +30,39 @@ describe('Event listeners', () => {
 		notifyEventListeners(fooType, param);
 
 		expect(fooHandler).toBeCalledWith(param);
+	});
+
+	test('can be notified and awaited on', async () => {
+		const asyncType = 'async';
+		const asyncHandler = jest.fn().mockImplementation(() => Promise.resolve());
+		const param = { bar: 'bar' };
+		addEventListener(asyncType, asyncHandler);
+
+		try {
+			await notifyEventListenersAndAwaitHandlers(asyncType, param);
+			expect(asyncHandler).toBeCalledWith(param);
+		} catch (e) {}
+
+		expect.hasAssertions();
+	});
+
+	test('can handle async error', async () => {
+		const errType = 'err';
+		const err = new Error();
+		const errHandler = jest.fn().mockImplementation(() => {
+			throw err;
+		});
+		const param = { bar: 'bar' };
+		addEventListener(errType, errHandler);
+
+		try {
+			await notifyEventListenersAndAwaitHandlers(errType, param);
+		} catch (e) {
+			expect(errHandler).toBeCalledWith(param);
+			expect(e).toBe(err);
+		}
+
+		expect.hasAssertions();
 	});
 
 	test('can handle multiple parameters', () => {
@@ -67,5 +103,13 @@ describe('Event listeners', () => {
 		expect(barHandler).toBeCalledTimes(0);
 		// one listener added
 		expect(bazHandler).toBeCalledTimes(1);
+	});
+
+	test('will not error out on an unregistered type', async () => {
+		const unknownType = 'unknown';
+		expect(notifyEventListeners(unknownType, {})).toBeUndefined();
+		expect(
+			await notifyEventListenersAndAwaitHandlers(unknownType, {})
+		).toStrictEqual([]);
 	});
 });

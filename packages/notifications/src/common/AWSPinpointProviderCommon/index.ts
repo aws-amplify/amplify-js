@@ -140,6 +140,7 @@ export default abstract class AWSPinpointProviderCommon
 			this.logger.debug('recording analytics event');
 			await this.config.pinpointClient.send(command);
 		} catch (err) {
+			this.logger.error('Error recording analytics event', err);
 			throw err;
 		}
 	};

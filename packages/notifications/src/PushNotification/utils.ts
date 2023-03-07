@@ -60,8 +60,8 @@ export const normalizeNativeMessage = (
 };
 
 const normalizeApnsMessage = (apnsMessage): NormalizedValues => {
-	const { aps = { alert: {} }, data = {} } = apnsMessage;
-	const { body, title } = aps.alert;
+	const { aps, data = {} } = apnsMessage;
+	const { body, title } = aps.alert ?? {};
 	// We want to eventually move provider specifics into the provider somehow, but without another provider use case to
 	// develop against, any decisions made regarding how to transform this data would likely be discarded. For now, we
 	// should not over-complicate this transformer
@@ -103,8 +103,9 @@ const getFcmAction = (
 };
 
 const getApnsOptions = ({
-	subtitle,
+	aps,
 }): Pick<PushNotificationMessage, 'apnsOptions'> => {
+	const { subtitle } = aps.alert ?? {};
 	const apnsOptions = { ...(subtitle && { subtitle }) };
 	return { ...(!isEmpty(apnsOptions) && { apnsOptions }) };
 };
@@ -114,11 +115,12 @@ const getFcmOptions = ({
 	messageId,
 	senderId,
 	sendTime,
-}): Pick<PushNotificationMessage, 'fcmOptions'> => ({
-	fcmOptions: {
-		channelId,
-		messageId,
-		senderId,
-		sendTime: new Date(sendTime),
-	},
-});
+}): Pick<PushNotificationMessage, 'fcmOptions'> => {
+	const fcmOptions = {
+		...(channelId && { channelId }),
+		...(messageId && { messageId }),
+		...(senderId && { senderId }),
+		...(sendTime && { sendTime: new Date(sendTime) }),
+	};
+	return { ...(!isEmpty(fcmOptions) && { fcmOptions }) };
+};

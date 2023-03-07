@@ -10,9 +10,9 @@ import {
 	AWSPinpointMessageEvent,
 } from './types';
 
-const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
 const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
 	'pinpoint.campaign.campaign_activity_id';
+const ANDROID_CAMPAIGN_ID_KEY = 'pinpoint.campaign.campaign_id';
 const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
 
 export const logger = new ConsoleLogger('PushNotification.AWSPinpointProvider');
@@ -54,8 +54,8 @@ const getAnalyticsEventAttributes = (data: PushNotificationMessage['data']) => {
 		return {
 			source: AWSPinpointMessageEventSource.CAMPAIGN,
 			attributes: {
-				campaign_id: data[ANDROID_CAMPAIGN_ID_KEY],
 				campaign_activity_id: data[ANDROID_CAMPAIGN_ACTIVITY_ID_KEY],
+				campaign_id: data[ANDROID_CAMPAIGN_ID_KEY],
 				treatment_id: data[ANDROID_CAMPAIGN_TREATMENT_ID_KEY],
 			},
 		};

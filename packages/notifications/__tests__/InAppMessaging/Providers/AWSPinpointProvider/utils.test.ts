@@ -14,7 +14,6 @@ import {
 	extractMetadata,
 	getStartOfDay,
 	isBeforeEndDate,
-	isQuietTime,
 	matchesAttributes,
 	matchesEventType,
 	matchesMetrics,

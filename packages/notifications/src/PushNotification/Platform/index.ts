@@ -3,16 +3,17 @@
 
 import { Platform as PlatformInterface } from './types';
 
-const userAgentIncludes = (text: string): boolean =>
-	navigator?.userAgent?.includes(text);
+const userAgentIncludes = (text: string): boolean => {
+	return navigator?.userAgent?.includes(text);
+};
 
 const getOS = (): PlatformInterface['OS'] => {
-	if (userAgentIncludes('Win')) return 'windows';
-	if (userAgentIncludes('Mac')) return 'macos';
-	if (userAgentIncludes('X11')) return 'unix';
-	if (userAgentIncludes('Linux')) return 'linux';
 	if (userAgentIncludes('Android')) return 'android';
 	if (userAgentIncludes('like Mac')) return 'ios';
+	if (userAgentIncludes('Win')) return 'windows';
+	if (userAgentIncludes('Mac')) return 'macos';
+	if (userAgentIncludes('Linux')) return 'linux';
+	if (userAgentIncludes('X11')) return 'unix';
 	return 'unknown';
 };
 

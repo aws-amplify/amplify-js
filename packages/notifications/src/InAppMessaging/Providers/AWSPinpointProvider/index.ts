@@ -69,7 +69,7 @@ export default class AWSPinpointProvider
 	configure = (config = {}): Record<string, any> => {
 		this.config = {
 			...super.configure(config),
-			endpointInfo: { channel: ChannelType.IN_APP },
+			endpointInfo: { channelType: ChannelType.IN_APP },
 		};
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason

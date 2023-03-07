@@ -9,25 +9,24 @@ import {
 	StorageHelper,
 } from '@aws-amplify/core';
 
-import InAppMessaging, {
-	InAppMessageInteractionEvent,
-} from '../../src/InAppMessaging';
-import {
-	addEventListener,
-	notifyEventListeners,
-} from '../../src/common/eventListeners';
-
 import {
 	closestExpiryMessage,
 	customHandledMessage,
-	inAppMessagingConfig,
 	inAppMessages,
-	simpleEvent,
-	simpleMessages,
+	simpleInAppMessages,
+	simpleInAppMessagingEvent,
+	subcategoryConfig,
 	userId,
 	userInfo,
 } from '../../__mocks__/data';
 import { mockInAppMessagingProvider, mockStorage } from '../../__mocks__/mocks';
+import {
+	addEventListener,
+	notifyEventListeners,
+} from '../../src/common/eventListeners';
+import InAppMessaging, {
+	InAppMessageInteractionEvent,
+} from '../../src/InAppMessaging';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/common/eventListeners');
@@ -41,6 +40,7 @@ jest.mock('../../src/InAppMessaging/Providers', () => ({
 }));
 
 const PROVIDER_NAME = 'InAppMessagingProvider';
+const SUBCATEGORY_NAME = 'InAppMessaging';
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
@@ -55,13 +55,15 @@ describe('InAppMessaging', () => {
 		inAppMessaging = new InAppMessaging();
 		inAppMessaging.addPluggable(mockInAppMessagingProvider);
 		mockInAppMessagingProvider.getCategory.mockReturnValue('Notifications');
-		mockInAppMessagingProvider.getInAppMessages.mockReturnValue(simpleMessages);
+		mockInAppMessagingProvider.getInAppMessages.mockReturnValue(
+			simpleInAppMessages
+		);
 		mockInAppMessagingProvider.getProviderName.mockReturnValue(PROVIDER_NAME);
-		mockInAppMessagingProvider.getSubCategory.mockReturnValue('InAppMessaging');
+		mockInAppMessagingProvider.getSubCategory.mockReturnValue(SUBCATEGORY_NAME);
 	});
 
 	test('returns the correct module name', () => {
-		expect(inAppMessaging.getModuleName()).toBe('InAppMessaging');
+		expect(inAppMessaging.getModuleName()).toBe(SUBCATEGORY_NAME);
 	});
 
 	describe('Pluggables', () => {
@@ -112,10 +114,10 @@ describe('InAppMessaging', () => {
 		});
 
 		test('attaches a storage helper to the config', () => {
-			const config = inAppMessaging.configure(inAppMessagingConfig);
+			const config = inAppMessaging.configure(subcategoryConfig);
 
 			expect(config).toStrictEqual({
-				...inAppMessagingConfig,
+				...subcategoryConfig,
 				storage: mockStorage,
 			});
 		});
@@ -124,7 +126,7 @@ describe('InAppMessaging', () => {
 			const recordCapsule = {
 				payload: {
 					event: 'record',
-					data: simpleEvent,
+					data: simpleInAppMessagingEvent,
 				},
 			} as HubCapsule;
 			const configuredCapsule = {
@@ -161,7 +163,7 @@ describe('InAppMessaging', () => {
 
 			expect(mockStorage.setItem).toBeCalledWith(
 				expect.stringContaining(PROVIDER_NAME),
-				JSON.stringify(simpleMessages)
+				JSON.stringify(simpleInAppMessages)
 			);
 		});
 
@@ -241,13 +243,13 @@ describe('InAppMessaging', () => {
 			mockInAppMessagingProvider.processInAppMessages.mockReturnValue([
 				message,
 			]);
-			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleMessages));
+			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleInAppMessages));
 
-			await inAppMessaging.dispatchEvent(simpleEvent);
+			await inAppMessaging.dispatchEvent(simpleInAppMessagingEvent);
 
 			expect(mockInAppMessagingProvider.processInAppMessages).toBeCalledWith(
-				simpleMessages,
-				simpleEvent
+				simpleInAppMessages,
+				simpleInAppMessagingEvent
 			);
 			expect(notifyEventListeners).toBeCalledWith(
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
@@ -257,9 +259,9 @@ describe('InAppMessaging', () => {
 
 		test('does not notify listeners if no messages are returned', async () => {
 			mockInAppMessagingProvider.processInAppMessages.mockReturnValue([]);
-			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleMessages));
+			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleInAppMessages));
 
-			await inAppMessaging.dispatchEvent(simpleEvent);
+			await inAppMessaging.dispatchEvent(simpleInAppMessagingEvent);
 
 			expect(notifyEventListeners).not.toBeCalled();
 		});
@@ -269,7 +271,7 @@ describe('InAppMessaging', () => {
 				throw new Error();
 			});
 
-			await inAppMessaging.dispatchEvent(simpleEvent);
+			await inAppMessaging.dispatchEvent(simpleInAppMessagingEvent);
 
 			expect(loggerErrorSpy).toBeCalledWith(
 				expect.stringContaining('Failed to retrieve'),
@@ -358,7 +360,7 @@ describe('InAppMessaging', () => {
 				inAppMessages
 			);
 
-			await inAppMessaging.dispatchEvent(simpleEvent);
+			await inAppMessaging.dispatchEvent(simpleInAppMessagingEvent);
 
 			expect(notifyEventListeners).toBeCalledWith(
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
@@ -374,7 +376,7 @@ describe('InAppMessaging', () => {
 			);
 
 			inAppMessaging.setConflictHandler(customConflictHandler);
-			await inAppMessaging.dispatchEvent(simpleEvent);
+			await inAppMessaging.dispatchEvent(simpleInAppMessagingEvent);
 
 			expect(notifyEventListeners).toBeCalledWith(
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
