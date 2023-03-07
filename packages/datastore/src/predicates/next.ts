@@ -758,12 +758,6 @@ export class GroupCondition {
  * `predicateFor()` returns objecst with recursive getters. To facilitate this,
  * a `query` and `tail` can be provided to "accumulate" nested conditions.
  *
- * TODO: the sortof-immutable algorithm was originally done to support legacy style
- * predicate branching (`p => p.x.eq(value).y.eq(value)`). i'm not sure this is
- * necessary or beneficial at this point, since we decided that each field condition
- * must flly terminate a branch. is the strong mutation barrier between chain links
- * still necessary or helpful?
- *
  * @param ModelType The ModelMeta used to build child properties.
  * @param field Scopes the query branch to a field.
  * @param query A base query to build on. Omit to start a new query.
