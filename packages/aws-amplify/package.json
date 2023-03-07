@@ -52,7 +52,7 @@
     "@aws-amplify/predictions": "5.0.17",
     "@aws-amplify/pubsub": "5.1.0",
     "@aws-amplify/storage": "5.1.7",
-    "@aws-amplify/xr": "latest",
+    "@aws-amplify/xr": "4.0.15",
     "tslib": "^2.0.0"
   },
   "jest": {
