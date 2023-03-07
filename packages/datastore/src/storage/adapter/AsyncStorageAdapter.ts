@@ -132,7 +132,7 @@ export class AsyncStorageAdapter implements Adapter {
 			model,
 			this.schema.namespaces[namespaceName],
 			this.modelInstanceCreator,
-			this.getModelConstructorByModelName as any
+			this.getModelConstructorByModelName
 		);
 
 		const set = new Set<string>();

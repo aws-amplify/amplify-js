@@ -134,7 +134,7 @@ export class ModelPredicateCreator {
 			throw new Error('The predicate is not valid');
 		}
 
-		return ModelPredicateCreator.predicateGroupsMap.get(predicate as any);
+		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
 	}
 
 	/**

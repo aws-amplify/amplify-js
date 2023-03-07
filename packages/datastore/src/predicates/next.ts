@@ -584,9 +584,7 @@ export class GroupCondition {
 						}
 					);
 
-					resultGroups.push(
-						await storage.query(this.model.builder, predicate as any)
-					);
+					resultGroups.push(await storage.query(this.model.builder, predicate));
 				} else {
 					throw new Error('Missing field metadata.');
 				}
@@ -782,7 +780,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// our eventual return object, which can be built upon.
 	// next steps will be to add or(), and(), not(), and field.op() methods.
-	const link = {} as any;
+	const link = {} as RecursiveModelPredicate<T>;
 
 	// so it can be looked up later with in the internals when processing conditions.
 	registerPredicateInternals(baseCondition, link);
@@ -801,10 +799,8 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// Adds .or() and .and() methods to the link.
 	// TODO: If revisiting this code, consider writing a Proxy instead.
-	['and', 'or'].forEach(op => {
-		(link as any)[op] = (
-			builder: RecursiveModelPredicateAggregateExtender<T>
-		) => {
+	(['and', 'or'] as const).forEach(op => {
+		link[op] = (builder: RecursiveModelPredicateAggregateExtender<T>) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
 			const { query, newTail } = copyLink();
@@ -964,5 +960,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>
 ): ModelPredicate<T> & PredicateInternalsKey {
+	// the cast here is just a cheap way to reduce the surface area from
+	// the recursive type.
 	return recursivePredicateFor(ModelType, false) as any as ModelPredicate<T>;
 }

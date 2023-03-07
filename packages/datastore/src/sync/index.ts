@@ -134,7 +134,10 @@ export class SyncEngine {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
