@@ -102,16 +102,20 @@ export class Predicates {
 }
 
 export class ModelPredicateCreator {
+	/**
+	 * Map of storage predicates (key objects) to storage predicate AST's.
+	 */
 	private static predicateGroupsMap = new WeakMap<
 		ModelPredicate<any>,
 		PredicatesGroup<any>
 	>();
 
-	static createPredicate<T extends PersistentModel>() {
-		const predicate = {} as ModelPredicate<T>;
-		return predicate;
-	}
-
+	/**
+	 * Determines whether the given storage predicate (lookup key) is a predicate
+	 * key that DataStore recognizes.
+	 *
+	 * @param predicate The storage predicate (lookup key) to test.
+	 */
 	static isValidPredicate<T extends PersistentModel>(
 		predicate: any
 	): predicate is ModelPredicate<T> {
@@ -119,12 +123,11 @@ export class ModelPredicateCreator {
 	}
 
 	/**
-	 * Looks for the storage predicate AST that corresponds to a given
-	 * storage predicate key.
+	 * Looks for the storage predicate AST that corresponds to a given storage
+	 * predicate key.
 	 *
 	 * The key must have been created internally by a DataStore utility
-	 * method, such as `ModelPredicate.createPredicateBuilder` for the express
-	 * purpose of being associated with an internal storage predicate AST.
+	 * method, such as `ModelPredicate.createFromAST()`.
 	 *
 	 * @param predicate The predicate reference to look up.
 	 * @param throwOnInvalid Whether to throw an exception if the predicate
@@ -142,8 +145,8 @@ export class ModelPredicateCreator {
 	}
 
 	/**
-	 * Creates a predicate that matches an instance described by `modelDefinition`
 	 * using the PK values from the given `model` (which can be a partial of T
+	 * Creates a predicate that matches an instance described by `modelDefinition`
 	 * that contains only PK field values.)
 	 *
 	 * @param modelDefinition The model definition to create a predicate for.
@@ -265,7 +268,7 @@ export class ModelPredicateCreator {
 		modelDefinition: SchemaModel,
 		ast: any
 	): ModelPredicate<T> {
-		const key = ModelPredicateCreator.createPredicate<T>();
+		const key = {} as ModelPredicate<T>;
 
 		ModelPredicateCreator.predicateGroupsMap.set(
 			key,
