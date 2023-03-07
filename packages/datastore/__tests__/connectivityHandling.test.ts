@@ -59,6 +59,7 @@ describe('DataStore sync engine', () => {
 			LegacyJSONPost,
 			Post,
 			Comment,
+			Model,
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
@@ -584,6 +585,107 @@ describe('DataStore sync engine', () => {
 				'_deleted',
 				'blog',
 			]);
+		});
+
+		test('subscription query receives expected filter variable', async () => {
+			await resyncWith([
+				syncExpression(
+					Post,
+					async () => post => post.title.contains('cleaning')
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Post')
+				.map(req => req.variables.filter);
+
+			const expectedFilter = {
+				and: [
+					{
+						title: {
+							contains: 'cleaning',
+						},
+					},
+				],
+			};
+
+			expect(onCreate).toEqual(expectedFilter);
+			expect(onUpdate).toEqual(expectedFilter);
+			expect(onDelete).toEqual(expectedFilter);
+		});
+
+		test('subscription query receives expected filter variable - nested', async () => {
+			await resyncWith([
+				syncExpression(
+					Model,
+					async () => m =>
+						m.or(or => [
+							or.and(and => [
+								and.field1.eq('field'),
+								and.createdAt.gt('1/1/2023'),
+							]),
+							or.and(and => [
+								and.or(or => [
+									or.optionalField1.beginsWith('a'),
+									or.optionalField1.notContains('z'),
+								]),
+								and.emails.ne('-'),
+							]),
+						])
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Model')
+				.map(req => req.variables.filter);
+
+			expect(onCreate).toEqual(onUpdate);
+			expect(onCreate).toEqual(onDelete);
+			expect(onCreate).toMatchInlineSnapshot(`
+			Object {
+			  "or": Array [
+			    Object {
+			      "and": Array [
+			        Object {
+			          "field1": Object {
+			            "eq": "field",
+			          },
+			        },
+			        Object {
+			          "createdAt": Object {
+			            "gt": "1/1/2023",
+			          },
+			        },
+			      ],
+			    },
+			    Object {
+			      "and": Array [
+			        Object {
+			          "or": Array [
+			            Object {
+			              "optionalField1": Object {
+			                "beginsWith": "a",
+			              },
+			            },
+			            Object {
+			              "optionalField1": Object {
+			                "notContains": "z",
+			              },
+			            },
+			          ],
+			        },
+			        Object {
+			          "emails": Object {
+			            "ne": "-",
+			          },
+			        },
+			      ],
+			    },
+			  ],
+			}
+		`);
 		});
 	});
 });

@@ -867,7 +867,15 @@ class FakeGraphQLService {
 
 		this.log('Parsed Request', parsed);
 
-		this.requests.push({ query, variables, authMode, authToken });
+		this.requests.push({
+			query,
+			variables,
+			authMode,
+			authToken,
+			operation,
+			tableName,
+			type,
+		});
 		let data;
 		let errors = [] as any;
 
