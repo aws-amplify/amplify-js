@@ -1131,6 +1131,8 @@ export class AuthClass {
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
+		const signInUserSession = (user as CognitoUser).getSignInUserSession();
+		const isLoggedIn = signInUserSession?.isValid();
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -1139,7 +1141,13 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
-					dispatchAuthEvent('signIn', user, `A user ${user.getUsername()} has been signed in`);
+					if (!isLoggedIn) {
+						dispatchAuthEvent(
+							'signIn',
+							user,
+							`A user ${user.getUsername()} has been signed in`
+						);
+					}
 					dispatchAuthEvent(
 						'verify',
 						user,
