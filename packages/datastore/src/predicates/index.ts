@@ -1,9 +1,6 @@
 import {
-	AllOperators,
 	ModelPredicate,
 	PersistentModel,
-	PredicateExpression,
-	PredicateGroups,
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
@@ -69,10 +66,6 @@ export const comparisonKeys = new Set([
 const isComparison = o => {
 	const keys = [...Object.keys(o)];
 	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
-};
-
-const isComparisonArray = o => {
-	return Array.isArray(o) && isComparison(o[0]);
 };
 
 /**
