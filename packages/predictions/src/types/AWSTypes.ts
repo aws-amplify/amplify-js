@@ -1,3 +1,4 @@
+/* tslint:disable:max-line-length */
 import { Geometry, Relationship } from './Predictions';
 
 export type BlockList = Block[];
