@@ -89,7 +89,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 			if (usesCPKCodegen) {
 				logger.error(
-					'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in `amplify/cli.json` to false to disable custom primary key. Then, to properly regenerate your API, add an empty newline to your GraphQL schema and run `amplify push`.'
+					'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in `amplify/cli.json` to false to disable custom primary key. To regenerate your API, add or remove an empty newline to your GraphQL schema (to change the computed hash) then run `amplify push`.'
 				);
 			}
 			await this.db.init();
