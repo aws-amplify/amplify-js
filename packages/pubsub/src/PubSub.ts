@@ -11,9 +11,15 @@ import {
 } from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProviderOptions } from './types';
 import { AWSAppSyncRealTimeProvider } from './Providers';
+import { PubSubContent } from './types/PubSub';
 
 const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
+
+type PubSubObservable = {
+	provider: PubSubProvider;
+	value: string | Record<string, unknown>;
+};
 
 export class PubSubClass {
 	private _options: PubSubOptions;
@@ -60,7 +66,9 @@ export class PubSubClass {
 	 * @return {Object} - The current configuration
 	 */
 	configure(options: PubSubOptions) {
-		const opt = options ? options.PubSub || options : {};
+		const opt: Record<string, unknown> = options
+			? options.PubSub || options
+			: {};
 		logger.debug('configure PubSub', { opt });
 
 		this._options = Object.assign({}, this._options, opt);
@@ -105,14 +113,14 @@ export class PubSubClass {
 	}
 
 	private getProviders(options: ProviderOptions = {}) {
-		const { provider: providerName } = options;
+		const providerName = options.provider;
 		if (!providerName) {
 			return this._pluggables;
 		}
 
 		const provider = this.getProviderByName(providerName);
 		if (!provider) {
-			throw new Error(`Could not find provider named ${providerName}`);
+			throw new Error(`Could not find provider named ${String(providerName)}`);
 		}
 
 		return [provider];
@@ -120,7 +128,7 @@ export class PubSubClass {
 
 	async publish(
 		topics: string[] | string,
-		msg: any,
+		msg: PubSubContent,
 		options?: ProviderOptions
 	) {
 		return Promise.all(
@@ -133,7 +141,7 @@ export class PubSubClass {
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
-	): Observable<any> {
+	): Observable<PubSubObservable> {
 		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
 				'Subscriptions are not supported for Server-Side Rendering (SSR)'
@@ -144,7 +152,7 @@ export class PubSubClass {
 
 		const providers = this.getProviders(options);
 
-		return new Observable(observer => {
+		return new Observable<PubSubObservable>(observer => {
 			const observables = providers.map(provider => ({
 				provider,
 				observable: provider.subscribe(topics, options),
@@ -153,8 +161,8 @@ export class PubSubClass {
 			const subscriptions = observables.map(({ provider, observable }) =>
 				observable.subscribe({
 					start: console.error,
-					next: value => observer.next({ provider, value }),
-					error: error => observer.error({ provider, error }),
+					next: (value: PubSubContent) => observer.next({ provider, value }),
+					error: (error: unknown) => observer.error({ provider, error }),
 					// complete: observer.complete, // TODO: when all completed, complete the outer one
 				})
 			);

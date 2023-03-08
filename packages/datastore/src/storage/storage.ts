@@ -60,7 +60,7 @@ class StorageClass implements StorageFacade {
 		private readonly sessionId?: string
 	) {
 		this.adapter = this.adapter || getDefaultAdapter();
-		this.pushStream = new PushStream() as any;
+		this.pushStream = new PushStream();
 	}
 
 	static getNamespace() {
@@ -154,7 +154,7 @@ class StorageClass implements StorageFacade {
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
-				model: modelConstructor as any,
+				model: modelConstructor,
 				opType,
 				element,
 				mutator,
@@ -234,7 +234,7 @@ class StorageClass implements StorageFacade {
 			}
 
 			this.pushStream.next({
-				model: modelConstructor as any,
+				model: modelConstructor,
 				opType: OpType.DELETE,
 				element: model,
 				mutator,
@@ -340,7 +340,7 @@ class StorageClass implements StorageFacade {
 			});
 		});
 
-		return result as any;
+		return result;
 	}
 
 	// returns null if no user fields were changed (determined by value comparison)
@@ -510,11 +510,11 @@ class ExclusiveStorage implements StorageFacade {
 			if (isModelConstructor(modelOrModelConstructor)) {
 				const modelConstructor = modelOrModelConstructor;
 
-				return storage.delete(modelConstructor as any, condition, mutator);
+				return storage.delete(modelConstructor, condition, mutator);
 			} else {
 				const model = modelOrModelConstructor;
 
-				return storage.delete(model as any, condition, mutator);
+				return storage.delete(model, condition, mutator);
 			}
 		});
 	}
