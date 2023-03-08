@@ -749,6 +749,8 @@ class SubscriptionProcessor {
 			'Filters combination exceed maximum limit': RTFError.MaxCombinations,
 			'filter uses same fieldName multiple time': RTFError.RepeatedFieldname,
 			"The variables input contains a field name 'not'": RTFError.NotGroup,
+			'The variables input contains a field that is not defined for input object type':
+				RTFError.FieldNotInType,
 		};
 
 		const [_errorMsg, errorType] =
