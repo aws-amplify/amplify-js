@@ -10,15 +10,14 @@ import {
 	FromCognitoIdentityParameters,
 	fromCognitoIdentityPool,
 	FromCognitoIdentityPoolParameters,
-} from '@aws-sdk/credential-provider-cognito-identity';
-import {
 	GetIdCommand,
 	GetCredentialsForIdentityCommand,
-} from '@aws-sdk/client-cognito-identity';
-import { CredentialProvider } from '@aws-sdk/types';
+	createCognitoIdentityClient,
+} from './AWSClients/CognitoIdentity';
+
+import type { CredentialProvider } from '@aws-sdk/types';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
-import { createCognitoIdentityClient } from './Util/CognitoIdentityClient';
 
 const logger = new Logger('Credentials');
 

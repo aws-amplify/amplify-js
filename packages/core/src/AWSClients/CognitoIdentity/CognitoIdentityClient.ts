@@ -5,8 +5,8 @@ import {
 	CognitoIdentityClient,
 	CognitoIdentityClientConfig,
 } from '@aws-sdk/client-cognito-identity';
-import { Provider } from '@aws-sdk/types';
-import { getAmplifyUserAgent } from '../Platform';
+
+import { getAmplifyUserAgent } from '../../Platform';
 
 /**
  * Returns a CognitoIdentityClient with middleware
