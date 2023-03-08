@@ -5,6 +5,7 @@ const logger = new LoggerClass('Amplify');
 export class AmplifyClass {
 	// Everything that is `register`ed is tracked here
 	private _components = [];
+
 	private _config = {};
 
 	// All modules (with `getModuleName()`) are stored here for dependency injection
@@ -31,6 +32,10 @@ export class AmplifyClass {
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
+
+	public get config() {
+		return this.config;
+	}
 
 	register(comp) {
 		logger.debug('component registered in amplify', comp);

@@ -47,6 +47,8 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.0.15",
+    "@aws-sdk/client-cognito-identity-provider": "3.282.0",
+    "@aws-sdk/client-cognito-identity": "3.282.0",
     "amazon-cognito-identity-js": "6.1.2",
     "tslib": "^1.8.0"
   },
