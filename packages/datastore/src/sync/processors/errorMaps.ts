@@ -44,7 +44,7 @@ export const syncErrorMap: ErrorMap = {
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
-	Unauthorized: () => false,
+	Unauthorized: (error: any) => error.errorType === 'Unauthorized',
 };
 
 /**

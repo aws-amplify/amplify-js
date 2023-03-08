@@ -177,6 +177,53 @@ describe('Sync', () => {
 			});
 		});
 
+		it.only('should send Hub event when unauthorized', async () => {
+			const rejectResponse = {
+				errors: [
+					{
+						message: 'Unauthorized error message.',
+						errorType: 'Unauthorized',
+					},
+				],
+			};
+
+			const hubDispatchMock = jest.fn();
+			const coreMocks = {
+				Hub: {
+					dispatch: hubDispatchMock,
+					listen: jest.fn(),
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				rejectResponse,
+				coreMocks,
+			});
+
+			const data = await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+				authMode: defaultAuthMode,
+			});
+
+			expect(data).toMatchSnapshot();
+
+			expect(hubDispatchMock).toHaveBeenCalledWith('datastore', {
+				event: 'nonApplicableDataReceived',
+				data: {
+					errors: [
+						{
+							errorType: 'Unauthorized',
+							message: 'Unauthorized error message.',
+						},
+					],
+					modelName: 'Post',
+				},
+			});
+		});
+
 		it('should throw error if no data is returned', async () => {
 			const rejectResponse = {
 				data: null,
@@ -407,6 +454,36 @@ describe('Sync', () => {
 					operation: 'syncPosts',
 					process: 'sync',
 					errorType: 'Transient',
+				})
+			);
+		});
+
+		test.only('unauthorized', async () => {
+			const syncProcessor = jitteredRetrySyncProcessorSetup({
+				errorHandler,
+				rejectResponse: {
+					data,
+					errors: [
+						{
+							errorType: 'Unauthorized',
+							message: 'Error: Unauthorized error message.',
+						},
+					],
+				},
+			});
+
+			await syncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(errorHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					operation: 'syncPosts',
+					process: 'sync',
+					errorType: 'Unauthorized',
 				})
 			);
 		});

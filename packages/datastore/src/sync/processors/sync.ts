@@ -232,19 +232,6 @@ class SyncProcessor {
 					}
 
 					const hasItems = Boolean(error?.data?.[opName]?.items);
-
-					const unauthorized =
-						error?.errors &&
-						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
-						);
-
-					const otherErrors =
-						error?.errors &&
-						(error.errors as [any]).filter(
-							err => err.errorType !== 'Unauthorized'
-						);
-
 					const result = error;
 
 					if (hasItems) {
@@ -253,9 +240,9 @@ class SyncProcessor {
 						);
 					}
 
-					if (hasItems && otherErrors?.length) {
+					if (error?.errors?.length) {
 						await Promise.all(
-							otherErrors.map(async err => {
+							error?.errors.map(async err => {
 								try {
 									await this.errorHandler({
 										recoverySuggestion:
@@ -277,13 +264,19 @@ class SyncProcessor {
 						Hub.dispatch('datastore', {
 							event: 'nonApplicableDataReceived',
 							data: {
-								errors: otherErrors,
+								errors: error.errors,
 								modelName: modelDefinition.name,
 							},
 						});
 					}
 
-					if (unauthorized) {
+					const unauthorizedErrors =
+						error?.errors &&
+						(error.errors as [any]).some(
+							err => err.errorType === 'Unauthorized'
+						);
+
+					if (unauthorizedErrors) {
 						logger.warn(
 							'queryError',
 							`User is unauthorized to query ${opName}, some items could not be returned.`

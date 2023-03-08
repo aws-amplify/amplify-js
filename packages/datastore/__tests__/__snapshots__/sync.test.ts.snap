@@ -62,6 +62,24 @@ Object {
 }
 `;
 
+exports[`Sync jitteredRetry should send Hub event when unauthorized 1`] = `
+Object {
+  "data": Object {
+    "syncPosts": Object {
+      "items": Array [],
+      "nextToken": null,
+      "startedAt": null,
+    },
+  },
+  "errors": Array [
+    Object {
+      "errorType": "Unauthorized",
+      "message": "Unauthorized error message.",
+    },
+  ],
+}
+`;
+
 exports[`Sync jitteredRetry should throw error if no data is returned 1`] = `
 Object {
   "data": null,
