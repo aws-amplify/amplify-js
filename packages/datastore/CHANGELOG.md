@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.17...@aws-amplify/datastore@4.1.0) (2023-03-08)
+
+
+### Bug Fixes
+
+* **datastore:** rtf errorType conditional ([#11056](https://github.com/aws-amplify/amplify-js/issues/11056)) ([2f92869](https://github.com/aws-amplify/amplify-js/commit/2f92869168495ccb4aef59407b4a81cfd3246560))
+
+
+### Features
+
+* **datastore:** add support for AppSync RTF ([#11000](https://github.com/aws-amplify/amplify-js/issues/11000)) ([a050c1a](https://github.com/aws-amplify/amplify-js/commit/a050c1a895dfeaa1247b6702ba54c29171ad033e))
+
+
+
+
+
 ## [4.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.16...@aws-amplify/datastore@4.0.17) (2023-03-06)
 
 

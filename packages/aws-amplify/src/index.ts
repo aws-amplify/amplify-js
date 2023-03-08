@@ -24,7 +24,6 @@ export { PubSub } from '@aws-amplify/pubsub';
 export { Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
 export { Notifications } from '@aws-amplify/notifications';
-export { XR } from '@aws-amplify/xr';
 export { Predictions } from '@aws-amplify/predictions';
 export {
 	ConsoleLogger as Logger,
