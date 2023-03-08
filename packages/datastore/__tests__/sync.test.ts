@@ -177,7 +177,7 @@ describe('Sync', () => {
 			});
 		});
 
-		it.only('should send Hub event when unauthorized', async () => {
+		it('should send Hub event when unauthorized', async () => {
 			const rejectResponse = {
 				errors: [
 					{
@@ -458,7 +458,7 @@ describe('Sync', () => {
 			);
 		});
 
-		test.only('unauthorized', async () => {
+		test('unauthorized', async () => {
 			const syncProcessor = jitteredRetrySyncProcessorSetup({
 				errorHandler,
 				rejectResponse: {
