@@ -608,68 +608,81 @@ describe('error handler', () => {
 		});
 	});
 
-	test('error handler once after all retires have failed', done => {
-		Amplify.Logger.LOG_LEVEL = 'DEBUG';
-		const debugLog = jest.spyOn(console, 'log');
-		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
-		mockObservable = new Observable(observer => {
-			observer.error({
-				error: {
-					errors: [
-						{
-							message,
-						},
-					],
+	function assertErrorHandlerCalled(message: string, errorType: string) {
+		return new Promise(resolve => {
+			Amplify.Logger.LOG_LEVEL = 'DEBUG';
+			const debugLog = jest.spyOn(console, 'log');
+			mockObservable = new Observable(observer => {
+				observer.error({
+					error: {
+						errors: [
+							{
+								message,
+							},
+						],
+					},
+				});
+			});
+
+			const subscription = subscriptionProcessor.start();
+			subscription[0].subscribe({
+				error: data => {
+					console.log(data);
+					console.log(errorHandler.mock.calls);
+
+					// call once each for Create, Update, and Delete
+					expect(errorHandler).toHaveBeenCalledTimes(3);
+					['Create', 'Update', 'Delete'].forEach(operation => {
+						expect(errorHandler).toHaveBeenCalledWith(
+							expect.objectContaining({
+								process: 'subscribe',
+								errorType,
+								message,
+								model: 'Model',
+								operation,
+							})
+						);
+						// expect logger.debug to be called 6 times for auth mode (2 for each operation)
+						// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
+						expect(debugLog).toHaveBeenCalledWith(
+							expect.stringMatching(
+								new RegExp(
+									`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
+								)
+							)
+						);
+						expect(debugLog).toHaveBeenCalledWith(
+							expect.stringMatching(
+								new RegExp(
+									`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
+								)
+							)
+						);
+
+						expect(mockGraphQL).toHaveBeenCalledWith(
+							expect.objectContaining({
+								userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+							})
+						);
+					});
+
+					resolve();
 				},
 			});
 		});
+	}
 
-		const subscription = subscriptionProcessor.start();
-		subscription[0].subscribe({
-			error: data => {
-				console.log(data);
-				console.log(errorHandler.mock.calls);
+	test('error handler once after all retires have failed', async () => {
+		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
+		const errorType = 'Unknown';
+		await assertErrorHandlerCalled(message, errorType);
+	});
 
-				// call once each for Create, Update, and Delete
-				expect(errorHandler).toHaveBeenCalledTimes(3);
-				['Create', 'Update', 'Delete'].forEach(operation => {
-					expect(errorHandler).toHaveBeenCalledWith(
-						expect.objectContaining({
-							process: 'subscribe',
-							errorType: 'Unknown',
-							message,
-							model: 'Model',
-							operation,
-						})
-					);
-					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
-					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
-					expect(debugLog).toHaveBeenCalledWith(
-						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
-							)
-						)
-					);
-					expect(debugLog).toHaveBeenCalledWith(
-						expect.stringMatching(
-							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
-							)
-						)
-					);
-
-					expect(mockGraphQL).toHaveBeenCalledWith(
-						expect.objectContaining({
-							userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-						})
-					);
-				});
-
-				done();
-			},
-		});
-	}, 500);
+	test('error handler on unauthorized', async () => {
+		const message = 'Connection failed: UnauthorizedException';
+		const errorType = 'Unauthorized';
+		await assertErrorHandlerCalled(message, errorType);
+	});
 
 	async function instantiateSubscriptionProcessor({
 		errorHandler = () => null,
