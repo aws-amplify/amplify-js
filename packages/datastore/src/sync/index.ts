@@ -134,7 +134,10 @@ export class SyncEngine {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
@@ -915,9 +918,9 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
+		const predicate = ModelPredicateCreator.createFromAST<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			c => c.namespace('eq', namespace).model('eq', model)
+			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] }
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {

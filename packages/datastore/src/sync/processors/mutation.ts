@@ -195,7 +195,7 @@ class MutationProcessor {
 									operation,
 									data,
 									condition,
-									modelConstructor as any,
+									modelConstructor,
 									this.MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
