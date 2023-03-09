@@ -20,6 +20,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicatesGroup,
+	PredicateObject,
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
@@ -28,6 +29,7 @@ import {
 	InternalSchema,
 	AuthModeStrategy,
 	ModelAttributes,
+	isPredicateGroup,
 } from '../types';
 import {
 	extractPrimaryKeyFieldNames,
@@ -247,6 +249,7 @@ export function getAuthorizationRules(
 			groupClaim = 'cognito:groups',
 			allow: authStrategy = 'iam',
 			groups = [],
+			groupsField = '',
 		} = rule;
 
 		const isReadAuthorized = operations.includes('read');
@@ -263,6 +266,7 @@ export function getAuthorizationRules(
 			groupClaim,
 			authStrategy,
 			groups,
+			groupsField,
 			areSubscriptionsPublic: false,
 		};
 
@@ -300,26 +304,36 @@ export function buildSubscriptionGraphQLOperation(
 	modelDefinition: SchemaModel,
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
-	ownerField: string
+	ownerField: string,
+	filterArg: boolean = false
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
-	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
+	const { name: typeName } = modelDefinition;
 
 	const opName = `on${transformerMutationType}${typeName}`;
-	let docArgs = '';
-	let opArgs = '';
+
+	const docArgs: string[] = [];
+	const opArgs: string[] = [];
+
+	if (filterArg) {
+		docArgs.push(`$filter: ModelSubscription${typeName}FilterInput`);
+		opArgs.push('filter: $filter');
+	}
 
 	if (isOwnerAuthorization) {
-		docArgs = `($${ownerField}: String!)`;
-		opArgs = `(${ownerField}: $${ownerField})`;
+		docArgs.push(`$${ownerField}: String!`);
+		opArgs.push(`${ownerField}: $${ownerField}`);
 	}
+
+	const docStr = docArgs.length ? `(${docArgs.join(',')})` : '';
+	const opStr = opArgs.length ? `(${opArgs.join(',')})` : '';
 
 	return [
 		transformerMutationType,
 		opName,
-		`subscription operation${docArgs}{
-			${opName}${opArgs}{
+		`subscription operation${docStr}{
+			${opName}${opStr}{
 				${selectionSet}
 			}
 		}`,
@@ -476,10 +490,25 @@ export function predicateToGraphQLCondition(
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
+/**
+ * @param predicatesGroup - Predicate Group
+	@returns GQL Filter Expression from Predicate Group
+	
+	@remarks Flattens redundant list predicates
+	@example
 
+	```js
+	{ and:[{ and:[{ username:  { eq: 'bob' }}] }] }
+	```
+	Becomes
+	```js
+	{ and:[{ username: { eq: 'bob' }}] }
+	```
+	*/
 export function predicateToGraphQLFilter(
 	predicatesGroup: PredicatesGroup<any>,
-	fieldsToOmit: string[] = []
+	fieldsToOmit: string[] = [],
+	root = true
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -492,8 +521,7 @@ export function predicateToGraphQLFilter(
 
 	result[type] = isList ? [] : {};
 
-	const appendToFilter = value =>
-		isList ? result[type].push(value) : (result[type] = value);
+	const children: GraphQLFilter[] = [];
 
 	predicates.forEach(predicate => {
 		if (isPredicateObj(predicate)) {
@@ -505,12 +533,37 @@ export function predicateToGraphQLFilter(
 				[field]: { [operator]: operand },
 			};
 
-			appendToFilter(gqlField);
+			children.push(gqlField);
 			return;
 		}
 
-		const child = predicateToGraphQLFilter(predicate, fieldsToOmit);
-		Object.keys(child).length > 0 && appendToFilter(child);
+		const child = predicateToGraphQLFilter(predicate, fieldsToOmit, false);
+		if (Object.keys(child).length > 0) {
+			children.push(child);
+		}
+	});
+
+	// flatten redundant list predicates
+	if (children.length === 1) {
+		const [child] = children;
+		if (
+			// any nested list node
+			(isList && !root) ||
+			// root list node where the only child is also a list node
+			(isList && root && ('and' in child || 'or' in child))
+		) {
+			delete result[type];
+			Object.assign(result, child);
+			return result;
+		}
+	}
+
+	children.forEach(child => {
+		if (isList) {
+			result[type].push(child);
+		} else {
+			result[type] = child;
+		}
 	});
 
 	if (isList) {
@@ -520,6 +573,223 @@ export function predicateToGraphQLFilter(
 	}
 
 	return result;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns set of distinct field names in the filter group
+ */
+export function filterFields(group?: PredicatesGroup<any>): Set<string> {
+	const fields = new Set<string>();
+
+	if (!group || !Array.isArray(group.predicates)) return fields;
+
+	const { predicates } = group;
+	const stack = [...predicates];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+		if (isPredicateObj(current)) {
+			fields.add(current.field as string);
+		} else if (isPredicateGroup(current)) {
+			stack.push(...current.predicates);
+		}
+	}
+
+	return fields;
+}
+
+/**
+ *
+ * @param modelDefinition
+ * @returns set of field names used with dynamic auth modes configured for the provided model definition
+ */
+export function dynamicAuthFields(modelDefinition: SchemaModel): Set<string> {
+	const rules = getAuthorizationRules(modelDefinition);
+	const fields = new Set<string>();
+
+	for (const rule of rules) {
+		if (rule.groupsField && !rule.groups.length) {
+			// dynamic group rule will have no values in `rule.groups`
+			fields.add((rule as AuthorizationRule).groupsField);
+		} else if (rule.ownerField) {
+			fields.add(rule.ownerField);
+		}
+	}
+
+	return fields;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns the total number of OR'd predicates in the filter group
+ *
+ * @example returns 2
+ * ```js
+ * { type: "or", predicates: [
+ * { field: "username", operator: "beginsWith", operand: "a" },
+ * { field: "title", operator: "contains", operand: "abc" },
+ * ]}
+ * ```
+ */
+export function countFilterCombinations(group?: PredicatesGroup<any>): number {
+	if (!group || !Array.isArray(group.predicates)) return 0;
+
+	let count = 0;
+	const stack: (PredicatesGroup<any> | PredicateObject<any>)[] = [group];
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		if (isPredicateGroup(current)) {
+			const { predicates, type } = current;
+			// ignore length = 1; groups with 1 predicate will get flattened when converted to gqlFilter
+			if (type === 'or' && predicates.length > 1) {
+				count += predicates.length;
+			}
+			stack.push(...predicates);
+		}
+	}
+
+	// if we didn't encounter any OR groups, default to 1
+	return count || 1;
+}
+
+/**
+ *
+ * @param group - selective sync predicate group
+ * @returns name of repeated field | null
+ *
+ * @example returns "username"
+ * ```js
+ * { type: "and", predicates: [
+ * 		{ field: "username", operator: "beginsWith", operand: "a" },
+ * 		{ field: "username", operator: "contains", operand: "abc" },
+ * ] }
+ * ```
+ */
+export function repeatedFieldInGroup(
+	group?: PredicatesGroup<any>
+): string | null {
+	if (!group || !Array.isArray(group.predicates)) return null;
+
+	// convert to filter in order to flatten redundant groups
+	const gqlFilter = predicateToGraphQLFilter(group);
+
+	const stack: GraphQLFilter[] = [gqlFilter];
+
+	const hasGroupRepeatedFields = (fields: GraphQLFilter[]): string | null => {
+		const seen = {};
+
+		for (const f of fields) {
+			const [fieldName] = Object.keys(f);
+			if (seen[fieldName]) {
+				return fieldName;
+			}
+			seen[fieldName] = true;
+		}
+		return null;
+	};
+
+	while (stack.length > 0) {
+		const current = stack.pop();
+
+		const [key] = Object.keys(current!);
+		const values = current![key];
+
+		if (!Array.isArray(values)) {
+			return null;
+		}
+
+		// field value will be single object
+		const predicateObjects = values.filter(
+			v => !Array.isArray(Object.values(v)[0])
+		);
+
+		// group value will be an array
+		const predicateGroups = values.filter(v =>
+			Array.isArray(Object.values(v)[0])
+		);
+
+		if (key === 'and') {
+			const repeatedField = hasGroupRepeatedFields(predicateObjects);
+			if (repeatedField) {
+				return repeatedField;
+			}
+		}
+
+		stack.push(...predicateGroups);
+	}
+
+	return null;
+}
+
+export enum RTFError {
+	UnknownField,
+	MaxAttributes,
+	MaxCombinations,
+	RepeatedFieldname,
+	NotGroup,
+	FieldNotInType,
+}
+
+export function generateRTFRemediation(
+	errorType: RTFError,
+	modelDefinition: SchemaModel,
+	predicatesGroup: PredicatesGroup<any> | undefined
+): string {
+	const selSyncFields = filterFields(predicatesGroup);
+	const selSyncFieldStr = [...selSyncFields].join(', ');
+	const dynamicAuthModeFields = dynamicAuthFields(modelDefinition);
+	const dynamicAuthFieldsStr = [...dynamicAuthModeFields].join(', ');
+	const filterCombinations = countFilterCombinations(predicatesGroup);
+	const repeatedField = repeatedFieldInGroup(predicatesGroup);
+
+	switch (errorType) {
+		case RTFError.UnknownField:
+			return (
+				`Your API was generated with an older version of the CLI that doesn't support backend subscription filtering.` +
+				'To enable backend subscription filtering, upgrade your Amplify CLI to the latest version and push your app by running `amplify upgrade` followed by `amplify push`'
+			);
+
+		case RTFError.MaxAttributes: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${selSyncFields.size} different model fields: ${selSyncFieldStr}.\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth each utilize 1 field.\n` +
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+			}
+
+			return message;
+		}
+
+		case RTFError.MaxCombinations: {
+			let message = `Your selective sync expression for ${modelDefinition.name} contains ${filterCombinations} field combinations (total number of predicates in an OR expression).\n\n`;
+
+			if (dynamicAuthModeFields.size > 0) {
+				message +=
+					`Note: the number of fields you can use with selective sync is affected by @auth rules configured on the model.\n\n` +
+					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
+					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
+			}
+			return message;
+		}
+
+		case RTFError.RepeatedFieldname:
+			return `Your selective sync expression for ${modelDefinition.name} contains multiple entries for ${repeatedField} in the same AND group.`;
+		case RTFError.NotGroup:
+			return (
+				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
+				`rewrite your expression using \`ne\` or \`notContains\` operators.`
+			);
+		case RTFError.FieldNotInType:
+			// no remediation instructions. We'll surface the message directly
+			return '';
+	}
 }
 
 export function getUserGroupsFromToken(
