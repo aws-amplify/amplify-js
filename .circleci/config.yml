@@ -1732,7 +1732,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *minimal_browser_list
+              browser: [chrome]
       - integ_angular_interactions:
           requires:
             - integ_setup
