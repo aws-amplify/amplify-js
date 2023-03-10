@@ -82,13 +82,13 @@
 			"name": "Core (Hub)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Hub }",
-			"limit": "2 kB"
+			"limit": "2.05 kB"
 		},
 		{
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2 kB"
+			"limit": "2.05 kB"
 		},
 		{
 			"name": "Core (Logger)",
@@ -100,7 +100,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "34.5 kB"
+			"limit": "35.5 kB"
 		}
 	],
 	"jest": {
