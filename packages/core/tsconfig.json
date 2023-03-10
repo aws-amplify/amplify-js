@@ -3,5 +3,8 @@
 	"compilerOptions": {
 		"importHelpers": false
 	},
-	"include": ["lib*/**/*.ts", "src"]
+	"include": ["./src"],
+	"watchOptions": {
+		"excludeDirectories": ["lib*"]
+	}
 }
