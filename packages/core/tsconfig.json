@@ -1,5 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
-	"compilerOptions": {},
+	"compilerOptions": {
+		"downlevelIteration": true
+	},
 	"include": ["lib*/**/*.ts", "src"]
 }
