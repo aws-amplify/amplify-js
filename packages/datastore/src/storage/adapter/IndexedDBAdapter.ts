@@ -550,12 +550,12 @@ class IndexedDBAdapter implements Adapter {
 		for (const name of store.indexNames) {
 			const idx = store.index(name);
 			const keypath = Array.isArray(idx.keyPath) ? idx.keyPath : [idx.keyPath];
-			const matchingPredicateValues: string[] = [];
+			const matchingPredicateValues: (string | number)[] = [];
 
 			for (const field of keypath) {
 				const p = predicateIndex.get(field);
-				if (p) {
-					matchingPredicateValues.push(String(p.operand));
+				if (p && p.operand !== null && p.operand !== undefined) {
+					matchingPredicateValues.push(p.operand);
 				} else {
 					break;
 				}
@@ -1238,7 +1238,7 @@ class IndexedDBAdapter implements Adapter {
 	 * @returns An array or string, depending on and given key,
 	 * that is ensured to be compatible with the IndexedDB implementation's nuances.
 	 */
-	private canonicalKeyPath = (keyArr: string[]) => {
+	private canonicalKeyPath = (keyArr: (string | number)[]) => {
 		if (this.safariCompatabilityMode) {
 			return keyArr.length > 1 ? keyArr : keyArr[0];
 		}
