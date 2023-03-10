@@ -263,9 +263,7 @@ export default class PushNotification implements PushNotificationInterface {
 	};
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				try {
@@ -279,32 +277,24 @@ export default class PushNotification implements PushNotificationInterface {
 	};
 
 	getLaunchNotification = async (): Promise<PushNotificationMessage | null> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return normalizeNativeMessage(
 			await this.nativeModule.getLaunchNotification?.()
 		);
 	};
 
 	getBadgeCount = async (): Promise<number | null> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return this.nativeModule.getBadgeCount?.();
 	};
 
 	setBadgeCount = (count: number): void => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return this.nativeModule.setBadgeCount?.(count);
 	};
 
 	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return normalizeNativePermissionStatus(
 			await this.nativeModule.getPermissionStatus?.()
 		);
@@ -317,9 +307,7 @@ export default class PushNotification implements PushNotificationInterface {
 			sound: true,
 		}
 	): Promise<boolean> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return this.nativeModule.requestPermissions?.(permissions);
 	};
 
@@ -337,9 +325,7 @@ export default class PushNotification implements PushNotificationInterface {
 	onBackgroundNotificationReceived = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return addEventListener(
 			PushNotificationEvent.BACKGROUND_MESSAGE_RECEIVED,
 			handler
@@ -349,9 +335,7 @@ export default class PushNotification implements PushNotificationInterface {
 	onForegroundNotificationReceived = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return addEventListener(
 			PushNotificationEvent.FOREGROUND_MESSAGE_RECEIVED,
 			handler
@@ -361,18 +345,14 @@ export default class PushNotification implements PushNotificationInterface {
 	onNotificationOpened = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return addEventListener(PushNotificationEvent.NOTIFICATION_OPENED, handler);
 	};
 
 	onTokenReceived = (
 		handler: OnTokenReceivedHandler
 	): EventListener<OnTokenReceivedHandler> => {
-		if (!this.isEnabled) {
-			throw new NotEnabledError();
-		}
+		this.assertIsEnabled();
 		return addEventListener(PushNotificationEvent.TOKEN_RECEIVED, handler);
 	};
 
@@ -387,5 +367,11 @@ export default class PushNotification implements PushNotificationInterface {
 				}
 			})
 		);
+	};
+
+	private assertIsEnabled = (): void => {
+		if (!this.isEnabled) {
+			throw new NotEnabledError();
+		}
 	};
 }
