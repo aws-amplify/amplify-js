@@ -1,3 +1,9 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+/**
+ * Denotes the medium over which a confirmation code was sent.
+ */
 export const enum DeliveryMedium {
 	/** Code was sent via email. */
 	EMAIL = 'EMAIL',

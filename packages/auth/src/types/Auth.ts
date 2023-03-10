@@ -18,12 +18,6 @@ export interface SignUpParams {
 	autoSignIn?: AutoSignInOptions;
 }
 
-export interface AuthCache {
-	setItem();
-	getItem();
-	removeItem();
-}
-
 /**
  * Auth instance options
  */

@@ -30,6 +30,28 @@
     "lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
     "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
   },
+  "typesVersions": {
+    ">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "cognito": [
+        "./lib-esm/providers/cognito/index.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./cognito": {
+      "types": "./lib-esm/providers/cognito/index.d.ts",
+      "import": "./lib-esm/providers/cognito/index.js",
+      "require": "./lib/providers/cognito/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-js.git"
@@ -47,8 +69,8 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.0.15",
-    "@aws-sdk/client-cognito-identity-provider": "3.282.0",
-    "@aws-sdk/client-cognito-identity": "3.282.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.54.0",
+    "@aws-sdk/client-cognito-identity": "3.54.0",
     "amazon-cognito-identity-js": "6.1.2",
     "tslib": "^1.8.0"
   },

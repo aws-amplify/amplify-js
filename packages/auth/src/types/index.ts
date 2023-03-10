@@ -1,19 +1,29 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// Models
-export { AnyAttribute } from './models/AnyAttribute';
-export { AuthStandardAttributeKey } from './models/AuthStandardAttributeKey';
-export { AuthUserAttributeKey } from './models/AuthUserAttributeKey';
-
-// Options
-export { AuthServiceOptions } from './options/AuthServiceOptions';
-export { AuthSignUpOptions } from './options/AuthSignUpOptions';
-
-// Requests
-export { SignUpRequest } from './requests/SignUpRequest';
-
-// Responses
-
 // TODO: Remove "./Auth" export
 export * from './Auth';
+
+// Enums
+export { AuthSignUpStep } from './enums/AuthSignUpStep';
+export { DeliveryMedium } from './enums/DeliveryMedium';
+
+// Models
+export type { AdditionalInfo } from './models/AdditionalInfo';
+export type { AnyAttribute } from './models/AnyAttribute';
+export type { AuthCodeDeliveryDetails } from './models/AuthCodeDeliveryDetails';
+export type { AuthNextSignUpStep } from './models/AuthNextSignUpStep';
+export type { AuthStandardAttributeKey } from './models/AuthStandardAttributeKey';
+export type { AuthUserAttributeKey } from './models/AuthUserAttributeKey';
+export type { AuthUserAttribute } from './models/AuthUserAttribute';
+export type { GetAttributeKey } from './models/GetAttributeKey';
+
+// Options
+export type { AuthServiceOptions } from './options/AuthServiceOptions';
+export type { AuthSignUpOptions } from './options/AuthSignUpOptions';
+
+// Requests
+export type { SignUpRequest } from './requests/SignUpRequest';
+
+// Results
+export type { AuthSignUpResult } from './results/AuthSignUpResult';

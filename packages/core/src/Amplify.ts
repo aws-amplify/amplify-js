@@ -33,8 +33,8 @@ export class AmplifyClass {
 	Logger = LoggerClass;
 	ServiceWorker = null;
 
-	public get config() {
-		return this.config;
+	public get config(): any {
+		return this._config;
 	}
 
 	register(comp) {

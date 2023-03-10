@@ -17,7 +17,7 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
 /**
  * @deprecated use named import
  */
-export default Auth;
+// export default Auth;
 export {
 	Auth,
 	CognitoUser,
@@ -28,3 +28,9 @@ export {
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,
 };
+
+// Provider specific types
+export * from './providers/cognito';
+
+// Category specific types
+export * from './types';
