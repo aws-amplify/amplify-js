@@ -28,6 +28,13 @@ import {
 	getUserGroupsFromToken,
 	TransformerMutationType,
 	getTokenForCustomAuth,
+	predicateToGraphQLFilter,
+	dynamicAuthFields,
+	filterFields,
+	repeatedFieldInGroup,
+	countFilterCombinations,
+	RTFError,
+	generateRTFRemediation,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
@@ -65,7 +72,10 @@ class SubscriptionProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
@@ -79,7 +89,8 @@ class SubscriptionProcessor {
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } | undefined,
 		oidcTokenPayload: { [field: string]: any } | undefined,
-		authMode: GRAPHQL_AUTH_MODE
+		authMode: GRAPHQL_AUTH_MODE,
+		filterArg: boolean = false
 	): {
 		opType: TransformerMutationType;
 		opName: string;
@@ -105,7 +116,8 @@ class SubscriptionProcessor {
 			model,
 			transformerMutationType,
 			isOwner,
-			ownerField!
+			ownerField!,
+			filterArg
 		);
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
@@ -182,10 +194,18 @@ class SubscriptionProcessor {
 		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
 
+			// AuthZ for "list of owners" is handled dynamically in the subscription auth request
+			// resolver. It doesn't rely on a subscription arg.
+			// Only pass a subscription arg for single owner auth
+			const singleOwner =
+				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+			const isOwnerArgRequired =
+				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
+
 			if (ownerValue) {
 				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
+					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -209,10 +229,15 @@ class SubscriptionProcessor {
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
+			const singleOwner =
+				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
+			const isOwnerArgRequired =
+				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
+
 			if (ownerValue) {
 				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
+					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -356,8 +381,20 @@ class SubscriptionProcessor {
 										[TransformerMutationType.DELETE]: 0,
 									};
 
-									// Retry failed subscriptions with next auth mode (if available)
-									const authModeRetry = async operation => {
+									const predicatesGroup = ModelPredicateCreator.getPredicates(
+										this.syncPredicates.get(modelDefinition)!,
+										false
+									);
+
+									const addFilterArg = predicatesGroup !== undefined;
+
+									// Retry subscriptions that failed for one of the following reasons:
+									// 1. unauthorized - retry with next auth mode (if available)
+									// 2. RTF error - retry without sending filter arg. (filtering will fall back to clientside)
+									const subscriptionRetry = async (
+										operation,
+										addFilter = addFilterArg
+									) => {
 										const {
 											opType: transformerMutationType,
 											opName,
@@ -373,7 +410,8 @@ class SubscriptionProcessor {
 											userCredentials,
 											cognitoTokenPayload,
 											oidcTokenPayload,
-											readAuthModes[operationAuthModeAttempts[operation]]
+											readAuthModes[operationAuthModeAttempts[operation]],
+											addFilter
 										);
 
 										const authToken = await getTokenForCustomAuth(
@@ -382,6 +420,11 @@ class SubscriptionProcessor {
 										);
 
 										const variables = {};
+
+										if (addFilter && predicatesGroup) {
+											variables['filter'] =
+												predicateToGraphQLFilter(predicatesGroup);
+										}
 
 										if (isOwner) {
 											if (!ownerValue) {
@@ -478,6 +521,33 @@ class SubscriptionProcessor {
 															},
 														} = subscriptionError;
 
+														const isRTFError =
+															// only attempt catch if a filter variable was added to the subscription query
+															addFilter &&
+															this.catchRTFError(
+																message,
+																modelDefinition,
+																predicatesGroup
+															);
+
+														// Catch RTF errors
+														if (isRTFError) {
+															// Unsubscribe and clear subscription array for model/operation
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															].forEach(subscription =>
+																subscription.unsubscribe()
+															);
+
+															subscriptions[modelDefinition.name][
+																transformerMutationType
+															] = [];
+
+															// retry subscription connection without filter
+															subscriptionRetry(operation, false);
+															return;
+														}
+
 														if (
 															message.includes(
 																PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
@@ -523,10 +593,11 @@ class SubscriptionProcessor {
 																		]
 																	}`
 																);
-																authModeRetry(operation);
+																subscriptionRetry(operation);
 																return;
 															}
 														}
+
 														logger.warn('subscriptionError', message);
 
 														try {
@@ -586,7 +657,7 @@ class SubscriptionProcessor {
 										);
 									};
 
-									operations.forEach(op => authModeRetry(op));
+									operations.forEach(op => subscriptionRetry(op));
 								})
 						);
 				});
@@ -659,6 +730,49 @@ class SubscriptionProcessor {
 			this.buffer.forEach(data => this.dataObserver.next!(data));
 			this.buffer = [];
 		}
+	}
+
+	/**
+	 * @returns true if the service returned an RTF subscription error
+	 * @remarks logs a warning with remediation instructions
+	 *
+	 */
+	private catchRTFError(
+		message: string,
+		modelDefinition: SchemaModel,
+		predicatesGroup: PredicatesGroup<any> | undefined
+	): boolean {
+		const header =
+			'Backend subscriptions filtering error.\n' +
+			'Subscriptions filtering will be applied clientside.\n';
+
+		const messageErrorTypeMap = {
+			'UnknownArgument: Unknown field argument filter': RTFError.UnknownField,
+			'Filters exceed maximum attributes limit': RTFError.MaxAttributes,
+			'Filters combination exceed maximum limit': RTFError.MaxCombinations,
+			'filter uses same fieldName multiple time': RTFError.RepeatedFieldname,
+			"The variables input contains a field name 'not'": RTFError.NotGroup,
+			'The variables input contains a field that is not defined for input object type':
+				RTFError.FieldNotInType,
+		};
+
+		const [_errorMsg, errorType] =
+			Object.entries(messageErrorTypeMap).find(([errorMsg]) =>
+				message.includes(errorMsg)
+			) || [];
+
+		if (errorType !== undefined) {
+			const remediationMessage = generateRTFRemediation(
+				errorType,
+				modelDefinition,
+				predicatesGroup
+			);
+
+			logger.warn(`${header}\n${message}\n${remediationMessage}`);
+			return true;
+		}
+
+		return false;
 	}
 }
 

@@ -4,8 +4,16 @@ import {
 	LimitTimerRaceResolvedValues,
 	SchemaModel,
 	SchemaNamespace,
+	PredicatesGroup,
 } from '../src/types';
-import { generateSelectionSet, getModelAuthModes } from '../src/sync/utils';
+import {
+	generateSelectionSet,
+	getModelAuthModes,
+	filterFields,
+	dynamicAuthFields,
+	countFilterCombinations,
+	repeatedFieldInGroup,
+} from '../src/sync/utils';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { DeferredCallbackResolver } from '../src/util';
 
@@ -585,6 +593,297 @@ _deleted`;
 			expect(limitTimerRaceCallback).toBeCalledTimes(0);
 
 			limitTimerRace.clear();
+		});
+	});
+
+	describe('RTF helper utils', () => {
+		test('repeatedFieldInGroup', () => {
+			const group1: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'field',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						field: 'field',
+						operator: 'ne',
+						operand: 'something',
+					},
+				],
+			};
+
+			expect(repeatedFieldInGroup(group1)).toEqual('field');
+
+			const group2: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						type: 'and',
+						predicates: [
+							{
+								field: 'field',
+								operator: 'eq',
+								operand: 'something',
+							},
+						],
+					},
+					{
+						type: 'and',
+						predicates: [
+							{
+								field: 'field',
+								operator: 'ne',
+								operand: 'something',
+							},
+						],
+					},
+				],
+			};
+
+			expect(repeatedFieldInGroup(group2)).toEqual('field');
+
+			const group3: PredicatesGroup<any> = {
+				type: 'or',
+				predicates: [
+					{
+						field: 'field',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						field: 'field',
+						operator: 'ne',
+						operand: 'something',
+					},
+				],
+			};
+
+			expect(repeatedFieldInGroup(group3)).toEqual(null);
+		});
+
+		test('dynamicAuthFields', () => {
+			// owner + dynamic group
+			const modelDefinition: SchemaModel = {
+				name: 'Post',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					customOwner: {
+						name: 'customOwner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Posts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'customOwner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									groupsField: 'admins',
+									allow: 'groups',
+									identityClaim: 'cognito:groups',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			};
+
+			const expectedSet = new Set(['customOwner', 'admins']);
+			expect(dynamicAuthFields(modelDefinition)).toEqual(expectedSet);
+
+			// owner + static group
+			const modelDefinition2: SchemaModel = {
+				name: 'Post',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Posts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									allow: 'groups',
+									groups: ['Admin'],
+									identityClaim: 'cognito:groups',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+			};
+
+			const expectedSet2 = new Set(['owner']);
+			expect(dynamicAuthFields(modelDefinition2)).toEqual(expectedSet2);
+		});
+
+		test('filterFields', () => {
+			const group1: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'name',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						field: 'title',
+						operator: 'ne',
+						operand: 'something',
+					},
+				],
+			};
+
+			const expectedSet = new Set(['name', 'title']);
+			expect(filterFields(group1)).toEqual(expectedSet);
+
+			const group2: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'name',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						type: 'or',
+						predicates: [
+							{
+								field: 'title',
+								operator: 'eq',
+								operand: 'something',
+							},
+							{
+								field: 'createdAt',
+								operator: 'ge',
+								operand: '1/1/2023',
+							},
+							{
+								field: 'updatedAt',
+								operator: 'le',
+								operand: '2/1/2023',
+							},
+						],
+					},
+				],
+			};
+
+			const expectedSet2 = new Set(['name', 'title', 'createdAt', 'updatedAt']);
+			expect(filterFields(group2)).toEqual(expectedSet2);
+		});
+
+		test('countFilterCombinations', () => {
+			const group1: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'name',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						field: 'title',
+						operator: 'ne',
+						operand: 'something',
+					},
+				],
+			};
+
+			expect(countFilterCombinations(group1)).toEqual(1);
+
+			const group2: PredicatesGroup<any> = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'name',
+						operator: 'eq',
+						operand: 'something',
+					},
+					{
+						type: 'or',
+						predicates: [
+							{
+								field: 'title',
+								operator: 'eq',
+								operand: 'something',
+							},
+							{
+								field: 'createdAt',
+								operator: 'ge',
+								operand: '1/1/2023',
+							},
+							{
+								field: 'updatedAt',
+								operator: 'le',
+								operand: '2/1/2023',
+							},
+						],
+					},
+				],
+			};
+
+			expect(countFilterCombinations(group2)).toEqual(3);
 		});
 	});
 });
