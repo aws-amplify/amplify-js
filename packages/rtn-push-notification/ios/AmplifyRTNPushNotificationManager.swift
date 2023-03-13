@@ -4,7 +4,6 @@
 import Foundation
 import AmplifyUtilsNotifications
 
-private let isBackgroundModeKey = "isBackgroundMode"
 private let completionHandlerIdKey = "completionHandlerId"
 
 extension UNAuthorizationStatus {
@@ -30,9 +29,7 @@ class AmplifyRTNPushNotificationManager  {
     static let shared = AmplifyRTNPushNotificationManager()
 
     private var cachedDeviceToken: String?
-    private var launchNotification: Any?
-    private var isBackgroundMode = false
-    private var justExitedBackgroundMode = false
+    private var launchNotification: [AnyHashable: Any]?
     private var remoteNotificationCompletionHandlers: [String: (UIBackgroundFetchResult) -> Void] = [:]
     private let sharedEventManager: AmplifyRTNEventManager
 
@@ -46,17 +43,30 @@ class AmplifyRTNPushNotificationManager  {
     }
 
     func handleLaunchOptions(launchOptions: [AnyHashable: Any]) {
-        // to get the launch notification when the app is launched from the "killed" state
-        if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification],
+        // 1. The host App launch is caused by a notification
+        if let remoteNotification = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any],
            let application = RCTSharedApplication() {
+            // 2. The host App is launched from terminated state to the foreground
+            //    (including transitioning to foregound), i.e. .active .inactive.
+            //    This happens under one of below conditions:
+            //      a. Remote notifications are not able to launch the host App (without `content-available: 1`)
+            //      b. Remote notifications background mode was not enabled on the host App
+            //      c. The end user disabled background refresh of the host App
+            // 3. This notification must be tapped by an end user which is recorded as the launch notification
             if application.applicationState != .background {
                 launchNotification = remoteNotification
+
+                // NOTE: the notification payload will also be passed into didReceiveRemoteNotification below after
+                // this delegate method, didFinishLaunchingWithOptions completes.
+                // As this notification will already be recorded as the launch notification, it should not be sent as
+                // notificationOpened event, this check is handled in didReceiveRemoteNotification.
             }
 
-            if application.applicationState == .background {
-                // App woke up in the background by a remote notification
-                isBackgroundMode = true
-            }
+            // Otherwise the host App is launched in the background, this notification will be sent to react-native
+            // as backgroundMessageReceived event in didReceiveRemoteNotification below.
+            // After the host App launched in the background, didFinishLaunchingWithOptions will no longer
+            // be fired when an end user taps a notification.
+            // After the host App launched in the background, it runs developers' react-native code as well.
         }
     }
 
@@ -157,18 +167,8 @@ class AmplifyRTNPushNotificationManager  {
         completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         if let application = RCTSharedApplication() {
-            if (application.applicationState == .inactive) {
-                if justExitedBackgroundMode {
-                    // When an end user taps on a notification to bring the App to the foreground
-                    // and the App just exited from the background mode, we treat the tapped notification
-                    // as the "launch notification."
-                    setLaunchNotification(notification: userInfo)
-                } else {
-                    sharedEventManager.sendEventToJS(
-                        AmplifyRTNEvent(type: NativeEvent.notificationOpened, payload: userInfo)
-                    )
-                }
-            } else if (application.applicationState == .background) {
+            switch application.applicationState {
+            case .background:
                 let completionHandlerId = UUID().uuidString
                 var userInfoCopy = userInfo
 
@@ -178,15 +178,43 @@ class AmplifyRTNPushNotificationManager  {
                 sharedEventManager.sendEventToJS(
                     AmplifyRTNEvent(type: NativeEvent.backgroundMessageReceived, payload: userInfoCopy)
                 )
-            } else {
+
+                // Expecting remoteNotificationCompletionHandlers[completionHandlerIdKey] to be called from JS to complete
+                // the background notification
+            case .inactive:
+                if let launchNotification = launchNotification {
+                    if NSDictionary(dictionary: launchNotification).isEqual(to: userInfo) {
+                        // When the last tapped notification is the same as the launch notification,
+                        // it's sent as launchNotificationOpened event, and retrievable via getLaunchNotification.
+                        AmplifyRTNEventManager.shared.sendEventToJS(
+                            AmplifyRTNEvent(type: NativeEvent.launchNotificationOpened, payload: launchNotification)
+                        )
+                    } else {
+                        // When a launch notification is recorded in handleLaunchOptions above,
+                        // but the last tapped notification is not the recorded launch notification, the last
+                        // tapped notification will be sent to react-native as notificationOpened event.
+                        // This may happen when an end user rapidly tapped on multiple notifications.
+                        self.launchNotification = nil
+                        sharedEventManager.sendEventToJS(
+                            AmplifyRTNEvent(type: NativeEvent.notificationOpened, payload: userInfo)
+                        )
+                    }
+                } else {
+                    // When there is no launch notification recorded, the last tapped notification
+                    // will be sent to react-native as notificationOpened event.
+                    sharedEventManager.sendEventToJS(
+                        AmplifyRTNEvent(type: NativeEvent.notificationOpened, payload: userInfo)
+                    )
+                }
+                completionHandler(.noData)
+            case .active:
                 sharedEventManager.sendEventToJS(
                     AmplifyRTNEvent(type: NativeEvent.foregroundMessageReceived, payload: userInfo)
                 )
+                completionHandler(.noData)
+            @unknown default: break // we don't handle any possible new state added in the future for now
             }
         }
-
-        // Expecting remoteNotificationCompletionHandlers[completionHandlerIdKey] to be called from JS to complete
-        // the background notification
     }
 
     func completeNotification(_ completionHandlerId: String) {
@@ -199,18 +227,6 @@ class AmplifyRTNPushNotificationManager  {
     private func setUpObservers() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(applicationWillEnterForeground),
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidEnterBackground),
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
             selector: #selector(applicationDidBecomeActive),
             name: UIApplication.didBecomeActiveNotification,
             object: nil
@@ -220,48 +236,14 @@ class AmplifyRTNPushNotificationManager  {
     private func removeObservers() {
         NotificationCenter.default.removeObserver(
             self,
-            name: UIApplication.willEnterForegroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.didEnterBackgroundNotification,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
     }
 
     @objc
-    private func applicationWillEnterForeground() {
-        exitBackgroundMode()
-    }
-
-    @objc
-    private func applicationDidEnterBackground() {
-        justExitedBackgroundMode = false
-    }
-
-    @objc
     private func applicationDidBecomeActive() {
         registerForRemoteNotifications()
-    }
-
-    private func setLaunchNotification(notification: Any) {
-        launchNotification = notification
-        AmplifyRTNEventManager.shared.sendEventToJS(
-            AmplifyRTNEvent(type: NativeEvent.launchNotificationOpened, payload: notification)
-        )
-    }
-
-    private func exitBackgroundMode() {
-        if isBackgroundMode {
-            isBackgroundMode = false
-            justExitedBackgroundMode = true
-        }
     }
 
     private func registerForRemoteNotifications() {
