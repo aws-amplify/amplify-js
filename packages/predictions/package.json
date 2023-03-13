@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "5.0.15",
+	"version": "5.0.18",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -13,7 +13,7 @@
 		"./lib-esm/Predictions.js"
 	],
 	"scripts": {
-		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+		"test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
@@ -45,8 +45,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.0.15",
-		"@aws-amplify/storage": "5.1.5",
+		"@aws-amplify/core": "5.1.1",
+		"@aws-amplify/storage": "5.1.8",
 		"@aws-sdk/client-comprehend": "3.6.1",
 		"@aws-sdk/client-polly": "3.6.1",
 		"@aws-sdk/client-rekognition": "3.6.1",

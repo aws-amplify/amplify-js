@@ -464,6 +464,7 @@ export class AWSS3UploadTask implements UploadTask {
 		} catch (err) {
 			if (!axios.isCancel(err)) {
 				logger.error('Error initializing the upload task', err);
+				this._emitEvent(TaskEvents.ERROR, err);
 			}
 		}
 	}

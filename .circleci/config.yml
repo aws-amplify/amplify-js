@@ -587,6 +587,13 @@ jobs:
           sample_name: auth-ssr
           spec: auth-ssr
           browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'NextJS Auth Custom Implementation with SSR'
+          framework: next
+          category: auth
+          sample_name: custom-auth-ssr
+          spec: authenticator
+          browser: << parameters.browser >>
 
   integ_react_predictions:
     parameters:
@@ -1522,6 +1529,23 @@ jobs:
           spec: vanilla-js-basic-crud
           amplifyjs_dir: ~/amplify-js
 
+  integ_react_datastore_docs_examples:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/amplify-docs-examples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Docs Examples'
+          framework: react
+          category: datastore
+          sample_name: v2/amplify-docs-examples
+          spec: amplify-docs-examples
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1708,7 +1732,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              <<: *minimal_browser_list
+              browser: [chrome]
       - integ_angular_interactions:
           requires:
             - integ_setup
@@ -2159,6 +2183,15 @@ workflows:
           matrix:
             parameters:
               <<: *minimal_browser_list
+      - integ_react_datastore_docs_examples:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2228,6 +2261,7 @@ workflows:
             - integ_vite_datastore_basic_crud
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
+            - integ_react_datastore_docs_examples
       - post_release:
           filters:
             branches:

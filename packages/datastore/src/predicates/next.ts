@@ -584,9 +584,7 @@ export class GroupCondition {
 						}
 					);
 
-					resultGroups.push(
-						await storage.query(this.model.builder, predicate as any)
-					);
+					resultGroups.push(await storage.query(this.model.builder, predicate));
 				} else {
 					throw new Error('Missing field metadata.');
 				}
@@ -718,13 +716,15 @@ export class GroupCondition {
 		};
 	}
 
-	toStoragePredicate<T>(
-		baseCondition?: StoragePredicate<T>
-	): StoragePredicate<T> {
-		return FlatModelPredicateCreator.createFromAST(
+	/**
+	 * Turn this predicate group into something a storage adapter
+	 * understands how to use.
+	 */
+	toStoragePredicate<T>(): StoragePredicate<T> {
+		return FlatModelPredicateCreator.createFromAST<T>(
 			this.model.schema,
 			this.toAST()
-		) as unknown as StoragePredicate<T>;
+		) as StoragePredicate<T>;
 	}
 
 	/**
@@ -758,12 +758,6 @@ export class GroupCondition {
  * `predicateFor()` returns objecst with recursive getters. To facilitate this,
  * a `query` and `tail` can be provided to "accumulate" nested conditions.
  *
- * TODO: the sortof-immutable algorithm was originally done to support legacy style
- * predicate branching (`p => p.x.eq(value).y.eq(value)`). i'm not sure this is
- * necessary or beneficial at this point, since we decided that each field condition
- * must flly terminate a branch. is the strong mutation barrier between chain links
- * still necessary or helpful?
- *
  * @param ModelType The ModelMeta used to build child properties.
  * @param field Scopes the query branch to a field.
  * @param query A base query to build on. Omit to start a new query.
@@ -786,7 +780,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// our eventual return object, which can be built upon.
 	// next steps will be to add or(), and(), not(), and field.op() methods.
-	const link = {} as any;
+	const link = {} as RecursiveModelPredicate<T>;
 
 	// so it can be looked up later with in the internals when processing conditions.
 	registerPredicateInternals(baseCondition, link);
@@ -805,10 +799,8 @@ export function recursivePredicateFor<T extends PersistentModel>(
 
 	// Adds .or() and .and() methods to the link.
 	// TODO: If revisiting this code, consider writing a Proxy instead.
-	['and', 'or'].forEach(op => {
-		(link as any)[op] = (
-			builder: RecursiveModelPredicateAggregateExtender<T>
-		) => {
+	(['and', 'or'] as const).forEach(op => {
+		link[op] = (builder: RecursiveModelPredicateAggregateExtender<T>) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
 			const { query, newTail } = copyLink();
@@ -889,10 +881,16 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// the same link is being used elsewhere by the customer.
 								const { query, newTail } = copyLink();
 
+								// normalize operands. if any of the values are `undefiend`, use
+								// `null` instead, because that's what will be stored cross-platform.
+								const normalizedOperands = operands.map(o =>
+									o === undefined ? null : o
+								);
+
 								// add the given condition to the link's TAIL node.
 								// remember: the base link might go N nodes deep! e.g.,
 								newTail?.operands.push(
-									new FieldCondition(fieldName, operator, operands)
+									new FieldCondition(fieldName, operator, normalizedOperands)
 								);
 
 								// A `FinalModelPredicate`.
@@ -962,5 +960,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>
 ): ModelPredicate<T> & PredicateInternalsKey {
+	// the cast here is just a cheap way to reduce the surface area from
+	// the recursive type.
 	return recursivePredicateFor(ModelType, false) as any as ModelPredicate<T>;
 }

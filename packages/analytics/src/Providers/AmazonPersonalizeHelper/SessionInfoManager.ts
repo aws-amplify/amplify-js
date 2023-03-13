@@ -10,7 +10,7 @@ import { Cache } from '@aws-amplify/cache';
 const PERSONALIZE_CACHE = '_awsct';
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';
 const PERSONALIZE_CACHE_SESSIONID = '_awsct_sid';
-const DEFAULT_CACHE_PREFIX = 'peronslize';
+const DEFAULT_CACHE_PREFIX = 'personalize';
 const TIMER_INTERVAL = 30 * 1000;
 const DELIMITER = '.';
 const CACHE_EXPIRY_IN_DAYS = 7;
