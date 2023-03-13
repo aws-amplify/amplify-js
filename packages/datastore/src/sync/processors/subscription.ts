@@ -596,6 +596,15 @@ class SubscriptionProcessor {
 																subscriptionRetry(operation);
 																return;
 															}
+														} else if (
+															message.includes(
+																PUBSUB_CONTROL_MSG.CONNECTION_ABORTED
+															)
+														) {
+															logger.debug('Subscription aborted by software.');
+															// signal to sync engine that full sync is needed
+															observer.error(message);
+															return;
 														}
 
 														logger.warn('subscriptionError', message);

@@ -373,6 +373,27 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 				region,
 				additionalHeaders,
 			});
+
+			// A websocket error after initial connection can occur when iOS Safari is placed in the background.
+			// The websocket will be forced closed due to bug in Safari https://developer.apple.com/forums/thread/685403
+			//
+			// Without the bollow error handler a new websocket would be opened, but any consumer of AWSAppSyncRealTimeProvider
+			// would not know there was a connection interruption.
+			if (this.awsRealTimeSocket) {
+				this.awsRealTimeSocket.onerror = err => {
+					logger.debug(err);
+					this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(
+									`${CONTROL_MSG.CONNECTION_ABORTED}: Software caused connection abort.`
+								),
+							},
+						],
+					});
+				};
+			}
 		} catch (err) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
 			return;

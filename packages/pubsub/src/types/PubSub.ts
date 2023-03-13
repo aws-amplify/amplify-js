@@ -15,6 +15,9 @@ export enum CONTROL_MSG {
 	REALTIME_SUBSCRIPTION_INIT_ERROR = 'AppSync Realtime subscription init error',
 	SUBSCRIPTION_ACK = 'Subscription ack',
 	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+	// iOS Safari may abort the connection when app is placed in background
+	// https://developer.apple.com/forums/thread/685403
+	CONNECTION_ABORTED = 'Connection aborted',
 }
 
 /** @enum {string} */
