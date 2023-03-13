@@ -15,7 +15,7 @@ import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
-import { Category, Framework } from '@aws-amplify/core/src';
+import { Category, Framework } from '@aws-amplify/core';
 
 axios.CancelToken = <CancelTokenStatic>{
 	source: () => ({ token: null, cancel: null }),
