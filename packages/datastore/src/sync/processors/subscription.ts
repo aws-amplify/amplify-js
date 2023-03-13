@@ -402,7 +402,7 @@ class SubscriptionProcessor {
 											}`
 										);
 
-										let customUserAgent: CustomUserAgent = {
+										const customUserAgent: CustomUserAgent = {
 											category: Category.DataStore,
 										};
 

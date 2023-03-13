@@ -211,7 +211,7 @@ class SyncProcessor {
 						authMode,
 						this.amplifyConfig
 					);
-					let customUserAgent: CustomUserAgent = {
+					const customUserAgent: CustomUserAgent = {
 						category: Category.DataStore,
 					};
 

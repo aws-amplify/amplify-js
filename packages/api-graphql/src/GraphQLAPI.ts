@@ -284,13 +284,8 @@ export class GraphQLAPIClass {
 			graphql_endpoint: customGraphqlEndpoint,
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
-
-		let userAgentDetails = customUserAgent;
-		if (!userAgentDetails) {
-			userAgentDetails = { category: Category.API };
-		} else {
-			userAgentDetails.category = userAgentDetails.category ?? Category.API;
-		}
+		
+		const userAgentDetails = {category: Category.API, ...customUserAgent};
 
 		const headers = {
 			...(!customGraphqlEndpoint &&

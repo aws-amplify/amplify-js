@@ -305,19 +305,14 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				if (!customUserAgent) {
-					customUserAgent = { category: Category.DataStore };
-				} else {
-					customUserAgent.category =
-						customUserAgent.category ?? Category.DataStore;
-				}
+				const userAgentDetails = { category: Category.DataStore, ...customUserAgent };
 
 				const tryWith = {
 					query,
 					variables,
 					authMode,
 					authToken,
-					customUserAgent,
+					userAgentDetails,
 				};
 				let attempt = 0;
 
