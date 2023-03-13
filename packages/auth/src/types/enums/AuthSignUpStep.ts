@@ -4,7 +4,7 @@
 /**
  * Denotes the next step in the Sign Up process.
  */
-export const enum AuthSignUpStep {
+export enum AuthSignUpStep {
 	CONFIRM_SIGN_UP = 'CONFIRM_SIGN_UP',
 	DONE = 'DONE',
 }

@@ -51,7 +51,9 @@ export async function signUp(
 		ValidationData: validationData,
 	});
 
-	if (res.UserConfirmed === true) {
+	const { UserConfirmed, CodeDeliveryDetails } = res;
+
+	if (UserConfirmed === true) {
 		return {
 			isSignUpComplete: true,
 			nextStep: {
@@ -64,15 +66,14 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: res.CodeDeliveryDetails?.DeliveryMedium
-						? (res.CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium)
+					deliveryMedium: CodeDeliveryDetails?.DeliveryMedium
+						? (CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium)
 						: undefined,
-					destination: res.CodeDeliveryDetails?.Destination
-						? (res.CodeDeliveryDetails?.Destination as string)
+					destination: CodeDeliveryDetails?.Destination
+						? (CodeDeliveryDetails?.Destination as string)
 						: undefined,
-					attributeName: res.CodeDeliveryDetails?.AttributeName
-						? (res.CodeDeliveryDetails
-								?.AttributeName as AuthStandardAttributeKey)
+					attributeName: CodeDeliveryDetails?.AttributeName
+						? (CodeDeliveryDetails?.AttributeName as AuthStandardAttributeKey)
 						: undefined,
 				},
 			},
@@ -81,11 +82,8 @@ export async function signUp(
 }
 
 function mapValidationData(data: ValidationData): AttributeType[] {
-	const attributeTypeArray: AttributeType[] = [];
-	if (data) {
-		for (let k in data) {
-			attributeTypeArray.push({ Name: k, Value: data[k] });
-		}
-	}
-	return attributeTypeArray;
+	return Object.entries(data).map(([key, value]) => ({
+		Name: key,
+		Value: value,
+	}));
 }

@@ -4,7 +4,7 @@
 /**
  * Denotes the medium over which a confirmation code was sent.
  */
-export const enum DeliveryMedium {
+export enum DeliveryMedium {
 	/** Code was sent via email. */
 	EMAIL = 'EMAIL',
 	/** Code was sent via text message SMS. */
