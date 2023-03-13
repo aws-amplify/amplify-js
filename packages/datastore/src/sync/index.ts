@@ -134,7 +134,10 @@ export class SyncEngine {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
@@ -540,12 +543,12 @@ export class SyncEngine {
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
-						let newestFullSyncStartedAt: number;
-						let theInterval: number;
+						let lastFullSyncStartedAt: number;
+						let syncInterval: number;
 
 						let start: number;
-						let duration: number;
-						let newestStartedAt: number;
+						let syncDuration: number;
+						let lastStartedAt: number;
 						await new Promise((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
 							onTerminate.then(() => resolve());
@@ -572,10 +575,10 @@ export class SyncEngine {
 											});
 
 											start = getNow();
-											newestStartedAt =
-												newestStartedAt === undefined
+											lastStartedAt =
+												lastStartedAt === undefined
 													? startedAt
-													: Math.max(newestStartedAt, startedAt);
+													: Math.max(lastStartedAt, startedAt);
 										}
 
 										/**
@@ -655,13 +658,13 @@ export class SyncEngine {
 
 											const { lastFullSync, fullSyncInterval } = modelMetadata;
 
-											theInterval = fullSyncInterval;
+											syncInterval = fullSyncInterval;
 
-											newestFullSyncStartedAt =
-												newestFullSyncStartedAt === undefined
+											lastFullSyncStartedAt =
+												lastFullSyncStartedAt === undefined
 													? lastFullSync!
 													: Math.max(
-															newestFullSyncStartedAt,
+															lastFullSyncStartedAt,
 															isFullSync ? startedAt : lastFullSync!
 													  );
 
@@ -699,7 +702,7 @@ export class SyncEngine {
 											paginatingModels.delete(modelDefinition);
 
 											if (paginatingModels.size === 0) {
-												duration = getNow() - start;
+												syncDuration = getNow() - start;
 												resolve();
 												observer.next({
 													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
@@ -721,10 +724,19 @@ export class SyncEngine {
 							});
 						});
 
-						const msNextFullSync =
-							newestFullSyncStartedAt! +
-							theInterval! -
-							(newestStartedAt! + duration!);
+						// null is cast to 0 resulting in unexpected behavior.
+						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
+						// If lastFullSyncStartedAt is null this is the first sync.
+						// Assume lastStartedAt is is also newest full sync.
+						let msNextFullSync;
+						if (!lastFullSyncStartedAt!) {
+							msNextFullSync = syncInterval! - syncDuration!;
+						} else {
+							msNextFullSync =
+								lastFullSyncStartedAt! +
+								syncInterval! -
+								(lastStartedAt! + syncDuration!);
+						}
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
@@ -906,9 +918,9 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
+		const predicate = ModelPredicateCreator.createFromAST<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			c => c.namespace('eq', namespace).model('eq', model)
+			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] }
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {

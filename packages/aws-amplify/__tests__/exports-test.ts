@@ -26,7 +26,6 @@ describe('aws-amplify', () => {
 			  "Cache",
 			  "Interactions",
 			  "Notifications",
-			  "XR",
 			  "Predictions",
 			  "Logger",
 			  "Hub",

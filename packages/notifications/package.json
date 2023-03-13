@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.0.12",
+	"version": "1.0.18",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -13,7 +13,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
@@ -47,8 +47,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.0.12",
-		"@aws-amplify/core": "5.0.12",
+		"@aws-amplify/cache": "5.0.18",
+		"@aws-amplify/core": "5.1.1",
 		"@aws-sdk/client-pinpoint": "3.186.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
