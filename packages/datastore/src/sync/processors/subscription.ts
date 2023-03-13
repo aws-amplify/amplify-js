@@ -72,7 +72,10 @@ class SubscriptionProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
@@ -749,6 +752,8 @@ class SubscriptionProcessor {
 			'Filters combination exceed maximum limit': RTFError.MaxCombinations,
 			'filter uses same fieldName multiple time': RTFError.RepeatedFieldname,
 			"The variables input contains a field name 'not'": RTFError.NotGroup,
+			'The variables input contains a field that is not defined for input object type':
+				RTFError.FieldNotInType,
 		};
 
 		const [_errorMsg, errorType] =

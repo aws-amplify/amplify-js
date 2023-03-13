@@ -732,6 +732,7 @@ export enum RTFError {
 	MaxCombinations,
 	RepeatedFieldname,
 	NotGroup,
+	FieldNotInType,
 }
 
 export function generateRTFRemediation(
@@ -785,6 +786,9 @@ export function generateRTFRemediation(
 				`Your selective sync expression for ${modelDefinition.name} uses a \`not\` group. If you'd like to filter subscriptions in the backend, ` +
 				`rewrite your expression using \`ne\` or \`notContains\` operators.`
 			);
+		case RTFError.FieldNotInType:
+			// no remediation instructions. We'll surface the message directly
+			return '';
 	}
 }
 

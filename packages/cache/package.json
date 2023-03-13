@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test": "npm run lint && jest -w 1 --coverage",
     "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",

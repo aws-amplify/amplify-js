@@ -985,7 +985,7 @@ const createModelClass = <T extends PersistentModel>(
 		const field = relationship.field;
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
-			set(model: PersistentModel | undefined | null) {
+			set(model: T | undefined | null) {
 				if (!(typeof model === 'object' || typeof model === 'undefined'))
 					return;
 
@@ -1054,7 +1054,7 @@ const createModelClass = <T extends PersistentModel>(
 								base.and(q => {
 									return relationship.remoteJoinFields.map((field, index) => {
 										// TODO: anything we can use instead of `any` here?
-										return (q[field] as any).eq(
+										return (q[field] as T[typeof field]).eq(
 											this[relationship.localJoinFields[index]]
 										);
 									});
@@ -1304,9 +1304,9 @@ async function checkSchemaVersion(
 	await storage.runExclusive(async s => {
 		const [schemaVersionSetting] = await s.query(
 			Setting,
-			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				c.key('eq', SETTING_SCHEMA_VERSION)
-			),
+			ModelPredicateCreator.createFromAST(modelDefinition, {
+				and: { key: { eq: SETTING_SCHEMA_VERSION } },
+			}),
 			{ page: 0, limit: 1 }
 		);
 
@@ -1407,7 +1407,7 @@ class DataStore {
 	private sync?: SyncEngine;
 	private syncPageSize!: number;
 	private syncExpressions!: SyncExpression[];
-	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
+	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any> | null> =
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId?: string;
 	private storageAdapter!: Adapter;
@@ -1668,10 +1668,9 @@ class DataStore {
 						throw new Error(msg);
 					}
 
-					const predicate = ModelPredicateCreator.createForSingleField<T>(
+					const predicate = ModelPredicateCreator.createFromFlatEqualities<T>(
 						modelDefinition,
-						keyFields[0],
-						identifierOrCriteria
+						{ [keyFields[0]]: identifierOrCriteria }
 					);
 
 					result = await this.storage.query<T>(
@@ -1924,10 +1923,9 @@ class DataStore {
 							throw new Error(msg);
 						}
 
-						condition = ModelPredicateCreator.createForSingleField<T>(
+						condition = ModelPredicateCreator.createFromFlatEqualities<T>(
 							modelDefinition,
-							keyFields[0],
-							identifierOrCriteria
+							{ [keyFields[0]]: identifierOrCriteria }
 						);
 					} else {
 						if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
@@ -2006,7 +2004,7 @@ class DataStore {
 									pkField: extractPrimaryKeyFieldNames(modelDefinition),
 								})
 							)
-						).toStoragePredicate<T>(pkPredicate);
+						).toStoragePredicate<T>();
 					} else {
 						condition = pkPredicate;
 					}
@@ -2106,7 +2104,7 @@ class DataStore {
 		} else if (modelConstructor && typeof identifierOrCriteria === 'function') {
 			executivePredicate = internals(
 				(identifierOrCriteria as RecursiveModelPredicateExtender<T>)(
-					buildSeedPredicate(modelConstructor) as any
+					buildSeedPredicate(modelConstructor)
 				)
 			);
 		}
@@ -2635,7 +2633,7 @@ class DataStore {
 	 * SchemaModel -> predicate to use during sync.
 	 */
 	private async processSyncExpressions(): Promise<
-		WeakMap<SchemaModel, ModelPredicate<any>>
+		WeakMap<SchemaModel, ModelPredicate<any> | null>
 	> {
 		if (!this.syncExpressions || !this.syncExpressions.length) {
 			return new WeakMap<SchemaModel, ModelPredicate<any>>();
@@ -2645,7 +2643,7 @@ class DataStore {
 			this.syncExpressions.map(
 				async (
 					syncExpression: SyncExpression
-				): Promise<[SchemaModel, ModelPredicate<any>]> => {
+				): Promise<[SchemaModel, ModelPredicate<any> | null]> => {
 					const { modelConstructor, conditionProducer } = await syncExpression;
 					const modelDefinition = getModelDefinition(modelConstructor)!;
 
@@ -2653,7 +2651,7 @@ class DataStore {
 					// OR a function/promise that returns a predicate
 					const condition = await this.unwrapPromise(conditionProducer);
 					if (isPredicatesAll(condition)) {
-						return [modelDefinition as any, null as any];
+						return [modelDefinition, null];
 					}
 
 					const predicate = internals(
@@ -2666,27 +2664,12 @@ class DataStore {
 						)
 					).toStoragePredicate<any>();
 
-					return [modelDefinition as any, predicate as any];
+					return [modelDefinition, predicate];
 				}
 			)
 		);
 
 		return this.weakMapFromEntries(syncPredicates);
-	}
-
-	private createFromCondition(
-		modelDefinition: SchemaModel,
-		condition: ProducerModelPredicate<PersistentModel>
-	) {
-		try {
-			return ModelPredicateCreator.createFromExisting(
-				modelDefinition,
-				condition
-			);
-		} catch (error) {
-			logger.error('Error creating Sync Predicate');
-			throw error;
-		}
 	}
 
 	private async unwrapPromise<T extends PersistentModel>(
@@ -2704,7 +2687,7 @@ class DataStore {
 	}
 
 	private weakMapFromEntries(
-		entries: [SchemaModel, ModelPredicate<any>][]
+		entries: [SchemaModel, ModelPredicate<any> | null][]
 	): WeakMap<SchemaModel, ModelPredicate<any>> {
 		return entries.reduce((map, [modelDefinition, predicate]) => {
 			if (map.has(modelDefinition)) {
