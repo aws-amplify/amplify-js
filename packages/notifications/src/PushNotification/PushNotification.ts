@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import PlatformNotSupportedError from '.';
+import PlatformNotSupportedError from './PlatformNotSupportedError';
 import {
 	NotificationsSubCategory,
 	OnPushNotificationMessageHandler,
@@ -51,6 +51,10 @@ export default class PushNotification implements PushNotificationInterface {
 	 * @param {string} providerName - the name of the plugin to remove
 	 */
 	removePluggable = (): void => {
+		throw new PlatformNotSupportedError();
+	};
+
+	enable = (): void => {
 		throw new PlatformNotSupportedError();
 	};
 
