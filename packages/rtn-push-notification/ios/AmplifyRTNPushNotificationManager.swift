@@ -49,8 +49,8 @@ class AmplifyRTNPushNotificationManager  {
             // 2. The host App is launched from terminated state to the foreground
             //    (including transitioning to foregound), i.e. .active .inactive.
             //    This happens under one of below conditions:
-            //      a. Remote notifications are not capable to launch the host App (without `content-avaialble: 1`)
-            //      b. Remote notifications background mode has not enabled on the host App
+            //      a. Remote notifications are not able to launch the host App (without `content-available: 1`)
+            //      b. Remote notifications background mode was not enabled on the host App
             //      c. The end user disabled background refresh of the host App
             // 3. This notification must be tapped by an end user which is recorded as the launch notification
             if application.applicationState != .background {
@@ -58,18 +58,15 @@ class AmplifyRTNPushNotificationManager  {
 
                 // NOTE: the notification payload will also be passed into didReceiveRemoteNotification below after
                 // this delegate method, didFinishLaunchingWithOptions completes.
-                // As this notification is recorded as the luanch notification, it should not be sent via
-                // sharedEventsStreamHandlers.notificationOpened, this check is handled in didReceiveRemoteNotification.
+                // As this notification will already be recorded as the launch notification, it should not be sent as
+                // notificationOpened event, this check is handled in didReceiveRemoteNotification.
             }
 
             // Otherwise the host App is launched in the background, this notification will be sent to react-native
-            // via flutterApi.onNotificationReceivedInBackground in didReceiveRemoteNotification below.
+            // as backgroundMessageReceived event in didReceiveRemoteNotification below.
             // After the host App launched in the background, didFinishLaunchingWithOptions will no longer
             // be fired when an end user taps a notification.
-            // After the host App launched in the background, it runs developers' react-native code as well including
-            // Amplify.addPlugin and Amplify.confogure, and the listeners of notification events should be
-            // attached. When an end user taps a notification from this point, the tapped notification will be
-            // sent via sharedEventsStreamHandlers.notificationOpened in didReceiveRemoteNotification below.
+            // After the host App launched in the background, it runs developers' react-native code as well.
         }
     }
 
@@ -188,14 +185,14 @@ class AmplifyRTNPushNotificationManager  {
                 if let launchNotification = launchNotification {
                     if NSDictionary(dictionary: launchNotification).isEqual(to: userInfo) {
                         // When the last tapped notification is the same as the launch notification,
-                        // it's sent as launchNotificationOpened, and retrievable via getLaunchNotification.
+                        // it's sent as launchNotificationOpened event, and retrievable via getLaunchNotification.
                         AmplifyRTNEventManager.shared.sendEventToJS(
                             AmplifyRTNEvent(type: NativeEvent.launchNotificationOpened, payload: launchNotification)
                         )
                     } else {
                         // When a launch notification is recorded in handleLaunchOptions above,
                         // but the last tapped notification is not the recorded launch notification, the last
-                        // tapped notification will be sent to react-native via notificationOpened.
+                        // tapped notification will be sent to react-native as notificationOpened event.
                         // This may happen when an end user rapidly tapped on multiple notifications.
                         self.launchNotification = nil
                         sharedEventManager.sendEventToJS(
@@ -204,7 +201,7 @@ class AmplifyRTNPushNotificationManager  {
                     }
                 } else {
                     // When there is no launch notification recorded, the last tapped notification
-                    // will be sent to react-native via notificationOpened.
+                    // will be sent to react-native as notificationOpened event.
                     sharedEventManager.sendEventToJS(
                         AmplifyRTNEvent(type: NativeEvent.notificationOpened, payload: userInfo)
                     )
