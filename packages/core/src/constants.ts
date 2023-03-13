@@ -49,10 +49,11 @@ export const enum UIComponent {
 }
 
 export const enum Framework {
-	JS = '4:0',
+	None = '4:0',
 	React = '4:1',
-	Next = '4:2',
-	Angular = '4:3',
-	Angular2Plus = '4:4',
-	Vue = '4:5',
+	ReactNative = '4:2',
+	Next = '4:3',
+	Angular = '4:4',
+	Angular2Plus = '4:5',
+	Vue = '4:6',
 }
