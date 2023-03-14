@@ -427,6 +427,34 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
+				test('subscription fails when onerror triggered after initialization', async () => {
+					expect.assertions(1);
+					const mockError = jest.fn();
+
+					const observer = provider.subscribe('test', {
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					observer.subscribe({
+						// Succeed only when the first message comes through
+						next: jest.fn(),
+						// Closing a hot connection (for cleanup) makes it blow up the test stack
+						error: mockError,
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.triggerError();
+
+					expect(mockError).toBeCalledWith({
+						errors: [
+							{
+								message:
+									'Connection aborted: Software caused connection abort.',
+							},
+						],
+					});
+				});
+
 				test('subscription observer is triggered when a connection is formed and a data message is received before connection ack', async () => {
 					expect.assertions(1);
 
