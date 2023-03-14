@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.0.18...@aws-amplify/api-rest@3.0.19) (2023-03-13)
+
+
+### Bug Fixes
+
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
 ## [3.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@3.0.17...@aws-amplify/api-rest@3.0.18) (2023-03-08)
 
 **Note:** Version bump only for package @aws-amplify/api-rest
