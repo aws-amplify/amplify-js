@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Auth } from './Auth';
+//TODO: remove Auth and AuthClass imports/exports
+import { Auth, AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
 	SignUpParams,
@@ -20,6 +21,7 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
 export default Auth;
 export {
 	Auth,
+	AuthClass,
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
