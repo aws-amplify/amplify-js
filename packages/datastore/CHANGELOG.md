@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.0...@aws-amplify/datastore@4.1.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* **datastore:** add fallback catch case for misc. bad input ([#11061](https://github.com/aws-amplify/amplify-js/issues/11061)) ([268a270](https://github.com/aws-amplify/amplify-js/commit/268a270a2810a43a8361cbe5c6b02cd2a1f419dd))
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.17...@aws-amplify/datastore@4.1.0) (2023-03-08)
 
 

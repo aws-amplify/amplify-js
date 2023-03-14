@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.1...@aws-amplify/core@5.1.2) (2023-03-13)
+
+
+### Bug Fixes
+
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
 ## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.0...@aws-amplify/core@5.1.1) (2023-03-08)
 
 **Note:** Version bump only for package @aws-amplify/core
