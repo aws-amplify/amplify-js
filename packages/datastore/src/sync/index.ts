@@ -780,7 +780,7 @@ export class SyncEngine {
 
 	private disconnectionHandler(): (msg: string) => void {
 		return (msg: string) => {
-			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect', 'Connection aborted' msg
 			if (
 				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
 				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg ||
