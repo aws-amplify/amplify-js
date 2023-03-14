@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "4.0.12",
+	"version": "4.1.0",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -27,7 +27,7 @@
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
-		"lint": "tslint '{__tests__,src}/**/*.ts'",
+		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
@@ -55,10 +55,10 @@
 		"ssr"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "5.0.12",
-		"@aws-amplify/auth": "5.1.6",
-		"@aws-amplify/core": "5.0.12",
-		"@aws-amplify/pubsub": "5.0.12",
+		"@aws-amplify/api": "5.0.18",
+		"@aws-amplify/auth": "5.1.12",
+		"@aws-amplify/core": "5.1.1",
+		"@aws-amplify/pubsub": "5.1.1",
 		"amazon-cognito-identity-js": "6.1.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
@@ -72,7 +72,7 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "153 kB"
+			"limit": "155 kB"
 		}
 	],
 	"jest": {

@@ -38,12 +38,14 @@ class MutationEventOutbox {
 
 			// `id` is the key for the record in the mutationEvent;
 			// `modelId` is the key for the actual record that was mutated
-			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+			const predicate = ModelPredicateCreator.createFromAST<MutationEvent>(
 				mutationEventModelDefinition,
-				c =>
-					c
-						.modelId('eq', mutationEvent.modelId)
-						.id('ne', this.inProgressMutationEventId)
+				{
+					and: [
+						{ modelId: { eq: mutationEvent.modelId } },
+						{ id: { ne: this.inProgressMutationEventId } },
+					],
+				}
 			);
 
 			// Check if there are any other records with same id
@@ -138,10 +140,9 @@ class MutationEventOutbox {
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
-			ModelPredicateCreator.createFromExisting(
-				mutationEventModelDefinition,
-				c => c.modelId('eq', modelId)
-			)
+			ModelPredicateCreator.createFromAST(mutationEventModelDefinition, {
+				and: { modelId: { eq: modelId } },
+			})
 		);
 
 		return mutationEvents;
@@ -201,9 +202,14 @@ class MutationEventOutbox {
 
 		const recordId = getIdentifierValue(userModelDefinition, record);
 
-		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+		const predicate = ModelPredicateCreator.createFromAST<MutationEvent>(
 			mutationEventModelDefinition,
-			c => c.modelId('eq', recordId).id('ne', this.inProgressMutationEventId)
+			{
+				and: [
+					{ modelId: { eq: recordId } },
+					{ id: { ne: this.inProgressMutationEventId } },
+				],
+			}
 		);
 
 		const outdatedMutations = await storage.query(
