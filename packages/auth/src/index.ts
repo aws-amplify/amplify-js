@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 //TODO: remove Auth and AuthClass imports/exports
-import { Auth, AuthClass } from './Auth';
+import { Auth } from './Auth';
+import type { AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
 	SignUpParams,
@@ -21,7 +22,6 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
 export default Auth;
 export {
 	Auth,
-	AuthClass,
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
@@ -30,6 +30,7 @@ export {
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,
 };
+export type { AuthClass };
 
 // Provider specific types
 export * from './providers/cognito';
