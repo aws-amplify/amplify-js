@@ -594,6 +594,57 @@ describe('sync engine subscription module', () => {
 			)
 		).toEqual(authInfo);
 	});
+
+	test('subscription error on connection aborted', async done => {
+		const { initSchema, DataStore } = require('../src/datastore/datastore');
+		const classes = initSchema(smallTestSchema());
+		await DataStore.start();
+		const { schema } = (DataStore as any).storage.storage;
+		const syncPredicates = new WeakMap();
+
+		const subscriptionProcessor = new SubscriptionProcessor(
+			schema,
+			syncPredicates,
+			{
+				aws_project_region: 'us-west-2',
+				aws_appsync_graphqlEndpoint:
+					'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+				aws_appsync_region: 'us-west-2',
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+			},
+			() => [
+				GRAPHQL_AUTH_MODE.API_KEY,
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+			],
+			jest.fn()
+		);
+
+		const errorHandler = jest.fn();
+		Amplify.Logger.LOG_LEVEL = 'DEBUG';
+		const debugLog = jest.spyOn(console, 'log');
+		const message = PUBSUB_CONTROL_MSG.CONNECTION_ABORTED;
+		mockObservable = new Observable(observer => {
+			observer.error({
+				error: {
+					errors: [
+						{
+							message,
+						},
+					],
+				},
+			});
+		});
+
+		const mockError = jest.fn();
+		const subscription = subscriptionProcessor.start();
+		subscription[0].subscribe({
+			error: error => {
+				expect(error).toEqual(message);
+				done();
+			},
+		});
+	});
 });
 
 describe('error handler', () => {
