@@ -366,34 +366,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 		try {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
-			await this._initializeWebSocketConnection({
-				apiKey,
-				appSyncGraphqlEndpoint,
-				authenticationType,
-				region,
-				additionalHeaders,
-			});
-
-			// A websocket error after initial connection can occur when iOS Safari is placed in the background.
-			// The websocket will be forced closed due to bug in Safari https://developer.apple.com/forums/thread/685403
-			//
-			// Without the bollow error handler a new websocket would be opened, but any consumer of AWSAppSyncRealTimeProvider
-			// would not know there was a connection interruption.
-			if (this.awsRealTimeSocket) {
-				this.awsRealTimeSocket.onerror = err => {
-					logger.debug(err);
-					this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
-					observer.error({
-						errors: [
-							{
-								...new GraphQLError(
-									`${CONTROL_MSG.CONNECTION_ABORTED}: Software caused connection abort.`
-								),
-							},
-						],
-					});
-				};
-			}
+			await this._initializeWebSocketConnection(
+				{
+					apiKey,
+					appSyncGraphqlEndpoint,
+					authenticationType,
+					region,
+					additionalHeaders,
+				},
+				observer
+			);
 		} catch (err) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
 			return;
@@ -667,8 +649,30 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		}
 	}
 
-	private _errorDisconnect(msg: string) {
+	private _errorDisconnect(
+		msg: string,
+		event?: CloseEvent,
+		observer?: PubSubContentObserver
+	) {
 		logger.debug(`Disconnect error: ${msg}`);
+
+		// A websocket error after initial connection can occur when iOS Safari is placed in the background.
+		// The websocket will be forced closed due to bug in Safari.
+		// https://developer.apple.com/forums/thread/685403
+		//
+		// Without the bellow error handler a new websocket would be opened.
+		// But any consumer of AWSAppSyncRealTimeProvider would not know there was a connection interruption.
+		if (event && event.code === 1006 && observer) {
+			observer.error({
+				errors: [
+					{
+						...new GraphQLError(
+							`${CONTROL_MSG.CONNECTION_ABORTED}: Software caused connection abort.`
+						),
+					},
+				],
+			});
+		}
 
 		if (this.awsRealTimeSocket) {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -701,13 +705,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		}
 	}
 
-	private _initializeWebSocketConnection({
-		appSyncGraphqlEndpoint,
-		authenticationType,
-		apiKey,
-		region,
-		additionalHeaders,
-	}: AWSAppSyncRealTimeProviderOptions) {
+	private _initializeWebSocketConnection(
+		{
+			appSyncGraphqlEndpoint,
+			authenticationType,
+			apiKey,
+			region,
+			additionalHeaders,
+		}: AWSAppSyncRealTimeProviderOptions,
+		observer: PubSubContentObserver
+	) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
 		}
@@ -754,7 +761,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 
 					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
 
-					await this._initializeRetryableHandshake(awsRealTimeUrl);
+					await this._initializeRetryableHandshake(awsRealTimeUrl, observer);
 
 					this.promiseArray.forEach(({ res }) => {
 						logger.debug('Notifying connection successful');
@@ -779,16 +786,22 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		});
 	}
 
-	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
+	private async _initializeRetryableHandshake(
+		awsRealTimeUrl: string,
+		observer: PubSubContentObserver
+	) {
 		logger.debug(`Initializaling retryable Handshake`);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
-			[awsRealTimeUrl],
+			[awsRealTimeUrl, observer],
 			MAX_DELAY_MS
 		);
 	}
 
-	private async _initializeHandshake(awsRealTimeUrl: string) {
+	private async _initializeHandshake(
+		awsRealTimeUrl: string,
+		observer: PubSubContentObserver
+	) {
 		logger.debug(`Initializing handshake ${awsRealTimeUrl}`);
 		// Because connecting the socket is async, is waiting until connection is open
 		// Step 1: connect websocket
@@ -847,7 +860,11 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 									};
 									this.awsRealTimeSocket.onclose = event => {
 										logger.debug(`WebSocket closed ${event.reason}`);
-										this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+										this._errorDisconnect(
+											CONTROL_MSG.CONNECTION_CLOSED,
+											event,
+											observer
+										);
 									};
 								}
 								res('Cool, connected to AWS AppSyncRealTime');

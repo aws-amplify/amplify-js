@@ -149,11 +149,11 @@ export class FakeWebSocketInterface {
 	 * After a close is triggered, the provider has logic that must execute
 	 * which changes the function resolvers assigned to the websocket
 	 */
-	async triggerClose() {
+	async triggerClose(eventObject = {}) {
 		await this.runAndResolve(() => {
 			if (this.webSocket.onclose) {
 				try {
-					this.webSocket.onclose(new CloseEvent('', {}));
+					this.webSocket.onclose(new CloseEvent('', eventObject));
 				} catch {}
 			}
 		});

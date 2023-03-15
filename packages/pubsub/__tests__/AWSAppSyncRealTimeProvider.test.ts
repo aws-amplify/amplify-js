@@ -427,7 +427,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('subscription fails when onerror triggered after initialization', async () => {
+				test('subscription fails when onclose triggered with client error', async () => {
 					expect.assertions(1);
 					const mockError = jest.fn();
 
@@ -436,14 +436,12 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					observer.subscribe({
-						// Succeed only when the first message comes through
 						next: jest.fn(),
-						// Closing a hot connection (for cleanup) makes it blow up the test stack
 						error: mockError,
 					});
 
 					await fakeWebSocketInterface?.standardConnectionHandshake();
-					await fakeWebSocketInterface?.triggerError();
+					await fakeWebSocketInterface?.triggerClose({ code: 1006 });
 
 					expect(mockError).toBeCalledWith({
 						errors: [
