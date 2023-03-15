@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export const testParams = {
+export const authAPITestParams = {
 	user1: {
 		username: 'user1',
 		password: 'password1',

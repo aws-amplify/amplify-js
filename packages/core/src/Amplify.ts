@@ -32,8 +32,9 @@ export class AmplifyClass {
 	Logger = LoggerClass;
 	ServiceWorker = null;
 
+	// TODO: update "any" when types are determined
 	public get config(): any {
-		return this._config;
+		return Object.assign({}, this._config);
 	}
 
 	register(comp) {

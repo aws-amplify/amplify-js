@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import {
+import type {
 	AttributeType,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -31,7 +31,9 @@ import { UserpoolClient } from '../utils/clients/UserPoolClient';
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
+	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
+	const client = new UserpoolClient();
 	const _config = Amplify.config;
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
@@ -39,7 +41,7 @@ export async function signUp(
 		);
 	}
 
-	const res: SignUpCommandOutput = await UserpoolClient.signUp({
+	const res: SignUpCommandOutput = await client.signUp({
 		Username: signUpRequest.username,
 		Password: signUpRequest.password,
 		UserAttributes: signUpRequest.options?.userAttributes.map(el => {

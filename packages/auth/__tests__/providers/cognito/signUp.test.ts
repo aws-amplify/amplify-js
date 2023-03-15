@@ -7,11 +7,11 @@ import {
 	SignUpClientInput,
 	UserpoolClient,
 } from '../../../lib/providers/cognito/utils/clients/UserPoolClient';
-import { testParams } from './testUtils/testParams';
-
-let signUpSpy;
+import { authAPITestParams } from './testUtils/testParams';
 
 describe('SignUp API Happy Path Cases:', () => {
+	let signUpSpy;
+	const { user1 } = authAPITestParams;
 	beforeEach(() => {
 		signUpSpy = jest
 			.spyOn(UserpoolClient, 'signUp')
@@ -22,7 +22,7 @@ describe('SignUp API Happy Path Cases:', () => {
 					CodeDeliveryDetails: {
 						AttributeName: 'email',
 						DeliveryMedium: 'EMAIL',
-						Destination: testParams.user1.email,
+						Destination: user1.email,
 					},
 				} as SignUpCommandOutput;
 			});
@@ -32,12 +32,10 @@ describe('SignUp API Happy Path Cases:', () => {
 	});
 	test('SignUp API should call the UserPoolClient and should return a SignUpResult', async () => {
 		const result = await signUp({
-			username: testParams.user1.username,
-			password: testParams.user1.password,
+			username: user1.username,
+			password: user1.password,
 			options: {
-				userAttributes: [
-					{ userAttributeKey: 'email', value: testParams.user1.email },
-				],
+				userAttributes: [{ userAttributeKey: 'email', value: user1.email }],
 			},
 		});
 		expect(result).toEqual({
@@ -45,7 +43,7 @@ describe('SignUp API Happy Path Cases:', () => {
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					destination: testParams.user1.email,
+					destination: user1.email,
 					deliveryMedium: 'EMAIL',
 					attributeName: 'email',
 				},
@@ -53,9 +51,9 @@ describe('SignUp API Happy Path Cases:', () => {
 		});
 		expect(signUpSpy).toHaveBeenCalledWith({
 			ClientMetadata: undefined,
-			Password: testParams.user1.password,
-			UserAttributes: [{ Name: 'email', Value: testParams.user1.email }],
-			Username: testParams.user1.username,
+			Password: user1.password,
+			UserAttributes: [{ Name: 'email', Value: user1.email }],
+			Username: user1.username,
 			ValidationData: undefined,
 		});
 		expect(signUpSpy).toBeCalledTimes(1);

@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
+import type {
 	SignUpCommandInput,
-	ConfirmSignUpCommandInput,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 
