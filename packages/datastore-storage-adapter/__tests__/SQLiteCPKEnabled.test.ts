@@ -8,11 +8,9 @@
  *
  * Both files should be removed when CPK support is added.
  */
-import sqlite3 from 'sqlite3';
-sqlite3.verbose();
 import Observable from 'zen-observable';
 import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
-import { testSchema } from './helpers';
+import { testSchema, InnerSQLiteDatabase } from './helpers';
 import { initSchema, DataStore } from '@aws-amplify/datastore';
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
@@ -33,78 +31,6 @@ jest.mock('react-native-sqlite-storage', () => {
 		DEBUG(debug) {},
 	};
 });
-
-const sqlog = [];
-
-/**
- * A lower-level SQLite wrapper to test SQLiteAdapter against.
- * It's intended to be fast, using an in-memory database.
- */
-class InnerSQLiteDatabase {
-	private innerDB;
-
-	constructor() {
-		this.innerDB = new sqlite3.Database(':memory:');
-	}
-
-	async executeSql(
-		statement,
-		params: any[] = [],
-		callback: ((...args) => Promise<any>) | undefined = undefined,
-		logger = undefined
-	) {
-		sqlog.push(`${statement}; ${JSON.stringify(params)}`);
-		if (statement.trim().toLowerCase().startsWith('select')) {
-			return new Promise(async resolve => {
-				const rows: any[] = [];
-				const resultSet = {
-					rows: {
-						get length() {
-							return rows.length;
-						},
-						raw: () => rows,
-					},
-				};
-
-				await this.innerDB.each(
-					statement,
-					params,
-					async (err, row) => {
-						if (err) {
-							console.error('SQLite ERROR', new Error(err));
-							console.warn(statement, params);
-						}
-						rows.push(row);
-					},
-					() => {
-						resolve([resultSet]);
-					}
-				);
-
-				if (typeof callback === 'function') await callback(this, resultSet);
-			});
-		} else {
-			return await this.innerDB.run(statement, params, err => {
-				if (typeof callback === 'function') {
-					callback(err);
-				} else if (err) {
-					console.error('calback', err);
-					throw err;
-				}
-			});
-		}
-	}
-
-	async transaction(fn) {
-		return this.innerDB.serialize(await fn(this));
-	}
-
-	async readTransaction(fn) {
-		return this.innerDB.serialize(await fn(this));
-	}
-
-	async close() {}
-}
 
 describe('SQLite SPK Enabled', () => {
 	test('logs error when schema is generated with targetNames (cpk enabled)', async () => {
