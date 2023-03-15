@@ -312,8 +312,6 @@ export abstract class StorageAdapterBase implements Adapter {
 					isPredicateObj(p) &&
 					p.field === key &&
 					p.operator === 'eq' &&
-					// it's only valid if it's not nullish.
-					// (IDB will throw a fit if it's nullish.)
 					p.operand !== null &&
 					p.operand !== undefined
 			) as PredicateObject<T>;
