@@ -77,4 +77,5 @@ export type CustomUserAgent = {
 	action?: CategoryAction;
 	component?: UIComponent;
 	framework?: Framework;
+	packageDetails?: string;
 };
