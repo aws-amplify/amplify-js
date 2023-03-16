@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-//TODO: remove Auth and AuthClass imports/exports
+// TODO: remove Auth and AuthClass imports/exports
+// eslint-disable no-duplicate-imports
 import { Auth } from './Auth';
-// eslint-disable-next-line no-duplicate-imports
 import type { AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
