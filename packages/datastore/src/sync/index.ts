@@ -2,8 +2,13 @@ import {
 	browserOrNode,
 	ConsoleLogger as Logger,
 	BackgroundProcessManager,
+	Hub,
 } from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+	ConnectionState,
+} from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -116,6 +121,13 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
+	private unsleepSyncQueriesObservable: (forceFullSync?: boolean) => void;
+	private syncQueriesObservableSleepTimeout: ReturnType<typeof setTimeout>;
+	private stopPubsubConnectionHubListener: () => void;
+	private pubsubConnectionHistory = {
+		[ConnectionState.ConnectionDisrupted]: false,
+		[ConnectionState.Connecting]: false,
+	};
 
 	private runningProcesses: BackgroundProcessManager;
 
@@ -241,6 +253,8 @@ export class SyncEngine {
 										[ctlSubsObservable, dataSubsObservable] =
 											this.subscriptionsProcessor.start();
 
+										this.stopPubsubConnectionHubListener =
+											this.startPubsubConnectionHubListner();
 										try {
 											await new Promise((resolve, reject) => {
 												onTerminate.then(reject);
@@ -480,7 +494,8 @@ export class SyncEngine {
 	}
 
 	private async getModelsMetadataWithNextFullSync(
-		currentTimeStamp: number
+		currentTimeStamp: number,
+		forceFullSync: boolean
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(
@@ -499,7 +514,7 @@ export class SyncEngine {
 				}) => {
 					const nextFullSync = lastFullSync! + fullSyncInterval;
 					const syncFrom =
-						!lastFullSync || nextFullSync < currentTimeStamp
+						forceFullSync || !lastFullSync || nextFullSync < currentTimeStamp
 							? 0 // perform full sync if expired
 							: lastSync; // perform delta sync
 
@@ -521,6 +536,8 @@ export class SyncEngine {
 			return Observable.of<ControlMessageType<ControlMessage>>();
 		}
 
+		let forceFullSync = false;
+
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 
@@ -539,7 +556,8 @@ export class SyncEngine {
 						> = new WeakMap();
 
 						const modelLastSync = await this.getModelsMetadataWithNextFullSync(
-							Date.now()
+							Date.now(),
+							forceFullSync
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
@@ -757,22 +775,27 @@ export class SyncEngine {
 						// TLDR; this is a lot of complexity here for a sleep(),
 						// but, it's not clear to me yet how to support an
 						// extensible, centralized cancelable `sleep()` elegantly.
-						await this.runningProcesses.add(async onTerminate => {
-							let sleepTimer;
-							let unsleep;
+						forceFullSync = await this.runningProcesses.add(
+							async onTerminate => {
+								let sleepTimer;
+								let unsleep;
 
-							const sleep = new Promise(_unsleep => {
-								unsleep = _unsleep;
-								sleepTimer = setTimeout(unsleep, msNextFullSync);
-							});
+								const sleep = new Promise<boolean>(_unsleep => {
+									unsleep = _unsleep;
+									sleepTimer = setTimeout(unsleep, msNextFullSync);
+								});
 
-							onTerminate.then(() => {
-								terminated = true;
-								unsleep();
-							});
+								onTerminate.then(() => {
+									terminated = true;
+									unsleep();
+								});
 
-							return sleep;
-						}, 'syncQueriesObservable sleep');
+								this.unsleepSyncQueriesObservable = unsleep;
+								this.syncQueriesObservableSleepTimeout = sleepTimer;
+								return sleep;
+							},
+							'syncQueriesObservable sleep'
+						);
 					}
 				}, 'syncQueriesObservable main');
 		});
@@ -806,6 +829,12 @@ export class SyncEngine {
 		 * from entering the pipelines.
 		 */
 		this.unsubscribeConnectivity();
+
+		/**
+		 * Stop listening for websocket connection disruption
+		 */
+		this.stopPubsubConnectionHubListener &&
+			this.stopPubsubConnectionHubListener();
 
 		/**
 		 * aggressively shut down any lingering background processes.
@@ -1051,5 +1080,77 @@ export class SyncEngine {
 			},
 		};
 		return namespace;
+	}
+
+	/**
+	 * listen for websocket connection disruption
+	 * A sequence of events ConnectionDisrupted -> Connecting -> Connected
+	 *
+	 * May indicate there was a period of time where messages
+	 * from AppSync were missed. A sync needs to be triggered to
+	 * retrieve the missed data.
+	 */
+	private startPubsubConnectionHubListner() {
+		return Hub.listen('api', (data: any) => {
+			if (data.source === 'PubSub') {
+				if (data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE) {
+					const connectionState = data.payload.data
+						.connectionState as ConnectionState;
+
+					switch (connectionState) {
+						// event 1: Disrupted
+						case ConnectionState.ConnectionDisrupted:
+							this.clearPubsubConnectionHistory();
+							this.pubsubConnectionHistory[
+								ConnectionState.ConnectionDisrupted
+							] = true;
+							break;
+
+						// event 2: Connecting
+						case ConnectionState.Connecting:
+							// if previous event was ConnectionDisrupted
+							if (
+								this.pubsubConnectionHistory[
+									ConnectionState.ConnectionDisrupted
+								]
+							) {
+								this.pubsubConnectionHistory[ConnectionState.Connecting] = true;
+							} else {
+								this.clearPubsubConnectionHistory();
+							}
+							break;
+
+						// event 3: Connected
+						case ConnectionState.Connected:
+							// if previous two events were ConnectionDisrupted and Connecting
+							if (
+								this.pubsubConnectionHistory[
+									ConnectionState.ConnectionDisrupted
+								] &&
+								this.pubsubConnectionHistory[ConnectionState.Connecting]
+							) {
+								this.fullSyncNow();
+							}
+							this.clearPubsubConnectionHistory();
+							break;
+
+						default:
+							this.clearPubsubConnectionHistory();
+							break;
+					}
+				}
+			}
+		});
+	}
+
+	private clearPubsubConnectionHistory() {
+		this.pubsubConnectionHistory[ConnectionState.ConnectionDisrupted] = false;
+		this.pubsubConnectionHistory[ConnectionState.Connecting] = false;
+	}
+
+	private fullSyncNow() {
+		// todo: need debounce?
+		clearTimeout(this.syncQueriesObservableSleepTimeout);
+		this.unsleepSyncQueriesObservable(true);
 	}
 }
