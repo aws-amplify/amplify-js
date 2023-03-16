@@ -880,7 +880,7 @@ export class AuthClass {
 		});
 	}
 
-	private _getMfaTypeFromUserData(data) {
+	private async _getMfaTypeFromUserData(data) {
 		let ret = null;
 		const preferredMFA = data.PreferredMfaSetting;
 		// if the user has used Auth.setPreferredMFA() to setup the mfa type
@@ -888,24 +888,7 @@ export class AuthClass {
 		if (preferredMFA) {
 			ret = preferredMFA;
 		} else {
-			// if mfaList exists but empty, then its noMFA
-			const mfaList = data.UserMFASettingList;
-			if (!mfaList) {
-				// if SMS was enabled by using Auth.enableSMS(),
-				// the response would contain MFAOptions
-				// as for now Cognito only supports for SMS, so we will say it is 'SMS_MFA'
-				// if it does not exist, then it should be NOMFA
-				const MFAOptions = data.MFAOptions;
-				if (MFAOptions) {
-					ret = 'SMS_MFA';
-				} else {
-					ret = 'NOMFA';
-				}
-			} else if (mfaList.length === 0) {
-				ret = 'NOMFA';
-			} else {
-				logger.debug('invalid case for getPreferredMFA', data);
-			}
+			ret = 'NOMFA';
 		}
 		return ret;
 	}
@@ -974,7 +957,9 @@ export class AuthClass {
 				const mfaList = userData['UserMFASettingList'];
 				const currentMFAType = await this._getMfaTypeFromUserData(userData);
 				if (currentMFAType === 'NOMFA') {
-					return Promise.resolve('No change for mfa type');
+					if (!mfaList || mfaList.length === 0) {
+						return Promise.resolve('No change for mfa type');
+					}
 				} else if (currentMFAType === 'SMS_MFA') {
 					smsMfaSettings = {
 						PreferredMfa: false,

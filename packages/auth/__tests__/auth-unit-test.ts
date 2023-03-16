@@ -4574,6 +4574,28 @@ describe('auth unit test', () => {
 			expect(getUserDataSpy).toHaveBeenCalledTimes(1);
 		});
 
+		test('return NOMFA when PreferredMFASetting is not there', async () => {
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool
+			});
+			const getUserDataSpy = jest
+				.spyOn(user, 'getUserData')
+				.mockImplementationOnce((callback: any) => {
+					const data = {
+						Username: 'username',
+						MFAOptions: {
+							phone_number: '+1234567890'
+						}
+					};
+					callback(null, data);
+				});
+			const res = await auth.getPreferredMFA(user);
+			expect(res).toEqual('NOMFA');
+			expect(getUserDataSpy).toHaveBeenCalledTimes(1);
+		});
+
 		test('should allow bypassCache', async () => {
 			const auth = new Auth(authOptions);
 			const user = new CognitoUser({
