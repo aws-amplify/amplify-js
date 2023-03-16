@@ -2,20 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
-import { AuthSignUpStep, signUp } from '../../..';
-import {
-	SignUpClientInput,
-	UserpoolClient,
-} from '../../../lib/providers/cognito/utils/clients/UserPoolClient';
 import { authAPITestParams } from './testUtils/testParams';
+import { signUp } from '../../../src/providers/cognito';
+import { AuthSignUpStep } from '../../../src/types';
+import * as signUpClient from '../../../src/providers/cognito/utils/clients/SignUpClient';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
 	const { user1 } = authAPITestParams;
 	beforeEach(() => {
 		signUpSpy = jest
-			.spyOn(UserpoolClient, 'signUp')
-			.mockImplementation(async (params: SignUpClientInput) => {
+			.spyOn(signUpClient, 'signUpClient')
+			.mockImplementation(async (params: signUpClient.SignUpClientInput) => {
 				return {
 					UserConfirmed: false,
 					UserSub: '1234567890',

@@ -19,7 +19,7 @@ import {
 	CustomAttribute,
 	ValidationData,
 } from '..';
-import { UserpoolClient } from '../utils/clients/UserPoolClient';
+import { signUpClient } from '../utils/clients/SignUpClient';
 
 /**
  * Creates a user
@@ -33,7 +33,6 @@ export async function signUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
-	const client = new UserpoolClient();
 	const _config = Amplify.config;
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
@@ -41,7 +40,7 @@ export async function signUp(
 		);
 	}
 
-	const res: SignUpCommandOutput = await client.signUp({
+	const res: SignUpCommandOutput = await signUpClient({
 		Username: signUpRequest.username,
 		Password: signUpRequest.password,
 		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
@@ -54,6 +53,9 @@ export async function signUp(
 	});
 
 	const { UserConfirmed, CodeDeliveryDetails } = res;
+	const { DeliveryMedium, Destination, AttributeName } = {
+		...CodeDeliveryDetails,
+	};
 
 	if (UserConfirmed === true) {
 		return {
@@ -68,14 +70,12 @@ export async function signUp(
 			nextStep: {
 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				codeDeliveryDetails: {
-					deliveryMedium: CodeDeliveryDetails?.DeliveryMedium
-						? (CodeDeliveryDetails?.DeliveryMedium as DeliveryMedium)
+					deliveryMedium: DeliveryMedium
+						? (DeliveryMedium as DeliveryMedium)
 						: undefined,
-					destination: CodeDeliveryDetails?.Destination
-						? (CodeDeliveryDetails?.Destination as string)
-						: undefined,
-					attributeName: CodeDeliveryDetails?.AttributeName
-						? (CodeDeliveryDetails?.AttributeName as AuthStandardAttributeKey)
+					destination: Destination ? (Destination as string) : undefined,
+					attributeName: AttributeName
+						? (AttributeName as AuthStandardAttributeKey)
 						: undefined,
 				},
 			},
