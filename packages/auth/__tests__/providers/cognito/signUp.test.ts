@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
-import { authAPITestParams } from './testUtils/testParams';
 import { signUp } from '../../../src/providers/cognito';
 import { AuthSignUpStep } from '../../../src/types';
 import * as signUpClient from '../../../src/providers/cognito/utils/clients/SignUpClient';
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
