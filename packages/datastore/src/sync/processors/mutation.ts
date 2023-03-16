@@ -312,7 +312,7 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					userAgentDetails,
+					customUserAgent: userAgentDetails,
 				};
 				let attempt = 0;
 
