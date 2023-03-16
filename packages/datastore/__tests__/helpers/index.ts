@@ -7,7 +7,7 @@ import {
 	SchemaModel,
 	isModelAttributePrimaryKey,
 	__modelMeta__,
-} from '../src/types';
+} from '../../src/types';
 import {
 	AsyncCollection,
 	MutableModel,
@@ -19,13 +19,13 @@ import {
 	OptionallyManagedIdentifier,
 	PersistentModelConstructor,
 	AsyncItem,
-} from '../src';
-import { validatePredicate } from '../src/util';
-import { ModelPredicateCreator } from '../src/predicates';
+} from '../../src';
+import { validatePredicate } from '../../src/util';
+import { ModelPredicateCreator } from '../../src/predicates';
 import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
-} from '../src/datastore/datastore';
+} from '../../src/datastore/datastore';
 
 type initSchemaType = typeof _initSchema;
 type DataStoreType = typeof DataStoreInstance;
@@ -1114,7 +1114,7 @@ export function getDataStore({
 	}: {
 		initSchema: initSchemaType;
 		DataStore: DataStoreType;
-	} = require('../src/datastore/datastore');
+	} = require('../../src/datastore/datastore');
 
 	DataStore.configure({
 		storageAdapter: storageAdapterFactory(),
