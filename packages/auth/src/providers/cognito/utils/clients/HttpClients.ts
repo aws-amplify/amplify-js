@@ -28,7 +28,7 @@ export class UserPoolHttpClient {
 		operation: ClientOperations,
 		input: ClientInputs
 	): Promise<ClientOutputs> {
-		let headers = {
+		const headers = {
 			...this._headers,
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
 		};

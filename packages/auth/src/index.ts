@@ -3,6 +3,7 @@
 
 //TODO: remove Auth and AuthClass imports/exports
 import { Auth } from './Auth';
+// eslint-disable-next-line no-duplicate-imports
 import type { AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
