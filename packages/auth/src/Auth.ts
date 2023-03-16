@@ -880,7 +880,7 @@ export class AuthClass {
 		});
 	}
 
-	private async _getMfaTypeFromUserData(data) {
+	private _getMfaTypeFromUserData(data) {
 		let ret = null;
 		const preferredMFA = data.PreferredMfaSetting;
 		// if the user has used Auth.setPreferredMFA() to setup the mfa type
