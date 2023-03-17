@@ -9,6 +9,7 @@ import {
 import { validatePredicate } from '../../../src/util';
 import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
+import { pause } from '../util';
 
 /**
  * Statefully pretends to be AppSync, with minimal built-in asertions with
@@ -26,6 +27,33 @@ export class FakeGraphQLService {
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
 
+	/**
+	 * Artificial latencies to introduce to the imagined network boundaries.
+	 */
+	public latencies = {
+		/**
+		 * The time it takes a request will take to reach the cloud.
+		 */
+		request: 15,
+
+		/**
+		 * After request processing, the time it takes for the client to
+		 * receive a response.
+		 */
+		response: 15,
+
+		/**
+		 * After request processing, the time it takes for each relevant
+		 * subscriber to receive an event.
+		 */
+		subscriber: 15,
+
+		/**
+		 * The max amount to randomly to +/- from each latency.
+		 */
+		jitter: 5,
+	};
+
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
@@ -42,6 +70,17 @@ export class FakeGraphQLService {
 				this.PKFields.set(model.name, ['id']);
 			}
 		}
+	}
+
+	private jitteredPause(ms) {
+		/**
+		 * "Materialized" jitter from -jitter to +jitter.
+		 */
+		const jitter = Math.floor(
+			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
+		);
+		const jitteredMs = Math.max(ms + jitter, 0);
+		return pause(jitteredMs);
 	}
 
 	public parseQuery(query) {
@@ -335,6 +374,28 @@ export class FakeGraphQLService {
 		this.isConnected = true;
 	}
 
+	public async notifySubscribers(tableName, type, data, selection) {
+		await this.jitteredPause(this.latencies.subscriber);
+		const observers = this.getObservers(tableName, type);
+		const typeName = {
+			create: 'Create',
+			update: 'Update',
+			delete: 'Delete',
+		}[type];
+		const observerMessageName = `on${typeName}${tableName}`;
+		observers.forEach(observer => {
+			const message = {
+				value: {
+					data: {
+						[observerMessageName]: data[selection],
+					},
+				},
+			};
+			this.log('API subscription message', { observerMessageName, message });
+			observer.next(message);
+		});
+	}
+
 	/**
 	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
 	 *
@@ -375,137 +436,11 @@ export class FakeGraphQLService {
 
 		const table = this.getTable(tableName);
 
-		if (operation === 'query') {
-			if (type === 'get') {
-				const record = table.get(this.getPK(tableName, variables.input));
-				data = { [selection]: record };
-			} else if (type === 'list' || type === 'sync') {
-				data = {
-					[selection]: {
-						items: [...table.values()].filter(item =>
-							this.satisfiesCondition(tableName, item, variables.filter)
-						),
-						nextToken: null,
-						startedAt: new Date().getTime(),
-					},
-				};
-			}
-		} else if (operation === 'mutation') {
-			const record = variables.input;
-			if (type === 'create') {
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'create', record);
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else {
-					data = {
-						[selection]: {
-							...record,
-							_deleted: false,
-							_version: 1,
-							_lastChangedAt: new Date().getTime(),
-						},
-					};
-					table.set(this.getPK(tableName, record), data[selection]);
-				}
-			} else if (type === 'update') {
-				// Simulate update using the default (AUTO_MERGE) for now.
-				// NOTE: We're not doing list/set merging. :o
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'update', record);
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingUpdateTarget(selection)];
-				} else {
-					const updated = this.autoMerge(existing, record);
-					data = {
-						[selection]: updated,
-					};
-					table.set(this.getPK(tableName, record), updated);
-				}
-			} else if (type === 'delete') {
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'delete', record);
-				this.log('delete looking for existing', { existing });
-
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingUpdateTarget(selection)];
-				} else if (record._version === undefined) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingVersion(existing, selection)];
-				} else if (existing._version !== record._version) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else if (
-					!this.satisfiesCondition(tableName, existing, variables.condition)
-				) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else {
-					data = {
-						[selection]: {
-							...existing,
-							...record,
-							_deleted: true,
-							_version: existing._version + 1,
-							_lastChangedAt: new Date().getTime(),
-						},
-					};
-					table.set(this.getPK(tableName, record), data[selection]);
-					this.log('delete applying to table', { data });
-				}
-			}
-
-			this.log('API Response', { data, errors });
-
-			const observers = this.getObservers(tableName, type);
-			const typeName = {
-				create: 'Create',
-				update: 'Update',
-				delete: 'Delete',
-			}[type];
-			const observerMessageName = `on${typeName}${tableName}`;
-			observers.forEach(observer => {
-				const message = {
-					value: {
-						data: {
-							[observerMessageName]: data[selection],
-						},
-					},
-				};
-				this.log('API subscription message', { observerMessageName, message });
-				observer.next(message);
-			});
-		} else if (operation === 'subscription') {
+		// API returns immediately if the operation is a subscription.
+		// if the subscription fails or is delayed, that will simply manifest as either
+		// errors or missed messages, respective -- neither of which we're testing yet.
+		// TBD how we simulate that.
+		if (operation === 'subscription') {
 			return new Observable(observer => {
 				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
@@ -513,10 +448,128 @@ export class FakeGraphQLService {
 			});
 		}
 
-		return Promise.resolve({
-			data,
-			errors,
-			extensions: {},
+		return new Promise(async resolve => {
+			await this.jitteredPause(this.latencies.request);
+
+			if (operation === 'query') {
+				if (type === 'get') {
+					const record = table.get(this.getPK(tableName, variables.input));
+					data = { [selection]: record };
+				} else if (type === 'list' || type === 'sync') {
+					data = {
+						[selection]: {
+							items: [...table.values()].filter(item =>
+								this.satisfiesCondition(tableName, item, variables.filter)
+							),
+							nextToken: null,
+							startedAt: new Date().getTime(),
+						},
+					};
+				}
+			} else if (operation === 'mutation') {
+				const record = variables.input;
+				if (type === 'create') {
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'create', record);
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpateFailedError(selection)];
+					} else {
+						data = {
+							[selection]: {
+								...record,
+								_deleted: false,
+								_version: 1,
+								_lastChangedAt: new Date().getTime(),
+							},
+						};
+						table.set(this.getPK(tableName, record), data[selection]);
+					}
+				} else if (type === 'update') {
+					// Simulate update using the default (AUTO_MERGE) for now.
+					// NOTE: We're not doing list/set merging. :o
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'update', record);
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (!existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingUpdateTarget(selection)];
+					} else {
+						const updated = this.autoMerge(existing, record);
+						data = {
+							[selection]: updated,
+						};
+						table.set(this.getPK(tableName, record), updated);
+					}
+				} else if (type === 'delete') {
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'delete', record);
+					this.log('delete looking for existing', { existing });
+
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (!existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingUpdateTarget(selection)];
+					} else if (record._version === undefined) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingVersion(existing, selection)];
+					} else if (existing._version !== record._version) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpateFailedError(selection)];
+					} else if (
+						!this.satisfiesCondition(tableName, existing, variables.condition)
+					) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpateFailedError(selection)];
+					} else {
+						data = {
+							[selection]: {
+								...existing,
+								...record,
+								_deleted: true,
+								_version: existing._version + 1,
+								_lastChangedAt: new Date().getTime(),
+							},
+						};
+						table.set(this.getPK(tableName, record), data[selection]);
+						this.log('delete applying to table', { data });
+					}
+				}
+				this.log('API Response', { data, errors });
+				this.notifySubscribers(tableName, type, data, selection);
+			}
+
+			await this.jitteredPause(this.latencies.response);
+			resolve({
+				data,
+				errors,
+				extensions: {},
+			});
 		});
 	}
 }

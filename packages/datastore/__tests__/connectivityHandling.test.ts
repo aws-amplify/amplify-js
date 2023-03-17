@@ -46,6 +46,10 @@ describe('DataStore sync engine', () => {
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
+		// we don't need to see all the console warnings for these tests ...
+		(console as any)._warn = console.warn;
+		console.warn = () => {};
+
 		({
 			DataStore,
 			schema,
@@ -69,6 +73,7 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		await DataStore.clear();
+		console.warn = (console as any)._warn;
 	});
 
 	describe('basic protocol', () => {
@@ -688,4 +693,20 @@ describe('DataStore sync engine', () => {
 		`);
 		});
 	});
+
+	// describe('protocol consistency behavior', () => {
+	// 	describe('using automerge', () => {
+	// 		test('does not reject on stale local _version', async () => {
+
+	// 		});
+
+	// 		test('settles on cloud model field on stale local _version', async () => {
+
+	// 		});
+
+	// 		test('settles on local model field on updated local _version', async () => {
+
+	// 		});
+	// 	});
+	// });
 });
