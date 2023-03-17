@@ -123,10 +123,7 @@ export class SyncEngine {
 	> = new WeakMap();
 	private unsleepSyncQueriesObservable: (forceFullSync?: boolean) => void;
 	private stopPubsubConnectionHubListener: () => void;
-	private pubsubConnectionHistory = {
-		[ConnectionState.ConnectionDisrupted]: false,
-		[ConnectionState.Connecting]: false,
-	};
+	private connectionDisrupted = false;
 
 	private runningProcesses: BackgroundProcessManager;
 
@@ -1082,7 +1079,6 @@ export class SyncEngine {
 
 	/**
 	 * listen for websocket connection disruption
-	 * A sequence of events ConnectionDisrupted -> Connecting -> Connected
 	 *
 	 * May indicate there was a period of time where messages
 	 * from AppSync were missed. A sync needs to be triggered to
@@ -1090,60 +1086,27 @@ export class SyncEngine {
 	 */
 	private startPubsubConnectionHubListner() {
 		return Hub.listen('api', (data: any) => {
-			if (data.source === 'PubSub') {
-				if (data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE) {
-					const connectionState = data.payload.data
-						.connectionState as ConnectionState;
+			if (
+				data.source === 'PubSub' &&
+				data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE
+			) {
+				const connectionState = data.payload.data
+					.connectionState as ConnectionState;
 
-					switch (connectionState) {
-						// event 1: Disrupted
-						case ConnectionState.ConnectionDisrupted:
-							this.clearPubsubConnectionHistory();
-							this.pubsubConnectionHistory[
-								ConnectionState.ConnectionDisrupted
-							] = true;
-							break;
+				switch (connectionState) {
+					case ConnectionState.ConnectionDisrupted:
+						this.connectionDisrupted = true;
+						break;
 
-						// event 2: Connecting
-						case ConnectionState.Connecting:
-							// if previous event was ConnectionDisrupted
-							if (
-								this.pubsubConnectionHistory[
-									ConnectionState.ConnectionDisrupted
-								]
-							) {
-								this.pubsubConnectionHistory[ConnectionState.Connecting] = true;
-							} else {
-								this.clearPubsubConnectionHistory();
-							}
-							break;
-
-						// event 3: Connected
-						case ConnectionState.Connected:
-							// if previous two events were ConnectionDisrupted and Connecting
-							if (
-								this.pubsubConnectionHistory[
-									ConnectionState.ConnectionDisrupted
-								] &&
-								this.pubsubConnectionHistory[ConnectionState.Connecting]
-							) {
-								this.fullSyncNow();
-							}
-							this.clearPubsubConnectionHistory();
-							break;
-
-						default:
-							this.clearPubsubConnectionHistory();
-							break;
-					}
+					case ConnectionState.Connected:
+						if (this.connectionDisrupted) {
+							this.fullSyncNow();
+						}
+						this.connectionDisrupted = false;
+						break;
 				}
 			}
 		});
-	}
-
-	private clearPubsubConnectionHistory() {
-		this.pubsubConnectionHistory[ConnectionState.ConnectionDisrupted] = false;
-		this.pubsubConnectionHistory[ConnectionState.Connecting] = false;
 	}
 
 	private fullSyncNow() {
