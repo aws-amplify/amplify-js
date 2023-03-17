@@ -121,7 +121,9 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
-	private unsleepSyncQueriesObservable: (forceFullSync?: boolean) => void;
+	private unsleepSyncQueriesObservable:
+		| ((forceFullSync?: boolean) => void)
+		| null;
 	private stopPubsubConnectionHubListener: () => void;
 	private connectionDisrupted = false;
 
@@ -779,6 +781,8 @@ export class SyncEngine {
 								const sleep = new Promise<boolean>(_unsleep => {
 									unsleep = _unsleep;
 									sleepTimer = setTimeout(unsleep, msNextFullSync);
+								}).then(() => {
+									this.unsleepSyncQueriesObservable = null;
 								});
 
 								onTerminate.then(() => {
@@ -1094,6 +1098,8 @@ export class SyncEngine {
 					.connectionState as ConnectionState;
 
 				switch (connectionState) {
+					// Do not need to listen for ConnectionDisruptedPendingNetwork
+					// Normal network reconnection logic will handle the sync
 					case ConnectionState.ConnectionDisrupted:
 						this.connectionDisrupted = true;
 						break;
@@ -1110,7 +1116,13 @@ export class SyncEngine {
 	}
 
 	private fullSyncNow() {
-		// todo: need debounce?
-		this.unsleepSyncQueriesObservable(true);
+		if (this.unsleepSyncQueriesObservable) {
+			this.unsleepSyncQueriesObservable(true);
+		} else {
+			// todo: what to do here?
+			// syncQueriesObservable has awoken, but has not reached next sleep
+			// is it possible to reach this?
+			console.log('cant unsleep right now');
+		}
 	}
 }
