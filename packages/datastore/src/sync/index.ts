@@ -122,7 +122,6 @@ export class SyncEngine {
 		boolean
 	> = new WeakMap();
 	private unsleepSyncQueriesObservable: (forceFullSync?: boolean) => void;
-	private syncQueriesObservableSleepTimeout: ReturnType<typeof setTimeout>;
 	private stopPubsubConnectionHubListener: () => void;
 	private pubsubConnectionHistory = {
 		[ConnectionState.ConnectionDisrupted]: false,
@@ -791,7 +790,6 @@ export class SyncEngine {
 								});
 
 								this.unsleepSyncQueriesObservable = unsleep;
-								this.syncQueriesObservableSleepTimeout = sleepTimer;
 								return sleep;
 							},
 							'syncQueriesObservable sleep'
@@ -1150,7 +1148,6 @@ export class SyncEngine {
 
 	private fullSyncNow() {
 		// todo: need debounce?
-		clearTimeout(this.syncQueriesObservableSleepTimeout);
 		this.unsleepSyncQueriesObservable(true);
 	}
 }
