@@ -82,13 +82,13 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
-	onBackgroundNotificationReceived = (
+	onNotificationReceivedInBackground = (
 		_: OnPushNotificationMessageHandler
 	): any => {
 		throw new PlatformNotSupportedError();
 	};
 
-	onForegroundNotificationReceived = (
+	onNotificationReceivedInForeground = (
 		_: OnPushNotificationMessageHandler
 	): any => {
 		throw new PlatformNotSupportedError();

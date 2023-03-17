@@ -189,7 +189,7 @@ export default class PushNotification implements PushNotificationInterface {
 								setTimeout(
 									() =>
 										reject(
-											`onBackgroundNotificationReceived handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
+											`onNotificationReceivedInBackground handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
 										),
 									BACKGROUND_TASK_TIMEOUT * 1000
 								);
@@ -313,7 +313,7 @@ export default class PushNotification implements PushNotificationInterface {
 
 	/**
 	 * Background notifications on will start the app (as a headless JS instance running on a background service on
-	 * Android) in the background. Handlers registered via `onBackgroundNotificationReceived` should return Promises if
+	 * Android) in the background. Handlers registered via `onNotificationReceivedInBackground` should return Promises if
 	 * it needs to be asynchronous (e.g. to perform some network requests). The app should run in the background as long
 	 * as there are handlers still running (however, if they run for more than 30 seconds on iOS, subsequent tasks could
 	 * get deprioritized!). If it is necessary for a handler to execute while the app is in quit state, it should be
@@ -322,7 +322,7 @@ export default class PushNotification implements PushNotificationInterface {
 	 * @param handler a function to be run when a BACKGROUND_MESSAGE_RECEIVED event is received
 	 * @returns an event listener which should be removed when no longer needed
 	 */
-	onBackgroundNotificationReceived = (
+	onNotificationReceivedInBackground = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
 		this.assertIsEnabled();
@@ -332,7 +332,7 @@ export default class PushNotification implements PushNotificationInterface {
 		);
 	};
 
-	onForegroundNotificationReceived = (
+	onNotificationReceivedInForeground = (
 		handler: OnPushNotificationMessageHandler
 	): EventListener<OnPushNotificationMessageHandler> => {
 		this.assertIsEnabled();
