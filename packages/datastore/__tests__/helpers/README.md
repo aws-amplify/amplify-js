@@ -5,9 +5,9 @@ Please try to keep things clean.
 In particular, let's try to to keep file sizes smaller and more "categorical" in order to:
 
 1. Make finding and discovering test utils easier
-1. Reduce excessive vertical scrolling
-1. Reduce complexity of merge conflicts
-1. _<< And other awesome benefits I haven't thought of! >>_
+2. Reduce excessive vertical scrolling
+3. Reduce complexity of merge conflicts
+4. _<< And other awesome benefits I haven't thought of! >>_
 
 Intended organization is as follows:
 
