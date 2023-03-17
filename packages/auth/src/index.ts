@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO: remove Auth and AuthClass imports/exports
 import { Auth } from './Auth';
+// tslint:disable-next-line no-duplicate-imports
+import type { AuthClass } from './Auth';
 import {
 	CognitoHostedUIIdentityProvider,
 	SignUpParams,
@@ -28,3 +31,10 @@ export {
 	AuthErrorStrings,
 	GRAPHQL_AUTH_MODE,
 };
+export type { AuthClass };
+
+// Provider specific types
+export * from './providers/cognito';
+
+// Category specific types
+export * from './types';
