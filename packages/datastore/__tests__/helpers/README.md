@@ -14,7 +14,7 @@ Intended organization is as follows:
 |                       | Intent                                                                                                                |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `fakes/*`             | Util classes to inject and/or observe datastore's interaction with its boundaries, like cloud/graphql storage.        |
-| `schemas/*`           | Schema JSON and model types (Plenty of room for further refactoring reorg here!)                                      |
+| `schemas/*`           | Schema JSON and model types (Plenty of room for further refactoring and reorganization here!)                         |
 | `datastoreFactory.ts` | Function(s) for creating clean, test-configured initializations of DataStore and deps to test against.                |
 | `util.ts`             | Miscellaneous, mostly-isolated utility functions to aid with testing. (To be further decomposed as-needed over time.) |
 
