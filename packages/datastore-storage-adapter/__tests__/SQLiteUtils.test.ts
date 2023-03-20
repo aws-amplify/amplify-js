@@ -6,6 +6,7 @@ import {
 	modelInsertStatement,
 	modelUpdateStatement,
 	whereClauseFromPredicate,
+	whereConditionFromPredicateObject,
 	limitClauseFromPagination,
 	orderByClauseFromSort,
 	deleteByIdStatement,
@@ -284,21 +285,57 @@ describe('SQLiteUtils tests', () => {
 	});
 
 	describe('whereConditionFromPredicateObject', () => {
-		it('should generate valid WHERE condition from predicate object', () => {
-			const predicateGroup = {
-				type: 'and',
-				predicates: [
-					{
-						field: 'name',
-						operator: 'contains',
-						operand: '%',
-					},
-				],
+		it('should generate valid `beginsWith` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'beginsWith',
+				operand: '%',
 			};
 
-			const expected = [`WHERE (instr(\"name\", ?) > 0)`, ['%']];
+			const expected = [`instr(\"name\", ?) = 1`, ['%']];
 
-			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `contains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'contains',
+				operand: '%',
+			};
+
+			const expected = [`instr(\"name\", ?) > 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `notContains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'notContains',
+				operand: '%',
+			};
+
+			const expected = [`instr(\"name\", ?) = 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `between` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'between',
+				operand: ['a', 'b'],
+			};
+
+			const expected = [`\"name\" BETWEEN ? AND ?`, ['a', 'b']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
 		});
 	});
 

@@ -289,7 +289,7 @@ function buildSpecialNullComparison(field, operator, operand) {
 	return null;
 }
 
-const whereConditionFromPredicateObject = ({
+export const whereConditionFromPredicateObject = ({
 	field,
 	operator,
 	operand,
@@ -395,9 +395,7 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 
 			result.push(condition);
 
-			if (conditionParams) {
-				params.push(...conditionParams);
-			}
+			params.push(...conditionParams);
 		}
 	}
 }
