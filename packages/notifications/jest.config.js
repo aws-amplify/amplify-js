@@ -9,10 +9,10 @@ module.exports = {
 	collectCoverageFrom: ['**/src/**', '!**/src/**/*.native.*'],
 	coverageThreshold: {
 		global: {
-			statements: 80,
+			statements: 90,
 			branches: 80,
-			lines: 80,
-			functions: 80,
+			lines: 90,
+			functions: 90,
 		},
 	},
 	coveragePathIgnorePatterns: ['/node_modules/', 'dist', 'lib', 'lib-esm'],

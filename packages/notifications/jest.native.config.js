@@ -10,10 +10,10 @@ module.exports = {
 	collectCoverageFrom: ['**/src/**/*.native.*'],
 	coverageThreshold: {
 		global: {
-			statements: 80,
-			branches: 80,
-			lines: 80,
-			functions: 80,
+			statements: 95,
+			branches: 85,
+			lines: 95,
+			functions: 95,
 		},
 	},
 };
