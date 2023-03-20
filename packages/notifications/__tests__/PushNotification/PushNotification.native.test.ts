@@ -418,10 +418,10 @@ describe('PushNotification', () => {
 		test('throw errors if Push is not enabled', () => {
 			const handler = jest.fn();
 			expect(() =>
-				pushNotification.onBackgroundNotificationReceived(handler)
+				pushNotification.onNotificationReceivedInBackground(handler)
 			).toThrow(notEnabledError);
 			expect(() =>
-				pushNotification.onForegroundNotificationReceived(handler)
+				pushNotification.onNotificationReceivedInForeground(handler)
 			).toThrow(notEnabledError);
 			expect(() => pushNotification.onNotificationOpened(handler)).toThrow(
 				notEnabledError
@@ -434,8 +434,8 @@ describe('PushNotification', () => {
 		test('can add handlers', () => {
 			const handler = jest.fn();
 			pushNotification.enable();
-			pushNotification.onBackgroundNotificationReceived(handler);
-			pushNotification.onForegroundNotificationReceived(handler);
+			pushNotification.onNotificationReceivedInBackground(handler);
+			pushNotification.onNotificationReceivedInForeground(handler);
 			pushNotification.onNotificationOpened(handler);
 			pushNotification.onTokenReceived(handler);
 			expect(addEventListener).toBeCalledWith(

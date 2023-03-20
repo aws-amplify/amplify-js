@@ -29,10 +29,10 @@ describe('PushNotification', () => {
 		await expect(pushNotification.requestPermissions()).rejects.toThrow(
 			notSupportedError
 		);
-		expect(pushNotification.onBackgroundNotificationReceived).toThrow(
+		expect(pushNotification.onNotificationReceivedInBackground).toThrow(
 			notSupportedError
 		);
-		expect(pushNotification.onForegroundNotificationReceived).toThrow(
+		expect(pushNotification.onNotificationReceivedInForeground).toThrow(
 			notSupportedError
 		);
 		expect(pushNotification.onTokenReceived).toThrow(notSupportedError);

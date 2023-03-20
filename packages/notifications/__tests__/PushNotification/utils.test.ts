@@ -134,12 +134,12 @@ describe('PushNotification Utils', () => {
 
 	describe('normalizeNativePermissionStatus', () => {
 		test('normalizes android statuses', () => {
-			expect(normalizeNativePermissionStatus('NotRequested')).toBe(
-				PushNotificationPermissionStatus.NOT_REQUESTED
+			expect(normalizeNativePermissionStatus('ShouldRequest')).toBe(
+				PushNotificationPermissionStatus.SHOULD_REQUEST
 			);
-			expect(
-				normalizeNativePermissionStatus('ShouldRequestWithRationale')
-			).toBe(PushNotificationPermissionStatus.SHOULD_REQUEST_WITH_RATIONALE);
+			expect(normalizeNativePermissionStatus('ShouldExplainThenRequest')).toBe(
+				PushNotificationPermissionStatus.SHOULD_EXPLAIN_THEN_REQUEST
+			);
 			expect(normalizeNativePermissionStatus('Granted')).toBe(
 				PushNotificationPermissionStatus.GRANTED
 			);
@@ -150,7 +150,7 @@ describe('PushNotification Utils', () => {
 
 		test('normalizes ios statuses', () => {
 			expect(normalizeNativePermissionStatus('NotDetermined')).toBe(
-				PushNotificationPermissionStatus.SHOULD_REQUEST_WITH_RATIONALE
+				PushNotificationPermissionStatus.SHOULD_EXPLAIN_THEN_REQUEST
 			);
 			expect(normalizeNativePermissionStatus('Authorized')).toBe(
 				PushNotificationPermissionStatus.GRANTED
