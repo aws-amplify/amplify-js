@@ -335,10 +335,7 @@ const whereConditionFromPredicateObject = ({
 			case 'beginsWith':
 			case 'contains':
 			case 'notContains':
-				statement = [
-					`instr("${field}", "${operand}") ${logicalOperator}`,
-					[''],
-				];
+				statement = [`instr("${field}", ?) ${logicalOperator}`, [operand]];
 				break;
 			default:
 				const _: never = logicalOperatorKey;
@@ -397,7 +394,10 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				whereConditionFromPredicateObject(predicate);
 
 			result.push(condition);
-			params.push(...conditionParams);
+
+			if (conditionParams) {
+				params.push(...conditionParams);
+			}
 		}
 	}
 }

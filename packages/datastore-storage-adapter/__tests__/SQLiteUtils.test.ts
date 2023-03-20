@@ -160,8 +160,8 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM "Model" WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
-				['Bob', 'Sm%', 5, 10, 30],
+				`SELECT * FROM "Model" WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
+				['Bob', 'Sm', 5, 10, 30],
 			];
 
 			expect(
@@ -275,9 +275,28 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?)`,
-				['Bob', 'Sm%', 5],
+				`WHERE (\"firstName\" = ? AND instr(\"lastName\", ?) = 1 AND \"sortOrder\" > ?)`,
+				['Bob', 'Sm', 5],
 			];
+
+			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
+	});
+
+	describe('whereConditionFromPredicateObject', () => {
+		it('should generate valid WHERE condition from predicate object', () => {
+			const predicateGroup = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'name',
+						operator: 'contains',
+						operand: '%',
+					},
+				],
+			};
+
+			const expected = [`WHERE (instr(\"name\", ?) > 0)`, ['%']];
 
 			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
 		});
