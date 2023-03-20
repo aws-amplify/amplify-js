@@ -316,6 +316,7 @@ export type AuthorizationRule = {
 	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
 	groupClaim: string;
 	groups: [string];
+	groupsField: string;
 	authStrategy: 'owner' | 'groups' | 'private' | 'public';
 	areSubscriptionsPublic: boolean;
 };

@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.1...@aws-amplify/datastore@4.1.2) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.0...@aws-amplify/datastore@4.1.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* **datastore:** add fallback catch case for misc. bad input ([#11061](https://github.com/aws-amplify/amplify-js/issues/11061)) ([268a270](https://github.com/aws-amplify/amplify-js/commit/268a270a2810a43a8361cbe5c6b02cd2a1f419dd))
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.17...@aws-amplify/datastore@4.1.0) (2023-03-08)
+
+
+### Bug Fixes
+
+* **datastore:** rtf errorType conditional ([#11056](https://github.com/aws-amplify/amplify-js/issues/11056)) ([2f92869](https://github.com/aws-amplify/amplify-js/commit/2f92869168495ccb4aef59407b4a81cfd3246560))
+
+
+### Features
+
+* **datastore:** add support for AppSync RTF ([#11000](https://github.com/aws-amplify/amplify-js/issues/11000)) ([a050c1a](https://github.com/aws-amplify/amplify-js/commit/a050c1a895dfeaa1247b6702ba54c29171ad033e))
+
+
+
+
+
+## [4.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.16...@aws-amplify/datastore@4.0.17) (2023-03-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** strictly define null vs undefined behavior on models ([#11009](https://github.com/aws-amplify/amplify-js/issues/11009)) ([eb8b05f](https://github.com/aws-amplify/amplify-js/commit/eb8b05f844f089e4810b986df9420832c6b68cca)), closes [#10932](https://github.com/aws-amplify/amplify-js/issues/10932)
+* **datastore:** remove connections with model field as undefined ([#10983](https://github.com/aws-amplify/amplify-js/issues/10983)) ([91e0c8f](https://github.com/aws-amplify/amplify-js/commit/91e0c8fa335280259f2634a48f586058eba5d789))
+
+
+
+
+
 ## [4.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.15...@aws-amplify/datastore@4.0.16) (2023-02-24)
 
 

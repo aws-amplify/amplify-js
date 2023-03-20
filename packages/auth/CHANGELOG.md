@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.13...@aws-amplify/auth@5.1.14) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [5.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.12...@aws-amplify/auth@5.1.13) (2023-03-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.11...@aws-amplify/auth@5.1.12) (2023-03-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Verify totp hub event ([#11049](https://github.com/aws-amplify/amplify-js/issues/11049)) ([2c5b5a7](https://github.com/aws-amplify/amplify-js/commit/2c5b5a7b0494ebb26eeae94885698253fa6c8ca5))
+
+
+
+
+
+## [5.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.10...@aws-amplify/auth@5.1.11) (2023-03-06)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
 ## [5.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.9...@aws-amplify/auth@5.1.10) (2023-02-24)
 
 

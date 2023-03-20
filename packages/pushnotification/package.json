@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "5.0.16",
+  "version": "5.0.20",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -9,14 +9,15 @@
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test": "npm run lint && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build": "npm run clean && tsc",
     "build:cjs:watch": "node ./build es5 --watch",
     "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\"",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 55"
   },
   "repository": {
     "type": "git",
@@ -52,7 +53,7 @@
     "android"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.0.16",
+    "@aws-amplify/core": "5.1.3",
     "@react-native-community/push-notification-ios": "1.0.3"
   },
   "jest": {
