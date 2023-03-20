@@ -22,16 +22,16 @@ export const normalizeNativePermissionStatus = (
 	nativeStatus?
 ): PushNotificationPermissionStatus => {
 	switch (nativeStatus) {
-		case 'Denied':
-			return PushNotificationPermissionStatus.DENIED;
+		case 'ShouldRequest':
+			return PushNotificationPermissionStatus.SHOULD_REQUEST;
+		case 'NotDetermined':
+		case 'ShouldExplainThenRequest':
+			return PushNotificationPermissionStatus.SHOULD_EXPLAIN_THEN_REQUEST;
 		case 'Authorized':
 		case 'Granted':
 			return PushNotificationPermissionStatus.GRANTED;
-		case 'NotRequested':
-			return PushNotificationPermissionStatus.NOT_REQUESTED;
-		case 'NotDetermined':
-		case 'ShouldRequestWithRationale':
-			return PushNotificationPermissionStatus.SHOULD_REQUEST_WITH_RATIONALE;
+		case 'Denied':
+			return PushNotificationPermissionStatus.DENIED;
 	}
 };
 

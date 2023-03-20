@@ -26,8 +26,8 @@ private const val PREF_FILE_KEY = "com.amazonaws.amplify.rtnpushnotification"
 private const val PREF_PREVIOUSLY_DENIED = "wasPermissionPreviouslyDenied"
 
 enum class PushNotificationPermissionStatus {
-    NotRequested,
-    ShouldRequestWithRationale,
+    ShouldRequest,
+    ShouldExplainThenRequest,
     Granted,
     Denied,
 }
@@ -65,7 +65,7 @@ class PushNotificationModule(
         // If the shouldShowRequestPermissionRationale flag is true, permission must have been
         // denied once (and only once) previously
         if (shouldShowRequestPermissionRationale()) {
-            return promise.resolve(PushNotificationPermissionStatus.ShouldRequestWithRationale.name)
+            return promise.resolve(PushNotificationPermissionStatus.ShouldExplainThenRequest.name)
         }
         // If the shouldShowRequestPermissionRationale flag is false and the permission was
         // already previously denied then user has denied permissions twice
@@ -74,7 +74,7 @@ class PushNotificationModule(
         }
         // Otherwise it's never been requested (or user could have dismissed the request without
         // explicitly denying)
-        promise.resolve(PushNotificationPermissionStatus.NotRequested.name)
+        promise.resolve(PushNotificationPermissionStatus.ShouldRequest.name)
     }
 
     @ReactMethod

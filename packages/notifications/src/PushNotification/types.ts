@@ -29,10 +29,10 @@ export interface PushNotificationInterface {
 	requestPermissions: (
 		permissions?: PushNotificationPermissions
 	) => Promise<boolean>;
-	onBackgroundNotificationReceived: (
+	onNotificationReceivedInBackground: (
 		handler: OnPushNotificationMessageHandler
 	) => EventListener<OnPushNotificationMessageHandler>;
-	onForegroundNotificationReceived: (
+	onNotificationReceivedInForeground: (
 		handler: OnPushNotificationMessageHandler
 	) => EventListener<OnPushNotificationMessageHandler>;
 	onNotificationOpened: (
@@ -86,8 +86,8 @@ export interface PushNotificationPermissions extends Record<string, boolean> {
 export enum PushNotificationPermissionStatus {
 	DENIED = 'DENIED',
 	GRANTED = 'GRANTED',
-	NOT_REQUESTED = 'NOT_REQUESTED',
-	SHOULD_REQUEST_WITH_RATIONALE = 'SHOULD_REQUEST_WITH_RATIONALE',
+	SHOULD_REQUEST = 'SHOULD_REQUEST',
+	SHOULD_EXPLAIN_THEN_REQUEST = 'SHOULD_EXPLAIN_THEN_REQUEST',
 }
 
 export type OnTokenReceivedHandler = (token: PushNotificationTokenMap) => any;
