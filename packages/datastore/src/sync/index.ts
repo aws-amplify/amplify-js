@@ -121,6 +121,7 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
+	private syncInProgress: Promise<any> | null;
 	private unsleepSyncQueriesObservable:
 		| ((forceFullSync?: boolean) => void)
 		| null;
@@ -565,9 +566,12 @@ export class SyncEngine {
 						let start: number;
 						let syncDuration: number;
 						let lastStartedAt: number;
-						await new Promise((resolve, reject) => {
+						this.syncInProgress = new Promise((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
-							onTerminate.then(() => resolve());
+							onTerminate.then(() => {
+								this.syncInProgress = null;
+								resolve();
+							});
 							syncQueriesSubscription = this.syncQueriesProcessor
 								.start(modelLastSync)
 								.subscribe({
@@ -740,6 +744,8 @@ export class SyncEngine {
 							});
 						});
 
+						await this.syncInProgress;
+
 						// null is cast to 0 resulting in unexpected behavior.
 						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
 						// If lastFullSyncStartedAt is null this is the first sync.
@@ -781,10 +787,16 @@ export class SyncEngine {
 								const sleep = new Promise<boolean>(_unsleep => {
 									unsleep = _unsleep;
 									sleepTimer = setTimeout(unsleep, msNextFullSync);
-								}).then(res => {
-									this.unsleepSyncQueriesObservable = null;
-									return res;
-								});
+								})
+									.then(res => {
+										this.unsleepSyncQueriesObservable = null;
+										return res;
+									})
+									.then(res =>
+										this.syncInProgress
+											? this.syncInProgress.then(() => res)
+											: res
+									);
 
 								onTerminate.then(() => {
 									terminated = true;
