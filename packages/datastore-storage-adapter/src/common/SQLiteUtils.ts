@@ -259,9 +259,9 @@ const comparisonOperatorMap = {
 };
 
 const logicalOperatorMap = {
-	beginsWith: 'LIKE',
-	contains: 'LIKE',
-	notContains: 'NOT LIKE',
+	beginsWith: '= 1',
+	contains: '> 0',
+	notContains: '= 0',
 	between: 'BETWEEN',
 };
 
@@ -315,30 +315,38 @@ const whereConditionFromPredicateObject = ({
 	}
 
 	const logicalOperatorKey = <keyof typeof logicalOperatorMap>operator;
+
 	const logicalOperator = logicalOperatorMap[logicalOperatorKey];
+
+	let statement: ParameterizedStatement;
 
 	if (logicalOperator) {
 		let rightExp = [];
 		switch (logicalOperatorKey) {
 			case 'between':
 				rightExp = operand; // operand is a 2-tuple
+				statement = [
+					`"${field}" ${logicalOperator} ${rightExp
+						.map(_ => '?')
+						.join(' AND ')}`,
+					rightExp,
+				];
 				break;
 			case 'beginsWith':
-				rightExp = [`${operand}%`];
-				break;
 			case 'contains':
 			case 'notContains':
-				rightExp = [`%${operand}%`];
+				statement = [
+					`instr("${field}", "${operand}") ${logicalOperator}`,
+					[''],
+				];
 				break;
 			default:
 				const _: never = logicalOperatorKey;
 				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
-		return [
-			`"${field}" ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`,
-			rightExp,
-		];
+
+		return statement;
 	}
 };
 
