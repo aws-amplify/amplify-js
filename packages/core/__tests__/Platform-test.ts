@@ -12,13 +12,16 @@ describe('Platform test', () => {
 	describe('getAmplifyUserAgent test', () => {
 		test('without content', () => {
 			expect(getAmplifyUserAgent()).toBe(
-				`${Platform.userAgent} (${Framework.JS})`
+				`${Platform.userAgent} (${Framework.None})`
 			);
 		});
 
 		test('with content', () => {
-			expect(getAmplifyUserAgent({ category: Category.DataStore })).toBe(
-				`${Platform.userAgent} (${Category.DataStore},${Framework.JS})`
+			const packageDetails = 'amplify-ui/3:1:15';
+			expect(
+				getAmplifyUserAgent({ category: Category.DataStore, packageDetails })
+			).toBe(
+				`${Platform.userAgent} ${packageDetails} (${Category.DataStore},${Framework.None})`
 			);
 		});
 	});
