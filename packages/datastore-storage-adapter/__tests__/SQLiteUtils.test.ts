@@ -276,7 +276,7 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE (\"firstName\" = ? AND instr(\"lastName\", ?) = 1 AND \"sortOrder\" > ?)`,
+				`WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?)`,
 				['Bob', 'Sm', 5],
 			];
 
@@ -292,7 +292,7 @@ describe('SQLiteUtils tests', () => {
 				operand: '%',
 			};
 
-			const expected = [`instr(\"name\", ?) = 1`, ['%']];
+			const expected = [`instr("name", ?) = 1`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
 				expected
@@ -305,7 +305,7 @@ describe('SQLiteUtils tests', () => {
 				operand: '%',
 			};
 
-			const expected = [`instr(\"name\", ?) > 0`, ['%']];
+			const expected = [`instr("name", ?) > 0`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
 				expected
@@ -318,7 +318,7 @@ describe('SQLiteUtils tests', () => {
 				operand: '%',
 			};
 
-			const expected = [`instr(\"name\", ?) = 0`, ['%']];
+			const expected = [`instr("name", ?) = 0`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
 				expected
@@ -331,7 +331,7 @@ describe('SQLiteUtils tests', () => {
 				operand: ['a', 'b'],
 			};
 
-			const expected = [`\"name\" BETWEEN ? AND ?`, ['a', 'b']];
+			const expected = [`"name" BETWEEN ? AND ?`, ['a', 'b']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
 				expected
