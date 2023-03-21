@@ -60,15 +60,24 @@ class NotificationsClass {
 		return this.pushNotification;
 	}
 
-	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[][]> => {
-		const promises: Promise<void[]>[] = [];
+	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
+		const identifyFunctions: Function[] = [];
 		if (this.InAppMessaging) {
-			promises.push(this.InAppMessaging.identifyUser(userId, userInfo));
+			identifyFunctions.push(this.InAppMessaging.identifyUser);
 		}
 		if (this.Push) {
-			promises.push(this.Push.identifyUser(userId, userInfo));
+			identifyFunctions.push(this.Push.identifyUser);
 		}
-		return Promise.all<void[]>(promises);
+		return Promise.all<void>(
+			identifyFunctions.map(async identifyFunction => {
+				try {
+					await identifyFunction(userId, userInfo);
+				} catch (err) {
+					logger.error('Failed to identify user', err);
+					throw err;
+				}
+			})
+		);
 	};
 }
 

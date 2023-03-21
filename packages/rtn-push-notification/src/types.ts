@@ -11,7 +11,7 @@ export interface PushNotificationNativeModule {
 			NOTIFICATION_OPENED: string;
 			TOKEN_RECEIVED: string;
 		};
-		NativeHeadlessTaskKey: string;
+		NativeHeadlessTaskKey?: string;
 	};
 	getLaunchNotification: () => Promise<Record<string, string>>;
 	getBadgeCount: () => Promise<number>;

@@ -38,7 +38,10 @@ export default class AWSPinpointProvider
 	}
 
 	configure = (config = {}): Record<string, any> => {
-		super.configure(config);
+		this.config = {
+			...super.configure(config),
+			endpointInfo: { channelType: this.getChannelType() },
+		};
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
@@ -86,14 +89,12 @@ export default class AWSPinpointProvider
 	};
 
 	registerDevice = async (address: string): Promise<void> => {
-		const channelType = this.getChannelType();
 		if (!this.initialized) {
 			await this.init();
 		}
 		try {
 			this.config.endpointInfo = {
 				...this.config.endpointInfo,
-				channelType,
 				address,
 			};
 			await this.updateEndpoint();

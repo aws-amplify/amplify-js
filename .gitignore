@@ -1,5 +1,4 @@
 build
-coverage
 Config
 lerna-debug.log
 node_modules
@@ -19,7 +18,6 @@ packages/**/cypress/videos/
 yarn.lock
 package-lock.json
 packages/*/.watchmanconfig
-coverage-ts/
 dual-publish-tmp
 
 ### Gradle ###
@@ -35,3 +33,8 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
+
+### Coverage ###
+coverage/
+coverage-native/
+coverage-ts/

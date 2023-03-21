@@ -11,6 +11,7 @@ import {
 	PushNotificationMessage,
 	PushNotificationPermissions,
 	PushNotificationPermissionStatus,
+	PushNotificationProvider,
 } from './types';
 
 export default class PushNotification implements PushNotificationInterface {
@@ -18,7 +19,7 @@ export default class PushNotification implements PushNotificationInterface {
 	 * Configure PushNotification
 	 * @param {Object} config - PushNotification configuration object
 	 */
-	configure = (_): PushNotificationConfig => {
+	configure = (_: PushNotificationConfig = {}): PushNotificationConfig => {
 		throw new PlatformNotSupportedError();
 	};
 
@@ -34,7 +35,7 @@ export default class PushNotification implements PushNotificationInterface {
 	 * Get a plugin from added plugins
 	 * @param {string} providerName - the name of the plugin to get
 	 */
-	getPluggable = () => {
+	getPluggable = (_: string) => {
 		throw new PlatformNotSupportedError();
 	};
 
@@ -42,7 +43,7 @@ export default class PushNotification implements PushNotificationInterface {
 	 * Add plugin into PushNotification
 	 * @param {PushNotificationProvider} pluggable - an instance of the plugin
 	 */
-	addPluggable = (): void => {
+	addPluggable = (_: PushNotificationProvider): void => {
 		throw new PlatformNotSupportedError();
 	};
 
@@ -62,7 +63,7 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
-	getLaunchNotification = (): Promise<PushNotificationMessage> => {
+	getLaunchNotification = async (): Promise<PushNotificationMessage> => {
 		throw new PlatformNotSupportedError();
 	};
 
@@ -74,11 +75,13 @@ export default class PushNotification implements PushNotificationInterface {
 		throw new PlatformNotSupportedError();
 	};
 
-	getPermissionStatus = (): Promise<PushNotificationPermissionStatus> => {
+	getPermissionStatus = async (): Promise<PushNotificationPermissionStatus> => {
 		throw new PlatformNotSupportedError();
 	};
 
-	requestPermissions = (_?: PushNotificationPermissions): Promise<boolean> => {
+	requestPermissions = async (
+		_?: PushNotificationPermissions
+	): Promise<boolean> => {
 		throw new PlatformNotSupportedError();
 	};
 
