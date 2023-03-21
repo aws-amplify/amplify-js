@@ -384,7 +384,7 @@ describe('DataStore sync engine', () => {
 				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
 			});
 
-			test.only(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+			test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
 				const parent = await DataStore.save(
 					new CompositePKParent({
 						customId: 'customId',
