@@ -10,8 +10,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts' && jest -w 1 --passWithNoTests --coverage",
-		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+		"test": "tslint 'src/**/*.ts' && npm run test:android",
+		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",

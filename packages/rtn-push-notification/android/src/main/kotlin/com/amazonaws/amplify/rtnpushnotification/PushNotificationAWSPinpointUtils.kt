@@ -42,41 +42,10 @@ class PushNotificationUtils(context: Context) {
     fun showNotification(
         payload: NotificationPayload
     ) {
-        var sourceId: String?
-        var activityId: String?
-
-        // Assign campaign attributes
-        sourceId = payload.rawData[PushNotificationsConstants.PINPOINT_CAMPAIGN_CAMPAIGN_ID]
-        activityId =
-            payload.rawData[PushNotificationsConstants.PINPOINT_CAMPAIGN_CAMPAIGN_ACTIVITY_ID]
-
-        // If no campaign id, try to assign journey attributes
-        if (sourceId.isNullOrEmpty()) {
-            val journeyAttributes =
-                payload.rawData[PushNotificationsConstants.PINPOINT_PREFIX]?.let {
-                    try {
-                        Json.decodeFromString<Map<String, Map<String, String>>>(it)[PushNotificationsConstants.JOURNEY]
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing journey attribute", e)
-                        null
-                    }
-                }
-            journeyAttributes?.let {
-                sourceId = it[PushNotificationsConstants.JOURNEY_ID]
-                activityId = it[PushNotificationsConstants.JOURNEY_ACTIVITY_ID]
-            }
-        }
-
-        // If no activity id (even if campaign was direct send), use a random id, otherwise hash
-        // attributes to prevent displaying duplicate notifications from an activity
-        val notificationId = activityId?.let {
-            "$sourceId:$activityId".hashCode()
-        } ?: Random.nextInt()
-
         PinpointNotificationPayload.fromNotificationPayload(payload)?.let {
             if (utils.areNotificationsEnabled() && !it.silentPush) {
                 utils.showNotification(
-                    notificationId, it, PushNotificationLaunchActivity::class.java
+                    payload.notificationId, it, PushNotificationLaunchActivity::class.java
                 )
             }
         }
@@ -89,8 +58,7 @@ class PushNotificationUtils(context: Context) {
 
 @InternalAmplifyApi
 fun Bundle.getNotificationPayload(): NotificationPayload? {
-    val payload =
-        NotificationPayload(NotificationContentProvider.FCM(RemoteMessage(this).data))
+    val payload = NotificationPayload(NotificationContentProvider.FCM(RemoteMessage(this).data))
     return PinpointNotificationPayload.fromNotificationPayload(payload)
 }
 
@@ -126,15 +94,17 @@ fun NotificationPayload.toWritableMap(): WritableMap {
     val payload = PinpointNotificationPayload.fromNotificationPayload(this)
 
     // Build actions map
-    val action = Arguments.createMap().apply {
-        payload?.action?.get(PushNotificationsConstants.OPENAPP)?.let {
-            putString(PushNotificationsConstants.OPENAPP, it)
-        }
-        payload?.action?.get(PushNotificationsConstants.URL)?.let {
-            putString(PushNotificationsConstants.URL, it)
-        }
-        payload?.action?.get(PushNotificationsConstants.DEEPLINK)?.let {
-            putString(PushNotificationsConstants.DEEPLINK, it)
+    val action = payload?.action?.let { action ->
+        Arguments.createMap().apply {
+            action[PushNotificationsConstants.OPENAPP]?.let {
+                putString(PushNotificationsConstants.OPENAPP, it)
+            }
+            action[PushNotificationsConstants.URL]?.let {
+                putString(PushNotificationsConstants.URL, it)
+            }
+            action[PushNotificationsConstants.DEEPLINK]?.let {
+                putString(PushNotificationsConstants.DEEPLINK, it)
+            }
         }
     }
 
@@ -150,7 +120,40 @@ fun NotificationPayload.toWritableMap(): WritableMap {
         payload?.body?.let { putString("body", it) }
         payload?.imageUrl?.let { putString("imageUrl", it) }
         payload?.channelId?.let { putString("channelId", it) }
-        putMap("action", action)
+        action?.let { putMap("action", action) }
         putMap("rawData", rawData)
     }
 }
+
+@InternalAmplifyApi
+private val NotificationPayload.notificationId: Int
+    get() {
+        var sourceId: String?
+        var activityId: String?
+
+        // Assign campaign attributes
+        sourceId = this.rawData[PushNotificationsConstants.PINPOINT_CAMPAIGN_CAMPAIGN_ID]
+        activityId = this.rawData[PushNotificationsConstants.PINPOINT_CAMPAIGN_CAMPAIGN_ACTIVITY_ID]
+
+        // If no campaign id, try to assign journey attributes
+        if (sourceId.isNullOrEmpty()) {
+            val journeyAttributes = this.rawData[PushNotificationsConstants.PINPOINT_PREFIX]?.let {
+                try {
+                    Json.decodeFromString<Map<String, Map<String, String>>>(it)[PushNotificationsConstants.JOURNEY]
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error parsing journey attribute", e)
+                    null
+                }
+            }
+            journeyAttributes?.let {
+                sourceId = it[PushNotificationsConstants.JOURNEY_ID]
+                activityId = it[PushNotificationsConstants.JOURNEY_ACTIVITY_ID]
+            }
+        }
+
+        // If no activity id (even if campaign was direct send), use a random id, otherwise hash
+        // attributes to prevent displaying duplicate notifications from an activity
+        return activityId?.let {
+            "$sourceId:$activityId".hashCode()
+        } ?: Random.nextInt()
+    }

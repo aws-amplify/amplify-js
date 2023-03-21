@@ -6,7 +6,6 @@ package com.amazonaws.amplify.rtnpushnotification
 import android.app.Activity
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.amplifyframework.annotations.InternalAmplifyApi
@@ -14,10 +13,7 @@ import com.amplifyframework.notifications.pushnotifications.NotificationPayload
 import com.facebook.react.bridge.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 private val TAG = PushNotificationModule::class.java.simpleName
@@ -33,18 +29,18 @@ enum class PushNotificationPermissionStatus {
 }
 
 class PushNotificationModule(
-    reactContext: ReactApplicationContext
+    reactContext: ReactApplicationContext,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main
 ) : ReactContextBaseJavaModule(reactContext), ActivityEventListener, LifecycleEventListener {
 
     private var isAppLaunch: Boolean = true
     private var launchNotification: WritableMap? = null
-    private var sharedPreferences: SharedPreferences
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main)
+    private val sharedPreferences = reactContext.getSharedPreferences(PREF_FILE_KEY, MODE_PRIVATE)
+    private val scope = CoroutineScope(dispatcher)
 
     init {
         reactContext.addActivityEventListener(this)
         reactContext.addLifecycleEventListener(this)
-        sharedPreferences = reactContext.getSharedPreferences(PREF_FILE_KEY, MODE_PRIVATE)
     }
 
     @ReactMethod
@@ -78,7 +74,10 @@ class PushNotificationModule(
     }
 
     @ReactMethod
-    fun requestPermissions(permissions: ReadableMap, promise: Promise) {
+    fun requestPermissions(
+        @Suppress("UNUSED_PARAMETER") permissions: ReadableMap,
+        promise: Promise
+    ) {
         scope.launch {
             val permission = PushNotificationPermission(reactApplicationContext)
             if (permission.requestPermission()) {
@@ -100,12 +99,12 @@ class PushNotificationModule(
     }
 
     @ReactMethod
-    fun addListener(eventName: String) {
+    fun addListener(@Suppress("UNUSED_PARAMETER") eventName: String) {
         // noop - only required for RN NativeEventEmitter
     }
 
     @ReactMethod
-    fun removeListeners(count: Int) {
+    fun removeListeners(@Suppress("UNUSED_PARAMETER") count: Int) {
         // noop - only required for RN NativeEventEmitter
     }
 

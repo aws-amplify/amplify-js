@@ -66,8 +66,7 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
                 }
             } catch (exception: Exception) {
                 Log.e(
-                    TAG,
-                    "Something went wrong while starting headless task: ${exception.message}"
+                    TAG, "Something went wrong while starting headless task: ${exception.message}"
                 )
             }
         }
