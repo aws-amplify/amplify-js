@@ -362,7 +362,6 @@ describe('DataStore sync engine', () => {
 				);
 				await waitForEmptyOutboxOrError(graphqlService);
 				const parentTable = graphqlService.tables.get('HasOneParent')!;
-				console.log(parentTable);
 				const savedParentWithChild = parentTable.get(
 					JSON.stringify([parent.id])
 				) as any;
