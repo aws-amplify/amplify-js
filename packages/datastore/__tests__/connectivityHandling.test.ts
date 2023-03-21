@@ -425,7 +425,7 @@ describe('DataStore sync engine', () => {
 					JSON.stringify([child.childId, child.content])
 				) as any;
 				expect(savedChildWithoutParent.parentId).toEqual(null);
-				expect(savedChildWithoutParent.parentId).toEqual(null);
+				expect(savedChildWithoutParent.parentTitle).toEqual(null);
 			});
 		});
 	});
