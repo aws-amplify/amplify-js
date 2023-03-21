@@ -53,7 +53,7 @@ export const awsConfig = {
 	Notifications: notificationsConfig,
 };
 
-export const imageUrl = 'http://image.url/avocado.png';
+export const imageUrl = 'http://image.fakeurl/avocado.png';
 
 export const userId = 'user-id';
 
@@ -164,7 +164,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 						BackgroundColor: '#88FFFF',
 						BorderRadius: 4,
 						ButtonAction: ButtonAction.LINK,
-						Link: 'http://link.url',
+						Link: 'http://link.fakeurl',
 						Text: 'Link button',
 						TextColor: '#FFFFFF',
 					},
@@ -221,7 +221,7 @@ export const extractedContent = [
 			action: 'LINK',
 			style: { backgroundColor: '#88FFFF', borderRadius: 4, color: '#FFFFFF' },
 			title: 'Link button',
-			url: 'http://link.url',
+			url: 'http://link.fakeurl',
 		},
 	},
 ];
@@ -261,7 +261,7 @@ export const simplePushMessage: PushNotificationMessage = {
 };
 
 export const pushToken = 'foo-bar';
-export const pushNotificationUrl = 'http://url';
+export const pushNotificationUrl = 'http://goto.fakeurl';
 export const pushNotificationDeeplinkUrl = 'deeplink://url';
 export const pushNotificationAdhocData = { foo: 'bar' };
 export const pinpointCampaign = {
