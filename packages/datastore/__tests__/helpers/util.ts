@@ -418,7 +418,7 @@ export async function waitForEmptyOutbox(verbose = false) {
 }
 
 /**
- * Watches Hub events until ready event is recieved
+ * Watches Hub events until ready event is received
  *
  * @param verbose Whether to log hub events until empty
  */
@@ -437,7 +437,7 @@ export async function waitForDataStoreReady(verbose = false) {
 }
 
 /**
- * Watches Hub events until syncQueriesReady is recieved
+ * Watches Hub events until syncQueriesReady is received
  *
  * @param verbose Whether to log hub events until empty
  */
