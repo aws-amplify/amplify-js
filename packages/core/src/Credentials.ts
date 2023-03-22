@@ -49,7 +49,7 @@ export class CredentialsClass {
 	private _storage;
 	private _storageSync;
 	private _identityId;
-	private _nextCredentialsRefresh: Number;
+	private _nextCredentialsRefresh: number;
 
 	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
 	Auth = undefined;
