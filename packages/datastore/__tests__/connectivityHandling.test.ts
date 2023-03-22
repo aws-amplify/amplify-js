@@ -40,6 +40,10 @@ describe('DataStore sync engine', () => {
 		LegacyJSONPost,
 		Post,
 		Comment,
+		HasOneParent,
+		HasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
@@ -60,6 +64,10 @@ describe('DataStore sync engine', () => {
 			Post,
 			Comment,
 			Model,
+			HasOneParent,
+			HasOneChild,
+			CompositePKParent,
+			CompositePKChild,
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
@@ -340,6 +348,84 @@ describe('DataStore sync engine', () => {
 			const savedItem = table.get(JSON.stringify([post.id])) as any;
 			expect(savedItem.title).toEqual(deleted.title);
 			expect(savedItem._deleted).toEqual(true);
+		});
+
+		[null, undefined].forEach(value => {
+			test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+				const child = await DataStore.save(
+					new HasOneChild({ content: 'child content' })
+				);
+				const parent = await DataStore.save(
+					new HasOneParent({
+						child,
+					})
+				);
+				await waitForEmptyOutboxOrError(graphqlService);
+				const parentTable = graphqlService.tables.get('HasOneParent')!;
+				const savedParentWithChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithChild.hasOneParentChildId).toEqual(child.id);
+
+				const parentWithoutChild = HasOneParent.copyOf(
+					(await DataStore.query(HasOneParent, parent.id))!,
+					draft => {
+						draft.child = value;
+					}
+				);
+				await DataStore.save(parentWithoutChild);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedParentWithoutChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
+			});
+
+			test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+				const parent = await DataStore.save(
+					new CompositePKParent({
+						customId: 'customId',
+						content: 'content',
+					})
+				);
+
+				const child = await DataStore.save(
+					new CompositePKChild({
+						childId: 'childId',
+						content: 'content',
+						parent,
+					})
+				);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+				const childTable = graphqlService.tables.get('CompositePKChild')!;
+				const savedChildWithParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithParent.parentId).toEqual(parent.customId);
+				expect(savedChildWithParent.parentTitle).toEqual(parent.content);
+
+				const childWithoutParent = CompositePKChild.copyOf(
+					(await DataStore.query(CompositePKChild, {
+						childId: child.childId,
+						content: child.content,
+					}))!,
+					draft => {
+						draft.parent = value;
+					}
+				);
+				await DataStore.save(childWithoutParent);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedChildWithoutParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithoutParent.parentId).toEqual(null);
+				expect(savedChildWithoutParent.parentTitle).toEqual(null);
+			});
 		});
 	});
 
