@@ -535,6 +535,22 @@ describe('DataStore sync engine', () => {
 			const cloudThirdPost = table.get(JSON.stringify([thirdPost.id])) as any;
 			expect(cloudThirdPost.title).toEqual('a title 3');
 		});
+
+		test('does not error when disruption before sync queries start', async () => {
+			DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+			const errorLog = jest.spyOn(console, 'error');
+			await simulateDisruption();
+			await simulateDisruptionEnd();
+			await waitForSyncQueriesReady();
+			expect(errorLog).not.toHaveBeenCalledWith(
+				expect.stringMatching(new RegExp('[ERROR].* Hub')),
+				expect.anything()
+			);
+		});
 	});
 
 	describe('selective sync', () => {

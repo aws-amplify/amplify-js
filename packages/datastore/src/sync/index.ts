@@ -121,10 +121,13 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
-	private syncInProgress: Promise<any> | null;
 	private unsleepSyncQueriesObservable:
 		| ((forceFullSync?: boolean) => void)
 		| null;
+	private waitForSleepState: Promise<void>;
+	private syncQueriesObservableStartSleeping: (
+		value?: void | PromiseLike<void>
+	) => void;
 	private stopDisruptionListener: () => void;
 	private connectionDisrupted = false;
 
@@ -155,6 +158,9 @@ export class SyncEngine {
 		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
+		this.waitForSleepState = new Promise(resolve => {
+			this.syncQueriesObservableStartSleeping = resolve;
+		});
 
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -248,12 +254,12 @@ export class SyncEngine {
 											'Realtime disabled when in a server-side environment'
 										);
 									} else {
+										this.stopDisruptionListener =
+											this.startDisruptionListener();
 										//#region GraphQL Subscriptions
 										[ctlSubsObservable, dataSubsObservable] =
 											this.subscriptionsProcessor.start();
 
-										this.stopDisruptionListener =
-											this.startDisruptionListener();
 										try {
 											await new Promise((resolve, reject) => {
 												onTerminate.then(reject);
@@ -566,10 +572,9 @@ export class SyncEngine {
 						let start: number;
 						let syncDuration: number;
 						let lastStartedAt: number;
-						this.syncInProgress = new Promise((resolve, reject) => {
+						await new Promise((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
 							onTerminate.then(() => {
-								this.syncInProgress = null;
 								resolve();
 							});
 							syncQueriesSubscription = this.syncQueriesProcessor
@@ -744,8 +749,6 @@ export class SyncEngine {
 							});
 						});
 
-						await this.syncInProgress;
-
 						// null is cast to 0 resulting in unexpected behavior.
 						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
 						// If lastFullSyncStartedAt is null this is the first sync.
@@ -787,23 +790,25 @@ export class SyncEngine {
 								const sleep = new Promise<boolean>(_unsleep => {
 									unsleep = _unsleep;
 									sleepTimer = setTimeout(unsleep, msNextFullSync);
-								}).then(res => {
-									this.unsleepSyncQueriesObservable = null;
-									return this.syncInProgress
-										? this.syncInProgress.then(() => res)
-										: res;
 								});
 
 								onTerminate.then(() => {
 									terminated = true;
+									this.syncQueriesObservableStartSleeping();
 									unsleep();
 								});
 
 								this.unsleepSyncQueriesObservable = unsleep;
+								this.syncQueriesObservableStartSleeping();
 								return sleep;
 							},
 							'syncQueriesObservable sleep'
 						);
+
+						this.unsleepSyncQueriesObservable = null;
+						this.waitForSleepState = new Promise(resolve => {
+							this.syncQueriesObservableStartSleeping = resolve;
+						});
 					}
 				}, 'syncQueriesObservable main');
 		});
@@ -1114,7 +1119,7 @@ export class SyncEngine {
 
 					case ConnectionState.Connected:
 						if (this.connectionDisrupted) {
-							this.fullSyncNow();
+							this.scheduleFullSync();
 						}
 						this.connectionDisrupted = false;
 						break;
@@ -1123,14 +1128,14 @@ export class SyncEngine {
 		});
 	}
 
-	private fullSyncNow() {
-		if (this.unsleepSyncQueriesObservable) {
-			this.unsleepSyncQueriesObservable(true);
-		} else {
-			// todo: what to do here?
-			// syncQueriesObservable has awoken, but has not reached next sleep
-			// is it possible to reach this?
-			console.log('cant unsleep right now');
-		}
+	/*
+	 * Schedule a full sync to start when syncQueriesObservable enters sleep state
+	 * Start full sync immediately if syncQueriesObservable is already in sleep state
+	 */
+	private scheduleFullSync(): Promise<void> {
+		return this.waitForSleepState.then(() => {
+			// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
+			this.unsleepSyncQueriesObservable!(true);
+		});
 	}
 }
