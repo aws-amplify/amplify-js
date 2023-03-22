@@ -787,16 +787,12 @@ export class SyncEngine {
 								const sleep = new Promise<boolean>(_unsleep => {
 									unsleep = _unsleep;
 									sleepTimer = setTimeout(unsleep, msNextFullSync);
-								})
-									.then(res => {
-										this.unsleepSyncQueriesObservable = null;
-										return res;
-									})
-									.then(res =>
-										this.syncInProgress
-											? this.syncInProgress.then(() => res)
-											: res
-									);
+								}).then(res => {
+									this.unsleepSyncQueriesObservable = null;
+									return this.syncInProgress
+										? this.syncInProgress.then(() => res)
+										: res;
+								});
 
 								onTerminate.then(() => {
 									terminated = true;
