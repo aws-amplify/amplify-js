@@ -1,6 +1,8 @@
-import { getUserAgent } from "./Platform";
+import { getUserAgent } from './Platform';
+import { detectFramework } from './Platform/detectFramework';
+
 // constructor
-function UserAgent() { }
+function UserAgent() {}
 // public
 UserAgent.prototype.userAgent = getUserAgent();
 
@@ -23,4 +25,20 @@ export const appendToCognitoUserAgent = content => {
 };
 
 // class for defining the amzn user-agent
+export const getAmplifyUserAgent = customUserAgent => {
+	return `${UserAgent.prototype.userAgent} ${buildUserAgentDetails(
+		customUserAgent
+	)}`;
+};
+
+const buildUserAgentDetails = customUserAgent => {
+	const { packageDetails, ...userAgentDetails } = {
+		framework: detectFramework(),
+		...customUserAgent,
+	};
+	return `${packageDetails ? `${packageDetails} ` : ''}(${Object.values(
+		userAgentDetails
+	).sort()})`;
+};
+
 export default UserAgent;

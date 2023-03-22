@@ -1,6 +1,10 @@
-import UserAgent, { appendToCognitoUserAgent } from '../src/UserAgent';
+import UserAgent, {
+	appendToCognitoUserAgent,
+	getAmplifyUserAgent,
+} from '../src/UserAgent';
+import { Framework } from '../src/constants';
 
-const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x js';
+const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x';
 
 describe('UserAgent test', () => {
 	beforeEach(() => {
@@ -18,6 +22,10 @@ describe('UserAgent test', () => {
 	test('appendToCognitoUserAgent appends content to userAgent', () => {
 		appendToCognitoUserAgent('test');
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
+
+		expect(getAmplifyUserAgent()).toBe(
+			`${DEFAULT_USER_AGENT} test (${Framework.None})`
+		);
 	});
 
 	test('appendToCognitoUserAgent does not append duplicate content', () => {
@@ -28,6 +36,10 @@ describe('UserAgent test', () => {
 		);
 
 		expect(UserAgent.prototype.userAgent).toBe(`${DEFAULT_USER_AGENT} test`);
+
+		expect(getAmplifyUserAgent()).toBe(
+			`${DEFAULT_USER_AGENT} test (${Framework.None})`
+		);
 	});
 
 	test('appendToCognitoUserAgent sets userAgent if userAgent has no content', () => {
