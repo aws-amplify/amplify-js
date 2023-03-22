@@ -6,26 +6,27 @@ package com.amazonaws.amplify.rtnpushnotification
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.amplifyframework.pushnotifications.pinpoint.utils.processRemoteMessage
-import com.amplifyframework.pushnotifications.pinpoint.utils.PushNotificationsUtils
+import com.amplifyframework.annotations.InternalAmplifyApi
+import com.amplifyframework.notifications.pushnotifications.NotificationPayload
 import com.facebook.react.HeadlessJsTaskService
 import com.facebook.react.bridge.Arguments
 import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 
+@InternalAmplifyApi
 private val TAG = PushNotificationFirebaseMessagingService::class.java.simpleName
-private const val ACTION_NEW_TOKEN = "com.google.firebase.messaging.NEW_TOKEN"
 
+@InternalAmplifyApi
 class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
 
-    private lateinit var utils: PushNotificationsUtils
+    private lateinit var utils: PushNotificationUtils
 
     override fun onCreate() {
         super.onCreate()
-        utils = PushNotificationsUtils(baseContext)
+        utils = PushNotificationUtils(baseContext)
     }
 
     override fun onNewToken(token: String) {
+        super.onNewToken(token)
         val params = Arguments.createMap()
         params.putString("token", token)
         Log.d(TAG, "Send device token event")
@@ -33,46 +34,33 @@ class PushNotificationFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun handleIntent(intent: Intent) {
-        // If the intent is for a new token, just forward intent to Firebase SDK
-        if (intent.action == ACTION_NEW_TOKEN) {
-            Log.d(TAG, "Received new token intent")
-            super.handleIntent(intent)
-            return
-        }
-
         val extras = intent.extras ?: Bundle()
-
-        // If we can't handle the message type coming in, just forward the intent to Firebase SDK
-        if (!isExtrasSupported(extras)) {
-            Log.i(TAG, "Message payload is not supported")
+        extras.getNotificationPayload()?.let {
+            // message contains push notification payload, show notification
+            onMessageReceived(it)
+        } ?: run {
+            Log.d(TAG, "Ignore intents that don't contain push notification payload")
             super.handleIntent(intent)
-            return
         }
-
-        // Otherwise, try to handle the message
-        onMessageReceived(RemoteMessage(extras))
     }
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        val payload = processRemoteMessage(remoteMessage)
-
+    private fun onMessageReceived(payload: NotificationPayload) {
         if (utils.isAppInForeground()) {
             Log.d(TAG, "Send foreground message received event")
-            val params = Arguments.fromBundle(payload.bundle())
             PushNotificationEventManager.sendEvent(
-                PushNotificationEventType.FOREGROUND_MESSAGE_RECEIVED, params
+                PushNotificationEventType.FOREGROUND_MESSAGE_RECEIVED, payload.toWritableMap()
             )
         } else {
             Log.d(
                 TAG, "App is in background, try to create notification and start headless service"
             )
 
-            utils.showNotification(payload, PushNotificationLaunchActivity::class.java)
+            utils.showNotification(payload)
 
             try {
                 val serviceIntent =
                     Intent(baseContext, PushNotificationHeadlessTaskService::class.java)
-                serviceIntent.putExtras(payload.bundle())
+                serviceIntent.putExtra("amplifyNotificationPayload", payload)
                 if (baseContext.startService(serviceIntent) != null) {
                     HeadlessJsTaskService.acquireWakeLockNow(baseContext)
                 }

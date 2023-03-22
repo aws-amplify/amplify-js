@@ -302,11 +302,13 @@ export const fcmMessagePayload = {
 	title: 'fcm-title',
 	body: 'fcm-body',
 	imageUrl: imageUrl,
+	action: {},
 	rawData: pushNotificationAdhocData,
 };
 
 export const fcmMessage = {
-	payload: JSON.stringify({ ...fcmMessagePayload, ...fcmMessageOptions }),
+	...fcmMessagePayload,
+	...fcmMessageOptions,
 };
 
 export const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =

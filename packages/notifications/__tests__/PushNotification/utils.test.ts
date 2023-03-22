@@ -88,8 +88,7 @@ describe('PushNotification Utils', () => {
 			});
 
 			test('data only messages', () => {
-				const { rawData } = fcmMessagePayload;
-				const payload = { payload: JSON.stringify({ rawData }) };
+				const payload = { rawData: fcmMessagePayload.rawData };
 				expect(normalizeNativeMessage(payload)).toStrictEqual({
 					data: pushNotificationAdhocData,
 				});
@@ -97,9 +96,8 @@ describe('PushNotification Utils', () => {
 
 			test('go to url action', () => {
 				const payload = {
-					payload: JSON.stringify({
-						action: { 'pinpoint.url': pushNotificationUrl },
-					}),
+					...fcmMessagePayload,
+					action: { url: pushNotificationUrl },
 				};
 				expect(normalizeNativeMessage(payload)).toMatchObject({
 					goToUrl: pushNotificationUrl,
@@ -108,22 +106,12 @@ describe('PushNotification Utils', () => {
 
 			test('deep link action', () => {
 				const payload = {
-					payload: JSON.stringify({
-						action: { 'pinpoint.deeplink': pushNotificationDeeplinkUrl },
-					}),
+					...fcmMessagePayload,
+					action: { deeplink: pushNotificationDeeplinkUrl },
 				};
 				expect(normalizeNativeMessage(payload)).toMatchObject({
 					deeplinkUrl: pushNotificationDeeplinkUrl,
 				});
-			});
-
-			test('logs an error if the payload is not parseable', () => {
-				jest.clearAllMocks();
-				const payload = { payload: 'bad-payload' };
-				normalizeNativeMessage(payload);
-				expect(loggerErrorSpy).toBeCalledWith(
-					expect.stringContaining('An error ocurred parsing')
-				);
 			});
 		});
 
