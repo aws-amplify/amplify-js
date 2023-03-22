@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.2...@aws-amplify/datastore@4.1.3) (2023-03-21)
+
+
+### Bug Fixes
+
+* **data:** update SQLite utils to use 'instr' instead of 'like' when constructing WHERE conditions from predicates ([#11108](https://github.com/aws-amplify/amplify-js/issues/11108)) ([42d5328](https://github.com/aws-amplify/amplify-js/commit/42d5328f8e142c15b25c086c9455bcd70987e885))
+
+
+
+
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.1...@aws-amplify/datastore@4.1.2) (2023-03-16)
 
 **Note:** Version bump only for package @aws-amplify/datastore
