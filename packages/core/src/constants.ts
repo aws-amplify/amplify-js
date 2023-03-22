@@ -8,13 +8,6 @@
 const hasSymbol =
 	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function';
 
-/**
- * @deprecated Unused, all usecases have migrated to INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
- */
-export const INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER = hasSymbol
-	? Symbol.for('INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER')
-	: '@@INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER';
-
 export const INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER = hasSymbol
 	? Symbol.for('INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER')
 	: '@@INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER';

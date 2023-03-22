@@ -3,6 +3,5 @@
 	"compilerOptions": {
 		"allowJs": true
 	},
-	"exclude": ["src/**/*.js"],
 	"include": ["lib*/**/*.ts", "src/**/*.ts"]
 }

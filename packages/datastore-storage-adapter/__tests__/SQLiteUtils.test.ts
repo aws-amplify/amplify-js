@@ -6,6 +6,7 @@ import {
 	modelInsertStatement,
 	modelUpdateStatement,
 	whereClauseFromPredicate,
+	whereConditionFromPredicateObject,
 	limitClauseFromPagination,
 	orderByClauseFromSort,
 	deleteByIdStatement,
@@ -160,8 +161,8 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM "Model" WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
-				['Bob', 'Sm%', 5, 10, 30],
+				`SELECT * FROM "Model" WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
+				['Bob', 'Sm', 5, 10, 30],
 			];
 
 			expect(
@@ -201,7 +202,7 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted") VALUES (?, ?, ?, ?, ?, ?)',
+				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted", "optionalField1", "emails", "ips", "metadata", "createdAt", "updatedAt") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
 				[
 					model.field1,
 					model.dateCreated,
@@ -209,6 +210,12 @@ describe('SQLiteUtils tests', () => {
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 				],
 			];
 
@@ -224,13 +231,19 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=? WHERE id=?`,
+				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=?, "optionalField1"=?, "emails"=?, "ips"=?, "metadata"=?, "createdAt"=?, "updatedAt"=? WHERE id=?`,
 				[
 					model.field1,
 					model.dateCreated,
 					undefined,
 					undefined,
 					undefined,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
 					model.id,
 				],
 			];
@@ -263,11 +276,66 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?)`,
-				['Bob', 'Sm%', 5],
+				`WHERE ("firstName" = ? AND instr("lastName", ?) = 1 AND "sortOrder" > ?)`,
+				['Bob', 'Sm', 5],
 			];
 
 			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
+		});
+	});
+
+	describe('whereConditionFromPredicateObject', () => {
+		it('should generate valid `beginsWith` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'beginsWith',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) = 1`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `contains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'contains',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) > 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `notContains` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'notContains',
+				operand: '%',
+			};
+
+			const expected = [`instr("name", ?) = 0`, ['%']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
+		});
+		it('should generate valid `between` condition from predicate object', () => {
+			const predicate = {
+				field: 'name',
+				operator: 'between',
+				operand: ['a', 'b'],
+			};
+
+			const expected = [`"name" BETWEEN ? AND ?`, ['a', 'b']];
+
+			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
+				expected
+			);
 		});
 	});
 

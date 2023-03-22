@@ -957,9 +957,6 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 				<a href="mqttoverwsprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-				<a href="mqttoverwsprovider.html#gettopicforvalue" class="tsd-kind-icon">get<wbr>Topic<wbr>For<wbr>Value</a>
-			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 				<a href="mqttoverwsprovider.html#newclient" class="tsd-kind-icon">new<wbr>Client</a>
 			</li>
@@ -982,14 +979,11 @@ img { max-width: 100%; }
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<a href="abstractpubsubprovider.html" class="tsd-signature-type">AbstractPubSubProvider</a>
+				<a href="abstractpubsubprovider.html" class="tsd-signature-type">AbstractPubSubProvider</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">&gt;</span>
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">MqttOverWSProvider</span>
 						<ul class="tsd-hierarchy">
-							<li>
-								<a href="awsappsyncprovider.html" class="tsd-signature-type">AWSAppSyncProvider</a>
-							</li>
 							<li>
 								<a href="awsiotprovider.html" class="tsd-signature-type">AWSIoTProvider</a>
 							</li>
@@ -1040,7 +1034,6 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="mqttoverwsprovider.html#disconnect" class="tsd-kind-icon">disconnect</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="mqttoverwsprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="mqttoverwsprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="mqttoverwsprovider.html#gettopicforvalue" class="tsd-kind-icon">get<wbr>Topic<wbr>For<wbr>Value</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="mqttoverwsprovider.html#newclient" class="tsd-kind-icon">new<wbr>Client</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="mqttoverwsprovider.html#ondisconnect" class="tsd-kind-icon">on<wbr>Disconnect</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="mqttoverwsprovider.html#publish" class="tsd-kind-icon">publish</a></li>
@@ -1063,7 +1056,7 @@ img { max-width: 100%; }
 					<aside class="tsd-sources">
 						<p>Overrides <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#constructor">constructor</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L78">packages/pubsub/src/Providers/MqttOverWSProvider.ts:78</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L106">packages/pubsub/src/Providers/MqttOverWSProvider.ts:106</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1082,20 +1075,20 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 			<a name="_clientidobservers" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _client<wbr>IdObservers</h3>
-			<div class="tsd-signature tsd-kind-icon">_client<wbr>IdObservers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/subscriptionobserver.html" class="tsd-signature-type">SubscriptionObserver</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
+			<div class="tsd-signature tsd-kind-icon">_client<wbr>IdObservers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#pubsubcontentobserver" class="tsd-signature-type">PubSubContentObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L253">packages/pubsub/src/Providers/MqttOverWSProvider.ts:253</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L284">packages/pubsub/src/Providers/MqttOverWSProvider.ts:284</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 			<a name="_topicobservers" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagProtected">Protected</span> _topic<wbr>Observers</h3>
-			<div class="tsd-signature tsd-kind-icon">_topic<wbr>Observers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/subscriptionobserver.html" class="tsd-signature-type">SubscriptionObserver</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
+			<div class="tsd-signature tsd-kind-icon">_topic<wbr>Observers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#pubsubcontentobserver" class="tsd-signature-type">PubSubContentObserver</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map()</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L250">packages/pubsub/src/Providers/MqttOverWSProvider.ts:250</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L281">packages/pubsub/src/Providers/MqttOverWSProvider.ts:281</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1108,7 +1101,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">client<wbr>Id<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L108">packages/pubsub/src/Providers/MqttOverWSProvider.ts:108</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L136">packages/pubsub/src/Providers/MqttOverWSProvider.ts:136</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1118,7 +1111,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">clients<wbr>Queue<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L116">packages/pubsub/src/Providers/MqttOverWSProvider.ts:116</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L144">packages/pubsub/src/Providers/MqttOverWSProvider.ts:144</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1128,7 +1121,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L112">packages/pubsub/src/Providers/MqttOverWSProvider.ts:112</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L140">packages/pubsub/src/Providers/MqttOverWSProvider.ts:140</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1138,7 +1131,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">isSSLEnabled<span class="tsd-signature-symbol">:</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L120">packages/pubsub/src/Providers/MqttOverWSProvider.ts:120</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L148">packages/pubsub/src/Providers/MqttOverWSProvider.ts:148</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1149,7 +1142,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#options">options</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/PubSubProvider.ts#L30">packages/pubsub/src/Providers/PubSubProvider.ts:30</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/PubSubProvider.ts#L33">packages/pubsub/src/Providers/PubSubProvider.ts:33</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1160,23 +1153,24 @@ img { max-width: 100%; }
 			<a name="configure" class="tsd-anchor"></a>
 			<h3>configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ProviderOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProviderOptions</span></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/pubsubprovider.html">PubSubProvider</a>.<a href="../interfaces/pubsubprovider.html#configure">configure</a></p>
 						<p>Inherited from <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#configure">configure</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/PubSubProvider.ts#L16">packages/pubsub/src/Providers/PubSubProvider.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/PubSubProvider.ts#L19">packages/pubsub/src/Providers/PubSubProvider.ts:19</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> config: <span class="tsd-signature-type">ProviderOptions</span><span class="tsd-signature-symbol"> = {}</span></h5>
+							<h5>config: <a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ProviderOptions</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a></h4>
 				</li>
 			</ul>
 		</section>
@@ -1184,13 +1178,13 @@ img { max-width: 100%; }
 			<a name="connect" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagProtected">Protected</span> connect</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-				<li class="tsd-signature tsd-kind-icon">connect<span class="tsd-signature-symbol">(</span>clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">connect<span class="tsd-signature-symbol">(</span>clientId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pahoclient.html" class="tsd-signature-type">PahoClient</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L203">packages/pubsub/src/Providers/MqttOverWSProvider.ts:203</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L231">packages/pubsub/src/Providers/MqttOverWSProvider.ts:231</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1202,7 +1196,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pahoclient.html" class="tsd-signature-type">PahoClient</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1216,7 +1210,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L222">packages/pubsub/src/Providers/MqttOverWSProvider.ts:222</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L253">packages/pubsub/src/Providers/MqttOverWSProvider.ts:253</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1241,7 +1235,7 @@ img { max-width: 100%; }
 						<p>Implementation of <a href="../interfaces/pubsubprovider.html">PubSubProvider</a>.<a href="../interfaces/pubsubprovider.html#getcategory">getCategory</a></p>
 						<p>Inherited from <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#getcategory">getCategory</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/PubSubProvider.ts#L24">packages/pubsub/src/Providers/PubSubProvider.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/PubSubProvider.ts#L27">packages/pubsub/src/Providers/PubSubProvider.ts:27</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1260,33 +1254,10 @@ img { max-width: 100%; }
 						<p>Implementation of <a href="../interfaces/pubsubprovider.html">PubSubProvider</a>.<a href="../interfaces/pubsubprovider.html#getprovidername">getProviderName</a></p>
 						<p>Overrides <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#getprovidername">getProviderName</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L129">packages/pubsub/src/Providers/MqttOverWSProvider.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L154">packages/pubsub/src/Providers/MqttOverWSProvider.ts:154</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-			<a name="gettopicforvalue" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Topic<wbr>For<wbr>Value</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-protected">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Topic<wbr>For<wbr>Value<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L125">packages/pubsub/src/Providers/MqttOverWSProvider.ts:125</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>value: <span class="tsd-signature-type">any</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1294,14 +1265,14 @@ img { max-width: 100%; }
 			<a name="newclient" class="tsd-anchor"></a>
 			<h3>new<wbr>Client</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-				<li class="tsd-signature tsd-kind-icon">new<wbr>Client<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">new<wbr>Client<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pahoclient.html" class="tsd-signature-type">PahoClient</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Overrides <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#newclient">newClient</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L155">packages/pubsub/src/Providers/MqttOverWSProvider.ts:155</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L180">packages/pubsub/src/Providers/MqttOverWSProvider.ts:180</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1318,7 +1289,7 @@ img { max-width: 100%; }
 							</ul>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/pahoclient.html" class="tsd-signature-type">PahoClient</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1332,7 +1303,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L133">packages/pubsub/src/Providers/MqttOverWSProvider.ts:133</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L158">packages/pubsub/src/Providers/MqttOverWSProvider.ts:158</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1360,14 +1331,14 @@ img { max-width: 100%; }
 			<a name="publish" class="tsd-anchor"></a>
 			<h3>publish</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-				<li class="tsd-signature tsd-kind-icon">publish<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">publish<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, msg<span class="tsd-signature-symbol">: </span><a href="../globals.html#pubsubcontent" class="tsd-signature-type">PubSubContent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<p>Overrides <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#publish">publish</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L232">packages/pubsub/src/Providers/MqttOverWSProvider.ts:232</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L263">packages/pubsub/src/Providers/MqttOverWSProvider.ts:263</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1376,7 +1347,7 @@ img { max-width: 100%; }
 							<h5>topics: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>msg: <span class="tsd-signature-type">any</span></h5>
+							<h5>msg: <a href="../globals.html#pubsubcontent" class="tsd-signature-type">PubSubContent</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1387,7 +1358,7 @@ img { max-width: 100%; }
 			<a name="subscribe" class="tsd-anchor"></a>
 			<h3>subscribe</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-				<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">subscribe<span class="tsd-signature-symbol">(</span>topics<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#pubsubcontent" class="tsd-signature-type">PubSubContent</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
@@ -1395,7 +1366,7 @@ img { max-width: 100%; }
 						<p>Implementation of <a href="../interfaces/pubsubprovider.html">PubSubProvider</a>.<a href="../interfaces/pubsubprovider.html#subscribe">subscribe</a></p>
 						<p>Overrides <a href="abstractpubsubprovider.html">AbstractPubSubProvider</a>.<a href="abstractpubsubprovider.html#subscribe">subscribe</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4901f556e/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L278">packages/pubsub/src/Providers/MqttOverWSProvider.ts:278</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/42d5328f8/packages/pubsub/src/Providers/MqttOverWSProvider.ts#L311">packages/pubsub/src/Providers/MqttOverWSProvider.ts:311</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1407,7 +1378,7 @@ img { max-width: 100%; }
 							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/mqttprovideroptions.html" class="tsd-signature-type">MqttProviderOptions</a><span class="tsd-signature-symbol"> = {}</span></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#pubsubcontent" class="tsd-signature-type">PubSubContent</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

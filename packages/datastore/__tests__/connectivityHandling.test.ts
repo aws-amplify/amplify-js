@@ -9,14 +9,41 @@ import {
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
 
+/**
+ * Surfaces errors sooner and outputs them more clearly if/when
+ * a test begins to fail.
+ */
+async function waitForEmptyOutboxOrError(service) {
+	const pendingError = new Promise((resolve, reject) => {
+		service.log = (channel, message) => {
+			if (channel.includes('API Response')) {
+				if (message.errors?.length > 0) reject(message);
+			}
+		};
+	});
+
+	return await Promise.race([waitForEmptyOutbox(), pendingError]);
+}
+
 describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
 		DataStore,
+		schema,
 		connectivityMonitor,
+		Model,
+		ModelWithExplicitOwner,
+		ModelWithExplicitCustomOwner,
+		ModelWithMultipleCustomOwner,
+		BasicModel,
+		BasicModelWritableTS,
 		LegacyJSONPost,
 		Post,
 		Comment,
+		HasOneParent,
+		HasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
@@ -25,10 +52,22 @@ describe('DataStore sync engine', () => {
 	beforeEach(async () => {
 		({
 			DataStore,
+			schema,
 			connectivityMonitor,
+			Model,
+			ModelWithExplicitOwner,
+			ModelWithExplicitCustomOwner,
+			ModelWithMultipleCustomOwner,
+			BasicModel,
+			BasicModelWritableTS,
 			LegacyJSONPost,
 			Post,
 			Comment,
+			Model,
+			HasOneParent,
+			HasOneChild,
+			CompositePKParent,
+			CompositePKChild,
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
@@ -45,13 +84,175 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(new Post({ title: 'post title' }));
 
 			// give thread control back to subscription event handlers.
-			await pause(1);
+			await waitForEmptyOutbox();
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
 			const savedItem = table.get(JSON.stringify([post.id])) as any;
 			expect(savedItem.title).toEqual(post.title);
+		});
+
+		test('omits readonly fields from mutation events on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.BasicModel.fields.createdAt.isReadOnly).toBe(true);
+
+			const m = await DataStore.save(
+				new BasicModel({
+					body: 'whatever and ever',
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModel')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.body).toEqual(m.body);
+		});
+
+		test('omits null owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitOwner({
+					title: 'very clever title',
+					owner: null,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits undefined owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitOwner({
+					title: 'very clever title',
+					owner: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits null custom owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitCustomOwner({
+					title: 'very clever title',
+					customowner: null,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits undefined custom owner fields from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithExplicitCustomOwner({
+					title: 'very clever title',
+					customowner: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithExplicitCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits empty owner fields (multi, both empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: undefined,
+					customownerTwo: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits empty owner fields (multi, owner 1 empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: undefined,
+					customownerTwo: 'bob',
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('omits null custom owner fields (multi, owner 2 empty) from mutation events on create', async () => {
+			const m = await DataStore.save(
+				new ModelWithMultipleCustomOwner({
+					title: 'very clever title',
+					customownerOne: 'bob',
+					customownerTwo: undefined,
+				})
+			);
+
+			await waitForEmptyOutboxOrError(graphqlService);
+
+			const table = graphqlService.tables.get('ModelWithMultipleCustomOwner')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.title).toEqual(m.title);
+		});
+
+		test('includes timestamp fields in mutation events when NOT readonly', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(
+				schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly
+			).toBe(false);
+
+			const m = await DataStore.save(
+				new BasicModelWritableTS({
+					body: 'whatever else',
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('BasicModelWritableTS')!;
+			expect(table.size).toEqual(1);
+
+			const savedItem = table.get(JSON.stringify([m.id])) as any;
+			expect(savedItem.body).toEqual(m.body);
 		});
 
 		test('uses model create subscription event to populate sync protocol metadata', async () => {
@@ -83,6 +284,35 @@ describe('DataStore sync engine', () => {
 
 			const savedItem = table.get(JSON.stringify([post.id])) as any;
 			expect(savedItem.title).toEqual(updated.title);
+		});
+
+		test('send model updates where field is nullified to the cloud', async () => {
+			const original = await DataStore.save(
+				new Model({
+					field1: 'field 1 value',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'optional field value',
+				})
+			);
+			await waitForEmptyOutbox();
+
+			const updated = await DataStore.save(
+				Model.copyOf(
+					(await DataStore.query(Model, original.id))!,
+					m => (m.optionalField1 = undefined)
+				)
+			);
+			const retrievedBeforeMutate = await DataStore.query(Model, original.id);
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model');
+			const cloudItem = table?.get(JSON.stringify([original.id])) as any;
+			const retrievedAfterMutate = await DataStore.query(Model, original.id);
+
+			expect(updated.optionalField1).toBe(null);
+			expect(cloudItem.optionalField1).toBe(null);
+			expect(retrievedBeforeMutate?.optionalField1).toBe(null);
+			expect(retrievedAfterMutate?.optionalField1).toBe(null);
 		});
 
 		test('sends model deletes to the cloud', async () => {
@@ -118,6 +348,84 @@ describe('DataStore sync engine', () => {
 			const savedItem = table.get(JSON.stringify([post.id])) as any;
 			expect(savedItem.title).toEqual(deleted.title);
 			expect(savedItem._deleted).toEqual(true);
+		});
+
+		[null, undefined].forEach(value => {
+			test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+				const child = await DataStore.save(
+					new HasOneChild({ content: 'child content' })
+				);
+				const parent = await DataStore.save(
+					new HasOneParent({
+						child,
+					})
+				);
+				await waitForEmptyOutboxOrError(graphqlService);
+				const parentTable = graphqlService.tables.get('HasOneParent')!;
+				const savedParentWithChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithChild.hasOneParentChildId).toEqual(child.id);
+
+				const parentWithoutChild = HasOneParent.copyOf(
+					(await DataStore.query(HasOneParent, parent.id))!,
+					draft => {
+						draft.child = value;
+					}
+				);
+				await DataStore.save(parentWithoutChild);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedParentWithoutChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
+			});
+
+			test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+				const parent = await DataStore.save(
+					new CompositePKParent({
+						customId: 'customId',
+						content: 'content',
+					})
+				);
+
+				const child = await DataStore.save(
+					new CompositePKChild({
+						childId: 'childId',
+						content: 'content',
+						parent,
+					})
+				);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+				const childTable = graphqlService.tables.get('CompositePKChild')!;
+				const savedChildWithParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithParent.parentId).toEqual(parent.customId);
+				expect(savedChildWithParent.parentTitle).toEqual(parent.content);
+
+				const childWithoutParent = CompositePKChild.copyOf(
+					(await DataStore.query(CompositePKChild, {
+						childId: child.childId,
+						content: child.content,
+					}))!,
+					draft => {
+						draft.parent = value;
+					}
+				);
+				await DataStore.save(childWithoutParent);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedChildWithoutParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithoutParent.parentId).toEqual(null);
+				expect(savedChildWithoutParent.parentTitle).toEqual(null);
+			});
 		});
 	});
 
@@ -363,6 +671,107 @@ describe('DataStore sync engine', () => {
 				'_deleted',
 				'blog',
 			]);
+		});
+
+		test('subscription query receives expected filter variable', async () => {
+			await resyncWith([
+				syncExpression(
+					Post,
+					async () => post => post.title.contains('cleaning')
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Post')
+				.map(req => req.variables.filter);
+
+			const expectedFilter = {
+				and: [
+					{
+						title: {
+							contains: 'cleaning',
+						},
+					},
+				],
+			};
+
+			expect(onCreate).toEqual(expectedFilter);
+			expect(onUpdate).toEqual(expectedFilter);
+			expect(onDelete).toEqual(expectedFilter);
+		});
+
+		test('subscription query receives expected filter variable - nested', async () => {
+			await resyncWith([
+				syncExpression(
+					Model,
+					async () => m =>
+						m.or(or => [
+							or.and(and => [
+								and.field1.eq('field'),
+								and.createdAt.gt('1/1/2023'),
+							]),
+							or.and(and => [
+								and.or(or => [
+									or.optionalField1.beginsWith('a'),
+									or.optionalField1.notContains('z'),
+								]),
+								and.emails.ne('-'),
+							]),
+						])
+				),
+			]);
+
+			// first 3 subscription requests are from calling DataStore.start in the `beforeEach`
+			const [, , , onCreate, onUpdate, onDelete] = graphqlService.requests
+				.filter(r => r.operation === 'subscription' && r.tableName === 'Model')
+				.map(req => req.variables.filter);
+
+			expect(onCreate).toEqual(onUpdate);
+			expect(onCreate).toEqual(onDelete);
+			expect(onCreate).toMatchInlineSnapshot(`
+			Object {
+			  "or": Array [
+			    Object {
+			      "and": Array [
+			        Object {
+			          "field1": Object {
+			            "eq": "field",
+			          },
+			        },
+			        Object {
+			          "createdAt": Object {
+			            "gt": "1/1/2023",
+			          },
+			        },
+			      ],
+			    },
+			    Object {
+			      "and": Array [
+			        Object {
+			          "or": Array [
+			            Object {
+			              "optionalField1": Object {
+			                "beginsWith": "a",
+			              },
+			            },
+			            Object {
+			              "optionalField1": Object {
+			                "notContains": "z",
+			              },
+			            },
+			          ],
+			        },
+			        Object {
+			          "emails": Object {
+			            "ne": "-",
+			          },
+			        },
+			      ],
+			    },
+			  ],
+			}
+		`);
 		});
 	});
 });
