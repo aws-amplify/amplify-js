@@ -1562,6 +1562,12 @@ class DataStore {
 						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 						.subscribe({
 							next: ({ type, data }) => {
+								if ((type as any) === 'TEST')
+									console.log('datastore.ts this.sync.subscribe() message', {
+										type,
+										data,
+									});
+
 								// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
 								// In the Browser, we can begin returning data once subscriptions are in place.
 								const readyType = isNode
@@ -2529,6 +2535,7 @@ class DataStore {
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
+			console.log('datastore.ts closing subscription');
 			syncSubscription.unsubscribe();
 		}
 

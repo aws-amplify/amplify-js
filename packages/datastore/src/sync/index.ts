@@ -195,6 +195,7 @@ export class SyncEngine {
 	}
 
 	start(params: StartParams) {
+		console.log('start');
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
@@ -215,8 +216,13 @@ export class SyncEngine {
 						async ({ online }) =>
 							this.runningProcesses.isOpen &&
 							this.runningProcesses.add(async onTerminate => {
+								console.log('online/offline', {
+									online,
+									thisIsOnline: this.online,
+								});
 								// From offline to online
 								if (online && !this.online) {
+									console.log('sync engine going back online');
 									this.online = online;
 
 									observer.next({
@@ -313,12 +319,23 @@ export class SyncEngine {
 									}
 									//#endregion
 
+									observer.next({
+										type: 'TEST',
+										data: 'sync/index subscribing to mutations processor',
+									} as any);
+									console.log('wtf');
+
 									//#region process mutations (outbox)
 									subscriptions.push(
 										this.mutationsProcessor
 											.start()
 											.subscribe(({ modelDefinition, model: item, hasMore }) =>
 												this.runningProcesses.add(async () => {
+													console.log('sync/index mutation event', {
+														modelDefinition,
+														model: item,
+														hasMore,
+													});
 													const modelConstructor = this.userModelClasses[
 														modelDefinition.name
 													] as PersistentModelConstructor<any>;
@@ -451,6 +468,8 @@ export class SyncEngine {
 
 								await startPromise;
 
+								// Set by the this.datastoreConnectivity.status().subscribe() loop defined
+								// near line 215.
 								if (this.online) {
 									this.mutationsProcessor.resume();
 								}

@@ -72,7 +72,7 @@ export class FakeGraphQLService {
 		}
 	}
 
-	private jitteredPause(ms) {
+	private async jitteredPause(ms) {
 		/**
 		 * "Materialized" jitter from -jitter to +jitter.
 		 */
@@ -123,7 +123,10 @@ export class FakeGraphQLService {
 		});
 
 		if (!condition) {
-			this.log('checking satisfiesCondition matches all for `null` conditions');
+			this.log(
+				'checking satisfiesCondition',
+				'matches all for `null` conditions'
+			);
 			return true;
 		}
 
@@ -560,11 +563,11 @@ export class FakeGraphQLService {
 						this.log('delete applying to table', { data });
 					}
 				}
-				this.log('API Response', { data, errors });
 				this.notifySubscribers(tableName, type, data, selection);
 			}
 
 			await this.jitteredPause(this.latencies.response);
+			this.log('API Response', { data, errors });
 			resolve({
 				data,
 				errors,

@@ -56,7 +56,7 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
-	private observer!: ZenObservable.Observer<MutationProcessorEvent>;
+	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -130,6 +130,7 @@ class MutationProcessor {
 			}
 
 			return this.runningProcesses.addCleaner(async () => {
+				this.observer = undefined;
 				this.pause();
 			});
 		});
@@ -138,6 +139,7 @@ class MutationProcessor {
 	}
 
 	public async stop() {
+		this.observer = undefined;
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
 	}
@@ -256,7 +258,13 @@ class MutationProcessor {
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
 
-					this.observer.next!({
+					console.log('in mutation this.observer.next()', {
+						operation,
+						modelDefinition,
+						model: record,
+						hasMore,
+					});
+					this.observer?.next?.({
 						operation,
 						modelDefinition,
 						model: record,
@@ -323,6 +331,8 @@ class MutationProcessor {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
 							await this.amplifyContext.API.graphql(tryWith)
 						);
+
+						console.log('mutation result', result);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params.
