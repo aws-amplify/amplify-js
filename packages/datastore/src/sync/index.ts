@@ -125,7 +125,7 @@ export class SyncEngine {
 	private unsleepSyncQueriesObservable:
 		| ((forceFullSync?: boolean) => void)
 		| null;
-	private stopPubsubConnectionHubListener: () => void;
+	private stopDisruptionListener: () => void;
 	private connectionDisrupted = false;
 
 	private runningProcesses: BackgroundProcessManager;
@@ -252,8 +252,8 @@ export class SyncEngine {
 										[ctlSubsObservable, dataSubsObservable] =
 											this.subscriptionsProcessor.start();
 
-										this.stopPubsubConnectionHubListener =
-											this.startPubsubConnectionHubListner();
+										this.stopDisruptionListener =
+											this.startDisruptionListener();
 										try {
 											await new Promise((resolve, reject) => {
 												onTerminate.then(reject);
@@ -845,8 +845,7 @@ export class SyncEngine {
 		/**
 		 * Stop listening for websocket connection disruption
 		 */
-		this.stopPubsubConnectionHubListener &&
-			this.stopPubsubConnectionHubListener();
+		this.stopDisruptionListener && this.stopDisruptionListener();
 
 		/**
 		 * aggressively shut down any lingering background processes.
@@ -1101,7 +1100,7 @@ export class SyncEngine {
 	 * from AppSync were missed. A sync needs to be triggered to
 	 * retrieve the missed data.
 	 */
-	private startPubsubConnectionHubListner() {
+	private startDisruptionListener() {
 		return Hub.listen('api', (data: any) => {
 			if (
 				data.source === 'PubSub' &&
