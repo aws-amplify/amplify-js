@@ -10,6 +10,8 @@ import {
 	Credentials,
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	Category,
+	Framework,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
@@ -105,7 +107,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -160,7 +162,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -228,7 +230,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -299,7 +301,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -381,7 +383,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -427,7 +429,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -474,7 +476,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -538,7 +540,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -586,7 +588,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -634,7 +636,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -696,7 +698,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -892,7 +894,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -1145,7 +1147,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -1205,7 +1207,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
 			};
 
 			const body = {
@@ -1265,8 +1267,7 @@ describe('API test', () => {
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentCategory = 'DataStore';
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1277,7 +1278,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS","c":"${userAgentCategory}"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
 			};
 
 			const body = {
@@ -1298,7 +1299,7 @@ describe('API test', () => {
 
 			await api.graphql(
 				graphqlOperation(GetEvent, variables, authToken, {
-					category: userAgentCategory,
+					category: Category.DataStore,
 				})
 			);
 
@@ -1341,8 +1342,7 @@ describe('API test', () => {
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentCategory = 'DataStore';
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1354,7 +1354,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS","c":"${userAgentCategory}"}`,
+				'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
 			};
 
 			const body = {
@@ -1376,7 +1376,7 @@ describe('API test', () => {
 
 			await api.graphql(
 				graphqlOperation(GetEvent, variables, authToken, {
-					category: userAgentCategory,
+					category: Category.DataStore,
 				})
 			);
 

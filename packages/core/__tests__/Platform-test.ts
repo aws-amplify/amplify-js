@@ -1,5 +1,5 @@
-import { getAmplifyUserAgent } from '../src/Platform';
-import { Platform } from '../src/Platform';
+import { getAmplifyUserAgent, Platform } from '../src/Platform';
+import { Category, Framework } from '../src';
 
 describe('Platform test', () => {
 	describe('isReactNative test', () => {
@@ -10,12 +10,14 @@ describe('Platform test', () => {
 
 	describe('getAmplifyUserAgent test', () => {
 		test('without content', () => {
-			expect(getAmplifyUserAgent()).toBe(`${Platform.userAgent} {"f":"JS"}`);
+			expect(getAmplifyUserAgent()).toBe(
+				`${Platform.userAgent} (${Framework.None})`
+			);
 		});
 
 		test('with content', () => {
-			expect(getAmplifyUserAgent({ category: 'DataStore' })).toBe(
-				`${Platform.userAgent} {"f":"JS","c":"DataStore"}`
+			expect(getAmplifyUserAgent({ category: Category.DataStore })).toBe(
+				`${Platform.userAgent} (${Category.DataStore},${Framework.None})`
 			);
 		});
 	});

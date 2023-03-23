@@ -20,14 +20,14 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
-	UserAgentSuffix,
+	CustomUserAgent,
+	Category,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -215,8 +215,8 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					const userAgentSuffix: UserAgentSuffix = {
-						category: USER_AGENT_SUFFIX_DATASTORE,
+					const customUserAgent: CustomUserAgent = {
+						category: Category.DataStore,
 					};
 
 					return await this.amplifyContext.API.graphql({
@@ -224,7 +224,7 @@ class SyncProcessor {
 						variables,
 						authMode,
 						authToken,
-						userAgentSuffix,
+						customUserAgent,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))

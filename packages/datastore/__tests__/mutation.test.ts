@@ -17,8 +17,7 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import { Constants } from '@aws-amplify/core';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+import { Constants, Category, Framework } from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -160,7 +159,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent} (c:${USER_AGENT_SUFFIX_DATASTORE})`,
+						'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
 					}),
 				})
 			);
@@ -175,7 +174,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent} (c:${USER_AGENT_SUFFIX_DATASTORE})`,
+						'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
 					}),
 				})
 			);

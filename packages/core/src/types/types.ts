@@ -1,5 +1,6 @@
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
+import { Category, CategoryAction, Framework } from '../constants';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -70,17 +71,8 @@ export type Platform = {
 	navigator: Navigator | null;
 	isReactNative: Boolean;
 };
-export type UserAgentSuffix = {
-	version?: string;
-	framework?: string;
-	category?: string;
-	action?: string;
-	component?: string;
-};
-export type CodedUserAgentSuffix = {
-	v?: string;
-	f?: string;
-	c?: string;
-	a?: string;
-	ui?: string;
+export type CustomUserAgent = {
+	category?: Category;
+	action?: CategoryAction;
+	framework?: Framework;
 };

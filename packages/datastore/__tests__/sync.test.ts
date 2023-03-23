@@ -1,7 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+import { Category } from '@aws-amplify/core';
+
 let mockGraphQl;
 
 const sessionStorageMock = (() => {
@@ -293,7 +294,7 @@ describe('Sync', () => {
 
 			expect(mockGraphQl).toHaveBeenCalledWith(
 				expect.objectContaining({
-					userAgentSuffix: { category: USER_AGENT_SUFFIX_DATASTORE },
+					customUserAgent: { category: Category.DataStore },
 				})
 			);
 		});
