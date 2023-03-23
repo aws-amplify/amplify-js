@@ -58,6 +58,9 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
+const expectedUserAgentAPI = `${Constants.userAgent} (${Category.API},${Framework.None})`;
+const expectedUserAgentDataStore = `${Constants.userAgent} (${Category.DataStore},${Framework.None})`;
+
 afterEach(() => {
 	jest.restoreAllMocks();
 });
@@ -107,7 +110,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -162,7 +165,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -230,7 +233,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -301,7 +304,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -383,7 +386,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -429,7 +432,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -476,7 +479,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -540,7 +543,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -588,7 +591,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -636,7 +639,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -698,7 +701,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -894,7 +897,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1147,7 +1150,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1207,7 +1210,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.API},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1278,7 +1281,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentDataStore,
 			};
 
 			const body = {
@@ -1354,7 +1357,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
+				'x-amz-user-agent': expectedUserAgentDataStore,
 			};
 
 			const body = {
