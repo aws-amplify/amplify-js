@@ -105,7 +105,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -160,7 +160,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -228,7 +228,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -299,7 +299,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -381,7 +381,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -427,7 +427,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -474,7 +474,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -538,7 +538,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -585,7 +585,9 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			const headers = { 'x-amz-user-agent': Constants.userAgent };
+			const headers = {
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
+			};
 
 			const body = {
 				query: getEventQuery,
@@ -632,7 +634,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 				Authorization: 'myAuthToken',
 			};
 
@@ -694,7 +696,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -890,7 +892,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -1143,7 +1145,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -1203,7 +1205,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS"}`,
 			};
 
 			const body = {
@@ -1264,7 +1266,7 @@ describe('API test', () => {
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
 				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentSuffix = '/DataStore';
+				userAgentCategory = 'DataStore';
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1275,7 +1277,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS","c":"${userAgentCategory}"}`,
 			};
 
 			const body = {
@@ -1295,7 +1297,9 @@ describe('API test', () => {
 			let authToken: undefined;
 
 			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
+				graphqlOperation(GetEvent, variables, authToken, {
+					category: userAgentCategory,
+				})
 			);
 
 			expect(spyon).toBeCalledWith(url, init);
@@ -1338,7 +1342,7 @@ describe('API test', () => {
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
 				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentSuffix = '/DataStore';
+				userAgentCategory = 'DataStore';
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1350,7 +1354,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
+				'x-amz-user-agent': `${Constants.userAgent} {"f":"JS","c":"${userAgentCategory}"}`,
 			};
 
 			const body = {
@@ -1371,7 +1375,9 @@ describe('API test', () => {
 			let authToken: undefined;
 
 			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
+				graphqlOperation(GetEvent, variables, authToken, {
+					category: userAgentCategory,
+				})
 			);
 
 			expect(spyon).toBeCalledWith(url, init);

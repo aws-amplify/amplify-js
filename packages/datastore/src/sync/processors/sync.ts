@@ -27,6 +27,7 @@ import {
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
+	UserAgentSuffix,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -214,12 +215,16 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
+					const userAgentSuffix: UserAgentSuffix = {
+						category: USER_AGENT_SUFFIX_DATASTORE,
+					};
+
 					return await this.amplifyContext.API.graphql({
 						query,
 						variables,
 						authMode,
 						authToken,
-						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
+						userAgentSuffix,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))

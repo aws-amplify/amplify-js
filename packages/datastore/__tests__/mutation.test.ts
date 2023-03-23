@@ -160,7 +160,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+						'x-amz-user-agent': `${Constants.userAgent} (c:${USER_AGENT_SUFFIX_DATASTORE})`,
 					}),
 				})
 			);
@@ -175,7 +175,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent}${USER_AGENT_SUFFIX_DATASTORE}`,
+						'x-amz-user-agent': `${Constants.userAgent} (c:${USER_AGENT_SUFFIX_DATASTORE})`,
 					}),
 				})
 			);

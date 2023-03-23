@@ -10,12 +10,12 @@ describe('Platform test', () => {
 
 	describe('getAmplifyUserAgent test', () => {
 		test('without content', () => {
-			expect(getAmplifyUserAgent()).toBe(Platform.userAgent);
+			expect(getAmplifyUserAgent()).toBe(`${Platform.userAgent} {"f":"JS"}`);
 		});
 
 		test('with content', () => {
-			expect(getAmplifyUserAgent('/DataStore')).toBe(
-				`${Platform.userAgent}/DataStore`
+			expect(getAmplifyUserAgent({ category: 'DataStore' })).toBe(
+				`${Platform.userAgent} {"f":"JS","c":"DataStore"}`
 			);
 		});
 	});

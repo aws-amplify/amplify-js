@@ -4,13 +4,14 @@ import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
+import { UserAgentSuffix } from '@aws-amplify/core';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
 	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
-	userAgentSuffix?: string;
+	userAgentSuffix?: UserAgentSuffix;
 }
 
 export interface GraphQLResult<T = object> {

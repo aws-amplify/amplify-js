@@ -14,6 +14,7 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgent,
+	UserAgentSuffix,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
@@ -34,7 +35,7 @@ export const graphqlOperation = (
 	query,
 	variables = {},
 	authToken?: string,
-	userAgentSuffix?: string
+	userAgentSuffix?: UserAgentSuffix
 ) => ({
 	query,
 	variables,

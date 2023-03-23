@@ -6,6 +6,7 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
+	UserAgentSuffix,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -443,7 +444,9 @@ class SubscriptionProcessor {
 											}`
 										);
 
-										const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
+										const userAgentSuffix: UserAgentSuffix = {
+											category: USER_AGENT_SUFFIX_DATASTORE,
+										};
 
 										const queryObservable = <
 											Observable<{
