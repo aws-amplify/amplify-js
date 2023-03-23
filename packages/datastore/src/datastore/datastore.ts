@@ -2535,7 +2535,6 @@ class DataStore {
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
-			console.log('datastore.ts closing subscription');
 			syncSubscription.unsubscribe();
 		}
 

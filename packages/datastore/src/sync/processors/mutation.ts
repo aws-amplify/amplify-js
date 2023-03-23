@@ -258,12 +258,6 @@ class MutationProcessor {
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
 
-					console.log('in mutation this.observer.next()', {
-						operation,
-						modelDefinition,
-						model: record,
-						hasMore,
-					});
 					this.observer?.next?.({
 						operation,
 						modelDefinition,
@@ -331,9 +325,6 @@ class MutationProcessor {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
 							await this.amplifyContext.API.graphql(tryWith)
 						);
-
-						console.log('mutation result', result);
-
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params.
 						return [result, opName, modelDefinition] as any;

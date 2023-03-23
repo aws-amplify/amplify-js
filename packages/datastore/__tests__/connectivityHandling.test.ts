@@ -360,49 +360,16 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('survives online -> offline -> online cycle', async () => {
-			const start = performance.now();
-
-			// graphqlService.log = (category, message) => {
-			// 	const elapsed = performance.now() - start;
-			// 	console.log(
-			// 		`${(elapsed / 1000).toFixed(3)} ${category} ${JSON.stringify(
-			// 			message || ''
-			// 		).substring(0, 80)}`
-			// 	);
-			// };
-
-			console.log('a');
-
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
 				})
 			);
 
-			console.log('b');
-
 			await waitForEmptyOutbox();
-
-			console.log('c');
 			await simulateDisconnect();
-
-			console.log('d');
 			await simulateConnect();
-
-			console.log('e');
 			await pause(1);
-
-			console.log('f - enable test logging and SAVING THE THING');
-
-			graphqlService.log = (category, message) => {
-				if (!JSON.stringify(message || '').includes('createPost')) return;
-				const elapsed = performance.now() - start;
-				console.log(
-					`${(elapsed / 1000).toFixed(3)} ${category} ${JSON.stringify(
-						message || ''
-					).substring(0, 80)}`
-				);
-			};
 
 			const anotherPost = await DataStore.save(
 				new Post({
@@ -410,11 +377,7 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			console.log('g - waiting for empty outbox');
-
 			await waitForEmptyOutbox();
-
-			console.log('h');
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(2);
@@ -426,7 +389,7 @@ describe('DataStore sync engine', () => {
 				JSON.stringify([anotherPost.id])
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
-		}, 10000);
+		});
 
 		test('survives online -> offline -> save -> online cycle (non-racing)', async () => {
 			const post = await DataStore.save(

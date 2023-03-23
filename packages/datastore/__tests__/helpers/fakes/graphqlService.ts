@@ -133,13 +133,6 @@ export class FakeGraphQLService {
 			return true;
 		}
 
-		console.log(condition);
-
-		if (isPredicatesAll(condition)) {
-			this.log('checking satisfiesCondition', 'Predicates.ALL');
-			return true;
-		}
-
 		const modelDefinition = this.schema.models[tableName];
 		const predicate = ModelPredicateCreator.createFromAST(
 			modelDefinition,
