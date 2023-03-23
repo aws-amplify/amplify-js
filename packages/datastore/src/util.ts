@@ -1098,3 +1098,36 @@ export const getIndexKeys = (
 };
 
 //#endregion
+
+/**
+ * Determine what the managed timestamp field names are for the given model definition
+ * and return the mapping.
+ *
+ * All timestamp fields are included in the mapping, regardless of whether the final field
+ * names are the defaults or customized in the `@model` directive.
+ *
+ * @see https://docs.amplify.aws/cli/graphql/data-modeling/#customize-creation-and-update-timestamps
+ *
+ * @param definition modelDefinition to inspect.
+ * @returns An object mapping `createdAt` and `updatedAt` to their field names.
+ */
+export const getTimestampFields = (
+	definition: SchemaModel
+): { createdAt: string; updatedAt: string } => {
+	const modelAttributes = definition.attributes?.find(
+		attr => attr.type === 'model'
+	);
+	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
+
+	const defaultFields = {
+		createdAt: 'createdAt',
+		updatedAt: 'updatedAt',
+	};
+
+	const customFields = timestampFieldsMap || {};
+
+	return {
+		...defaultFields,
+		...customFields,
+	};
+};
