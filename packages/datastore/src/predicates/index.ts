@@ -68,6 +68,10 @@ const isComparison = o => {
 	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
 };
 
+const isEmpty = o => {
+	return !Array.isArray(o) && Object.keys(o).length === 0;
+};
+
 /**
  * A light check to determine whether an object is a valid GraphQL Condition AST.
  *
@@ -77,7 +81,8 @@ const isValid = o => {
 	if (Array.isArray(o)) {
 		return o.every(v => isValid(v));
 	} else {
-		return Object.keys(o).length === 1;
+		// return Object.keys(o).length === 1;
+		return Object.keys(o).length <= 1;
 	}
 };
 
@@ -204,10 +209,17 @@ export class ModelPredicateCreator {
 	 */
 	static transformGraphQLFilterNodeToPredicateAST(gql: any) {
 		if (!isValid(gql)) {
-			throw new Error('Invalid GraphQL Condition or subtree: ' + gql);
+			throw new Error(
+				'Invalid GraphQL Condition or subtree: ' + JSON.stringify(gql)
+			);
 		}
 
-		if (isGroup(gql)) {
+		if (isEmpty(gql)) {
+			return {
+				type: 'and',
+				predicates: [],
+			};
+		} else if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
 			const children = this.transformGraphQLFilterNodeToPredicateAST(
 				gql[groupkey]

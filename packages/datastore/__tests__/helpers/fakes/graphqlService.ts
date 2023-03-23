@@ -7,7 +7,10 @@ import {
 	__modelMeta__,
 } from '../../../src/types';
 import { validatePredicate } from '../../../src/util';
-import { ModelPredicateCreator } from '../../../src/predicates';
+import {
+	ModelPredicateCreator,
+	isPredicatesAll,
+} from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
@@ -127,6 +130,13 @@ export class FakeGraphQLService {
 				'checking satisfiesCondition',
 				'matches all for `null` conditions'
 			);
+			return true;
+		}
+
+		console.log(condition);
+
+		if (isPredicatesAll(condition)) {
+			this.log('checking satisfiesCondition', 'Predicates.ALL');
 			return true;
 		}
 
