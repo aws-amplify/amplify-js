@@ -68,6 +68,12 @@ const isComparison = o => {
 	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
 };
 
+/**
+ * Determines whether an object specifies no conditions and should match everything,
+ * as would be the case with `Predicates.ALL`.
+ *
+ * @param o The object to test.
+ */
 const isEmpty = o => {
 	return !Array.isArray(o) && Object.keys(o).length === 0;
 };
