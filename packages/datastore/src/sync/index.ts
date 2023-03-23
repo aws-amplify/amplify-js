@@ -451,8 +451,7 @@ export class SyncEngine {
 
 								await startPromise;
 
-								// Set by the this.datastoreConnectivity.status().subscribe() loop defined
-								// near line 215.
+								// Set by the this.datastoreConnectivity.status().subscribe() loop
 								if (this.online) {
 									this.mutationsProcessor.resume();
 								}

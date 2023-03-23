@@ -56,6 +56,14 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
+	/**
+	 * The observer that receives messages when mutations are successfully completed
+	 * against cloud storage.
+	 *
+	 * A value of `undefined` signals that the sync has either been stopped or has not
+	 * yet started. In this case, `isReady()` will be `false` and `resume()` will exit
+	 * early.
+	 */
 	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
@@ -130,6 +138,7 @@ class MutationProcessor {
 			}
 
 			return this.runningProcesses.addCleaner(async () => {
+				// The observer has unsubscribed and/or `stop()` has been called.
 				this.observer = undefined;
 				this.pause();
 			});
@@ -325,6 +334,7 @@ class MutationProcessor {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
 							await this.amplifyContext.API.graphql(tryWith)
 						);
+
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params.
 						return [result, opName, modelDefinition] as any;

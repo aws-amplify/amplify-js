@@ -81,7 +81,6 @@ const isValid = o => {
 	if (Array.isArray(o)) {
 		return o.every(v => isValid(v));
 	} else {
-		// return Object.keys(o).length === 1;
 		return Object.keys(o).length <= 1;
 	}
 };

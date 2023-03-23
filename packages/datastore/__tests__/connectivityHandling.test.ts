@@ -438,7 +438,7 @@ describe('DataStore sync engine', () => {
 
 	describe('connection state change handling', () => {
 		beforeEach(async () => {
-			warpTime(100);
+			warpTime();
 		});
 
 		afterEach(async () => {
@@ -789,20 +789,4 @@ describe('DataStore sync engine', () => {
 		`);
 		});
 	});
-
-	// describe('protocol consistency behavior', () => {
-	// 	describe('using automerge', () => {
-	// 		test('does not reject on stale local _version', async () => {
-
-	// 		});
-
-	// 		test('settles on cloud model field on stale local _version', async () => {
-
-	// 		});
-
-	// 		test('settles on local model field on updated local _version', async () => {
-
-	// 		});
-	// 	});
-	// });
 });
