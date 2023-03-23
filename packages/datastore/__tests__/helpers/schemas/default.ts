@@ -63,6 +63,8 @@ export declare class Post {
 	public readonly title: string;
 	public readonly comments: AsyncCollection<Comment>;
 	public readonly blogId?: string;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
 
 	constructor(init: ModelInit<Post>);
 
@@ -858,6 +860,20 @@ export function testSchema(): Schema {
 							connectionType: 'HAS_MANY',
 							associatedWith: ['post'],
 						},
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
 					},
 				},
 				syncable: true,
