@@ -2,7 +2,7 @@
  * General None HTTP-specific request interface
  */
 export interface Request {
-	destination: URL;
+	url: URL;
 	body?: unknown;
 }
 

@@ -1,15 +1,5 @@
 import { Request, Response, TransferHandler } from './core';
 
-export type Method =
-	| 'GET'
-	| 'HEAD'
-	| 'POST'
-	| 'PUT'
-	| 'DELETE'
-	| 'CONNECT'
-	| 'OPTIONS'
-	| 'TRACE';
-
 /**
  * Use basic Record interface to workaround fetch Header class not available in Node.js
  * The header names must be lowercased.
@@ -18,7 +8,7 @@ export type Method =
 export type Headers = Record<string, string>;
 
 export interface HttpRequest extends Request {
-	method: Method;
+	method: string;
 	headers: Headers;
 	body?: BodyInit;
 }
