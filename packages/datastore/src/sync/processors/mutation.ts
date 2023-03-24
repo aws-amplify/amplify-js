@@ -139,7 +139,7 @@ class MutationProcessor {
 
 			return this.runningProcesses.addCleaner(async () => {
 				// The observer has unsubscribed and/or `stop()` has been called.
-				this.observer = undefined;
+				this.removeObserver();
 				this.pause();
 			});
 		});
@@ -148,9 +148,14 @@ class MutationProcessor {
 	}
 
 	public async stop() {
-		this.observer = undefined;
+		this.removeObserver();
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
+	}
+
+	public removeObserver() {
+		this.observer?.complete?.();
+		this.observer = undefined;
 	}
 
 	public async resume(): Promise<void> {
