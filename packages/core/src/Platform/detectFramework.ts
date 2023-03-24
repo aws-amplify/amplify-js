@@ -1,6 +1,6 @@
 import { Framework } from './types';
 
-export const detectFramework = () => {
+export const detectFramework = (): Framework => {
 	if (
 		Array.from(document.querySelectorAll('*')).some(e =>
 			e.hasOwnProperty('_reactRootContainer')
