@@ -50,6 +50,10 @@ describe('DataStore sync engine', () => {
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
+		// we don't need to see all the console warnings for these tests ...
+		(console as any)._warn = console.warn;
+		console.warn = () => {};
+
 		({
 			DataStore,
 			schema,
@@ -77,6 +81,7 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		await DataStore.clear();
+		console.warn = (console as any)._warn;
 	});
 
 	describe('basic protocol', () => {
@@ -498,16 +503,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
-		/**
-		 * Existing bug. (Sort of.)
-		 *
-		 * Outbox mutations are processed, but the hub events are not sent, so
-		 * the test hangs and times out. :shrug:
-		 *
-		 * It is notable that the data is correct in this case, we just don't
-		 * receive all of the expected Hub events.
-		 */
-		test.skip('survives online -> offline -> save/online race', async () => {
+		test('survives online -> offline -> save/online race', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',

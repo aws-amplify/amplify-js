@@ -56,7 +56,15 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
-	private observer!: ZenObservable.Observer<MutationProcessorEvent>;
+	/**
+	 * The observer that receives messages when mutations are successfully completed
+	 * against cloud storage.
+	 *
+	 * A value of `undefined` signals that the sync has either been stopped or has not
+	 * yet started. In this case, `isReady()` will be `false` and `resume()` will exit
+	 * early.
+	 */
+	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -130,6 +138,8 @@ class MutationProcessor {
 			}
 
 			return this.runningProcesses.addCleaner(async () => {
+				// The observer has unsubscribed and/or `stop()` has been called.
+				this.observer = undefined;
 				this.pause();
 			});
 		});
@@ -138,6 +148,7 @@ class MutationProcessor {
 	}
 
 	public async stop() {
+		this.observer = undefined;
 		await this.runningProcesses.close();
 		await this.runningProcesses.open();
 	}
@@ -256,7 +267,7 @@ class MutationProcessor {
 						hasMore = (await this.outbox.peek(storage)) !== undefined;
 					});
 
-					this.observer.next!({
+					this.observer?.next?.({
 						operation,
 						modelDefinition,
 						model: record,
