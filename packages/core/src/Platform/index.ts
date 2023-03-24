@@ -4,10 +4,10 @@ import { CustomUserAgent } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 
-const BASE_USER_AGENT = `aws-amplify/${version}`;
+const BASE_USER_AGENT = `aws-amplify`;
 
 export const Platform = {
-	userAgent: BASE_USER_AGENT,
+	userAgent: `${BASE_USER_AGENT}/${version}`,
 	product: '',
 	navigator: null,
 	isReactNative: false,
@@ -20,11 +20,22 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	}
 }
 
-export const getAmplifyUserAgent = (customUserAgent?: CustomUserAgent) => {
+export const getAmplifyUserAgent = (
+	customUserAgent?: CustomUserAgent
+): string[][] => {
+	return [[BASE_USER_AGENT, version], [buildUserAgentDetails(customUserAgent)]];
+};
+
+export const getAmplifyUserAgentString = (
+	customUserAgent?: CustomUserAgent
+): string => {
 	return `${Platform.userAgent} ${buildUserAgentDetails(customUserAgent)}`;
 };
 
-const buildUserAgentDetails = (customUserAgent?: CustomUserAgent) => {
+const buildUserAgentDetails = (customUserAgent?: CustomUserAgent): string => {
 	const userAgentDetails = { framework: detectFramework(), ...customUserAgent };
-	return `(${Object.values(userAgentDetails).sort()})`;
+	return `${Object.values(userAgentDetails)
+		.sort()
+		.toString()
+		.replace(',', '|')}`;
 };
