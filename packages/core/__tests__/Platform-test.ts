@@ -1,5 +1,5 @@
 import { getAmplifyUserAgent, Platform } from '../src/Platform';
-import { Category, Framework } from '../src';
+import { Category, Framework } from '../src/Platform/types';
 
 describe('Platform test', () => {
 	describe('isReactNative test', () => {
