@@ -97,6 +97,7 @@ export const query = async (
 	// Submit query
 	let response;
 	let requestAuthMode: 'JWT' | 'SigV4' | 'None' = 'None';
+	let customHeader = {};
 
 	if (
 		appSyncAuthMode === 'AMAZON_COGNITO_USER_POOLS' ||
@@ -111,7 +112,7 @@ export const query = async (
 	}
 
 	if (appSyncAuthMode === 'API_KEY') {
-		customHeaders['x-api-key'] = apiKey;
+		customHeader['x-api-key'] = apiKey;
 	}
 
 	try {
@@ -122,7 +123,7 @@ export const query = async (
 			region: payload.signerServiceInfo.region,
 			service: payload.signerServiceInfo.service,
 			authMode: requestAuthMode,
-			headers: { ...customHeaders },
+			headers: { ...customHeader },
 		});
 
 		// response = await restClient.post(endpoint, payload);
