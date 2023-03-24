@@ -26,5 +26,5 @@ export const getAmplifyUserAgent = (customUserAgent?: CustomUserAgent) => {
 
 const buildUserAgentDetails = (customUserAgent?: CustomUserAgent) => {
 	const userAgentDetails = { framework: detectFramework(), ...customUserAgent };
-	return `(${Object.values(userAgentDetails).sort().toString()})`;
+	return `(${Object.values(userAgentDetails).sort()})`;
 };
