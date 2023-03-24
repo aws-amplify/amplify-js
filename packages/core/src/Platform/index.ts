@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomUserAgent } from '../types';
+import { CustomUserAgent } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 

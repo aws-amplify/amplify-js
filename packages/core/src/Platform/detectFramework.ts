@@ -1,4 +1,4 @@
-import { Framework } from '../constants';
+import { Framework } from './types';
 
 export const detectFramework = () => {
 	if (
