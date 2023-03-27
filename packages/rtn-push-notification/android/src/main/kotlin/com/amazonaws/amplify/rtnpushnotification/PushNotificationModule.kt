@@ -9,8 +9,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import com.amplifyframework.pushnotifications.pinpoint.utils.permissions.PermissionRequestResult
-import com.amplifyframework.pushnotifications.pinpoint.utils.permissions.PushNotificationPermission
+import com.amplifyframework.annotations.InternalAmplifyApi
+import com.amplifyframework.notifications.pushnotifications.NotificationPayload
 import com.facebook.react.bridge.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -81,8 +81,7 @@ class PushNotificationModule(
     fun requestPermissions(permissions: ReadableMap, promise: Promise) {
         scope.launch {
             val permission = PushNotificationPermission(reactApplicationContext)
-            val result = permission.requestPermission()
-            if (result is PermissionRequestResult.Granted) {
+            if (permission.requestPermission()) {
                 promise.resolve(true)
             } else {
                 // If permission was not granted and the shouldShowRequestPermissionRationale flag
@@ -125,12 +124,12 @@ class PushNotificationModule(
     /**
      * Send notification opened app event to JS layer if the app is in a background state
      */
+    @InternalAmplifyApi
     override fun onNewIntent(intent: Intent) {
-        val payload = getPayloadFromExtras(intent.extras)
+        val payload = NotificationPayload.fromIntent(intent)
         if (payload != null) {
-            val params = Arguments.fromBundle(payload.bundle())
             PushNotificationEventManager.sendEvent(
-                PushNotificationEventType.NOTIFICATION_OPENED, params
+                PushNotificationEventType.NOTIFICATION_OPENED, payload.toWritableMap()
             )
         }
     }
@@ -139,6 +138,7 @@ class PushNotificationModule(
      * On every app resume (including launch), send the current device token to JS layer. Also
      * store the app launching notification if app is in a quit state
      */
+    @InternalAmplifyApi
     override fun onHostResume() {
         if (isAppLaunch) {
             isAppLaunch = false
@@ -149,8 +149,9 @@ class PushNotificationModule(
                     Log.w(TAG, "Fetching FCM registration token failed")
                     return@OnCompleteListener
                 }
-                val params = Arguments.createMap()
-                params.putString("token", task.result)
+                val params = Arguments.createMap().apply {
+                    putString("token", task.result)
+                }
                 Log.d(TAG, "Send device token event")
                 PushNotificationEventManager.sendEvent(
                     PushNotificationEventType.TOKEN_RECEIVED,
@@ -158,13 +159,13 @@ class PushNotificationModule(
                 )
             })
             currentActivity?.intent?.let {
-                val payload = getPayloadFromExtras(it.extras)
+                val payload = NotificationPayload.fromIntent(it)
                 if (payload != null) {
-                    launchNotification = Arguments.fromBundle(payload.bundle())
+                    launchNotification = payload.toWritableMap()
                     // Launch notification opened event is emitted for internal use only
-                    val params = Arguments.fromBundle(payload.bundle())
                     PushNotificationEventManager.sendEvent(
-                        PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED, params
+                        PushNotificationEventType.LAUNCH_NOTIFICATION_OPENED,
+                        payload.toWritableMap()
                     )
                 }
             }

@@ -4,18 +4,20 @@
 package com.amazonaws.amplify.rtnpushnotification
 
 import android.content.Intent
+import com.amplifyframework.annotations.InternalAmplifyApi
+import com.amplifyframework.notifications.pushnotifications.NotificationPayload
 import com.facebook.react.HeadlessJsTaskService
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.jstasks.HeadlessJsTaskConfig
 
 class PushNotificationHeadlessTaskService : HeadlessJsTaskService() {
 
     private val defaultTimeout: Long = 10000 // 10 seconds
 
+    @InternalAmplifyApi
     override fun getTaskConfig(intent: Intent): HeadlessJsTaskConfig? {
-        return intent.extras?.let {
+        return NotificationPayload.fromIntent(intent)?.let {
             HeadlessJsTaskConfig(
-                HEADLESS_TASK_KEY, Arguments.fromBundle(it), defaultTimeout, true
+                HEADLESS_TASK_KEY, it.toWritableMap(), defaultTimeout, true
             )
         }
     }

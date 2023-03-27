@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { isEmpty } from 'lodash';
 
 import {
@@ -10,11 +9,6 @@ import {
 	PushNotificationPermissionStatus,
 } from './types';
 
-const logger = new Logger('Notifications.PushNotification');
-
-// Currently, the pinpoint specifics have not yet been abstracted out of the native payloads, but we are working
-// towards doing so.
-const PINPOINT_PREFIX = 'pinpoint.';
 const DEEP_LINK_ACTION = 'deeplink';
 const URL_ACTION = 'url';
 
@@ -42,7 +36,7 @@ export const normalizeNativeMessage = (
 	if (nativeMessage?.aps) {
 		normalized = normalizeApnsMessage(nativeMessage);
 	}
-	if (nativeMessage?.payload) {
+	if (nativeMessage?.rawData) {
 		normalized = normalizeFcmMessage(nativeMessage);
 	}
 	if (!normalized) {
@@ -62,9 +56,6 @@ export const normalizeNativeMessage = (
 const normalizeApnsMessage = (apnsMessage): NormalizedValues => {
 	const { aps, data = {} } = apnsMessage;
 	const { body, title } = aps.alert ?? {};
-	// We want to eventually move provider specifics into the provider somehow, but without another provider use case to
-	// develop against, any decisions made regarding how to transform this data would likely be discarded. For now, we
-	// should not over-complicate this transformer
 	const action = getApnsAction(data.pinpoint) ?? {};
 	const imageUrl = data['media-url'];
 	const options = getApnsOptions(apnsMessage);
@@ -72,15 +63,10 @@ const normalizeApnsMessage = (apnsMessage): NormalizedValues => {
 };
 
 const normalizeFcmMessage = (fcmMessage): NormalizedValues => {
-	try {
-		const payload = JSON.parse(fcmMessage.payload);
-		const { body, imageUrl, rawData: data, title } = payload;
-		const action = getFcmAction(payload.action) ?? {};
-		const options = getFcmOptions(payload);
-		return { body, imageUrl, title, action, options, data };
-	} catch (e) {
-		logger.error('An error ocurred parsing the native payload');
-	}
+	const { body, imageUrl, rawData: data, title } = fcmMessage;
+	const action = getFcmAction(fcmMessage.action) ?? {};
+	const options = getFcmOptions(fcmMessage);
+	return { body, imageUrl, title, action, options, data };
 };
 
 const getApnsAction = (
@@ -94,11 +80,11 @@ const getApnsAction = (
 const getFcmAction = (
 	action = {}
 ): Pick<PushNotificationMessage, 'goToUrl' | 'deeplinkUrl'> => {
-	if (action[`${PINPOINT_PREFIX}${URL_ACTION}`]) {
-		return { goToUrl: action[`${PINPOINT_PREFIX}${URL_ACTION}`] };
+	if (action[URL_ACTION]) {
+		return { goToUrl: action[URL_ACTION] };
 	}
-	if (action[`${PINPOINT_PREFIX}${DEEP_LINK_ACTION}`]) {
-		return { deeplinkUrl: action[`${PINPOINT_PREFIX}${DEEP_LINK_ACTION}`] };
+	if (action[DEEP_LINK_ACTION]) {
+		return { deeplinkUrl: action[DEEP_LINK_ACTION] };
 	}
 };
 
