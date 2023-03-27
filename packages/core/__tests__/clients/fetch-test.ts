@@ -14,7 +14,7 @@ describe(fetchTransferHandler.name, () => {
 	const mockFetchResponse = Object.assign(
 		{
 			status: 200,
-			headers: {},
+			headers: { forEach: jest.fn() },
 			body: {},
 		},
 		mockBody

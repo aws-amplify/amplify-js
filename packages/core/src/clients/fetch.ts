@@ -10,15 +10,24 @@ export const fetchTransferHandler: TransferHandler<
 	HttpResponse,
 	HttpTransferOptions
 > = async (request, options) => {
-	const resp = await fetch(request.url, {
-		method: request.method,
-		headers: request.headers,
-		body: shouldSendBody(request.method) ? request.body : undefined,
-		signal: options.abortSignal,
-	});
+	let resp: Response;
+	try {
+		resp = await fetch(request.url, {
+			method: request.method,
+			headers: request.headers,
+			body: shouldSendBody(request.method) ? request.body : undefined,
+			signal: options.abortSignal,
+		});
+	} catch (e) {
+		// TODO: needs to revise error handling in v6
+		if (e instanceof TypeError) {
+			throw new Error(`Network error`);
+		}
+		throw e;
+	}
 
 	const headersBag = {};
-	resp.headers?.forEach?.((key, value) => {
+	resp.headers?.forEach((key, value) => {
 		headersBag[key.toLowerCase()] = value;
 	});
 	const httpResponse = {
