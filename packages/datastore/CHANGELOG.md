@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.3...@aws-amplify/datastore@4.1.4) (2023-03-23)
+
+
+### Bug Fixes
+
+* **datastore:** stale observeQuery snapshot with sort param ([#11119](https://github.com/aws-amplify/amplify-js/issues/11119)) ([4e3b8fc](https://github.com/aws-amplify/amplify-js/commit/4e3b8fc84a929a7f0d7da9b4e6eb1d420879ce90))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.2...@aws-amplify/datastore@4.1.3) (2023-03-21)
+
+
+### Bug Fixes
+
+* **data:** update SQLite utils to use 'instr' instead of 'like' when constructing WHERE conditions from predicates ([#11108](https://github.com/aws-amplify/amplify-js/issues/11108)) ([42d5328](https://github.com/aws-amplify/amplify-js/commit/42d5328f8e142c15b25c086c9455bcd70987e885))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.1...@aws-amplify/datastore@4.1.2) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.0...@aws-amplify/datastore@4.1.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* **datastore:** add fallback catch case for misc. bad input ([#11061](https://github.com/aws-amplify/amplify-js/issues/11061)) ([268a270](https://github.com/aws-amplify/amplify-js/commit/268a270a2810a43a8361cbe5c6b02cd2a1f419dd))
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.17...@aws-amplify/datastore@4.1.0) (2023-03-08)
 
 

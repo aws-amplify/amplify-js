@@ -40,12 +40,20 @@ describe('DataStore sync engine', () => {
 		LegacyJSONPost,
 		Post,
 		Comment,
+		HasOneParent,
+		HasOneChild,
+		CompositePKParent,
+		CompositePKChild,
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
+		// we don't need to see all the console warnings for these tests ...
+		(console as any)._warn = console.warn;
+		console.warn = () => {};
+
 		({
 			DataStore,
 			schema,
@@ -60,6 +68,10 @@ describe('DataStore sync engine', () => {
 			Post,
 			Comment,
 			Model,
+			HasOneParent,
+			HasOneChild,
+			CompositePKParent,
+			CompositePKChild,
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
@@ -69,6 +81,7 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		await DataStore.clear();
+		console.warn = (console as any)._warn;
 	});
 
 	describe('basic protocol', () => {
@@ -341,6 +354,84 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.title).toEqual(deleted.title);
 			expect(savedItem._deleted).toEqual(true);
 		});
+
+		[null, undefined].forEach(value => {
+			test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
+				const child = await DataStore.save(
+					new HasOneChild({ content: 'child content' })
+				);
+				const parent = await DataStore.save(
+					new HasOneParent({
+						child,
+					})
+				);
+				await waitForEmptyOutboxOrError(graphqlService);
+				const parentTable = graphqlService.tables.get('HasOneParent')!;
+				const savedParentWithChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithChild.hasOneParentChildId).toEqual(child.id);
+
+				const parentWithoutChild = HasOneParent.copyOf(
+					(await DataStore.query(HasOneParent, parent.id))!,
+					draft => {
+						draft.child = value;
+					}
+				);
+				await DataStore.save(parentWithoutChild);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedParentWithoutChild = parentTable.get(
+					JSON.stringify([parent.id])
+				) as any;
+				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
+			});
+
+			test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
+				const parent = await DataStore.save(
+					new CompositePKParent({
+						customId: 'customId',
+						content: 'content',
+					})
+				);
+
+				const child = await DataStore.save(
+					new CompositePKChild({
+						childId: 'childId',
+						content: 'content',
+						parent,
+					})
+				);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+				const childTable = graphqlService.tables.get('CompositePKChild')!;
+				const savedChildWithParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithParent.parentId).toEqual(parent.customId);
+				expect(savedChildWithParent.parentTitle).toEqual(parent.content);
+
+				const childWithoutParent = CompositePKChild.copyOf(
+					(await DataStore.query(CompositePKChild, {
+						childId: child.childId,
+						content: child.content,
+					}))!,
+					draft => {
+						draft.parent = value;
+					}
+				);
+				await DataStore.save(childWithoutParent);
+
+				await waitForEmptyOutboxOrError(graphqlService);
+
+				const savedChildWithoutParent = childTable.get(
+					JSON.stringify([child.childId, child.content])
+				) as any;
+				expect(savedChildWithoutParent.parentId).toEqual(null);
+				expect(savedChildWithoutParent.parentTitle).toEqual(null);
+			});
+		});
 	});
 
 	describe('connection state change handling', () => {
@@ -412,16 +503,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
-		/**
-		 * Existing bug. (Sort of.)
-		 *
-		 * Outbox mutations are processed, but the hub events are not sent, so
-		 * the test hangs and times out. :shrug:
-		 *
-		 * It is notable that the data is correct in this case, we just don't
-		 * receive all of the expected Hub events.
-		 */
-		test.skip('survives online -> offline -> save/online race', async () => {
+		test('survives online -> offline -> save/online race', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -455,6 +537,65 @@ describe('DataStore sync engine', () => {
 				JSON.stringify([anotherPost.id])
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
+		});
+
+		test('survives online -> offline -> update/online race', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisconnect();
+
+			const outboxEmpty = waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+			await DataStore.save(
+				Post.copyOf(retrieved!, updated => (updated.title = 'new title'))
+			);
+
+			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
+			// between the save and the sync engine reconnection operations.
+
+			await simulateConnect();
+			await outboxEmpty;
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('new title');
+		});
+
+		test('survives online -> offline -> delete/online race', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisconnect();
+
+			const outboxEmpty = waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+			await DataStore.delete(retrieved!);
+
+			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
+			// between the save and the sync engine reconnection operations.
+
+			await simulateConnect();
+			await outboxEmpty;
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('a title');
+			expect(cloudPost._deleted).toEqual(true);
 		});
 	});
 
