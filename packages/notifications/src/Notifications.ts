@@ -39,11 +39,11 @@ class NotificationsClass {
 		// Configure sub-categories
 		this.inAppMessaging.configure(this.config.InAppMessaging);
 
-		if (this.config.PushNotification) {
+		if (this.config.Push) {
 			try {
 				const PushNotification = require('./PushNotification').default;
 				this.pushNotification = new PushNotification();
-				this.pushNotification.configure(this.config.PushNotification);
+				this.pushNotification.configure(this.config.Push);
 			} catch (err) {
 				logger.error(err);
 			}
