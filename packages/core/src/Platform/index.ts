@@ -6,8 +6,6 @@ import { detectFramework } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 import { ConsoleLogger as Logger } from '../Logger';
 
-const logger = new Logger('Platform');
-
 const BASE_USER_AGENT = `aws-amplify`;
 
 export const Platform = {
@@ -69,9 +67,6 @@ const buildUserAgentDetailsString = (
 	const userAgentTuples = buildUserAgentTuples(customUserAgent);
 	let userAgentDetailsString = '';
 	for (let i = 0; i < userAgentTuples.length; i++) {
-		logger.debug(`tuple ${i}`, userAgentTuples[i]);
-		logger.debug(`tuple ${i} 0`, userAgentTuples[i][0]);
-		logger.debug(`tuple ${i} 1`, userAgentTuples[i][1]);
 		userAgentDetailsString += `${userAgentTuples[i][0]}/${userAgentTuples[i][1]} `;
 	}
 
