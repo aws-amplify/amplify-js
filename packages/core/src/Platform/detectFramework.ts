@@ -1,10 +1,23 @@
 import { Framework } from './types';
 
-export const detectFramework = (): Framework => {
+interface ExtendedWindow extends Window {
+	__REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
+}
+
+export const detectFramework = (isReactNative: Boolean): Framework => {
+	if (isReactNative) {
+		return Framework.ReactNative;
+	}
+
+	if (typeof document == 'undefined') {
+		return Framework.NodeJS;
+	}
+
+	let reactWindow = window as ExtendedWindow;
+
 	if (
-		Array.from(document.querySelectorAll('*')).some(e =>
-			e.hasOwnProperty('_reactRootContainer')
-		)
+		reactWindow.__REACT_DEVTOOLS_GLOBAL_HOOK__ &&
+		reactWindow.__REACT_DEVTOOLS_GLOBAL_HOOK__.renderers.size > 0
 	) {
 		return Framework.React;
 	}

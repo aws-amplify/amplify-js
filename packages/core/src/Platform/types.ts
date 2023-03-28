@@ -27,4 +27,6 @@ export enum CategoryAction {
 export enum Framework {
 	None = '0',
 	React = '1',
+	ReactNative = '2',
+	NodeJS = '3',
 }
