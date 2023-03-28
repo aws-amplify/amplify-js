@@ -53,6 +53,10 @@ describe('DataStore sync engine', () => {
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
+		// we don't need to see all the console warnings for these tests ...
+		(console as any)._warn = console.warn;
+		console.warn = () => {};
+
 		({
 			DataStore,
 			schema,
@@ -82,6 +86,7 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		await DataStore.clear();
+		console.warn = (console as any)._warn;
 	});
 
 	describe('basic protocol', () => {
@@ -503,16 +508,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
 
-		/**
-		 * Existing bug. (Sort of.)
-		 *
-		 * Outbox mutations are processed, but the hub events are not sent, so
-		 * the test hangs and times out. :shrug:
-		 *
-		 * It is notable that the data is correct in this case, we just don't
-		 * receive all of the expected Hub events.
-		 */
-		test.skip('survives online -> offline -> save/online race', async () => {
+		test('survives online -> offline -> save/online race', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -546,6 +542,65 @@ describe('DataStore sync engine', () => {
 				JSON.stringify([anotherPost.id])
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
+		});
+
+		test('survives online -> offline -> update/online race', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisconnect();
+
+			const outboxEmpty = waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+			await DataStore.save(
+				Post.copyOf(retrieved!, updated => (updated.title = 'new title'))
+			);
+
+			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
+			// between the save and the sync engine reconnection operations.
+
+			await simulateConnect();
+			await outboxEmpty;
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('new title');
+		});
+
+		test('survives online -> offline -> delete/online race', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisconnect();
+
+			const outboxEmpty = waitForEmptyOutbox();
+
+			const retrieved = await DataStore.query(Post, post.id);
+			await DataStore.delete(retrieved!);
+
+			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
+			// between the save and the sync engine reconnection operations.
+
+			await simulateConnect();
+			await outboxEmpty;
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('a title');
+			expect(cloudPost._deleted).toEqual(true);
 		});
 
 		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {

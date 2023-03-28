@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.3...@aws-amplify/datastore@4.1.4) (2023-03-23)
+
+
+### Bug Fixes
+
+* **datastore:** stale observeQuery snapshot with sort param ([#11119](https://github.com/aws-amplify/amplify-js/issues/11119)) ([4e3b8fc](https://github.com/aws-amplify/amplify-js/commit/4e3b8fc84a929a7f0d7da9b4e6eb1d420879ce90))
+
+
+
+
+
 ## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.2...@aws-amplify/datastore@4.1.3) (2023-03-21)
 
 
