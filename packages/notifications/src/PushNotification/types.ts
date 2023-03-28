@@ -90,7 +90,7 @@ export enum PushNotificationPermissionStatus {
 	SHOULD_EXPLAIN_THEN_REQUEST = 'SHOULD_EXPLAIN_THEN_REQUEST',
 }
 
-export type OnTokenReceivedHandler = (token: PushNotificationTokenMap) => any;
+export type OnTokenReceivedHandler = (token: string) => any;
 
 export type OnPushNotificationMessageHandler = (
 	message: PushNotificationMessage
@@ -102,10 +102,6 @@ export const enum PushNotificationEvent {
 	LAUNCH_NOTIFICATION_OPENED,
 	NOTIFICATION_OPENED,
 	TOKEN_RECEIVED,
-}
-
-export interface PushNotificationTokenMap {
-	token: string;
 }
 
 export interface NormalizedValues {
