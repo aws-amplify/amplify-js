@@ -27,6 +27,7 @@ def getExtOrDefault(prop) {
 
 android {
     compileSdkVersion getExtOrDefault('compileSdkVersion')
+
     defaultConfig {
         minSdkVersion getExtOrDefault('minSdkVersion')
         targetSdkVersion getExtOrDefault('targetSdkVersion')
@@ -35,6 +36,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
 
@@ -59,4 +66,11 @@ dependencies {
 
     // Import support library for Amplify push utils
     implementation 'com.amplifyframework:aws-push-notifications-pinpoint-common:2.5.0'
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.mockk:mockk:1.13.4'
+    testImplementation 'org.slf4j:slf4j-nop:2.0.7'
+    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 }
