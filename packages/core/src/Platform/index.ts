@@ -3,6 +3,10 @@
 import { CustomUserAgent } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
+import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+import { ConsoleLogger as Logger } from '../Logger';
+
+const logger = new Logger('Platform');
 
 const BASE_USER_AGENT = `aws-amplify`;
 
@@ -22,20 +26,51 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 
 export const getAmplifyUserAgent = (
 	customUserAgent?: CustomUserAgent
-): string[][] => {
-	return [[BASE_USER_AGENT, version], [buildUserAgentDetails(customUserAgent)]];
+): AWSUserAgent => {
+	return buildUserAgentTuples(customUserAgent);
 };
 
 export const getAmplifyUserAgentString = (
 	customUserAgent?: CustomUserAgent
 ): string => {
-	return `${Platform.userAgent} ${buildUserAgentDetails(customUserAgent)}`;
+	return buildUserAgentDetailsString(customUserAgent);
 };
 
-const buildUserAgentDetails = (customUserAgent?: CustomUserAgent): string => {
-	const userAgentDetails = { framework: detectFramework(), ...customUserAgent };
-	return `${Object.values(userAgentDetails)
-		.sort()
-		.toString()
-		.replace(',', '|')}`;
+const buildUserAgentTuples = (
+	customUserAgent?: CustomUserAgent
+): AWSUserAgent => {
+	const userAgentDetails = {
+		...customUserAgent,
+	};
+	const userAgentTuples: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	if (userAgentDetails.category) {
+		userAgentTuples.push(['category', userAgentDetails.category]);
+	}
+
+	if (userAgentDetails.action) {
+		userAgentTuples.push(['action', userAgentDetails.action]);
+	}
+
+	if (userAgentDetails.framework) {
+		userAgentTuples.push(['framework', userAgentDetails.framework]);
+	} else {
+		userAgentTuples.push(['framework', detectFramework()]);
+	}
+
+	return userAgentTuples;
+};
+
+const buildUserAgentDetailsString = (
+	customUserAgent?: CustomUserAgent
+): string => {
+	const userAgentTuples = buildUserAgentTuples(customUserAgent);
+	let userAgentDetailsString = '';
+	for (let i = 0; i < userAgentTuples.length; i++) {
+		logger.debug(`tuple ${i}`, userAgentTuples[i]);
+		logger.debug(`tuple ${i} 0`, userAgentTuples[i][0]);
+		logger.debug(`tuple ${i} 1`, userAgentTuples[i][1]);
+		userAgentDetailsString += `${userAgentTuples[i][0]}/${userAgentTuples[i][1]} `;
+	}
+
+	return userAgentDetailsString.trimEnd();
 };

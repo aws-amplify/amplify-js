@@ -13,7 +13,7 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	getAmplifyUserAgentString,
 	CustomUserAgent,
 	Category,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
@@ -297,7 +297,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentDetails),
+				[USER_AGENT_HEADER]: getAmplifyUserAgentString(userAgentDetails),
 			}),
 		};
 
