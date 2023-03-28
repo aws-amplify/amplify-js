@@ -728,12 +728,12 @@ export class SyncEngine {
 											paginatingModels.delete(modelDefinition);
 
 											if (paginatingModels.size === 0) {
+												syncQueriesSubscription.unsubscribe();
 												syncDuration = getNow() - start;
 												resolve();
 												observer.next({
 													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
 												});
-												syncQueriesSubscription.unsubscribe();
 											}
 										}
 									},

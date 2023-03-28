@@ -678,7 +678,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('does not error when disruption before sync queries start', async () => {
-			DataStore.save(
+			const post = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
@@ -691,6 +691,12 @@ describe('DataStore sync engine', () => {
 				expect.stringMatching(new RegExp('[ERROR].* Hub')),
 				expect.anything()
 			);
+			await waitForEmptyOutbox();
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			expect(cloudPost.title).toEqual('a title');
 		});
 	});
 
