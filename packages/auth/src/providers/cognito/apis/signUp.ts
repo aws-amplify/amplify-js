@@ -22,6 +22,8 @@ import {
 import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertServiceError } from '../../../error/utils/assertServiceError';
 import { AuthError } from '../../../error/AuthError';
+import { assertValidationError } from '../../../error/utils/assertValidationError';
+import { AuthValidationErrorCode } from '../../../error/types/validation';
 
 /**
  * Creates a user
@@ -33,9 +35,14 @@ import { AuthError } from '../../../error/AuthError';
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
+    const username = signUpRequest.username
+	const password = signUpRequest.password
+	assertValidationError(!!username, AuthValidationErrorCode.EmptySignUpUsername)
+	assertValidationError(!!password, AuthValidationErrorCode.EmptySignUpPassword)
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
 	const _config = Amplify.config
+
 
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
@@ -84,11 +91,9 @@ export async function signUp(
 				},
 			};
 		}
-		
 	} catch (error) {
 		assertServiceError(error)
 		throw new AuthError({name: error.name, message:error.message})
-	
 	}
 
 	
