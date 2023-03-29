@@ -254,6 +254,10 @@ export default class PushNotification implements PushNotificationInterface {
 			// broadcast to library listeners
 			TOKEN_RECEIVED,
 			({ token }) => {
+				// avoid a race condition where two endpoints are created with the same token on a fresh install
+				if (this.token === token) {
+					return;
+				}
 				this.token = token;
 				this.registerDevice();
 				notifyEventListeners(PushNotificationEvent.TOKEN_RECEIVED, token);
