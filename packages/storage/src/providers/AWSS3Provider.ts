@@ -20,6 +20,7 @@ import {
 	PutObjectCommandInput,
 	GetObjectCommandInput,
 	ListObjectsV2Request,
+	HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -376,6 +377,7 @@ export class AWSS3Provider implements StorageProvider {
 			SSECustomerKey,
 			SSECustomerKeyMD5,
 			progressCallback,
+			validateObjectExistence = false,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
@@ -446,7 +448,24 @@ export class AWSS3Provider implements StorageProvider {
 				throw error;
 			}
 		}
-
+		if (validateObjectExistence === true) {
+			try {
+				const headCommand = new HeadObjectCommand(params);
+				await s3.send(headCommand);
+			} catch (error) {
+				dispatchStorageEvent(
+					track,
+					'getSignedUrl',
+					{
+						method: 'get',
+						result: 'failed',
+					},
+					null,
+					`Key: ${key} Not Found`
+				);
+				throw error;
+			}
+		}
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
