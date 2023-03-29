@@ -33,7 +33,7 @@ export const subcategoryConfig = {
 
 export const notificationsConfig = {
 	InAppMessaging: subcategoryConfig,
-	PushNotification: subcategoryConfig,
+	Push: subcategoryConfig,
 };
 
 export const adhocConfig: NotificationsConfig = {
