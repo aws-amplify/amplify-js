@@ -511,6 +511,48 @@ describe('StorageProvider test', () => {
 
 			curCredSpyOn.mockClear();
 		});
+
+		test('get Existed object with validateObjectExistence option', async () => {
+			expect.assertions(3);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const options_with_validateObjectExistence = Object.assign({}, options, {
+				validateObjectExistence: true,
+			});
+			storage = new StorageProvider();
+			storage.configure(options_with_validateObjectExistence);
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
+			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
+
+			expect(await storage.get('key', { validateObjectExistence: true })).toBe(
+				'url'
+			);
+			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
+			);
+		});
+
+		test('get UnExisted object with validateObjectExistence option', async () => {
+			expect.assertions(1);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
+			try {
+				await storage.get('key', { validateObjectExistence: true });
+			} catch (e) {
+				expect(e).toBe('err');
+			}
+		});
 	});
 
 	describe('put test', () => {
