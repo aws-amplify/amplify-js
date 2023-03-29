@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { validationErrorMap } from '../../common/AuthErrorStrings';
 import { AuthError } from '../AuthError';
 import { AuthValidationErrorCode } from '../types/validation';
