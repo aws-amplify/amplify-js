@@ -7,7 +7,7 @@ import {
 } from '../types/core';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
-const CONTEXT_KEY_RETRY_COUNT = 'retryCount';
+const CONTEXT_KEY_RETRY_COUNT = 'attemptsCount';
 
 /**
  * Configuration of the retry middleware
@@ -35,27 +35,30 @@ export const retry =
 				abortSignal,
 			} = options;
 			let error = undefined;
-			let retryCount = (context[CONTEXT_KEY_RETRY_COUNT] as number) ?? 0;
+			let attemptsCount = (context[CONTEXT_KEY_RETRY_COUNT] as number) ?? 0;
 			let response;
-			do {
+			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				try {
 					response = await next(request, options);
 				} catch (e) {
 					error = e;
 				}
 				if (retryDecider(response, error)) {
-					const delay = backOffStrategy.computeDelay(retryCount);
-					retryCount += 1;
-					context[CONTEXT_KEY_RETRY_COUNT] = retryCount;
-					await cancellableSleep(delay, abortSignal);
+					attemptsCount += 1;
+					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
+						// prevent sleep for last attempt or cancelled request;
+						const delay = backOffStrategy.computeDelay(attemptsCount);
+						await cancellableSleep(delay, abortSignal);
+					}
+					context[CONTEXT_KEY_RETRY_COUNT] = attemptsCount;
 					continue;
 				} else if (response) {
 					return response;
 				} else {
 					throw error;
 				}
-			} while (retryCount < maxAttempts && !abortSignal?.aborted);
-			throw new Error(`Retry attempts exhausted, ${error ?? response}`);
+			}
+			throw error ?? new Error('Retry attempts exhausted');
 		};
 	};
 
