@@ -92,7 +92,10 @@ export class FakeGraphQLService {
 		});
 
 		if (!condition) {
-			this.log('checking satisfiesCondition matches all for `null` conditions');
+			this.log(
+				'checking satisfiesCondition',
+				'matches all for `null` conditions'
+			);
 			return true;
 		}
 
