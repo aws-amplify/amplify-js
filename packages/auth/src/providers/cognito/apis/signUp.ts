@@ -20,6 +20,8 @@ import {
 	ValidationData,
 } from '..';
 import { signUpClient } from '../utils/clients/SignUpClient';
+import { assertServiceError } from '../../../error/utils/assertServiceError';
+import { AuthError } from '../../../error/AuthError';
 
 /**
  * Creates a user
@@ -33,54 +35,63 @@ export async function signUp(
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
-	const _config = Amplify.config;
+	const _config = Amplify.config
+
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
 			signUpRequest.options?.serviceOptions?.validationData
 		);
 	}
-
-	const res: SignUpCommandOutput = await signUpClient({
-		Username: signUpRequest.username,
-		Password: signUpRequest.password,
-		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
-			return { Name: el.userAttributeKey.toString(), Value: el.value };
-		}),
-		ClientMetadata:
-			signUpRequest.options?.serviceOptions?.clientMetadata ??
-			_config.clientMetadata,
-		ValidationData: validationData,
-	});
-
-	const { UserConfirmed, CodeDeliveryDetails } = res;
-	const { DeliveryMedium, Destination, AttributeName } = {
-		...CodeDeliveryDetails,
-	};
-
-	if (UserConfirmed === true) {
-		return {
-			isSignUpComplete: true,
-			nextStep: {
-				signUpStep: AuthSignUpStep.DONE,
-			},
+	try {
+		const res: SignUpCommandOutput = await signUpClient({
+			Username: signUpRequest.username,
+			Password: signUpRequest.password,
+			UserAttributes: signUpRequest.options?.userAttributes.map(el => {
+				return { Name: el.userAttributeKey.toString(), Value: el.value };
+			}),
+			ClientMetadata:
+				signUpRequest.options?.serviceOptions?.clientMetadata ??
+				_config.clientMetadata,
+			ValidationData: validationData,
+		});
+	
+		const { UserConfirmed, CodeDeliveryDetails } = res;
+		const { DeliveryMedium, Destination, AttributeName } = {
+			...CodeDeliveryDetails,
 		};
-	} else {
-		return {
-			isSignUpComplete: false,
-			nextStep: {
-				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-				codeDeliveryDetails: {
-					deliveryMedium: DeliveryMedium
-						? (DeliveryMedium as DeliveryMedium)
-						: undefined,
-					destination: Destination ? (Destination as string) : undefined,
-					attributeName: AttributeName
-						? (AttributeName as AuthStandardAttributeKey)
-						: undefined,
+	
+		if (UserConfirmed === true) {
+			return {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: AuthSignUpStep.DONE,
 				},
-			},
-		};
+			};
+		} else {
+			return {
+				isSignUpComplete: false,
+				nextStep: {
+					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+					codeDeliveryDetails: {
+						deliveryMedium: DeliveryMedium
+							? (DeliveryMedium as DeliveryMedium)
+							: undefined,
+						destination: Destination ? (Destination as string) : undefined,
+						attributeName: AttributeName
+							? (AttributeName as AuthStandardAttributeKey)
+							: undefined,
+					},
+				},
+			};
+		}
+		
+	} catch (error) {
+		assertServiceError(error)
+		throw new AuthError({name: error.name, message:error.message})
+	
 	}
+
+	
 }
 
 function mapValidationData(data: ValidationData): AttributeType[] {
