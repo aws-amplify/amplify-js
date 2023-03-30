@@ -5,6 +5,7 @@ import {
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
+	Hub,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -41,6 +42,8 @@ import {
 	getModelAuthModes,
 	TransformerMutationType,
 	getTokenForCustomAuth,
+	getClientSideAuthError,
+	getForbiddenError,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
 
@@ -198,6 +201,7 @@ class MutationProcessor {
 						});
 
 						const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+						const authModeErrors = new Array(operationAuthModes.length);
 
 						let authModeAttempts = 0;
 						const authModeRetry = async () => {
@@ -224,6 +228,7 @@ class MutationProcessor {
 
 								return response;
 							} catch (error) {
+								authModeErrors[authModeAttempts] = error;
 								authModeAttempts++;
 								if (authModeAttempts >= operationAuthModes.length) {
 									logger.debug(
@@ -231,6 +236,17 @@ class MutationProcessor {
 											operationAuthModes[authModeAttempts - 1]
 										}`
 									);
+
+									Hub.dispatch('datastore', {
+										event: 'mutationError',
+										data: {
+											errorType: 'Unauthorized',
+											errors: authModeErrors,
+											model: modelDefinition,
+											authModes: operationAuthModes,
+										},
+									});
+
 									throw error;
 								}
 								logger.debug(
@@ -348,7 +364,9 @@ class MutationProcessor {
 							const [error] = err.errors;
 							const { originalError: { code = null } = {} } = error;
 
-							if (error.errorType === 'Unauthorized') {
+							const clientOrForbiddenErrorMessage =
+								getClientSideAuthError(error) || getForbiddenError(error);
+							if (clientOrForbiddenErrorMessage) {
 								throw new NonRetryableError('Unauthorized');
 							}
 

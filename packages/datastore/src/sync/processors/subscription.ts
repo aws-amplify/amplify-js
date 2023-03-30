@@ -359,6 +359,7 @@ class SubscriptionProcessor {
 
 									// subscriptions are created only based on the READ auth mode(s)
 									const readAuthModes = modelAuthModes.READ;
+									const authModeErrors = new Array(readAuthModes.length);
 
 									subscriptions = {
 										...subscriptions,
@@ -566,6 +567,9 @@ class SubscriptionProcessor {
 																transformerMutationType
 															] = [];
 
+															authModeErrors[
+																operationAuthModeAttempts[operation]
+															] = subscriptionError.error;
 															operationAuthModeAttempts[operation]++;
 															if (
 																operationAuthModeAttempts[operation] >=
@@ -579,6 +583,15 @@ class SubscriptionProcessor {
 																		]
 																	}`
 																);
+																Hub.dispatch('datastore', {
+																	event: 'subscriptionError',
+																	data: {
+																		errorType: 'Unauthorized',
+																		errors: authModeErrors,
+																		model: modelDefinition,
+																		authModes: readAuthModes,
+																	},
+																});
 															} else {
 																// retry with different auth mode. Do not trigger
 																// observer error or error handler
