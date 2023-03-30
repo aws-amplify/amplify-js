@@ -81,7 +81,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				Storage.get(source.key, storageConfig)
 					.then((url: string) => {
 						const parser =
-							/https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
+							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
 						const parsedURL = url.match(parser);
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
 						res({
