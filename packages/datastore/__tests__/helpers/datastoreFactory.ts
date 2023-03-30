@@ -10,6 +10,8 @@ import {
 	Blog,
 	Post,
 	Comment,
+	PostUni,
+	CommentUni,
 	User,
 	Profile,
 	PostComposite,
@@ -151,6 +153,8 @@ export function getDataStore({
 		Blog,
 		Post,
 		Comment,
+		PostUni,
+		CommentUni,
 		User,
 		Profile,
 		PostComposite,
@@ -183,6 +187,8 @@ export function getDataStore({
 		Blog: PersistentModelConstructor<Blog>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
+		PostUni: PersistentModelConstructor<PostUni>;
+		CommentUni: PersistentModelConstructor<CommentUni>;
 		User: PersistentModelConstructor<User>;
 		Profile: PersistentModelConstructor<Profile>;
 		PostComposite: PersistentModelConstructor<PostComposite>;
@@ -223,6 +229,8 @@ export function getDataStore({
 		Blog,
 		Post,
 		Comment,
+		PostUni,
+		CommentUni,
 		User,
 		Profile,
 		PostComposite,
