@@ -136,7 +136,7 @@ export function getDataStore({
 			'PubSub'
 		);
 
-		if (log) console.log('done simulated disruption');
+		if (log) console.log('done simulated disruption.');
 	}
 
 	/**
@@ -149,7 +149,7 @@ export function getDataStore({
 	 * not actually dependent on any async behavior yet.
 	 */
 	async function simulateDisruptionEnd(log = false) {
-		if (log) console.log('starting simulated connection disruption.');
+		if (log) console.log('starting simulated connection disruption end.');
 
 		await graphqlService.simulateDisruptionEnd();
 		if (log) console.log('simulated graphql service disruption end');
@@ -174,7 +174,7 @@ export function getDataStore({
 			},
 			'PubSub'
 		);
-		if (log) console.log('done simulated disruption end');
+		if (log) console.log('done simulated disruption end.');
 	}
 
 	jest.mock('@aws-amplify/core', () => {
