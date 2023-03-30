@@ -121,9 +121,7 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
-	private unsleepSyncQueriesObservable:
-		| ((forceFullSync?: boolean) => void)
-		| null;
+	private unsleepSyncQueriesObservable: (() => void) | null;
 	private waitForSleepState: Promise<void>;
 	private syncQueriesObservableStartSleeping: (
 		value?: void | PromiseLike<void>
@@ -500,8 +498,7 @@ export class SyncEngine {
 	}
 
 	private async getModelsMetadataWithNextFullSync(
-		currentTimeStamp: number,
-		forceFullSync: boolean
+		currentTimeStamp: number
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(
@@ -520,7 +517,7 @@ export class SyncEngine {
 				}) => {
 					const nextFullSync = lastFullSync! + fullSyncInterval;
 					const syncFrom =
-						forceFullSync || !lastFullSync || nextFullSync < currentTimeStamp
+						!lastFullSync || nextFullSync < currentTimeStamp
 							? 0 // perform full sync if expired
 							: lastSync; // perform delta sync
 
@@ -542,8 +539,6 @@ export class SyncEngine {
 			return Observable.of<ControlMessageType<ControlMessage>>();
 		}
 
-		let forceFullSync = false;
-
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 
@@ -562,8 +557,7 @@ export class SyncEngine {
 						> = new WeakMap();
 
 						const modelLastSync = await this.getModelsMetadataWithNextFullSync(
-							Date.now(),
-							forceFullSync
+							Date.now()
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
@@ -781,28 +775,25 @@ export class SyncEngine {
 						// TLDR; this is a lot of complexity here for a sleep(),
 						// but, it's not clear to me yet how to support an
 						// extensible, centralized cancelable `sleep()` elegantly.
-						forceFullSync = await this.runningProcesses.add(
-							async onTerminate => {
-								let sleepTimer;
-								let unsleep;
+						await this.runningProcesses.add(async onTerminate => {
+							let sleepTimer;
+							let unsleep;
 
-								const sleep = new Promise<boolean>(_unsleep => {
-									unsleep = _unsleep;
-									sleepTimer = setTimeout(unsleep, msNextFullSync);
-								});
+							const sleep = new Promise(_unsleep => {
+								unsleep = _unsleep;
+								sleepTimer = setTimeout(unsleep, msNextFullSync);
+							});
 
-								onTerminate.then(() => {
-									terminated = true;
-									this.syncQueriesObservableStartSleeping();
-									unsleep();
-								});
-
-								this.unsleepSyncQueriesObservable = unsleep;
+							onTerminate.then(() => {
+								terminated = true;
 								this.syncQueriesObservableStartSleeping();
-								return sleep;
-							},
-							'syncQueriesObservable sleep'
-						);
+								unsleep();
+							});
+
+							this.unsleepSyncQueriesObservable = unsleep;
+							this.syncQueriesObservableStartSleeping();
+							return sleep;
+						}, 'syncQueriesObservable sleep');
 
 						this.unsleepSyncQueriesObservable = null;
 						this.waitForSleepState = new Promise(resolve => {
@@ -1118,7 +1109,7 @@ export class SyncEngine {
 
 					case ConnectionState.Connected:
 						if (this.connectionDisrupted) {
-							this.scheduleFullSync();
+							this.scheduleSync();
 						}
 						this.connectionDisrupted = false;
 						break;
@@ -1128,13 +1119,13 @@ export class SyncEngine {
 	}
 
 	/*
-	 * Schedule a full sync to start when syncQueriesObservable enters sleep state
-	 * Start full sync immediately if syncQueriesObservable is already in sleep state
+	 * Schedule a sync to start when syncQueriesObservable enters sleep state
+	 * Start sync immediately if syncQueriesObservable is already in sleep state
 	 */
-	private scheduleFullSync(): Promise<void> {
+	private scheduleSync(): Promise<void> {
 		return this.waitForSleepState.then(() => {
 			// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
-			this.unsleepSyncQueriesObservable!(true);
+			this.unsleepSyncQueriesObservable!();
 		});
 	}
 }
