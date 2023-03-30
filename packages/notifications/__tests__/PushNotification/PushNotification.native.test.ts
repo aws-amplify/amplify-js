@@ -275,6 +275,30 @@ describe('PushNotification', () => {
 			);
 		});
 
+		test('token received should not be invoked with the same token twice', () => {
+			mockAddListener.mockImplementation((heardEvent, handler) => {
+				if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
+					handler({ token: pushToken });
+					handler({ token: pushToken });
+				}
+			});
+			pushNotification.enable();
+
+			expect(notifyEventListeners).toBeCalledTimes(1);
+		});
+
+		test('token received should be invoked with different tokens', () => {
+			mockAddListener.mockImplementation((heardEvent, handler) => {
+				if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
+					handler({ token: pushToken });
+					handler({ token: 'bar-foo' });
+				}
+			});
+			pushNotification.enable();
+
+			expect(notifyEventListeners).toBeCalledTimes(2);
+		});
+
 		test('handles device registration failure', () => {
 			mockPushNotificationProvider.registerDevice.mockImplementationOnce(() => {
 				throw new Error();
