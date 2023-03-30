@@ -24,9 +24,9 @@ import {
 	extractPrimaryKeyValues,
 	traverseModel,
 	validatePredicate,
+	getIndex,
+	getIndexFromAssociation,
 	isModelConstructor,
-	getFieldsFromAssociation,
-	predicateGroupFromKeys,
 } from '../../util';
 import type { IDBPDatabase, IDBPObjectStore } from 'idb';
 import type AsyncStorageDatabase from './AsyncStorageDatabase';
@@ -494,11 +494,6 @@ export abstract class StorageAdapterBase implements Adapter {
 		}
 	}
 
-	protected abstract filterOnPredicate<T extends PersistentModel>(
-		storeName: string,
-		predicates: PredicatesGroup<T>
-	);
-
 	protected abstract deleteItem<T extends PersistentModel>(
 		deleteQueue?: {
 			storeName: string;
@@ -525,6 +520,12 @@ export abstract class StorageAdapterBase implements Adapter {
 		rel: RelationType
 	): Promise<T | undefined>;
 
+	protected abstract getHasManyChildren<T extends PersistentModel>(
+		storeName: string,
+		index: string,
+		keyValues: string[]
+	): Promise<T[] | undefined>;
+
 	/**
 	 * Recursively traverse relationship graph and add
 	 * all Has One and Has Many relations to `deleteQueue` param
@@ -548,6 +549,19 @@ export abstract class StorageAdapterBase implements Adapter {
 			const { modelName, relationType, targetNames, associatedWith } = rel;
 
 			const storeName = getStorename(namespace, modelName);
+			const index: string =
+				getIndex(
+					this.schema.namespaces[namespace].relationships![modelName]
+						.relationTypes,
+					srcModel
+				) ||
+				// if we were unable to find an index via relationTypes
+				// i.e. for keyName connections, attempt to find one by the
+				// associatedWith property
+				getIndexFromAssociation(
+					this.schema.namespaces[namespace].relationships![modelName].indexes,
+					associatedWith!
+				)!;
 
 			for await (const model of models) {
 				const childRecords: PersistentModel[] = [];
@@ -577,20 +591,12 @@ export abstract class StorageAdapterBase implements Adapter {
 
 						break;
 					case 'HAS_MANY':
-						const relationModelDefinition =
-							this.schema.namespaces[namespace].models[modelName];
-
-						const keyFields = getFieldsFromAssociation(
-							associatedWith!,
-							relationModelDefinition
-						);
-
 						const keyValues: string[] = this.getIndexKeyValuesFromModel(model);
-						const predicateGroup = predicateGroupFromKeys(keyFields, keyValues);
 
-						const records = await this.filterOnPredicate(
+						const records = await this.getHasManyChildren(
 							storeName,
-							predicateGroup
+							index,
+							keyValues
 						);
 
 						if (records?.length) {
@@ -606,7 +612,7 @@ export abstract class StorageAdapterBase implements Adapter {
 				}
 
 				// instantiate models before passing them to next recursive call
-				// necessary for extracting PK metadata in `getHasOneChild`
+				// necessary for extracting PK metadata in `getHasOneChild` and `getHasManyChildren`
 				const childModels = await this.load(namespace, modelName, childRecords);
 
 				await this.deleteTraverse(
