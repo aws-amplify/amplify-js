@@ -15,7 +15,7 @@ describe('Platform test', () => {
 
 	describe('getAmplifyUserAgent test', () => {
 		test('without customUserAgent', () => {
-			expect(getAmplifyUserAgent()).toBe([
+			expect(getAmplifyUserAgent()).toStrictEqual([
 				['aws-amplify', version],
 				['framework', Framework.None],
 			]);
@@ -27,10 +27,10 @@ describe('Platform test', () => {
 					category: Category.DataStore,
 					action: CategoryAction.DataStoreJitteredRetry,
 				})
-			).toBe([
+			).toStrictEqual([
 				['aws-amplify', version],
 				['category', Category.DataStore],
-				[CategoryAction.DataStoreJitteredRetry],
+				['action', CategoryAction.DataStoreJitteredRetry],
 				['framework', Framework.None],
 			]);
 		});
