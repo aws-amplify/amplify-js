@@ -575,9 +575,7 @@ export class SyncEngine {
 						let lastStartedAt: number;
 						await new Promise((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
-							onTerminate.then(() => {
-								resolve();
-							});
+							onTerminate.then(() => resolve());
 							syncQueriesSubscription = this.syncQueriesProcessor
 								.start(modelLastSync)
 								.subscribe({
