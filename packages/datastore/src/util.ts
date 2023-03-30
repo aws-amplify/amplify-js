@@ -1043,6 +1043,86 @@ export const getIndexFromAssociation = (
 };
 
 /**
+ * Retrieve child foreign key field names from parent's associatedWith value.
+ * Normalizes all possible permutations (legacy codegen, pre-cpk, bi-directional, uni-directional)
+ *
+ * @param associatedWith - parent model's `associatedWith` value.
+ * Can contain the actual FK field(s) or a model field (when relationship is bi-directional)
+ * @param modelDefinition - child model definition
+ *
+ * @returns foreign key fields on the child model used to form the relationship with the parent
+ *
+ */
+export const getFieldsFromAssociation = (
+	associatedWith: string | string[],
+	modelDefinition: SchemaModel
+): string[] => {
+	const associatedWithArr = Array.isArray(associatedWith)
+		? associatedWith
+		: [associatedWith];
+
+	if (associatedWithArr.length === 1) {
+		const [field] = associatedWithArr;
+
+		if (modelDefinition.fields[field].association?.targetNames) {
+			return modelDefinition.fields[field].association!.targetNames!;
+		}
+
+		if (modelDefinition.fields[field].association?.targetName) {
+			return [modelDefinition.fields[field].association!.targetName!];
+		}
+	}
+
+	return associatedWithArr;
+};
+
+/**
+ * Generates a predicate group from provided key field names and values
+ *
+ * @param keyFields
+ * @param keyValues
+ * @returns predicate group constructed from parameters
+ *
+ * @example
+ * #### Usage
+ * ```ts
+ * predicateGroupFromKeys(['postId', 'content'], ['abc123', 'title']);
+ * ```
+ *
+ * #### Result
+ * ```ts
+ * { type: 'and',
+ *   predicates: [
+ *     { postId: { eq: 'abc123' } },
+ *     { content: { eq: 'title' } }
+ *   ]
+ * }
+ * ```
+ */
+export const predicateGroupFromKeys = (
+	keyFields: string[],
+	keyValues: string[]
+): PredicatesGroup<any> => {
+	/* fk: eq: keValues */
+	const keyPredicates: PredicateObject<any>[] = [];
+
+	keyFields.forEach((key, idx) => {
+		keyPredicates.push({
+			field: key,
+			operator: 'eq',
+			operand: keyValues[idx],
+		});
+	});
+
+	const predicateGroup: PredicatesGroup<any> = {
+		type: 'and',
+		predicates: keyPredicates,
+	};
+
+	return predicateGroup;
+};
+
+/**
  * Backwards-compatability for schema generated prior to custom primary key support:
 the single field `targetName` has been replaced with an array of `targetNames`.
 `targetName` and `targetNames` are exclusive (will never exist on the same schema)
