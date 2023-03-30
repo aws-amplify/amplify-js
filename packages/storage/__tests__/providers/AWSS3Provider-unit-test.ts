@@ -512,7 +512,7 @@ describe('StorageProvider test', () => {
 			curCredSpyOn.mockClear();
 		});
 
-		test('get Existed object with validateObjectExistence option', async () => {
+		test('get existing object with validateObjectExistence option', async () => {
 			expect.assertions(3);
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -535,7 +535,7 @@ describe('StorageProvider test', () => {
 			);
 		});
 
-		test('get UnExisted object with validateObjectExistence option', async () => {
+		test('get non-existing object with validateObjectExistence option', async () => {
 			expect.assertions(1);
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {

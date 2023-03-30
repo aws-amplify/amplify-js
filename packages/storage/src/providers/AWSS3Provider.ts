@@ -389,7 +389,7 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Key: final_key,
 		};
-
+		const headObjectCommand = new HeadObjectCommand(params);
 		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 		if (cacheControl) params.ResponseCacheControl = cacheControl;
 		if (contentDisposition)
@@ -448,10 +448,9 @@ export class AWSS3Provider implements StorageProvider {
 				throw error;
 			}
 		}
-		if (validateObjectExistence === true) {
+		if (validateObjectExistence) {
 			try {
-				const headCommand = new HeadObjectCommand(params);
-				await s3.send(headCommand);
+				await s3.send(headObjectCommand);
 			} catch (error) {
 				dispatchStorageEvent(
 					track,
@@ -461,7 +460,7 @@ export class AWSS3Provider implements StorageProvider {
 						result: 'failed',
 					},
 					null,
-					`Key: ${key} Not Found`
+					`${key} not found`
 				);
 				throw error;
 			}
@@ -698,6 +697,7 @@ export class AWSS3Provider implements StorageProvider {
 			results: [],
 			hasNextToken: false,
 		};
+		console.log('Get Instance');
 		const s3 = this._createNewS3Client(opt);
 		const listObjectsV2Command = new ListObjectsV2Command({ ...params });
 		const response = await s3.send(listObjectsV2Command);
