@@ -9,7 +9,7 @@ export const detectFramework = (isReactNative: Boolean): Framework => {
 		return Framework.ReactNative;
 	}
 
-	if (typeof document == 'undefined') {
+	if (typeof document === 'undefined') {
 		return Framework.NodeJS;
 	}
 
