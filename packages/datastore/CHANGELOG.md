@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.4...@aws-amplify/datastore@4.1.5) (2023-03-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** adds serialization for empty predicates ([#11133](https://github.com/aws-amplify/amplify-js/issues/11133)) ([57f8abc](https://github.com/aws-amplify/amplify-js/commit/57f8abcf1c3c43af8e07c40727d224456d8de685))
+* **@aws-amplify/datastore:** mutation hub event drops during reconnect ([#11132](https://github.com/aws-amplify/amplify-js/issues/11132)) ([69a9cf0](https://github.com/aws-amplify/amplify-js/commit/69a9cf078640749d65a7ca5fe61de877089d6a55))
+* **datastore:** normalize deleteTraverse 1:M ([#11160](https://github.com/aws-amplify/amplify-js/issues/11160)) ([6e18be6](https://github.com/aws-amplify/amplify-js/commit/6e18be6a87b3aff03318ab3f4319894950e9ed5b))
+
+
+### Reverts
+
+* Revert "fix(datastore): normalize deleteTraverse 1:M" (#11164) ([a34c36d](https://github.com/aws-amplify/amplify-js/commit/a34c36df5d297ef98f8bdd3b4a19f74b06c748eb)), closes [#11164](https://github.com/aws-amplify/amplify-js/issues/11164) [#11160](https://github.com/aws-amplify/amplify-js/issues/11160)
+
+
+
+
+
 ## [4.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.3...@aws-amplify/datastore@4.1.4) (2023-03-23)
 
 
