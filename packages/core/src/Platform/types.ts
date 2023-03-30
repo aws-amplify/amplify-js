@@ -5,16 +5,16 @@ export type CustomUserAgent = {
 };
 
 export enum Category {
-	Auth = '1',
-	API = '2',
-	DataStore = '3',
-	Geo = '4',
-	Interactions = '5',
-	Notifications = '6',
-	Predictions = '7',
-	PubSub = '8',
-	PushNotification = '9',
-	Storage = '10',
+	Auth = 'auth',
+	API = 'api',
+	DataStore = 'datastore',
+	Geo = 'geo',
+	Interactions = 'interactions',
+	Notifications = 'notifications',
+	Predictions = 'predictions',
+	PubSub = 'pubsub',
+	PushNotification = 'pushnotification',
+	Storage = 'storage',
 }
 
 export enum CategoryAction {

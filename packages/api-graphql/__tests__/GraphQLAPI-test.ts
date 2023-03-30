@@ -58,8 +58,8 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
-const expectedUserAgentAPI = `${Constants.userAgent} (${Category.API},${Framework.None})`;
-const expectedUserAgentDataStore = `${Constants.userAgent} (${Category.DataStore},${Framework.None})`;
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API} framework/${Framework.None}`;
+const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();

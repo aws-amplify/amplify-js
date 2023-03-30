@@ -29,8 +29,7 @@ describe('Platform test', () => {
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				['category', Category.DataStore],
-				['action', CategoryAction.DataStoreJitteredRetry],
+				[Category.DataStore, CategoryAction.DataStoreJitteredRetry],
 				['framework', Framework.None],
 			]);
 		});
@@ -45,7 +44,7 @@ describe('Platform test', () => {
 
 		test('with customUserAgent', () => {
 			expect(getAmplifyUserAgentString({ category: Category.DataStore })).toBe(
-				`${Platform.userAgent} category/${Category.DataStore} framework/${Framework.None}`
+				`${Platform.userAgent} ${Category.DataStore} framework/${Framework.None}`
 			);
 		});
 	});

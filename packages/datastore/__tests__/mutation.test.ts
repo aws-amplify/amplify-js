@@ -25,6 +25,7 @@ let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 let axiosError;
+const datastoreUserAgent = `${Constants.userAgent} ${Category.DataStore} framework/${Framework.None}`;
 
 beforeEach(() => {
 	axiosError = timeoutError;
@@ -159,7 +160,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
+						'x-amz-user-agent': datastoreUserAgent,
 					}),
 				})
 			);
@@ -174,7 +175,7 @@ describe('MutationProcessor', () => {
 				expect.anything(),
 				expect.objectContaining({
 					headers: expect.objectContaining({
-						'x-amz-user-agent': `${Constants.userAgent} (${Category.DataStore},${Framework.None})`,
+						'x-amz-user-agent': datastoreUserAgent,
 					}),
 				})
 			);

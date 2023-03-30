@@ -4,7 +4,6 @@ import { CustomUserAgent } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
-import { ConsoleLogger as Logger } from '../Logger';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
@@ -42,11 +41,7 @@ const buildUserAgentTuples = (
 	};
 	const userAgentTuples: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (userAgentDetails.category) {
-		userAgentTuples.push(['category', userAgentDetails.category]);
-	}
-
-	if (userAgentDetails.action) {
-		userAgentTuples.push(['action', userAgentDetails.action]);
+		userAgentTuples.push([userAgentDetails.category, userAgentDetails.action]);
 	}
 
 	if (userAgentDetails.framework) {
@@ -67,7 +62,9 @@ const buildUserAgentDetailsString = (
 	const userAgentTuples = buildUserAgentTuples(customUserAgent);
 	let userAgentDetailsString = '';
 	for (let i = 0; i < userAgentTuples.length; i++) {
-		userAgentDetailsString += `${userAgentTuples[i][0]}/${userAgentTuples[i][1]} `;
+		userAgentDetailsString += `${userAgentTuples[i][0]}${
+			userAgentTuples[i][1] ? `/${userAgentTuples[i][1]}` : ''
+		} `;
 	}
 
 	return userAgentDetailsString.trimEnd();

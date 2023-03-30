@@ -125,7 +125,7 @@ describe('S3ClientUtils tests', () => {
 			useAccelerateEndpoint: true,
 		});
 		// ensure customUserAgent is set properly
-		expect(s3client.config.customUserAgent).toEqual([[getAmplifyUserAgent()]]);
+		expect(s3client.config.customUserAgent).toEqual(getAmplifyUserAgent());
 		expect(await s3client.config.region()).toEqual('us-west-2');
 		expect(s3client.config.useAccelerateEndpoint).toBe(true);
 	});
