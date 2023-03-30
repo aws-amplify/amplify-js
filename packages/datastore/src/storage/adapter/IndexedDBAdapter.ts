@@ -504,6 +504,28 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return recordToDelete;
 	}
 
+	/**
+	 * Gets related Has Many records by given `storeName`, `index`, and `keyValues`
+	 *
+	 * @param storeName
+	 * @param index
+	 * @param keyValues
+	 * @returns
+	 */
+	protected async getHasManyChildren<T extends PersistentModel>(
+		storeName: string,
+		index: string,
+		keyValues: string[]
+	): Promise<T[]> {
+		const childRecords = await this.db
+			.transaction(storeName, 'readwrite')
+			.objectStore(storeName)
+			.index(index as string)
+			.getAll(this.canonicalKeyPath(keyValues));
+
+		return childRecords;
+	}
+
 	//#region platform-specific helper methods
 
 	private async checkPrivate() {
@@ -743,7 +765,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return result;
 	}
 
-	protected async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {

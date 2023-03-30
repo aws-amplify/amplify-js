@@ -186,7 +186,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		return await this.db.getAll(storeName);
 	}
 
-	protected async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
@@ -367,6 +367,29 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		) as T;
 
 		return recordToDelete;
+	}
+
+	/**
+	 *  Gets related Has Many records by given `storeName`, `index`, and `keyValues`
+	 *
+	 * @param storeName
+	 * @param index
+	 * @param keyValues
+	 * @returns
+	 */
+	protected async getHasManyChildren<T extends PersistentModel>(
+		storeName: string,
+		index: string,
+		keyValues: string[]
+	): Promise<T[]> {
+		const allRecords = await this.db.getAll(storeName);
+		const indices = index!.split(IDENTIFIER_KEY_SEPARATOR);
+
+		const childRecords = allRecords.filter(childItem =>
+			indices.every(index => keyValues.includes(childItem[index]))
+		) as T[];
+
+		return childRecords;
 	}
 
 	//#region platform-specific helper methods
