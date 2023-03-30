@@ -87,7 +87,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2 kB"
+			"limit": "2.1 kB"
 		},
 		{
 			"name": "Core (Logger)",
