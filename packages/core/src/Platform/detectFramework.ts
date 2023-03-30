@@ -13,7 +13,7 @@ export const detectFramework = (isReactNative: Boolean): Framework => {
 		return Framework.NodeJS;
 	}
 
-	let reactWindow = window as ExtendedWindow;
+	const reactWindow = window as ExtendedWindow;
 
 	if (
 		reactWindow.__REACT_DEVTOOLS_GLOBAL_HOOK__ &&
