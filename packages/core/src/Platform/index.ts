@@ -49,7 +49,6 @@ const buildUserAgentTuples = (
 	} else {
 		userAgentTuples.push(['framework', detectFramework()]);
 	}
-	π;
 
 	return userAgentTuples;
 };
