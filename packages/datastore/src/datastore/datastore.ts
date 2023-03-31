@@ -937,6 +937,12 @@ const createModelClass = <T extends PersistentModel>(
 					checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
 				}
 			} else {
+				// always register patches when performing a copyOf, even if the
+				// patches list is empty. this allows `save()` to recognize when an
+				// instance is the result of a `copyOf()`. without more significant
+				// refactoring, this is the only way for `save()` to know which
+				// diffs (patches) are relevant for `storage` to use in building
+				// the list of "changed" fields for mutations.
 				modelPatchesMap.set(model, [[], source]);
 			}
 
