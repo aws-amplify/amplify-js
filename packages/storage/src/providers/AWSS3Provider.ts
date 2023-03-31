@@ -449,19 +449,22 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 		if (validateObjectExistence) {
+			const headObjectCommand = new HeadObjectCommand(params);
 			try {
 				await s3.send(headObjectCommand);
 			} catch (error) {
-				dispatchStorageEvent(
-					track,
-					'getSignedUrl',
-					{
-						method: 'get',
-						result: 'failed',
-					},
-					null,
-					`${key} not found`
-				);
+				if (error.$metadata.httpStatusCode === 404) {
+					dispatchStorageEvent(
+						track,
+						'getSignedUrl',
+						{
+							method: 'get',
+							result: 'failed',
+						},
+						null,
+						`${key} not found`
+					);
+				}
 				throw error;
 			}
 		}
