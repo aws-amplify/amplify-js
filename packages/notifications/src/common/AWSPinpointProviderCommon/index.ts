@@ -255,7 +255,11 @@ export default abstract class AWSPinpointProviderCommon
 	private getEndpointId = async (): Promise<string> => {
 		const { appId } = this.config;
 		// Each Pinpoint channel requires its own Endpoint ID
-		const cacheKey = `${this.getSubCategory()}:${this.getProviderName()}:${appId}`;
+		// However, Push will share the Analytics endpoint for now so as to not break existing customers
+		const cacheKey =
+			this.getSubCategory() === 'PushNotification'
+				? `${this.getProviderName()}_${appId}`
+				: `${this.getSubCategory()}:${this.getProviderName()}:${appId}`;
 		// First attempt to retrieve the ID from cache
 		const cachedEndpointId = await Cache.getItem(cacheKey);
 		// Found in cache, just return it
