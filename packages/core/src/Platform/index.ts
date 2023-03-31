@@ -47,11 +47,9 @@ const buildUserAgentTuples = (
 	if (userAgentDetails.framework) {
 		userAgentTuples.push(['framework', userAgentDetails.framework]);
 	} else {
-		userAgentTuples.push([
-			'framework',
-			detectFramework(Platform.isReactNative),
-		]);
+		userAgentTuples.push(['framework', detectFramework()]);
 	}
+	π;
 
 	return userAgentTuples;
 };
