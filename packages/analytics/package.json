@@ -59,6 +59,20 @@
 		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
 	},
+	"overrides": {
+		"@aws-sdk/client-firehose": {
+			"@aws-sdk/client-sts": "3.303.0"
+		},
+		"@aws-sdk/client-kinesis": {
+			"@aws-sdk/client-sts": "3.303.0"
+		},
+		"@aws-sdk/client-personalize-events": {
+			"@aws-sdk/client-sts": "3.303.0"
+		},
+		"@aws-sdk/client-pinpoint": {
+			"@aws-sdk/client-sts": "3.303.0"
+		}
+	},
 	"size-limit": [
 		{
 			"name": "Analytics (Pinpoint)",

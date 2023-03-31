@@ -52,6 +52,11 @@
 		"camelcase-keys": "6.2.2",
 		"tslib": "^1.8.0"
 	},
+	"overrides": {
+		"@aws-sdk/client-location": {
+			"@aws-sdk/client-sts": "3.303.0"
+		}
+	},
 	"size-limit": [
 		{
 			"name": "Geo (top-level class)",
