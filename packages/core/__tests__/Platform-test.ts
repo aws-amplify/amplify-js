@@ -4,7 +4,7 @@ import {
 	Platform,
 } from '../src/Platform';
 import { version } from '../src/Platform/version';
-import { Category, CategoryAction, Framework } from '../src/Platform/types';
+import { Category, Framework } from '../src/Platform/types';
 
 describe('Platform test', () => {
 	describe('isReactNative test', () => {
@@ -25,11 +25,10 @@ describe('Platform test', () => {
 			expect(
 				getAmplifyUserAgent({
 					category: Category.DataStore,
-					action: CategoryAction.DataStoreJitteredRetry,
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				[Category.DataStore, CategoryAction.DataStoreJitteredRetry],
+				[Category.DataStore, undefined],
 				['framework', Framework.None],
 			]);
 		});

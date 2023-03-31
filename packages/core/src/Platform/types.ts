@@ -1,6 +1,5 @@
 export type CustomUserAgent = {
 	category?: Category;
-	action?: CategoryAction;
 	framework?: Framework;
 };
 
@@ -15,13 +14,6 @@ export enum Category {
 	PubSub = 'pubsub',
 	PushNotification = 'pushnotification',
 	Storage = 'storage',
-}
-
-export enum CategoryAction {
-	AuthSignUp = '1',
-	AuthSignIn = '2',
-	APIQuery = '3',
-	DataStoreJitteredRetry = '4',
 }
 
 export enum Framework {
