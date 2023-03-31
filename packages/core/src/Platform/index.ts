@@ -41,7 +41,8 @@ const buildUserAgentTuples = (
 	};
 	const userAgentTuples: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (userAgentDetails.category) {
-		userAgentTuples.push([userAgentDetails.category, userAgentDetails.action]);
+		/** TODO: add action as second element */
+		userAgentTuples.push([userAgentDetails.category, undefined]);
 	}
 
 	if (userAgentDetails.framework) {
