@@ -384,7 +384,12 @@ export abstract class StorageAdapterBase implements Adapter {
 			const models = await this.query(modelConstructor, condition);
 
 			if (condition !== undefined) {
-				await this.deleteTraverse(models, namespace, deleteQueue);
+				await this.deleteTraverse(
+					models,
+					modelConstructor,
+					namespace,
+					deleteQueue
+				);
 
 				await this.deleteItem(deleteQueue);
 
@@ -395,7 +400,12 @@ export abstract class StorageAdapterBase implements Adapter {
 
 				return [models, deletedModels];
 			} else {
-				await this.deleteTraverse(models, namespace, deleteQueue);
+				await this.deleteTraverse(
+					models,
+					modelConstructor,
+					namespace,
+					deleteQueue
+				);
 
 				await this.deleteItem(deleteQueue);
 
@@ -441,14 +451,19 @@ export abstract class StorageAdapterBase implements Adapter {
 					throw new Error(msg);
 				}
 
-				await this.deleteTraverse([model], namespaceName, deleteQueue);
+				await this.deleteTraverse(
+					[model],
+					modelConstructor,
+					namespaceName,
+					deleteQueue
+				);
 			} else {
-				const relations =
-					this.schema.namespaces[namespaceName].relationships![
-						modelConstructor.name
-					].relationTypes;
-
-				await this.deleteTraverse([model], namespaceName, deleteQueue);
+				await this.deleteTraverse(
+					[model],
+					modelConstructor,
+					namespaceName,
+					deleteQueue
+				);
 			}
 			await this.deleteItem(deleteQueue);
 
@@ -460,11 +475,6 @@ export abstract class StorageAdapterBase implements Adapter {
 			return [[model], deletedModels];
 		}
 	}
-
-	protected abstract filterOnPredicate<T extends PersistentModel>(
-		storeName: string,
-		predicates: PredicatesGroup<T>
-	);
 
 	protected abstract deleteItem<T extends PersistentModel>(
 		deleteQueue?: {
@@ -480,27 +490,26 @@ export abstract class StorageAdapterBase implements Adapter {
 	 * Actual deletion of records added to `deleteQueue` occurs in the `delete` method
 	 *
 	 * @param models
+	 * @param modelConstructor
 	 * @param namespace
 	 * @param deleteQueue
 	 */
 	private async deleteTraverse<T extends PersistentModel>(
 		models: T[],
+		modelConstructor: PersistentModelConstructor<T>,
 		namespace: NAMESPACES,
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		const cascadingRelationTypes = ['HAS_ONE', 'HAS_MANY'];
 
 		for await (const model of models) {
-			const modelConstructor = (Object.getPrototypeOf(model) as Object)
-				.constructor as PersistentModelConstructor<T>;
-
-			const modelDef =
+			const modelDefinition =
 				this.schema.namespaces[namespace].models[modelConstructor.name];
 
 			const modelMeta = {
 				builder: modelConstructor,
-				schema: modelDef,
-				pkField: extractPrimaryKeyFieldNames(modelDef),
+				schema: modelDefinition,
+				pkField: extractPrimaryKeyFieldNames(modelDefinition),
 			};
 
 			const relationships = ModelRelationship.allFrom(modelMeta).filter(r =>
@@ -518,16 +527,19 @@ export abstract class StorageAdapterBase implements Adapter {
 						)
 					);
 
-					await this.deleteTraverse(relatedRecords, namespace, deleteQueue);
+					await this.deleteTraverse(
+						relatedRecords,
+						r.remoteModelConstructor,
+						namespace,
+						deleteQueue
+					);
 				}
 			}
-
-			deleteQueue.push({
-				storeName: getStorename(namespace, modelConstructor.name),
-				items: models.map(record =>
-					this.modelInstanceCreator(modelConstructor, record)
-				),
-			});
 		}
+
+		deleteQueue.push({
+			storeName: getStorename(namespace, modelConstructor.name),
+			items: models,
+		});
 	}
 }

@@ -381,7 +381,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	}
 
 	protected async deleteItem<T extends PersistentModel>(
-		deleteQueue?: {
+		deleteQueue: {
 			storeName: string;
 			items: T[] | IDBValidKey[];
 		}[]
@@ -656,7 +656,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 		return result;
 	}
 
-	protected async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {

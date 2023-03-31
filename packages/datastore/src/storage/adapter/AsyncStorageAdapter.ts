@@ -181,7 +181,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		return await this.db.getAll(storeName);
 	}
 
-	protected async filterOnPredicate<T extends PersistentModel>(
+	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
