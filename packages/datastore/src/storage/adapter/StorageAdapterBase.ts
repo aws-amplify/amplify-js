@@ -15,7 +15,6 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
-	RelationType,
 } from '../../types';
 import {
 	NAMESPACES,
@@ -24,12 +23,12 @@ import {
 	extractPrimaryKeyValues,
 	traverseModel,
 	validatePredicate,
-	getIndex,
-	getIndexFromAssociation,
 	isModelConstructor,
+	extractPrimaryKeyFieldNames,
 } from '../../util';
 import type { IDBPDatabase, IDBPObjectStore } from 'idb';
 import type AsyncStorageDatabase from './AsyncStorageDatabase';
+import { ModelRelationship } from '../relationship';
 
 const logger = new Logger('DataStore');
 const DB_NAME = 'amplify-datastore';
@@ -382,17 +381,12 @@ export abstract class StorageAdapterBase implements Adapter {
 			const modelConstructor =
 				modelOrModelConstructor as PersistentModelConstructor<T>;
 			const namespace = this.namespaceResolver(modelConstructor) as NAMESPACES;
-
 			const models = await this.query(modelConstructor, condition);
-			const relations =
-				this.schema.namespaces![namespace].relationships![modelConstructor.name]
-					.relationTypes;
 
 			if (condition !== undefined) {
 				await this.deleteTraverse(
-					relations,
 					models,
-					modelConstructor.name,
+					modelConstructor,
 					namespace,
 					deleteQueue
 				);
@@ -407,9 +401,8 @@ export abstract class StorageAdapterBase implements Adapter {
 				return [models, deletedModels];
 			} else {
 				await this.deleteTraverse(
-					relations,
 					models,
-					modelConstructor.name,
+					modelConstructor,
 					namespace,
 					deleteQueue
 				);
@@ -428,6 +421,7 @@ export abstract class StorageAdapterBase implements Adapter {
 
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;
+
 			const namespaceName = this.namespaceResolver(
 				modelConstructor
 			) as NAMESPACES;
@@ -457,28 +451,16 @@ export abstract class StorageAdapterBase implements Adapter {
 					throw new Error(msg);
 				}
 
-				const relations =
-					this.schema.namespaces[namespaceName].relationships![
-						modelConstructor.name
-					].relationTypes;
-
 				await this.deleteTraverse(
-					relations,
 					[model],
-					modelConstructor.name,
+					modelConstructor,
 					namespaceName,
 					deleteQueue
 				);
 			} else {
-				const relations =
-					this.schema.namespaces[namespaceName].relationships![
-						modelConstructor.name
-					].relationTypes;
-
 				await this.deleteTraverse(
-					relations,
 					[model],
-					modelConstructor.name,
+					modelConstructor,
 					namespaceName,
 					deleteQueue
 				);
@@ -501,139 +483,63 @@ export abstract class StorageAdapterBase implements Adapter {
 		}[]
 	);
 
-	protected abstract getHasOneChild<T extends PersistentModel>(
-		model: T,
-		srcModel: string,
-		namespace: NAMESPACES,
-		rel: RelationType
-	): Promise<T | undefined>;
-
-	/**
-	 * Backwards compatability for pre-CPK codegen
-	 * TODO - deprecate this in v6; will need to re-gen MIPR for older unit
-	 * tests that hit this path
-	 */
-	protected abstract getHasOneChildLegacy<T extends PersistentModel>(
-		model: T,
-		srcModel: string,
-		namespace: NAMESPACES,
-		rel: RelationType
-	): Promise<T | undefined>;
-
-	protected abstract getHasManyChildren<T extends PersistentModel>(
-		storeName: string,
-		index: string,
-		keyValues: string[]
-	): Promise<T[] | undefined>;
-
 	/**
 	 * Recursively traverse relationship graph and add
 	 * all Has One and Has Many relations to `deleteQueue` param
 	 *
 	 * Actual deletion of records added to `deleteQueue` occurs in the `delete` method
 	 *
-	 * @param relations
 	 * @param models
-	 * @param srcModel
+	 * @param modelConstructor
 	 * @param namespace
 	 * @param deleteQueue
 	 */
-	protected async deleteTraverse<T extends PersistentModel>(
-		relations: RelationType[],
+	private async deleteTraverse<T extends PersistentModel>(
 		models: T[],
-		srcModel: string,
+		modelConstructor: PersistentModelConstructor<T>,
 		namespace: NAMESPACES,
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
-		for await (const rel of relations) {
-			const { modelName, relationType, targetNames, associatedWith } = rel;
+		const cascadingRelationTypes = ['HAS_ONE', 'HAS_MANY'];
 
-			const storeName = getStorename(namespace, modelName);
-			const index: string =
-				getIndex(
-					this.schema.namespaces[namespace].relationships![modelName]
-						.relationTypes,
-					srcModel
-				) ||
-				// if we were unable to find an index via relationTypes
-				// i.e. for keyName connections, attempt to find one by the
-				// associatedWith property
-				getIndexFromAssociation(
-					this.schema.namespaces[namespace].relationships![modelName].indexes,
-					associatedWith!
-				)!;
+		for await (const model of models) {
+			const modelDefinition =
+				this.schema.namespaces[namespace].models[modelConstructor.name];
 
-			for await (const model of models) {
-				const childRecords: PersistentModel[] = [];
+			const modelMeta = {
+				builder: modelConstructor,
+				schema: modelDefinition,
+				pkField: extractPrimaryKeyFieldNames(modelDefinition),
+			};
 
-				switch (relationType) {
-					case 'HAS_ONE':
-						let childRecord;
-						if (targetNames?.length) {
-							childRecord = await this.getHasOneChild(
-								model,
-								srcModel,
-								namespace,
-								rel
-							);
-						} else {
-							childRecord = await this.getHasOneChildLegacy(
-								model,
-								srcModel,
-								namespace,
-								rel
-							);
-						}
+			const relationships = ModelRelationship.allFrom(modelMeta).filter(r =>
+				cascadingRelationTypes.includes(r.type)
+			);
 
-						if (childRecord) {
-							childRecords.push(childRecord);
-						}
+			for await (const r of relationships) {
+				const queryObject = r.createRemoteQueryObject(model);
+				if (queryObject !== null) {
+					const relatedRecords = await this.query(
+						r.remoteModelConstructor,
+						ModelPredicateCreator.createFromFlatEqualities(
+							r.remoteDefinition!,
+							queryObject
+						)
+					);
 
-						break;
-					case 'HAS_MANY':
-						const keyValues: string[] = this.getIndexKeyValuesFromModel(model);
-
-						const records = await this.getHasManyChildren(
-							storeName,
-							index,
-							keyValues
-						);
-
-						if (records?.length) {
-							childRecords.push(...records);
-						}
-
-						break;
-					case 'BELONGS_TO':
-						// Intentionally blank
-						break;
-					default:
-						throw new Error(`Invalid relation type ${relationType}`);
+					await this.deleteTraverse(
+						relatedRecords,
+						r.remoteModelConstructor,
+						namespace,
+						deleteQueue
+					);
 				}
-
-				// instantiate models before passing them to next recursive call
-				// necessary for extracting PK metadata in `getHasOneChild` and `getHasManyChildren`
-				const childModels = await this.load(namespace, modelName, childRecords);
-
-				await this.deleteTraverse(
-					this.schema.namespaces[namespace].relationships![modelName]
-						.relationTypes,
-					childModels,
-					modelName,
-					namespace,
-					deleteQueue
-				);
 			}
 		}
 
 		deleteQueue.push({
-			storeName: getStorename(namespace, srcModel),
-			items: models.map(record =>
-				this.modelInstanceCreator(
-					this.getModelConstructorByModelName!(namespace, srcModel),
-					record
-				)
-			),
+			storeName: getStorename(namespace, modelConstructor.name),
+			items: models,
 		});
 	}
 }
