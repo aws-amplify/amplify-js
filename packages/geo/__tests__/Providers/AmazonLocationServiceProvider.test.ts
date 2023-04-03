@@ -184,7 +184,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -214,7 +213,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 
 			expect(input).toEqual({
@@ -248,7 +246,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -345,7 +342,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -375,7 +371,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 
 			expect(input).toEqual({
@@ -407,7 +402,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(resultsWithConstraints).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -498,7 +492,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
@@ -576,7 +569,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
@@ -603,7 +595,6 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
@@ -721,7 +712,6 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
 			spyonClient.mockImplementation(geofenceInput => {
-				// @ts-ignore
 				const entries = geofenceInput.input as any;
 
 				if (entries.Entries.some(entry => entry.GeofenceId === 'badId')) {
@@ -1006,7 +996,6 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
 			spyonClient.mockImplementation(geofenceInput => {
-				// @ts-ignore
 				const entries = geofenceInput.input as any;
 
 				if (entries.GeofenceIds.some(entry => entry === 'badId')) {
