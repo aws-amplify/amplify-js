@@ -42,7 +42,7 @@
   "dependencies": {
     "@aws-amplify/analytics": "6.0.23",
     "@aws-amplify/api": "5.0.23",
-    "@aws-amplify/auth": "5.2.0",
+    "@aws-amplify/auth": "5.2.1",
     "@aws-amplify/cache": "5.0.23",
     "@aws-amplify/core": "5.1.6",
     "@aws-amplify/datastore": "4.1.5",
