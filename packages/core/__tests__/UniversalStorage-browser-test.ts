@@ -24,7 +24,6 @@ import { UniversalStorage } from '../src/UniversalStorage';
 
 describe(UniversalStorage.name, () => {
 	describe('on client side', () => {
-		let originalLocalStorage;
 		let universalStorage: UniversalStorage;
 
 		beforeEach(() => {
@@ -32,10 +31,6 @@ describe(UniversalStorage.name, () => {
 			mockCookiesGetAll.mockReturnValue({});
 			window.localStorage.clear();
 			universalStorage = new UniversalStorage();
-		});
-
-		afterEach(() => {
-			window.localStorage = originalLocalStorage;
 		});
 
 		describe('constructor', () => {
