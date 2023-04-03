@@ -23,3 +23,8 @@ coverage-ts/
 dual-publish-tmp
 .gradle/
 local.properties
+/.vs/slnx.sqlite-journal
+/.vs/slnx.sqlite
+/.vs/amplify-js/v17/TestStore/0/000.testlog
+/.vs/amplify-js/v17/TestStore/0/testlog.manifest
+/.vs/amplify-js/FileContentIndex
