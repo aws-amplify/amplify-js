@@ -102,7 +102,6 @@ export const matchesAttributes = (
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
 		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(
-			// @ts-ignore
 			([key, { Values }]) => Values.includes(attributes[key])
 		);
 	}
@@ -125,7 +124,6 @@ export const matchesMetrics = (
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
 	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
 		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
-			// @ts-ignore
 			([key, { ComparisonOperator, Value }]) => {
 				const compare = getComparator(ComparisonOperator);
 				// if there is some unknown comparison operator, treat as a comparison failure
