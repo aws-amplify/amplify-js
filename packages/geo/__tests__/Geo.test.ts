@@ -230,6 +230,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -255,6 +256,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -283,6 +285,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -345,6 +348,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
@@ -391,6 +395,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -416,6 +421,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -444,6 +450,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
@@ -507,6 +514,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
@@ -533,6 +541,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
@@ -575,6 +584,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			const output = {
 				Entries: [
@@ -654,6 +664,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			// @ts-ignore
 			const input = spyon.mock.calls[0][0].input;
 			const output = {
 				GeofenceId: 'testGeofenceId',
