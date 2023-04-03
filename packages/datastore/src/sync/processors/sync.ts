@@ -315,7 +315,8 @@ class SyncProcessor {
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
+		const { maxRecordsToSync, syncPageSize, perModelSyncPageSize } =
+			this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
@@ -360,10 +361,15 @@ class SyncProcessor {
 										return;
 									}
 
-									const limit = Math.min(
-										maxRecordsToSync - recordsReceived,
-										syncPageSize
-									);
+									const limit = perModelSyncPageSize?.[modelDefinition.name]
+										? Math.min(
+												maxRecordsToSync - recordsReceived,
+												perModelSyncPageSize[modelDefinition.name]
+										  )
+										: Math.min(
+												maxRecordsToSync - recordsReceived,
+												syncPageSize
+										  );
 
 									({ items, nextToken, startedAt } = await this.retrievePage(
 										modelDefinition,
