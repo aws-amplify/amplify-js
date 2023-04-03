@@ -12,6 +12,7 @@ const LOG_LEVELS = {
 	INFO: 3,
 	WARN: 4,
 	ERROR: 5,
+	NONE: 6,
 };
 
 export enum LOG_TYPE {
@@ -20,6 +21,7 @@ export enum LOG_TYPE {
 	INFO = 'INFO',
 	WARN = 'WARN',
 	VERBOSE = 'VERBOSE',
+	NONE = 'NONE'
 }
 
 /**
