@@ -25,9 +25,9 @@ export interface RetryOptions {
  * Retry middleware
  */
 export const retry =
-	<T extends Request, U extends Response>() =>
-	(next: MiddlewareHandler<T, U, RetryOptions>, context: MiddlewareContext) => {
-		return async function retry(request: T, options: RetryOptions) {
+	<T extends Request, U extends Response>(options: RetryOptions) =>
+	(next: MiddlewareHandler<T, U>, context: MiddlewareContext) => {
+		return async function retry(request: T) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
@@ -38,8 +38,10 @@ export const retry =
 			let attemptsCount = (context[CONTEXT_KEY_RETRY_COUNT] as number) ?? 0;
 			let response;
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
+				error = undefined;
+				response = undefined;
 				try {
-					response = await next(request, options);
+					response = await next(request);
 				} catch (e) {
 					error = e;
 				}
@@ -58,7 +60,9 @@ export const retry =
 					throw error;
 				}
 			}
-			throw error ?? new Error('Retry attempts exhausted');
+			throw abortSignal?.aborted
+				? new Error('Request aborted')
+				: error ?? new Error('Retry attempts exhausted');
 		};
 	};
 
