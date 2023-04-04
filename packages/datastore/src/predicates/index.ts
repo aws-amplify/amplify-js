@@ -79,16 +79,6 @@ const isComparison = o => {
 };
 
 /**
- * Determines whether an object specifies no conditions and should match everything,
- * as would be the case with `Predicates.ALL`.
- *
- * @param o The object to test.
- */
-const isEmpty = o => {
-	return !Array.isArray(o) && Object.keys(o).length === 0;
-};
-
-/**
  * A light check to determine whether an object is a valid GraphQL Condition AST.
  *
  * @param o The object to test.
