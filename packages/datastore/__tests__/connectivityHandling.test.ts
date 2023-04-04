@@ -5,6 +5,7 @@ import {
 	getDataStore,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
+	waitForSyncQueriesReady,
 	warpTime,
 	unwarpTime,
 } from './helpers';
@@ -49,6 +50,8 @@ describe('DataStore sync engine', () => {
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		simulateDisruption,
+		simulateDisruptionEnd,
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
@@ -77,6 +80,8 @@ describe('DataStore sync engine', () => {
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
+			simulateDisruption,
+			simulateDisruptionEnd,
 		} = getDataStore({ online: true, isNode: false }));
 		await DataStore.start();
 	});
@@ -606,6 +611,102 @@ describe('DataStore sync engine', () => {
 			const cloudPost = table.get(JSON.stringify([post.id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 			expect(cloudPost._deleted).toEqual(true);
+		});
+
+		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisruption();
+
+			// simulate second client creating a new post
+			const secondPostId = '1c49fa30-ef5c-44f5-b503-234af5a0a088';
+			await graphqlService.graphql({
+				query:
+					'mutation operation($input: CreatePostInput!){\n' +
+					'\t\tcreatePost(input: $input){\n' +
+					'\t\t\tid\n' +
+					'title\n' +
+					'blogId\n' +
+					'_version\n' +
+					'_lastChangedAt\n' +
+					'_deleted\n' +
+					'\t\t}\n' +
+					'\t}',
+				variables: {
+					input: {
+						id: secondPostId,
+						title: 'a title 2',
+						blogId: null,
+						_version: undefined,
+					},
+				},
+				authMode: undefined,
+				authToken: undefined,
+			});
+
+			// wait for subscription message if connection were not disrupted
+			// next DataStore.query(Post) would have length of 2 if not disrupted
+			await pause(1);
+			// DataStore has not received new subscription message
+			expect((await DataStore.query(Post)).length).toEqual(1);
+
+			await simulateDisruptionEnd();
+			await waitForSyncQueriesReady();
+
+			expect((await DataStore.query(Post)).length).toEqual(2);
+			expect((await DataStore.query(Post, post.id))!.title).toEqual('a title');
+			expect((await DataStore.query(Post, secondPostId))!.title).toEqual(
+				'a title 2'
+			);
+
+			const thirdPost = await DataStore.save(
+				new Post({
+					title: 'a title 3',
+				})
+			);
+
+			expect((await DataStore.query(Post)).length).toEqual(3);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(3);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('a title');
+
+			const cloudSecondPost = table.get(JSON.stringify([secondPostId])) as any;
+			expect(cloudSecondPost.title).toEqual('a title 2');
+
+			const cloudThirdPost = table.get(JSON.stringify([thirdPost.id])) as any;
+			expect(cloudThirdPost.title).toEqual('a title 3');
+		});
+
+		test('does not error when disruption before sync queries start', async () => {
+			const post = DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+			const errorLog = jest.spyOn(console, 'error');
+			await simulateDisruption();
+			await simulateDisruptionEnd();
+			await waitForSyncQueriesReady();
+			expect(errorLog).not.toHaveBeenCalledWith(
+				expect.stringMatching(new RegExp('[ERROR].* Hub')),
+				expect.anything()
+			);
+			await waitForEmptyOutbox();
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			expect(cloudPost.title).toEqual('a title');
 		});
 	});
 

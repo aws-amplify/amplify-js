@@ -25,6 +25,7 @@ export class FakeGraphQLService {
 	public tables = new Map<string, Map<string, any[]>>();
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
+	public stopSubscriptionMessages = false;
 	public timestampFields = new Map<
 		string,
 		{ createdAt: string; updatedAt: string }
@@ -389,6 +390,25 @@ export class FakeGraphQLService {
 		this.isConnected = true;
 	}
 
+	/*
+	 * Simulate disruption by stopping subscription messages
+	 */
+	public simulateDisruption() {
+		this.stopSubscriptionMessages = true;
+	}
+
+	public simulateDisruptionEnd() {
+		this.stopSubscriptionMessages = false;
+	}
+
+	/**
+	 * Sends out graphql subscription messages to all subscribers of a table-operation.
+	 *
+	 * @param tableName The table name subscribers are looking at.
+	 * @param type The operation type. (Create, Update, Delete).
+	 * @param data The data to sendout.
+	 * @param selection The function/selection name, like "onCreateTodo".
+	 */
 	public async notifySubscribers(tableName, type, data, selection) {
 		await this.jitteredPause(this.latencies.subscriber);
 		const observers = this.getObservers(tableName, type);
@@ -406,8 +426,13 @@ export class FakeGraphQLService {
 					},
 				},
 			};
-			this.log('API subscription message', { observerMessageName, message });
-			observer.next(message);
+			if (!this.stopSubscriptionMessages) {
+				this.log('API subscription message', {
+					observerMessageName,
+					message,
+				});
+				observer.next(message);
+			}
 		});
 	}
 

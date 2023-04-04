@@ -41,6 +41,16 @@ const isGroup = o => {
 };
 
 /**
+ * Determines whether an object specifies no conditions and should match everything,
+ * as would be the case with `Predicates.ALL`.
+ *
+ * @param o The object to test.
+ */
+const isEmpty = o => {
+	return !Array.isArray(o) && Object.keys(o).length === 0;
+};
+
+/**
  * The valid comparison operators that can be used as keys in a predicate comparison object.
  */
 export const comparisonKeys = new Set([

@@ -1546,6 +1546,23 @@ jobs:
           spec: amplify-docs-examples
           browser: << parameters.browser >>
 
+  integ_react_datastore_websocket_disruption:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/websocket-disruption
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - WebSocket Disruption'
+          framework: react
+          category: datastore
+          sample_name: websocket-disruption
+          spec: websocket-disruption
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -2192,6 +2209,15 @@ workflows:
           matrix:
             parameters:
               <<: *minimal_browser_list
+      - integ_react_datastore_websocket_disruption:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2262,6 +2288,7 @@ workflows:
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
             - integ_react_datastore_docs_examples
+            - integ_react_datastore_websocket_disruption
       - post_release:
           filters:
             branches:

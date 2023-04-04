@@ -2274,6 +2274,12 @@ describe('Predicates', () => {
 	describe('non-recursive predicate to storage predicate generation', () => {
 		const ASTTransalationTestCases = [
 			{
+				gql: {},
+				expectedRegeneration: {},
+				matches: [{ name: 'abc' }],
+				mismatches: [],
+			},
+			{
 				gql: { and: [] },
 				expectedRegeneration: {},
 				matches: [{ name: 'abc' }],
@@ -2379,6 +2385,11 @@ describe('Predicates', () => {
 			});
 		}
 		const predicateTestCases = [
+			{
+				predicate: p => p,
+				matches: [{ name: 'abc' }],
+				mismatches: [],
+			},
 			{
 				predicate: p => p.name.eq('abc'),
 				matches: [{ name: 'abc' }],
