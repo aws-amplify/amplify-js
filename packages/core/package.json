@@ -102,6 +102,18 @@
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
 			"limit": "35.5 kB"
+		},
+		{
+			"name": "Custom clients (retry middleware)",
+			"path": "./lib-esm/clients/middleware/retry.js",
+			"import": "{ retry }",
+			"limit": "1.2 kB"
+		},
+		{
+			"name": "Custom clients (fetch handler)",
+			"path": "./lib-esm/clients/fetch.js",
+			"import": "{ fetchTransferHandler }",
+			"limit": "1.73 kB"
 		}
 	],
 	"jest": {
