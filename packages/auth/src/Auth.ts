@@ -94,7 +94,7 @@ const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
  * Provide authentication steps
  */
 export class AuthClass {
-	private _config: AuthOptions;
+	private _initialAuthOptions: AuthOptions;
 	private userPool: CognitoUserPool = null;
 	private user: any = null;
 	private _oAuthHandler: OAuth;
@@ -112,6 +112,7 @@ export class AuthClass {
 	 * @param {Object} config - Configuration of the Auth
 	 */
 	constructor(config: AuthOptions) {
+		this._initialAuthOptions = config;
 		this.configure(config);
 		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
@@ -133,6 +134,18 @@ export class AuthClass {
 		});
 	}
 
+	private get _config(): AuthOptions {
+		const config = Amplify.config;
+		const conf = Object.assign(
+			{},
+			this._initialAuthOptions,
+			parseAWSExports(config).Auth,
+			config
+		);
+
+		return conf;
+	}
+
 	public getModuleName() {
 		return 'Auth';
 	}
@@ -146,7 +159,7 @@ export class AuthClass {
 			parseAWSExports(config).Auth,
 			config
 		);
-		this._config = conf;
+		this._initialAuthOptions = conf;
 		const {
 			userPoolId,
 			userPoolWebClientId,
@@ -2780,5 +2793,3 @@ export class AuthClass {
 }
 
 export const Auth = new AuthClass(null);
-
-Amplify.register(Auth);

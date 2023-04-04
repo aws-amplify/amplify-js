@@ -1,4 +1,5 @@
 import { ConsoleLogger as LoggerClass } from './Logger';
+import { AmplifyUserSessionProvider } from './types';
 
 const logger = new LoggerClass('Amplify');
 
@@ -10,9 +11,7 @@ export class AmplifyClass {
 	// All modules (with `getModuleName()`) are stored here for dependency injection
 	private _modules = {};
 
-	// for backward compatibility to avoid breaking change
-	// if someone is using like Amplify.Auth
-	Auth = null;
+	private _Auth: AmplifyUserSessionProvider;
 	Analytics = null;
 	API = null;
 	Credentials = null;
@@ -37,6 +36,10 @@ export class AmplifyClass {
 		return Object.assign({}, this._config);
 	}
 
+	public get Auth() {
+		return this._Auth;
+	}
+
 	register(comp) {
 		logger.debug('component registered in amplify', comp);
 		this._components.push(comp);
@@ -56,8 +59,15 @@ export class AmplifyClass {
 		comp.configure(this._config);
 	}
 
-	configure(config?) {
-		if (!config) return this._config;
+	configure(
+		config,
+		libraryConfig?: { Auth: { sessionProvider: AmplifyUserSessionProvider } }
+	): void {
+		if (libraryConfig?.Auth) {
+			this._Auth = libraryConfig.Auth.sessionProvider;
+		}
+
+		if (!config) return;
 
 		this._config = Object.assign(this._config, config);
 		logger.debug('amplify config', this._config);
@@ -78,8 +88,6 @@ export class AmplifyClass {
 		this._components.map(comp => {
 			comp.configure(this._config);
 		});
-
-		return this._config;
 	}
 
 	addPluggable(pluggable) {

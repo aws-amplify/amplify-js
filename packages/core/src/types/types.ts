@@ -1,5 +1,6 @@
 import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
 import { Credentials } from '@aws-sdk/types';
+import type { Observable } from 'rxjs';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -63,3 +64,37 @@ export interface CloudWatchDataTracker {
 	logEvents: InputLogEvent[];
 	verifiedLogGroup?: LogGroup;
 }
+
+export interface AmplifyUserSessionProvider {
+	getUserSession: (
+		options?: GetUserSessionOptions
+	) => Promise<AmplifyUserSession>;
+	listenUserSession(): Observable<AmplifyUserSession>;
+}
+
+// Other types just for reference
+
+export type GetUserSessionOptions = {
+	refresh?: boolean;
+};
+
+export type AmplifyUserSession = {
+	isLoggedIn: boolean;
+	username?: string;
+	credentials?: ICredentials;
+	jwts?: JWTS;
+};
+
+export interface JWT {
+	payload: JSON;
+	header: JSON;
+	signature: string;
+	expiration?: Date;
+	toString: () => string;
+	isValid: () => boolean;
+}
+
+export type JWTS = {
+	accessToken?: JWT;
+	idToken?: JWT;
+};

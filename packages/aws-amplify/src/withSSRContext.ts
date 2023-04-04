@@ -1,5 +1,4 @@
 import { API } from '@aws-amplify/api';
-import { Auth } from '@aws-amplify/auth';
 import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
 import { DataStore } from '@aws-amplify/datastore';
 
@@ -8,13 +7,13 @@ import { Amplify } from './index';
 
 const requiredModules = [
 	// API cannot function without Auth
-	Auth,
+	// Auth,
 	// Auth cannot function without Credentials
 	Credentials,
 ];
 
 // These modules have been tested with SSR
-const defaultModules = [API, Auth, DataStore];
+const defaultModules = [API, DataStore];
 
 type Context = {
 	req?: any;
@@ -23,7 +22,7 @@ type Context = {
 
 export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
-	const previousConfig = Amplify.configure();
+	const previousConfig = Amplify.config;
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
 
