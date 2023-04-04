@@ -28,18 +28,18 @@ describe(composeTransferHandler.name, () => {
 	test('should call execute middleware in order', async () => {
 		type OptionsType = { mockFnInOptions: (calledFrom: string) => void };
 		const middlewareA: Middleware<Request, Response, OptionsType> =
-			(next, context) => async (request, options) => {
+			(options: OptionsType) => (next, context) => async request => {
 				request.body += 'A';
 				options.mockFnInOptions('A');
-				const resp = await next(request, options);
+				const resp = await next(request);
 				resp.body += 'A';
 				return resp;
 			};
 		const middlewareB: Middleware<Request, Response, OptionsType> =
-			(next, context) => async (request, options) => {
+			(options: OptionsType) => (next, context) => async request => {
 				request.body += 'B';
 				options.mockFnInOptions('B');
-				const resp = await next(request, options);
+				const resp = await next(request);
 				resp.body += 'B';
 				return resp;
 			};

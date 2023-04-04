@@ -86,13 +86,13 @@ export const composeTransferHandler =
 			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
 		>
 	) => {
-		let composedHandler = coreHandler as unknown as MiddlewareHandler<
-			Request,
-			Response,
-			MiddlewareOptionsArr[number]
-		>;
+		const context = {};
+		let composedHandler: MiddlewareHandler<Request, Response> = (
+			request: Request
+		) => coreHandler(request, options);
 		for (const m of middleware.reverse()) {
-			composedHandler = m(composedHandler, {});
+			const resolvedMiddleware = m(options);
+			composedHandler = resolvedMiddleware(composedHandler, context);
 		}
-		return composedHandler(request, options);
+		return composedHandler(request);
 	};
