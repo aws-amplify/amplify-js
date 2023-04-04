@@ -1928,24 +1928,16 @@ describe('Predicates', () => {
 						]);
 					});
 
-					// a different bug found while testing
-					// notContains for filters mechanism does not give correct result
-					if (mechanism.name === 'filters') {
-						test.skip('notContains', () => {});
-					} else {
-						test('notContains', async () => {
-							expect.assertions(2);
-							const query =
-								recursivePredicateFor(PersonMeta).username.notContains(
-									'defined'
-								);
-							const matches = await mechanism.execute<ModelOf<typeof Person>>(
-								query
-							);
-							expect(matches.length).toBe(3);
-							expect(matches.map(n => n.username)).toEqual([null, null, null]);
-						});
-					}
+					test('notContains', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.notContains('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(3);
+						expect(matches.map(n => n.username)).toEqual([null, null, null]);
+					});
 
 					test('beginsWith', async () => {
 						expect.assertions(2);
