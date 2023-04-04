@@ -1,13 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthErrorParams } from './types/models';
+import { AmplifyError } from '@aws-amplify/core/src/Errors';
+import { ErrorParams } from '@aws-amplify/core/src/types/types';
 
-export class AuthError extends Error {
-	underlyingError?: Error | unknown;
-	recoverySuggestion?: string;
+export class AuthError extends AmplifyError {
 	/**
-	 * Creates an Auth error
 	 *
 	 * @param message text that describes the main problem.
 	 * @param underlyingError the underlying cause of the error.
@@ -19,11 +17,7 @@ export class AuthError extends Error {
 		name,
 		recoverySuggestion,
 		underlyingError,
-	}: AuthErrorParams) {
-		super(message);
-
-		this.name = name;
-		this.underlyingError = underlyingError;
-		this.recoverySuggestion = recoverySuggestion;
+	}: ErrorParams) {
+		super({ message, name, recoverySuggestion, underlyingError });
 	}
 }

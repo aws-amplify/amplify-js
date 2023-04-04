@@ -63,3 +63,10 @@ export interface CloudWatchDataTracker {
 	logEvents: InputLogEvent[];
 	verifiedLogGroup?: LogGroup;
 }
+
+export type ErrorParams = {
+	message: string;
+	name: string;
+	recoverySuggestion?: string;
+	underlyingError?: Error | unknown;
+};
