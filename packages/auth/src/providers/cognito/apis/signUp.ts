@@ -24,13 +24,18 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { SignUpException } from '../types/errors/service';
 
 /**
  * Creates a user
  *
  * @param signUpRequest - The SignUpRequest object
  * @returns AuthSignUpResult
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password are not defined.
  *
+ *
+ * TODO: add config errors
  */
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
