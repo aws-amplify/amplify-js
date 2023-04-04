@@ -47,7 +47,7 @@
 	],
 	"dependencies": {
 		"@aws-amplify/core": "5.1.6",
-		"@aws-sdk/client-location": "3.186.0",
+		"@aws-sdk/client-location": "3.186.1",
 		"@turf/boolean-clockwise": "6.5.0",
 		"camelcase-keys": "6.2.2",
 		"tslib": "^1.8.0"
