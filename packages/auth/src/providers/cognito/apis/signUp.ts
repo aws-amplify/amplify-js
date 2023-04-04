@@ -20,10 +20,10 @@ import {
 	ValidationData,
 } from '..';
 import { signUpClient } from '../utils/clients/SignUpClient';
-import { assertServiceError } from '../../../error/utils/assertServiceError';
-import { AuthError } from '../../../error/AuthError';
-import { assertValidationError } from '../../../error/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../error/types/validation';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../errors/AuthError';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '../../../errors/types/validation';
 
 /**
  * Creates a user
@@ -35,14 +35,19 @@ import { AuthValidationErrorCode } from '../../../error/types/validation';
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
-    const username = signUpRequest.username
-	const password = signUpRequest.password
-	assertValidationError(!!username, AuthValidationErrorCode.EmptySignUpUsername)
-	assertValidationError(!!password, AuthValidationErrorCode.EmptySignUpPassword)
+	const username = signUpRequest.username;
+	const password = signUpRequest.password;
+	assertValidationError(
+		!!username,
+		AuthValidationErrorCode.EmptySignUpUsername
+	);
+	assertValidationError(
+		!!password,
+		AuthValidationErrorCode.EmptySignUpPassword
+	);
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
-	const _config = Amplify.config
-
+	const config = Amplify.config;
 
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
@@ -51,23 +56,23 @@ export async function signUp(
 	}
 	try {
 		const res: SignUpCommandOutput = await signUpClient({
-			Username: signUpRequest.username,
-			Password: signUpRequest.password,
+			Username: username,
+			Password: password,
 			UserAttributes: signUpRequest.options?.userAttributes.map(el => {
 				return { Name: el.userAttributeKey.toString(), Value: el.value };
 			}),
 			ClientMetadata:
 				signUpRequest.options?.serviceOptions?.clientMetadata ??
-				_config.clientMetadata,
+				config.clientMetadata,
 			ValidationData: validationData,
 		});
-	
+
 		const { UserConfirmed, CodeDeliveryDetails } = res;
 		const { DeliveryMedium, Destination, AttributeName } = {
 			...CodeDeliveryDetails,
 		};
-	
-		if (UserConfirmed === true) {
+
+		if (UserConfirmed) {
 			return {
 				isSignUpComplete: true,
 				nextStep: {
@@ -92,11 +97,9 @@ export async function signUp(
 			};
 		}
 	} catch (error) {
-		assertServiceError(error)
-		throw new AuthError({name: error.name, message:error.message})
+		assertServiceError(error);
+		throw new AuthError({ name: error.name, message: error.message });
 	}
-
-	
 }
 
 function mapValidationData(data: ValidationData): AttributeType[] {
