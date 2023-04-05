@@ -962,7 +962,13 @@ export const establishRelationAndKeys = (
 
 					if (targetNames) {
 						const idxName = indexNameFromKeys(targetNames);
-						relationship[mKey].indexes.push([idxName, targetNames]);
+						const idxExists = relationship[mKey].indexes.find(
+							([index]) => index === idxName
+						);
+
+						if (!idxExists) {
+							relationship[mKey].indexes.push([idxName, targetNames]);
+						}
 					}
 				}
 			}
