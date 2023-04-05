@@ -1571,10 +1571,8 @@ jobs:
           at: ~/
       - run:
           name: 'Publish to Amplify Package'
-          environment:
-            # Generates a suffix for deconflicting pre-ids, e.g. `.a9bd459`
-            PREID_HASH_SUFFIX: $(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')
           command: |
+            PREID_HASH_SUFFIX=$(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm whoami
             git config --global user.email $GITHUB_EMAIL
