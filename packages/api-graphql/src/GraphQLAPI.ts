@@ -302,8 +302,6 @@ export class GraphQLAPIClass {
 			variables,
 		};
 
-		console.log('printing', body);
-
 		const init = Object.assign(
 			{
 				headers,
