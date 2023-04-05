@@ -7,6 +7,41 @@ import {
 } from '../types';
 
 /**
+ * Compose a transfer handler with a core transfer handler and a list of middleware.
+ * @param coreHandler Core transfer handler
+ * @param middleware	List of middleware
+ * @returns A transfer handler whose option type is the union of the core
+ * 	transfer handler's option type and the middleware's option type.
+ * @internal
+ */
+export const composeTransferHandler =
+	<
+		Request extends RequestBase,
+		Response extends ResponseBase,
+		CoreHandler extends TransferHandler<Request, Response, any>,
+		MiddlewareOptionsArr extends any[] = []
+	>(
+		coreHandler: CoreHandler,
+		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
+	) =>
+	(
+		request: Request,
+		options: MergeNoConflictKeys<
+			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
+		>
+	) => {
+		const context = {};
+		let composedHandler: MiddlewareHandler<Request, Response> = (
+			request: Request
+		) => coreHandler(request, options);
+		for (const m of middleware.reverse()) {
+			const resolvedMiddleware = m(options);
+			composedHandler = resolvedMiddleware(composedHandler, context);
+		}
+		return composedHandler(request);
+	};
+
+/**
  * Type to convert a middleware option type to a middleware type with the given
  * option type.
  */
@@ -61,38 +96,3 @@ type MergeNoConflictKeys<Options extends any[]> = Options extends [
 type InferOptionTypeFromTransferHandler<
 	T extends TransferHandler<any, any, any>
 > = Parameters<T>[1];
-
-/**
- * Compose a transfer handler with a core transfer handler and a list of middleware.
- * @param coreHandler Core transfer handler
- * @param middleware	List of middleware
- * @returns A transfer handler whose option type is the union of the core
- * 	transfer handler's option type and the middleware's option type.
- * @internal
- */
-export const composeTransferHandler =
-	<
-		Request extends RequestBase,
-		Response extends ResponseBase,
-		CoreHandler extends TransferHandler<Request, Response, any>,
-		MiddlewareOptionsArr extends any[] = []
-	>(
-		coreHandler: CoreHandler,
-		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
-	) =>
-	(
-		request: Request,
-		options: MergeNoConflictKeys<
-			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
-		>
-	) => {
-		const context = {};
-		let composedHandler: MiddlewareHandler<Request, Response> = (
-			request: Request
-		) => coreHandler(request, options);
-		for (const m of middleware.reverse()) {
-			const resolvedMiddleware = m(options);
-			composedHandler = resolvedMiddleware(composedHandler, context);
-		}
-		return composedHandler(request);
-	};

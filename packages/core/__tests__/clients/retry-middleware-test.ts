@@ -1,24 +1,22 @@
 import { MiddlewareHandler } from '../../src/clients/types';
 import { composeTransferHandler } from '../../src/clients/internal/composeTransferHandler';
+import { retry, RetryOptions } from '../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
-import { retry, RetryOptions } from '../../src/clients/middleware/retry';
 
 describe(`${retry.name} middleware`, () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
+
 	const defaultRetryOptions = {
 		retryDecider: () => true,
 		backOffStrategy: { computeDelay: () => 1 },
 	};
 	const defaultRequest = { url: new URL('https://a.b') };
-	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) => {
-		return composeTransferHandler<any, any, any, [RetryOptions]>(nextHandler, [
-			retry,
-		]);
-	};
+	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
+		composeTransferHandler<any, any, any, [RetryOptions]>(nextHandler, [retry]);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue('foo');

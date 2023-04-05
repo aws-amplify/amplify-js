@@ -1,4 +1,3 @@
-import { HttpResponse } from '../types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
@@ -13,11 +12,34 @@ const CONTEXT_KEY_RETRY_COUNT = 'attemptsCount';
  * Configuration of the retry middleware
  */
 export interface RetryOptions {
-	retryDecider: (response: HttpResponse, error?: unknown) => boolean;
+	/**
+	 * Function to decide if the request should be retried.
+	 *
+	 * @param response Response of the request.
+	 * @param error Optional error thrown from previous attempts.
+	 * @returns True if the request should be retried.
+	 */
+	retryDecider: (response: Response, error?: unknown) => boolean;
+	/**
+	 * Strategy to compute the delay before the next retry.
+	 */
 	backOffStrategy: {
+		/**
+		 * Function to compute the delay in milliseconds before the next retry based
+		 * on the number of attempts.
+		 * @param attempt Current number of attempts, including the first attempt.
+		 * @returns Delay in milliseconds.
+		 */
 		computeDelay: (attempt: number) => number;
-	}; // MS to wait
+	};
+	/**
+	 * Maximum number of retry attempts, starting from 1. Defaults to 3.
+	 */
 	maxAttempts?: number;
+
+	/**
+	 * Optional AbortSignal to abort the retry attempts.
+	 */
 	abortSignal?: AbortSignal;
 }
 
@@ -25,9 +47,12 @@ export interface RetryOptions {
  * Retry middleware
  */
 export const retry =
-	<T extends Request, U extends Response>(options: RetryOptions) =>
-	(next: MiddlewareHandler<T, U>, context: MiddlewareContext) => {
-		return async function retry(request: T) {
+	(options: RetryOptions) =>
+	(next: MiddlewareHandler<Request, Response>, context: MiddlewareContext) => {
+		if (options.maxAttempts < 1) {
+			throw new Error('maxAttempts must be greater than 0');
+		}
+		return async function retry(request: Request) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
