@@ -34,10 +34,6 @@ describe(UniversalStorage.name, () => {
 			universalStorage = new UniversalStorage();
 		});
 
-		afterEach(() => {
-			window.localStorage = originalLocalStorage;
-		});
-
 		describe('constructor', () => {
 			test('initiates store with cookies', () => {
 				mockCookiesGetAll.mockReturnValue({ bar: 'barz' });

@@ -72,3 +72,5 @@ export {
  * @deprecated use named import
  */
 export default Amplify;
+
+export { Amplify as NewAmplify } from './NewAmplify';
