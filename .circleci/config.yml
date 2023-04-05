@@ -69,6 +69,9 @@ test_env_vars: &test_env_vars
     NPM_USER: circleci
     NPM_PASS: circleci
     NPM_EMAIL: circleci@amplify.js
+
+deploy_env_vars: &deploy_env_vars
+  environment:
     # Generates a suffix for deconflicting pre-ids, e.g. `.a9bd459`
     PREID_HASH_SUFFIX: $(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')
 
@@ -1567,6 +1570,7 @@ jobs:
 
   deploy:
     executor: macos-executor
+    <<: *deploy_env_vars
     working_directory: ~/amplify-js
     steps:
       - attach_workspace:
