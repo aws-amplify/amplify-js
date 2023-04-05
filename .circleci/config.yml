@@ -1572,8 +1572,9 @@ jobs:
       - run:
           name: 'Publish to Amplify Package'
           command: |
-            PREID_HASH_SUFFIX=$(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            echo "export PREID_HASH_SUFFIX=$(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')" >> "$BASH_ENV"
+            source "$BASH_ENV"
             npm whoami
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
