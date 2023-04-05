@@ -122,6 +122,128 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.body).toEqual(m.body);
 		});
 
+		test('omits all unspecified fields from mutation on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const omitted_optional_fields = [
+				'emails',
+				'ips',
+				'logins',
+				'metadata',
+				'optionalField',
+			];
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			for (const field of omitted_optional_fields) {
+				expect(mutation[field]).toEqual(undefined);
+			}
+		});
+
+		test('includes explicit null fields from mutation on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+					metadata: null,
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			expect(mutation.metadata).toEqual(null);
+		});
+
+		test('omits all unchanged fields from mutation on update', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			const saved = await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			await waitForEmptyOutbox();
+			const retrieved = (await DataStore.query(Model, saved.id))!;
+
+			const updated = await DataStore.save(
+				Model.copyOf(retrieved, d => (d.optionalField1 = 'new value'))
+			);
+
+			const omitted_fields = ['field1', 'emails', 'ips', 'logins', 'metadata'];
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [createMutation, updateMutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			for (const field of omitted_fields) {
+				expect(updateMutation[field]).toEqual(undefined);
+			}
+		});
+
+		test('includes explicit null fields from mutation on update', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			const saved = await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'something',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			const retrieved = (await DataStore.query(Model, saved.id))!;
+
+			await DataStore.save(
+				Model.copyOf(retrieved, d => (d.optionalField1 = null))
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [createMutation, updateMutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			expect(updateMutation.optionalField1).toEqual(null);
+		});
+
 		test('omits null owner fields from mutation events on create', async () => {
 			const m = await DataStore.save(
 				new ModelWithExplicitOwner({
