@@ -24,46 +24,32 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 export const getAmplifyUserAgent = (
 	customUserAgent?: CustomUserAgent
 ): AWSUserAgent => {
-	return buildUserAgentTuples(customUserAgent);
+	return buildUserAgent(customUserAgent);
+};
+
+const buildUserAgent = (customUserAgent?: CustomUserAgent): AWSUserAgent => {
+	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	if (customUserAgent?.category) {
+		/** TODO: add action as second element */
+		userAgent.push([customUserAgent.category, undefined]);
+	}
+
+	if (customUserAgent?.framework) {
+		userAgent.push(['framework', customUserAgent.framework]);
+	} else {
+		userAgent.push(['framework', detectFramework()]);
+	}
+
+	return userAgent;
 };
 
 export const getAmplifyUserAgentString = (
 	customUserAgent?: CustomUserAgent
 ): string => {
-	return buildUserAgentDetailsString(customUserAgent);
-};
-
-const buildUserAgentTuples = (
-	customUserAgent?: CustomUserAgent
-): AWSUserAgent => {
-	const userAgentDetails = {
-		...customUserAgent,
-	};
-	const userAgentTuples: AWSUserAgent = [[BASE_USER_AGENT, version]];
-	if (userAgentDetails.category) {
-		/** TODO: add action as second element */
-		userAgentTuples.push([userAgentDetails.category, undefined]);
-	}
-
-	if (userAgentDetails.framework) {
-		userAgentTuples.push(['framework', userAgentDetails.framework]);
-	} else {
-		userAgentTuples.push(['framework', detectFramework()]);
-	}
-
-	return userAgentTuples;
-};
-
-const buildUserAgentDetailsString = (
-	customUserAgent?: CustomUserAgent
-): string => {
-	const userAgentTuples = buildUserAgentTuples(customUserAgent);
-	let userAgentDetailsString = '';
-	for (let i = 0; i < userAgentTuples.length; i++) {
-		userAgentDetailsString += `${userAgentTuples[i][0]}${
-			userAgentTuples[i][1] ? `/${userAgentTuples[i][1]}` : ''
-		} `;
-	}
+	const userAgent = buildUserAgent(customUserAgent);
+	const userAgentDetailsString = userAgent
+		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue ?? ''}`)
+		.join(' ');
 
 	return userAgentDetailsString.trimEnd();
 };
