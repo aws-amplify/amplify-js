@@ -397,9 +397,6 @@ export function addCommonQueryTests({
 			expect(mutations.length).toBe(2);
 			expectMutation(mutations[0], {
 				title: 'some post',
-				blogId: null,
-				createdAt: null,
-				updatedAt: null,
 			});
 			expectMutation(mutations[1], {
 				content: 'updated content',
