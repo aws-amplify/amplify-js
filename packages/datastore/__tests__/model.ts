@@ -187,6 +187,7 @@ declare class PersonModel {
 	readonly firstName: string;
 	readonly lastName: string;
 	readonly username?: string;
+	readonly age?: number;
 	constructor(init: ModelInit<PersonModel>);
 	static copyOf(
 		source: PersonModel,
