@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.5...@aws-amplify/datastore@4.1.6) (2023-04-04)
+
+
+### Bug Fixes
+
+* **datastore:** normalize deleteTraverse ([#11169](https://github.com/aws-amplify/amplify-js/issues/11169)) ([1965964](https://github.com/aws-amplify/amplify-js/commit/1965964fec7026109044b47414c22a65aa984b8f))
+* **datastore:** trigger sync on websocket disruption ([#11100](https://github.com/aws-amplify/amplify-js/issues/11100)) ([589cfbc](https://github.com/aws-amplify/amplify-js/commit/589cfbc2e1eaa4d79a50c95b1b8cf8c59f308e79))
+
+
+
+
+
 ## [4.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.4...@aws-amplify/datastore@4.1.5) (2023-03-30)
 
 

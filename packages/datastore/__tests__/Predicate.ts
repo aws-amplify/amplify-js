@@ -1745,6 +1745,7 @@ describe('Predicates', () => {
 						firstName: `${name} first name`,
 						lastName: `${name} last name`,
 						username: name.includes('null') ? null : name,
+						age: name.includes('null') ? null : parseInt(name.split(' ')[1]),
 					});
 				}
 			);
@@ -1829,6 +1830,141 @@ describe('Predicates', () => {
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(n => n.username)).toEqual([null, null, null]);
+				});
+
+				describe('can query on null fields without error', () => {
+					test('eq', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.eq('defined 01');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(1);
+						expect(matches.map(n => n.username)).toEqual(['defined 01']);
+					});
+
+					test('ne', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.ne('defined 01');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(4);
+						expect(matches.map(n => n.username)).toEqual([
+							null,
+							null,
+							'defined 02',
+							null,
+						]);
+					});
+
+					test('gt', async () => {
+						expect.assertions(2);
+						const query = recursivePredicateFor(PersonMeta).age.gt(1);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(1);
+						expect(matches.map(n => n.username)).toEqual(['defined 02']);
+					});
+
+					test('ge', async () => {
+						expect.assertions(2);
+						const query = recursivePredicateFor(PersonMeta).age.ge(1);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(2);
+						expect(matches.map(n => n.username)).toEqual([
+							'defined 01',
+							'defined 02',
+						]);
+					});
+
+					test('lt', async () => {
+						expect.assertions(2);
+						const query = recursivePredicateFor(PersonMeta).age.lt(2);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(4);
+						expect(matches.map(n => n.username)).toEqual([
+							null,
+							'defined 01',
+							null,
+							null,
+						]);
+					});
+
+					test('le', async () => {
+						expect.assertions(2);
+						const query = recursivePredicateFor(PersonMeta).age.le(2);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(5);
+						expect(matches.map(n => n.username)).toEqual([
+							null,
+							'defined 01',
+							null,
+							'defined 02',
+							null,
+						]);
+					});
+
+					test('contains', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.contains('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(2);
+						expect(matches.map(n => n.username)).toEqual([
+							'defined 01',
+							'defined 02',
+						]);
+					});
+
+					test('notContains', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.notContains('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(3);
+						expect(matches.map(n => n.username)).toEqual([null, null, null]);
+					});
+
+					test('beginsWith', async () => {
+						expect.assertions(2);
+						const query =
+							recursivePredicateFor(PersonMeta).username.beginsWith('defined');
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(2);
+						expect(matches.map(n => n.username)).toEqual([
+							'defined 01',
+							'defined 02',
+						]);
+					});
+
+					test('between', async () => {
+						expect.assertions(2);
+						const query = recursivePredicateFor(PersonMeta).age.between(1, 2);
+						const matches = await mechanism.execute<ModelOf<typeof Person>>(
+							query
+						);
+						expect(matches.length).toBe(2);
+						expect(matches.map(n => n.username)).toEqual([
+							'defined 01',
+							'defined 02',
+						]);
+					});
 				});
 			});
 		});
