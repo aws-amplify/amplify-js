@@ -18,7 +18,5 @@ export enum Category {
 
 export enum Framework {
 	None = '0',
-	React = '1',
-	ReactNative = '2',
-	NodeJS = '3',
+	ReactNative = '1',
 }

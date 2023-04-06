@@ -1,25 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomUserAgent } from './types';
+import { CustomUserAgent, Framework } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
+const framework = detectFramework();
 export const Platform = {
 	userAgent: `${BASE_USER_AGENT}/${version}`,
-	product: '',
-	navigator: null,
-	isReactNative: false,
+	framework,
+	isReactNative: framework === Framework.ReactNative,
 };
-if (typeof navigator !== 'undefined' && navigator.product) {
-	Platform.product = navigator.product || '';
-	Platform.navigator = navigator || null;
-	if (navigator.product === 'ReactNative') {
-		Platform.isReactNative = true;
-	}
-}
 
 export const getAmplifyUserAgent = (
 	customUserAgent?: CustomUserAgent
@@ -37,7 +30,7 @@ const buildUserAgent = (customUserAgent?: CustomUserAgent): AWSUserAgent => {
 	if (customUserAgent?.framework) {
 		userAgent.push(['framework', customUserAgent.framework]);
 	} else {
-		userAgent.push(['framework', detectFramework()]);
+		userAgent.push(['framework', Platform.framework]);
 	}
 
 	return userAgent;
