@@ -14,13 +14,7 @@ export const Platform = {
 	isReactNative: framework === Framework.ReactNative,
 };
 
-export const getAmplifyUserAgent = (
-	customUserAgent?: CustomUserAgent
-): AWSUserAgent => {
-	return buildUserAgent(customUserAgent);
-};
-
-const buildUserAgent = ({
+const getAmplifyUserAgent = ({
 	category,
 	framework,
 }: CustomUserAgent = {}): AWSUserAgent => {
@@ -37,7 +31,7 @@ const buildUserAgent = ({
 export const getAmplifyUserAgentString = (
 	customUserAgent?: CustomUserAgent
 ): string => {
-	const userAgent = buildUserAgent(customUserAgent);
+	const userAgent = getAmplifyUserAgent(customUserAgent);
 	const userAgentDetailsString = userAgent
 		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue ?? ''}`)
 		.join(' ');
