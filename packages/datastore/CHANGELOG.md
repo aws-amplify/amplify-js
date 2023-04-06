@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.6...@aws-amplify/datastore@4.1.7) (2023-04-06)
+
+
+### Bug Fixes
+
+* **data:** fix `establishRelationAndKeys` util to not attempt to add duplicate indices for `belongsTo` relationships ([#11187](https://github.com/aws-amplify/amplify-js/issues/11187)) ([#11192](https://github.com/aws-amplify/amplify-js/issues/11192)) ([a9bd459](https://github.com/aws-amplify/amplify-js/commit/a9bd459b6b0d4c4307e10da0a8be39b13c3763f0))
+* query on null fields to not throw error ([#11185](https://github.com/aws-amplify/amplify-js/issues/11185)) ([b0b9b5b](https://github.com/aws-amplify/amplify-js/commit/b0b9b5bddf95fd17ed457ecda4b2f80e19d2e10e))
+* **@aws-amplify/datastore:** Remove extra null fields on create mutations ([#11171](https://github.com/aws-amplify/amplify-js/issues/11171)) ([33810b1](https://github.com/aws-amplify/amplify-js/commit/33810b10b723711fb722dd34e4068cce3e3001cf))
+
+
+
+
+
 ## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.5...@aws-amplify/datastore@4.1.6) (2023-04-04)
 
 
