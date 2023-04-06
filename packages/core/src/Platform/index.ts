@@ -29,12 +29,7 @@ const buildUserAgent = ({
 		/** TODO: add action as second element */
 		userAgent.push([category, undefined]);
 	}
-
-	if (framework) {
-		userAgent.push(['framework', framework]);
-	} else {
-		userAgent.push(['framework', Platform.framework]);
-	}
+	userAgent.push(['framework', framework ? framework : Platform.framework]);
 
 	return userAgent;
 };
