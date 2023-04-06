@@ -12,11 +12,11 @@ describe(`${retry.name} middleware`, () => {
 
 	const defaultRetryOptions = {
 		retryDecider: () => true,
-		backOffStrategy: { computeDelay: () => 1 },
+		computeDelay: () => 1,
 	};
 	const defaultRequest = { url: new URL('https://a.b') };
 	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<any, any, any, [RetryOptions]>(nextHandler, [retry]);
+		composeTransferHandler<[RetryOptions]>(nextHandler, [retry]);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue('foo');
@@ -49,6 +49,7 @@ describe(`${retry.name} middleware`, () => {
 		expect(retryDecider).toBeCalledTimes(1);
 		expect(resp).toEqual('foo');
 	});
+
 	test('should call retry decider on whether error is retryable', async () => {
 		const nextHandler = jest
 			.fn()
@@ -74,23 +75,21 @@ describe(`${retry.name} middleware`, () => {
 		expect.assertions(4);
 	});
 
-	test('should call backoff strategy for intervals', async () => {
+	test('should call computeDelay for intervals', async () => {
 		const nextHandler = jest.fn().mockResolvedValue('foo');
 		const retryableHandler = getRetryableHandler(nextHandler);
-		const backOffStrategy = {
-			computeDelay: jest.fn().mockImplementation(retry => retry * 100),
-		};
+		const computeDelay = jest.fn().mockImplementation(retry => retry * 100);
 		try {
 			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				maxAttempts: 6,
-				backOffStrategy,
+				computeDelay,
 			});
 			fail('this test should fail');
 		} catch (error) {
 			expect(error.message).toBe('Retry attempts exhausted');
 			expect(nextHandler).toBeCalledTimes(6);
-			expect(backOffStrategy.computeDelay).toBeCalledTimes(5); // no interval after last attempt
+			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
 		}
 		expect.assertions(3);
 	});
@@ -119,19 +118,17 @@ describe(`${retry.name} middleware`, () => {
 		const retryableHandler = getRetryableHandler(nextHandler);
 		const controller = new AbortController();
 		const retryDecider = () => true;
-		const backOffStrategy = {
-			computeDelay: jest.fn().mockImplementation(attempt => {
-				if (attempt === 1) {
-					setTimeout(() => controller.abort(), 100);
-				}
-				return 200;
-			}),
-		};
+		const computeDelay = jest.fn().mockImplementation(attempt => {
+			if (attempt === 1) {
+				setTimeout(() => controller.abort(), 100);
+			}
+			return 200;
+		});
 		try {
 			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				abortSignal: controller.signal,
-				backOffStrategy,
+				computeDelay,
 				retryDecider,
 			});
 			fail('this test should fail');
@@ -141,8 +138,8 @@ describe(`${retry.name} middleware`, () => {
 			expect(clearTimeout).toBeCalledTimes(1); // cancel 2nd attempt
 		}
 	});
-	test('track attempts count in context across 2 retry middleware', async () => {
-		// middleware after 2nd retry middleware;
+
+	test('should support 2 retry middleware tracking the same retry count', async () => {
 		const coreHandler = jest
 			.fn()
 			.mockRejectedValueOnce(new Error('CoreRetryableError'))
@@ -158,9 +155,6 @@ describe(`${retry.name} middleware`, () => {
 			};
 
 		const doubleRetryableHandler = composeTransferHandler<
-			any,
-			any,
-			any,
 			[RetryOptions, {}, RetryOptions]
 		>(coreHandler, [retry, betweenRetryMiddleware, retry]);
 
@@ -170,21 +164,19 @@ describe(`${retry.name} middleware`, () => {
 				if (error && error.message.endsWith('RetryableError')) return true;
 				return false;
 			});
-		const backOffStrategy = {
-			computeDelay: jest.fn().mockReturnValue(0),
-		};
+		const computeDelay = jest.fn().mockReturnValue(0);
 		const response = await doubleRetryableHandler(defaultRequest, {
 			...defaultRetryOptions,
 			retryDecider,
-			backOffStrategy,
+			computeDelay,
 		});
 
 		expect(response).toEqual('foo');
 		expect(coreHandler).toBeCalledTimes(2);
 		expect(betweenRetryFunction).toBeCalledTimes(2);
 		expect(retryDecider).toBeCalledTimes(4);
-		// backOffStrategy is called regardless whether from different retry middleware.
-		expect(backOffStrategy.computeDelay).toHaveBeenNthCalledWith(1, 1);
-		expect(backOffStrategy.computeDelay).toHaveBeenNthCalledWith(2, 2);
+		// computeDelay is called by 2 retry middleware with continuous attempts count.
+		expect(computeDelay).toHaveBeenNthCalledWith(1, 1);
+		expect(computeDelay).toHaveBeenNthCalledWith(2, 2);
 	});
 });

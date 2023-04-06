@@ -12,11 +12,7 @@ describe(composeTransferHandler.name, () => {
 		const coreHandler: TransferHandler<Request, Response, HandlerOptions> = jest
 			.fn()
 			.mockResolvedValue({ body: 'Response' } as Response);
-		const handler = composeTransferHandler<
-			Request,
-			Response,
-			TransferHandler<Request, Response, HandlerOptions>
-		>(coreHandler, []);
+		const handler = composeTransferHandler(coreHandler, []);
 		const resp = await handler({ url: new URL('https://a.b') }, { foo: 'bar' });
 		expect(resp).toEqual({ body: 'Response' });
 		expect(coreHandler).toBeCalledWith(
@@ -46,12 +42,10 @@ describe(composeTransferHandler.name, () => {
 		const coreHandler: TransferHandler<Request, Response, {}> = jest
 			.fn()
 			.mockResolvedValue({ body: '' } as Response);
-		const handler = composeTransferHandler<
-			Request,
-			Response,
-			TransferHandler<Request, Response, {}>,
-			[OptionsType, OptionsType]
-		>(coreHandler, [middlewareA, middlewareB]);
+		const handler = composeTransferHandler<[OptionsType, OptionsType]>(
+			coreHandler,
+			[middlewareA, middlewareB]
+		);
 		const options = {
 			mockFnInOptions: jest.fn(),
 		};

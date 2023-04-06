@@ -16,10 +16,14 @@ import {
  */
 export const composeTransferHandler =
 	<
-		Request extends RequestBase,
-		Response extends ResponseBase,
-		CoreHandler extends TransferHandler<Request, Response, any>,
-		MiddlewareOptionsArr extends any[] = []
+		MiddlewareOptionsArr extends any[] = [],
+		Request extends RequestBase = RequestBase,
+		Response extends ResponseBase = ResponseBase,
+		CoreHandler extends TransferHandler<
+			Request,
+			Response,
+			any
+		> = TransferHandler<Request, Response, {}>
 	>(
 		coreHandler: CoreHandler,
 		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
@@ -61,23 +65,6 @@ type OptionToMiddleware<
 	: never;
 
 /**
- * Type to merge two types to validate if 2 types have no conflict keys.
- */
-type EnsureNoConflictKeys<T, U> = Pick<U, keyof T & keyof U> extends Pick<
-	T,
-	keyof T & keyof U
->
-	? true
-	: false;
-
-/**
- * Type to intersect two types if they have no conflict keys.
- */
-type MergeTwoNoConflictKeys<T, U> = EnsureNoConflictKeys<T, U> extends true
-	? T & U
-	: never;
-
-/**
  * Type to intersect multiple types if they have no conflict keys.
  */
 type MergeNoConflictKeys<Options extends any[]> = Options extends [
@@ -85,9 +72,9 @@ type MergeNoConflictKeys<Options extends any[]> = Options extends [
 ]
 	? OnlyOption
 	: Options extends [infer FirstOption, infer SecondOption]
-	? MergeTwoNoConflictKeys<FirstOption, SecondOption>
+	? FirstOption & SecondOption
 	: Options extends [infer FirstOption, ...infer RestOptions]
-	? MergeTwoNoConflictKeys<FirstOption, MergeNoConflictKeys<RestOptions>>
+	? FirstOption & MergeNoConflictKeys<RestOptions>
 	: never;
 
 /**

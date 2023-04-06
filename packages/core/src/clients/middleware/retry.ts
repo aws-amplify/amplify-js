@@ -6,7 +6,6 @@ import {
 } from '../types/core';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
-const CONTEXT_KEY_RETRY_COUNT = 'attemptsCount';
 
 /**
  * Configuration of the retry middleware
@@ -21,17 +20,12 @@ export interface RetryOptions {
 	 */
 	retryDecider: (response: Response, error?: unknown) => boolean;
 	/**
-	 * Strategy to compute the delay before the next retry.
+	 * Function to compute the delay in milliseconds before the next retry based
+	 * on the number of attempts.
+	 * @param attempt Current number of attempts, including the first attempt.
+	 * @returns Delay in milliseconds.
 	 */
-	backOffStrategy: {
-		/**
-		 * Function to compute the delay in milliseconds before the next retry based
-		 * on the number of attempts.
-		 * @param attempt Current number of attempts, including the first attempt.
-		 * @returns Delay in milliseconds.
-		 */
-		computeDelay: (attempt: number) => number;
-	};
+	computeDelay: (attempt: number) => number;
 	/**
 	 * Maximum number of retry attempts, starting from 1. Defaults to 3.
 	 */
@@ -56,11 +50,11 @@ export const retry =
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
-				backOffStrategy,
+				computeDelay,
 				abortSignal,
 			} = options;
 			let error = undefined;
-			let attemptsCount = (context[CONTEXT_KEY_RETRY_COUNT] as number) ?? 0;
+			let attemptsCount = context.attemptsCount ?? 0;
 			let response;
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				error = undefined;
@@ -74,10 +68,10 @@ export const retry =
 					attemptsCount += 1;
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
-						const delay = backOffStrategy.computeDelay(attemptsCount);
+						const delay = computeDelay(attemptsCount);
 						await cancellableSleep(delay, abortSignal);
 					}
-					context[CONTEXT_KEY_RETRY_COUNT] = attemptsCount;
+					context.attemptsCount = attemptsCount;
 					continue;
 				} else if (response) {
 					return response;

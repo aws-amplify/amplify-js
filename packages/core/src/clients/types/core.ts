@@ -26,7 +26,12 @@ export type MiddlewareHandler<
 	Output extends Response
 > = (request: Input) => Promise<Output>;
 
-export type MiddlewareContext = Record<string, unknown>;
+export type MiddlewareContext = {
+	/**
+	 * The number of times the request has been attempted. This is set by retry middleware
+	 */
+	attemptsCount?: number;
+};
 
 /**
  * A slimmed down version of the AWS SDK v3 middleware, only handling tasks after Serde.
