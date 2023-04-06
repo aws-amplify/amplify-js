@@ -10,6 +10,9 @@ export function invalidParameter(name: string) {
 	return new Error('Invalid parameter value of ' + name);
 }
 
+export enum AmplifyErrorString {
+	UNKNOWN = 'UnknownError',
+}
 export class AmplifyError extends Error {
 	underlyingError?: Error | unknown;
 	recoverySuggestion?: string;

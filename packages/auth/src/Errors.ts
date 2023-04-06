@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO: delete this module when the Auth class is removed.
+
 import { AuthErrorMessages, AuthErrorTypes } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AuthErrorStrings } from './common/AuthErrorStrings';

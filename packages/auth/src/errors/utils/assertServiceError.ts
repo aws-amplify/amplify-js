@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ServiceError } from '@aws-amplify/core/src/types/types';
 import { AuthError } from '../AuthError';
-import { UnknownError } from '../../common/AuthErrorStrings';
+import { AmplifyErrorString, ServiceError } from '@aws-amplify/core';
 
 export function assertServiceError(
 	error: unknown
@@ -14,7 +13,7 @@ export function assertServiceError(
 		!((error as ServiceError).name && (error as ServiceError).message)
 	) {
 		throw new AuthError({
-			name: UnknownError,
+			name: AmplifyErrorString.UNKNOWN,
 			message: 'An unknown error has ocurred.',
 			underlyingError: error,
 		});

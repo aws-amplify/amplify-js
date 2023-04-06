@@ -43,8 +43,7 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	},
 };
 
-export const UnknownError = 'UnknownError';
-
+// TODO: delete this code when the Auth class is removed.
 export enum AuthErrorStrings {
 	DEFAULT_MSG = 'Authentication Error',
 	EMPTY_EMAIL = 'Email cannot be empty',

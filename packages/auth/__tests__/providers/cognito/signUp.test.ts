@@ -3,13 +3,13 @@
 
 import { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { signUp } from '../../../src/providers/cognito';
-import { AuthSignUpStep, SignUpRequest } from '../../../src/types';
+import { AuthSignUpStep } from '../../../src/types';
 import * as signUpClient from '../../../src/providers/cognito/utils/clients/SignUpClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors/service';
-import { UnknownError } from '../../../src/common/AuthErrorStrings';
+import { AmplifyErrorString } from '@aws-amplify/core';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
@@ -110,7 +110,7 @@ describe('SignUp API Error Path Cases:', () => {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(UnknownError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBeInstanceOf(Error);
 		}
 	});
@@ -126,7 +126,7 @@ describe('SignUp API Error Path Cases:', () => {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(UnknownError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBe(null);
 		}
 	});
