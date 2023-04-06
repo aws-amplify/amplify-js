@@ -14,7 +14,7 @@ export const Platform = {
 	isReactNative: framework === Framework.ReactNative,
 };
 
-const getAmplifyUserAgent = ({
+export const getAmplifyUserAgent = ({
 	category,
 	framework,
 }: CustomUserAgent = {}): AWSUserAgent => {
