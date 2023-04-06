@@ -81,7 +81,7 @@ describe('Jittered backoff', () => {
 describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
 
-	beforeAll(async () => {
+	beforeEach(async () => {
 		mutationProcessor = await instantiateMutationProcessor();
 	});
 
@@ -181,6 +181,26 @@ describe('MutationProcessor', () => {
 			);
 		});
 	});
+
+	it('unauthorized hub event', async () => {
+		jest.spyOn(mutationProcessor, 'resume');
+
+		mockRetry.mockImplementationOnce(() =>
+			Promise.reject({ message: 'Request failed with status code 401' })
+		);
+
+		await mutationProcessor.resume();
+		expect(hubDispatchMock).toBeCalledWith('datastore', {
+			event: 'mutationError',
+			data: {
+				errorType: 'Unauthorized',
+				authModes: ['API_KEY'],
+				errors: [{ message: 'Request failed with status code 401' }],
+				model: Model,
+			},
+		});
+	});
+
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -313,13 +333,19 @@ jest.mock('@aws-amplify/api', () => {
 // endlessly in the mutation processor and so that we can expect the thrown result in our test
 // should throw a Network Error
 let mockRetry;
+let hubDispatchMock;
 jest.mock('@aws-amplify/core', () => {
 	mockRetry = jest.fn().mockImplementation(async (fn, args) => {
 		await fn(...args);
 	});
+	hubDispatchMock = jest.fn();
 	return {
 		...jest.requireActual('@aws-amplify/core'),
 		retry: mockRetry,
+		Hub: {
+			dispatch: hubDispatchMock,
+			listen: jest.fn(),
+		},
 	};
 });
 

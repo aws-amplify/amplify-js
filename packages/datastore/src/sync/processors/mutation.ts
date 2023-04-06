@@ -242,7 +242,7 @@ class MutationProcessor {
 										data: {
 											errorType: 'Unauthorized',
 											errors: authModeErrors,
-											model: modelDefinition,
+											model: modelConstructor,
 											authModes: operationAuthModes,
 										},
 									});
@@ -364,9 +364,7 @@ class MutationProcessor {
 							const [error] = err.errors;
 							const { originalError: { code = null } = {} } = error;
 
-							const clientOrForbiddenErrorMessage =
-								getClientSideAuthError(error) || getForbiddenError(error);
-							if (clientOrForbiddenErrorMessage) {
+							if (error.errorType === 'Unauthorized') {
 								throw new NonRetryableError('Unauthorized');
 							}
 
