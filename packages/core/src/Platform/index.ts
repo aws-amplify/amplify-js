@@ -20,15 +20,18 @@ export const getAmplifyUserAgent = (
 	return buildUserAgent(customUserAgent);
 };
 
-const buildUserAgent = (customUserAgent?: CustomUserAgent): AWSUserAgent => {
+const buildUserAgent = ({
+	category,
+	framework,
+}: CustomUserAgent = {}): AWSUserAgent => {
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
-	if (customUserAgent?.category) {
+	if (category) {
 		/** TODO: add action as second element */
-		userAgent.push([customUserAgent.category, undefined]);
+		userAgent.push([category, undefined]);
 	}
 
-	if (customUserAgent?.framework) {
-		userAgent.push(['framework', customUserAgent.framework]);
+	if (framework) {
+		userAgent.push(['framework', framework]);
 	} else {
 		userAgent.push(['framework', Platform.framework]);
 	}
