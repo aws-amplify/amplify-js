@@ -32,7 +32,8 @@ import { SignUpException } from '../types/errors/service';
  * @param signUpRequest - The SignUpRequest object
  * @returns AuthSignUpResult
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password are not defined.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
  *
  *
  * TODO: add config errors

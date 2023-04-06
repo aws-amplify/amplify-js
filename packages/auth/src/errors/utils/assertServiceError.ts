@@ -3,16 +3,18 @@
 
 import { ServiceError } from '@aws-amplify/core/src/types/types';
 import { AuthError } from '../AuthError';
+import { UnknownError } from '../../common/AuthErrorStrings';
 
 export function assertServiceError(
 	error: unknown
 ): asserts error is ServiceError {
 	if (
 		!error ||
+		(error as ServiceError).name === Error.name ||
 		!((error as ServiceError).name && (error as ServiceError).message)
 	) {
 		throw new AuthError({
-			name: 'UnknownError',
+			name: UnknownError,
 			message: 'An unknown error has ocurred.',
 			underlyingError: error,
 		});

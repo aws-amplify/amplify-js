@@ -43,6 +43,8 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	},
 };
 
+export const UnknownError = 'UnknownError';
+
 export enum AuthErrorStrings {
 	DEFAULT_MSG = 'Authentication Error',
 	EMPTY_EMAIL = 'Email cannot be empty',
