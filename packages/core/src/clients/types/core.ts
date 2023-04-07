@@ -23,11 +23,15 @@ export interface TransferHandler<
  */
 export type MiddlewareHandler<
 	Input extends Request,
-	Output extends Response,
-	MiddlewareOptions
-> = (request: Input, options: MiddlewareOptions) => Promise<Output>;
+	Output extends Response
+> = (request: Input) => Promise<Output>;
 
-export type MiddlewareContext = Record<string, unknown>;
+export type MiddlewareContext = {
+	/**
+	 * The number of times the request has been attempted. This is set by retry middleware
+	 */
+	attemptsCount?: number;
+};
 
 /**
  * A slimmed down version of the AWS SDK v3 middleware, only handling tasks after Serde.
@@ -37,6 +41,8 @@ export type Middleware<
 	Output extends Response,
 	MiddlewareOptions
 > = (
-	next: MiddlewareHandler<Input, Output, MiddlewareOptions>,
+	options: MiddlewareOptions
+) => (
+	next: MiddlewareHandler<Input, Output>,
 	context: MiddlewareContext
-) => MiddlewareHandler<Input, Output, MiddlewareOptions>;
+) => MiddlewareHandler<Input, Output>;
