@@ -398,6 +398,8 @@ export async function expectIsolation(
 /**
  * Watches Hub events until an outBoxStatus with isEmpty is received.
  *
+ * NOTICE: If the outbox is *already* empty, this will not resolve.
+ *
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForEmptyOutbox(verbose = false) {
@@ -420,6 +422,8 @@ export async function waitForEmptyOutbox(verbose = false) {
 /**
  * Watches Hub events until ready event is received
  *
+ * NOTICE: If DataStore is *already* ready, this will not resolve.
+ *
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForDataStoreReady(verbose = false) {
@@ -438,6 +442,8 @@ export async function waitForDataStoreReady(verbose = false) {
 
 /**
  * Watches Hub events until syncQueriesReady is received
+ *
+ * NOTICE: If sync queries have already completed, this will not resolve.
  *
  * @param verbose Whether to log hub events until empty
  */

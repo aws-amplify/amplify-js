@@ -845,12 +845,20 @@ export class SyncEngine {
 		 * (Whereas `stop()` does.)
 		 */
 
+		console.log('sync stop a');
+
 		await this.mutationsProcessor.stop();
+		console.log('sync stop b');
 		await this.subscriptionsProcessor.stop();
+		console.log('sync stop c');
 		await this.datastoreConnectivity.stop();
+		console.log('sync stop d');
 		await this.syncQueriesProcessor.stop();
+		console.log('sync stop e');
 		await this.runningProcesses.close();
+		console.log('sync stop f');
 		await this.runningProcesses.open();
+		console.log('sync stop g');
 
 		logger.debug('sync engine stopped and ready to restart');
 	}
@@ -1109,6 +1117,7 @@ export class SyncEngine {
 
 					case ConnectionState.Connected:
 						if (this.connectionDisrupted) {
+							console.log('startDisruptionListener scheduling sync');
 							this.scheduleSync();
 						}
 						this.connectionDisrupted = false;
@@ -1122,10 +1131,15 @@ export class SyncEngine {
 	 * Schedule a sync to start when syncQueriesObservable enters sleep state
 	 * Start sync immediately if syncQueriesObservable is already in sleep state
 	 */
-	private scheduleSync(): Promise<void> {
-		return this.waitForSleepState.then(() => {
-			// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
-			this.unsleepSyncQueriesObservable!();
-		});
+	private scheduleSync() {
+		return (
+			this.runningProcesses.isOpen &&
+			this.runningProcesses.add(() =>
+				this.waitForSleepState.then(() => {
+					// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
+					this.unsleepSyncQueriesObservable!();
+				})
+			)
+		);
 	}
 }

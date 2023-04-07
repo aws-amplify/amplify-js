@@ -126,6 +126,8 @@ class SyncProcessor {
 				);
 			}
 
+			modelDefinition.name === 'Comment' && console.log('trying Comment');
+
 			try {
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
@@ -143,6 +145,8 @@ class SyncProcessor {
 				);
 				return response;
 			} catch (error) {
+				modelDefinition.name === 'Comment' &&
+					console.log('Comment error', error);
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -312,9 +316,18 @@ class SyncProcessor {
 		);
 	}
 
+	private startcount = 0;
+
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
+		this.startcount++;
+		try {
+			if (this.startcount == 2) throw new Error('ha!');
+		} catch (e) {
+			console.error(e);
+		}
+		console.log('sync.ts start!!!');
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
@@ -337,6 +350,8 @@ class SyncProcessor {
 					([modelDefinition, [namespace, lastSync]]) =>
 						this.runningProcesses.isOpen &&
 						this.runningProcesses.add(async onTerminate => {
+							modelDefinition.name === 'Comment' &&
+								console.log(`starting adding model ${modelDefinition.name}`);
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -356,15 +371,19 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
+									modelDefinition.name === 'Comment' && console.log('ping');
 									if (!this.runningProcesses.isOpen) {
 										return;
 									}
+
+									modelDefinition.name === 'Comment' && console.log('pang');
 
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
 										syncPageSize
 									);
 
+									// TODO: Why are we getting lost in here!!!
 									({ items, nextToken, startedAt } = await this.retrievePage(
 										modelDefinition,
 										lastSync,
@@ -373,6 +392,8 @@ class SyncProcessor {
 										filter,
 										onTerminate
 									));
+
+									modelDefinition.name === 'Comment' && console.log('pongo!');
 
 									recordsReceived += items.length;
 
@@ -387,6 +408,7 @@ class SyncProcessor {
 										startedAt,
 										isFullSync: !lastSync,
 									});
+									modelDefinition.name === 'Comment' && console.log('pong');
 								} while (!done);
 
 								res();
@@ -397,7 +419,13 @@ class SyncProcessor {
 								promise
 							);
 
+							modelDefinition.name === 'Comment' &&
+								console.log(
+									`awaitting promise adding model ${modelDefinition.name}`
+								);
 							await promise;
+							modelDefinition.name === 'Comment' &&
+								console.log(`done adding model ${modelDefinition.name}`);
 						}, `adding model ${modelDefinition.name}`)
 				);
 
@@ -411,7 +439,9 @@ class SyncProcessor {
 
 	async stop() {
 		logger.debug('stopping sync processor');
+		console.log('sync.ts stop running procs', this.runningProcesses);
 		await this.runningProcesses.close();
+		console.log('sync.ts stop middle');
 		await this.runningProcesses.open();
 		logger.debug('sync processor stopped');
 	}

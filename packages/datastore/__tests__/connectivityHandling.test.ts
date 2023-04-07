@@ -87,8 +87,10 @@ describe('DataStore sync engine', () => {
 	});
 
 	afterEach(async () => {
+		console.log('after each outer top');
 		await DataStore.clear();
 		console.warn = (console as any)._warn;
+		console.log('after each outer bottom');
 	});
 
 	describe('basic protocol', () => {
@@ -570,6 +572,7 @@ describe('DataStore sync engine', () => {
 
 		afterEach(async () => {
 			unwarpTime();
+			console.log('after each completed');
 		});
 
 		test('survives online -> offline -> online cycle', async () => {
@@ -735,7 +738,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost._deleted).toEqual(true);
 		});
 
-		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+		test('survives online -> connection disruption -> online cycle and triggers re-sync', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -773,7 +776,8 @@ describe('DataStore sync engine', () => {
 
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
-			await pause(1);
+			await pause(100);
+
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
@@ -809,26 +813,46 @@ describe('DataStore sync engine', () => {
 			expect(cloudThirdPost.title).toEqual('a title 3');
 		});
 
-		test('does not error when disruption before sync queries start', async () => {
-			const post = DataStore.save(
+		test.only('does not error when disruption before sync queries start', async () => {
+			console.time('abc');
+			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
 			);
 			const errorLog = jest.spyOn(console, 'error');
+
+			console.log('a');
 			await simulateDisruption();
+
+			console.log('b');
 			await simulateDisruptionEnd();
+
+			console.log('c');
 			await waitForSyncQueriesReady();
+
+			console.log('d');
+
 			expect(errorLog).not.toHaveBeenCalledWith(
 				expect.stringMatching(new RegExp('[ERROR].* Hub')),
 				expect.anything()
 			);
+
+			console.log('e');
+			// graphqlService.log = (...all) => console.log(...all);
 			await waitForEmptyOutbox();
+
+			console.log('f');
+
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
-			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			const cloudPost = table.get(
+				JSON.stringify([(await postPromise).id])
+			) as any;
 			expect(cloudPost.title).toEqual('a title');
+
+			console.log('all done?', table, cloudPost);
 		});
 	});
 
