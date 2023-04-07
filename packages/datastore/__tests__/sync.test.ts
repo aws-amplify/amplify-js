@@ -47,13 +47,13 @@ const defaultModelDefinition = { name: 'Post' };
 const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
 describe('Sync', () => {
-	describe('jitteredRetry', () => {
-		beforeEach(() => {
-			window.sessionStorage.clear();
-			jest.resetModules();
-			jest.resetAllMocks();
-		});
+	beforeEach(() => {
+		window.sessionStorage.clear();
+		jest.resetModules();
+		jest.resetAllMocks();
+	});
 
+	describe('jitteredRetry', () => {
 		it('should return all data', async () => {
 			const resolveResponse = {
 				data: {
