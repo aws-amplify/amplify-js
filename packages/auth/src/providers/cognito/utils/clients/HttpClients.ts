@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type {
+	ForgotPasswordCommandInput,
+	ForgotPasswordCommandOutput,
 	SignUpCommandInput,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 const USER_AGENT = 'amplify test';
 
-export type ClientInputs = SignUpCommandInput;
-export type ClientOutputs = SignUpCommandOutput;
-export type ClientOperations = 'SignUp' | 'ConfirmSignUp';
+export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput;
+export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput;
+export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
@@ -27,7 +29,7 @@ export class UserPoolHttpClient {
 	async send<T extends ClientOutputs>(
 		operation: ClientOperations,
 		input: ClientInputs
-	): Promise<ClientOutputs> {
+	): Promise<T> {
 		const headers = {
 			...this._headers,
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
