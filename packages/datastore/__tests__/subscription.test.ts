@@ -681,7 +681,7 @@ describe('error handler and hub', () => {
 		});
 	}, 500);
 
-	test.only('unauthorized hub event', done => {
+	test('unauthorized hub event', done => {
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
 		mockObservable = new Observable(observer => {
 			observer.error({
