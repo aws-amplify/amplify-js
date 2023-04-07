@@ -3,7 +3,7 @@ jest.mock('isomorphic-unfetch', () => {
 	global['fetch'] = mockUnfetch;
 });
 
-import { fetchTransferHandler } from '../../src/clients/fetch';
+import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
 
 describe(fetchTransferHandler.name, () => {
 	const mockBody = {

@@ -1,6 +1,6 @@
 import 'isomorphic-unfetch'; // TODO: remove this dependency in v6
-import { HttpRequest, HttpResponse, HttpTransferOptions } from './types/http';
-import { TransferHandler } from './types/core';
+import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
+import { TransferHandler } from '../types/core';
 
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
