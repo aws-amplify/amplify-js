@@ -297,7 +297,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider<MqttProviderOptio
 			const parsedMessage: PubSubContent = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
-				parsedMessage.topicSymbol = topic;
+				// @ts-ignore
+				parsedMessage[topicSymbol] = topic;
 			}
 
 			matchedTopicObservers.forEach(observersForTopic => {

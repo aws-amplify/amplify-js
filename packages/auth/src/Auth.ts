@@ -159,9 +159,10 @@ export class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
+			storage,
 		} = this._config;
 
-		if (!this._config.storage) {
+		if (!storage) {
 			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
@@ -170,11 +171,11 @@ export class AuthClass {
 					: new StorageHelper().getStorage();
 			}
 		} else {
-			if (!this._isValidAuthStorage(this._config.storage)) {
+			if (!this._isValidAuthStorage(storage)) {
 				logger.error('The storage in the Auth config is not valid!');
 				throw new Error('Empty storage object');
 			}
-			this._storage = this._config.storage;
+			this._storage = storage;
 		}
 
 		this._storageSync = Promise.resolve();

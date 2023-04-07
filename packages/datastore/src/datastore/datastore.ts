@@ -98,6 +98,7 @@ import {
 	isIdManaged,
 	isIdOptionallyManaged,
 	mergePatches,
+	getTimestampFields,
 } from '../util';
 import {
 	recursivePredicateFor,
@@ -160,39 +161,6 @@ const getModelDefinition = (
 		: undefined;
 
 	return definition;
-};
-
-/**
- * Determine what the managed timestamp field names are for the given model definition
- * and return the mapping.
- *
- * All timestamp fields are included in the mapping, regardless of whether the final field
- * names are the defaults or customized in the `@model` directive.
- *
- * @see https://docs.amplify.aws/cli/graphql/data-modeling/#customize-creation-and-update-timestamps
- *
- * @param definition modelDefinition to inspect.
- * @returns An object mapping `createdAt` and `updatedAt` to their field names.
- */
-const getTimestampFields = (
-	definition: SchemaModel
-): { createdAt: string; updatedAt: string } => {
-	const modelAttributes = definition.attributes?.find(
-		attr => attr.type === 'model'
-	);
-	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
-
-	const defaultFields = {
-		createdAt: 'createdAt',
-		updatedAt: 'updatedAt',
-	};
-
-	const customFields = timestampFieldsMap || {};
-
-	return {
-		...defaultFields,
-		...customFields,
-	};
 };
 
 /**
@@ -784,6 +752,13 @@ const castInstanceType = (
 };
 
 /**
+ * Records the patches (as if against an empty object) used to initialize
+ * an instance of a Model. This can be used for determining which fields to
+ * send to the cloud durnig a CREATE mutation.
+ */
+const initPatches = new WeakMap<PersistentModel, Patch[]>();
+
+/**
  * Attempts to apply type-aware, casted field values from a given `init`
  * object to the given `draft`.
  *
@@ -838,7 +813,11 @@ const createModelClass = <T extends PersistentModel>(
 ) => {
 	const clazz = <PersistentModelConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
-			const instance = produce(
+			// we create a base instance first so we can distinguish which fields were explicitly
+			// set by customer code versus those set by normalization. only those fields
+			// which are explicitly set by customers should be part of create mutations.
+			let patches: Patch[] = [];
+			const baseInstance = produce(
 				this,
 				(draft: Draft<T & ModelInstanceMetadata>) => {
 					initializeInstance(init, modelDefinition, draft);
@@ -882,12 +861,24 @@ const createModelClass = <T extends PersistentModel>(
 						draft._lastChangedAt = _lastChangedAt;
 						draft._deleted = _deleted;
 					}
-
-					normalize(modelDefinition, draft);
-				}
+				},
+				p => (patches = p)
 			);
 
-			return instance;
+			// now that we have a list of patches that encapsulate the explicit, customer-provided
+			// fields, we can normalize. patches from normalization are ignored, because the changes
+			// are only create to provide a consistent view of the data for fields pre/post sync
+			// where possible. (not all fields can be normalized pre-sync, because they're generally
+			// "cloud managed" fields, like createdAt and updatedAt.)
+			const normalized = produce(
+				baseInstance,
+				(draft: Draft<T & ModelInstanceMetadata>) =>
+					normalize(modelDefinition, draft)
+			);
+
+			initPatches.set(normalized, patches);
+
+			return normalized;
 		}
 
 		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
@@ -945,6 +936,14 @@ const createModelClass = <T extends PersistentModel>(
 					modelPatchesMap.set(model, [patches, source]);
 					checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
 				}
+			} else {
+				// always register patches when performing a copyOf, even if the
+				// patches list is empty. this allows `save()` to recognize when an
+				// instance is the result of a `copyOf()`. without more significant
+				// refactoring, this is the only way for `save()` to know which
+				// diffs (patches) are relevant for `storage` to use in building
+				// the list of "changed" fields for mutations.
+				modelPatchesMap.set(model, [[], source]);
 			}
 
 			return attached(model, ModelAttachment.DataStore);
@@ -1743,7 +1742,24 @@ class DataStore {
 
 				// Immer patches for constructing a correct update mutation input
 				// Allows us to only include changed fields for updates
-				const patchesTuple = modelPatchesMap.get(model);
+				const updatedPatchesTuple = modelPatchesMap.get(model);
+
+				// Immer patches for initial object construction. These are used if
+				// there are no `update` patches under the assumption we're performing
+				// a CREATE and wish to send only explicitly specified fields to the cloud.
+				const initPatchesTuple = initPatches.has(model)
+					? ([initPatches.get(model)!, {}] as [
+							Patch[],
+							Readonly<Record<string, any>>
+					  ])
+					: undefined;
+
+				// favor update patches over init/create patches, because init patches
+				// are ALWAYS present, whereas update patches are only present if copyOf
+				// was used to create the instance.
+				const patchesTuple:
+					| [Patch[], Readonly<Record<string, any>>]
+					| undefined = updatedPatchesTuple || initPatchesTuple;
 
 				const modelConstructor: PersistentModelConstructor<T> | undefined =
 					model ? <PersistentModelConstructor<T>>model.constructor : undefined;
@@ -2330,10 +2346,6 @@ class DataStore {
 					...Array.from(itemsChanged.values()),
 				];
 
-				if (options?.sort) {
-					sortItems(itemsArray);
-				}
-
 				items.clear();
 				itemsArray.forEach(item => {
 					const itemModelDefinition = getModelDefinition(model);
@@ -2344,8 +2356,16 @@ class DataStore {
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(idOrPk => items.delete(idOrPk));
 
+				const snapshot = Array.from(items.values());
+
+				// we sort after we merge the snapshots (items, itemsChanged)
+				// otherwise, the merge may not
+				if (options?.sort) {
+					sortItems(snapshot);
+				}
+
 				return {
-					items: Array.from(items.values()),
+					items: snapshot,
 					isSynced,
 				};
 			};
