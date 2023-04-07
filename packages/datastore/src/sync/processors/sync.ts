@@ -128,7 +128,6 @@ class SyncProcessor {
 			}
 
 			try {
-				console.log('here');
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
 				);
