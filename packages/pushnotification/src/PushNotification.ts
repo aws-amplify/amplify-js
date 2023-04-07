@@ -19,7 +19,7 @@ const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
 const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 
 /**
- * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+ * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
  * instructions on how to migrate to a new version of Amplify Push Notifications.
  *
  * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -33,7 +33,7 @@ export default class PushNotification {
 	private _notificationOpenedHandlers: Function[];
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -59,7 +59,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -69,7 +69,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -105,7 +105,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -122,7 +122,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -137,7 +137,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -154,7 +154,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -189,7 +189,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -204,7 +204,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -214,7 +214,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -239,7 +239,7 @@ export default class PushNotification {
 	 * And checks if the app was launched by a Push Notification
 	 * Note: Current AppState will be null or 'unknown' if the app is coming from killed state to active
 	 * @param nextAppState The next state the app is changing to as part of the event
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -268,7 +268,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -316,7 +316,7 @@ export default class PushNotification {
 	};
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -357,7 +357,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -394,7 +394,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -442,7 +442,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -468,7 +468,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -491,7 +491,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
@@ -536,7 +536,7 @@ export default class PushNotification {
 	}
 
 	/**
-	 * @deprecated This package (@aws-sdk/pushnotifications) is on a deprecation path. Please see the following link for
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
 	 * instructions on how to migrate to a new version of Amplify Push Notifications.
 	 *
 	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
