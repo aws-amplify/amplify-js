@@ -365,8 +365,7 @@ class MutationProcessor {
 							const { originalError: { code = null } = {} } = error;
 
 							if (
-								getClientSideAuthError(error) ||
-								getForbiddenError(error) ||
+								getForbiddenError(err.errors) ||
 								error.errorType === 'Unauthorized'
 							) {
 								throw new NonRetryableError('Unauthorized');
