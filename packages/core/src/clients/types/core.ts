@@ -26,6 +26,10 @@ export type MiddlewareHandler<
 	Output extends Response
 > = (request: Input) => Promise<Output>;
 
+/**
+ * The context object to store states across the middleware chain and retry
+ * attempts if retry middleware exists.
+ */
 export type MiddlewareContext = {
 	/**
 	 * The number of times the request has been attempted. This is set by retry middleware
@@ -46,3 +50,7 @@ export type Middleware<
 	Output extends Response,
 	MiddlewareOptions
 > = (options: MiddlewareOptions) => ConfiguredMiddleware<Input, Output>;
+
+export interface Endpoint {
+	url: URL;
+}
