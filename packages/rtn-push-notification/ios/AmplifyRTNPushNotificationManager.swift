@@ -231,6 +231,13 @@ class AmplifyRTNPushNotificationManager  {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
     }
 
     private func removeObservers() {
@@ -239,11 +246,25 @@ class AmplifyRTNPushNotificationManager  {
             name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
+
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
     }
 
     @objc
     private func applicationDidBecomeActive() {
         registerForRemoteNotifications()
+    }
+
+    @objc
+    private func applicationDidEnterBackground() {
+        // When App enters background we remove the cached launchNotification
+        // as when the App reopens after this point, there won't be a notification
+        // that launched the App.
+        launchNotification = nil
     }
 
     private func registerForRemoteNotifications() {
