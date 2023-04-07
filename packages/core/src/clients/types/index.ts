@@ -4,6 +4,7 @@ export {
 	Request,
 	Response,
 	TransferHandler,
+	Endpoint,
 } from './core';
 export {
 	Headers,
@@ -13,3 +14,4 @@ export {
 	HttpTransferOptions,
 	ResponseBodyMixin,
 } from './http';
+export { Credentials, ServiceClientOptions } from './aws';
