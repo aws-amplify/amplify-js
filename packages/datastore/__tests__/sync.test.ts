@@ -449,6 +449,15 @@ describe('Sync', () => {
 				undefined,
 				new Promise(resolve => {})
 			);
+			expect(hubDispatchMock).toBeCalledWith('datastore', {
+				event: 'syncError',
+				data: {
+					errorType: 'Unauthorized',
+					authModes: ['userPools'],
+					errors: [{ message: 'Request failed with status code 403' }],
+					model: 'Post',
+				},
+			});
 		});
 	});
 });

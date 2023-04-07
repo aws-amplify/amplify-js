@@ -128,6 +128,7 @@ class SyncProcessor {
 			}
 
 			try {
+				console.log('here');
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
 				);
@@ -144,7 +145,7 @@ class SyncProcessor {
 				);
 				return response;
 			} catch (error) {
-				authModeErrors[authModeAttempts] = error;
+				authModeErrors[authModeAttempts] = { message: error.message };
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
