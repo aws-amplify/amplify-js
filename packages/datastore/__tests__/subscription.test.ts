@@ -1,6 +1,7 @@
 import Observable from 'zen-observable-ts';
 let mockObservable = new Observable(() => {});
 const mockGraphQL = jest.fn(() => mockObservable);
+let hubDispatchMock;
 
 import { Amplify } from 'aws-amplify';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -21,6 +22,17 @@ import {
 } from '../src/types';
 import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
+jest.mock('@aws-amplify/core', () => {
+	hubDispatchMock = jest.fn();
+	return {
+		...jest.requireActual('@aws-amplify/core'),
+		Hub: {
+			dispatch: hubDispatchMock,
+			listen: jest.fn(),
+			remove: jest.fn(),
+		},
+	};
+});
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
 	const actualAPIModule = jest.requireActual('@aws-amplify/api');
@@ -596,13 +608,14 @@ describe('sync engine subscription module', () => {
 	});
 });
 
-describe('error handler', () => {
+describe('error handler and hub', () => {
 	let Model: PersistentModelConstructor<ModelType>;
 
 	let subscriptionProcessor: SubscriptionProcessor;
 	const errorHandler = jest.fn();
 	beforeEach(async () => {
 		errorHandler.mockClear();
+		hubDispatchMock.mockClear();
 		subscriptionProcessor = await instantiateSubscriptionProcessor({
 			errorHandler,
 		});
@@ -627,9 +640,6 @@ describe('error handler', () => {
 		const subscription = subscriptionProcessor.start();
 		subscription[0].subscribe({
 			error: data => {
-				console.log(data);
-				console.log(errorHandler.mock.calls);
-
 				// call once each for Create, Update, and Delete
 				expect(errorHandler).toHaveBeenCalledTimes(3);
 				['Create', 'Update', 'Delete'].forEach(operation => {
@@ -670,6 +680,50 @@ describe('error handler', () => {
 			},
 		});
 	}, 500);
+
+	test.only('unauthorized hub event', done => {
+		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
+		mockObservable = new Observable(observer => {
+			observer.error({
+				error: {
+					errors: [
+						{
+							message,
+						},
+					],
+				},
+			});
+		});
+
+		const subscription = subscriptionProcessor.start();
+		subscription[0].subscribe({
+			error: () => {
+				const data = {
+					errorType: 'Unauthorized',
+					errors: [
+						{
+							message,
+						},
+						{
+							message,
+						},
+					],
+					model: 'Model',
+					authModes: ['API_KEY', 'AMAZON_COGNITO_USER_POOLS'],
+				};
+				['Create', 'Update', 'Delete'].forEach(operation => {
+					expect(hubDispatchMock).toHaveBeenCalledWith('datastore', {
+						event: 'subscriptionError',
+						data: {
+							...data,
+							operation,
+						},
+					});
+				});
+				done();
+			},
+		});
+	});
 
 	async function instantiateSubscriptionProcessor({
 		errorHandler = () => null,
