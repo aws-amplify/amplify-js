@@ -70,6 +70,6 @@
 		}
 	],
 	"devDependencies": {
-		"@aws-amplify/rtn-push-notification": "0.0.1"
+		"@aws-amplify/rtn-push-notification": "1.0.0"
 	}
 }
