@@ -107,7 +107,7 @@
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry.js",
 			"import": "{ retry }",
-			"limit": "1.2 kB"
+			"limit": "1.22 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",

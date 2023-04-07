@@ -33,6 +33,11 @@ export type MiddlewareContext = {
 	attemptsCount?: number;
 };
 
+type ConfiguredMiddleware<Input extends Request, Output extends Response> = (
+	next: MiddlewareHandler<Input, Output>,
+	context: MiddlewareContext
+) => MiddlewareHandler<Input, Output>;
+
 /**
  * A slimmed down version of the AWS SDK v3 middleware, only handling tasks after Serde.
  */
@@ -40,9 +45,4 @@ export type Middleware<
 	Input extends Request,
 	Output extends Response,
 	MiddlewareOptions
-> = (
-	options: MiddlewareOptions
-) => (
-	next: MiddlewareHandler<Input, Output>,
-	context: MiddlewareContext
-) => MiddlewareHandler<Input, Output>;
+> = (options: MiddlewareOptions) => ConfiguredMiddleware<Input, Output>;
