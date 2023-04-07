@@ -196,7 +196,7 @@ describe('MutationProcessor', () => {
 				errorType: 'Unauthorized',
 				authModes: ['API_KEY'],
 				errors: [{ message: 'Request failed with status code 401' }],
-				model: Model,
+				model: Model.name,
 			},
 		});
 	});

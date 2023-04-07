@@ -242,7 +242,7 @@ class MutationProcessor {
 										data: {
 											errorType: 'Unauthorized',
 											errors: authModeErrors,
-											model: modelConstructor,
+											model,
 											authModes: operationAuthModes,
 										},
 									});

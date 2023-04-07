@@ -160,7 +160,7 @@ class SyncProcessor {
 							data: {
 								errorType: 'Unauthorized',
 								errors: authModeErrors,
-								model: modelDefinition,
+								model: modelDefinition.name,
 								authModes: readAuthModes,
 							},
 						});
