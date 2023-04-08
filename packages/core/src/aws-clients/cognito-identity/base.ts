@@ -1,6 +1,6 @@
 import { Middleware, HttpRequest, HttpResponse } from '../../clients/types';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
-import { fetchTransferHandler } from '../../clients/fetch';
+import { unAuthenticatedHandler } from '../../clients/handlers/unauth';
 
 const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
 	() => (next, context) =>
@@ -13,8 +13,8 @@ export const cognitoIdentityTransferHandler = composeTransferHandler<
 	[unknown],
 	HttpRequest,
 	HttpResponse,
-	typeof fetchTransferHandler
->(fetchTransferHandler, [disableCacheMiddleware]);
+	typeof unAuthenticatedHandler
+>(unAuthenticatedHandler, [disableCacheMiddleware]);
 
 export const defaultConfigs = {
 	service: 'cognito-identity',

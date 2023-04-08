@@ -3,14 +3,9 @@ import type {
 	GetIdCommandOutput,
 } from '@aws-sdk/client-cognito-identity';
 import { cognitoIdentityTransferHandler, defaultConfigs } from './base';
-import {
-	composeServiceApi,
-	Endpoint,
-	HttpRequest,
-	HttpResponse,
-	parseBody,
-	throwError,
-} from '../../clients';
+import { composeServiceApi } from '../../clients/internal/composeApiHandler';
+import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
+import { parseBody, throwError } from '../../clients/serde';
 
 export type {
 	GetIdCommandInput,
@@ -27,7 +22,7 @@ const getIdSerializer = async (
 			'x-amz-target': 'AWSCognitoIdentityService.GetId',
 		},
 		method: 'POST',
-		destination: endpoint.url,
+		url: endpoint.url,
 		body: JSON.stringify(input),
 	};
 };
