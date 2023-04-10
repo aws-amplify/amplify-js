@@ -100,5 +100,26 @@ describe('I18n test', () => {
 				cn: {},
 			};
 		});
+
+		test('multi-call putVocabulariesForLanguage results in correct get result', () => {
+			const i18n = new I18n(null);
+
+			i18n.putVocabulariesForLanguage('cn', {
+				hello: '你好',
+				exciting: '+1s',
+				stable: 'x',
+			});
+
+			i18n.putVocabulariesForLanguage('cn', {
+				exciting: '+2s',
+			});
+
+			expect(i18n.getByLanguage('exciting', 'cn')).toEqual('+2s');
+			expect(i18n.getByLanguage('stable', 'cn')).toEqual('x');
+
+			i18n._dict = {
+				cn: {},
+			};
+		});
 	});
 });
