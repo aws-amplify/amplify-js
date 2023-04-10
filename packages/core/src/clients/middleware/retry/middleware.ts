@@ -19,7 +19,7 @@ export interface RetryOptions<ResponseType = Response> {
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider: (response?: ResponseType, error?: unknown) => boolean;
+	retryDecider: (response?: ResponseType, error?: unknown) => Promise<boolean>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -71,7 +71,7 @@ export const retry = <Input = Request, Output = Response>(
 						? context.attemptsCount
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
-				if (retryDecider(response, error)) {
+				if (await retryDecider(response, error)) {
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);
