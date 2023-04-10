@@ -99,7 +99,7 @@ describe('SignUp API Error Path Cases:', () => {
 		}
 	});
 
-	test('SignUp API should expect an unknown error when underlying error is not comming from the service', async () => {
+	test('SignUp API should expect an unknown error when underlying error is not coming from the service', async () => {
 		const unknownError = new Error('unknown error');
 
 		jest
