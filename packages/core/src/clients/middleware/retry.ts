@@ -66,7 +66,7 @@ export const retry = (options: RetryOptions) => {
 				} catch (e) {
 					error = e;
 				}
-				// context.attemptsCount maybe updated after calling next handler which may retry the request by itself.
+				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
 				attemptsCount =
 					context.attemptsCount > attemptsCount
 						? context.attemptsCount
@@ -112,7 +112,7 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 };
 
 const isMetadataBearer = (response: unknown): response is MetadataBearer =>
-	response && typeof response['$metadata'] === 'object';
+	typeof response?.['$metadata'] === 'object';
 
 const updateMetadataAttempts = (
 	nextHandlerOutput: Object,
