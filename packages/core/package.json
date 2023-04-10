@@ -101,11 +101,11 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "35.5 kB"
+			"limit": "11.1 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",
-			"path": "./lib-esm/clients/middleware/retry.js",
+			"path": "./lib-esm/clients/middleware/retry/middleware.js",
 			"import": "{ retry }",
 			"limit": "1.23 kB"
 		},
@@ -120,12 +120,6 @@
 			"path": "./lib-esm/clients/handlers/unauth.js",
 			"import": "{ unAuthenticatedHandler }",
 			"limit": "2.74 kB"
-		},
-		{
-			"name": "Cognito Identity Client(GetCredentialsForIdentity)",
-			"path": "./lib-esm/aws-clients/cognito-identity/get-credentials-for-identity.js",
-			"import": "{ getCredentialsForIdentity }",
-			"limit": "3.86 kB"
 		}
 	],
 	"jest": {

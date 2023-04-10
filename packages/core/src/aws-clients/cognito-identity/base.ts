@@ -1,6 +1,7 @@
 import { Middleware, HttpRequest, HttpResponse } from '../../clients/types';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import { unAuthenticatedHandler } from '../../clients/handlers/unauth';
+import { jitteredBackoff } from '../../clients/middleware/retry/jitteredBackoff';
 
 const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
 	() => (next, context) =>
@@ -24,5 +25,5 @@ export const defaultConfigs = {
 		),
 	}),
 	retryDecider: () => false, // TODO;
-	computeDelay: () => 100, // TODO;
+	computeDelay: jitteredBackoff,
 };

@@ -4,7 +4,7 @@ import {
 	MiddlewareHandler,
 	Request,
 	Response,
-} from '../types/core';
+} from '../../types/core';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
