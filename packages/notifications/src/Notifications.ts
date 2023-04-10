@@ -52,21 +52,21 @@ class NotificationsClass {
 		return this.config;
 	};
 
-	get InAppMessaging() {
+	get InAppMessaging(): InAppMessaging {
 		return this.inAppMessaging;
 	}
 
-	get Push() {
-		return this.pushNotification;
+	get Push(): PushNotification {
+		return this.pushNotification ?? ({} as PushNotification);
 	}
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
 		const identifyFunctions: Function[] = [];
-		if (this.InAppMessaging) {
-			identifyFunctions.push(this.InAppMessaging.identifyUser);
+		if (this.inAppMessaging) {
+			identifyFunctions.push(this.inAppMessaging.identifyUser);
 		}
-		if (this.Push) {
-			identifyFunctions.push(this.Push.identifyUser);
+		if (this.pushNotification) {
+			identifyFunctions.push(this.pushNotification.identifyUser);
 		}
 		return Promise.all<void>(
 			identifyFunctions.map(async identifyFunction => {
