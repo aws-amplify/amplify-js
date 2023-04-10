@@ -31,7 +31,6 @@ describe(composeServiceApi.name, () => {
 			expect.objectContaining({
 				bar: 'baz',
 				foo: 'foo',
-				maxAttempts: 3,
 			})
 		);
 	});
@@ -60,12 +59,5 @@ describe(composeServiceApi.name, () => {
 		);
 		expect(mockDeserializer).toBeCalledTimes(1);
 		expect(mockDeserializer).toBeCalledWith(defaultResponse);
-	});
-
-	describe('retry', () => {
-		test('should retry errors from transfer handler', async () => {});
-		test('should retry errors from deserializer', async () => {});
-		test('should not retry errors from serializer', async () => {});
-		test('should conform to maxAttempts', async () => {});
 	});
 });
