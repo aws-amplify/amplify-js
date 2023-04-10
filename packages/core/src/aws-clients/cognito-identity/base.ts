@@ -23,4 +23,6 @@ export const defaultConfigs = {
 			`https://cognito-identity.${endpointOptions.region}.amazonaws.com`
 		),
 	}),
+	retryDecider: () => false, // TODO;
+	computeDelay: () => 100, // TODO;
 };

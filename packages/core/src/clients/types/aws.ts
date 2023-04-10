@@ -1,5 +1,4 @@
-import { RetryOptions } from '../middleware/retry';
-import { Endpoint, Response } from './core';
+import { Endpoint } from './core';
 export interface Credentials {
 	accessKeyId: string;
 	secretAccessKey: string;
@@ -9,7 +8,7 @@ export interface Credentials {
 
 export type SourceData = string | ArrayBuffer | ArrayBufferView;
 
-export interface ServiceClientOptions extends RetryOptions<Response> {
+export interface ServiceClientOptions {
 	region: string;
 	endpointResolver: (input: { region: string }) => Endpoint;
 }
