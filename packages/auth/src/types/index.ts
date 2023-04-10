@@ -18,7 +18,7 @@ export type { AuthStandardAttributeKey } from './models/AuthStandardAttributeKey
 export type { AuthUserAttributeKey } from './models/AuthUserAttributeKey';
 export type { AuthUserAttribute } from './models/AuthUserAttribute';
 export type { GetAttributeKey } from './models/GetAttributeKey';
-export type {  AuthNextResetPasswordStep } from './models/AuthNextResetPasswordStep';
+export type { AuthNextResetPasswordStep } from './models/AuthNextResetPasswordStep';
 
 // Options
 export type { AuthServiceOptions } from './options/AuthServiceOptions';
