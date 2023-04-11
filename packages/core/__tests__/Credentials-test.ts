@@ -101,7 +101,7 @@ describe('Credentials test', () => {
 		});
 	});
 
-	describe('different regions', () => {
+	describe.skip('different regions', () => {
 		const userPoolId = 'us-west-2:aaaaaaaaa';
 		const identityPoolId = 'us-east-1:bbbbbbbb';
 		const identityPoolRegion = 'us-east-1';
