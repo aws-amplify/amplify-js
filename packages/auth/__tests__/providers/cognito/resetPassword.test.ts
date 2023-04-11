@@ -1,13 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyErrorString, Amplify } from '@aws-amplify/core';
 import { ForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { AuthError } from '../../../src/errors/AuthError';
+import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
+import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors/service';
 import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/ResetPasswordClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
-describe('ResetPassword API happy paths', () => {
+describe('ResetPassword API happy path cases', () => {
 	let resetPasswordSpy;
 
 	beforeEach(() => {
@@ -50,5 +53,55 @@ describe('ResetPassword API happy paths', () => {
 });
 
 describe('ResetPassword API Error Path Cases:', () => {
-	// TODO: write tests after Error Handling is implemented
+	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
+		expect.assertions(2);
+		try {
+			await resetPassword({username: ''});
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AuthValidationErrorCode.EmptyResetPasswordUsername);
+		}
+	});
+
+	test('ResetPassword API should expect service error', async () => {
+		expect.assertions(2);
+		const serviceError = new Error('service error');
+		serviceError.name = ForgotPasswordException.InvalidParameterException;
+		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+			.mockImplementationOnce(() => Promise.reject(serviceError));
+		try {
+			await resetPassword({username: 'username'});
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(ForgotPasswordException.InvalidParameterException);
+		}
+	});
+
+	test('ResetPassword API should expect an unknown error when underlying error is not coming from the service', async () => {
+		expect.assertions(3);
+		const unknownError = new Error('unknown error');
+		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+			.mockImplementation(() => Promise.reject(unknownError));
+		try {
+			await resetPassword({username: 'username'});
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.underlyingError).toBeInstanceOf(Error);
+		}
+	});
+
+	test('ResetPassword API should expect an unknown error when the underlying error is null', async () => {
+		expect.assertions(3);
+		const unknownError = null;
+		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+			.mockImplementation(() => Promise.reject(unknownError));
+		try {
+			await resetPassword({username: 'username'});
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.underlyingError).toBe(null);
+		}
+	});
 });
