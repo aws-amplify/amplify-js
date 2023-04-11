@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.1.4",
+	"version": "5.1.8",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -89,7 +89,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2.05 kB"
+			"limit": "2.12 kB"
 		},
 		{
 			"name": "Core (Logger)",
@@ -107,7 +107,7 @@
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry.js",
 			"import": "{ retry }",
-			"limit": "1.22 kB"
+			"limit": "1.23 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",

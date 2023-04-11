@@ -5,17 +5,16 @@ export default class CookieStorage {
 	/**
 	 * Constructs a new CookieStorage object
 	 * @param {object} data Creation options.
-	 * @param {string} data.domain Cookies domain (mandatory).
+	 * @param {string} data.domain Cookies domain (default: domain of the page
+	 * 				where the cookie was created, excluding subdomains)
 	 * @param {string} data.path Cookies path (default: '/')
 	 * @param {integer} data.expires Cookie expiration (in days, default: 365)
 	 * @param {boolean} data.secure Cookie secure flag (default: true)
-	 * @param {string} data.sameSite Cookie request behaviour (default: null)
+	 * @param {string} data.sameSite Cookie request behavior (default: null)
 	 */
-	constructor(data) {
+	constructor(data = {}) {
 		if (data.domain) {
 			this.domain = data.domain;
-		} else {
-			throw new Error('The domain of cookieStorage can not be undefined.');
 		}
 		if (data.path) {
 			this.path = data.path;

@@ -11,9 +11,9 @@ describe('Cookie Storage Unit Tests', () => {
 
 	describe('Constructor methods', () => {
 		test('Domain not supplied', () => {
-			expect(() => {
-				new CookieStorage({ domain: undefined });
-			}).toThrowError('The domain of cookieStorage can not be undefined.');
+			const storage = new CookieStorage();
+			expect(storage.setItem('key', 'value')).toBe('value');
+			expect(storage.getItem('key')).toBe('value');
 		});
 
 		test('Samesite value is undefined', () => {
