@@ -20,66 +20,91 @@ import {
 	ValidationData,
 } from '..';
 import { signUpClient } from '../utils/clients/SignUpClient';
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../errors/AuthError';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { SignUpException } from '../types/errors/service';
 
 /**
  * Creates a user
  *
  * @param signUpRequest - The SignUpRequest object
  * @returns AuthSignUpResult
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
  *
+ *
+ * TODO: add config errors
  */
 export async function signUp(
 	signUpRequest: SignUpRequest<CognitoUserAttributeKey, CognitoSignUpOptions>
 ): Promise<AuthSignUpResult<AuthStandardAttributeKey | CustomAttribute>> {
+	const username = signUpRequest.username;
+	const password = signUpRequest.password;
+	assertValidationError(
+		!!username,
+		AuthValidationErrorCode.EmptySignUpUsername
+	);
+	assertValidationError(
+		!!password,
+		AuthValidationErrorCode.EmptySignUpPassword
+	);
 	// TODO: implement autoSignIn
 	let validationData: AttributeType[] | undefined;
-	const _config = Amplify.config;
+	const config = Amplify.config;
+
 	if (signUpRequest.options?.serviceOptions?.validationData) {
 		validationData = mapValidationData(
 			signUpRequest.options?.serviceOptions?.validationData
 		);
 	}
+	try {
+		const res: SignUpCommandOutput = await signUpClient({
+			Username: username,
+			Password: password,
+			UserAttributes: signUpRequest.options?.userAttributes.map(el => {
+				return { Name: el.userAttributeKey.toString(), Value: el.value };
+			}),
+			ClientMetadata:
+				signUpRequest.options?.serviceOptions?.clientMetadata ??
+				config.clientMetadata,
+			ValidationData: validationData,
+		});
 
-	const res: SignUpCommandOutput = await signUpClient({
-		Username: signUpRequest.username,
-		Password: signUpRequest.password,
-		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
-			return { Name: el.userAttributeKey.toString(), Value: el.value };
-		}),
-		ClientMetadata:
-			signUpRequest.options?.serviceOptions?.clientMetadata ??
-			_config.clientMetadata,
-		ValidationData: validationData,
-	});
-
-	const { UserConfirmed, CodeDeliveryDetails } = res;
-	const { DeliveryMedium, Destination, AttributeName } = {
-		...CodeDeliveryDetails,
-	};
-
-	if (UserConfirmed === true) {
-		return {
-			isSignUpComplete: true,
-			nextStep: {
-				signUpStep: AuthSignUpStep.DONE,
-			},
+		const { UserConfirmed, CodeDeliveryDetails } = res;
+		const { DeliveryMedium, Destination, AttributeName } = {
+			...CodeDeliveryDetails,
 		};
-	} else {
-		return {
-			isSignUpComplete: false,
-			nextStep: {
-				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-				codeDeliveryDetails: {
-					deliveryMedium: DeliveryMedium
-						? (DeliveryMedium as DeliveryMedium)
-						: undefined,
-					destination: Destination ? (Destination as string) : undefined,
-					attributeName: AttributeName
-						? (AttributeName as AuthStandardAttributeKey)
-						: undefined,
+
+		if (UserConfirmed) {
+			return {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: AuthSignUpStep.DONE,
 				},
-			},
-		};
+			};
+		} else {
+			return {
+				isSignUpComplete: false,
+				nextStep: {
+					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+					codeDeliveryDetails: {
+						deliveryMedium: DeliveryMedium
+							? (DeliveryMedium as DeliveryMedium)
+							: undefined,
+						destination: Destination ? (Destination as string) : undefined,
+						attributeName: AttributeName
+							? (AttributeName as AuthStandardAttributeKey)
+							: undefined,
+					},
+				},
+			};
+		}
+	} catch (error) {
+		assertServiceError(error);
+		throw new AuthError({ name: error.name, message: error.message });
 	}
 }
 
