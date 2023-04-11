@@ -110,8 +110,14 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	return sleepPromise;
 };
 
-const isMetadataBearer = (response: unknown): response is MetadataBearer =>
-	typeof response?.['$metadata'] === 'object';
+/**
+ * Check if the response is a contains `$metadata` property.
+ *
+ * @internal Amplify internal use only
+ */
+export const isMetadataBearer = (
+	response: unknown
+): response is MetadataBearer => typeof response?.['$metadata'] === 'object';
 
 const updateMetadataAttempts = (
 	nextHandlerOutput: Object,

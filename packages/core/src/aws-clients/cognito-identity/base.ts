@@ -1,7 +1,11 @@
 import { Middleware, HttpRequest, HttpResponse } from '../../clients/types';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import { unAuthenticatedHandler } from '../../clients/handlers/unauth';
-import { jitteredBackoff } from '../../clients/middleware/retry/jitteredBackoff';
+import {
+	jitteredBackoff,
+	getRetryDecider,
+} from '../../clients/middleware/retry';
+import { loadErrorCode } from '../../clients/serde/json';
 
 const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
 	() => (next, context) =>
@@ -24,6 +28,6 @@ export const defaultConfigs = {
 			`https://cognito-identity.${endpointOptions.region}.amazonaws.com`
 		),
 	}),
-	retryDecider: () => false, // TODO;
+	retryDecider: getRetryDecider(loadErrorCode),
 	computeDelay: jitteredBackoff,
 };

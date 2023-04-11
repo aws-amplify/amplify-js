@@ -34,7 +34,6 @@ const getCredentialsForIdentityDeserializer = async (
 		throw await throwError(response);
 	} else {
 		const body = await parseBody(response);
-
 		return {
 			...body,
 			Credentials: {
