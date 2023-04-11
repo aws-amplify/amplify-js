@@ -5,10 +5,7 @@ import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
 import { Amplify } from './Amplify';
-import {
-	getId,
-	getCredentialsForIdentity,
-} from './aws-clients/cognito-identity';
+import { getId, getCredentialsForIdentity } from './AwsClients/CognitoIdentity';
 import { parseAWSExports } from './parseAWSExports';
 import { Hub } from './Hub';
 

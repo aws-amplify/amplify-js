@@ -3,8 +3,8 @@ import { Amplify } from '../src/Amplify';
 import {
 	getCredentialsForIdentity,
 	getId,
-} from '../src/aws-clients/cognito-identity';
-jest.mock('../src/aws-clients/cognito-identity');
+} from '../src/AwsClients/CognitoIdentity';
+jest.mock('../src/AwsClients/CognitoIdentity');
 import { Hub } from '../src/Hub';
 const session = {};
 
