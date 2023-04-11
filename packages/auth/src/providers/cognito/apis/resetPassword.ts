@@ -18,7 +18,6 @@ import {
 } from '../../../types';
 import { CustomAttribute } from '../types/models/CustomAttribute';
 import { CognitoResetPasswordOptions } from '../types/options/CognitoResetPasswordOptions';
-import { CognitoSignUpOptions } from '../types/options/CognitoSignUpOptions';
 import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
 
 export async function resetPassword(
