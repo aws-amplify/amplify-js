@@ -67,7 +67,7 @@ describe('ResetPassword API Error Path Cases:', () => {
 		expect.assertions(2);
 		const serviceError = new Error('service error');
 		serviceError.name = ForgotPasswordException.InvalidParameterException;
-		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
 			.mockImplementationOnce(() => Promise.reject(serviceError));
 		try {
 			await resetPassword({username: 'username'});
@@ -75,12 +75,14 @@ describe('ResetPassword API Error Path Cases:', () => {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(ForgotPasswordException.InvalidParameterException);
 		}
+		spyon.mockClear();
 	});
 
-	test('ResetPassword API should expect an unknown error when underlying error is not coming from the service', async () => {
+	test('ResetPassword API should expect an unknown error when underlying error is' +
+		+ 'not coming from the service', async () => {
 		expect.assertions(3);
 		const unknownError = new Error('unknown error');
-		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
 			.mockImplementation(() => Promise.reject(unknownError));
 		try {
 			await resetPassword({username: 'username'});
@@ -89,12 +91,13 @@ describe('ResetPassword API Error Path Cases:', () => {
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBeInstanceOf(Error);
 		}
+		spyon.mockClear();
 	});
 
 	test('ResetPassword API should expect an unknown error when the underlying error is null', async () => {
 		expect.assertions(3);
 		const unknownError = null;
-		jest.spyOn(resetPasswordClient, 'resetPasswordClient')
+		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
 			.mockImplementation(() => Promise.reject(unknownError));
 		try {
 			await resetPassword({username: 'username'});
@@ -103,5 +106,6 @@ describe('ResetPassword API Error Path Cases:', () => {
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBe(null);
 		}
+		spyon.mockClear();
 	});
 });
