@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/aws-amplify/amplify-ui/issues/new/choose
     about: Open an issue in the Amplify-UI repository
   - name: Usage Question
-    url: https://github.com/aws-amplify/amplify-js/discussions
+    url: https://discord.gg/amplify
     about: Ask a question about AWS Amplify usage

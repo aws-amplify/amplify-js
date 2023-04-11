@@ -2,7 +2,11 @@ declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
-	export type UpdateAttributesNodeCallback<E, T, K> = (err?: E, result?: T, details?: K) => void;
+	export type UpdateAttributesNodeCallback<E, T, K> = (
+		err?: E,
+		result?: T,
+		details?: K
+	) => void;
 	export namespace NodeCallback {
 		export type Any = NodeCallback<Error | undefined, any>;
 	}
@@ -399,14 +403,14 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export interface ICookieStorageData {
-		domain: string;
+		domain?: string;
 		path?: string;
 		expires?: number;
 		secure?: boolean;
 		sameSite?: 'strict' | 'lax' | 'none';
 	}
 	export class CookieStorage implements ICognitoStorage {
-		constructor(data: ICookieStorageData);
+		constructor(data?: ICookieStorageData);
 		setItem(key: string, value: string): void;
 		getItem(key: string): string;
 		removeItem(key: string): void;

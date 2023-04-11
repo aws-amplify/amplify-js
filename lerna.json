@@ -7,9 +7,6 @@
 	"command": {
 		"run": {
 			"private": false
-		},
-		"bootstrap": {
-			"ignore": "@aws-amplify/xr"
 		}
 	}
 }
