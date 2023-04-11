@@ -1,0 +1,76 @@
+buildscript {
+    def kotlin_version = rootProject.ext.has('kotlinVersion')
+            ? rootProject.ext.get('kotlinVersion')
+            : project.properties['default_kotlinVersion']
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        if (project == rootProject) {
+            classpath 'com.android.tools.build:gradle:7.3.1'
+        }
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
+
+def getExtOrDefault(prop) {
+    (rootProject.ext.has(prop) ? rootProject.ext.get(prop) : project.properties["default_$prop"]).toInteger()
+}
+
+android {
+    compileSdkVersion getExtOrDefault('compileSdkVersion')
+
+    defaultConfig {
+        minSdkVersion getExtOrDefault('minSdkVersion')
+        targetSdkVersion getExtOrDefault('targetSdkVersion')
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+repositories {
+    // React Native installed via NPM location in application
+    maven { url "$rootDir/../node_modules/react-native/android" }
+    // React Native installed via NPM location in Amplify monorepo
+    maven { url "$rootDir/../../../node_modules/react-native/android" }
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    //noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'
+    //noinspection GradleDependency
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
+
+    // Import the Firebase BoM and cloud messaging dependency
+    implementation platform('com.google.firebase:firebase-bom:31.0.0')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
+
+    // Import support library for Amplify push utils
+    implementation 'com.amplifyframework:aws-push-notifications-pinpoint-common:2.5.0'
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.mockk:mockk:1.13.4'
+    testImplementation 'org.slf4j:slf4j-nop:2.0.7'
+    testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+}
