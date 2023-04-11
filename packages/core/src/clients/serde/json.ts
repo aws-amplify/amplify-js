@@ -36,7 +36,7 @@ export const parseBody = async (response: HttpResponse): Promise<any> => {
 	if (!response.body) {
 		throw new Error('Missing response payload');
 	}
-	const output = JSON.parse(await response.body.text());
+	const output = await response.body.json();
 	return Object.assign(output, {
 		$metadata: parseMetadata(response),
 	});

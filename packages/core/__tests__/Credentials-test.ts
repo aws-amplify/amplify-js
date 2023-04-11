@@ -1,14 +1,11 @@
 import { CredentialsClass as Credentials } from '../src/Credentials';
 import { Amplify } from '../src/Amplify';
-import { Hub } from '../src/Hub';
 import {
-	CognitoIdentityClient,
-	GetCredentialsForIdentityCommand,
-	GetIdCommand,
-} from '@aws-sdk/client-cognito-identity';
-jest.mock('@aws-sdk/client-cognito-identity');
-import { fromCognitoIdentity } from '@aws-sdk/credential-provider-cognito-identity';
-jest.mock('@aws-sdk/credential-provider-cognito-identity');
+	getCredentialsForIdentity,
+	getId,
+} from '../src/aws-clients/cognito-identity';
+jest.mock('../src/aws-clients/cognito-identity');
+import { Hub } from '../src/Hub';
 const session = {};
 
 const user = {
@@ -101,46 +98,27 @@ describe('Credentials test', () => {
 		});
 	});
 
-	describe.skip('different regions', () => {
+	describe('different regions', () => {
 		const userPoolId = 'us-west-2:aaaaaaaaa';
 		const identityPoolId = 'us-east-1:bbbbbbbb';
 		const identityPoolRegion = 'us-east-1';
 		const region = 'us-west-2';
 
 		beforeAll(() => {
-			CognitoIdentityClient.mockImplementation(params => {
-				return {
-					send: params => {
-						if (params instanceof GetIdCommand) {
-							return { IdentityId: '123' };
-						}
-						if (params instanceof GetCredentialsForIdentityCommand) {
-							return {
-								Credentials: {
-									AccessKeyId: 'accessKey',
-									Expiration: 0,
-									SecretKey: 'secretKey',
-									SessionToken: 'sessionToken',
-								},
-								IdentityId: '123',
-							};
-						}
-					},
-					middlewareStack: {
-						add: (next, _) => {},
-					},
-				};
-			});
-
-			fromCognitoIdentity.mockImplementation(params => {
-				return async () => {
-					return {};
-				};
+			(getId as jest.Mock).mockResolvedValue({ IdentityId: '123' });
+			(getCredentialsForIdentity as jest.Mock).mockResolvedValue({
+				Credentials: {
+					AccessKeyId: 'accessKey',
+					Expiration: 0,
+					SecretKey: 'secretKey',
+					SessionToken: 'sessionToken',
+				},
+				IdentityId: '123',
 			});
 		});
 
 		test('should use identityPoolRegion param for credentials for federation', async () => {
-			expect.assertions(2);
+			expect.assertions(1);
 
 			const credentials = new Credentials(null);
 
@@ -157,14 +135,11 @@ describe('Credentials test', () => {
 				identity_id: '123',
 			});
 
-			expect(CognitoIdentityClient).toHaveBeenCalledWith(
-				expect.objectContaining({ region: identityPoolRegion })
-			);
-
-			expect(fromCognitoIdentity).toBeCalledWith(
+			expect(getCredentialsForIdentity).toHaveBeenCalledWith(
+				expect.objectContaining({ region: identityPoolRegion }),
 				expect.objectContaining({
-					identityId: '123',
-					logins: {
+					IdentityId: '123',
+					Logins: {
 						'accounts.google.com': 'token',
 					},
 				})
@@ -172,7 +147,7 @@ describe('Credentials test', () => {
 		});
 
 		test('should use identityPoolRegion param for credentials from session', async () => {
-			expect.assertions(2);
+			expect.assertions(1);
 
 			const credentials = new Credentials(null);
 
@@ -195,20 +170,19 @@ describe('Credentials test', () => {
 
 			await credentials._setCredentialsFromSession(session);
 
-			expect(CognitoIdentityClient).toHaveBeenCalledWith(
-				expect.objectContaining({ region: identityPoolRegion })
+			expect(getId).toBeCalledWith(
+				expect.objectContaining({ region: identityPoolRegion }),
+				{
+					IdentityPoolId: identityPoolId,
+					Logins: {
+						[`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: 'token',
+					},
+				}
 			);
-
-			expect(GetIdCommand).toBeCalledWith({
-				IdentityPoolId: identityPoolId,
-				Logins: {
-					[`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: 'token',
-				},
-			});
 		});
 
 		test('should use identityPoolRegion param for credentials for guest', async () => {
-			expect.assertions(2);
+			expect.assertions(1);
 
 			const credentials = new Credentials(null);
 
@@ -221,13 +195,12 @@ describe('Credentials test', () => {
 
 			await credentials._setCredentialsForGuest();
 
-			expect(CognitoIdentityClient).toHaveBeenCalledWith(
-				expect.objectContaining({ region: identityPoolRegion })
+			expect(getId).toBeCalledWith(
+				expect.objectContaining({ region: identityPoolRegion }),
+				{
+					IdentityPoolId: identityPoolId,
+				}
 			);
-
-			expect(GetIdCommand).toBeCalledWith({
-				IdentityPoolId: identityPoolId,
-			});
 		});
 	});
 
