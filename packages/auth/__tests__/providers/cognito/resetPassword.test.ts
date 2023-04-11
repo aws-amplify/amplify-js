@@ -7,7 +7,7 @@ import { resetPassword } from '../../../src/providers/cognito';
 import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/ResetPasswordClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
-describe('ResetPassword API happy pathes', () => {
+describe('ResetPassword API happy paths', () => {
 	let resetPasswordSpy;
 
 	beforeEach(() => {
