@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.14...@aws-amplify/storage@5.1.15) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [5.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.13...@aws-amplify/storage@5.1.14) (2023-04-04)
+
+
+### Bug Fixes
+
+* **deps:** update AWS SDK clients with fast-xml-parser dependency ([#11181](https://github.com/aws-amplify/amplify-js/issues/11181)) ([a05e1dd](https://github.com/aws-amplify/amplify-js/commit/a05e1dd9da7fb7a65f1ad1c78886e095e21a5c5a))
+
+
+
+
+
+## [5.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.12...@aws-amplify/storage@5.1.13) (2023-03-30)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.11...@aws-amplify/storage@5.1.12) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/storage

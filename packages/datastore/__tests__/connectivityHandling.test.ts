@@ -5,6 +5,7 @@ import {
 	getDataStore,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
+	waitForSyncQueriesReady,
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
@@ -47,6 +48,8 @@ describe('DataStore sync engine', () => {
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		simulateDisruption,
+		simulateDisruptionEnd,
 	} = getDataStore({ online: true, isNode: false });
 
 	beforeEach(async () => {
@@ -75,6 +78,8 @@ describe('DataStore sync engine', () => {
 			graphqlService,
 			simulateConnect,
 			simulateDisconnect,
+			simulateDisruption,
+			simulateDisruptionEnd,
 		} = getDataStore({ online: true, isNode: false }));
 		await DataStore.start();
 	});
@@ -115,6 +120,128 @@ describe('DataStore sync engine', () => {
 
 			const savedItem = table.get(JSON.stringify([m.id])) as any;
 			expect(savedItem.body).toEqual(m.body);
+		});
+
+		test('omits all unspecified fields from mutation on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			const omitted_optional_fields = [
+				'emails',
+				'ips',
+				'logins',
+				'metadata',
+				'optionalField',
+			];
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			for (const field of omitted_optional_fields) {
+				expect(mutation[field]).toEqual(undefined);
+			}
+		});
+
+		test('includes explicit null fields from mutation on create', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+					metadata: null,
+				})
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [mutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			expect(mutation.metadata).toEqual(null);
+		});
+
+		test('omits all unchanged fields from mutation on update', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			const saved = await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+				})
+			);
+
+			await waitForEmptyOutbox();
+			const retrieved = (await DataStore.query(Model, saved.id))!;
+
+			const updated = await DataStore.save(
+				Model.copyOf(retrieved, d => (d.optionalField1 = 'new value'))
+			);
+
+			const omitted_fields = ['field1', 'emails', 'ips', 'logins', 'metadata'];
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [createMutation, updateMutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			for (const field of omitted_fields) {
+				expect(updateMutation[field]).toEqual(undefined);
+			}
+		});
+
+		test('includes explicit null fields from mutation on update', async () => {
+			// make sure our test model still meets requirements to make this test valid.
+			expect(schema.models.Model.fields.optionalField1.isRequired).toBe(false);
+
+			const saved = await DataStore.save(
+				new Model({
+					field1: 'whatever and ever',
+					dateCreated: new Date().toISOString(),
+					optionalField1: 'something',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			const retrieved = (await DataStore.query(Model, saved.id))!;
+
+			await DataStore.save(
+				Model.copyOf(retrieved, d => (d.optionalField1 = null))
+			);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Model')!;
+			expect(table.size).toEqual(1);
+
+			const [createMutation, updateMutation] = graphqlService.requests
+				.filter(r => r.operation === 'mutation' && r.tableName === 'Model')
+				.map(req => req.variables.input);
+
+			expect(updateMutation.optionalField1).toEqual(null);
 		});
 
 		test('omits null owner fields from mutation events on create', async () => {
@@ -596,6 +723,102 @@ describe('DataStore sync engine', () => {
 			const cloudPost = table.get(JSON.stringify([post.id])) as any;
 			expect(cloudPost.title).toEqual('a title');
 			expect(cloudPost._deleted).toEqual(true);
+		});
+
+		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+			const post = await DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+
+			await waitForEmptyOutbox();
+			await simulateDisruption();
+
+			// simulate second client creating a new post
+			const secondPostId = '1c49fa30-ef5c-44f5-b503-234af5a0a088';
+			await graphqlService.graphql({
+				query:
+					'mutation operation($input: CreatePostInput!){\n' +
+					'\t\tcreatePost(input: $input){\n' +
+					'\t\t\tid\n' +
+					'title\n' +
+					'blogId\n' +
+					'_version\n' +
+					'_lastChangedAt\n' +
+					'_deleted\n' +
+					'\t\t}\n' +
+					'\t}',
+				variables: {
+					input: {
+						id: secondPostId,
+						title: 'a title 2',
+						blogId: null,
+						_version: undefined,
+					},
+				},
+				authMode: undefined,
+				authToken: undefined,
+			});
+
+			// wait for subscription message if connection were not disrupted
+			// next DataStore.query(Post) would have length of 2 if not disrupted
+			await pause(1);
+			// DataStore has not received new subscription message
+			expect((await DataStore.query(Post)).length).toEqual(1);
+
+			await simulateDisruptionEnd();
+			await waitForSyncQueriesReady();
+
+			expect((await DataStore.query(Post)).length).toEqual(2);
+			expect((await DataStore.query(Post, post.id))!.title).toEqual('a title');
+			expect((await DataStore.query(Post, secondPostId))!.title).toEqual(
+				'a title 2'
+			);
+
+			const thirdPost = await DataStore.save(
+				new Post({
+					title: 'a title 3',
+				})
+			);
+
+			expect((await DataStore.query(Post)).length).toEqual(3);
+
+			await waitForEmptyOutbox();
+
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(3);
+
+			const cloudPost = table.get(JSON.stringify([post.id])) as any;
+			expect(cloudPost.title).toEqual('a title');
+
+			const cloudSecondPost = table.get(JSON.stringify([secondPostId])) as any;
+			expect(cloudSecondPost.title).toEqual('a title 2');
+
+			const cloudThirdPost = table.get(JSON.stringify([thirdPost.id])) as any;
+			expect(cloudThirdPost.title).toEqual('a title 3');
+		});
+
+		test('does not error when disruption before sync queries start', async () => {
+			const post = DataStore.save(
+				new Post({
+					title: 'a title',
+				})
+			);
+			const errorLog = jest.spyOn(console, 'error');
+			await simulateDisruption();
+			await simulateDisruptionEnd();
+			await waitForSyncQueriesReady();
+			expect(errorLog).not.toHaveBeenCalledWith(
+				expect.stringMatching(new RegExp('[ERROR].* Hub')),
+				expect.anything()
+			);
+			await waitForEmptyOutbox();
+			const table = graphqlService.tables.get('Post')!;
+			expect(table.size).toEqual(1);
+
+			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			expect(cloudPost.title).toEqual('a title');
 		});
 	});
 

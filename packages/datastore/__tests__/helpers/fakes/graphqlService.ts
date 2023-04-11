@@ -21,6 +21,7 @@ export class FakeGraphQLService {
 	public tables = new Map<string, Map<string, any[]>>();
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
+	public stopSubscriptionMessages = false;
 	public timestampFields = new Map<
 		string,
 		{ createdAt: string; updatedAt: string }
@@ -347,6 +348,17 @@ export class FakeGraphQLService {
 		this.isConnected = true;
 	}
 
+	/*
+	 * Simulate disruption by stopping subscription messages
+	 */
+	public simulateDisruption() {
+		this.stopSubscriptionMessages = true;
+	}
+
+	public simulateDisruptionEnd() {
+		this.stopSubscriptionMessages = false;
+	}
+
 	/**
 	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
 	 *
@@ -522,8 +534,13 @@ export class FakeGraphQLService {
 						},
 					},
 				};
-				this.log('API subscription message', { observerMessageName, message });
-				observer.next(message);
+				if (!this.stopSubscriptionMessages) {
+					this.log('API subscription message', {
+						observerMessageName,
+						message,
+					});
+					observer.next(message);
+				}
 			});
 		} else if (operation === 'subscription') {
 			return new Observable(observer => {

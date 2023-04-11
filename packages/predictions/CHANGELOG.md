@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.24...@aws-amplify/predictions@5.0.25) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [5.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.23...@aws-amplify/predictions@5.0.24) (2023-04-04)
+
+
+### Bug Fixes
+
+* **deps:** update AWS SDK clients with fast-xml-parser dependency ([#11181](https://github.com/aws-amplify/amplify-js/issues/11181)) ([a05e1dd](https://github.com/aws-amplify/amplify-js/commit/a05e1dd9da7fb7a65f1ad1c78886e095e21a5c5a))
+
+
+
+
+
+## [5.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.22...@aws-amplify/predictions@5.0.23) (2023-03-30)
+
+
+### Bug Fixes
+
+* Codescanning alerts ([#11159](https://github.com/aws-amplify/amplify-js/issues/11159)) ([b19e0ba](https://github.com/aws-amplify/amplify-js/commit/b19e0bab948d995b70fb98ad5d935483b3e15d8d))
+
+
+
+
+
 ## [5.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.21...@aws-amplify/predictions@5.0.22) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/predictions

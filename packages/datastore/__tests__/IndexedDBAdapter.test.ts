@@ -15,6 +15,8 @@ import {
 	Profile,
 	Post,
 	Comment,
+	PostUni,
+	CommentUni,
 	DefaultPKParent,
 	DefaultPKChild,
 	CompositePKParent,
@@ -170,41 +172,17 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Delete', () => {
 		let User: PersistentModelConstructor<User>;
 		let Profile: PersistentModelConstructor<Profile>;
-		let profile1Id: string;
-		let user1Id: string;
 		let Post: PersistentModelConstructor<Post>;
 		let Comment: PersistentModelConstructor<Comment>;
-		let post1Id: string;
-		let comment1Id: string;
+		let PostUni: PersistentModelConstructor<PostUni>;
+		let CommentUni: PersistentModelConstructor<CommentUni>;
 
 		beforeEach(async () => {
-			({ DataStore, User, Profile, Post, Comment } = getDataStore({
-				storageAdapterFactory: () =>
-					require('../src/storage/adapter/IndexedDBAdapter').default,
-			}));
-
-			({ id: profile1Id } = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			));
-
-			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
-			));
-
-			({ id: profile1Id } = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
-			));
-
-			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
-			));
-
-			const post = await DataStore.save(new Post({ title: 'Test' }));
-			({ id: post1Id } = post);
-
-			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post })
-			));
+			({ DataStore, User, Profile, Post, Comment, PostUni, CommentUni } =
+				getDataStore({
+					storageAdapterFactory: () =>
+						require('../src/storage/adapter/IndexedDBAdapter').default,
+				}));
 		});
 
 		afterEach(async () => {
@@ -213,6 +191,18 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
 			expect.assertions(4);
+
+			let profile1Id: string;
+			let user1Id: string;
+
+			({ id: profile1Id } = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			));
+
+			({ id: user1Id } = await DataStore.save(
+				new User({ name: 'test', profileID: profile1Id })
+			));
+
 			let user = await DataStore.query(User, user1Id);
 			let profile = await DataStore.query(Profile, profile1Id);
 
@@ -232,6 +222,17 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
 			expect.assertions(4);
+
+			let post1Id: string;
+			let comment1Id: string;
+
+			const newPost = await DataStore.save(new Post({ title: 'Test' }));
+			({ id: post1Id } = newPost);
+
+			({ id: comment1Id } = await DataStore.save(
+				new Comment({ content: 'Test Content', post: newPost })
+			));
+
 			let post = await DataStore.query(Post, post1Id);
 			let comment = await DataStore.query(Comment, comment1Id);
 
@@ -243,6 +244,40 @@ describe('IndexedDBAdapter tests', () => {
 
 			post = await DataStore.query(Post, post1Id);
 			comment = await DataStore.query(Comment, comment1Id);
+
+			// both should be undefined, even though we only explicitly deleted the post
+			expect(post).toBeUndefined();
+			expect(comment).toBeUndefined();
+		});
+
+		// ref: https://github.com/aws-amplify/amplify-js/issues/10864
+		it('Should perform a cascading delete on a record with a unidirectional Has Many relationship on an index', async () => {
+			expect.assertions(4);
+
+			const newPost = await DataStore.save(
+				new PostUni({
+					title: 'post',
+				})
+			);
+
+			const newComment = await DataStore.save(
+				new CommentUni({
+					postID: newPost.id,
+					content: 'comment',
+				})
+			);
+
+			let post = await DataStore.query(PostUni, newPost.id);
+			let comment = await DataStore.query(CommentUni, newComment.id);
+
+			// double-checking that both of the records exist at first
+			expect(post!.id).toEqual(newPost.id);
+			expect(comment!.id).toEqual(newComment.id);
+
+			await DataStore.delete(PostUni, post!.id);
+
+			post = await DataStore.query(PostUni, newPost.id);
+			comment = await DataStore.query(CommentUni, newComment.id);
 
 			// both should be undefined, even though we only explicitly deleted the post
 			expect(post).toBeUndefined();

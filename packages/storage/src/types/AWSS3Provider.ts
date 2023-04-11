@@ -48,6 +48,7 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	SSECustomerAlgorithm?: GetObjectRequest['SSECustomerAlgorithm'];
 	SSECustomerKey?: GetObjectRequest['SSECustomerKey'];
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
+	validateObjectExistence?: boolean;
 };
 
 export type S3ProviderGetOuput<T> = T extends { download: true }

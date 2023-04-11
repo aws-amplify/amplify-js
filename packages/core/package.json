@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.1.5",
+	"version": "5.1.8",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -87,7 +87,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2 kB"
+			"limit": "2.1 kB"
 		},
 		{
 			"name": "Core (Logger)",
