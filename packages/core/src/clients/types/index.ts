@@ -1,6 +1,5 @@
 export {
 	Middleware,
-	MiddlewareContext,
 	MiddlewareHandler,
 	Request,
 	Response,

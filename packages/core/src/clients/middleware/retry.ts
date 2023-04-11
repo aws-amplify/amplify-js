@@ -1,3 +1,4 @@
+import { MetadataBearer } from '@aws-sdk/types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
@@ -14,11 +15,11 @@ export interface RetryOptions {
 	/**
 	 * Function to decide if the request should be retried.
 	 *
-	 * @param response Response of the request.
+	 * @param response Optional response of the request.
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider: (response: Response, error?: unknown) => boolean;
+	retryDecider: (response?: Response, error?: unknown) => boolean;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -30,7 +31,6 @@ export interface RetryOptions {
 	 * Maximum number of retry attempts, starting from 1. Defaults to 3.
 	 */
 	maxAttempts?: number;
-
 	/**
 	 * Optional AbortSignal to abort the retry attempts.
 	 */
@@ -40,22 +40,24 @@ export interface RetryOptions {
 /**
  * Retry middleware
  */
-export const retry =
-	(options: RetryOptions) =>
-	(next: MiddlewareHandler<Request, Response>, context: MiddlewareContext) => {
-		if (options.maxAttempts < 1) {
-			throw new Error('maxAttempts must be greater than 0');
-		}
-		return async function retry(request: Request) {
+export const retry = (options: RetryOptions) => {
+	if (options.maxAttempts < 1) {
+		throw new Error('maxAttempts must be greater than 0');
+	}
+	return (
+		next: MiddlewareHandler<Request, Response>,
+		context: MiddlewareContext
+	) =>
+		async function retry(request: Request) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
 				computeDelay,
 				abortSignal,
 			} = options;
-			let error = undefined;
+			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
-			let response;
+			let response: Response;
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				error = undefined;
 				response = undefined;
@@ -64,18 +66,24 @@ export const retry =
 				} catch (e) {
 					error = e;
 				}
+				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
+				attemptsCount =
+					context.attemptsCount > attemptsCount
+						? context.attemptsCount
+						: attemptsCount + 1;
+				context.attemptsCount = attemptsCount;
 				if (retryDecider(response, error)) {
-					attemptsCount += 1;
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);
 						await cancellableSleep(delay, abortSignal);
 					}
-					context.attemptsCount = attemptsCount;
 					continue;
 				} else if (response) {
+					updateMetadataAttempts(response, attemptsCount);
 					return response;
 				} else {
+					updateMetadataAttempts(error, attemptsCount);
 					throw error;
 				}
 			}
@@ -83,7 +91,7 @@ export const retry =
 				? new Error('Request aborted')
 				: error ?? new Error('Retry attempts exhausted');
 		};
-	};
+};
 
 const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	if (abortSignal?.aborted) {
@@ -101,4 +109,17 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 		sleepPromiseResolveFn();
 	});
 	return sleepPromise;
+};
+
+const isMetadataBearer = (response: unknown): response is MetadataBearer =>
+	typeof response?.['$metadata'] === 'object';
+
+const updateMetadataAttempts = (
+	nextHandlerOutput: Object,
+	attempts: number
+) => {
+	if (isMetadataBearer(nextHandlerOutput)) {
+		nextHandlerOutput.$metadata.attempts = attempts;
+	}
+	nextHandlerOutput['$metadata'] = { attempts };
 };
