@@ -17,11 +17,12 @@ import {
 	ResetPasswordResult 
 } from '../../../types';
 import { CustomAttribute } from '../types/models/CustomAttribute';
+import { CognitoResetPasswordOptions } from '../types/options/CognitoResetPasswordOptions';
 import { CognitoSignUpOptions } from '../types/options/CognitoSignUpOptions';
 import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
 
 export async function resetPassword(
-	resetPasswordRequest: ResetPasswordRequest<CognitoSignUpOptions>
+	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
 ): Promise<ResetPasswordResult<AuthStandardAttributeKey | CustomAttribute>> {
 	const username: string = resetPasswordRequest.username;
 	assertValidationError(
