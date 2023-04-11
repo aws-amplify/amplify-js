@@ -241,8 +241,7 @@ class MutationProcessor {
 										event: 'mutationError',
 										data: {
 											errorType: 'Unauthorized',
-											errors: authModeErrors,
-											model,
+											modelName: model,
 											authModes: operationAuthModes,
 										},
 									});

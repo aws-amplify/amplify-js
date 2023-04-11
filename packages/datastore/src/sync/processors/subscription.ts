@@ -587,11 +587,7 @@ class SubscriptionProcessor {
 																	event: 'subscriptionError',
 																	data: {
 																		errorType: 'Unauthorized',
-																		errors: authModeErrors.reduce(
-																			(acc, { errors }) => [...acc, ...errors],
-																			[]
-																		),
-																		model: modelDefinition.name,
+																		modelName: modelDefinition.name,
 																		authModes: readAuthModes,
 																		operation,
 																	},

@@ -454,8 +454,7 @@ describe('Sync', () => {
 				data: {
 					errorType: 'Unauthorized',
 					authModes: ['userPools'],
-					errors: [{ message: 'Request failed with status code 403' }],
-					model: 'Post',
+					modelName: 'Post',
 				},
 			});
 		});

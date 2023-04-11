@@ -700,15 +700,7 @@ describe('error handler and hub', () => {
 			error: () => {
 				const data = {
 					errorType: 'Unauthorized',
-					errors: [
-						{
-							message,
-						},
-						{
-							message,
-						},
-					],
-					model: 'Model',
+					modelName: 'Model',
 					authModes: ['API_KEY', 'AMAZON_COGNITO_USER_POOLS'],
 				};
 				['Create', 'Update', 'Delete'].forEach(operation => {
