@@ -2,21 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-
-import InAppMessagingClass from './InAppMessaging';
-import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
-import { PushNotificationInterface as PushNotification } from './PushNotification/types';
-import { NotificationsCategory, NotificationsConfig, UserInfo } from './types';
+import InAppMessaging from './InAppMessaging';
+import { NotificationsCategory, NotificationsConfig } from './types';
 
 const logger = new Logger('Notifications');
 
 class NotificationsClass {
 	private config: Record<string, any> = {};
 	private inAppMessaging: InAppMessaging;
-	private pushNotification?: PushNotification;
 
 	constructor() {
-		this.inAppMessaging = new InAppMessagingClass();
+		this.inAppMessaging = new InAppMessaging();
 	}
 
 	/**
@@ -39,46 +35,12 @@ class NotificationsClass {
 		// Configure sub-categories
 		this.inAppMessaging.configure(this.config.InAppMessaging);
 
-		if (this.config.Push) {
-			try {
-				const PushNotification = require('./PushNotification').default;
-				this.pushNotification = new PushNotification();
-				this.pushNotification.configure(this.config.Push);
-			} catch (err) {
-				logger.error(err);
-			}
-		}
-
 		return this.config;
 	};
 
-	get InAppMessaging(): InAppMessaging {
+	get InAppMessaging() {
 		return this.inAppMessaging;
 	}
-
-	get Push(): PushNotification {
-		return this.pushNotification ?? ({} as PushNotification);
-	}
-
-	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> => {
-		const identifyFunctions: Function[] = [];
-		if (this.inAppMessaging) {
-			identifyFunctions.push(this.inAppMessaging.identifyUser);
-		}
-		if (this.pushNotification) {
-			identifyFunctions.push(this.pushNotification.identifyUser);
-		}
-		return Promise.all<void>(
-			identifyFunctions.map(async identifyFunction => {
-				try {
-					await identifyFunction(userId, userInfo);
-				} catch (err) {
-					logger.error('Failed to identify user', err);
-					throw err;
-				}
-			})
-		);
-	};
 }
 
 const Notifications = new NotificationsClass();

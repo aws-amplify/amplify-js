@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>NotificationsProvider | amplify-js</title>
+	<title>OnMessageInteractionEventListener | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -916,22 +916,13 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 <ul>
 	<li class="current tsd-kind-interface">
-		<a href="notificationsprovider.html" class="tsd-kind-icon">Notifications<wbr>Provider</a>
+		<a href="onmessageinteractioneventlistener.html" class="tsd-kind-icon">On<wbr>Message<wbr>Interaction<wbr>Event<wbr>Listener</a>
 		<ul>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="notificationsprovider.html#configure" class="tsd-kind-icon">configure</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="onmessageinteractioneventlistener.html#handleevent" class="tsd-kind-icon">handle<wbr>Event</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="notificationsprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="notificationsprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="notificationsprovider.html#getsubcategory" class="tsd-kind-icon">get<wbr>Sub<wbr>Category</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="notificationsprovider.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="onmessageinteractioneventlistener.html#remove" class="tsd-kind-icon">remove</a>
 			</li>
 		</ul>
 	</li>
@@ -943,24 +934,8 @@ img { max-width: 100%; }
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="target">NotificationsProvider</span>
-				<ul class="tsd-hierarchy">
-					<li>
-						<a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a>
-					</li>
-					<li>
-						<a href="pushnotificationprovider.html" class="tsd-signature-type">PushNotificationProvider</a>
-					</li>
-				</ul>
+				<span class="target">OnMessageInteractionEventListener</span>
 			</li>
-		</ul>
-	</section>
-	<section class="tsd-panel">
-		<h3>Implemented by</h3>
-		<ul class="tsd-hierarchy">
-			<li><a href="../classes/awspinpointprovider.html" class="tsd-signature-type">AWSPinpointProvider</a></li>
-			<li><a href="../classes/awspinpointprovider.html" class="tsd-signature-type">AWSPinpointProvider</a></li>
-			<li><a href="../classes/awspinpointprovidercommon.html" class="tsd-signature-type">AWSPinpointProviderCommon</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -968,119 +943,51 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-index-panel">
 			<div class="tsd-index-content">
 				<section class="tsd-index-section ">
-					<h3>Methods</h3>
+					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="notificationsprovider.html#configure" class="tsd-kind-icon">configure</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="notificationsprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="notificationsprovider.html#getprovidername" class="tsd-kind-icon">get<wbr>Provider<wbr>Name</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="notificationsprovider.html#getsubcategory" class="tsd-kind-icon">get<wbr>Sub<wbr>Category</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="notificationsprovider.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="onmessageinteractioneventlistener.html#handleevent" class="tsd-kind-icon">handle<wbr>Event</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="onmessageinteractioneventlistener.html#remove" class="tsd-kind-icon">remove</a></li>
 					</ul>
 				</section>
 			</div>
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Methods</h2>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="configure" class="tsd-anchor"></a>
-			<h3>configure</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4c955d44a/packages/notifications/src/types.ts#L13">packages/notifications/src/types.ts:13</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>config: <span class="tsd-signature-type">object</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-				</li>
-			</ul>
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="handleevent" class="tsd-anchor"></a>
+			<h3>handle<wbr>Event</h3>
+			<div class="tsd-signature tsd-kind-icon">handle<wbr>Event<span class="tsd-signature-symbol">:</span> <a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/notifications/src/InAppMessaging/types.ts#L133">packages/notifications/src/InAppMessaging/types.ts:133</a></li>
+				</ul>
+			</aside>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="getcategory" class="tsd-anchor"></a>
-			<h3>get<wbr>Category</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Category<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#notificationscategory" class="tsd-signature-type">NotificationsCategory</a></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4c955d44a/packages/notifications/src/types.ts#L16">packages/notifications/src/types.ts:16</a></li>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="remove" class="tsd-anchor"></a>
+			<h3>remove</h3>
+			<div class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/notifications/src/InAppMessaging/types.ts#L134">packages/notifications/src/InAppMessaging/types.ts:134</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 						</ul>
-					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationscategory" class="tsd-signature-type">NotificationsCategory</a></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="getprovidername" class="tsd-anchor"></a>
-			<h3>get<wbr>Provider<wbr>Name</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Provider<wbr>Name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4c955d44a/packages/notifications/src/types.ts#L22">packages/notifications/src/types.ts:22</a></li>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
 						</ul>
-					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="getsubcategory" class="tsd-anchor"></a>
-			<h3>get<wbr>Sub<wbr>Category</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Sub<wbr>Category<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4c955d44a/packages/notifications/src/types.ts#L19">packages/notifications/src/types.ts:19</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="identifyuser" class="tsd-anchor"></a>
-			<h3>identify<wbr>User</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/4c955d44a/packages/notifications/src/types.ts#L25">packages/notifications/src/types.ts:25</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>userId: <span class="tsd-signature-type">string</span></h5>
-						</li>
-						<li>
-							<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-				</li>
-			</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
 	</section>
 	<footer>

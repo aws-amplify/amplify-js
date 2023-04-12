@@ -9,31 +9,29 @@ import {
 	StorageHelper,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
-
-import {
-	addEventListener,
-	EventListener,
-	notifyEventListeners,
-} from '../common';
-import { UserInfo } from '../types';
 import { AWSPinpointProvider } from './Providers';
+import {
+	addMessageInteractionEventListener,
+	notifyMessageInteractionEventListeners,
+} from './eventListeners';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
-	InAppMessagingInterface,
 	InAppMessagingConfig,
 	InAppMessageConflictHandler,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
-	NotificationsSubCategory,
+	NotificationsSubcategory,
 	OnMessageInteractionEventHandler,
+	OnMessageInteractionEventListener,
+	UserInfo,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-export default class InAppMessaging implements InAppMessagingInterface {
+export default class InAppMessaging {
 	private config: Record<string, any> = {};
 	private conflictHandler: InAppMessageConflictHandler;
 	private listeningForAnalyticEvents = false;
@@ -41,7 +39,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	private storageSynced = false;
 
 	constructor() {
-		this.config = { storage: new StorageHelper().getStorage() };
+		this.config = {
+			storage: new StorageHelper().getStorage(),
+		};
 		this.setConflictHandler(this.defaultConflictHandler);
 	}
 
@@ -77,7 +77,7 @@ export default class InAppMessaging implements InAppMessagingInterface {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): NotificationsSubCategory {
+	getModuleName(): NotificationsSubcategory {
 		return 'InAppMessaging';
 	}
 
@@ -172,9 +172,9 @@ export default class InAppMessaging implements InAppMessagingInterface {
 		const flattenedMessages = flatten(messages);
 
 		if (flattenedMessages.length) {
-			notifyEventListeners(
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
-				this.conflictHandler(flattenedMessages)
+			notifyMessageInteractionEventListeners(
+				this.conflictHandler(flattenedMessages),
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
 		}
 	};
@@ -193,32 +193,41 @@ export default class InAppMessaging implements InAppMessagingInterface {
 
 	onMessageReceived = (
 		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
-		addEventListener(InAppMessageInteractionEvent.MESSAGE_RECEIVED, handler);
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_RECEIVED
+		);
 
 	onMessageDisplayed = (
 		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
-		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISPLAYED, handler);
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISPLAYED
+		);
 
 	onMessageDismissed = (
 		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
-		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISMISSED, handler);
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISMISSED
+		);
 
 	onMessageActionTaken = (
 		handler: OnMessageInteractionEventHandler
-	): EventListener<OnMessageInteractionEventHandler> =>
-		addEventListener(
-			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN,
-			handler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
 		);
 
 	notifyMessageInteraction = (
 		message: InAppMessage,
-		type: InAppMessageInteractionEvent
+		event: InAppMessageInteractionEvent
 	): void => {
-		notifyEventListeners(type, message);
+		notifyMessageInteractionEventListeners(message, event);
 	};
 
 	setConflictHandler = (handler: InAppMessageConflictHandler): void => {

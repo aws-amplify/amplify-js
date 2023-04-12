@@ -14,23 +14,9 @@ export const mockInAppMessagingProvider = {
 	processInAppMessages: jest.fn(),
 };
 
-export const mockPushNotificationProvider = {
-	configure: jest.fn(),
-	getCategory: jest.fn(),
-	getProviderName: jest.fn(),
-	getSubCategory: jest.fn(),
-	identifyUser: jest.fn(),
-	registerDevice: jest.fn(),
-};
-
 export const mockStorage = {
 	getItem: jest.fn(),
 	removeItem: jest.fn(),
 	setItem: jest.fn(),
 	sync: jest.fn(),
-};
-
-export const mockLogger = {
-	debug: jest.fn(),
-	error: jest.fn(),
 };

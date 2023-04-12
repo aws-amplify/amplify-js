@@ -18,7 +18,6 @@ import {
 	S3ProviderGetConfig,
 } from '../../src/types';
 import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
-import * as StorageUtils from '../../src/common/StorageUtils';
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -511,78 +510,6 @@ describe('StorageProvider test', () => {
 			expect(curCredSpyOn.mock.calls.length).toBe(2);
 
 			curCredSpyOn.mockClear();
-		});
-
-		describe('get test with validateObjectExistence option', () => {
-			beforeEach(() => {
-				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-					return Promise.resolve(credentials);
-				});
-			});
-			test('get existing object with validateObjectExistence option', async () => {
-				expect.assertions(5);
-				const options_with_validateObjectExistence = Object.assign(
-					{},
-					options,
-					{
-						validateObjectExistence: true,
-					}
-				);
-				storage = new StorageProvider();
-				storage.configure(options_with_validateObjectExistence);
-				const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
-				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
-				jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
-
-				expect(
-					await storage.get('key', {
-						validateObjectExistence: true,
-						track: true,
-					})
-				).toBe('url');
-				expect(dispatchSpy).toHaveBeenCalledTimes(1);
-				expect(dispatchSpy).toBeCalledWith(
-					true,
-					'getSignedUrl',
-					{ method: 'get', result: 'success' },
-					null,
-					'Signed URL: url'
-				);
-				expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-				expect(spyon.mock.calls[0][0].hostname).toEqual(
-					`${options.bucket}.s3.${options.region}.amazonaws.com`
-				);
-			});
-
-			test('get non-existing object with validateObjectExistence option', async () => {
-				expect.assertions(2);
-				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res({});
-					});
-				});
-				const dispatchSpy = jest.spyOn(StorageUtils, 'dispatchStorageEvent');
-				jest
-					.spyOn(S3Client.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw { $metadata: { httpStatusCode: 404 }, name: 'NotFound' };
-					});
-				try {
-					await storage.get('key', {
-						validateObjectExistence: true,
-						track: true,
-					});
-				} catch (error) {
-					expect(error.$metadata.httpStatusCode).toBe(404);
-					expect(dispatchSpy).toBeCalledWith(
-						true,
-						'getSignedUrl',
-						{ method: 'get', result: 'failed' },
-						null,
-						'key not found'
-					);
-				}
-			});
 		});
 	});
 
