@@ -5,7 +5,7 @@ export { signUp } from './apis/signUp';
 export { resetPassword } from './apis/resetPassword';
 
 export { ClientMetadata } from './types/models/ClientMetadata';
-export type { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
+export { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
 export { CustomAttribute } from './types/models/CustomAttribute';
 export { ValidationData } from './types/models/ValidationData';
 export { CognitoSignUpOptions } from './types/options/CognitoSignUpOptions';

@@ -52,7 +52,7 @@ describe('ResetPassword API happy path cases', () => {
 
 });
 
-describe('ResetPassword API Error Path Cases:', () => {
+describe('ResetPassword API error path cases:', () => {
 	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -63,7 +63,7 @@ describe('ResetPassword API Error Path Cases:', () => {
 		}
 	});
 
-	test('ResetPassword API should expect service error', async () => {
+	test('ResetPassword API should raise service error', async () => {
 		expect.assertions(2);
 		const serviceError = new Error('service error');
 		serviceError.name = ForgotPasswordException.InvalidParameterException;
@@ -78,7 +78,7 @@ describe('ResetPassword API Error Path Cases:', () => {
 		spyon.mockClear();
 	});
 
-	test('ResetPassword API should expect an unknown error when underlying error is' +
+	test('ResetPassword API should raise an unknown error when underlying error is' +
 		+ 'not coming from the service', async () => {
 		expect.assertions(3);
 		const unknownError = new Error('unknown error');
@@ -94,7 +94,7 @@ describe('ResetPassword API Error Path Cases:', () => {
 		spyon.mockClear();
 	});
 
-	test('ResetPassword API should expect an unknown error when the underlying error is null', async () => {
+	test('ResetPassword API should raise an unknown error when the underlying error is null', async () => {
 		expect.assertions(3);
 		const unknownError = null;
 		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')

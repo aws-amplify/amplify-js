@@ -23,7 +23,7 @@ import { resetPasswordClient } from '../utils/clients/ResetPasswordClient';
 export async function resetPassword(
 	resetPasswordRequest: ResetPasswordRequest<CognitoResetPasswordOptions>
 ): Promise<ResetPasswordResult<AuthStandardAttributeKey | CustomAttribute>> {
-	const username: string = resetPasswordRequest.username;
+	const username = resetPasswordRequest.username;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername
