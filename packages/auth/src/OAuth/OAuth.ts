@@ -233,7 +233,7 @@ export default class OAuth {
 				return { ...(await this._handleImplicitFlow(currentUrl)), state };
 			}
 		} catch (e) {
-			logger.error(`Error handling auth response.`, e);
+			logger.debug(`Error handling auth response.`, e);
 			throw e;
 		}
 	}

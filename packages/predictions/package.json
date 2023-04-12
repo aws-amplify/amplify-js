@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "5.0.24",
+	"version": "5.0.25",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -45,8 +45,8 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.1.7",
-		"@aws-amplify/storage": "5.1.14",
+		"@aws-amplify/core": "5.1.8",
+		"@aws-amplify/storage": "5.1.15",
 		"@aws-sdk/client-comprehend": "3.6.1",
 		"@aws-sdk/client-polly": "3.6.1",
 		"@aws-sdk/client-rekognition": "3.6.1",
@@ -62,7 +62,7 @@
 			"name": "Predictions (all providers)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "133 kB"
+			"limit": "133.5 kB"
 		},
 		{
 			"name": "Predictions (Convert provider)",
@@ -74,7 +74,7 @@
 			"name": "Predictions (Identify provider)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "104 kB"
+			"limit": "104.5 kB"
 		},
 		{
 			"name": "Predictions (Interpret provider)",
