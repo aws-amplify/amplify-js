@@ -40,14 +40,14 @@ export interface RetryOptions<ResponseType = Response> {
 /**
  * Retry middleware
  */
-export const retry = <Input = Request, Output = Response>(
+export const retryMiddleware = <Input = Request, Output = Response>(
 	options: RetryOptions<Output>
 ) => {
 	if (options.maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
 	return (next: MiddlewareHandler<Input, Output>, context: MiddlewareContext) =>
-		async function retry(request: Input) {
+		async function retryMiddleware(request: Input) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,

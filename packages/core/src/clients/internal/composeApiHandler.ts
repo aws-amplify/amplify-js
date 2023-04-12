@@ -3,9 +3,9 @@ import { TransferHandler, Endpoint } from '../types/core';
 import { HttpRequest, HttpResponse } from '../types/http';
 
 export const composeServiceApi = <
+	TransferHandlerOptions,
 	Input,
 	Output,
-	TransferHandlerOptions,
 	DefaultConfig extends Partial<TransferHandlerOptions & ServiceClientOptions>
 >(
 	transferHandler: TransferHandler<
@@ -13,7 +13,7 @@ export const composeServiceApi = <
 		HttpResponse,
 		TransferHandlerOptions
 	>,
-	serializer: (input: Input, endpoint: Endpoint) => Promise<HttpRequest>,
+	serializer: (input: Input, endpoint: Endpoint) => HttpRequest,
 	deserializer: (output: HttpResponse) => Promise<Output>,
 	defaultConfig: DefaultConfig
 ) => {
@@ -31,7 +31,7 @@ export const composeServiceApi = <
 		const endpoint = await resolvedConfig.endpointResolver({
 			region: resolvedConfig.region,
 		});
-		const request = await serializer(input, endpoint);
+		const request = serializer(input, endpoint);
 		const response = await transferHandler(request, {
 			...resolvedConfig,
 		});

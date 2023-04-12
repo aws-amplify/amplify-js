@@ -34,7 +34,7 @@ const THROTTLING_ERROR_CODES = [
 	'TooManyRequestsException',
 ];
 
-export const CLOCK_SKEW_ERROR_CODES = [
+const CLOCK_SKEW_ERROR_CODES = [
 	'AuthFailure',
 	'InvalidSignatureException',
 	'RequestExpired',
@@ -44,7 +44,7 @@ export const CLOCK_SKEW_ERROR_CODES = [
 	'BadRequestException', // API Gateway
 ];
 
-export const TIMEOUT_ERROR_CODES = [
+const TIMEOUT_ERROR_CODES = [
 	'TimeoutError',
 	'RequestTimeout',
 	'RequestTimeoutException',

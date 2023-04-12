@@ -100,12 +100,12 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "11.5 kB"
+			"limit": "11.54 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry/middleware.js",
-			"import": "{ retry }",
+			"import": "{ retryMiddleware }",
 			"limit": "1.24 kB"
 		},
 		{
@@ -117,7 +117,7 @@
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./lib-esm/clients/handlers/unauth.js",
-			"import": "{ unAuthenticatedHandler }",
+			"import": "{ unauthenticatedHandler }",
 			"limit": "2.75 kB"
 		}
 	],

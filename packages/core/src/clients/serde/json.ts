@@ -1,29 +1,26 @@
 import { ErrorCodeLoader, HttpResponse } from '../types';
-import { parseMetadata } from './response-info';
+import { parseMetadata } from './responseInfo';
 
 /**
  * Error code loader for AWS JSON protocol.
  */
-export const loadErrorCode: ErrorCodeLoader = async (
-	response: HttpResponse
+export const loadJsonErrorCode: ErrorCodeLoader = async (
+	response?: HttpResponse
 ) => {
-	if (response.statusCode < 300) {
-		return undefined;
+	if (!response || response.statusCode < 300) {
+		return;
 	}
-	const body = await parseBody(response);
+	const body = await parseJsonBody(response);
 	const sanitizeErrorCode = (rawValue: string | number): string => {
-		let cleanValue = rawValue;
-		if (typeof cleanValue === 'number') {
-			cleanValue = cleanValue.toString();
+		let cleanValue = rawValue.toString();
+		if (cleanValue.includes(',')) {
+			[cleanValue] = cleanValue.split(',');
 		}
-		if (cleanValue.indexOf(',') >= 0) {
-			cleanValue = cleanValue.split(',')[0];
+		if (cleanValue.includes(':')) {
+			[cleanValue] = cleanValue.split(':');
 		}
-		if (cleanValue.indexOf(':') >= 0) {
-			cleanValue = cleanValue.split(':')[0];
-		}
-		if (cleanValue.indexOf('#') >= 0) {
-			cleanValue = cleanValue.split('#')[1];
+		if (cleanValue.includes('#')) {
+			[cleanValue] = cleanValue.split('#');
 		}
 		return cleanValue;
 	};
@@ -32,7 +29,7 @@ export const loadErrorCode: ErrorCodeLoader = async (
 	);
 };
 
-export const parseBody = async (response: HttpResponse): Promise<any> => {
+export const parseJsonBody = async (response: HttpResponse): Promise<any> => {
 	if (!response.body) {
 		throw new Error('Missing response payload');
 	}
@@ -42,9 +39,11 @@ export const parseBody = async (response: HttpResponse): Promise<any> => {
 	});
 };
 
-export const throwError = async (response: HttpResponse): Promise<never> => {
-	const body = await parseBody(response);
-	const code = (await loadErrorCode(response)) ?? 'UnknownError';
+export const throwJsonError = async (
+	response: HttpResponse
+): Promise<never> => {
+	const body = await parseJsonBody(response);
+	const code = (await loadJsonErrorCode(response)) ?? 'UnknownError';
 	const message = body.message ?? body.Message ?? 'Unknown error';
 	const error = new Error(message);
 	throw Object.assign(error, {

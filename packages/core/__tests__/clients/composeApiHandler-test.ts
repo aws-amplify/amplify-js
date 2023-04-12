@@ -18,7 +18,7 @@ describe(composeServiceApi.name, () => {
 		};
 		const api = composeServiceApi(
 			mockTransferHandler,
-			async input => defaultRequest,
+			input => defaultRequest,
 			async output => ({
 				Result: 'from API',
 			}),

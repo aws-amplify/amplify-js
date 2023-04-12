@@ -1,2 +1,2 @@
-export { parseMetadata } from './response-info';
-export { parseBody, loadErrorCode, throwError } from './json';
+export { parseMetadata } from './responseInfo';
+export { parseJsonBody, loadJsonErrorCode, throwJsonError } from './json';

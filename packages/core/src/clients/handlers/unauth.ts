@@ -1,11 +1,11 @@
-import { retry, RetryOptions } from '../middleware/retry';
+import { retryMiddleware, RetryOptions } from '../middleware/retry';
+import { userAgentMiddleware, UserAgentOptions } from '../middleware/userAgent';
 import { composeTransferHandler } from '../internal/composeTransferHandler';
 import { fetchTransferHandler } from './fetch';
 import { HttpRequest, HttpResponse } from '../types';
-import { userAgent, UserAgentOptions } from '../middleware/user-agent';
 
-export const unAuthenticatedHandler = composeTransferHandler<
+export const unauthenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>],
 	HttpRequest,
 	HttpResponse
->(fetchTransferHandler, [userAgent, retry]);
+>(fetchTransferHandler, [userAgentMiddleware, retryMiddleware]);

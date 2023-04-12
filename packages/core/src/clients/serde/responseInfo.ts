@@ -3,14 +3,15 @@ import { isMetadataBearer } from '../middleware/retry/middleware';
 import { HttpResponse } from '../types/http';
 
 export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
+	const { headers, statusCode } = response;
 	return {
 		...(isMetadataBearer(response) ? response.$metadata : {}),
-		httpStatusCode: response.statusCode,
+		httpStatusCode: statusCode,
 		requestId:
-			response.headers['x-amzn-requestid'] ??
-			response.headers['x-amzn-request-id'] ??
-			response.headers['x-amz-request-id'],
-		extendedRequestId: response.headers['x-amz-id-2'],
-		cfId: response.headers['x-amz-cf-id'],
+			headers['x-amzn-requestid'] ??
+			headers['x-amzn-request-id'] ??
+			headers['x-amz-request-id'],
+		extendedRequestId: headers['x-amz-id-2'],
+		cfId: headers['x-amz-cf-id'],
 	};
 };

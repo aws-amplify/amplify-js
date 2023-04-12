@@ -16,8 +16,8 @@ export interface ServiceClientOptions {
 
 /**
  * Load error code from given response. If no error code is found, return undefined.
- * This function is protocol specific(e.g. JSON, XML, etc.)
+ * This function is protocol-specific (e.g. JSON, XML, etc.)
  */
 export type ErrorCodeLoader = (
-	response: HttpResponse
+	response?: HttpResponse
 ) => Promise<string | undefined>;
