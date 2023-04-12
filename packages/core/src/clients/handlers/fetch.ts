@@ -27,7 +27,7 @@ export const fetchTransferHandler: TransferHandler<
 	}
 
 	const headersBag = {};
-	resp.headers?.forEach((key, value) => {
+	resp.headers?.forEach((value, key) => {
 		headersBag[key.toLowerCase()] = value;
 	});
 	const httpResponse = {
@@ -36,16 +36,16 @@ export const fetchTransferHandler: TransferHandler<
 		body: null,
 	};
 
-	if (resp.body) {
-		const bodyWithMixin = Object.assign(resp.body, {
-			text: () => resp.text(),
-			blob: () => resp.blob(),
-			json: () => resp.json(),
-		});
-		return {
-			...httpResponse,
-			body: bodyWithMixin,
-		};
-	}
-	return httpResponse;
+	// resp.body is a ReadableStream according to Fetch API spec, but React Native
+	// does not implement it.
+	const bodyWithMixin = Object.assign(resp.body ?? ({} as ReadableStream), {
+		text: () => resp.text(),
+		blob: () => resp.blob(),
+		json: () => resp.json(),
+	});
+
+	return {
+		...httpResponse,
+		body: bodyWithMixin,
+	};
 };

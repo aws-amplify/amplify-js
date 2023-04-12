@@ -39,6 +39,14 @@ describe(fetchTransferHandler.name, () => {
 		);
 	});
 
+	test('should support headers', async () => {
+		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
+			cb('foo', 'bar');
+		});
+		const { headers } = await fetchTransferHandler(mockRequest, {});
+		expect(headers).toEqual({ bar: 'foo' });
+	});
+
 	test('should support text() in response.body', async () => {
 		const { body } = await fetchTransferHandler(mockRequest, {});
 		if (!body) {
