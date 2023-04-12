@@ -587,6 +587,13 @@ jobs:
           sample_name: auth-ssr
           spec: auth-ssr
           browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'NextJS Auth Custom Implementation with SSR'
+          framework: next
+          category: auth
+          sample_name: custom-auth-ssr
+          spec: authenticator
+          browser: << parameters.browser >>
 
   integ_react_predictions:
     parameters:
@@ -1539,6 +1546,23 @@ jobs:
           spec: amplify-docs-examples
           browser: << parameters.browser >>
 
+  integ_react_datastore_websocket_disruption:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/websocket-disruption
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - WebSocket Disruption'
+          framework: react
+          category: datastore
+          sample_name: websocket-disruption
+          spec: websocket-disruption
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -1549,6 +1573,8 @@ jobs:
           name: 'Publish to Amplify Package'
           command: |
             echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            echo "export PREID_HASH_SUFFIX=$(echo $CIRCLE_SHA1 | cut -c -7 | sed 's/^/\./')" >> "$BASH_ENV"
+            source "$BASH_ENV"
             npm whoami
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
@@ -2185,6 +2211,15 @@ workflows:
           matrix:
             parameters:
               <<: *minimal_browser_list
+      - integ_react_datastore_websocket_disruption:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *minimal_browser_list
       - deploy:
           filters:
             <<: *releasable_branches
@@ -2255,6 +2290,7 @@ workflows:
             - integ_rollup_datastore_basic_crud
             - integ_vanilla_js_datastore_basic_crud
             - integ_react_datastore_docs_examples
+            - integ_react_datastore_websocket_disruption
       - post_release:
           filters:
             branches:
