@@ -12,9 +12,10 @@
 		"allowJs": false,
 		"declaration": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		"types": ["node"],
+		"types": ["jest", "node"],
 		"esModuleInterop": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"jsx": "react-native"
 	},
 	"include": ["src/**/*"],
 	"exclude": ["src/setupTests.ts"]
