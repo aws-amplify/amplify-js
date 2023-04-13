@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.0...@aws-amplify/notifications@1.1.1) (2023-04-13)
+
+### Bug Fixes
+
+- **notifications:** Fix permissions type ([#11237](https://github.com/aws-amplify/amplify-js/issues/11237)) ([7fe7d4e](https://github.com/aws-amplify/amplify-js/commit/7fe7d4ea9f638547cc7199cf8d02ac561d8bd7b1))
+
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.0.25...@aws-amplify/notifications@1.1.0) (2023-04-12)
 
 ### Bug Fixes
