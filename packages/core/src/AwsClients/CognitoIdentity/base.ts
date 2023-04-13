@@ -6,7 +6,7 @@ import type {
 	Middleware,
 } from '../../clients/types';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
-import { unauthenticatedHandler } from '../../clients/handlers/unauth';
+import { unauthenticatedHandler } from '../../clients/handlers/unauthenticated';
 import {
 	jitteredBackoff,
 	getRetryDecider,

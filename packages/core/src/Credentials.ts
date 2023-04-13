@@ -290,10 +290,10 @@ export class CredentialsClass {
 				this._identityId = IdentityId;
 			}
 			const { Credentials } = await getCredentialsForIdentity(cognitoConfig, {
-				IdentityId: identityId ?? this._identityId,
+				IdentityId: this._identityId,
 			});
 			return {
-				identityId: identityId ?? this._identityId,
+				identityId: this._identityId,
 				accessKeyId: Credentials.AccessKeyId,
 				secretAccessKey: Credentials.SecretKey,
 				sessionToken: Credentials.SessionToken,

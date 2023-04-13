@@ -16,15 +16,9 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const body = await parseJsonBody(response);
 	const sanitizeErrorCode = (rawValue: string | number): string => {
-		let cleanValue = rawValue.toString();
-		if (cleanValue.includes(',')) {
-			[cleanValue] = cleanValue.split(',');
-		}
-		if (cleanValue.includes(':')) {
-			[cleanValue] = cleanValue.split(':');
-		}
+		const [cleanValue] = rawValue.toString().split(/[\,\:]+/);
 		if (cleanValue.includes('#')) {
-			[cleanValue] = cleanValue.split('#');
+			return cleanValue.split('#')[1];
 		}
 		return cleanValue;
 	};
@@ -42,6 +36,9 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 	});
 };
 
+/**
+ * Parse JSON response body to JavaScript object.
+ */
 export const parseJsonBody = async (response: HttpResponse): Promise<any> => {
 	if (!response.body) {
 		throw new Error('Missing response payload');

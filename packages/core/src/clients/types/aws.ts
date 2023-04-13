@@ -1,11 +1,7 @@
 import { Endpoint } from './core';
 import { HttpResponse } from './http';
-export interface Credentials {
-	accessKeyId: string;
-	secretAccessKey: string;
-	sessionToken?: string;
-	expiration?: Date;
-}
+
+export type { Credentials } from '@aws-sdk/types';
 
 export type SourceData = string | ArrayBuffer | ArrayBufferView;
 

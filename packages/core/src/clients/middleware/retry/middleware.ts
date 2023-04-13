@@ -11,7 +11,7 @@ const DEFAULT_RETRY_ATTEMPTS = 3;
 /**
  * Configuration of the retry middleware
  */
-export interface RetryOptions<ResponseType = Response> {
+export interface RetryOptions<TResponse = Response> {
 	/**
 	 * Function to decide if the request should be retried.
 	 *
@@ -19,7 +19,7 @@ export interface RetryOptions<ResponseType = Response> {
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider: (response?: ResponseType, error?: unknown) => Promise<boolean>;
+	retryDecider: (response?: TResponse, error?: unknown) => Promise<boolean>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -40,14 +40,17 @@ export interface RetryOptions<ResponseType = Response> {
 /**
  * Retry middleware
  */
-export const retryMiddleware = <Input = Request, Output = Response>(
-	options: RetryOptions<Output>
+export const retryMiddleware = <TInput = Request, TOutput = Response>(
+	options: RetryOptions<TOutput>
 ) => {
 	if (options.maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
-	return (next: MiddlewareHandler<Input, Output>, context: MiddlewareContext) =>
-		async function retryMiddleware(request: Input) {
+	return (
+		next: MiddlewareHandler<TInput, TOutput>,
+		context: MiddlewareContext
+	) =>
+		async function retryMiddleware(request: TInput) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
@@ -56,7 +59,7 @@ export const retryMiddleware = <Input = Request, Output = Response>(
 			} = options;
 			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
-			let response: Output;
+			let response: TOutput;
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				error = undefined;
 				response = undefined;

@@ -10,7 +10,11 @@ import {
 } from './base';
 import { composeServiceApi } from '../../clients/internal/composeApiHandler';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
-import { parseJsonBody, parseJsonError } from '../../clients/serde';
+import {
+	parseJsonBody,
+	parseJsonError,
+	parseMetadata,
+} from '../../clients/serde';
 
 export type {
 	GetIdCommandInput,
@@ -34,7 +38,10 @@ const getIdDeserializer = async (
 		throw error;
 	} else {
 		const body = await parseJsonBody(response);
-		return body as GetIdCommandOutput;
+		return {
+			IdentityId: body.IdentityId,
+			$metadata: parseMetadata(response),
+		};
 	}
 };
 

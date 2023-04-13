@@ -19,7 +19,8 @@ export const userAgentMiddleware: Middleware<
 	next => {
 		return async function userAgentMiddleware(request) {
 			if (userAgentValue.trim().length === 0) {
-				return await next(request);
+				const result = await next(request);
+				return result;
 			} else {
 				const headerName = userAgentHeader.toLowerCase();
 				request.headers[headerName] = request.headers[headerName]

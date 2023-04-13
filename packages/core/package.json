@@ -116,7 +116,7 @@
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
-			"path": "./lib-esm/clients/handlers/unauth.js",
+			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
 			"limit": "2.75 kB"
 		}

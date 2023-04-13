@@ -4,8 +4,10 @@ import {
 	getCredentialsForIdentity,
 	getId,
 } from '../src/AwsClients/CognitoIdentity';
-jest.mock('../src/AwsClients/CognitoIdentity');
 import { Hub } from '../src/Hub';
+
+jest.mock('../src/AwsClients/CognitoIdentity');
+
 const session = {};
 
 const user = {

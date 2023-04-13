@@ -7,13 +7,13 @@ import { HttpResponse, ErrorParser } from '../../types';
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
 	async (response?: HttpResponse, error?: Error): Promise<boolean> => {
-		const errorFromResponse = error ?? (await errorParser(response));
+		const { name: errorCode } = error ?? (await errorParser(response)) ?? {};
 		const statusCode = response?.statusCode;
 		return (
 			isConnectionError(error) ||
-			isThrottlingError(statusCode, errorFromResponse.name) ||
-			isClockSkewError(errorFromResponse.name) ||
-			isServerSideError(statusCode, errorFromResponse.name)
+			isThrottlingError(statusCode, errorCode) ||
+			isClockSkewError(errorCode) ||
+			isServerSideError(statusCode, errorCode)
 		);
 	};
 

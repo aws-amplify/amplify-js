@@ -26,13 +26,13 @@ export const fetchTransferHandler: TransferHandler<
 		throw e;
 	}
 
-	const headersBag = {};
+	const headers = {};
 	resp.headers?.forEach((value, key) => {
-		headersBag[key.toLowerCase()] = value;
+		headers[key.toLowerCase()] = value;
 	});
 	const httpResponse = {
 		statusCode: resp.status,
-		headers: headersBag,
+		headers,
 		body: null,
 	};
 
