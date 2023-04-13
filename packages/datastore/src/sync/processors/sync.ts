@@ -322,11 +322,11 @@ class SyncProcessor {
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
 		this.startcount++;
-		try {
-			if (this.startcount == 2) throw new Error('ha!');
-		} catch (e) {
-			console.error(e);
-		}
+		// try {
+		// 	if (this.startcount == 2) throw new Error('ha!');
+		// } catch (e) {
+		// 	console.error(e);
+		// }
 		console.log('sync.ts start!!!');
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
@@ -383,6 +383,8 @@ class SyncProcessor {
 										syncPageSize
 									);
 
+									debugger;
+									console.log('// TODO: Why are we getting lost in here!!!');
 									// TODO: Why are we getting lost in here!!!
 									({ items, nextToken, startedAt } = await this.retrievePage(
 										modelDefinition,

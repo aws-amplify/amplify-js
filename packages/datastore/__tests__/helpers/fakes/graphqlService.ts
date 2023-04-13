@@ -84,14 +84,17 @@ export class FakeGraphQLService {
 		}
 	}
 
-	private async jitteredPause(ms) {
+	// private async jitteredPause(ms: number): Promise<unknown> {
+	private async jitteredPause(ms: number) {
 		/**
 		 * "Materialized" jitter from -jitter to +jitter.
 		 */
 		const jitter = Math.floor(
 			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
 		);
+		console.log('jitter from jitteredPause: ', jitter);
 		const jitteredMs = Math.max(ms + jitter, 0);
+		console.log('jitteredMs from jitteredPause: ', jitteredMs);
 		return pause(jitteredMs);
 	}
 
@@ -405,19 +408,24 @@ export class FakeGraphQLService {
 	 * Sends out graphql subscription messages to all subscribers of a table-operation.
 	 *
 	 * @param tableName The table name subscribers are looking at.
-	 * @param type The operation type. (Create, Update, Delete).
-	 * @param data The data to sendout.
+	 * @param type The operation type. (`Create`, `Update`, `Delete`).
+	 * @param data The data to send out.
 	 * @param selection The function/selection name, like "onCreateTodo".
 	 */
 	public async notifySubscribers(tableName, type, data, selection) {
+		console.time('notifySubscribers jitteredPause');
 		await this.jitteredPause(this.latencies.subscriber);
+		console.timeEnd('notifySubscribers jitteredPause');
 		const observers = this.getObservers(tableName, type);
+
 		const typeName = {
 			create: 'Create',
 			update: 'Update',
 			delete: 'Delete',
 		}[type];
+
 		const observerMessageName = `on${typeName}${tableName}`;
+
 		observers.forEach(observer => {
 			const message = {
 				value: {
@@ -458,6 +466,7 @@ export class FakeGraphQLService {
 		}
 
 		const parsed = this.parseQuery(query);
+
 		const { operation, selection, table: tableName, type } = parsed;
 
 		this.log('Parsed Request', parsed);
@@ -489,6 +498,7 @@ export class FakeGraphQLService {
 		}
 
 		return new Promise(async resolve => {
+			console.log('before jitteredPause in "request"', this.latencies.request);
 			await this.jitteredPause(this.latencies.request);
 
 			if (operation === 'query') {
@@ -536,6 +546,7 @@ export class FakeGraphQLService {
 								// [timestampFields!.updatedAt]: new Date().toISOString(),
 							},
 						};
+						console.log('TODO: update test expected values and re-enable');
 						table.set(this.getPK(tableName, record), data[selection]);
 					}
 				} else if (type === 'update') {
@@ -604,6 +615,7 @@ export class FakeGraphQLService {
 								// [timestampFields!.updatedAt]: new Date().toISOString(),
 							},
 						};
+						console.log('TODO: update test expected values and re-enabl');
 						table.set(this.getPK(tableName, record), data[selection]);
 						this.log('delete applying to table', { data });
 					}
