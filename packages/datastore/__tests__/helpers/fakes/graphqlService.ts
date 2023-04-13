@@ -40,7 +40,7 @@ export class FakeGraphQLService {
 	 */
 	public latencies = {
 		/**
-		 * The time it takes a request will take to reach the cloud.
+		 * The time it will take for a request to reach the "cloud".
 		 */
 		request: 15,
 
@@ -57,7 +57,7 @@ export class FakeGraphQLService {
 		subscriber: 15,
 
 		/**
-		 * The max amount to randomly to +/- from each latency.
+		 * The max amount to randomly +/- from each latency.
 		 */
 		jitter: 5,
 	};
