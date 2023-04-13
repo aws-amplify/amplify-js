@@ -1,19 +1,19 @@
-import { HttpResponse, ErrorCodeLoader } from '../../types';
+import { HttpResponse, ErrorParser } from '../../types';
 
 /**
  * Get retry decider function
- * @param errorCodeLoader Function to load error code from HTTP response
+ * @param errorParser Function to load JavaScript error from HTTP response
  */
 export const getRetryDecider =
-	(errorCodeLoader: ErrorCodeLoader) =>
+	(errorParser: ErrorParser) =>
 	async (response?: HttpResponse, error?: Error): Promise<boolean> => {
-		const errorCode = await errorCodeLoader(response);
+		const errorFromResponse = error ?? (await errorParser(response));
 		const statusCode = response?.statusCode;
 		return (
 			isConnectionError(error) ||
-			isThrottlingError(statusCode, errorCode) ||
-			isClockSkewError(errorCode) ||
-			isServerSideError(statusCode, errorCode)
+			isThrottlingError(statusCode, errorFromResponse.name) ||
+			isClockSkewError(errorFromResponse.name) ||
+			isServerSideError(statusCode, errorFromResponse.name)
 		);
 	};
 

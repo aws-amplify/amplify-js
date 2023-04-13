@@ -14,4 +14,4 @@ export {
 	HttpTransferOptions,
 	ResponseBodyMixin,
 } from './http';
-export { Credentials, ServiceClientOptions, ErrorCodeLoader } from './aws';
+export { Credentials, ServiceClientOptions, ErrorParser } from './aws';

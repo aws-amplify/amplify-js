@@ -21,7 +21,7 @@ export const fetchTransferHandler: TransferHandler<
 	} catch (e) {
 		// TODO: needs to revise error handling in v6
 		if (e instanceof TypeError) {
-			throw new Error(`Network error`);
+			throw new Error('Network error');
 		}
 		throw e;
 	}
@@ -38,7 +38,7 @@ export const fetchTransferHandler: TransferHandler<
 
 	// resp.body is a ReadableStream according to Fetch API spec, but React Native
 	// does not implement it.
-	const bodyWithMixin = Object.assign(resp.body ?? ({} as ReadableStream), {
+	const bodyWithMixin = Object.assign(resp.body ?? {}, {
 		text: () => resp.text(),
 		blob: () => resp.blob(),
 		json: () => resp.json(),

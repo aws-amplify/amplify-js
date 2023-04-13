@@ -1,12 +1,16 @@
-import { ErrorCodeLoader, HttpResponse } from '../types';
+import { ErrorParser, HttpResponse } from '../types';
 import { parseMetadata } from './responseInfo';
 
 /**
- * Error code loader for AWS JSON protocol.
+ * Utility functions for serializing and deserializing of JSON protocol in general(including: REST-JSON, JSON-RPC, etc.)
+ * The utility functions here must be mindful of only reading the response body once for each response in any
+ * deserializer code path.
  */
-export const loadJsonErrorCode: ErrorCodeLoader = async (
-	response?: HttpResponse
-) => {
+
+/**
+ * Error parser for AWS JSON protocol.
+ */
+export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 	if (!response || response.statusCode < 300) {
 		return;
 	}
@@ -24,9 +28,18 @@ export const loadJsonErrorCode: ErrorCodeLoader = async (
 		}
 		return cleanValue;
 	};
-	return sanitizeErrorCode(
-		response.headers['x-amzn-errortype'] ?? body.code ?? body.__type
+	const code = sanitizeErrorCode(
+		response.headers['x-amzn-errortype'] ??
+			body.code ??
+			body.__type ??
+			'UnknownError'
 	);
+	const message = body.message ?? body.Message ?? 'Unknown error';
+	const error = new Error(message);
+	return Object.assign(error, {
+		name: code,
+		$metadata: parseMetadata(response),
+	});
 };
 
 export const parseJsonBody = async (response: HttpResponse): Promise<any> => {
@@ -35,19 +48,6 @@ export const parseJsonBody = async (response: HttpResponse): Promise<any> => {
 	}
 	const output = await response.body.json();
 	return Object.assign(output, {
-		$metadata: parseMetadata(response),
-	});
-};
-
-export const throwJsonError = async (
-	response: HttpResponse
-): Promise<never> => {
-	const body = await parseJsonBody(response);
-	const code = (await loadJsonErrorCode(response)) ?? 'UnknownError';
-	const message = body.message ?? body.Message ?? 'Unknown error';
-	const error = new Error(message);
-	throw Object.assign(error, {
-		name: code,
 		$metadata: parseMetadata(response),
 	});
 };

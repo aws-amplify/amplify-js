@@ -11,7 +11,7 @@ import {
 	jitteredBackoff,
 	getRetryDecider,
 } from '../../clients/middleware/retry';
-import { loadJsonErrorCode } from '../../clients/serde/json';
+import { parseJsonError } from '../../clients/serde/json';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -56,7 +56,7 @@ export const cognitoIdentityTransferHandler = composeTransferHandler<
 export const defaultConfigs = {
 	service: SERVICE_NAME,
 	endpointResolver,
-	retryDecider: getRetryDecider(loadJsonErrorCode),
+	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
 };
 
