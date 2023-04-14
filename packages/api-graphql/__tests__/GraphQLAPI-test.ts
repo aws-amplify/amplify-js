@@ -62,7 +62,6 @@ const getEventQuery = print(getEventDoc);
 
 /* TODO: Test with actual actions */
 const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
-const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -1284,7 +1283,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentDataStore,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1303,11 +1302,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, {
-					category: Category.DataStore,
-				})
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1360,7 +1355,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentDataStore,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1380,11 +1375,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, {
-					category: Category.DataStore,
-				})
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});

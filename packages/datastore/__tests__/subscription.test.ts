@@ -658,16 +658,6 @@ describe('error handler', () => {
 							)
 						)
 					);
-
-					/* TODO: test with actual datastore action */
-					expect(mockGraphQL).toHaveBeenCalledWith(
-						expect.objectContaining({
-							customUserAgentDetails: {
-								category: Category.DataStore,
-								action: DataStoreAction.None,
-							},
-						})
-					);
 				});
 
 				done();

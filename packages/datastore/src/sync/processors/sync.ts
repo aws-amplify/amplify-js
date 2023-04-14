@@ -216,18 +216,11 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					/* TODO: send with actual DataStore action */
-					const customUserAgentDetails: CustomUserAgentDetails = {
-						category: Category.DataStore,
-						action: DataStoreAction.None,
-					};
-
 					return await this.amplifyContext.API.graphql({
 						query,
 						variables,
 						authMode,
 						authToken,
-						customUserAgentDetails,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))

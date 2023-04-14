@@ -446,12 +446,6 @@ class SubscriptionProcessor {
 											}`
 										);
 
-										/* TODO: send with actual DataStore action */
-										const customUserAgentDetails: CustomUserAgentDetails = {
-											category: Category.DataStore,
-											action: DataStoreAction.None,
-										};
-
 										const queryObservable = <
 											Observable<{
 												value: GraphQLResult<Record<string, PersistentModel>>;
@@ -461,7 +455,6 @@ class SubscriptionProcessor {
 											variables,
 											...{ authMode },
 											authToken,
-											customUserAgentDetails,
 										}));
 
 										let subscriptionReadyCallback: () => void;

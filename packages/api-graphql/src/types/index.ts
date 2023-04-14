@@ -15,7 +15,6 @@ export interface GraphQLOptions {
 	 * @deprecated This property should not be used
 	 */
 	userAgentSuffix?: string; // TODO: remove in v6
-	customUserAgentDetails?: CustomUserAgentDetails;
 }
 
 export interface GraphQLResult<T = object> {

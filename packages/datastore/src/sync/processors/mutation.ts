@@ -305,18 +305,11 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				/* TODO: Send with actual DataStore action */
-				const customUserAgentDetails: CustomUserAgentDetails = {
-					category: Category.DataStore,
-					action: DataStoreAction.None,
-				};
-
 				const tryWith = {
 					query,
 					variables,
 					authMode,
 					authToken,
-					customUserAgentDetails,
 				};
 				let attempt = 0;
 
@@ -400,7 +393,6 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
-										customUserAgentDetails,
 									});
 
 									// onTerminate cancel graphql()
