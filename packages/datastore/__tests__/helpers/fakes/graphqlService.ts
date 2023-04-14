@@ -95,7 +95,7 @@ export class FakeGraphQLService {
 		console.log('jitter from jitteredPause: ', jitter);
 		const jitteredMs = Math.max(ms + jitter, 0);
 		console.log('jitteredMs from jitteredPause: ', jitteredMs);
-		debugger;
+		// // debugger;
 		return pause(jitteredMs);
 	}
 
@@ -113,6 +113,19 @@ export class FakeGraphQLService {
 		)[1];
 
 		let table;
+
+		// IS THIS WHAT'S BROKEN?
+		const result = selection.match(/^(create|sync|get|list)(\w+)s$/);
+		const result2 = selection.match(
+			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+		);
+
+		console.log('HERE?', result);
+		if ((!result || result.length < 3) && (!result2 || result2.length < 3)) {
+			// TADA!
+			// debugger;
+		}
+
 		if (type === 'sync' || type === 'list') {
 			table = selection.match(/^(create|sync|get|list)(\w+)s$/)[2];
 		} else {
@@ -500,7 +513,7 @@ export class FakeGraphQLService {
 
 		return new Promise(async resolve => {
 			console.log('before jitteredPause in "request"', this.latencies.request);
-			debugger;
+			// // debugger;
 			await this.jitteredPause(this.latencies.request);
 
 			if (operation === 'query') {
@@ -549,7 +562,7 @@ export class FakeGraphQLService {
 							},
 						};
 						console.log('TODO: update test expected values and re-enable');
-						debugger;
+						// debugger;
 						table.set(this.getPK(tableName, record), data[selection]);
 					}
 				} else if (type === 'update') {
@@ -619,7 +632,7 @@ export class FakeGraphQLService {
 							},
 						};
 						console.log('TODO: update test expected values and re-enable');
-						debugger;
+						// debugger;
 						table.set(this.getPK(tableName, record), data[selection]);
 						this.log('delete applying to table', { data });
 					}

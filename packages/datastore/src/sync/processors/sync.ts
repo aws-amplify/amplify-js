@@ -128,14 +128,21 @@ class SyncProcessor {
 			}
 
 			// TODO: otherwise, way too much info, Comment is one of the ones that
-			//
 			modelDefinition.name === 'Comment' && console.log('trying Comment');
-			debugger;
+			if (modelDefinition.name === 'Post') {
+				// THIS SHOULD HAPPEN TWICE, AND RETRIEVE PAGE SHOULD RETURN TWICE
+				// debugger;
+			}
 
 			try {
+				// // debugger;
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
 				);
+				if (modelDefinition.name === 'Post') {
+					// do we enter jittered retry?
+					// debugger;
+				}
 				const response = await this.jitteredRetry<T>({
 					query,
 					variables,
@@ -147,11 +154,16 @@ class SyncProcessor {
 				logger.debug(
 					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
 				);
+				if (modelDefinition.name === 'Post') {
+					// debugger;
+				}
 				return response;
 			} catch (error) {
 				modelDefinition.name === 'Comment' &&
 					console.log('Comment error', error);
-				debugger;
+				if (modelDefinition.name === 'Post') {
+					// debugger;
+				}
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -218,6 +230,10 @@ class SyncProcessor {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
 				try {
+					if (modelDefinition.name === 'Post') {
+						// THIS FAILS, WHY?
+						debugger;
+					}
 					const authToken = await getTokenForCustomAuth(
 						authMode,
 						this.amplifyConfig
@@ -233,10 +249,17 @@ class SyncProcessor {
 
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {
+					console.log(error);
+					// TODO: AHA! WTF IS HAPPENING!
+					// "TypeError: Cannot read property '2' of null"
+					// debugger;
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
 					const clientOrForbiddenErrorMessage =
 						getClientSideAuthError(error) || getForbiddenError(error);
 					if (clientOrForbiddenErrorMessage) {
+						// WE GET HERE
+						// debugger;
+						console.log('error');
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
@@ -262,6 +285,7 @@ class SyncProcessor {
 						);
 					}
 
+					// debugger;
 					if (hasItems && otherErrors?.length) {
 						await Promise.all(
 							otherErrors.map(async err => {
@@ -279,6 +303,7 @@ class SyncProcessor {
 										cause: err,
 									});
 								} catch (e) {
+									// debugger;
 									logger.error('Sync error handler failed with:', e);
 								}
 							})
@@ -305,13 +330,16 @@ class SyncProcessor {
 							...result.data[opName],
 						};
 
+						// debugger;
 						return result;
 					}
 
 					if (result.data?.[opName].items?.length) {
+						// debugger;
 						return result;
 					}
 
+					// debugger;
 					throw error;
 				}
 			},
@@ -357,8 +385,8 @@ class SyncProcessor {
 						this.runningProcesses.add(async onTerminate => {
 							modelDefinition.name === 'Comment' &&
 								console.log(`starting adding model ${modelDefinition.name}`);
-							if (modelDefinition.name === 'Comment') {
-								debugger;
+							if (modelDefinition.name === 'Post') {
+								// debugger;
 							}
 							let done = false;
 							let nextToken: string = null!;
@@ -380,16 +408,16 @@ class SyncProcessor {
 
 								do {
 									modelDefinition.name === 'Comment' && console.log('ping');
-									if (modelDefinition.name === 'Comment') {
-										debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
 									}
 									if (!this.runningProcesses.isOpen) {
 										return;
 									}
 
 									modelDefinition.name === 'Comment' && console.log('pang');
-									if (modelDefinition.name === 'Comment') {
-										debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
 									}
 
 									// TODO: START HERE:
@@ -407,7 +435,9 @@ class SyncProcessor {
 									);
 
 									// check here, is math right?
-									debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
+									}
 
 									// TODO: Why are we getting lost in here!!!
 									// TODO: throwing exception? never returning?
@@ -432,14 +462,16 @@ class SyncProcessor {
 										onTerminate
 									));
 
-									debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
+									}
 									// START HERE
 									// TODO: do we get here?
 									// TODO: do we get here?
 
 									// hangs on second sync
-									if (modelDefinition.name === 'Comment') {
-										debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
 									}
 
 									recordsReceived += items.length;
@@ -456,7 +488,9 @@ class SyncProcessor {
 										isFullSync: !lastSync,
 									});
 									modelDefinition.name === 'Comment' && console.log('pong');
-									debugger;
+									if (modelDefinition.name === 'Post') {
+										// debugger;
+									}
 								} while (!done);
 
 								res();
@@ -471,13 +505,15 @@ class SyncProcessor {
 								console.log(
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
-							if (modelDefinition.name === 'Comment') {
-								debugger;
+							if (modelDefinition.name === 'Post') {
+								// debugger;
 							}
 							await promise;
 							modelDefinition.name === 'Comment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
-							debugger;
+							if (modelDefinition.name === 'Post') {
+								// debugger;
+							}
 						}, `adding model ${modelDefinition.name}`)
 				);
 

@@ -88,11 +88,11 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		// hanging here
-		debugger;
+		// debugger;
 		console.log('after each outer top');
 		await DataStore.clear();
 		console.warn = (console as any)._warn;
-		debugger;
+		// debugger;
 		console.log('after each outer bottom');
 	});
 
@@ -571,12 +571,12 @@ describe('DataStore sync engine', () => {
 	describe('connection state change handling', () => {
 		beforeEach(async () => {
 			console.log('test output');
-			// debugger;
+			// // debugger;
 			warpTime();
 		});
 
 		afterEach(async () => {
-			debugger;
+			// debugger;
 			unwarpTime();
 			console.log('after each completed');
 		});
@@ -788,7 +788,7 @@ describe('DataStore sync engine', () => {
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
-			debugger;
+			// debugger;
 			await simulateDisruptionEnd();
 			await waitForSyncQueriesReady();
 
@@ -822,10 +822,10 @@ describe('DataStore sync engine', () => {
 		});
 
 		test.only('does not error when disruption before sync queries start', async () => {
-			// debugger;
+			// // debugger;
 			// TODO: console logs to get a sense of timing on events
 			console.time('abc');
-			// debugger;
+			// // debugger;
 			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
@@ -834,13 +834,13 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 
 			console.log('a');
-			// debugger;
+			// // debugger;
 			// Make sure extra sync that is scheduled because of this
 			await simulateDisruption();
 
 			console.log('b');
 			await simulateDisruptionEnd();
-			// debugger;
+			// // debugger;
 
 			console.log('c');
 			await waitForSyncQueriesReady();
@@ -857,7 +857,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			console.log('f');
-			debugger;
+			// debugger;
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
@@ -867,7 +867,7 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			debugger;
+			// debugger;
 			console.log('all done?', table, cloudPost);
 		});
 	});

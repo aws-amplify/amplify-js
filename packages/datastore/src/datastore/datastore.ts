@@ -2533,7 +2533,7 @@ class DataStore {
 	 */
 	// TODO: hanging here?
 	async clear() {
-		debugger;
+		// debugger;
 		checkSchemaInitialized();
 		this.state = DataStoreState.Clearing;
 		await this.runningProcesses.close();
@@ -2749,6 +2749,8 @@ class DataStore {
 			if (sessionId) {
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
+				// BROKEN?
+				// debugger;
 				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
 				const [appSyncId] = appSyncUrl.split('.');
 
