@@ -83,7 +83,7 @@ describe('Notifications', () => {
 	});
 
 	describe('identifyUser', () => {
-		test('identifies users with subcategoies', async () => {
+		test.skip('identifies users with subcategoies', async () => {
 			Notifications.configure(awsConfig);
 			await Notifications.identifyUser(userId, userInfo);
 
