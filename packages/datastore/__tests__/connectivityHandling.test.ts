@@ -821,6 +821,10 @@ describe('DataStore sync engine', () => {
 			expect(cloudThirdPost.title).toEqual('a title 3');
 		});
 
+		/**
+		 * Looking for error here:
+		 * https://github.com/aws-amplify/amplify-js/blob/main/packages/datastore/src/sync/index.ts#L1128
+		 */
 		test.only('does not error when disruption before sync queries start', async () => {
 			// // debugger;
 			// TODO: console logs to get a sense of timing on events
@@ -846,6 +850,10 @@ describe('DataStore sync engine', () => {
 			await waitForSyncQueriesReady();
 
 			console.log('d');
+
+			// Is anything here?
+			console.log(errorLog);
+			debugger;
 
 			expect(errorLog).not.toHaveBeenCalledWith(
 				expect.stringMatching(new RegExp('[ERROR].* Hub')),
