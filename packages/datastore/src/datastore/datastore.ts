@@ -2535,8 +2535,11 @@ class DataStore {
 	async clear() {
 		// debugger;
 		checkSchemaInitialized();
+		// debugger;
 		this.state = DataStoreState.Clearing;
+		// debugger;
 		await this.runningProcesses.close();
+		// debugger;
 		if (this.storage === undefined) {
 			// connect to storage so that it can be cleared without fully starting DataStore
 			this.storage = new Storage(
@@ -2549,18 +2552,24 @@ class DataStore {
 			);
 			await this.storage.init();
 		}
+		// debugger;
 
 		if (syncSubscription && !syncSubscription.closed) {
 			console.log('clear d.a');
+			// debugger;
 			syncSubscription.unsubscribe();
 		}
+		// debugger;
 
 		if (this.sync) {
 			console.log('clear e.a');
+			// debugger;
 			await this.sync.stop();
 		}
+		// debugger;
 
 		// TODO: don't get here
+		// debugger;
 		console.log('clear f');
 
 		await this.storage!.clear();
@@ -2750,7 +2759,7 @@ class DataStore {
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				// BROKEN?
-				// debugger;
+				// // debugger;
 				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
 				const [appSyncId] = appSyncUrl.split('.');
 

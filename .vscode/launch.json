@@ -18,6 +18,7 @@
 				"connectivityHandling.test.ts",
 				"--runInBand",
 				"--testTimeout",
+				// "--detectOpenHandles",
 				// "--silent=false",
 				"600000", // 10 min timeout so jest doesn't error while we're stepping through code
 				"false",

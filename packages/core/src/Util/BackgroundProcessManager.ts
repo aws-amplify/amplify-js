@@ -343,6 +343,8 @@ export class BackgroundProcessManager {
 	 * manager's `close()` was called in an `Open` state.
 	 */
 	async close() {
+		// we don't get here.........
+		debugger;
 		if (this.isOpen) {
 			this._state = BackgroundProcessManagerState.Closing;
 			for (const job of Array.from(this.jobs)) {

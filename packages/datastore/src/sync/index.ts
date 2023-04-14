@@ -825,6 +825,7 @@ export class SyncEngine {
 	 * that they're disconnected, done retrying, etc..
 	 */
 	public async stop() {
+		// debugger;
 		logger.debug('stopping sync engine');
 
 		/**
@@ -846,19 +847,27 @@ export class SyncEngine {
 		 */
 
 		// TODO: this is not finishing:
+		// debugger;
 		console.log('sync stop a');
 
 		await this.mutationsProcessor.stop();
+		// debugger;
 		console.log('sync stop b');
 		await this.subscriptionsProcessor.stop();
+		// debugger;
 		console.log('sync stop c');
 		await this.datastoreConnectivity.stop();
+		// ULTIMATELY HANGS HERE:
+		// debugger;
 		console.log('sync stop d');
 		await this.syncQueriesProcessor.stop();
+		// debugger;
 		console.log('sync stop e');
 		await this.runningProcesses.close();
+		// debugger;
 		console.log('sync stop f');
 		await this.runningProcesses.open();
+		// debugger;
 		console.log('sync stop g');
 
 		logger.debug('sync engine stopped and ready to restart');
@@ -1135,13 +1144,13 @@ export class SyncEngine {
 	// Bookkeeping: otherwise, it tries to do stuff when process manager is closed
 	private scheduleSync() {
 		const test = this.runningProcesses.isOpen;
-		debugger;
+		// // debugger;
 		return (
 			this.runningProcesses.isOpen &&
 			this.runningProcesses.add(() =>
 				this.waitForSleepState.then(() => {
 					// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
-					debugger;
+					// // debugger;
 					this.unsleepSyncQueriesObservable!();
 				})
 			)

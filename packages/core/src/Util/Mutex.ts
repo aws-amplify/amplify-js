@@ -63,6 +63,7 @@ class Mutex implements MutexInterface {
 
 			try {
 				result = callback();
+				console.log(result);
 			} catch (e) {
 				release();
 				throw e;

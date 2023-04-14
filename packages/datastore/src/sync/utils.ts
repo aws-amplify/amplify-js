@@ -867,14 +867,14 @@ export function getForbiddenError(error) {
 		'Request failed with status code 403',
 	];
 	let forbiddenError;
-	// debugger;
+	// // debugger;
 	if (error && error.errors) {
 		forbiddenError = (error.errors as [any]).find(err =>
 			forbiddenErrorMessages.includes(err.message)
 		);
 	} else if (error && error.message) {
 		// LOOK! Cannot read property '2' of null
-		// debugger;
+		// // debugger;
 		forbiddenError = error;
 	}
 
@@ -893,7 +893,7 @@ export function getClientSideAuthError(error) {
 			error.message.includes(clientError)
 		);
 	// this is `undefined`
-	// debugger;
+	// // debugger;
 	return clientSideError || null;
 }
 
