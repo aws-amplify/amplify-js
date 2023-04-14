@@ -88,11 +88,11 @@ describe('DataStore sync engine', () => {
 
 	afterEach(async () => {
 		// hanging here
-		// debugger;
+		debugger;
 		console.log('after each outer top');
 		await DataStore.clear();
 		console.warn = (console as any)._warn;
-		// debugger;
+		debugger;
 		console.log('after each outer bottom');
 	});
 
@@ -576,7 +576,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		afterEach(async () => {
-			// debugger;
+			debugger;
 			unwarpTime();
 			console.log('after each completed');
 		});
@@ -783,11 +783,12 @@ describe('DataStore sync engine', () => {
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
 			// TODO:this is to see if we are encountering a race condition, try bumping up to a second.
-			await pause(100);
+			await pause(3000);
 
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
+			debugger;
 			await simulateDisruptionEnd();
 			await waitForSyncQueriesReady();
 
@@ -839,6 +840,7 @@ describe('DataStore sync engine', () => {
 
 			console.log('b');
 			await simulateDisruptionEnd();
+			// debugger;
 
 			console.log('c');
 			await waitForSyncQueriesReady();
@@ -855,7 +857,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			console.log('f');
-			// debugger;
+			debugger;
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
@@ -865,7 +867,7 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			// debugger;
+			debugger;
 			console.log('all done?', table, cloudPost);
 		});
 	});

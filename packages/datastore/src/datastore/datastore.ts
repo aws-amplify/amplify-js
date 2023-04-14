@@ -2533,6 +2533,7 @@ class DataStore {
 	 */
 	// TODO: hanging here?
 	async clear() {
+		debugger;
 		checkSchemaInitialized();
 		this.state = DataStoreState.Clearing;
 		await this.runningProcesses.close();

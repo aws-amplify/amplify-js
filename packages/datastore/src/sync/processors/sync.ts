@@ -130,7 +130,7 @@ class SyncProcessor {
 			// TODO: otherwise, way too much info, Comment is one of the ones that
 			//
 			modelDefinition.name === 'Comment' && console.log('trying Comment');
-			// debugger;
+			debugger;
 
 			try {
 				logger.debug(
@@ -151,7 +151,7 @@ class SyncProcessor {
 			} catch (error) {
 				modelDefinition.name === 'Comment' &&
 					console.log('Comment error', error);
-				// debugger;
+				debugger;
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -357,7 +357,9 @@ class SyncProcessor {
 						this.runningProcesses.add(async onTerminate => {
 							modelDefinition.name === 'Comment' &&
 								console.log(`starting adding model ${modelDefinition.name}`);
-							// debugger;
+							if (modelDefinition.name === 'Comment') {
+								debugger;
+							}
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -378,13 +380,17 @@ class SyncProcessor {
 
 								do {
 									modelDefinition.name === 'Comment' && console.log('ping');
-									// debugger;
+									if (modelDefinition.name === 'Comment') {
+										debugger;
+									}
 									if (!this.runningProcesses.isOpen) {
 										return;
 									}
 
 									modelDefinition.name === 'Comment' && console.log('pang');
-									// debugger;
+									if (modelDefinition.name === 'Comment') {
+										debugger;
+									}
 
 									// TODO: START HERE:
 									// TODO: make sure the following are numbers:
@@ -401,7 +407,7 @@ class SyncProcessor {
 									);
 
 									// check here, is math right?
-									// debugger;
+									debugger;
 
 									// TODO: Why are we getting lost in here!!!
 									// TODO: throwing exception? never returning?
@@ -426,11 +432,12 @@ class SyncProcessor {
 										onTerminate
 									));
 
-									// debugger;
+									debugger;
 									// START HERE
 									// TODO: do we get here?
 									// TODO: do we get here?
 
+									// hangs on second sync
 									if (modelDefinition.name === 'Comment') {
 										debugger;
 									}
@@ -449,7 +456,7 @@ class SyncProcessor {
 										isFullSync: !lastSync,
 									});
 									modelDefinition.name === 'Comment' && console.log('pong');
-									// debugger;
+									debugger;
 								} while (!done);
 
 								res();
@@ -464,11 +471,13 @@ class SyncProcessor {
 								console.log(
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
-							// debugger;
+							if (modelDefinition.name === 'Comment') {
+								debugger;
+							}
 							await promise;
 							modelDefinition.name === 'Comment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
-							// debugger;
+							debugger;
 						}, `adding model ${modelDefinition.name}`)
 				);
 
