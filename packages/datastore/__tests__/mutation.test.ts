@@ -17,12 +17,6 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import {
-	Constants,
-	Category,
-	Framework,
-	DataStoreAction,
-} from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -30,9 +24,6 @@ let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 let axiosError;
-
-/* TODO: test with actual actions */
-const datastoreUserAgent = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
 
 beforeEach(() => {
 	axiosError = timeoutError;
@@ -158,36 +149,7 @@ describe('MutationProcessor', () => {
 			expect(input.postId).toEqual('100');
 		});
 	});
-	describe('Call to rest api', () => {
-		it('Should send a user agent with the datastore suffix the rest api request', async () => {
-			jest.spyOn(mutationProcessor, 'resume');
-			await mutationProcessor.resume();
 
-			expect(mockRestPost).toBeCalledWith(
-				expect.anything(),
-				expect.objectContaining({
-					headers: expect.objectContaining({
-						'x-amz-user-agent': datastoreUserAgent,
-					}),
-				})
-			);
-		});
-	});
-	describe('Call to rest api', () => {
-		it('Should send a user agent with the datastore suffix the rest api request', async () => {
-			jest.spyOn(mutationProcessor, 'resume');
-			await mutationProcessor.resume();
-
-			expect(mockRestPost).toBeCalledWith(
-				expect.anything(),
-				expect.objectContaining({
-					headers: expect.objectContaining({
-						'x-amz-user-agent': datastoreUserAgent,
-					}),
-				})
-			);
-		});
-	});
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});

@@ -19,7 +19,6 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Category, DataStoreAction } from '@aws-amplify/core';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {

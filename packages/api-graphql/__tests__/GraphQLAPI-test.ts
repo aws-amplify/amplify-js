@@ -13,7 +13,6 @@ import {
 	Category,
 	Framework,
 	ApiAction,
-	DataStoreAction,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
