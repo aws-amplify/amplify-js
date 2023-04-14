@@ -2531,6 +2531,7 @@ class DataStore {
 	 * by explicitiliy calling `start()` or any method that implicitly starts
 	 * DataStore, such as `query()`, `save()`, or `delete()`.
 	 */
+	// TODO: hanging here?
 	async clear() {
 		checkSchemaInitialized();
 		this.state = DataStoreState.Clearing;
@@ -2558,6 +2559,7 @@ class DataStore {
 			await this.sync.stop();
 		}
 
+		// TODO: don't get here
 		console.log('clear f');
 
 		await this.storage!.clear();

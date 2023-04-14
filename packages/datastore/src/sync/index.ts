@@ -845,6 +845,7 @@ export class SyncEngine {
 		 * (Whereas `stop()` does.)
 		 */
 
+		// TODO: this is not finishing:
 		console.log('sync stop a');
 
 		await this.mutationsProcessor.stop();
@@ -1131,6 +1132,7 @@ export class SyncEngine {
 	 * Schedule a sync to start when syncQueriesObservable enters sleep state
 	 * Start sync immediately if syncQueriesObservable is already in sleep state
 	 */
+	// Bookkeeping: otherwise, it tries to do stuff when process manager is closed
 	private scheduleSync() {
 		return (
 			this.runningProcesses.isOpen &&

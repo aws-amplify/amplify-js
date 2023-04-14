@@ -91,6 +91,7 @@ class SyncProcessor {
 		return predicateToGraphQLFilter(predicatesGroup);
 	}
 
+	// happening after cleanup? not existing in fake service?
 	private async retrievePage<T extends ModelInstanceMetadata>(
 		modelDefinition: SchemaModel,
 		lastSync: number,
@@ -126,8 +127,10 @@ class SyncProcessor {
 				);
 			}
 
+			// TODO: otherwise, way too much info, Comment is one of the ones that
+			//
 			modelDefinition.name === 'Comment' && console.log('trying Comment');
-			debugger;
+			// debugger;
 
 			try {
 				logger.debug(
@@ -148,7 +151,7 @@ class SyncProcessor {
 			} catch (error) {
 				modelDefinition.name === 'Comment' &&
 					console.log('Comment error', error);
-				debugger;
+				// debugger;
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -354,7 +357,7 @@ class SyncProcessor {
 						this.runningProcesses.add(async onTerminate => {
 							modelDefinition.name === 'Comment' &&
 								console.log(`starting adding model ${modelDefinition.name}`);
-							debugger;
+							// debugger;
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -375,21 +378,45 @@ class SyncProcessor {
 
 								do {
 									modelDefinition.name === 'Comment' && console.log('ping');
-									debugger;
+									// debugger;
 									if (!this.runningProcesses.isOpen) {
 										return;
 									}
 
 									modelDefinition.name === 'Comment' && console.log('pang');
-									debugger;
+									// debugger;
 
+									// TODO: START HERE:
+									// TODO: make sure the following are numbers:
+
+									/**
+									 * Records received: 0
+									 * Max records to sync: 1000
+									 * Sync page size: 1000
+									 * Limit: 1000
+									 */
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
 										syncPageSize
 									);
 
-									debugger;
+									// check here, is math right?
+									// debugger;
+
 									// TODO: Why are we getting lost in here!!!
+									// TODO: throwing exception? never returning?
+									// if exception, try catch, and maybe not resolve but also reject above
+									// if never returning, then take a look there
+									/**
+									 * items: 0
+									 * nextToken: null
+									 * startedAt: null
+									 * modelDefinition: (a model definition)
+									 * lastSync: 0
+									 * limit: 0
+									 * filter: null
+									 * onTerminate: (pending Promise)
+									 */
 									({ items, nextToken, startedAt } = await this.retrievePage(
 										modelDefinition,
 										lastSync,
@@ -399,8 +426,14 @@ class SyncProcessor {
 										onTerminate
 									));
 
-									modelDefinition.name === 'Comment' && console.log('pongo!');
-									debugger;
+									// debugger;
+									// START HERE
+									// TODO: do we get here?
+									// TODO: do we get here?
+
+									if (modelDefinition.name === 'Comment') {
+										debugger;
+									}
 
 									recordsReceived += items.length;
 
@@ -416,7 +449,7 @@ class SyncProcessor {
 										isFullSync: !lastSync,
 									});
 									modelDefinition.name === 'Comment' && console.log('pong');
-									debugger;
+									// debugger;
 								} while (!done);
 
 								res();
@@ -431,11 +464,11 @@ class SyncProcessor {
 								console.log(
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
-							debugger;
+							// debugger;
 							await promise;
 							modelDefinition.name === 'Comment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
-							debugger;
+							// debugger;
 						}, `adding model ${modelDefinition.name}`)
 				);
 
@@ -450,6 +483,8 @@ class SyncProcessor {
 	async stop() {
 		logger.debug('stopping sync processor');
 		console.log('sync.ts stop running procs', this.runningProcesses);
+		// TODO: never closes:
+		// background process manager has models hanging out in it
 		await this.runningProcesses.close();
 		console.log('sync.ts stop middle');
 		await this.runningProcesses.open();
