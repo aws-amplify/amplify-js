@@ -7,17 +7,29 @@ import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
-const framework = detectFramework();
+let framework = detectFramework();
+let frameworkHasBeenRerun = false;
 export const Platform = {
 	userAgent: `${BASE_USER_AGENT}/${version}`,
 	framework,
 	isReactNative: framework === Framework.ReactNative,
 };
 
+// Rerun framework detection once when getAmplifyUserAgent is called if framework is None:
+// ReactNative framework must be detected initially, however
+// Other frameworks may not be detected in cases where DOM is not yet loaded
+const rerunFrameworkDetection = () => {
+	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
+		frameworkHasBeenRerun = true;
+		framework = detectFramework();
+		Platform.framework = framework;
+	}
+};
+
 export const getAmplifyUserAgent = ({
 	category,
 	framework,
-}: CustomUserAgent = {}): AWSUserAgent => {
+	rerunFrameworkDetection();
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
 		/** TODO: add action as second element */
