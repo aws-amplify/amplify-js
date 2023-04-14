@@ -4,14 +4,14 @@ import {
 	MiddlewareHandler,
 	Request,
 	Response,
-} from '../types/core';
+} from '../../types/core';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
 /**
  * Configuration of the retry middleware
  */
-export interface RetryOptions {
+export interface RetryOptions<TResponse = Response> {
 	/**
 	 * Function to decide if the request should be retried.
 	 *
@@ -19,7 +19,7 @@ export interface RetryOptions {
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider: (response?: Response, error?: unknown) => boolean;
+	retryDecider: (response?: TResponse, error?: unknown) => Promise<boolean>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -40,15 +40,17 @@ export interface RetryOptions {
 /**
  * Retry middleware
  */
-export const retry = (options: RetryOptions) => {
+export const retryMiddleware = <TInput = Request, TOutput = Response>(
+	options: RetryOptions<TOutput>
+) => {
 	if (options.maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
 	return (
-		next: MiddlewareHandler<Request, Response>,
+		next: MiddlewareHandler<TInput, TOutput>,
 		context: MiddlewareContext
 	) =>
-		async function retry(request: Request) {
+		async function retryMiddleware(request: TInput) {
 			const {
 				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 				retryDecider,
@@ -57,7 +59,7 @@ export const retry = (options: RetryOptions) => {
 			} = options;
 			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
-			let response: Response;
+			let response: TOutput;
 			while (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 				error = undefined;
 				response = undefined;
@@ -72,7 +74,7 @@ export const retry = (options: RetryOptions) => {
 						? context.attemptsCount
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
-				if (retryDecider(response, error)) {
+				if (await retryDecider(response, error)) {
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);
@@ -111,8 +113,14 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	return sleepPromise;
 };
 
-const isMetadataBearer = (response: unknown): response is MetadataBearer =>
-	typeof response?.['$metadata'] === 'object';
+/**
+ * Check if the response is a contains `$metadata` property.
+ *
+ * @internal Amplify internal use only
+ */
+export const isMetadataBearer = (
+	response: unknown
+): response is MetadataBearer => typeof response?.['$metadata'] === 'object';
 
 const updateMetadataAttempts = (
 	nextHandlerOutput: Object,

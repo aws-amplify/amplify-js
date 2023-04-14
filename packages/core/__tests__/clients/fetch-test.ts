@@ -3,7 +3,7 @@ jest.mock('isomorphic-unfetch', () => {
 	global['fetch'] = mockUnfetch;
 });
 
-import { fetchTransferHandler } from '../../src/clients/fetch';
+import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
 
 describe(fetchTransferHandler.name, () => {
 	const mockBody = {
@@ -37,6 +37,14 @@ describe(fetchTransferHandler.name, () => {
 		expect(mockUnfetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ signal })
 		);
+	});
+
+	test('should support headers', async () => {
+		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
+			cb('foo', 'bar');
+		});
+		const { headers } = await fetchTransferHandler(mockRequest, {});
+		expect(headers).toEqual({ bar: 'foo' });
 	});
 
 	test('should support text() in response.body', async () => {

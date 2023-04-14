@@ -1,17 +1,20 @@
 import { HttpResponse, MiddlewareHandler } from '../../src/clients/types';
 import { composeTransferHandler } from '../../src/clients/internal/composeTransferHandler';
-import { retry, RetryOptions } from '../../src/clients/middleware/retry';
+import {
+	retryMiddleware,
+	RetryOptions,
+} from '../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
 
-describe(`${retry.name} middleware`, () => {
+describe(`${retryMiddleware.name} middleware`, () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	const defaultRetryOptions = {
-		retryDecider: () => true,
+		retryDecider: async () => true,
 		computeDelay: () => 1,
 	};
 	const defaultRequest = { url: new URL('https://a.b') };
@@ -21,7 +24,7 @@ describe(`${retry.name} middleware`, () => {
 		headers: {},
 	};
 	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<[RetryOptions]>(nextHandler, [retry]);
+		composeTransferHandler<[RetryOptions]>(nextHandler, [retryMiddleware]);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
@@ -122,7 +125,7 @@ describe(`${retry.name} middleware`, () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const retryableHandler = getRetryableHandler(nextHandler);
 		const controller = new AbortController();
-		const retryDecider = () => true;
+		const retryDecider = async () => true;
 		const computeDelay = jest.fn().mockImplementation(attempt => {
 			if (attempt === 1) {
 				setTimeout(() => controller.abort(), 100);
@@ -161,7 +164,7 @@ describe(`${retry.name} middleware`, () => {
 
 		const doubleRetryableHandler = composeTransferHandler<
 			[RetryOptions, {}, RetryOptions]
-		>(coreHandler, [retry, betweenRetryMiddleware, retry]);
+		>(coreHandler, [retryMiddleware, betweenRetryMiddleware, retryMiddleware]);
 
 		const retryDecider = jest
 			.fn()

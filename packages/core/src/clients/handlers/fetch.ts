@@ -1,6 +1,6 @@
 import 'isomorphic-unfetch'; // TODO: remove this dependency in v6
-import { HttpRequest, HttpResponse, HttpTransferOptions } from './types/http';
-import { TransferHandler } from './types/core';
+import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
+import { TransferHandler } from '../types/core';
 
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
@@ -21,31 +21,31 @@ export const fetchTransferHandler: TransferHandler<
 	} catch (e) {
 		// TODO: needs to revise error handling in v6
 		if (e instanceof TypeError) {
-			throw new Error(`Network error`);
+			throw new Error('Network error');
 		}
 		throw e;
 	}
 
-	const headersBag = {};
-	resp.headers?.forEach((key, value) => {
-		headersBag[key.toLowerCase()] = value;
+	const headers = {};
+	resp.headers?.forEach((value, key) => {
+		headers[key.toLowerCase()] = value;
 	});
 	const httpResponse = {
 		statusCode: resp.status,
-		headers: headersBag,
+		headers,
 		body: null,
 	};
 
-	if (resp.body) {
-		const bodyWithMixin = Object.assign(resp.body, {
-			text: () => resp.text(),
-			blob: () => resp.blob(),
-			json: () => resp.json(),
-		});
-		return {
-			...httpResponse,
-			body: bodyWithMixin,
-		};
-	}
-	return httpResponse;
+	// resp.body is a ReadableStream according to Fetch API spec, but React Native
+	// does not implement it.
+	const bodyWithMixin = Object.assign(resp.body ?? {}, {
+		text: () => resp.text(),
+		blob: () => resp.blob(),
+		json: () => resp.json(),
+	});
+
+	return {
+		...httpResponse,
+		body: bodyWithMixin,
+	};
 };

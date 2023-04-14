@@ -21,11 +21,14 @@ export interface TransferHandler<
 /**
  * A slimmed down version of the AWS SDK v3 middleware handler, only handling instantiated requests
  */
-export type MiddlewareHandler<
-	Input extends Request,
-	Output extends Response
-> = (request: Input) => Promise<Output>;
+export type MiddlewareHandler<Input, Output> = (
+	request: Input
+) => Promise<Output>;
 
+/**
+ * The context object to store states across the middleware chain and retry
+ * attempts if retry middleware exists.
+ */
 export type MiddlewareContext = {
 	/**
 	 * The number of times the request has been attempted. This is set by retry middleware
@@ -46,3 +49,7 @@ export type Middleware<
 	Output extends Response,
 	MiddlewareOptions
 > = (options: MiddlewareOptions) => ConfiguredMiddleware<Input, Output>;
+
+export interface Endpoint {
+	url: URL;
+}

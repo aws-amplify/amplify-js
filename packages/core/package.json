@@ -47,6 +47,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
+		"@aws-sdk/client-cognito-identity": "3.6.1",
 		"@react-native-async-storage/async-storage": "1.15.17",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
@@ -63,8 +64,6 @@
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",
 		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
-		"@aws-sdk/client-cognito-identity": "3.6.1",
-		"@aws-sdk/credential-provider-cognito-identity": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"isomorphic-unfetch": "^3.0.0",
@@ -101,19 +100,25 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "35.5 kB"
+			"limit": "11.54 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",
-			"path": "./lib-esm/clients/middleware/retry.js",
-			"import": "{ retry }",
-			"limit": "1.23 kB"
+			"path": "./lib-esm/clients/middleware/retry/middleware.js",
+			"import": "{ retryMiddleware }",
+			"limit": "1.24 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
-			"path": "./lib-esm/clients/fetch.js",
+			"path": "./lib-esm/clients/handlers/fetch.js",
 			"import": "{ fetchTransferHandler }",
 			"limit": "1.73 kB"
+		},
+		{
+			"name": "Custom clients (unauthenticated handler)",
+			"path": "./lib-esm/clients/handlers/unauthenticated.js",
+			"import": "{ unauthenticatedHandler }",
+			"limit": "2.75 kB"
 		}
 	],
 	"jest": {
