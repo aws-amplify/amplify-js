@@ -1250,7 +1250,7 @@ describe('API test', () => {
 			});
 		});
 
-		test('sends userAgent with suffix in request', async () => {
+		test('sends customUserAgent with api category and action in request', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
