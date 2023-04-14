@@ -127,6 +127,7 @@ class SyncProcessor {
 			}
 
 			modelDefinition.name === 'Comment' && console.log('trying Comment');
+			debugger;
 
 			try {
 				logger.debug(
@@ -147,6 +148,7 @@ class SyncProcessor {
 			} catch (error) {
 				modelDefinition.name === 'Comment' &&
 					console.log('Comment error', error);
+				debugger;
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -352,6 +354,7 @@ class SyncProcessor {
 						this.runningProcesses.add(async onTerminate => {
 							modelDefinition.name === 'Comment' &&
 								console.log(`starting adding model ${modelDefinition.name}`);
+							debugger;
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -372,11 +375,13 @@ class SyncProcessor {
 
 								do {
 									modelDefinition.name === 'Comment' && console.log('ping');
+									debugger;
 									if (!this.runningProcesses.isOpen) {
 										return;
 									}
 
 									modelDefinition.name === 'Comment' && console.log('pang');
+									debugger;
 
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
@@ -384,7 +389,6 @@ class SyncProcessor {
 									);
 
 									debugger;
-									console.log('// TODO: Why are we getting lost in here!!!');
 									// TODO: Why are we getting lost in here!!!
 									({ items, nextToken, startedAt } = await this.retrievePage(
 										modelDefinition,
@@ -396,6 +400,7 @@ class SyncProcessor {
 									));
 
 									modelDefinition.name === 'Comment' && console.log('pongo!');
+									debugger;
 
 									recordsReceived += items.length;
 
@@ -411,6 +416,7 @@ class SyncProcessor {
 										isFullSync: !lastSync,
 									});
 									modelDefinition.name === 'Comment' && console.log('pong');
+									debugger;
 								} while (!done);
 
 								res();
@@ -425,9 +431,11 @@ class SyncProcessor {
 								console.log(
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
+							debugger;
 							await promise;
 							modelDefinition.name === 'Comment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
+							debugger;
 						}, `adding model ${modelDefinition.name}`)
 				);
 

@@ -95,6 +95,7 @@ export class FakeGraphQLService {
 		console.log('jitter from jitteredPause: ', jitter);
 		const jitteredMs = Math.max(ms + jitter, 0);
 		console.log('jitteredMs from jitteredPause: ', jitteredMs);
+		debugger;
 		return pause(jitteredMs);
 	}
 
@@ -499,6 +500,7 @@ export class FakeGraphQLService {
 
 		return new Promise(async resolve => {
 			console.log('before jitteredPause in "request"', this.latencies.request);
+			debugger;
 			await this.jitteredPause(this.latencies.request);
 
 			if (operation === 'query') {
@@ -547,6 +549,7 @@ export class FakeGraphQLService {
 							},
 						};
 						console.log('TODO: update test expected values and re-enable');
+						debugger;
 						table.set(this.getPK(tableName, record), data[selection]);
 					}
 				} else if (type === 'update') {
@@ -615,7 +618,8 @@ export class FakeGraphQLService {
 								// [timestampFields!.updatedAt]: new Date().toISOString(),
 							},
 						};
-						console.log('TODO: update test expected values and re-enabl');
+						console.log('TODO: update test expected values and re-enable');
+						debugger;
 						table.set(this.getPK(tableName, record), data[selection]);
 						this.log('delete applying to table', { data });
 					}

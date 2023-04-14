@@ -87,9 +87,11 @@ describe('DataStore sync engine', () => {
 	});
 
 	afterEach(async () => {
+		debugger;
 		console.log('after each outer top');
 		await DataStore.clear();
 		console.warn = (console as any)._warn;
+		debugger;
 		console.log('after each outer bottom');
 	});
 
@@ -567,10 +569,13 @@ describe('DataStore sync engine', () => {
 
 	describe('connection state change handling', () => {
 		beforeEach(async () => {
+			console.log('test output');
+			debugger;
 			warpTime();
 		});
 
 		afterEach(async () => {
+			debugger;
 			unwarpTime();
 			console.log('after each completed');
 		});
@@ -814,7 +819,9 @@ describe('DataStore sync engine', () => {
 		});
 
 		test.only('does not error when disruption before sync queries start', async () => {
+			debugger;
 			console.time('abc');
+			debugger;
 			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
@@ -823,6 +830,7 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 
 			console.log('a');
+			debugger;
 			await simulateDisruption();
 
 			console.log('b');
@@ -843,6 +851,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			console.log('f');
+			debugger;
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
@@ -852,6 +861,7 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
+			debugger;
 			console.log('all done?', table, cloudPost);
 		});
 	});
