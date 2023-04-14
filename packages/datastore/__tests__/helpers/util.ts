@@ -418,7 +418,7 @@ export async function waitForEmptyOutbox(verbose = false) {
 }
 
 /**
- * Watches Hub events until an outBoxStatus with isEmpty is received.
+ * Watches Hub events until ready event is received
  *
  * @param verbose Whether to log hub events until empty
  */
@@ -428,6 +428,25 @@ export async function waitForDataStoreReady(verbose = false) {
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'ready') {
+				Hub.remove('datastore', hubCallback);
+				resolve();
+			}
+		};
+		Hub.listen('datastore', hubCallback);
+	});
+}
+
+/**
+ * Watches Hub events until syncQueriesReady is received
+ *
+ * @param verbose Whether to log hub events until empty
+ */
+export async function waitForSyncQueriesReady(verbose = false) {
+	return new Promise(resolve => {
+		const { Hub } = require('@aws-amplify/core');
+		const hubCallback = message => {
+			if (verbose) console.log('hub event', message);
+			if (message.payload.event === 'syncQueriesReady') {
 				Hub.remove('datastore', hubCallback);
 				resolve();
 			}

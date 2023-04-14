@@ -2,26 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ClientDevice,
-	Credentials,
-	getAmplifyUserAgent,
-	StorageHelper,
-	transferKeyToUpperCase,
-} from '@aws-amplify/core';
-import { Cache } from '@aws-amplify/cache';
-import {
 	ChannelType,
 	GetInAppMessagesCommand,
 	GetInAppMessagesCommandInput,
 	InAppMessageCampaign as PinpointInAppMessage,
-	UpdateEndpointCommand,
-	UpdateEndpointCommandInput,
-	PinpointClient,
 } from '@aws-sdk/client-pinpoint';
-import { v4 as uuid } from 'uuid';
 
-import { addMessageInteractionEventListener } from '../../eventListeners';
-import { NotificationsCategory } from '../../../types';
+import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import SessionTracker, {
 	SessionState,
 	SessionStateChangeHandler,
@@ -29,15 +16,12 @@ import SessionTracker, {
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
-	InAppMessageLayout,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
-	NotificationsSubcategory,
-	UserInfo,
+	NotificationsSubCategory,
 } from '../../types';
 import {
 	AWSPinpointMessageEvent,
-	AWSPinpointUserInfo,
 	DailyInAppMessageCounter,
 	InAppMessageCountMap,
 	InAppMessageCounts,
@@ -60,32 +44,19 @@ import {
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 
-export default class AWSPinpointProvider implements InAppMessagingProvider {
-	static category: NotificationsCategory = 'Notifications';
-	static subCategory: NotificationsSubcategory = 'InAppMessaging';
-	static providerName = 'AWSPinpoint';
+export default class AWSPinpointProvider
+	extends AWSPinpointProviderCommon
+	implements InAppMessagingProvider
+{
+	static subCategory: NotificationsSubCategory = 'InAppMessaging';
 
-	private clientInfo;
-	private config: Record<string, any> = {};
 	private configured = false;
-	private endpointInitialized = false;
-	private initialized = false;
 	private sessionMessageCountMap: InAppMessageCountMap;
 	private sessionTracker: SessionTracker;
 
 	constructor() {
+		super(logger);
 		this.sessionMessageCountMap = {};
-		this.config = {
-			storage: new StorageHelper().getStorage(),
-		};
-		this.clientInfo = ClientDevice.clientInfo() ?? {};
-	}
-
-	/**
-	 * get the category of the plugin
-	 */
-	getCategory() {
-		return AWSPinpointProvider.category;
 	}
 
 	/**
@@ -95,41 +66,44 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		return AWSPinpointProvider.subCategory;
 	}
 
-	/**
-	 * get provider name of the plugin
-	 */
-	getProviderName(): string {
-		return AWSPinpointProvider.providerName;
-	}
-
-	configure = (config = {}): object => {
-		this.config = { ...this.config, ...config };
-
-		logger.debug('configure AWSPinpointProvider', this.config);
+	configure = (config = {}): Record<string, any> => {
+		this.config = {
+			...super.configure(config),
+			endpointInfo: { channelType: ChannelType.IN_APP },
+		};
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
 			this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
 			this.sessionTracker.start();
 			// wire up default Pinpoint message event handling
-			addMessageInteractionEventListener((message: InAppMessage) => {
-				this.recordMessageEvent(
-					message,
-					AWSPinpointMessageEvent.MESSAGE_DISPLAYED
-				);
-			}, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
-			addMessageInteractionEventListener((message: InAppMessage) => {
-				this.recordMessageEvent(
-					message,
-					AWSPinpointMessageEvent.MESSAGE_DISMISSED
-				);
-			}, InAppMessageInteractionEvent.MESSAGE_DISMISSED);
-			addMessageInteractionEventListener((message: InAppMessage) => {
-				this.recordMessageEvent(
-					message,
-					AWSPinpointMessageEvent.MESSAGE_ACTION_TAKEN
-				);
-			}, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
+			addEventListener(
+				InAppMessageInteractionEvent.MESSAGE_DISPLAYED,
+				(message: InAppMessage) => {
+					this.recordMessageEvent(
+						message,
+						AWSPinpointMessageEvent.MESSAGE_DISPLAYED
+					);
+				}
+			);
+			addEventListener(
+				InAppMessageInteractionEvent.MESSAGE_DISMISSED,
+				(message: InAppMessage) => {
+					this.recordMessageEvent(
+						message,
+						AWSPinpointMessageEvent.MESSAGE_DISMISSED
+					);
+				}
+			);
+			addEventListener(
+				InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN,
+				(message: InAppMessage) => {
+					this.recordMessageEvent(
+						message,
+						AWSPinpointMessageEvent.MESSAGE_ACTION_TAKEN
+					);
+				}
+			);
 		}
 
 		this.configured = true;
@@ -155,14 +129,14 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			const command: GetInAppMessagesCommand = new GetInAppMessagesCommand(
 				input
 			);
-			logger.debug('getting in-app messages', input);
+			this.logger.debug('getting in-app messages');
 			const response = await pinpointClient.send(command);
 			const { InAppMessageCampaigns: messages } =
 				response.InAppMessagesResponse;
 			dispatchInAppMessagingEvent('getInAppMessages', messages);
 			return messages;
 		} catch (err) {
-			logger.error('Error getting in-app messages', err);
+			this.logger.error('Error getting in-app messages', err);
 			throw err;
 		}
 	};
@@ -210,180 +184,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				return acc;
 			}, [])
 		);
-	};
-
-	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void> => {
-		if (!this.initialized) {
-			await this.init();
-		}
-		try {
-			await this.updateEndpoint(userId, userInfo);
-		} catch (err) {
-			logger.error('Error identifying user', err);
-			throw err;
-		}
-	};
-
-	private init = async () => {
-		const { endpointId, storage } = this.config;
-		const providerName = this.getProviderName();
-		try {
-			// Only run sync() if it's available (i.e. React Native)
-			if (typeof storage.sync === 'function') {
-				await storage.sync();
-			}
-			// If an endpoint was not provided via configuration, try to get it from cache
-			if (!endpointId) {
-				this.config.endpointId = await this.getEndpointId();
-			}
-			this.initialized = true;
-		} catch (err) {
-			logger.error(`Failed to initialize ${providerName}`, err);
-		}
-	};
-
-	private initPinpointClient = async () => {
-		const { appId, credentials, pinpointClient, region } = this.config;
-
-		if (!appId || !credentials || !region) {
-			throw new Error(
-				'One or more of credentials, appId or region is not configured'
-			);
-		}
-
-		if (pinpointClient) {
-			pinpointClient.destroy();
-		}
-
-		this.config.pinpointClient = new PinpointClient({
-			region,
-			credentials,
-			customUserAgent: getAmplifyUserAgent(),
-		});
-	};
-
-	private getEndpointId = async () => {
-		const { appId } = this.config;
-		// Each Pinpoint channel requires its own Endpoint ID
-		const cacheKey = `${this.getSubCategory()}:${this.getProviderName()}:${appId}`;
-		// First attempt to retrieve the ID from cache
-		const cachedEndpointId = await Cache.getItem(cacheKey);
-		// Found in cache, just return it
-		if (cachedEndpointId) {
-			return cachedEndpointId;
-		}
-		// Otherwise, generate a new ID and store it in long-lived cache before returning it
-		const endpointId = uuid();
-		// Set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
-		// Also set its priority to the highest to reduce its chance of being deleted when cache is full
-		const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
-		const expiration = new Date().getTime() + ttl;
-		Cache.setItem(cacheKey, endpointId, {
-			expires: expiration,
-			priority: 1,
-		});
-		return endpointId;
-	};
-
-	private updateEndpoint = async (
-		userId: string = null,
-		userInfo: AWSPinpointUserInfo = null
-	) => {
-		const {
-			appId,
-			credentials,
-			endpointId,
-			endpointInfo = {},
-			pinpointClient,
-		} = this.config;
-		const currentCredentials = await this.getCredentials();
-		// Shallow compare to determine if credentials stored here are outdated
-		const credentialsUpdated =
-			!credentials ||
-			Object.keys(currentCredentials).some(
-				key => currentCredentials[key] !== credentials[key]
-			);
-		// If endpoint is already initialized, and nothing else is changing, just early return
-		if (
-			this.endpointInitialized &&
-			!credentialsUpdated &&
-			!userId &&
-			!userInfo
-		) {
-			return;
-		}
-		// Update credentials
-		this.config.credentials = currentCredentials;
-		try {
-			// Initialize a new pinpoint client if one isn't already configured or if credentials changed
-			if (!pinpointClient || credentialsUpdated) {
-				await this.initPinpointClient();
-			}
-			const { address, attributes, demographic, location, metrics, optOut } =
-				userInfo ?? {};
-			const { appVersion, make, model, platform, version } = this.clientInfo;
-			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
-			// defaults (if any) obtained from the config
-			const input: UpdateEndpointCommandInput = {
-				ApplicationId: appId,
-				EndpointId: endpointId,
-				EndpointRequest: {
-					RequestId: uuid(),
-					EffectiveDate: new Date().toISOString(),
-					ChannelType: ChannelType.IN_APP,
-					Address: address ?? endpointInfo.address,
-					Attributes: {
-						...endpointInfo.attributes,
-						...attributes,
-					},
-					Demographic: {
-						AppVersion: appVersion,
-						Make: make,
-						Model: model,
-						ModelVersion: version,
-						Platform: platform,
-						...transferKeyToUpperCase({
-							...endpointInfo.demographic,
-							...demographic,
-						}),
-					},
-					Location: transferKeyToUpperCase({
-						...endpointInfo.location,
-						...location,
-					}),
-					Metrics: {
-						...endpointInfo.metrics,
-						...metrics,
-					},
-					OptOut: optOut ?? endpointInfo.optOut,
-					User: {
-						UserId:
-							userId ?? endpointInfo.userId ?? currentCredentials.identityId,
-						UserAttributes: attributes ?? endpointInfo.userAttributes,
-					},
-				},
-			};
-			const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
-			logger.debug('updating endpoint', input);
-			await this.config.pinpointClient.send(command);
-			this.endpointInitialized = true;
-		} catch (err) {
-			throw err;
-		}
-	};
-
-	private getCredentials = async () => {
-		try {
-			const credentials = await Credentials.get();
-			if (!credentials) {
-				logger.debug('no credentials found');
-				return null;
-			}
-			return Credentials.shear(credentials);
-		} catch (err) {
-			logger.error('Error getting credentials:', err);
-			return null;
-		}
 	};
 
 	private sessionStateChangeHandler: SessionStateChangeHandler = (
@@ -447,7 +247,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				totalCount: this.getTotalCount(messageId),
 			};
 		} catch (err) {
-			logger.error('Failed to get message counts from storage', err);
+			this.logger.error('Failed to get message counts from storage', err);
 		}
 	};
 
@@ -464,7 +264,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		try {
 			storage.setItem(MESSAGE_DAILY_COUNT_KEY, JSON.stringify(dailyCount));
 		} catch (err) {
-			logger.error('Failed to save daily message count to storage', err);
+			this.logger.error('Failed to save daily message count to storage', err);
 		}
 	};
 
@@ -473,7 +273,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		try {
 			storage.setItem(MESSAGE_TOTAL_COUNT_KEY, JSON.stringify(countMap));
 		} catch (err) {
-			logger.error('Failed to save total count to storage', err);
+			this.logger.error('Failed to save total count to storage', err);
 		}
 	};
 

@@ -87,6 +87,33 @@ export declare class Comment {
 		mutator: (draft: MutableModel<Comment>) => void | Comment
 	): Comment;
 }
+export declare class PostUni {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly comments: AsyncCollection<Comment>;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
+
+	constructor(init: ModelInit<Post>);
+
+	static copyOf(
+		src: Post,
+		mutator: (draft: MutableModel<Post>) => void | Post
+	): Post;
+}
+
+export declare class CommentUni {
+	public readonly id: string;
+	public readonly content: string;
+	public readonly postID: string;
+
+	constructor(init: ModelInit<Comment>);
+
+	static copyOf(
+		src: Comment,
+		mutator: (draft: MutableModel<Comment>) => void | Comment
+	): Comment;
+}
 
 export declare class User {
 	public readonly id: string;
@@ -942,6 +969,102 @@ export function testSchema(): Schema {
 						properties: {
 							name: 'byPost',
 							fields: ['postId'],
+						},
+					},
+				],
+			},
+			PostUni: {
+				name: 'PostUni',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					comments: {
+						name: 'comments',
+						isArray: true,
+						type: {
+							model: 'CommentUni',
+						},
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['postID'],
+						},
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Posts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			CommentUni: {
+				name: 'CommentUni',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postID: {
+						name: 'postID',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Comments',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byPost',
+							fields: ['postID', 'content'],
 						},
 					},
 				],
