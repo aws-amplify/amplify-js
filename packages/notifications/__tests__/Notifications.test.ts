@@ -71,7 +71,7 @@ describe('Notifications', () => {
 		});
 
 		test('does not crash if Push fails to configure', () => {
-			(PushNotification as any).default.mockImplementationOnce(() => {
+			(PushNotification as jest.Mock).mockImplementationOnce(() => {
 				throw new Error();
 			});
 			Notifications.configure(awsConfig);
