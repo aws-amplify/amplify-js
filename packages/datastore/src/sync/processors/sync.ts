@@ -26,9 +26,6 @@ import {
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';

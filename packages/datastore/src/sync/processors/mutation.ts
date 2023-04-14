@@ -5,9 +5,6 @@ import {
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';

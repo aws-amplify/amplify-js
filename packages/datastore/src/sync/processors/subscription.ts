@@ -6,9 +6,6 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
