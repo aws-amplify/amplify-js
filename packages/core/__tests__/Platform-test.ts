@@ -4,7 +4,7 @@ import {
 	Platform,
 } from '../src/Platform';
 import { version } from '../src/Platform/version';
-import { Category, Framework } from '../src/Platform/types';
+import { Category, DataStoreAction, Framework } from '../src/Platform/types';
 
 describe('Platform test', () => {
 	describe('isReactNative test', () => {
@@ -14,36 +14,43 @@ describe('Platform test', () => {
 	});
 
 	describe('getAmplifyUserAgent test', () => {
-		test('without customUserAgent', () => {
+		test('without customUserAgentDetails', () => {
 			expect(getAmplifyUserAgent()).toStrictEqual([
 				['aws-amplify', version],
 				['framework', Framework.None],
 			]);
 		});
 
-		test('with customUserAgent', () => {
+		/* TODO: Replace "DataStoreAction.None" action with actual action */
+		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgent({
 					category: Category.DataStore,
+					action: DataStoreAction.None,
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				[Category.DataStore, undefined],
+				[Category.DataStore, DataStoreAction.None],
 				['framework', Framework.None],
 			]);
 		});
 	});
 
 	describe('getAmplifyUserAgentString test', () => {
-		test('without customUserAgent', () => {
+		test('without customUserAgentDetails', () => {
 			expect(getAmplifyUserAgentString()).toBe(
 				`${Platform.userAgent} framework/${Framework.None}`
 			);
 		});
 
-		test('with customUserAgent', () => {
-			expect(getAmplifyUserAgentString({ category: Category.DataStore })).toBe(
-				`${Platform.userAgent} ${Category.DataStore} framework/${Framework.None}`
+		test('with customUserAgentDetails', () => {
+			expect(
+				getAmplifyUserAgentString({
+					category: Category.DataStore,
+					action: DataStoreAction.None,
+				})
+			).toBe(
+				`${Platform.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`
 			);
 		});
 	});

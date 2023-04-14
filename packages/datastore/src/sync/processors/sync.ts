@@ -26,8 +26,9 @@ import {
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
-	CustomUserAgent,
 	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
@@ -215,8 +216,10 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					const customUserAgent: CustomUserAgent = {
+					/* TODO: send with actual DataStore action */
+					const customUserAgentDetails: CustomUserAgentDetails = {
 						category: Category.DataStore,
+						action: DataStoreAction.None,
 					};
 
 					return await this.amplifyContext.API.graphql({
@@ -224,7 +227,7 @@ class SyncProcessor {
 						variables,
 						authMode,
 						authToken,
-						customUserAgent,
+						customUserAgentDetails,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))

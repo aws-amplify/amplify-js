@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomUserAgent, Framework } from './types';
+import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
@@ -28,12 +28,14 @@ const rerunFrameworkDetection = () => {
 
 export const getAmplifyUserAgent = ({
 	category,
+	action,
 	framework,
+}: CustomUserAgentDetails = {}): AWSUserAgent => {
 	rerunFrameworkDetection();
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
 		/** TODO: add action as second element */
-		userAgent.push([category, undefined]);
+		userAgent.push([category, action]);
 	}
 	userAgent.push(['framework', framework ? framework : Platform.framework]);
 
@@ -41,12 +43,12 @@ export const getAmplifyUserAgent = ({
 };
 
 export const getAmplifyUserAgentString = (
-	customUserAgent?: CustomUserAgent
+	customUserAgentDetails?: CustomUserAgentDetails
 ): string => {
-	const userAgent = getAmplifyUserAgent(customUserAgent);
-	const userAgentDetailsString = userAgent
-		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue ?? ''}`)
+	const userAgent = getAmplifyUserAgent(customUserAgentDetails);
+	const userAgentString = userAgent
+		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
 		.join(' ');
 
-	return userAgentDetailsString.trimEnd();
+	return userAgentString.trimEnd();
 };

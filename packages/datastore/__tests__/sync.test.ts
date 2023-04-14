@@ -1,7 +1,7 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
-import { Category } from '@aws-amplify/core';
+import { Category, DataStoreAction } from '@aws-amplify/core';
 
 let mockGraphQl;
 
@@ -292,9 +292,13 @@ describe('Sync', () => {
 				modelDefinition: defaultModelDefinition,
 			});
 
+			/* TODO: test with actual DataStore Action */
 			expect(mockGraphQl).toHaveBeenCalledWith(
 				expect.objectContaining({
-					customUserAgent: { category: Category.DataStore },
+					customUserAgentDetails: {
+						category: Category.DataStore,
+						action: DataStoreAction.None,
+					},
 				})
 			);
 		});

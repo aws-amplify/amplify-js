@@ -19,7 +19,7 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Category } from '@aws-amplify/core';
+import { Category, DataStoreAction } from '@aws-amplify/core';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
@@ -659,9 +659,13 @@ describe('error handler', () => {
 						)
 					);
 
+					/* TODO: test with actual datastore action */
 					expect(mockGraphQL).toHaveBeenCalledWith(
 						expect.objectContaining({
-							customUserAgent: { category: Category.DataStore },
+							customUserAgentDetails: {
+								category: Category.DataStore,
+								action: DataStoreAction.None,
+							},
 						})
 					);
 				});

@@ -17,7 +17,12 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { MutationEvent } from '../src/sync/';
-import { Constants, Category, Framework } from '@aws-amplify/core';
+import {
+	Constants,
+	Category,
+	Framework,
+	DataStoreAction,
+} from '@aws-amplify/core';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -25,7 +30,9 @@ let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 let axiosError;
-const datastoreUserAgent = `${Constants.userAgent} ${Category.DataStore} framework/${Framework.None}`;
+
+/* TODO: test with actual actions */
+const datastoreUserAgent = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
 
 beforeEach(() => {
 	axiosError = timeoutError;

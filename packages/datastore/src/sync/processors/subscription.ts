@@ -6,8 +6,9 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
-	CustomUserAgent,
 	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -445,8 +446,10 @@ class SubscriptionProcessor {
 											}`
 										);
 
-										const customUserAgent: CustomUserAgent = {
+										/* TODO: send with actual DataStore action */
+										const customUserAgentDetails: CustomUserAgentDetails = {
 											category: Category.DataStore,
+											action: DataStoreAction.None,
 										};
 
 										const queryObservable = <
@@ -458,7 +461,7 @@ class SubscriptionProcessor {
 											variables,
 											...{ authMode },
 											authToken,
-											customUserAgent,
+											customUserAgentDetails,
 										}));
 
 										let subscriptionReadyCallback: () => void;

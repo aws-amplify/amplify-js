@@ -5,8 +5,9 @@ import {
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-	CustomUserAgent,
 	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
@@ -304,8 +305,10 @@ class MutationProcessor {
 					this.amplifyConfig
 				);
 
-				const customUserAgent: CustomUserAgent = {
+				/* TODO: Send with actual DataStore action */
+				const customUserAgentDetails: CustomUserAgentDetails = {
 					category: Category.DataStore,
+					action: DataStoreAction.None,
 				};
 
 				const tryWith = {
@@ -313,7 +316,7 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					customUserAgent,
+					customUserAgentDetails,
 				};
 				let attempt = 0;
 
@@ -397,7 +400,7 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
-										customUserAgent,
+										customUserAgentDetails,
 									});
 
 									// onTerminate cancel graphql()

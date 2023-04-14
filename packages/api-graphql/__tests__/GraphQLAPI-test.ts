@@ -12,6 +12,8 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	Category,
 	Framework,
+	ApiAction,
+	DataStoreAction,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
@@ -58,8 +60,9 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
-const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API} framework/${Framework.None}`;
-const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore} framework/${Framework.None}`;
+/* TODO: Test with actual actions */
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
+const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();

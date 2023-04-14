@@ -40,7 +40,21 @@ export {
 	getAmplifyUserAgent,
 	getAmplifyUserAgentString,
 } from './Platform';
-export { Category, CustomUserAgent, Framework } from './Platform/types';
+export {
+	ApiAction,
+	AuthAction,
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	Framework,
+	GeoAction,
+	InteractionsAction,
+	NotificationsAction,
+	PredictionsAction,
+	PubSubAction,
+	PushNotificationAction,
+	StorageAction,
+} from './Platform/types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,

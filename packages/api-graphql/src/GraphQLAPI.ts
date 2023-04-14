@@ -11,11 +11,12 @@ import {
 import Observable from 'zen-observable-ts';
 import {
 	Amplify,
+	ApiAction,
+	Category,
 	ConsoleLogger as Logger,
 	Credentials,
+	CustomUserAgentDetails,
 	getAmplifyUserAgentString,
-	CustomUserAgent,
-	Category,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
@@ -36,12 +37,12 @@ export const graphqlOperation = (
 	query,
 	variables = {},
 	authToken?: string,
-	customUserAgent?: CustomUserAgent
+	customUserAgentDetails?: CustomUserAgentDetails
 ) => ({
 	query,
 	variables,
 	authToken,
-	customUserAgent,
+	customUserAgentDetails,
 });
 
 /**
@@ -223,7 +224,7 @@ export class GraphQLAPIClass {
 			variables = {},
 			authMode,
 			authToken,
-			customUserAgent,
+			customUserAgentDetails,
 		}: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -255,7 +256,7 @@ export class GraphQLAPIClass {
 					withCredentials: this._options.withCredentials,
 				};
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode, customUserAgent },
+					{ query, variables, authMode, customUserAgentDetails },
 					headers,
 					initParams
 				);
@@ -272,7 +273,7 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode, customUserAgent }: GraphQLOptions,
+		{ query, variables, authMode, customUserAgentDetails }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
@@ -285,7 +286,12 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
-		const userAgentDetails = { category: Category.API, ...customUserAgent };
+		/* TODO: Send with actual API action */
+		const userAgentDetails: CustomUserAgentDetails = {
+			category: Category.API,
+			action: ApiAction.None,
+			...customUserAgentDetails,
+		};
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
