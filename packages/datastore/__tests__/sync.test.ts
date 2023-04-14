@@ -2,6 +2,7 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
 import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
+import { PersistentModelConstructor } from '../src/types';
 let mockGraphQl;
 
 const sessionStorageMock = (() => {
@@ -46,13 +47,13 @@ const defaultModelDefinition = { name: 'Post' };
 const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
 describe('Sync', () => {
-	describe('jitteredRetry', () => {
-		beforeEach(() => {
-			window.sessionStorage.clear();
-			jest.resetModules();
-			jest.resetAllMocks();
-		});
+	beforeEach(() => {
+		window.sessionStorage.clear();
+		jest.resetModules();
+		jest.resetAllMocks();
+	});
 
+	describe('jitteredRetry', () => {
 		it('should return all data', async () => {
 			const resolveResponse = {
 				data: {
@@ -409,6 +410,53 @@ describe('Sync', () => {
 					errorType: 'Transient',
 				})
 			);
+		});
+	});
+
+	describe('retrievePage', () => {
+		it('syncError hub event unauthorized', async () => {
+			const rejectResponse = {
+				data: null,
+				errors: [
+					{
+						message: 'Request failed with status code 403',
+					},
+				],
+			};
+
+			const hubDispatchMock = jest.fn();
+			const coreMocks = {
+				Hub: {
+					dispatch: hubDispatchMock,
+					listen: jest.fn(),
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				rejectResponse,
+				coreMocks,
+			});
+
+			SyncProcessor.typeQuery.set(
+				defaultModelDefinition as PersistentModelConstructor<any>,
+				''
+			);
+			await SyncProcessor.retrievePage(
+				defaultModelDefinition,
+				0,
+				'',
+				10,
+				undefined,
+				new Promise(resolve => {})
+			);
+			expect(hubDispatchMock).toBeCalledWith('datastore', {
+				event: 'syncError',
+				data: {
+					errorType: 'Unauthorized',
+					authModes: ['userPools'],
+					modelName: 'Post',
+				},
+			});
 		});
 	});
 });

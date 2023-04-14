@@ -117,6 +117,7 @@ class SyncProcessor {
 
 		// sync only needs the READ auth mode(s)
 		const readAuthModes = modelAuthModes.READ;
+		const authModeErrors = new Array(readAuthModes.length);
 
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
@@ -143,6 +144,7 @@ class SyncProcessor {
 				);
 				return response;
 			} catch (error) {
+				authModeErrors[authModeAttempts] = { message: error.message };
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -152,6 +154,15 @@ class SyncProcessor {
 						logger.warn(
 							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
 						);
+
+						Hub.dispatch('datastore', {
+							event: 'syncError',
+							data: {
+								errorType: 'Unauthorized',
+								modelName: modelDefinition.name,
+								authModes: readAuthModes,
+							},
+						});
 
 						return {
 							data: {
