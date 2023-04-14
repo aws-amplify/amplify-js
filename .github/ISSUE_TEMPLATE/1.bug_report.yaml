@@ -43,7 +43,6 @@ body:
           | `@aws-amplify/ui-components`    | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components)       |
           | `@aws-amplify/ui-react`         | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)                 |
           | `@aws-amplify/ui-vue`           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)                     |
-          | `@aws-amplify/xr`               | [![version](https://img.shields.io/npm/v/@aws-amplify/xr/latest.svg)](https://www.npmjs.com/package/@aws-amplify/xr)                             |
 
         </details>
 
@@ -118,7 +117,6 @@ body:
         - notifications
         - interactions
         - predictions
-        - xr
         - Not applicable
   - type: textarea
     attributes:
