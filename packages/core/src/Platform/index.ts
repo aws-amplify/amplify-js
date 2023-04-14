@@ -50,5 +50,5 @@ export const getAmplifyUserAgentString = (
 		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
 		.join(' ');
 
-	return userAgentString.trimEnd();
+	return userAgentString;
 };
