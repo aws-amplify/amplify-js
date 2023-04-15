@@ -236,7 +236,8 @@ export function warpTime(multiplier = 20) {
  * implementations.
  */
 export function unwarpTime() {
-	// jest.runOnlyPendingTimers();
+	// Does this resolve the issue?
+	jest.runOnlyPendingTimers();
 	jest.useRealTimers();
 	clearInterval(warpTimeTick);
 }
