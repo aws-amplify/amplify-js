@@ -18,7 +18,6 @@ class NotificationsClass {
 
 	constructor() {
 		this.inAppMessaging = new InAppMessagingClass();
-		this.pushNotification = new PushNotificationClass();
 	}
 
 	/**
@@ -43,6 +42,10 @@ class NotificationsClass {
 
 		if (this.config.Push) {
 			try {
+				// only instantiate once
+				if (!this.pushNotification) {
+					this.pushNotification = new PushNotificationClass();
+				}
 				this.pushNotification.configure(this.config.Push);
 			} catch (err) {
 				logger.error(err);
