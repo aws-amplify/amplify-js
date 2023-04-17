@@ -13,9 +13,7 @@ import PushNotification from '../src/PushNotification';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../src/InAppMessaging', () => jest.fn(() => mockInAppMessaging));
-jest.mock('../src/PushNotification', () => ({
-	default: jest.fn(() => mockPushNotification),
-}));
+jest.mock('../src/PushNotification', () => jest.fn(() => mockPushNotification));
 
 const mockInAppMessaging = {
 	configure: jest.fn(),
@@ -73,7 +71,7 @@ describe('Notifications', () => {
 		});
 
 		test('does not crash if Push fails to configure', () => {
-			(PushNotification as any).default.mockImplementationOnce(() => {
+			(PushNotification as jest.Mock).mockImplementationOnce(() => {
 				throw new Error();
 			});
 			Notifications.configure(awsConfig);
