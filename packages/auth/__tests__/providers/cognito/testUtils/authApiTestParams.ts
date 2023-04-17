@@ -34,5 +34,26 @@ export const authAPITestParams = {
 	},
 	configWithClientMetadata: {
 		clientMetadata: {foo: 'bar'}
-	}
+	},
+	confirmResetPasswordRequestWithClientMetadata: {
+		username: 'username',
+		newPassword: 'password',
+		confirmationCode: 'code',
+		options: {
+			serviceOptions: {
+				clientMetadata: { foo: 'bar' }
+			}
+		}
+	},
+	confirmForgotPasswordCommandWithClientMetadata: {
+		Username: 'username',
+		Password: 'password',
+		ConfirmationCode: 'code',
+		ClientMetadata: {foo: 'bar'}
+	},
+	confirmResetPasswordRequest: {
+		username: 'username',
+		newPassword: 'password',
+		confirmationCode: 'code'
+	},
 };
