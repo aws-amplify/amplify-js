@@ -84,6 +84,21 @@ export class FakeGraphQLService {
 		}
 	}
 
+	// private async jitteredPause(ms: number): Promise<unknown> {
+	private async jitteredPause(ms: number) {
+		/**
+		 * "Materialized" jitter from -jitter to +jitter.
+		 */
+		const jitter = Math.floor(
+			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
+		);
+		// console.log('jitter from jitteredPause: ', jitter);
+		const jitteredMs = Math.max(ms + jitter, 0);
+		// console.log('jitteredMs from jitteredPause: ', jitteredMs);
+		// debugger;
+		return pause(jitteredMs);
+	}
+
 	/**
 	 * Given the plural name of a model, find the singular name
 	 * @param pluralName plural name of model (e.g. "Todos")
