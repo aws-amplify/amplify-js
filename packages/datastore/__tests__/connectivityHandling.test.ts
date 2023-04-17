@@ -822,8 +822,9 @@ describe('DataStore sync engine', () => {
 		});
 
 		/**
-		 * Looking for error here:
-		 * https://github.com/aws-amplify/amplify-js/blob/main/packages/datastore/src/sync/index.ts#L1128
+		 * We don't call `await` on Save. We want the sync engine start, but not finish anything, so that
+		 * this code path is hit when this.unsleepSyncQueriesObservable is still `null`:
+		 * https://github.com/aws-amplify/amplify-js/blob/main/packages/datastore/src/sync/index.ts#L1125
 		 */
 		test.only('does not error when disruption before sync queries start', async () => {
 			// // // debugger;
