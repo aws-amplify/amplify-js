@@ -822,30 +822,21 @@ describe('DataStore sync engine', () => {
 		});
 
 		/**
-		 * We don't call `await` on Save. We want the sync engine start, but not finish anything, so that
-		 * this code path is hit when this.unsleepSyncQueriesObservable is still `null`:
+		 * We don't call `await` on DataStore.save. We want the sync engine start, but not finish anything, so that
+		 * this code path is hit when `this.unsleepSyncQueriesObservable` is still `null`:
 		 * https://github.com/aws-amplify/amplify-js/blob/main/packages/datastore/src/sync/index.ts#L1125
 		 */
-		test.only('does not error when disruption before sync queries start', async () => {
-			// debugger;
-			// TODO: console logs to get a sense of timing on events
-			console.time('abc');
-			// debugger;
-			const postPromise = await DataStore.save(
+		test('does not error when disruption before sync queries start', async () => {
+			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
 			);
 			const errorLog = jest.spyOn(console, 'error');
 
-			console.log('a');
-			// debugger;
-			// Make sure extra sync that is scheduled because of this
-			await simulateDisruption(true);
+			await simulateDisruption();
 
-			console.log('b');
 			await simulateDisruptionEnd();
-			// debugger;
 
 			console.log('c');
 			await waitForSyncQueriesReady();

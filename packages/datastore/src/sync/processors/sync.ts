@@ -121,6 +121,7 @@ class SyncProcessor {
 
 		let authModeAttempts = 0;
 		const authModeRetry = async () => {
+			// Close on running processes
 			if (!this.runningProcesses.isOpen) {
 				throw new Error(
 					'sync.retreievePage termination was requested. Exiting.'
@@ -180,6 +181,7 @@ class SyncProcessor {
 							},
 						};
 					}
+					// unhandled?
 					throw error;
 				}
 				logger.debug(
@@ -382,8 +384,8 @@ class SyncProcessor {
 						this.runningProcesses.add(async onTerminate => {
 							modelDefinition.name === 'Comment' &&
 								console.log(`starting adding model ${modelDefinition.name}`);
-							if (modelDefinition.name === 'Post') {
-								// debugger;
+							if (modelDefinition.name === 'LegacyJSONComment') {
+								console.log('legacy comment');
 							}
 							let done = false;
 							let nextToken: string = null!;
@@ -404,15 +406,19 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
-									modelDefinition.name === 'Comment' && console.log('ping');
+									modelDefinition.name === 'LegacyJSONComment' &&
+										console.log('ping');
 									if (modelDefinition.name === 'Post') {
 										// debugger;
 									}
 									if (!this.runningProcesses.isOpen) {
-										return;
+										debugger;
+										// reject, and why? log?
+										return res();
 									}
 
-									modelDefinition.name === 'Comment' && console.log('pang');
+									modelDefinition.name === 'LegacyJSONComment' &&
+										console.log('pang');
 									if (modelDefinition.name === 'Post') {
 										// debugger;
 									}
@@ -450,14 +456,19 @@ class SyncProcessor {
 									 * filter: null
 									 * onTerminate: (pending Promise)
 									 */
-									({ items, nextToken, startedAt } = await this.retrievePage(
-										modelDefinition,
-										lastSync,
-										nextToken,
-										limit,
-										filter,
-										onTerminate
-									));
+									try {
+										({ items, nextToken, startedAt } = await this.retrievePage(
+											modelDefinition,
+											lastSync,
+											nextToken,
+											limit,
+											filter,
+											onTerminate
+										));
+									} catch (error) {
+										// add model that doesn't exist?
+										debugger;
+									}
 
 									if (modelDefinition.name === 'Post') {
 										// debugger;
@@ -484,7 +495,8 @@ class SyncProcessor {
 										startedAt,
 										isFullSync: !lastSync,
 									});
-									modelDefinition.name === 'Comment' && console.log('pong');
+									modelDefinition.name === 'LegacyJSONComment' &&
+										console.log('pong');
 									if (modelDefinition.name === 'Post') {
 										// debugger;
 									}
@@ -498,7 +510,7 @@ class SyncProcessor {
 								promise
 							);
 
-							modelDefinition.name === 'Comment' &&
+							modelDefinition.name === 'LegacyJSONComment' &&
 								console.log(
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
@@ -506,7 +518,7 @@ class SyncProcessor {
 								// debugger;
 							}
 							await promise;
-							modelDefinition.name === 'Comment' &&
+							modelDefinition.name === 'LegacyJSONComment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
 							if (modelDefinition.name === 'Post') {
 								// debugger;
@@ -525,10 +537,11 @@ class SyncProcessor {
 	async stop() {
 		// debugger;
 		logger.debug('stopping sync processor');
-		// console.log('sync.ts stop running procs', this.runningProcesses);
+		console.log('sync.ts stop running procs', this.runningProcesses);
 		// TODO: CURRENT: WHY DOES THIS BAIL???
 		// background process manager has models hanging out in it
 		// debugger;
+		// setInterval(() => console.log(this.runningProcesses), 1000);
 		await this.runningProcesses.close();
 		// debugger;
 		console.log('sync.ts stop middle');

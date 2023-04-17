@@ -517,7 +517,7 @@ export class FakeGraphQLService {
 		}
 
 		return new Promise(async resolve => {
-			console.log('before jitteredPause in "request"', this.latencies.request);
+			// console.log('before jitteredPause in "request"', this.latencies.request);
 			// debugger;
 			await this.jitteredPause(this.latencies.request);
 
