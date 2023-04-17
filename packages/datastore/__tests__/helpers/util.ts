@@ -222,23 +222,23 @@ let warpTimeTick;
  * @param multiplier How much faster than regular time should we run?
  */
 // https://github.com/facebook/jest/issues/11876
-export function warpTime(multiplier = 20) {
-	warpTimeTick = setInterval(() => {
-		jest.advanceTimersByTime(25 * multiplier);
+export async function warpTime(multiplier = 20) {
+	warpTimeTick = setInterval(async () => {
+		await jest.advanceTimersByTime(25 * multiplier);
 	}, 25);
 	// requires jest upgrade:
 	// jest.useFakeTimers({ advanceTimers: true });
-	jest.useFakeTimers();
+	await jest.useFakeTimers();
 }
 
 /**
  * Stops warping time and returns time-related functions to their builtin
  * implementations.
  */
-export function unwarpTime() {
+export async function unwarpTime() {
 	// Does this resolve the issue?
-	jest.runOnlyPendingTimers();
-	jest.useRealTimers();
+	await jest.runOnlyPendingTimers();
+	await jest.useRealTimers();
 	clearInterval(warpTimeTick);
 }
 
@@ -408,7 +408,7 @@ export async function expectIsolation(
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForEmptyOutbox(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -432,7 +432,7 @@ export async function waitForEmptyOutbox(verbose = false) {
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForDataStoreReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -453,7 +453,7 @@ export async function waitForDataStoreReady(verbose = false) {
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForSyncQueriesReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);

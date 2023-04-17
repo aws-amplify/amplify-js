@@ -343,8 +343,7 @@ export class BackgroundProcessManager {
 	 * manager's `close()` was called in an `Open` state.
 	 */
 	async close() {
-		// we don't get here.........
-		debugger;
+		// we DO get here.........
 		if (this.isOpen) {
 			this._state = BackgroundProcessManagerState.Closing;
 			for (const job of Array.from(this.jobs)) {
@@ -354,6 +353,7 @@ export class BackgroundProcessManager {
 					// Due to potential races with a job's natural completion, it's
 					// reasonable to expect the termination call to fail. Hence,
 					// not logging as an error.
+					// debugger;
 					console.warn(
 						`Failed to send termination signal to job. Error: ${error.message}`,
 						job
