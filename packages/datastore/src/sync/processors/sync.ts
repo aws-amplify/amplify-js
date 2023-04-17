@@ -357,8 +357,15 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
+									/**
+									 * It's possible that the running processes have been closed
+									 * (e.g. `DataStore.clear` has been called)
+									 */
 									if (!this.runningProcesses.isOpen) {
-										return;
+										logger.error(
+											'No open running processes when starting sync'
+										);
+										return res();
 									}
 
 									const limit = Math.min(
@@ -366,14 +373,23 @@ class SyncProcessor {
 										syncPageSize
 									);
 
-									({ items, nextToken, startedAt } = await this.retrievePage(
-										modelDefinition,
-										lastSync,
-										nextToken,
-										limit,
-										filter,
-										onTerminate
-									));
+									/**
+									 * It's possible that retrievePage will error here, for instance,
+									 * during `authModeRetry` if there are no open running processes.
+									 * An example would be if a model does not exist in the schema.
+									 */
+									try {
+										({ items, nextToken, startedAt } = await this.retrievePage(
+											modelDefinition,
+											lastSync,
+											nextToken,
+											limit,
+											filter,
+											onTerminate
+										));
+									} catch (error) {
+										logger.error('Error retrieving page:', error);
+									}
 
 									recordsReceived += items.length;
 
