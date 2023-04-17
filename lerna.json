@@ -4,7 +4,7 @@
 	"packages": ["packages/*"],
 	"exact": true,
 	"version": "independent",
-	"useNx": false,
+	"useNx": true,
 	"command": {
 		"run": {
 			"private": false
