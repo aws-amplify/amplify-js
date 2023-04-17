@@ -358,12 +358,13 @@ class SyncProcessor {
 
 								do {
 									/**
-									 * It's possible that the running processes have been closed
-									 * (e.g. `DataStore.clear` has been called)
+									 * If `runningProcesses` is not open, it means that the sync processor has been
+									 * stopped (for example by calling `DataStore.clear()` upstream) and has not yet
+									 * finished terminating and/or waiting for its background processes to complete.
 									 */
 									if (!this.runningProcesses.isOpen) {
-										logger.error(
-											'No open running processes when starting sync'
+										logger.debug(
+											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
 										);
 										return res();
 									}
