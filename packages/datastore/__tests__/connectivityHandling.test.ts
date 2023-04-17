@@ -571,7 +571,7 @@ describe('DataStore sync engine', () => {
 	describe('connection state change handling', () => {
 		beforeEach(async () => {
 			console.log('test output');
-			// // // debugger;
+			// debugger;
 			warpTime();
 		});
 
@@ -788,7 +788,7 @@ describe('DataStore sync engine', () => {
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
-			// // debugger;
+			// debugger;
 			await simulateDisruptionEnd();
 			await waitForSyncQueriesReady();
 
@@ -827,10 +827,10 @@ describe('DataStore sync engine', () => {
 		 * https://github.com/aws-amplify/amplify-js/blob/main/packages/datastore/src/sync/index.ts#L1125
 		 */
 		test.only('does not error when disruption before sync queries start', async () => {
-			// // // debugger;
+			// debugger;
 			// TODO: console logs to get a sense of timing on events
 			console.time('abc');
-			// // // debugger;
+			// debugger;
 			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
@@ -839,13 +839,13 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 
 			console.log('a');
-			// // // debugger;
+			// debugger;
 			// Make sure extra sync that is scheduled because of this
 			await simulateDisruption(true);
 
 			console.log('b');
 			await simulateDisruptionEnd();
-			// // // debugger;
+			// debugger;
 
 			console.log('c');
 			await waitForSyncQueriesReady();
@@ -854,7 +854,7 @@ describe('DataStore sync engine', () => {
 
 			// Is anything here?
 			console.log(errorLog);
-			// // debugger;
+			// debugger;
 
 			// expect(errorLog).not.toHaveBeenCalledWith(
 			// 	expect.stringMatching(new RegExp('[ERROR].* Hub')),
@@ -869,7 +869,7 @@ describe('DataStore sync engine', () => {
 			await waitForEmptyOutbox();
 
 			console.log('f');
-			// // debugger;
+			// debugger;
 
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);

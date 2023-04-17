@@ -131,17 +131,17 @@ class SyncProcessor {
 			modelDefinition.name === 'Comment' && console.log('trying Comment');
 			if (modelDefinition.name === 'Post') {
 				// THIS SHOULD HAPPEN TWICE, AND RETRIEVE PAGE SHOULD RETURN TWICE
-				// // debugger;
+				// debugger;
 			}
 
 			try {
-				// // // debugger;
+				// debugger;
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
 				);
 				if (modelDefinition.name === 'Post') {
 					// do we enter jittered retry?
-					// // debugger;
+					// debugger;
 				}
 				const response = await this.jitteredRetry<T>({
 					query,
@@ -155,14 +155,14 @@ class SyncProcessor {
 					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
 				);
 				if (modelDefinition.name === 'Post') {
-					// // debugger;
+					// debugger;
 				}
 				return response;
 			} catch (error) {
 				modelDefinition.name === 'Comment' &&
 					console.log('Comment error', error);
 				if (modelDefinition.name === 'Post') {
-					// // debugger;
+					// debugger;
 				}
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
@@ -232,7 +232,7 @@ class SyncProcessor {
 				try {
 					if (modelDefinition.name === 'Post') {
 						// THIS FAILS, WHY?
-						debugger;
+						// debugger;
 					}
 					const authToken = await getTokenForCustomAuth(
 						authMode,
@@ -286,7 +286,7 @@ class SyncProcessor {
 						);
 					}
 
-					// // debugger;
+					// debugger;
 					if (hasItems && otherErrors?.length) {
 						await Promise.all(
 							otherErrors.map(async err => {
@@ -304,7 +304,7 @@ class SyncProcessor {
 										cause: err,
 									});
 								} catch (e) {
-									// // debugger;
+									// debugger;
 									logger.error('Sync error handler failed with:', e);
 								}
 							})
@@ -331,16 +331,16 @@ class SyncProcessor {
 							...result.data[opName],
 						};
 
-						// // debugger;
+						// debugger;
 						return result;
 					}
 
 					if (result.data?.[opName].items?.length) {
-						// // debugger;
+						// debugger;
 						return result;
 					}
 
-					// // debugger;
+					// debugger;
 					throw error;
 				}
 			},
@@ -410,7 +410,7 @@ class SyncProcessor {
 								do {
 									modelDefinition.name === 'Comment' && console.log('ping');
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 									if (!this.runningProcesses.isOpen) {
 										return;
@@ -418,7 +418,7 @@ class SyncProcessor {
 
 									modelDefinition.name === 'Comment' && console.log('pang');
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 
 									// TODO: START HERE:
@@ -437,7 +437,7 @@ class SyncProcessor {
 
 									// check here, is math right?
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 
 									// TODO: Why are we getting lost in here!!!
@@ -464,7 +464,7 @@ class SyncProcessor {
 									));
 
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 									// START HERE
 									// TODO: do we get here?
@@ -472,7 +472,7 @@ class SyncProcessor {
 
 									// hangs on second sync
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 
 									recordsReceived += items.length;
@@ -490,7 +490,7 @@ class SyncProcessor {
 									});
 									modelDefinition.name === 'Comment' && console.log('pong');
 									if (modelDefinition.name === 'Post') {
-										// // debugger;
+										// debugger;
 									}
 								} while (!done);
 
@@ -507,13 +507,13 @@ class SyncProcessor {
 									`awaitting promise adding model ${modelDefinition.name}`
 								);
 							if (modelDefinition.name === 'Post') {
-								// // debugger;
+								// debugger;
 							}
 							await promise;
 							modelDefinition.name === 'Comment' &&
 								console.log(`done adding model ${modelDefinition.name}`);
 							if (modelDefinition.name === 'Post') {
-								// // debugger;
+								// debugger;
 							}
 						}, `adding model ${modelDefinition.name}`)
 				);

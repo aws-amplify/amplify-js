@@ -2759,7 +2759,7 @@ class DataStore {
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				// BROKEN?
-				// // debugger;
+				// debugger;
 				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
 				const [appSyncId] = appSyncUrl.split('.');
 

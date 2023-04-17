@@ -1144,13 +1144,13 @@ export class SyncEngine {
 	// Bookkeeping: otherwise, it tries to do stuff when process manager is closed
 	private scheduleSync() {
 		const test = this.runningProcesses.isOpen;
-		// // debugger;
+		// debugger;
 		return (
 			this.runningProcesses.isOpen &&
 			this.runningProcesses.add(() =>
 				this.waitForSleepState.then(() => {
 					// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
-					// // debugger;
+					// debugger;
 					this.unsleepSyncQueriesObservable!();
 				})
 			)
