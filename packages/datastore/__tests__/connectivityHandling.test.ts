@@ -809,10 +809,7 @@ describe('DataStore sync engine', () => {
 			await simulateDisruption();
 			await simulateDisruptionEnd();
 			await waitForSyncQueriesReady();
-			expect(errorLog).not.toHaveBeenCalledWith(
-				expect.stringMatching(new RegExp('[ERROR].* Hub')),
-				expect.anything()
-			);
+			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
