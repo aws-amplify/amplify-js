@@ -68,7 +68,8 @@ export class FakeGraphQLService {
 
 		let table;
 		if (type === 'sync' || type === 'list') {
-			table = selection.match(/^(create|sync|get|list)(\w+)s$/)[2];
+			// e.g. `syncTodos` or `syncCompositePKChildren`
+			table = selection.match(/^(create|sync|get|list)([A-Za-z]+)$/)[2];
 		} else {
 			table = selection.match(
 				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
