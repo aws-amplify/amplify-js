@@ -831,7 +831,7 @@ describe('DataStore sync engine', () => {
 			// TODO: console logs to get a sense of timing on events
 			console.time('abc');
 			// debugger;
-			const postPromise = DataStore.save(
+			const postPromise = await DataStore.save(
 				new Post({
 					title: 'a title',
 				})
