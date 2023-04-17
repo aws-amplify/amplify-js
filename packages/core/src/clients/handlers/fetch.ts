@@ -9,14 +9,14 @@ export const fetchTransferHandler: TransferHandler<
 	HttpRequest,
 	HttpResponse,
 	HttpTransferOptions
-> = async (request, options) => {
+> = async ({ url, method, headers, body }, { abortSignal }) => {
 	let resp: Response;
 	try {
-		resp = await fetch(request.url, {
-			method: request.method,
-			headers: request.headers,
-			body: shouldSendBody(request.method) ? request.body : undefined,
-			signal: options.abortSignal,
+		resp = await fetch(url, {
+			method,
+			headers,
+			body: shouldSendBody(method) ? body : undefined,
+			signal: abortSignal,
 		});
 	} catch (e) {
 		// TODO: needs to revise error handling in v6
@@ -26,13 +26,13 @@ export const fetchTransferHandler: TransferHandler<
 		throw e;
 	}
 
-	const headers = {};
+	const responseHeaders = {};
 	resp.headers?.forEach((value, key) => {
-		headers[key.toLowerCase()] = value;
+		responseHeaders[key.toLowerCase()] = value;
 	});
 	const httpResponse = {
 		statusCode: resp.status,
-		headers,
+		headers: responseHeaders,
 		body: null,
 	};
 

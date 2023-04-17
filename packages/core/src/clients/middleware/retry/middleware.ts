@@ -40,10 +40,13 @@ export interface RetryOptions<TResponse = Response> {
 /**
  * Retry middleware
  */
-export const retryMiddleware = <TInput = Request, TOutput = Response>(
-	options: RetryOptions<TOutput>
-) => {
-	if (options.maxAttempts < 1) {
+export const retryMiddleware = <TInput = Request, TOutput = Response>({
+	maxAttempts = DEFAULT_RETRY_ATTEMPTS,
+	retryDecider,
+	computeDelay,
+	abortSignal,
+}: RetryOptions<TOutput>) => {
+	if (maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
 	return (
@@ -51,12 +54,6 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>(
 		context: MiddlewareContext
 	) =>
 		async function retryMiddleware(request: TInput) {
-			const {
-				maxAttempts = DEFAULT_RETRY_ATTEMPTS,
-				retryDecider,
-				computeDelay,
-				abortSignal,
-			} = options;
 			let error: Error;
 			let attemptsCount = context.attemptsCount ?? 0;
 			let response: TOutput;
