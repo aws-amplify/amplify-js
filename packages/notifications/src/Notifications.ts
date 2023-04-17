@@ -4,6 +4,7 @@
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import InAppMessagingClass from './InAppMessaging';
+import PushNotificationClass from './PushNotification';
 import { InAppMessagingInterface as InAppMessaging } from './InAppMessaging/types';
 import { PushNotificationInterface as PushNotification } from './PushNotification/types';
 import { NotificationsCategory, NotificationsConfig, UserInfo } from './types';
@@ -41,8 +42,10 @@ class NotificationsClass {
 
 		if (this.config.Push) {
 			try {
-				const PushNotification = require('./PushNotification').default;
-				this.pushNotification = new PushNotification();
+				// only instantiate once
+				if (!this.pushNotification) {
+					this.pushNotification = new PushNotificationClass();
+				}
 				this.pushNotification.configure(this.config.Push);
 			} catch (err) {
 				logger.error(err);
