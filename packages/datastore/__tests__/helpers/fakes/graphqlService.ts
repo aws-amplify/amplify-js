@@ -84,19 +84,17 @@ export class FakeGraphQLService {
 		}
 	}
 
-	// private async jitteredPause(ms: number): Promise<unknown> {
-	private async jitteredPause(ms: number) {
-		/**
-		 * "Materialized" jitter from -jitter to +jitter.
-		 */
-		const jitter = Math.floor(
-			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
+	/**
+	 * Given the plural name of a model, find the singular name
+	 * @param pluralName plural name of model (e.g. "Todos")
+	 * @returns singular name of model (e.g. "Todo")
+	 */
+	private findSingularName(pluralName: string): string {
+		const model = Object.values(this.schema.models).find(
+			m => m.pluralName === pluralName
 		);
-		// console.log('jitter from jitteredPause: ', jitter);
-		const jitteredMs = Math.max(ms + jitter, 0);
-		// console.log('jitteredMs from jitteredPause: ', jitteredMs);
-		// debugger;
-		return pause(jitteredMs);
+		if (!model) throw new Error(`No model found for plural name ${pluralName}`);
+		return model.name;
 	}
 
 	public parseQuery(query) {
@@ -113,23 +111,13 @@ export class FakeGraphQLService {
 		)[1];
 
 		let table;
-
-		// IS THIS WHAT'S BROKEN?
-		const result = selection.match(/^(create|sync|get|list)(\w+)s$/);
-		const result2 = selection.match(
-			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
-		);
-
-		console.log('HERE?', result);
-		if ((!result || result.length < 3) && (!result2 || result2.length < 3)) {
-			// TADA!
-			// debugger;
-		}
-
+		// `selection` here could be `syncTodos` or `syncCompositePKChildren`
 		if (type === 'sync' || type === 'list') {
-			table = selection.match(
-				/^(create|sync|get|list|onCreate|onUpdate|onDelete)([A-Za-z]+)$/
+			// e.g. `Models`
+			const pluralName = selection.match(
+				/^(create|sync|get|list)([A-Za-z]+)$/
 			)[2];
+			table = this.findSingularName(pluralName);
 		} else {
 			table = selection.match(
 				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/

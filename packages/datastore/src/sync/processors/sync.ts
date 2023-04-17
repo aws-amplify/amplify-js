@@ -250,17 +250,13 @@ class SyncProcessor {
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {
 					console.log(error);
-					// TODO: AHA! WTF IS HAPPENING!
-					// "TypeError: Cannot read property '2' of null"
 					// debugger;
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
 					const clientOrForbiddenErrorMessage =
 						getClientSideAuthError(error) || getForbiddenError(error);
 					if (clientOrForbiddenErrorMessage) {
-						// WE GET HERE
 						// debugger;
-						// THIS WILL FAIL THE TEST:
-						logger.error('test', error);
+						logger.error('Sync processor retry error:', error);
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
