@@ -1606,6 +1606,9 @@ jobs:
             yarn run docs
             git add ./docs/api/
             git commit -m "chore(release): update API docs [ci skip]"
+      - run:
+          name: 'Push post release changes'
+          command: |
             git push origin release
             git push --force-with-lease origin release:main
 
