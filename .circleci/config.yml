@@ -2309,7 +2309,6 @@ workflows:
                 - release
           requires:
             - deploy
-
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
