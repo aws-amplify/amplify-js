@@ -15,9 +15,11 @@ export const Platform = {
 	isReactNative: framework === Framework.ReactNative,
 };
 
-// Rerun framework detection once when getAmplifyUserAgent is called if framework is None:
-// ReactNative framework must be detected initially, however
-// Other frameworks may not be detected in cases where DOM is not yet loaded
+/**
+ * Rerun framework detection once when getAmplifyUserAgent is called if framework is None.
+ * ReactNative framework must be detected initially, however other frameworks may not be 
+ * detected in cases where DOM is not yet loaded.
+ */
 const rerunFrameworkDetection = () => {
 	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
 		frameworkHasBeenRerun = true;
