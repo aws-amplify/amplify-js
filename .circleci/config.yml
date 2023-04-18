@@ -1613,7 +1613,7 @@ jobs:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
-          name: 'API doc generation test'
+          name: 'Update library version'
           command: |
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
@@ -1621,6 +1621,14 @@ jobs:
             yarn workspace @aws-amplify/core build
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
+            git push origin chore/docs-generation
+            git push --force-with-lease origin chore/docs-generation
+      - run:
+          name: 'Update API documentation'
+          command: |
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git pull origin chore/docs-generation
             yarn run docs
             git add ./docs/api/
             git commit -m "chore(release): update API docs [ci skip]"
