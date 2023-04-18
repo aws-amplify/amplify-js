@@ -101,7 +101,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getById for query by key', async () => {
-			const result = await DataStore.query(Model, model1Id);
+			const result = (await DataStore.query(Model, model1Id))!;
 			expect(result.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe('AsyncStorageAdapter tests', () => {
 
 		it('Should call getAll for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1('contains', 'value')
+				c.field1.contains('value')
 			);
 
 			expect(results.length).toEqual(3);
@@ -121,7 +121,7 @@ describe('AsyncStorageAdapter tests', () => {
 		it('Should call getAll & inMemoryPagination for query with a predicate and sort', async () => {
 			const results = await DataStore.query(
 				Model,
-				c => c.field1('contains', 'value'),
+				c => c.field1.contains('value'),
 				{
 					sort: s => s.dateCreated(SortDirection.DESCENDING),
 				}
@@ -219,8 +219,8 @@ describe('AsyncStorageAdapter tests', () => {
 			let profile = await DataStore.query(Profile, profile1Id);
 
 			// double-checking that both of the records exist at first
-			expect(user.id).toEqual(user1Id);
-			expect(profile.id).toEqual(profile1Id);
+			expect(user!.id).toEqual(user1Id);
+			expect(profile!.id).toEqual(profile1Id);
 
 			await DataStore.delete(User, user1Id);
 
@@ -233,8 +233,8 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should perform a cascading delete on a record with a Has Many relationship', async () => {
-			let post = await DataStore.query(Post, post1Id);
-			let comment = await DataStore.query(Comment, comment1Id);
+			let post = (await DataStore.query(Post, post1Id))!;
+			let comment = (await DataStore.query(Comment, comment1Id))!;
 
 			// double-checking that both of the records exist at first
 			expect(post.id).toEqual(post1Id);
@@ -242,8 +242,8 @@ describe('AsyncStorageAdapter tests', () => {
 
 			await DataStore.delete(Post, post.id);
 
-			post = await DataStore.query(Post, post1Id);
-			comment = await DataStore.query(Comment, comment1Id);
+			post = (await DataStore.query(Post, post1Id))!;
+			comment = (await DataStore.query(Comment, comment1Id))!;
 
 			// both should be undefined, even though we only explicitly deleted the post
 			expect(post).toBeUndefined();
@@ -281,8 +281,8 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
@@ -292,8 +292,54 @@ describe('AsyncStorageAdapter tests', () => {
 			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile.id);
-			expect(user.profile).toEqual(profile);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
+		});
+	});
+
+	describe('Save', () => {
+		let User: PersistentModelConstructor<User>;
+		let Profile: PersistentModelConstructor<Profile>;
+		let profile: Profile;
+
+		beforeAll(async () => {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ User } = classes as {
+				User: PersistentModelConstructor<User>;
+			});
+
+			({ Profile } = classes as {
+				Profile: PersistentModelConstructor<Profile>;
+			});
+
+			profile = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			);
+		});
+
+		it('should allow linking model via model field', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profile })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
+		});
+
+		it('should allow linking model via FK', async () => {
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profileID: profile.id })
+			);
+			const user1Id = savedUser.id;
+
+			const user = await DataStore.query(User, user1Id);
+			expect(user!.profileID).toEqual(profile.id);
+			expect(await user!.profile).toEqual(profile);
 		});
 	});
 });

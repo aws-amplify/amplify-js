@@ -6,6 +6,7 @@
 	<title>AWSS3ProviderManagedUpload | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -921,20 +922,11 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-constructor tsd-parent-kind-class">
 				<a href="awss3providermanagedupload.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-				<a href="awss3providermanagedupload.html#minpartsize" class="tsd-kind-icon">min<wbr>Part<wbr>Size</a>
-			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-protected">
 				<a href="awss3providermanagedupload.html#_createnews3client" class="tsd-kind-icon">_create<wbr>New<wbr>S3Client</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="awss3providermanagedupload.html#cancelupload" class="tsd-kind-icon">cancel<wbr>Upload</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="awss3providermanagedupload.html#upload" class="tsd-kind-icon">upload</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-				<a href="awss3providermanagedupload.html#uploadparts" class="tsd-kind-icon">upload<wbr>Parts</a>
 			</li>
 		</ul>
 	</li>
@@ -960,19 +952,11 @@ img { max-width: 100%; }
 						<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="awss3providermanagedupload.html#constructor" class="tsd-kind-icon">constructor</a></li>
 					</ul>
 				</section>
-				<section class="tsd-index-section tsd-is-private-protected">
-					<h3>Properties</h3>
-					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="awss3providermanagedupload.html#minpartsize" class="tsd-kind-icon">min<wbr>Part<wbr>Size</a></li>
-					</ul>
-				</section>
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><a href="awss3providermanagedupload.html#_createnews3client" class="tsd-kind-icon">_create<wbr>New<wbr>S3Client</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awss3providermanagedupload.html#cancelupload" class="tsd-kind-icon">cancel<wbr>Upload</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="awss3providermanagedupload.html#upload" class="tsd-kind-icon">upload</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="awss3providermanagedupload.html#uploadparts" class="tsd-kind-icon">upload<wbr>Parts</a></li>
 					</ul>
 				</section>
 			</div>
@@ -984,19 +968,19 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new AWSS3<wbr>Provider<wbr>Managed<wbr>Upload<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PutObjectRequest</span>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, emitter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">events.EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></li>
+				<li class="tsd-signature tsd-kind-icon">new AWSS3<wbr>Provider<wbr>Managed<wbr>Upload<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PutObjectCommandInput</span>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, emitter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">events.EventEmitter</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L67">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:67</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L58">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:58</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>params: <span class="tsd-signature-type">PutObjectRequest</span></h5>
+							<h5>params: <span class="tsd-signature-type">PutObjectCommandInput</span></h5>
 						</li>
 						<li>
 							<h5>opts: <span class="tsd-signature-type">any</span></h5>
@@ -1008,19 +992,6 @@ img { max-width: 100%; }
 					<h4 class="tsd-returns-title">Returns <a href="awss3providermanagedupload.html" class="tsd-signature-type">AWSS3ProviderManagedUpload</a></h4>
 				</li>
 			</ul>
-		</section>
-	</section>
-	<section class="tsd-panel-group tsd-member-group tsd-is-private-protected">
-		<h2>Properties</h2>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-			<a name="minpartsize" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagProtected">Protected</span> min<wbr>Part<wbr>Size</h3>
-			<div class="tsd-signature tsd-kind-icon">min<wbr>Part<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 5 * 1024 * 1024</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L53">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:53</a></li>
-				</ul>
-			</aside>
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
@@ -1035,7 +1006,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L334">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:334</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L319">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:319</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1052,68 +1023,19 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="cancelupload" class="tsd-anchor"></a>
-			<h3>cancel<wbr>Upload</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">cancel<wbr>Upload<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L235">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:235</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="upload" class="tsd-anchor"></a>
 			<h3>upload</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">upload<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">upload<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L76">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L67">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:67</a></li>
 						</ul>
 					</aside>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-			<a name="uploadparts" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagPrivate">Private</span> upload<wbr>Parts</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-				<li class="tsd-signature tsd-kind-icon">upload<wbr>Parts<span class="tsd-signature-symbol">(</span>uploadId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, parts<span class="tsd-signature-symbol">: </span><a href="../interfaces/part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/88fc68a01/packages/storage/src/providers/AWSS3ProviderManagedUpload.ts#L156">packages/storage/src/providers/AWSS3ProviderManagedUpload.ts:156</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>visiblefottesting</dt>
-							<dd></dd>
-						</dl>
-					</div>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>uploadId: <span class="tsd-signature-type">string</span></h5>
-						</li>
-						<li>
-							<h5>parts: <a href="../interfaces/part.html" class="tsd-signature-type">Part</a><span class="tsd-signature-symbol">[]</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MetadataBearer</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
 			</ul>
 		</section>

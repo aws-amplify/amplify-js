@@ -1,29 +1,22 @@
-/*
- * Copyright 2017-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import Observable from 'zen-observable-ts';
 import { PubSubProvider, ProviderOptions } from '../types/Provider';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { PubSubContent } from '../types/PubSub';
 
 const logger = new Logger('AbstractPubSubProvider');
 
-export abstract class AbstractPubSubProvider implements PubSubProvider {
-	private _config: ProviderOptions;
+export abstract class AbstractPubSubProvider<T extends ProviderOptions>
+	implements PubSubProvider
+{
+	private _config: T;
 
-	constructor(options: ProviderOptions = {}) {
+	constructor(options: T) {
 		this._config = options;
 	}
 
-	configure(config: ProviderOptions = {}): ProviderOptions {
+	configure(config: T): T {
 		this._config = { ...config, ...this._config };
 
 		logger.debug(`configure ${this.getProviderName()}`, this._config);
@@ -37,20 +30,20 @@ export abstract class AbstractPubSubProvider implements PubSubProvider {
 
 	abstract getProviderName(): string;
 
-	protected get options(): ProviderOptions {
+	protected get options(): T {
 		return { ...this._config };
 	}
 
-	public abstract newClient(clientOptions: ProviderOptions): Promise<any>;
+	public abstract newClient(clientOptions: T): Promise<any>;
 
 	public abstract publish(
 		topics: string[] | string,
-		msg: any,
-		options?: ProviderOptions
+		msg: PubSubContent,
+		options?: T
 	): void;
 
 	public abstract subscribe(
 		topics: string[] | string,
-		options?: ProviderOptions
-	): Observable<any>;
+		options?: T
+	): Observable<PubSubContent>;
 }

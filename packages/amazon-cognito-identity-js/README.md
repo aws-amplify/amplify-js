@@ -764,7 +764,7 @@ To use the CookieStorage you have to pass it in the constructor map of CognitoUs
  var poolData = {
      UserPoolId : '...', // Your user pool id here
      ClientId : '...' // Your client id here
-     Storage: new AmazonCognitoIdentity.CookieStorage({domain: ".yourdomain.com"})
+     Storage: new AmazonCognitoIdentity.CookieStorage({domain: ".yourdomain.com"}) // Subdomains are included
  };
 
  var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
@@ -778,7 +778,7 @@ To use the CookieStorage you have to pass it in the constructor map of CognitoUs
 
 The CookieStorage object receives a map (data) in its constructor that may have these values:
 
-- data.domain Cookies domain (mandatory)
+- data.domain Cookies domain (default: domain of the page where the cookie was created, excluding subdomains)
 - data.path Cookies path (default: '/')
 - data.expires Cookie expiration (in days, default: 365)
 - data.secure Cookie secure flag (default: true)

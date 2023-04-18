@@ -19,6 +19,7 @@ import {
 	isPredicateObj,
 	ModelPredicate,
 	NamespaceResolver,
+	NAMESPACES,
 	OpType,
 	PaginationInput,
 	PersistentModel,
@@ -28,7 +29,11 @@ import {
 	QueryOne,
 	utils,
 } from '@aws-amplify/datastore';
-import { CommonSQLiteDatabase, ParameterizedStatement, ModelInstanceMetadataWithId } from './types';
+import {
+	CommonSQLiteDatabase,
+	ParameterizedStatement,
+	ModelInstanceMetadataWithId,
+} from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
@@ -56,7 +61,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
-			namsespaceName: string,
+			namsespaceName: NAMESPACES,
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
@@ -75,6 +80,18 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
 
 		try {
+			const usesCPKCodegen = Object.values(
+				this.schema.namespaces.user.models
+			).some(model =>
+				Object.values(model.fields).some(field =>
+					field.association?.hasOwnProperty('targetNames')
+				)
+			);
+			if (usesCPKCodegen) {
+				logger.error(
+					'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in `amplify/cli.json` to false to disable custom primary key. To regenerate your API, add or remove an empty newline to your GraphQL schema (to change the computed hash) then run `amplify push`.'
+				);
+			}
 			await this.db.init();
 			const statements = generateSchemaStatements(this.schema);
 			await this.db.createSchema(statements);
@@ -177,72 +194,17 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const {
-				fieldName,
-				modelName: tableName,
-				targetName,
-				relationType,
-			} = relation;
-
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				tableName
-			);
-
-			// TODO: use SQL JOIN instead
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						const getByfield = recordItem[targetName] ? targetName : fieldName;
-						if (!recordItem[getByfield]) break;
-
-						const [queryStatement, params] = queryByIdStatement(
-							recordItem[getByfield],
-							tableName
-						);
-
-						const connectionRecord = await this.db.get(queryStatement, params);
-
-						recordItem[fieldName] =
-							connectionRecord &&
-							this.modelInstanceCreator(modelConstructor, connectionRecord);
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const [queryStatement, params] = queryByIdStatement(
-								recordItem[targetName],
-								tableName
-							);
-							const connectionRecord = await this.db.get(
-								queryStatement,
-								params
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					const _: never = relationType as never;
-					throw new Error(`invalid relation type ${relationType}`);
-					break;
+		// Remove related-model fields. They're all `null` in the database,
+		// and any that happen to be required will result in a false validation
+		// error when DataStore attempts to initialize with `null`.
+		// These fields aren't actually needed here. DataStore will use the FK's
+		// from the schema model.
+		return records.map(record => {
+			for (const r of relations) {
+				delete record[r.fieldName];
 			}
-		}
-
-		return records.map(record =>
-			this.modelInstanceCreator(modelConstructor, record)
-		);
+			return this.modelInstanceCreator(modelConstructor, record);
+		});
 	}
 
 	async query<T extends PersistentModel>(

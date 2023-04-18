@@ -14,6 +14,8 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 		};
 	};
 
+	CognitoUserSession.prototype.isValid = () => true;
+
 	return CognitoUserSession;
 });
 
@@ -177,12 +179,14 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		return 'testUsername';
 	};
 
+	CognitoUser.prototype.getSignInUserSession = () => {
+		return session;
+	};
+
 	return CognitoUser;
 });
 
-import { AuthOptions, SignUpParams } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
-import Cache from '@aws-amplify/cache';
 import {
 	CognitoUserPool,
 	CognitoUser,
@@ -190,6 +194,7 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
+import { Hub } from '@aws-amplify/core';
 
 const authOptions: any = {
 	Auth: {
@@ -260,7 +265,6 @@ describe('auth unit test', () => {
 	describe('disableMFA test', () => {
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
-
 			const spyon = jest.spyOn(CognitoUser.prototype, 'disableMFA');
 			expect(await auth.disableSMS(user)).toBe('Success');
 			expect(spyon).toBeCalled();
@@ -345,24 +349,63 @@ describe('auth unit test', () => {
 	});
 
 	describe('verifyTotpToken test', () => {
-		test('happy case', async () => {
+		test('happy case during sign-in', async () => {
 			const auth = new Auth(authOptions);
+			jest.clearAllMocks(); // clear hub calls
+
+			const happyCaseUser = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			happyCaseUser.getSignInUserSession = () => null;
 
 			const spyon = jest.spyOn(CognitoUser.prototype, 'verifySoftwareToken');
 			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
 
-			expect(await auth.verifyTotpToken(user, 'challengeAnswer')).toBe(
+			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe(
 				'Success'
 			);
 
 			expect(spyon).toBeCalled();
 			expect(spyon2).toBeCalled();
+			expect(hubSpy).toBeCalledTimes(2);
 
 			spyon.mockClear();
 			spyon2.mockClear();
 		});
 
-		test('err case', async () => {
+		test('happy case signedin user', async () => {
+			const auth = new Auth(authOptions);
+			jest.clearAllMocks(); // clear hub calls
+
+			const happyCaseUser = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const spyon = jest.spyOn(CognitoUser.prototype, 'verifySoftwareToken');
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
+			const hubSpy = jest.spyOn(Hub, 'dispatch');
+
+			expect(await auth.verifyTotpToken(happyCaseUser, 'challengeAnswer')).toBe(
+				'Success'
+			);
+
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
+			expect(hubSpy).toBeCalledTimes(1);
+
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+
+		test('err case user during sign in', async () => {
+			const errCaseUser = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			errCaseUser.getSignInUserSession = () => null;
+
 			const auth = new Auth(authOptions);
 
 			const spyon = jest
@@ -371,7 +414,7 @@ describe('auth unit test', () => {
 					callback.onFailure(new Error('err'));
 				});
 			try {
-				await auth.verifyTotpToken(user, 'challengeAnswer');
+				await auth.verifyTotpToken(errCaseUser, 'challengeAnswer');
 			} catch (e) {
 				expect(e).toEqual(new Error('err'));
 			}
@@ -397,7 +440,7 @@ describe('auth unit test', () => {
 			spyon2.mockClear();
 		});
 
-		'User has not verified software token mfa';
+		('User has not verified software token mfa');
 
 		test('totp not setup but TOTP chosed', async () => {
 			const auth = new Auth(authOptions);

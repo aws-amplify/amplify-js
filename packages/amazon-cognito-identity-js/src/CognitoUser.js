@@ -4,10 +4,8 @@
  */
 
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
-import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
-import Base64 from 'crypto-js/enc-base64';
-import HmacSHA256 from 'crypto-js/hmac-sha256';
+import { Sha256 } from '@aws-crypto/sha256-js';
+import { Platform } from './Platform';
 
 import BigInteger from './BigInteger';
 import AuthenticationHelper from './AuthenticationHelper';
@@ -58,8 +56,12 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
-const isBrowser = typeof navigator !== 'undefined';
-const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
+const isNavigatorAvailable = typeof navigator !== 'undefined';
+const userAgent = isNavigatorAvailable
+	? Platform.isReactNative
+		? 'react-native'
+		: navigator.userAgent
+	: 'nodejs';
 
 /** @class */
 export default class CognitoUser {
@@ -293,16 +295,19 @@ export default class CognitoUser {
 
 						const dateNow = dateHelper.getNowString();
 
-						const message = CryptoJS.lib.WordArray.create(
-							Buffer.concat([
-								Buffer.from(this.pool.getUserPoolName(), 'utf8'),
-								Buffer.from(this.username, 'utf8'),
-								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-								Buffer.from(dateNow, 'utf8'),
-							])
-						);
-						const key = CryptoJS.lib.WordArray.create(hkdf);
-						const signatureString = Base64.stringify(HmacSHA256(message, key));
+						const concatBuffer = Buffer.concat([
+							Buffer.from(this.pool.getUserPoolName(), 'utf8'),
+							Buffer.from(this.username, 'utf8'),
+							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+							Buffer.from(dateNow, 'utf8'),
+						]);
+
+						const awsCryptoHash = new Sha256(hkdf);
+						awsCryptoHash.update(concatBuffer);
+
+						const resultFromAWSCrypto = awsCryptoHash.digestSync();
+						const signatureString =
+							Buffer.from(resultFromAWSCrypto).toString('base64');
 
 						const challengeResponses = {};
 
@@ -691,16 +696,19 @@ export default class CognitoUser {
 
 						const dateNow = dateHelper.getNowString();
 
-						const message = CryptoJS.lib.WordArray.create(
-							Buffer.concat([
-								Buffer.from(this.deviceGroupKey, 'utf8'),
-								Buffer.from(this.deviceKey, 'utf8'),
-								Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
-								Buffer.from(dateNow, 'utf8'),
-							])
-						);
-						const key = CryptoJS.lib.WordArray.create(hkdf);
-						const signatureString = Base64.stringify(HmacSHA256(message, key));
+						const concatBuffer = Buffer.concat([
+							Buffer.from(this.deviceGroupKey, 'utf8'),
+							Buffer.from(this.deviceKey, 'utf8'),
+							Buffer.from(challengeParameters.SECRET_BLOCK, 'base64'),
+							Buffer.from(dateNow, 'utf8'),
+						]);
+
+						const awsCryptoHash = new Sha256(hkdf);
+						awsCryptoHash.update(concatBuffer);
+
+						const resultFromAWSCrypto = awsCryptoHash.digestSync();
+						const signatureString =
+							Buffer.from(resultFromAWSCrypto).toString('base64');
 
 						const challengeResponses = {};
 
@@ -1122,13 +1130,13 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err,result) => {
 				if (err) {
 					return callback(err, null);
 				}
 
 				// update cached user
-				return this.getUserData(() => callback(null, 'SUCCESS'), {
+				return this.getUserData(() => callback(null, 'SUCCESS', result), {
 					bypassCache: true,
 				});
 			}

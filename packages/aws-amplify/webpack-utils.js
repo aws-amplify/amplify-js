@@ -27,15 +27,11 @@
 
 const packageFolderMap = {
 	'amazon-cognito-identity-js': 'amazon-cognito-identity-js',
-	'amplify-ui': '@aws-amplify/ui',
 	analytics: '@aws-amplify/analytics',
 	api: '@aws-amplify/api',
 	auth: '@aws-amplify/auth',
 	'aws-amplify': 'aws-amplify',
-	'aws-amplify-angular': 'aws-amplify-angular',
-	'aws-amplify-react': 'aws-amplify-react',
 	'aws-amplify-react-native': 'aws-amplify-react-native',
-	'aws-amplify-vue': 'aws-amplify-vue',
 	cache: '@aws-amplify/cache',
 	core: '@aws-amplify/core',
 	datastore: '@aws-amplify/datastore',
@@ -43,7 +39,6 @@ const packageFolderMap = {
 	pubsub: '@aws-amplify/pubsub',
 	pushnotification: '@aws-amplify/pushnotification',
 	storage: '@aws-amplify/storage',
-	xr: '@aws-amplify/xr',
 };
 
 const folders = Object.keys(packageFolderMap);

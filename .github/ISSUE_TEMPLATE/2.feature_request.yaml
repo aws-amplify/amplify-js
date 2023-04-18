@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an idea for Amplify JS
-labels: feature-request
+labels: pending-triage
 
 body:
   - type: markdown

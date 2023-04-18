@@ -1,15 +1,5 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import {
 	NativeModules,
@@ -19,7 +9,7 @@ import {
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -28,6 +18,12 @@ const REMOTE_NOTIFICATION_RECEIVED = 'remoteNotificationReceived';
 const REMOTE_TOKEN_RECEIVED = 'remoteTokenReceived';
 const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 
+/**
+ * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+ * instructions on how to migrate to a new version of Amplify Push Notifications.
+ *
+ * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+ */
 export default class PushNotification {
 	private _config;
 	private _currentState;
@@ -36,6 +32,12 @@ export default class PushNotification {
 
 	private _notificationOpenedHandlers: Function[];
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	constructor(config) {
 		if (config) {
 			this.configure(config);
@@ -56,12 +58,24 @@ export default class PushNotification {
 		this._notificationOpenedHandlers = [];
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	getModuleName() {
 		return 'Pushnotification';
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	configure(config) {
-		if (JS.isEmpty(config)) return this._config;
+		if (isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
 		if (config['aws_mobile_analytics_app_id']) {
@@ -90,6 +104,12 @@ export default class PushNotification {
 		return this._config;
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	onNotification(handler) {
 		if (typeof handler === 'function') {
 			// check platform
@@ -101,6 +121,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	onNotificationOpened(handler) {
 		if (typeof handler === 'function') {
 			this._notificationOpenedHandlers = [
@@ -110,6 +136,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	onRegister(handler) {
 		if (typeof handler === 'function') {
 			// check platform
@@ -121,6 +153,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	async initializeAndroid() {
 		this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
 		this.addEventListenerForAndroid(
@@ -150,6 +188,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	async _registerTokenCached(): Promise<boolean> {
 		const { appId } = this._config;
 		const cacheKey = 'push_token' + appId;
@@ -159,10 +203,22 @@ export default class PushNotification {
 		});
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	requestIOSPermissions(options = { alert: true, badge: true, sound: true }) {
 		PushNotificationIOS.requestPermissions(options);
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	initializeIOS() {
 		if (this._config.requestIOSPermissions) {
 			this.requestIOSPermissions();
@@ -183,6 +239,10 @@ export default class PushNotification {
 	 * And checks if the app was launched by a Push Notification
 	 * Note: Current AppState will be null or 'unknown' if the app is coming from killed state to active
 	 * @param nextAppState The next state the app is changing to as part of the event
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
 	 */
 	_checkIfOpenedByNotification(nextAppState, handler) {
 		// the App state changes from killed state to active
@@ -207,6 +267,12 @@ export default class PushNotification {
 		this._currentState = nextAppState;
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	parseMessageData = rawMessage => {
 		let eventSource = null;
 		let eventSourceAttributes = {};
@@ -249,6 +315,12 @@ export default class PushNotification {
 		};
 	};
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	handleNotificationReceived(rawMessage) {
 		logger.debug('handleNotificationReceived, raw data', rawMessage);
 		const { eventSource, eventSourceAttributes } =
@@ -284,6 +356,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	handleNotificationOpened(rawMessage) {
 		this._notificationOpenedHandlers.forEach(handler => {
 			handler(rawMessage);
@@ -315,6 +393,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	updateEndpoint(token) {
 		if (!token) {
 			logger.debug('no device token recieved on register');
@@ -357,7 +441,12 @@ export default class PushNotification {
 			});
 	}
 
-	// only for android
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	addEventListenerForAndroid(event, handler) {
 		const that = this;
 		const listener = DeviceEventEmitter.addListener(event, data => {
@@ -378,6 +467,12 @@ export default class PushNotification {
 		});
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	addEventListenerForIOS(event, handler) {
 		if (event === REMOTE_TOKEN_RECEIVED) {
 			PushNotificationIOS.addEventListener('register', data => {
@@ -395,6 +490,12 @@ export default class PushNotification {
 		}
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	parseMessagefromAndroid(message, from?) {
 		let dataObj = null;
 		try {
@@ -434,6 +535,12 @@ export default class PushNotification {
 		return ret;
 	}
 
+	/**
+	 * @deprecated This package (@aws-amplify/pushnotification) is on a deprecation path. Please see the following link for
+	 * instructions on how to migrate to a new version of Amplify Push Notifications.
+	 *
+	 * https://docs.amplify.aws/lib/push-notifications/migrate-from-previous-version/q/platform/react-native/
+	 */
 	parseMessageFromIOS(message) {
 		const _data = message && message._data ? message._data : null;
 		const _alert = message && message._alert ? message._alert : {};

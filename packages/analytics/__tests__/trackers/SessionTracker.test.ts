@@ -1,4 +1,4 @@
-import SessionTracker from '../../src/trackers/SessionTracker';
+import { SessionTracker } from '../../src/trackers/SessionTracker';
 
 const tracker = jest.fn().mockImplementation(() => {
 	return Promise.resolve();

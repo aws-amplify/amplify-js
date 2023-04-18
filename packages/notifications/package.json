@@ -1,0 +1,73 @@
+{
+	"name": "@aws-amplify/notifications",
+	"version": "1.1.2",
+	"description": "Notifications category of aws-amplify",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
+	"sideEffects": [
+		"./lib/Notifications.js",
+		"./lib-esm/Notifications.js"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "npm run lint && npm run test:default && npm run test:native",
+		"test:default": "jest -w 1 --coverage",
+		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
+		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+		"test:size": "size-limit",
+		"build-with-test": "npm run clean && npm test && tsc && webpack",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+	},
+	"react-native": {
+		"./lib/index": "./lib-esm/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://docs.amplify.aws/",
+	"files": [
+		"lib",
+		"lib-esm",
+		"src"
+	],
+	"dependencies": {
+		"@aws-amplify/cache": "5.0.28",
+		"@aws-amplify/core": "5.1.11",
+		"@aws-amplify/rtn-push-notification": "1.1.1",
+		"@aws-sdk/client-pinpoint": "3.186.1",
+		"lodash": "^4.17.21",
+		"uuid": "^3.2.1"
+	},
+	"size-limit": [
+		{
+			"name": "Notifications (top-level class)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Notifications }",
+			"limit": "71 kB"
+		},
+		{
+			"name": "Notifications (with Analytics)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Amplify, Notifications, Analytics }",
+			"limit": "71 kB"
+		}
+	]
+}

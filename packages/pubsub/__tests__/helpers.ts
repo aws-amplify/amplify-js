@@ -86,7 +86,7 @@ export class HubConnectionListener {
 }
 
 export class FakeWebSocketInterface {
-	readonly webSocket: FakeWebSocket;
+	webSocket: FakeWebSocket;
 	readyForUse: Promise<void>;
 	hasClosed: Promise<undefined>;
 	hubConnectionListener: HubConnectionListener;
@@ -95,6 +95,10 @@ export class FakeWebSocketInterface {
 
 	constructor() {
 		this.hubConnectionListener = new HubConnectionListener('api');
+		this.resetWebsocket();
+	}
+
+	resetWebsocket() {
 		this.readyForUse = new Promise((res, rej) => {
 			this.readyResolve = res;
 		});
@@ -128,6 +132,7 @@ export class FakeWebSocketInterface {
 		await this.readyForUse;
 		await this.triggerOpen();
 		await this.handShakeMessage();
+		await this.keepAlive();
 	}
 
 	/**
@@ -159,13 +164,9 @@ export class FakeWebSocketInterface {
 	 */
 	async closeInterface() {
 		await this.triggerClose();
-		// Wait for either hasClosed or a half second has passed
-		await new Promise(async res => {
-			// The interface is closed when the socket "hasClosed"
-			this.hasClosed.then(() => res(undefined));
-			await this.waitUntilConnectionStateIn([CS.Disconnected]);
-			res(undefined);
-		});
+
+		// Wait for the connection to be Disconnected
+		await this.waitUntilConnectionStateIn([CS.Disconnected]);
 	}
 
 	/**
@@ -190,12 +191,38 @@ export class FakeWebSocketInterface {
 	/**
 	 * Send a connection_ack
 	 */
-	async handShakeMessage() {
+	async handShakeMessage(payload = { connectionTimeoutMs: 100_000 }) {
 		await this.sendMessage(
-			new MessageEvent('connection_ack', {
+			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_ACK, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
-					payload: { connectionTimeoutMs: 100_000 },
+					payload: payload,
+				}),
+			})
+		);
+	}
+
+	/**
+	 * Send a connection_ack
+	 */
+	async keepAlive(payload = {}) {
+		await this.sendMessage(
+			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE, {
+				data: JSON.stringify({
+					type: constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
+					payload: payload,
+				}),
+			})
+		);
+	}
+
+	async startAckMessage(payload = {}) {
+		await this.sendMessage(
+			new MessageEvent(constants.MESSAGE_TYPES.GQL_START_ACK, {
+				data: JSON.stringify({
+					type: constants.MESSAGE_TYPES.GQL_START_ACK,
+					payload: payload,
+					id: this.webSocket.subscriptionId,
 				}),
 			})
 		);
@@ -226,10 +253,10 @@ export class FakeWebSocketInterface {
 	}
 
 	/**
-	 * Run a gicommand and resolve to allow internal behavior to execute
+	 * Run a command and resolve to allow internal behavior to execute
 	 */
 	async runAndResolve(fn) {
-		fn();
+		await fn();
 		await Promise.resolve();
 	}
 
@@ -283,7 +310,6 @@ class FakeWebSocket implements WebSocket {
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
-
 		this.subscriptionId = parsedInput.id;
 	}
 	CLOSED: number;

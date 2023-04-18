@@ -9,7 +9,7 @@ jest.mock('../../src/vendor/dom-utils', () => {
 	};
 });
 
-import EventTracker from '../../src/trackers/EventTracker';
+import { EventTracker } from '../../src/trackers/EventTracker';
 
 describe('EventTracer test', () => {
 	describe('environment test', () => {

@@ -1,6 +1,3 @@
-import sqlite3 from 'sqlite3';
-sqlite3.verbose();
-
 import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
 import SQLiteDatabase from '../src/SQLiteAdapter/SQLiteDatabase';
 import { ParameterizedStatement } from '../src/common/types';
@@ -10,13 +7,21 @@ import {
 	PersistentModelConstructor,
 	initSchema as initSchemaType,
 } from '@aws-amplify/datastore';
-import { Model, Post, Comment, testSchema } from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib/sync';
+import {
+	Model,
+	Post,
+	Comment,
+	testSchema,
+	InnerSQLiteDatabase,
+} from './helpers';
+import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
 import Observable from 'zen-observable';
 import {
 	pause,
 	addCommonQueryTests,
 } from '../../datastore/__tests__/commonAdapterTests';
+
+let innerSQLiteDatabase;
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
@@ -30,7 +35,8 @@ jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 jest.mock('react-native-sqlite-storage', () => {
 	return {
 		async openDatabase(name, version, displayname, size) {
-			return new InnerSQLiteDatabase();
+			innerSQLiteDatabase = new InnerSQLiteDatabase();
+			return innerSQLiteDatabase;
 		},
 		async deleteDatabase(name) {},
 		enablePromise(enabled) {},
@@ -40,84 +46,12 @@ jest.mock('react-native-sqlite-storage', () => {
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-let sqlog: any[];
-
-/**
- * A lower-level SQLite wrapper to test SQLiteAdapter against.
- * It's intended to be fast, using an in-memory database.
- */
-class InnerSQLiteDatabase {
-	private innerDB;
-
-	constructor() {
-		this.innerDB = new sqlite3.Database(':memory:');
-	}
-
-	async executeSql(
-		statement,
-		params = [],
-		callback = undefined,
-		logger = undefined
-	) {
-		sqlog.push(`${statement}; ${JSON.stringify(params)}`);
-		if (statement.trim().toLowerCase().startsWith('select')) {
-			return new Promise(async resolve => {
-				const rows = [];
-				const resultSet = {
-					rows: {
-						get length() {
-							return rows.length;
-						},
-						raw: () => rows,
-					},
-				};
-
-				await this.innerDB.each(
-					statement,
-					params,
-					async (err, row) => {
-						if (err) {
-							console.error('SQLite ERROR', new Error(err));
-							console.warn(statement, params);
-						}
-						rows.push(row);
-					},
-					() => {
-						resolve([resultSet]);
-					}
-				);
-
-				if (callback) await callback(this, resultSet);
-			});
-		} else {
-			return await this.innerDB.run(statement, params, err => {
-				if (typeof callback === 'function') {
-					callback(err);
-				} else if (err) {
-					console.error('calback', err);
-					throw err;
-				}
-			});
-		}
-	}
-
-	async transaction(fn) {
-		return this.innerDB.serialize(await fn(this));
-	}
-
-	async readTransaction(fn) {
-		return this.innerDB.serialize(await fn(this));
-	}
-
-	async close() {}
-}
 
 describe('SQLiteAdapter', () => {
 	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
 	let Post: PersistentModelConstructor<Post>;
 	let syncEngine: SyncEngine;
-	sqlog = [];
 
 	/**
 	 * Gets all mutations currently in the outbox. This should include ALL
@@ -141,7 +75,7 @@ describe('SQLiteAdapter', () => {
 	({ initSchema, DataStore } = require('@aws-amplify/datastore'));
 	addCommonQueryTests({
 		initSchema,
-		DataStore,
+		DataStore: DataStore as any,
 		storageAdapter: SQLiteAdapter,
 		getMutations,
 		clearOutbox,
@@ -176,8 +110,6 @@ describe('SQLiteAdapter', () => {
 			// prevents the mutation process from clearing the mutation queue, which
 			// allows us to observe the state of mutations.
 			(syncEngine as any).mutationsProcessor.isReady = () => false;
-
-			sqlog = [];
 		});
 
 		describe('sanity checks', () => {
@@ -186,10 +118,8 @@ describe('SQLiteAdapter', () => {
 			});
 
 			it('is logging SQL statements during normal operation', async () => {
-				// `start()`, which is called during `beforeEach`, should perform
-				// a number of queries to create tables. the test adapter should
-				// log these all to `sqlog`.
-				expect(sqlog.length).toBeGreaterThan(0);
+				await DataStore.query(Post);
+				expect(innerSQLiteDatabase.sqlog.length).toBeGreaterThan(0);
 			});
 
 			it('can batchSave', async () => {
@@ -235,9 +165,9 @@ describe('SQLiteAdapter', () => {
 						'2022-04-18T19:29:46.316Z',
 						'abcd@abcd.com',
 						'a1d63606-bd3b-4641-870a-ac97694577a8',
-						null,
-						null,
-						null,
+						null!,
+						null!,
+						null!,
 					]
 				);
 

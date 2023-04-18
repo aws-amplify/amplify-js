@@ -19,7 +19,7 @@ import { getIdentifierValue, TransformerMutationType } from './utils';
 // TODO: Persist deleted ids
 // https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#outbox
 class MutationEventOutbox {
-	private inProgressMutationEventId: string;
+	private inProgressMutationEventId!: string;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -32,18 +32,20 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		storage.runExclusive(async s => {
+		await storage.runExclusive(async s => {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
 			// `id` is the key for the record in the mutationEvent;
 			// `modelId` is the key for the actual record that was mutated
-			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+			const predicate = ModelPredicateCreator.createFromAST<MutationEvent>(
 				mutationEventModelDefinition,
-				c =>
-					c
-						.modelId('eq', mutationEvent.modelId)
-						.id('ne', this.inProgressMutationEventId)
+				{
+					and: [
+						{ modelId: { eq: mutationEvent.modelId } },
+						{ id: { ne: this.inProgressMutationEventId } },
+					],
+				}
 			);
 
 			// Check if there are any other records with same id
@@ -88,7 +90,7 @@ class MutationEventOutbox {
 					await s.delete(this.MutationEvent, predicate);
 				}
 
-				merged = merged || mutationEvent;
+				merged = merged! || mutationEvent;
 
 				// Enqueue new one
 				await s.save(merged, undefined, this.ownSymbol);
@@ -104,11 +106,11 @@ class MutationEventOutbox {
 		const head = await this.peek(storage);
 
 		if (record) {
-			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
+			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
 		await storage.delete(head);
-		this.inProgressMutationEventId = undefined;
+		this.inProgressMutationEventId = undefined!;
 
 		return head;
 	}
@@ -121,9 +123,9 @@ class MutationEventOutbox {
 	public async peek(storage: StorageFacade): Promise<MutationEvent> {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
-		this.inProgressMutationEventId = head ? head.id : undefined;
+		this.inProgressMutationEventId = head ? head.id : undefined!;
 
-		return head;
+		return head!;
 	}
 
 	public async getForModel<T extends PersistentModel>(
@@ -138,10 +140,9 @@ class MutationEventOutbox {
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
-			ModelPredicateCreator.createFromExisting(
-				mutationEventModelDefinition,
-				c => c.modelId('eq', modelId)
-			)
+			ModelPredicateCreator.createFromAST(mutationEventModelDefinition, {
+				and: { modelId: { eq: modelId } },
+			})
 		);
 
 		return mutationEvents;
@@ -201,9 +202,14 @@ class MutationEventOutbox {
 
 		const recordId = getIdentifierValue(userModelDefinition, record);
 
-		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+		const predicate = ModelPredicateCreator.createFromAST<MutationEvent>(
 			mutationEventModelDefinition,
-			c => c.modelId('eq', recordId).id('ne', this.inProgressMutationEventId)
+			{
+				and: [
+					{ modelId: { eq: recordId } },
+					{ id: { ne: this.inProgressMutationEventId } },
+				],
+			}
 		);
 
 		const outdatedMutations = await storage.query(
