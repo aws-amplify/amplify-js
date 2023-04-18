@@ -1609,32 +1609,32 @@ jobs:
             git push origin release
             git push --force-with-lease origin release:main
 
-    test_api_docs:
-      executor: build-executor
-      steps:
-        - attach_workspace:
-            at: /root
-        - restore_cache:
-            keys:
-              - amplify-ssh-deps-{{ .Branch }}
-              - amplify-ssh-deps
-        - run:
-            name: 'Update library version'
-            command: |
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              git pull origin chore/docs-generation
-              yarn workspace @aws-amplify/core build
-              git add ./packages/core/src/Platform/version.ts
-              git commit -m "chore(release): update version.ts [ci skip]"
-        - run:
-            name: 'Update API documentation'
-            command: |
-              yarn run docs
-              git add ./docs/api/
-              git commit -m "chore(release): update API docs [ci skip]"
-              git push origin chore/docs-generation
-              git push --force-with-lease origin chore/docs-generation
+  test_api_docs:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          keys:
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
+      - run:
+          name: 'Update library version'
+          command: |
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git pull origin chore/docs-generation
+            yarn workspace @aws-amplify/core build
+            git add ./packages/core/src/Platform/version.ts
+            git commit -m "chore(release): update version.ts [ci skip]"
+      - run:
+          name: 'Update API documentation'
+          command: |
+            yarn run docs
+            git add ./docs/api/
+            git commit -m "chore(release): update API docs [ci skip]"
+            git push origin chore/docs-generation
+            git push --force-with-lease origin chore/docs-generation
 
 # Specifies the branches that can be considered releasable.
 #
