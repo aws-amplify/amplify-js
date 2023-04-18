@@ -17,12 +17,12 @@ export const Platform = {
 
 /**
  * Rerun framework detection once when getAmplifyUserAgent is called if framework is None.
- * ReactNative framework must be detected initially, however other frameworks may not be 
+ * ReactNative framework must be detected initially, however other frameworks may not be
  * detected in cases where DOM is not yet loaded.
  */
 const rerunFrameworkDetection = () => {
 	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
-        framework = detectFramework();
+		framework = detectFramework();
 		frameworkHasBeenRerun = true;
 		Platform.framework = framework;
 	}
@@ -36,7 +36,6 @@ export const getAmplifyUserAgent = ({
 	rerunFrameworkDetection();
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
-		/** TODO: add action as second element */
 		userAgent.push([category, action]);
 	}
 	userAgent.push(['framework', framework ? framework : Platform.framework]);
