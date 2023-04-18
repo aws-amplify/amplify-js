@@ -375,9 +375,9 @@ class SyncProcessor {
 									);
 
 									/**
-									 * It's possible that retrievePage will error here, for instance,
-									 * during `authModeRetry` if there are no open running processes.
-									 * An example would be if a model does not exist in the schema.
+									 * It's possible that `retrievePage` will fail.
+									 * If it does fail, continue merging the rest of the data,
+									 * and invoke the error handler for non-applicable data.
 									 */
 									try {
 										({ items, nextToken, startedAt } = await this.retrievePage(
@@ -389,7 +389,23 @@ class SyncProcessor {
 											onTerminate
 										));
 									} catch (error) {
-										logger.error('Error retrieving page:', error);
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null!,
+												message: error.message,
+												model: modelDefinition.name,
+												operation: null!,
+												errorType: getSyncErrorType(error),
+												process: ProcessName.sync,
+												remoteModel: null!,
+												cause: error,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+										return res();
 									}
 
 									recordsReceived += items.length;
