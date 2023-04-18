@@ -5,7 +5,6 @@ export { PubSub } from './PubSub';
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';
 export { ConnectionState, CONTROL_MSG } from './types';
 export {
-	AWSAppSyncProvider,
 	AWSAppSyncRealTimeProvider,
 	AWSAppSyncRealTimeProviderOptions,
 	AWSIoTProvider,

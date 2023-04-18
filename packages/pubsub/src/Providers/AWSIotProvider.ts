@@ -15,8 +15,8 @@ export class AWSIoTProvider extends MqttOverWSProvider {
 		super(options);
 	}
 
-	protected get region() {
-		return this.options.aws_pubsub_region;
+	protected get region(): string | undefined {
+		return this.options['aws_pubsub_region'];
 	}
 
 	public getProviderName() {

@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
 import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
 import cloneDeep from 'lodash/cloneDeep';
@@ -13,7 +14,6 @@ import {
 	extractMetadata,
 	getStartOfDay,
 	isBeforeEndDate,
-	isQuietTime,
 	matchesAttributes,
 	matchesEventType,
 	matchesMetrics,
@@ -73,15 +73,6 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 		});
 
 		test('does not try to record an event without a message', () => {
-			recordAnalyticsEvent(AWSPinpointMessageEvent.MESSAGE_DISPLAYED, null);
-
-			expect(loggerDebugSpy).toBeCalledWith(
-				expect.stringContaining('Unable to record')
-			);
-			expect(Amplify.Analytics.record).not.toBeCalled();
-		});
-
-		test('does not try to record an event without a message', () => {
 			Amplify.Analytics = null;
 
 			recordAnalyticsEvent(AWSPinpointMessageEvent.MESSAGE_DISPLAYED, message);
@@ -121,12 +112,14 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 		test('memoizes matches', () => {
 			const clickEvent: InAppMessagingEvent = { name: 'clicked' };
-			message.Schedule.EventFilter.Dimensions.EventType.Values = ['clicked'];
+			message!.Schedule!.EventFilter!.Dimensions!.EventType!.Values = [
+				'clicked',
+			];
 
 			expect(matchesEventType(message, clickEvent)).toBe(true);
 
 			// This is a contrived way of validating the memo logic and should never happen in practice
-			message.Schedule.EventFilter.Dimensions.EventType.Values = [];
+			message!.Schedule!.EventFilter!.Dimensions!.EventType!.Values = [];
 
 			expect(matchesEventType(message, clickEvent)).toBe(true);
 
@@ -173,7 +166,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 			clearMemo();
 
-			message.Schedule.EventFilter.Dimensions.Attributes = {
+			message!.Schedule!.EventFilter!.Dimensions!.Attributes = {
 				favoriteFood: { Values: ['pizza', 'sushi'] },
 				favoriteAnimal: { Values: ['dog', 'giraffe'] },
 			};
@@ -189,14 +182,14 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 				name: 'action.taken',
 				attributes: { favoriteFood: 'sushi' },
 			};
-			message.Schedule.EventFilter.Dimensions.Attributes = {
+			message!.Schedule!.EventFilter!.Dimensions!.Attributes = {
 				favoriteFood: { Values: ['pizza', 'sushi'] },
 			};
 
 			expect(matchesAttributes(message, event)).toBe(true);
 
 			// This is a contrived way of validating the memo logic and should never happen in practice
-			message.Schedule.EventFilter.Dimensions.Attributes = {
+			message!.Schedule!.EventFilter!.Dimensions!.Attributes = {
 				favoriteFood: { Values: ['pizza'] },
 			};
 
@@ -254,7 +247,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 			clearMemo();
 
-			message.Schedule.EventFilter.Dimensions.Metrics = {
+			message!.Schedule!.EventFilter!.Dimensions!.Metrics = {
 				lotSize: { ComparisonOperator: 'GREATER_THAN', Value: 1000 },
 				yearBuilt: { ComparisonOperator: 'EQUAL', Value: 2000 },
 				bedrooms: { ComparisonOperator: 'LESS_THAN_OR_EQUAL', Value: 3 },
@@ -269,7 +262,7 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 
 			clearMemo();
 
-			message.Schedule.EventFilter.Dimensions.Metrics = {
+			message!.Schedule!.EventFilter!.Dimensions!.Metrics = {
 				lotSize: { ComparisonOperator: 'GREATER_OR_LESS_THAN', Value: 1000 },
 			};
 
@@ -281,14 +274,14 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 				name: 'action.taken',
 				metrics: { lotSize: 2000 },
 			};
-			message.Schedule.EventFilter.Dimensions.Metrics = {
+			message!.Schedule!.EventFilter!.Dimensions!.Metrics = {
 				lotSize: { ComparisonOperator: 'GREATER_THAN', Value: 1000 },
 			};
 
 			expect(matchesMetrics(message, event)).toBe(true);
 
 			// This is a contrived way of validating the memo logic and should never happen in practice
-			message.Schedule.EventFilter.Dimensions.Metrics = {
+			message!.Schedule!.EventFilter!.Dimensions!.Metrics = {
 				lotSize: { ComparisonOperator: 'LESS_THAN', Value: 1000 },
 			};
 
@@ -306,13 +299,13 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 		expect(isBeforeEndDate(message)).toBe(false);
 
 		// Set the end date to 24 hours from now
-		message.Schedule.EndDate = new Date(
+		message!.Schedule!.EndDate = new Date(
 			new Date().getTime() + HOUR_IN_MS * 24
 		).toISOString();
 
 		expect(isBeforeEndDate(message)).toBe(true);
 
-		message.Schedule.EndDate = null;
+		message!.Schedule!.EndDate = undefined;
 
 		expect(isBeforeEndDate(message)).toBe(true);
 	});

@@ -48,7 +48,17 @@ export type SchemaModel = {
 	name: string;
 	pluralName: string;
 	attributes?: ModelAttributes;
+
+	/**
+	 * Explicitly defined fields.
+	 */
 	fields: ModelFields;
+
+	/**
+	 * Explicitly defined fields plus implied fields. (E.g., foreign keys.)
+	 */
+	allFields?: ModelFields;
+
 	syncable?: boolean;
 };
 
@@ -306,6 +316,7 @@ export type AuthorizationRule = {
 	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
 	groupClaim: string;
 	groups: [string];
+	groupsField: string;
 	authStrategy: 'owner' | 'groups' | 'private' | 'public';
 	areSubscriptionsPublic: boolean;
 };
@@ -587,9 +598,11 @@ type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: T[P] extends Promise<infer InnerPromiseType>
-		? InnerPromiseType
+		? undefined extends InnerPromiseType
+			? InnerPromiseType | null
+			: InnerPromiseType
 		: T[P] extends AsyncCollection<infer InnerCollectionType>
-		? InnerCollectionType[] | undefined
+		? InnerCollectionType[] | undefined | null
 		: DeepWritable<T[P]>;
 };
 

@@ -2,8 +2,13 @@ import {
 	browserOrNode,
 	ConsoleLogger as Logger,
 	BackgroundProcessManager,
+	Hub,
 } from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+	ConnectionState,
+} from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -116,6 +121,13 @@ export class SyncEngine {
 		PersistentModelConstructor<any>,
 		boolean
 	> = new WeakMap();
+	private unsleepSyncQueriesObservable: (() => void) | null;
+	private waitForSleepState: Promise<void>;
+	private syncQueriesObservableStartSleeping: (
+		value?: void | PromiseLike<void>
+	) => void;
+	private stopDisruptionListener: () => void;
+	private connectionDisrupted = false;
 
 	private runningProcesses: BackgroundProcessManager;
 
@@ -134,13 +146,19 @@ export class SyncEngine {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncPredicates: WeakMap<
+			SchemaModel,
+			ModelPredicate<any> | null
+		>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
 		private readonly connectivityMonitor?: DataStoreConnectivity
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
+		this.waitForSleepState = new Promise(resolve => {
+			this.syncQueriesObservableStartSleeping = resolve;
+		});
 
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -234,6 +252,8 @@ export class SyncEngine {
 											'Realtime disabled when in a server-side environment'
 										);
 									} else {
+										this.stopDisruptionListener =
+											this.startDisruptionListener();
 										//#region GraphQL Subscriptions
 										[ctlSubsObservable, dataSubsObservable] =
 											this.subscriptionsProcessor.start();
@@ -448,6 +468,7 @@ export class SyncEngine {
 
 								await startPromise;
 
+								// Set by the this.datastoreConnectivity.status().subscribe() loop
 								if (this.online) {
 									this.mutationsProcessor.resume();
 								}
@@ -540,12 +561,12 @@ export class SyncEngine {
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
-						let newestFullSyncStartedAt: number;
-						let theInterval: number;
+						let lastFullSyncStartedAt: number;
+						let syncInterval: number;
 
 						let start: number;
-						let duration: number;
-						let newestStartedAt: number;
+						let syncDuration: number;
+						let lastStartedAt: number;
 						await new Promise((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
 							onTerminate.then(() => resolve());
@@ -572,10 +593,10 @@ export class SyncEngine {
 											});
 
 											start = getNow();
-											newestStartedAt =
-												newestStartedAt === undefined
+											lastStartedAt =
+												lastStartedAt === undefined
 													? startedAt
-													: Math.max(newestStartedAt, startedAt);
+													: Math.max(lastStartedAt, startedAt);
 										}
 
 										/**
@@ -655,13 +676,13 @@ export class SyncEngine {
 
 											const { lastFullSync, fullSyncInterval } = modelMetadata;
 
-											theInterval = fullSyncInterval;
+											syncInterval = fullSyncInterval;
 
-											newestFullSyncStartedAt =
-												newestFullSyncStartedAt === undefined
+											lastFullSyncStartedAt =
+												lastFullSyncStartedAt === undefined
 													? lastFullSync!
 													: Math.max(
-															newestFullSyncStartedAt,
+															lastFullSyncStartedAt,
 															isFullSync ? startedAt : lastFullSync!
 													  );
 
@@ -699,7 +720,7 @@ export class SyncEngine {
 											paginatingModels.delete(modelDefinition);
 
 											if (paginatingModels.size === 0) {
-												duration = getNow() - start;
+												syncDuration = getNow() - start;
 												resolve();
 												observer.next({
 													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
@@ -721,10 +742,19 @@ export class SyncEngine {
 							});
 						});
 
-						const msNextFullSync =
-							newestFullSyncStartedAt! +
-							theInterval! -
-							(newestStartedAt! + duration!);
+						// null is cast to 0 resulting in unexpected behavior.
+						// undefined in arithmetic operations results in NaN also resulting in unexpected behavior.
+						// If lastFullSyncStartedAt is null this is the first sync.
+						// Assume lastStartedAt is is also newest full sync.
+						let msNextFullSync;
+						if (!lastFullSyncStartedAt!) {
+							msNextFullSync = syncInterval! - syncDuration!;
+						} else {
+							msNextFullSync =
+								lastFullSyncStartedAt! +
+								syncInterval! -
+								(lastStartedAt! + syncDuration!);
+						}
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
@@ -756,11 +786,19 @@ export class SyncEngine {
 
 							onTerminate.then(() => {
 								terminated = true;
+								this.syncQueriesObservableStartSleeping();
 								unsleep();
 							});
 
+							this.unsleepSyncQueriesObservable = unsleep;
+							this.syncQueriesObservableStartSleeping();
 							return sleep;
 						}, 'syncQueriesObservable sleep');
+
+						this.unsleepSyncQueriesObservable = null;
+						this.waitForSleepState = new Promise(resolve => {
+							this.syncQueriesObservableStartSleeping = resolve;
+						});
 					}
 				}, 'syncQueriesObservable main');
 		});
@@ -794,6 +832,11 @@ export class SyncEngine {
 		 * from entering the pipelines.
 		 */
 		this.unsubscribeConnectivity();
+
+		/**
+		 * Stop listening for websocket connection disruption
+		 */
+		this.stopDisruptionListener && this.stopDisruptionListener();
 
 		/**
 		 * aggressively shut down any lingering background processes.
@@ -906,9 +949,9 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
+		const predicate = ModelPredicateCreator.createFromAST<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			c => c.namespace('eq', namespace).model('eq', model)
+			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] }
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
@@ -1039,5 +1082,50 @@ export class SyncEngine {
 			},
 		};
 		return namespace;
+	}
+
+	/**
+	 * listen for websocket connection disruption
+	 *
+	 * May indicate there was a period of time where messages
+	 * from AppSync were missed. A sync needs to be triggered to
+	 * retrieve the missed data.
+	 */
+	private startDisruptionListener() {
+		return Hub.listen('api', (data: any) => {
+			if (
+				data.source === 'PubSub' &&
+				data.payload.event === PUBSUB_CONNECTION_STATE_CHANGE
+			) {
+				const connectionState = data.payload.data
+					.connectionState as ConnectionState;
+
+				switch (connectionState) {
+					// Do not need to listen for ConnectionDisruptedPendingNetwork
+					// Normal network reconnection logic will handle the sync
+					case ConnectionState.ConnectionDisrupted:
+						this.connectionDisrupted = true;
+						break;
+
+					case ConnectionState.Connected:
+						if (this.connectionDisrupted) {
+							this.scheduleSync();
+						}
+						this.connectionDisrupted = false;
+						break;
+				}
+			}
+		});
+	}
+
+	/*
+	 * Schedule a sync to start when syncQueriesObservable enters sleep state
+	 * Start sync immediately if syncQueriesObservable is already in sleep state
+	 */
+	private scheduleSync(): Promise<void> {
+		return this.waitForSleepState.then(() => {
+			// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
+			this.unsleepSyncQueriesObservable!();
+		});
 	}
 }

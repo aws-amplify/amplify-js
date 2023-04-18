@@ -1,9 +1,6 @@
 import {
-	AllOperators,
 	ModelPredicate,
 	PersistentModel,
-	PredicateExpression,
-	PredicateGroups,
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
@@ -20,12 +17,42 @@ export function isPredicatesAll(
 	return predicatesAllSet.has(predicate);
 }
 
+/**
+ * The valid logical grouping keys for a predicate group.
+ */
 const groupKeys = new Set(['and', 'or', 'not']);
+
+/**
+ * Determines whether an object is a GraphQL style predicate "group", which must be an
+ * object containing a single "group key", which then contains the child condition(s).
+ *
+ * E.g.,
+ *
+ * ```
+ * { and: [ ... ] }
+ * { not: { ... } }
+ * ```
+ *
+ * @param o The object to test.
+ */
 const isGroup = o => {
 	const keys = [...Object.keys(o)];
 	return keys.length === 1 && groupKeys.has(keys[0]);
 };
 
+/**
+ * Determines whether an object specifies no conditions and should match everything,
+ * as would be the case with `Predicates.ALL`.
+ *
+ * @param o The object to test.
+ */
+const isEmpty = o => {
+	return !Array.isArray(o) && Object.keys(o).length === 0;
+};
+
+/**
+ * The valid comparison operators that can be used as keys in a predicate comparison object.
+ */
 export const comparisonKeys = new Set([
 	'eq',
 	'ne',
@@ -38,16 +65,29 @@ export const comparisonKeys = new Set([
 	'beginsWith',
 	'between',
 ]);
+
+/**
+ * Determines whether an object is a GraphQL style predicate comparison node, which must
+ * be an object containing a single "comparison operator" key, which then contains the
+ * operand or operands to compare against.
+ *
+ * @param o The object to test.
+ */
 const isComparison = o => {
 	const keys = [...Object.keys(o)];
 	return !Array.isArray(o) && keys.length === 1 && comparisonKeys.has(keys[0]);
 };
 
+/**
+ * A light check to determine whether an object is a valid GraphQL Condition AST.
+ *
+ * @param o The object to test.
+ */
 const isValid = o => {
 	if (Array.isArray(o)) {
 		return o.every(v => isValid(v));
 	} else {
-		return Object.keys(o).length === 1;
+		return Object.keys(o).length <= 1;
 	}
 };
 
@@ -65,106 +105,37 @@ export class Predicates {
 }
 
 export class ModelPredicateCreator {
+	/**
+	 * Map of storage predicates (key objects) to storage predicate AST's.
+	 */
 	private static predicateGroupsMap = new WeakMap<
 		ModelPredicate<any>,
 		PredicatesGroup<any>
 	>();
 
-	static createPredicateBuilder<T extends PersistentModel>(
-		modelDefinition: SchemaModel
-	) {
-		const { name: modelName } = modelDefinition;
-		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
-
-		let handler: ProxyHandler<ModelPredicate<T>>;
-
-		const predicate = new Proxy(
-			{} as ModelPredicate<T>,
-			(handler = {
-				get(
-					_,
-					propertyKey,
-					self: ModelPredicate<T>
-				): PredicateExpression<T, any> {
-					const groupType = propertyKey as keyof PredicateGroups<T>;
-
-					switch (groupType) {
-						case 'and':
-						case 'or':
-						case 'not':
-							const result: PredicateExpression<T, any> = (
-								newPredicate: (criteria: ModelPredicate<T>) => ModelPredicate<T>
-							) => {
-								const group: PredicatesGroup<T> = {
-									type: groupType,
-									predicates: [],
-								};
-
-								// Create a new recorder
-								const tmpPredicateRecorder = new Proxy(
-									{} as ModelPredicate<T>,
-									handler
-								);
-
-								// Set the recorder group
-								ModelPredicateCreator.predicateGroupsMap.set(
-									tmpPredicateRecorder as any,
-									group
-								);
-
-								// Apply the predicates to the recorder (this is the step that records the changes)
-								newPredicate(tmpPredicateRecorder);
-
-								// Push the group to the top-level recorder
-								ModelPredicateCreator.predicateGroupsMap
-									.get(self as any)!
-									.predicates.push(group);
-
-								return self;
-							};
-
-							return result;
-						default:
-						// intentionally blank.
-					}
-
-					const field = propertyKey as keyof T;
-
-					if (!fieldNames.has(field)) {
-						throw new Error(
-							`Invalid field for model. field: ${field}, model: ${modelName}`
-						);
-					}
-
-					const result: PredicateExpression<T, any> = (
-						operator: keyof AllOperators,
-						operand: any
-					) => {
-						ModelPredicateCreator.predicateGroupsMap
-							.get(self as any)!
-							.predicates.push({ field, operator, operand });
-						return self;
-					};
-					return result;
-				},
-			})
-		);
-
-		const group: PredicatesGroup<T> = {
-			type: 'and',
-			predicates: [],
-		};
-		ModelPredicateCreator.predicateGroupsMap.set(predicate as any, group);
-
-		return predicate;
-	}
-
+	/**
+	 * Determines whether the given storage predicate (lookup key) is a predicate
+	 * key that DataStore recognizes.
+	 *
+	 * @param predicate The storage predicate (lookup key) to test.
+	 */
 	static isValidPredicate<T extends PersistentModel>(
 		predicate: any
 	): predicate is ModelPredicate<T> {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
 
+	/**
+	 * Looks for the storage predicate AST that corresponds to a given storage
+	 * predicate key.
+	 *
+	 * The key must have been created internally by a DataStore utility
+	 * method, such as `ModelPredicate.createFromAST()`.
+	 *
+	 * @param predicate The predicate reference to look up.
+	 * @param throwOnInvalid Whether to throw an exception if the predicate
+	 * isn't a valid DataStore predicate.
+	 */
 	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
 		throwOnInvalid: boolean = true
@@ -173,33 +144,17 @@ export class ModelPredicateCreator {
 			throw new Error('The predicate is not valid');
 		}
 
-		return ModelPredicateCreator.predicateGroupsMap.get(predicate as any);
+		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
 	}
 
-	// transforms cb-style predicate into Proxy
-	static createFromExisting<T extends PersistentModel>(
-		modelDefinition?: SchemaModel,
-		existing?: ProducerModelPredicate<T>
-	) {
-		if (!existing || !modelDefinition) {
-			return undefined;
-		}
-
-		return existing(
-			ModelPredicateCreator.createPredicateBuilder(modelDefinition)
-		);
-	}
-
-	static createForSingleField<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		fieldName: string,
-		value: string
-	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
-			fieldName
-		](<any>'eq', <any>value);
-	}
-
+	/**
+	 * using the PK values from the given `model` (which can be a partial of T
+	 * Creates a predicate that matches an instance described by `modelDefinition`
+	 * that contains only PK field values.)
+	 *
+	 * @param modelDefinition The model definition to create a predicate for.
+	 * @param model The model instance to extract value equalities from.
+	 */
 	static createForPk<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		model: T
@@ -207,15 +162,14 @@ export class ModelPredicateCreator {
 		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 		const keyValues = extractPrimaryKeyValues(model, keyFields);
 
-		let modelPredicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		keyFields.forEach((field, idx) => {
-			const operand = keyValues[idx];
-			modelPredicate = modelPredicate[field](<any>'eq', <any>operand);
+		const predicate = this.createFromAST<T>(modelDefinition, {
+			and: keyFields.map((field, idx) => {
+				const operand = keyValues[idx];
+				return { [field]: { eq: operand } };
+			}),
 		});
 
-		return modelPredicate;
+		return predicate;
 	}
 
 	/**
@@ -231,53 +185,48 @@ export class ModelPredicateCreator {
 		modelDefinition: SchemaModel,
 		flatEqualities: Record<string, any>
 	) {
-		let predicate =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		for (const [field, value] of Object.entries(flatEqualities)) {
-			predicate = predicate[field]('eq' as any, value);
-		}
-
-		return predicate;
+		const ast = {
+			and: Object.entries(flatEqualities).map(([k, v]) => ({ [k]: { eq: v } })),
+		};
+		return this.createFromAST<T>(modelDefinition, ast);
 	}
 
-	static createGroupFromExisting<T extends PersistentModel>(
-		modelDefinition: SchemaModel,
-		group: 'and' | 'or' | 'not',
-		existingPredicates: (ProducerModelPredicate<T> | ModelPredicate<T>)[]
-	) {
-		let outer =
-			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
-
-		outer = outer[group](seed => {
-			let inner = seed;
-			for (const existing of existingPredicates) {
-				if (typeof existing === 'function') {
-					inner = existing(inner);
-				} else {
-					ModelPredicateCreator.predicateGroupsMap
-						.get(inner)
-						?.predicates.push(
-							ModelPredicateCreator.predicateGroupsMap.get(
-								existing as ModelPredicate<T>
-							)!
-						);
-				}
-			}
-			return inner;
-		});
-
-		return outer;
-	}
-
-	static transformGraphQLtoPredicateAST(gql: any) {
+	/**
+	 * Accepts a GraphQL style filter predicate tree and transforms it into an
+	 * AST that can be used for a storage adapter predicate. Example input:
+	 *
+	 * ```js
+	 * {
+	 * 	and: [
+	 * 		{ name: { eq: "Bob Jones" } },
+	 * 		{ age: { between: [32, 64] } },
+	 * 		{ not: {
+	 * 			or: [
+	 * 				{ favoriteFood: { eq: 'pizza' } },
+	 * 				{ favoriteFood: { eq: 'tacos' } },
+	 * 			]
+	 * 		}}
+	 * 	]
+	 * }
+	 * ```
+	 *
+	 * @param gql GraphQL style filter node.
+	 */
+	static transformGraphQLFilterNodeToPredicateAST(gql: any) {
 		if (!isValid(gql)) {
-			throw new Error('Invalid QGL AST: ' + gql);
+			throw new Error('Invalid GraphQL Condition or subtree: ' + gql);
 		}
 
-		if (isGroup(gql)) {
+		if (isEmpty(gql)) {
+			return {
+				type: 'and',
+				predicates: [],
+			};
+		} else if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
-			const children = this.transformGraphQLtoPredicateAST(gql[groupkey]);
+			const children = this.transformGraphQLFilterNodeToPredicateAST(
+				gql[groupkey]
+			);
 			return {
 				type: groupkey,
 				predicates: Array.isArray(children) ? children : [children],
@@ -290,29 +239,50 @@ export class ModelPredicateCreator {
 			};
 		} else {
 			if (Array.isArray(gql)) {
-				return gql.map(o => this.transformGraphQLtoPredicateAST(o));
+				return gql.map(o => this.transformGraphQLFilterNodeToPredicateAST(o));
 			} else {
 				const fieldKey = Object.keys(gql)[0];
 				return {
 					field: fieldKey,
-					...this.transformGraphQLtoPredicateAST(gql[fieldKey]),
+					...this.transformGraphQLFilterNodeToPredicateAST(gql[fieldKey]),
 				};
 			}
 		}
 	}
 
-	static createFromAST(
+	/**
+	 * Accepts a GraphQL style filter predicate tree and transforms it into a predicate
+	 * that storage adapters understand. Example input:
+	 *
+	 * ```js
+	 * {
+	 * 	and: [
+	 * 		{ name: { eq: "Bob Jones" } },
+	 * 		{ age: { between: [32, 64] } },
+	 * 		{ not: {
+	 * 			or: [
+	 * 				{ favoriteFood: { eq: 'pizza' } },
+	 * 				{ favoriteFood: { eq: 'tacos' } },
+	 * 			]
+	 * 		}}
+	 * 	]
+	 * }
+	 * ```
+	 *
+	 * @param modelDefinition The model that the AST/predicate must be compatible with.
+	 * @param ast The graphQL style AST that should specify conditions for `modelDefinition`.
+	 */
+	static createFromAST<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		ast: any
-	): ModelPredicate<any> {
-		const predicate =
-			ModelPredicateCreator.createPredicateBuilder(modelDefinition);
+	): ModelPredicate<T> {
+		const key = {} as ModelPredicate<T>;
 
 		ModelPredicateCreator.predicateGroupsMap.set(
-			predicate,
-			this.transformGraphQLtoPredicateAST(ast)
+			key,
+			this.transformGraphQLFilterNodeToPredicateAST(ast)
 		);
 
-		return predicate;
+		return key;
 	}
 }
