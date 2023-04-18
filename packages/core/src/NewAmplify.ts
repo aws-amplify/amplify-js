@@ -13,12 +13,10 @@ const _frontendConfig: FrontendConfig = { Auth: {} };
 export const Amplify = {
 	configure(resources: ResourceConfig, frontendConfig?: FrontendConfig): void {
 		_resourcesConfig = resources;
-		if (frontendConfig) {
-			if (frontendConfig?.Auth === null) {
-				_frontendConfig.Auth = {};
-			} else if (frontendConfig?.Auth) {
-				_frontendConfig.Auth = frontendConfig.Auth;
-			}
+		if (frontendConfig?.Auth === null) {
+			_frontendConfig.Auth = {};
+		} else if (frontendConfig?.Auth) {
+			_frontendConfig.Auth = frontendConfig.Auth;
 		}
 
 		Hub.dispatch(
