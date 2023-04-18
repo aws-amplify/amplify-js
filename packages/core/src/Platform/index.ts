@@ -22,8 +22,8 @@ export const Platform = {
  */
 const rerunFrameworkDetection = () => {
 	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
+        framework = detectFramework();
 		frameworkHasBeenRerun = true;
-		framework = detectFramework();
 		Platform.framework = framework;
 	}
 };
