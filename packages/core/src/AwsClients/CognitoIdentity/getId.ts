@@ -1,6 +1,6 @@
-import type {
-	GetIdCommandInput,
-	GetIdCommandOutput,
+import {
+	GetIdCommandInput as GetIdInput,
+	GetIdCommandOutput as GetIdOutput,
 } from '@aws-sdk/client-cognito-identity';
 import {
 	buildHttpRpcRequest,
@@ -17,12 +17,12 @@ import {
 } from '../../clients/serde';
 
 export type {
-	GetIdCommandInput,
-	GetIdCommandOutput,
+	GetIdCommandInput as GetIdInput,
+	GetIdCommandOutput as GetIdOutput,
 } from '@aws-sdk/client-cognito-identity';
 
 const getIdSerializer = (
-	input: GetIdCommandInput,
+	input: GetIdInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = sharedHeaders('GetId');
@@ -32,7 +32,7 @@ const getIdSerializer = (
 
 const getIdDeserializer = async (
 	response: HttpResponse
-): Promise<GetIdCommandOutput> => {
+): Promise<GetIdOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;
