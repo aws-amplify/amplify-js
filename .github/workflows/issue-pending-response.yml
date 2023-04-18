@@ -13,4 +13,3 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pending-response-label: pending-response
-a
