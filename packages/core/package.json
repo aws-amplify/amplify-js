@@ -100,7 +100,7 @@
 			"name": "Core (Credentials)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Credentials }",
-			"limit": "11.54 kB"
+			"limit": "11.7 kB"
 		},
 		{
 			"name": "Custom clients (retry middleware)",

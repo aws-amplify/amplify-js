@@ -59,6 +59,7 @@ describe('cognito-identity service client', () => {
 					'cache-control': 'no-store',
 					'content-type': 'application/x-amz-json-1.1',
 					'x-amz-target': 'AWSCognitoIdentityService.GetId',
+					'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 				}),
 				body: JSON.stringify({
 					IdentityPoolId: IDENTITY_POOL_ID,
@@ -162,6 +163,7 @@ describe('cognito-identity service client', () => {
 					'cache-control': 'no-store',
 					'content-type': 'application/x-amz-json-1.1',
 					'x-amz-target': 'AWSCognitoIdentityService.GetCredentialsForIdentity',
+					'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 				}),
 				body: JSON.stringify({
 					IdentityId: IDENTITY_ID,
