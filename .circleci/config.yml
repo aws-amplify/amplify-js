@@ -1600,6 +1600,9 @@ jobs:
             yarn workspace @aws-amplify/core build
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
+            yarn install
+            yarn run docs
+            git commit -m "chore(release): update API docs [ci skip]"
             git push origin release
             git push --force-with-lease origin release:main
 
