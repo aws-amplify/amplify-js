@@ -1626,7 +1626,7 @@ jobs:
             git pull origin chore/docs-generation
             yarn workspace @aws-amplify/core build
             git add ./packages/core/src/Platform/version.ts
-            git commit -m "chore(release): update version.ts [ci skip]"
+            git commit --allow-empty -m "chore(release): update version.ts [ci skip]"
       - run:
           name: 'Update API documentation'
           command: |
