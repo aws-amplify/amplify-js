@@ -1,6 +1,6 @@
-export { getId, GetIdCommandInput, GetIdCommandOutput } from './getId';
+export { getId, GetIdInput, GetIdOutput } from './getId';
 export {
 	getCredentialsForIdentity,
-	GetCredentialsForIdentityCommandInput,
-	GetCredentialsForIdentityCommandOutput,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
 } from './getCredentialsForIdentity';

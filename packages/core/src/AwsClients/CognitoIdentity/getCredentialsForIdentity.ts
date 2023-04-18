@@ -1,6 +1,6 @@
 import type {
-	GetCredentialsForIdentityCommandInput,
-	GetCredentialsForIdentityCommandOutput,
+	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityCommandOutput as GetCredentialsForIdentityOutput,
 	Credentials,
 } from '@aws-sdk/client-cognito-identity';
 import {
@@ -18,12 +18,12 @@ import {
 } from '../../clients/serde';
 
 export type {
-	GetCredentialsForIdentityCommandInput,
-	GetCredentialsForIdentityCommandOutput,
+	GetCredentialsForIdentityCommandInput as GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityCommandOutput as GetCredentialsForIdentityOutput,
 } from '@aws-sdk/client-cognito-identity';
 
 const getCredentialsForIdentitySerializer = (
-	input: GetCredentialsForIdentityCommandInput,
+	input: GetCredentialsForIdentityInput,
 	endpoint: Endpoint
 ): HttpRequest => {
 	const headers = sharedHeaders('GetCredentialsForIdentity');
@@ -33,7 +33,7 @@ const getCredentialsForIdentitySerializer = (
 
 const getCredentialsForIdentityDeserializer = async (
 	response: HttpResponse
-): Promise<GetCredentialsForIdentityCommandOutput> => {
+): Promise<GetCredentialsForIdentityOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;

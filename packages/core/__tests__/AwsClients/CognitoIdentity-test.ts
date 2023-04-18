@@ -2,16 +2,17 @@
  * @jest-environment jsdom
  */
 
-import {
-	CognitoIdentityClient,
-	GetIdCommand,
-} from '@aws-sdk/client-cognito-identity';
-import { FetchHttpHandler } from '@aws-sdk/fetch-http-handler';
 import { fetchTransferHandler } from '../../src/clients/handlers/fetch';
-import { getId } from '../../src/AwsClients/CognitoIdentity';
+import {
+	getId,
+	GetIdInput,
+	getCredentialsForIdentity,
+	GetIdOutput,
+	GetCredentialsForIdentityInput,
+	GetCredentialsForIdentityOutput,
+} from '../../src/AwsClients/CognitoIdentity';
 import { HttpResponse } from '../../src/clients/types';
 jest.mock('../../src/clients/handlers/fetch');
-jest.mock('@aws-sdk/fetch-http-handler');
 
 const mockJsonResponse = ({
 	status,
@@ -35,20 +36,36 @@ const mockJsonResponse = ({
 };
 
 describe('cognito-identity service client', () => {
+	const REQUEST_ID = 'ff1ca798-b930-4b81-9ef3-c02e770188af';
+	const IDENTITY_ID = 'us-east-1:88859bc9-0149-4183-bf10-39e36EXAMPLE';
+	const handlerOptions = {
+		region: 'us-east-1',
+	};
+
 	// API reference: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetId.html
 	describe('getId', () => {
 		const IDENTITY_POOL_ID = 'us-east-1:177a950c-2c08-43f0-9983-28727EXAMPLE';
 		const ACCOUNT_ID = '123456789012';
-		const IDENTITY_ID = 'us-east-1:88859bc9-0149-4183-bf10-39e36EXAMPLE';
-		const REQUEST_ID = 'ff1ca798-b930-4b81-9ef3-c02e770188af';
+		const params: GetIdInput = {
+			IdentityPoolId: IDENTITY_POOL_ID,
+			AccountId: ACCOUNT_ID,
+		};
 
 		test('happy case', async () => {
-			(FetchHttpHandler as jest.Mock).mockImplementation(() => {
-				return {
-					handle: jest.fn(),
-				};
-			});
-			const mockResponse = {
+			const expectedRequest = {
+				url: new URL('https://cognito-identity.us-east-1.amazonaws.com/'),
+				method: 'POST',
+				headers: expect.objectContaining({
+					'cache-control': 'no-store',
+					'content-type': 'application/x-amz-json-1.1',
+					'x-amz-target': 'AWSCognitoIdentityService.GetId',
+				}),
+				body: JSON.stringify({
+					IdentityPoolId: IDENTITY_POOL_ID,
+					AccountId: ACCOUNT_ID,
+				}),
+			};
+			const succeedResponse = {
 				status: 200,
 				headers: {
 					'x-amzn-requestid': REQUEST_ID,
@@ -57,88 +74,137 @@ describe('cognito-identity service client', () => {
 					IdentityId: IDENTITY_ID,
 				},
 			};
-			(fetchTransferHandler as jest.Mock).mockResolvedValue(
-				mockJsonResponse(mockResponse)
-			);
-			const response = await getId(
-				{ region: 'us-east-1' },
-				{
-					IdentityPoolId: IDENTITY_POOL_ID,
-					AccountId: ACCOUNT_ID,
-				}
-			);
-			expect(response).toEqual({
-				IdentityId: 'us-east-1:88859bc9-0149-4183-bf10-39e36EXAMPLE',
+			const expectedOutput: GetIdOutput = {
+				IdentityId: IDENTITY_ID,
 				$metadata: expect.objectContaining({
 					attempts: 1,
-					requestId: mockResponse.headers['x-amzn-requestid'],
-					httpStatusCode: mockResponse.status,
+					requestId: REQUEST_ID,
+					httpStatusCode: 200,
 				}),
-			});
+			};
+			(fetchTransferHandler as jest.Mock).mockResolvedValue(
+				mockJsonResponse(succeedResponse)
+			);
+			const response = await getId(handlerOptions, params);
+			expect(response).toEqual(expectedOutput);
 			expect(fetchTransferHandler).toBeCalledWith(
-				{
-					url: new URL('https://cognito-identity.us-east-1.amazonaws.com/'),
-					method: 'POST',
-					headers: {
-						'cache-control': 'no-store',
-						'content-type': 'application/x-amz-json-1.1',
-						'x-amz-target': 'AWSCognitoIdentityService.GetId',
-					},
-					body: JSON.stringify({
-						IdentityPoolId: IDENTITY_POOL_ID,
-						AccountId: ACCOUNT_ID,
-					}),
-				},
+				expectedRequest,
 				expect.anything()
 			);
 		});
 
 		test('error case', async () => {
-			const mockResponse = {
+			const failureResponse = {
 				status: 400,
 				headers: {
-					'x-amzn-requestid': 'ff1ca798-b930-4b81-9ef3-c02e770188af',
+					'x-amzn-requestid': REQUEST_ID,
 					'x-amzn-errortype': 'NotAuthorizedException',
 				},
 				body: {
-					Message:
-						'Identity pool us-east-1:177a950c-2c08-43f0-9983-28727EXAMPLE does not exist.',
+					__type: 'NotAuthorizedException',
+					message: `Identity pool ${IDENTITY_POOL_ID} does not exist.`,
 				},
 			};
+			const expectedError = {
+				name: 'NotAuthorizedException',
+				message: failureResponse.body.message,
+			};
 			(fetchTransferHandler as jest.Mock).mockResolvedValue(
-				mockJsonResponse(mockResponse)
+				mockJsonResponse(failureResponse)
 			);
 			expect.assertions(1);
 			try {
-				await getId(
-					{ region: 'us-east-1' },
-					{
-						IdentityPoolId: 'us-east-1:177a950c-2c08-43f0-9983-28727EXAMPLE',
-						AccountId: '123456789012',
-					}
-				);
+				await getId(handlerOptions, params);
 				fail('test should fail');
 			} catch (e) {
-				expect(e).toEqual(
-					expect.objectContaining({
-						name: 'NotAuthorizedException',
-						message: mockResponse.body.Message,
-					})
-				);
+				expect(e).toEqual(expect.objectContaining(expectedError));
 			}
 		});
 	});
 
 	// API reference: https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_GetCredentialsForIdentity.html
 	describe('getCredentialsForIdentity', () => {
+		const CREDENTIALS = {
+			SecretKey: 'secretKey',
+			SessionToken: 'sessionToken',
+			Expiration: 1442877512.0,
+			AccessKeyId: 'accessKeyId',
+		};
+		const params: GetCredentialsForIdentityInput = { IdentityId: IDENTITY_ID };
+
 		test('happy case', async () => {
-			const mockResponse = {
+			const succeedResponse = {
 				status: 200,
 				headers: {
-					'x-amzn-requestid': 'ff1ca798-b930-4b81-9ef3-c02e770188af',
+					'x-amzn-requestid': REQUEST_ID,
+				},
+				body: {
+					Credentials: CREDENTIALS,
+					IdentityId: IDENTITY_ID,
 				},
 			};
+			const expectedOutput: GetCredentialsForIdentityOutput = {
+				Credentials: {
+					...CREDENTIALS,
+					Expiration: new Date(CREDENTIALS.Expiration * 1000),
+				},
+				IdentityId: IDENTITY_ID,
+				$metadata: expect.objectContaining({
+					attempts: 1,
+					requestId: REQUEST_ID,
+					httpStatusCode: 200,
+				}),
+			};
+			const expectedRequest = {
+				url: new URL('https://cognito-identity.us-east-1.amazonaws.com/'),
+				method: 'POST',
+				headers: expect.objectContaining({
+					'cache-control': 'no-store',
+					'content-type': 'application/x-amz-json-1.1',
+					'x-amz-target': 'AWSCognitoIdentityService.GetCredentialsForIdentity',
+				}),
+				body: JSON.stringify({
+					IdentityId: IDENTITY_ID,
+				}),
+			};
+
+			(fetchTransferHandler as jest.Mock).mockResolvedValue(
+				mockJsonResponse(succeedResponse)
+			);
+			const response = await getCredentialsForIdentity(handlerOptions, params);
+			expect(response).toEqual(expectedOutput);
+			expect(fetchTransferHandler).toBeCalledWith(
+				expectedRequest,
+				expect.anything()
+			);
 		});
-		test('error case', async () => {});
+
+		test('error case', async () => {
+			const failureResponse = {
+				status: 400,
+				headers: {
+					'x-amzn-requestid': REQUEST_ID,
+					'x-amzn-errortype': 'NotAuthorizedException',
+				},
+				body: {
+					__type: 'NotAuthorizedException',
+					message: `Identity ${IDENTITY_ID} does not exist.`,
+				},
+			};
+			const expectedError = {
+				name: 'NotAuthorizedException',
+				message: failureResponse.body.message,
+			};
+			(fetchTransferHandler as jest.Mock).mockResolvedValue(
+				mockJsonResponse(failureResponse)
+			);
+			expect.assertions(1);
+			try {
+				await getCredentialsForIdentity(handlerOptions, params);
+				fail('test should fail');
+			} catch (e) {
+				expect(e).toEqual(expect.objectContaining(expectedError));
+			}
+		});
 	});
 });

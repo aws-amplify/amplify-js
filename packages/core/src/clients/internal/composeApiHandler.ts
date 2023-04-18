@@ -31,6 +31,9 @@ export const composeServiceApi = <
 		const endpoint = await resolvedConfig.endpointResolver({
 			region: resolvedConfig.region,
 		});
+		// Unlike AWS SDK clients, a serializer should NOT populate the `host` or `content-length` headers.
+		// Both of these headers are prohibited per Spec(https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name).
+		// They will be populated automatically by browser, or node-fetch polyfill.
 		const request = serializer(input, endpoint);
 		const response = await transferHandler(request, {
 			...resolvedConfig,
