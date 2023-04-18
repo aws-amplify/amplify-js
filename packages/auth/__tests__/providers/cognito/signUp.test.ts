@@ -17,7 +17,7 @@ describe('SignUp API Happy Path Cases:', () => {
 	beforeEach(() => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementation(async (params: signUpClient.SignUpClientInput) => {
+			.mockImplementationOnce(async (params: signUpClient.SignUpClientInput) => {
 				return {
 					UserConfirmed: false,
 					UserSub: '1234567890',
@@ -64,8 +64,10 @@ describe('SignUp API Happy Path Cases:', () => {
 
 describe('SignUp API Error Path Cases:', () => {
 	const { user1 } = authAPITestParams;
+	const globalMock = global as any;
 
 	test('SignUp API should throw a validation AuthError when username is empty', async () => {
+		expect.assertions(2);
 		try {
 			await signUp({ username: '', password: user1.password });
 		} catch (error) {
@@ -75,6 +77,7 @@ describe('SignUp API Error Path Cases:', () => {
 	});
 
 	test('SignUp API should throw a validation AuthError when password is empty', async () => {
+		expect.assertions(2);
 		try {
 			await signUp({ username: user1.username, password: '' });
 		} catch (error) {
@@ -84,13 +87,10 @@ describe('SignUp API Error Path Cases:', () => {
 	});
 
 	test('SignUp API should expect a service error', async () => {
+		expect.assertions(2);
 		const serviceError = new Error('service error');
 		serviceError.name = SignUpException.InvalidParameterException;
-
-		jest
-			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementation(() => Promise.reject(serviceError));
-
+		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {
@@ -100,12 +100,8 @@ describe('SignUp API Error Path Cases:', () => {
 	});
 
 	test('SignUp API should expect an unknown error when underlying error is not coming from the service', async () => {
-		const unknownError = new Error('unknown error');
-
-		jest
-			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementation(() => Promise.reject(unknownError));
-
+		expect.assertions(3);
+		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
 		try {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {
@@ -116,12 +112,8 @@ describe('SignUp API Error Path Cases:', () => {
 	});
 
 	test('SignUp API should expect an unknown error when the underlying error is null', async () => {
-		const unknownError = null;
-
-		jest
-			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementation(() => Promise.reject(unknownError));
-
+		expect.assertions(3);
+		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {

@@ -15,7 +15,7 @@ describe('ResetPassword API happy path cases', () => {
 
 	beforeEach(() => {
 		resetPasswordSpy = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementation(async (params: resetPasswordClient.ResetPasswordClientInput) => {
+			.mockImplementationOnce(async (params: resetPasswordClient.ResetPasswordClientInput) => {
 				return {
 					CodeDeliveryDetails: {
 						AttributeName: 'email',
@@ -53,6 +53,8 @@ describe('ResetPassword API happy path cases', () => {
 });
 
 describe('ResetPassword API error path cases:', () => {
+	const globalMock = global as any;
+
 	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
 		expect.assertions(2);
 		try {
@@ -64,26 +66,23 @@ describe('ResetPassword API error path cases:', () => {
 	});
 
 	test('ResetPassword API should raise service error', async () => {
-		expect.assertions(2);
+		expect.assertions(3);
 		const serviceError = new Error('service error');
 		serviceError.name = ForgotPasswordException.InvalidParameterException;
-		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementationOnce(() => Promise.reject(serviceError));
+		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
-			await resetPassword({username: 'username'});
+			const result = await resetPassword({username: 'username'});
 		} catch (error) {
+			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(ForgotPasswordException.InvalidParameterException);
 		}
-		spyon.mockClear();
 	});
 
 	test('ResetPassword API should raise an unknown error when underlying error is' +
 		+ 'not coming from the service', async () => {
 		expect.assertions(3);
-		const unknownError = new Error('unknown error');
-		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementation(() => Promise.reject(unknownError));
+		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
 		try {
 			await resetPassword({username: 'username'});
 		} catch (error) {
@@ -91,14 +90,11 @@ describe('ResetPassword API error path cases:', () => {
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBeInstanceOf(Error);
 		}
-		spyon.mockClear();
 	});
 
 	test('ResetPassword API should raise an unknown error when the underlying error is null', async () => {
 		expect.assertions(3);
-		const unknownError = null;
-		const spyon = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
-			.mockImplementation(() => Promise.reject(unknownError));
+		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
 			await resetPassword({username: 'username'});
 		} catch (error) {
@@ -106,6 +102,5 @@ describe('ResetPassword API error path cases:', () => {
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
 			expect(error.underlyingError).toBe(null);
 		}
-		spyon.mockClear();
 	});
 });

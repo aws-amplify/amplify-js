@@ -7,6 +7,8 @@ import type {
 	SignUpCommandInput,
 	SignUpCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { AuthError } from '../../../../errors/AuthError';
+import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
 const USER_AGENT = 'amplify test';
 
@@ -40,6 +42,11 @@ export class UserPoolHttpClient {
 			mode: 'cors',
 			body: JSON.stringify(input),
 		};
-		return (await (await fetch(this._endpoint, options)).json()) as T;
+		try {
+			return (await (await fetch(this._endpoint, options)).json()) as T;
+		} catch (error) {
+			assertServiceError(error);
+			throw new AuthError({ name: error.name, message: error.message });
+		}
 	}
 }
