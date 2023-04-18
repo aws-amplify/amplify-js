@@ -104,16 +104,16 @@ export type FrontendConfig = {
 };
 
 export type ResourceConfig = {
+	API?: {};
+	Analytics?: {};
 	Auth?: {
 		userPoolId?: string;
 		identityPoolId?: string;
 		userPoolWebClientId?: string;
 	};
-	API?: {};
-	Analytics?: {};
-	Storage?: {};
 	DataStore?: {};
-	Predictions?: {};
 	Interactions?: {};
 	Notifications?: {};
+	Predictions?: {};
+	Storage?: {};
 };
