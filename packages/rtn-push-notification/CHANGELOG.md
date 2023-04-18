@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.0...@aws-amplify/rtn-push-notification@1.1.1) (2023-04-18)
+
+### Bug Fixes
+
+- **notifications:** Support use_frameworks! ([#11253](https://github.com/aws-amplify/amplify-js/issues/11253)) ([08ad590](https://github.com/aws-amplify/amplify-js/commit/08ad590b065e421c800f59327703afd858887879))
+
 # 1.1.0 (2023-04-12)
 
 ### Bug Fixes

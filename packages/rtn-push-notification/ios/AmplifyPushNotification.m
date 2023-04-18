@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+#if __has_include ("AmplifyRTNPushNotification/AmplifyRTNPushNotification-Swift.h")
+#import "AmplifyRTNPushNotification/AmplifyRTNPushNotification-Swift.h"
+#else
 #import "AmplifyRTNPushNotification-Swift.h"
+#endif
 #import "AmplifyPushNotification.h"
 
 @implementation AmplifyPushNotification
