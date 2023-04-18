@@ -77,7 +77,8 @@ interface ApnsPlatformOptions {
 	subtitle?: string;
 }
 
-export interface PushNotificationPermissions extends Record<string, boolean> {
+export interface PushNotificationPermissions
+	extends Partial<Record<string, boolean>> {
 	alert?: boolean;
 	badge?: boolean;
 	sound?: boolean;
