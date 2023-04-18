@@ -19,7 +19,7 @@ describe('NewAmplify tests', () => {
 		expect(AuthConfig).toEqual(config.Auth);
 	});
 
-	test('Happy path sessionProvider configured', async () => {
+	test('getUserSession & listenUserSession with sessionProvider', async () => {
 		const sessionProvider: AmplifyUserSessionProvider = {
 			async getUserSession(options) {
 				return {
