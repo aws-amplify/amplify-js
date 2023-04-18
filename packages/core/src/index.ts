@@ -35,7 +35,26 @@ export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { UniversalStorage } from './UniversalStorage';
-export { Platform, getAmplifyUserAgent } from './Platform';
+export {
+	Platform,
+	getAmplifyUserAgent,
+	getAmplifyUserAgentString,
+} from './Platform';
+export {
+	ApiAction,
+	AuthAction,
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	Framework,
+	GeoAction,
+	InteractionsAction,
+	NotificationsAction,
+	PredictionsAction,
+	PubSubAction,
+	PushNotificationAction,
+	StorageAction,
+} from './Platform/types';
 export {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 	USER_AGENT_HEADER,

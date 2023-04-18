@@ -20,7 +20,6 @@ import {
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
 } from '../utils';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../../util';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
@@ -219,7 +218,6 @@ class SyncProcessor {
 						variables,
 						authMode,
 						authToken,
-						userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))

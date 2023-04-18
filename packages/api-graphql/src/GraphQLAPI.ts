@@ -11,9 +11,12 @@ import {
 import Observable from 'zen-observable-ts';
 import {
 	Amplify,
+	ApiAction,
+	Category,
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
+	CustomUserAgentDetails,
+	getAmplifyUserAgentString,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
@@ -33,13 +36,11 @@ const logger = new Logger('GraphQLAPI');
 export const graphqlOperation = (
 	query,
 	variables = {},
-	authToken?: string,
-	userAgentSuffix?: string
+	authToken?: string
 ) => ({
 	query,
 	variables,
 	authToken,
-	userAgentSuffix,
 });
 
 /**
@@ -216,13 +217,7 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{
-			query: paramQuery,
-			variables = {},
-			authMode,
-			authToken,
-			userAgentSuffix,
-		}: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -253,7 +248,7 @@ export class GraphQLAPIClass {
 					withCredentials: this._options.withCredentials,
 				};
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode, userAgentSuffix },
+					{ query, variables, authMode },
 					headers,
 					initParams
 				);
@@ -270,7 +265,7 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode, userAgentSuffix }: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult<T>> {
@@ -283,6 +278,12 @@ export class GraphQLAPIClass {
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
 
+		/* TODO: Send with actual API action */
+		const customUserAgentDetails: CustomUserAgentDetails = {
+			category: Category.API,
+			action: ApiAction.None,
+		};
+
 		const headers = {
 			...(!customGraphqlEndpoint &&
 				(await this._headerBasedAuth(authMode, additionalHeaders))),
@@ -293,7 +294,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgent(userAgentSuffix),
+				[USER_AGENT_HEADER]: getAmplifyUserAgentString(customUserAgentDetails),
 			}),
 		};
 

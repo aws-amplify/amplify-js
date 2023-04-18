@@ -19,7 +19,6 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
@@ -657,12 +656,6 @@ describe('error handler', () => {
 								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
 							)
 						)
-					);
-
-					expect(mockGraphQL).toHaveBeenCalledWith(
-						expect.objectContaining({
-							userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-						})
 					);
 				});
 

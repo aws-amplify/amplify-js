@@ -28,12 +28,7 @@ import {
 	ProcessName,
 	AmplifyContext,
 } from '../../types';
-import {
-	extractTargetNamesFromSrc,
-	USER,
-	USER_AGENT_SUFFIX_DATASTORE,
-	ID,
-} from '../../util';
+import { extractTargetNamesFromSrc, USER, ID } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -312,7 +307,6 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 				};
 				let attempt = 0;
 
@@ -396,7 +390,6 @@ class MutationProcessor {
 										variables: { id: variables.input.id },
 										authMode,
 										authToken,
-										userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
 									});
 
 									// onTerminate cancel graphql()

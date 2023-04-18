@@ -10,6 +10,9 @@ import {
 	Credentials,
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+	Category,
+	Framework,
+	ApiAction,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
@@ -55,6 +58,9 @@ const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
 }`;
 const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
+
+/* TODO: Test with actual actions */
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -105,7 +111,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -160,7 +166,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -228,7 +234,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -299,7 +305,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -381,7 +387,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -427,7 +433,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -474,7 +480,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -538,7 +544,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -585,7 +591,9 @@ describe('API test', () => {
 				aws_appsync_apiKey: apiKey,
 			});
 
-			const headers = { 'x-amz-user-agent': Constants.userAgent };
+			const headers = {
+				'x-amz-user-agent': expectedUserAgentAPI,
+			};
 
 			const body = {
 				query: getEventQuery,
@@ -632,7 +640,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 				Authorization: 'myAuthToken',
 			};
 
@@ -694,7 +702,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -890,7 +898,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1143,7 +1151,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1203,7 +1211,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': Constants.userAgent,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1242,7 +1250,7 @@ describe('API test', () => {
 			});
 		});
 
-		test('sends userAgent with suffix in request', async () => {
+		test('sends customUserAgent with api category and action in request', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -1263,8 +1271,7 @@ describe('API test', () => {
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentSuffix = '/DataStore';
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1275,7 +1282,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1294,9 +1301,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1337,8 +1342,7 @@ describe('API test', () => {
 			const url = 'https://appsync.amazonaws.com',
 				region = 'us-east-2',
 				apiKey = 'secret_api_key',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
-				userAgentSuffix = '/DataStore';
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 			api.configure({
 				aws_appsync_graphqlEndpoint: url,
 				aws_appsync_region: region,
@@ -1350,7 +1354,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': `${Constants.userAgent}${userAgentSuffix}`,
+				'x-amz-user-agent': expectedUserAgentAPI,
 			};
 
 			const body = {
@@ -1370,9 +1374,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, userAgentSuffix)
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});

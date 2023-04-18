@@ -75,7 +75,6 @@ const SYNC = NAMESPACES.SYNC;
 const STORAGE = NAMESPACES.STORAGE;
 
 export { USER, SYNC, STORAGE, DATASTORE };
-export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
