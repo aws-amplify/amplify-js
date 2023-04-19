@@ -23,7 +23,6 @@ dual-publish-tmp
 ### Gradle ###
 .gradle/
 local.properties
-/.vs
 
 ### Xcode ###
 xcuserdata/
@@ -39,4 +38,3 @@ xcuserdata/
 coverage/
 coverage-native/
 coverage-ts/
-
