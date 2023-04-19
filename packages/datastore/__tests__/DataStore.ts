@@ -2554,8 +2554,19 @@ describe('DataStore tests', () => {
 			const [settingsSave, modelCall] = <any>save.mock.calls;
 			const [_model, _condition, _mutator, patches] = modelCall;
 
+			const expectedPatchedFields = [
+				'field1',
+				'dateCreated',
+				'id',
+				'_version',
+				'_lastChangedAt',
+				'_deleted',
+			];
+
 			expect(result).toMatchObject(model);
-			expect(patches).toBeUndefined();
+			expect(patches[0].map(p => p.path.join(''))).toEqual(
+				expectedPatchedFields
+			);
 		});
 
 		test('Save returns the updated model and patches', async () => {
@@ -4073,8 +4084,19 @@ describe('DataStore tests', () => {
 				const [settingsSave, modelCall] = <any>save.mock.calls;
 				const [_model, _condition, _mutator, patches] = modelCall;
 
+				const expectedPatchedFields = [
+					'postId',
+					'title',
+					'dateCreated',
+					'_version',
+					'_lastChangedAt',
+					'_deleted',
+				];
+
 				expect(result).toMatchObject(model);
-				expect(patches).toBeUndefined();
+				expect(patches[0].map(p => p.path.join(''))).toEqual(
+					expectedPatchedFields
+				);
 			});
 
 			test('Save returns the updated model and patches', async () => {

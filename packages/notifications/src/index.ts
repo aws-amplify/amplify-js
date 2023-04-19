@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { default as Notifications } from './Notifications';
+
+export { AWSPinpointProviderCommon } from './common';
+export { AWSPinpointUserInfo } from './common/AWSPinpointProviderCommon/types';
 export {
-	AWSPinpointUserInfo,
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageButton,
@@ -15,6 +17,10 @@ export {
 	InAppMessageTextAlign,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
-	UserInfo,
 } from './InAppMessaging';
-export { NotificationsConfig } from './types';
+export {
+	PushNotificationMessage,
+	PushNotificationPermissions,
+	PushNotificationPermissionStatus,
+} from './PushNotification/types';
+export { NotificationsConfig, UserInfo } from './types';
