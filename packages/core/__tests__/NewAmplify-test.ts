@@ -19,6 +19,20 @@ describe('NewAmplify tests', () => {
 		expect(AuthConfig).toEqual(config.Auth);
 	});
 
+	test('config cannot be modified outside of Singleton', () => {
+		Amplify.configure(config);
+
+		const returnedConfig = Amplify.getConfig();
+
+		if (returnedConfig.Auth) {
+			returnedConfig.Auth.userPoolId = 'modified-userpool';
+		}
+
+		const configAfterModify = Amplify.getConfig();
+
+		expect(configAfterModify.Auth?.userPoolId).toBe('userpoolid');
+	});
+
 	test('getUserSession & listenUserSession with sessionProvider', async () => {
 		const sessionProvider: AmplifyUserSessionProvider = {
 			async getUserSession(options) {

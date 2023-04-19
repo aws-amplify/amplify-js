@@ -97,7 +97,7 @@ export interface AmplifyUserSessionProvider {
 	listenUserSession(): Observable<AmplifyUserSession>;
 }
 
-export type FrontendConfig = {
+export type LibraryOptions = {
 	Auth: {
 		sessionProvider?: AmplifyUserSessionProvider;
 	} | null;
