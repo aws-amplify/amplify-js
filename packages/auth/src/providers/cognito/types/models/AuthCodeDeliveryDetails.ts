@@ -4,6 +4,10 @@
 import { AuthUserAttributeKey, DeliveryMedium } from '../../../../types';
 
 // TODO(Samaritan1011001): Confirm if the values need to be nullable
+
+/**
+ * Confrirmation code delivery details that indicate the destination and the medium used to deliver the code.
+ */
 export type AuthCodeDeliveryDetails<
 	UserAttributeKey extends AuthUserAttributeKey
 > = {

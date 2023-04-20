@@ -19,26 +19,24 @@ import { SignUpException } from '../types/errors/service';
 import { resendSignUpConfirmationCodeClient } from '../utils/clients/resendSignUpCodeClient';
 
 /**
- * Creates a user
+ * Resend the confirmation code while signing up
  *
- * @param signUpRequest - The SignUpRequest object
- * @returns AuthSignUpResult
+ * @param resendRequest - The resendRequest object
+ * @returns AuthCodeDeliveryDetails
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
  *
  *
  * TODO: add config errors
  */
 
-// TODO(Samaritan1011001): Function type was changed, confirm it's right
+// TODO(Samaritan1011001): Function type was changed, may need API change in doc
 
 export async function resendSignUpCode<
 	PluginOptions extends CognitoResendSignUpCodeOptions = AuthPluginOptions
 >(
-	resendReq: ResendSignUpCodeRequest<PluginOptions>
+	resendRequest: ResendSignUpCodeRequest<PluginOptions>
 ): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
-	const username = resendReq.username;
+	const username = resendRequest.username;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
@@ -49,7 +47,7 @@ export async function resendSignUpCode<
 			await resendSignUpConfirmationCodeClient({
 				Username: username,
 				ClientMetadata:
-					resendReq.options?.pluginOptions?.clientMetadata ??
+					resendRequest.options?.pluginOptions?.clientMetadata ??
 					config.clientMetadata,
 			});
 		const { DeliveryMedium, AttributeName, Destination } = {
