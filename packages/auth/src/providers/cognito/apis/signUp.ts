@@ -20,8 +20,6 @@ import {
 	ValidationData,
 } from '..';
 import { signUpClient } from '../utils/clients/SignUpClient';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { AuthError } from '../../../errors/AuthError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors/service';
@@ -60,51 +58,46 @@ export async function signUp(
 			signUpRequest.options?.serviceOptions?.validationData
 		);
 	}
-	try {
-		const res: SignUpCommandOutput = await signUpClient({
-			Username: username,
-			Password: password,
-			UserAttributes: signUpRequest.options?.userAttributes.map(el => {
-				return { Name: el.userAttributeKey.toString(), Value: el.value };
-			}),
-			ClientMetadata:
-				signUpRequest.options?.serviceOptions?.clientMetadata ??
-				config.clientMetadata,
-			ValidationData: validationData,
-		});
+	const res: SignUpCommandOutput = await signUpClient({
+		Username: username,
+		Password: password,
+		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
+			return { Name: el.userAttributeKey.toString(), Value: el.value };
+		}),
+		ClientMetadata:
+			signUpRequest.options?.serviceOptions?.clientMetadata ??
+			config.clientMetadata,
+		ValidationData: validationData,
+	});
 
-		const { UserConfirmed, CodeDeliveryDetails } = res;
-		const { DeliveryMedium, Destination, AttributeName } = {
-			...CodeDeliveryDetails,
+	const { UserConfirmed, CodeDeliveryDetails } = res;
+	const { DeliveryMedium, Destination, AttributeName } = {
+		...CodeDeliveryDetails,
+	};
+
+	if (UserConfirmed) {
+		return {
+			isSignUpComplete: true,
+			nextStep: {
+				signUpStep: AuthSignUpStep.DONE,
+			},
 		};
-
-		if (UserConfirmed) {
-			return {
-				isSignUpComplete: true,
-				nextStep: {
-					signUpStep: AuthSignUpStep.DONE,
+	} else {
+		return {
+			isSignUpComplete: false,
+			nextStep: {
+				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+				codeDeliveryDetails: {
+					deliveryMedium: DeliveryMedium
+						? (DeliveryMedium as DeliveryMedium)
+						: undefined,
+					destination: Destination ? (Destination as string) : undefined,
+					attributeName: AttributeName
+						? (AttributeName as AuthStandardAttributeKey)
+						: undefined,
 				},
-			};
-		} else {
-			return {
-				isSignUpComplete: false,
-				nextStep: {
-					signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-					codeDeliveryDetails: {
-						deliveryMedium: DeliveryMedium
-							? (DeliveryMedium as DeliveryMedium)
-							: undefined,
-						destination: Destination ? (Destination as string) : undefined,
-						attributeName: AttributeName
-							? (AttributeName as AuthStandardAttributeKey)
-							: undefined,
-					},
-				},
-			};
-		}
-	} catch (error) {
-		assertServiceError(error);
-		throw new AuthError({ name: error.name, message: error.message });
+			},
+		};
 	}
 }
 
