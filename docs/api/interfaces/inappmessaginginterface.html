@@ -3,9 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BackgroundProcessManager | amplify-js</title>
+	<title>InAppMessagingInterface | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
 /* ========================================================================== HTML5 display definitions ========================================================================== */
 /** Correct `block` display not defined in IE 6/7/8/9 and Firefox 3. */
@@ -880,12 +881,12 @@ img { max-width: 100%; }
 			<div class="table-wrap">
 				<div class="table-cell logo">
 					<a href="../index.html">
-						<img src="https://aws-amplify.github.io/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
-						<div style="margin-left: 45px; padding-top: 1px; position: absolute;">AWS Amplify API</div>
+						<img src="https://aws-amplify.github.io/amplify-js/images/layout/logo.png" style="width:38px; position: absolute; margin-top: 5px;">
+						<div style="margin-left: 45px; padding-top: 1px; position: relative;">AWS Amplify JS API</div>
 					</a>
 				</div>
 				<div class="table-cell" style="">	<body>
-						<a href="/amplify-js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify Home</a>
+						<a href="https://docs.amplify.aws/lib/q/platform/js/" style='background: #efefef; padding: 4px; border-radius: 20px; font-size: 14.5px; padding-left: 10px; padding-right: 10px;' for="tsd-filter-docs">AWS Amplify JS Dev Center</a>
 </div>	</body>
 <div class="table-cell" id="tsd-widgets">
 <div id="tsd-filter">
@@ -915,41 +916,53 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 <ul>
-	<li class="current tsd-kind-class tsd-is-private">
-		<a href="backgroundprocessmanager.html" class="tsd-kind-icon">Background<wbr>Process<wbr>Manager</a>
+	<li class="current tsd-kind-interface">
+		<a href="inappmessaginginterface.html" class="tsd-kind-icon">In<wbr>App<wbr>Messaging<wbr>Interface</a>
 		<ul>
-			<li class=" tsd-kind-constructor tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#constructor" class="tsd-kind-icon">constructor</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#isclosed" class="tsd-kind-icon">is<wbr>Closed</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#clearmessages" class="tsd-kind-icon">clear<wbr>Messages</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#isclosing" class="tsd-kind-icon">is<wbr>Closing</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#isopen" class="tsd-kind-icon">is<wbr>Open</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#dispatchevent" class="tsd-kind-icon">dispatch<wbr>Event</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#length" class="tsd-kind-icon">length</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#pending" class="tsd-kind-icon">pending</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#getpluggable" class="tsd-kind-icon">get<wbr>Pluggable</a>
 			</li>
-			<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#state" class="tsd-kind-icon">state</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<a href="backgroundprocessmanager.html#add" class="tsd-kind-icon">add</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#notifymessageinteraction" class="tsd-kind-icon">notify<wbr>Message<wbr>Interaction</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<a href="backgroundprocessmanager.html#addcleaner" class="tsd-kind-icon">add<wbr>Cleaner</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#onmessageactiontaken" class="tsd-kind-icon">on<wbr>Message<wbr>Action<wbr>Taken</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#close" class="tsd-kind-icon">close</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#onmessagedismissed" class="tsd-kind-icon">on<wbr>Message<wbr>Dismissed</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="backgroundprocessmanager.html#open" class="tsd-kind-icon">open</a>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#onmessagedisplayed" class="tsd-kind-icon">on<wbr>Message<wbr>Displayed</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#onmessagereceived" class="tsd-kind-icon">on<wbr>Message<wbr>Received</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#removepluggable" class="tsd-kind-icon">remove<wbr>Pluggable</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#setconflicthandler" class="tsd-kind-icon">set<wbr>Conflict<wbr>Handler</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="inappmessaginginterface.html#syncmessages" class="tsd-kind-icon">sync<wbr>Messages</a>
 			</li>
 		</ul>
 	</li>
@@ -957,16 +970,18 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 <div class="content-wrap">
-	<section class="tsd-panel tsd-comment">
-		<div class="tsd-comment tsd-typography">
-		</div>
-	</section>
 	<section class="tsd-panel tsd-hierarchy">
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="target">BackgroundProcessManager</span>
+				<span class="target">InAppMessagingInterface</span>
 			</li>
+		</ul>
+	</section>
+	<section class="tsd-panel">
+		<h3>Implemented by</h3>
+		<ul class="tsd-hierarchy">
+			<li><a href="../classes/inappmessaging.html" class="tsd-signature-type">InAppMessaging</a></li>
 		</ul>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
@@ -974,517 +989,482 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-index-panel">
 			<div class="tsd-index-content">
 				<section class="tsd-index-section ">
-					<h3>Constructors</h3>
+					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="backgroundprocessmanager.html#constructor" class="tsd-kind-icon">constructor</a></li>
-					</ul>
-				</section>
-				<section class="tsd-index-section ">
-					<h3>Accessors</h3>
-					<ul class="tsd-index-list">
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#isclosed" class="tsd-kind-icon">is<wbr>Closed</a></li>
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#isclosing" class="tsd-kind-icon">is<wbr>Closing</a></li>
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#isopen" class="tsd-kind-icon">is<wbr>Open</a></li>
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#length" class="tsd-kind-icon">length</a></li>
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#pending" class="tsd-kind-icon">pending</a></li>
-						<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="backgroundprocessmanager.html#state" class="tsd-kind-icon">state</a></li>
-					</ul>
-				</section>
-				<section class="tsd-index-section ">
-					<h3>Methods</h3>
-					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="backgroundprocessmanager.html#add" class="tsd-kind-icon">add</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="backgroundprocessmanager.html#addcleaner" class="tsd-kind-icon">add<wbr>Cleaner</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="backgroundprocessmanager.html#close" class="tsd-kind-icon">close</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="backgroundprocessmanager.html#open" class="tsd-kind-icon">open</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#addpluggable" class="tsd-kind-icon">add<wbr>Pluggable</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#clearmessages" class="tsd-kind-icon">clear<wbr>Messages</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#configure" class="tsd-kind-icon">configure</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#dispatchevent" class="tsd-kind-icon">dispatch<wbr>Event</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#getpluggable" class="tsd-kind-icon">get<wbr>Pluggable</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#identifyuser" class="tsd-kind-icon">identify<wbr>User</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#notifymessageinteraction" class="tsd-kind-icon">notify<wbr>Message<wbr>Interaction</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#onmessageactiontaken" class="tsd-kind-icon">on<wbr>Message<wbr>Action<wbr>Taken</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#onmessagedismissed" class="tsd-kind-icon">on<wbr>Message<wbr>Dismissed</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#onmessagedisplayed" class="tsd-kind-icon">on<wbr>Message<wbr>Displayed</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#onmessagereceived" class="tsd-kind-icon">on<wbr>Message<wbr>Received</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#removepluggable" class="tsd-kind-icon">remove<wbr>Pluggable</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#setconflicthandler" class="tsd-kind-icon">set<wbr>Conflict<wbr>Handler</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="inappmessaginginterface.html#syncmessages" class="tsd-kind-icon">sync<wbr>Messages</a></li>
 					</ul>
 				</section>
 			</div>
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Constructors</h2>
-		<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-			<a name="constructor" class="tsd-anchor"></a>
-			<h3>constructor</h3>
-			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Background<wbr>Process<wbr>Manager<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="backgroundprocessmanager.html" class="tsd-signature-type">BackgroundProcessManager</a></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L24">packages/core/src/Util/BackgroundProcessManager.ts:24</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Creates a new manager for promises, observables, and other types
-								of work that may be running in the background. This manager provides
-							a centralized mechanism to request termination and await completion.</p>
-						</div>
-					</div>
-					<h4 class="tsd-returns-title">Returns <a href="backgroundprocessmanager.html" class="tsd-signature-type">BackgroundProcessManager</a></h4>
-				</li>
-			</ul>
-		</section>
-	</section>
-	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Accessors</h2>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="isclosed" class="tsd-anchor"></a>
-			<h3>is<wbr>Closed</h3>
-			<div class="tsd-signature tsd-kind-icon">is<wbr>Closed<span class="tsd-signature-symbol">:</span></div>
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="addpluggable" class="tsd-anchor"></a>
+			<h3>add<wbr>Pluggable</h3>
+			<div class="tsd-signature tsd-kind-icon">add<wbr>Pluggable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L308">packages/core/src/Util/BackgroundProcessManager.ts:308</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L21">packages/notifications/src/InAppMessaging/types.ts:21</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Whether the manager is rejecting work and done waiting for submitted
-					work to complete.</p>
-				</div>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>pluggable<span class="tsd-signature-symbol">: </span><a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>pluggable: <a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="isclosing" class="tsd-anchor"></a>
-			<h3>is<wbr>Closing</h3>
-			<div class="tsd-signature tsd-kind-icon">is<wbr>Closing<span class="tsd-signature-symbol">:</span></div>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="clearmessages" class="tsd-anchor"></a>
+			<h3>clear<wbr>Messages</h3>
+			<div class="tsd-signature tsd-kind-icon">clear<wbr>Messages<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L300">packages/core/src/Util/BackgroundProcessManager.ts:300</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L24">packages/notifications/src/InAppMessaging/types.ts:24</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Whether the manager is rejecting new work, but still waiting for
-					submitted work to complete.</p>
-				</div>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="isopen" class="tsd-anchor"></a>
-			<h3>is<wbr>Open</h3>
-			<div class="tsd-signature tsd-kind-icon">is<wbr>Open<span class="tsd-signature-symbol">:</span></div>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="configure" class="tsd-anchor"></a>
+			<h3>configure</h3>
+			<div class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L292">packages/core/src/Util/BackgroundProcessManager.ts:292</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L18">packages/notifications/src/InAppMessaging/types.ts:18</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Whether the manager is accepting new jobs.</p>
-				</div>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="inappmessagingconfig.html" class="tsd-signature-type">InAppMessagingConfig</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="inappmessagingconfig.html" class="tsd-signature-type">InAppMessagingConfig</a></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>config: <a href="inappmessagingconfig.html" class="tsd-signature-type">InAppMessagingConfig</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="inappmessagingconfig.html" class="tsd-signature-type">InAppMessagingConfig</a></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="length" class="tsd-anchor"></a>
-			<h3>length</h3>
-			<div class="tsd-signature tsd-kind-icon">length<span class="tsd-signature-symbol">:</span></div>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="dispatchevent" class="tsd-anchor"></a>
+			<h3>dispatch<wbr>Event</h3>
+			<div class="tsd-signature tsd-kind-icon">dispatch<wbr>Event<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L265">packages/core/src/Util/BackgroundProcessManager.ts:265</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L25">packages/notifications/src/InAppMessaging/types.ts:25</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>The number of jobs being waited on.</p>
-				</div>
-				<p>We don&#39;t use this for anything. It&#39;s just informational for the caller,
-				and can be used in logging and testing.</p>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../globals.html#inappmessagingevent" class="tsd-signature-type">InAppMessagingEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>event: <a href="../globals.html#inappmessagingevent" class="tsd-signature-type">InAppMessagingEvent</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="pending" class="tsd-anchor"></a>
-			<h3>pending</h3>
-			<div class="tsd-signature tsd-kind-icon">pending<span class="tsd-signature-symbol">:</span></div>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="getmodulename" class="tsd-anchor"></a>
+			<h3>get<wbr>Module<wbr>Name</h3>
+			<div class="tsd-signature tsd-kind-icon">get<wbr>Module<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L285">packages/core/src/Util/BackgroundProcessManager.ts:285</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L19">packages/notifications/src/InAppMessaging/types.ts:19</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>The registered <code>description</code> of all still-pending jobs.</p>
-				</div>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-returns-title">Returns <a href="../globals.html#notificationssubcategory" class="tsd-signature-type">NotificationsSubCategory</a></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-			<a name="state" class="tsd-anchor"></a>
-			<h3>state</h3>
-			<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span></div>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="getpluggable" class="tsd-anchor"></a>
+			<h3>get<wbr>Pluggable</h3>
+			<div class="tsd-signature tsd-kind-icon">get<wbr>Pluggable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L276">packages/core/src/Util/BackgroundProcessManager.ts:276</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L20">packages/notifications/src/InAppMessaging/types.ts:20</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>The execution state of the manager. One of:</p>
-				</div>
-				<ol>
-					<li>&quot;Open&quot; -&gt; Accepting new jobs</li>
-					<li>&quot;Closing&quot; -&gt; Not accepting new work. Waiting for jobs to complete.</li>
-					<li>&quot;Closed&quot; -&gt; Not accepting new work. All submitted jobs are complete.</li>
-				</ol>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>providerName: <span class="tsd-signature-type">string</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="inappmessagingprovider.html" class="tsd-signature-type">InAppMessagingProvider</a></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
 		</section>
-	</section>
-	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Methods</h2>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-			<a name="add" class="tsd-anchor"></a>
-			<h3>add</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">add&lt;T&gt;<span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-				<li class="tsd-signature tsd-kind-icon">add&lt;T&gt;<span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-				<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
-				<li class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><a href="backgroundprocessmanager.html" class="tsd-signature-type">BackgroundProcessManager</a>, description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L42">packages/core/src/Util/BackgroundProcessManager.ts:42</a></li>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="identifyuser" class="tsd-anchor"></a>
+			<h3>identify<wbr>User</h3>
+			<div class="tsd-signature tsd-kind-icon">identify<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L26">packages/notifications/src/InAppMessaging/types.ts:26</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>userId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, userInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Executes an async <code>job</code> function, passing the return value through to
-								the caller, registering it as a running job in the manager. When the
-							manager <em>closes</em>, it will <code>await</code> the job.</p>
-						</div>
-					</div>
-					<h4 class="tsd-type-parameters-title">Type parameters</h4>
-					<ul class="tsd-type-parameters">
-						<li>
-							<h4>T</h4>
-						</li>
-					</ul>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>job: <span class="tsd-signature-type">function</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>The function to execute.</p>
-							</div>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-siganture">
-									<ul class="tsd-signatures tsd-kind-type-literal">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> description: <span class="tsd-signature-type">string</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>Optional description to help identify pending jobs.</p>
-							</div>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-					<p>The return value from the given function.</p>
-				</li>
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L56">packages/core/src/Util/BackgroundProcessManager.ts:56</a></li>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>userId: <span class="tsd-signature-type">string</span></h5>
+									</li>
+									<li>
+										<h5>userInfo: <a href="../globals.html#userinfo" class="tsd-signature-type">UserInfo</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Executes an async <code>job</code> function, passing the return value through to
-								the caller, registering it as a running job in the manager. When the
-								manager <em>closes</em>, it will request termination by resolving the
-								provided <code>onTerminate</code> promise. It will then <code>await</code> the job, so it is
-								important that the job still <code>resolve()</code> or <code>reject()</code> when responding
-							to a termination request.</p>
-						</div>
-					</div>
-					<h4 class="tsd-type-parameters-title">Type parameters</h4>
-					<ul class="tsd-type-parameters">
-						<li>
-							<h4>T</h4>
-						</li>
-					</ul>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>job: <span class="tsd-signature-type">function</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>The function to execute.</p>
-							</div>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-siganture">
-									<ul class="tsd-signatures tsd-kind-type-literal">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>onTerminate<span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<h4 class="tsd-parameters-title">Parameters</h4>
-											<ul class="tsd-parameters">
-												<li>
-													<h5>onTerminate: <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
-												</li>
-											</ul>
-											<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> description: <span class="tsd-signature-type">string</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>Optional description to help identify pending jobs.</p>
-							</div>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-					<p>The return value from the given function.</p>
-				</li>
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L72">packages/core/src/Util/BackgroundProcessManager.ts:72</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Create a no-op job, registers it with the manager, and returns hooks
-								to the caller to signal the job&#39;s completion and respond to termination
-							requests.</p>
-						</div>
-						<p>When the manager closes, the no-op job will be <code>await</code>-ed, so its
-							important to always <code>resolve()</code> or <code>reject()</code> when done responding to an
-						<code>onTerminate</code> signal.</p>
-					</div>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> description: <span class="tsd-signature-type">string</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>Optional description to help identify pending jobs.</p>
-							</div>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-					<p>Job promise hooks + onTerminate signaling promise</p>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter">
-							<h5>on<wbr>Terminate<span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h5>
-						</li>
-						<li class="tsd-parameter">
-							<h5>reject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></h5>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-siganture">
-									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>reason<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<h4 class="tsd-parameters-title">Parameters</h4>
-											<ul class="tsd-parameters">
-												<li>
-													<h5><span class="tsd-flag ts-flagOptional">Optional</span> reason: <span class="tsd-signature-type">any</span></h5>
-												</li>
-											</ul>
-											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-						<li class="tsd-parameter">
-							<h5>resolve<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></h5>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-siganture">
-									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<h4 class="tsd-parameters-title">Parameters</h4>
-											<ul class="tsd-parameters">
-												<li>
-													<h5><span class="tsd-flag ts-flagOptional">Optional</span> value: <span class="tsd-signature-type">unknown</span></h5>
-												</li>
-											</ul>
-											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L86">packages/core/src/Util/BackgroundProcessManager.ts:86</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Adds another job manager to await on at the time of closing. the inner
-								manager&#39;s termination is signaled when this manager&#39;s <code>close()</code> is
-							called for.</p>
-						</div>
-					</div>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>job: <a href="backgroundprocessmanager.html" class="tsd-signature-type">BackgroundProcessManager</a></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>The inner job manager to await.</p>
-							</div>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> description: <span class="tsd-signature-type">string</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>Optional description to help identify pending jobs.</p>
-							</div>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-				</li>
-			</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-			<a name="addcleaner" class="tsd-anchor"></a>
-			<h3>add<wbr>Cleaner</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">add<wbr>Cleaner&lt;T&gt;<span class="tsd-signature-symbol">(</span>clean<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L126">packages/core/src/Util/BackgroundProcessManager.ts:126</a></li>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="notifymessageinteraction" class="tsd-anchor"></a>
+			<h3>notify<wbr>Message<wbr>Interaction</h3>
+			<div class="tsd-signature tsd-kind-icon">notify<wbr>Message<wbr>Interaction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L39">packages/notifications/src/InAppMessaging/types.ts:39</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><a href="inappmessage.html" class="tsd-signature-type">InAppMessage</a>, type<span class="tsd-signature-symbol">: </span><a href="../enums/inappmessageinteractionevent.html" class="tsd-signature-type">InAppMessageInteractionEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Adds a <strong>cleaner</strong> function that doesn&#39;t immediately get executed.
-								Instead, the caller gets a <strong>terminate</strong> function back. The <em>cleaner</em> is
-								invoked only once the mananger <em>closes</em> or the returned <strong>terminate</strong>
-							function is called.</p>
-						</div>
-					</div>
-					<h4 class="tsd-type-parameters-title">Type parameters</h4>
-					<ul class="tsd-type-parameters">
-						<li>
-							<h4>T</h4>
-						</li>
-					</ul>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>clean: <span class="tsd-signature-type">function</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>The cleanup function.</p>
-							</div>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-siganture">
-									<ul class="tsd-signatures tsd-kind-type-literal">
-										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
-									</ul>
-									<ul class="tsd-descriptions">
-										<li class="tsd-description">
-											<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> description: <span class="tsd-signature-type">string</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<p>Optional description to help identify pending jobs.</p>
-							</div>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
-					<p>A terminate function.</p>
-					<ul class="tsd-parameters">
-						<li class="tsd-parameter-siganture">
-							<ul class="tsd-signatures tsd-kind-type-literal">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-							</ul>
-							<ul class="tsd-descriptions">
-								<li class="tsd-description">
-									<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-			</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>message: <a href="inappmessage.html" class="tsd-signature-type">InAppMessage</a></h5>
+									</li>
+									<li>
+										<h5>type: <a href="../enums/inappmessageinteractionevent.html" class="tsd-signature-type">InAppMessageInteractionEvent</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="close" class="tsd-anchor"></a>
-			<h3>close</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">close<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L345">packages/core/src/Util/BackgroundProcessManager.ts:345</a></li>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="onmessageactiontaken" class="tsd-anchor"></a>
+			<h3>on<wbr>Message<wbr>Action<wbr>Taken</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Message<wbr>Action<wbr>Taken<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L36">packages/notifications/src/InAppMessaging/types.ts:36</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Signals jobs to stop (for those that accept interruptions) and waits
-							for confirmation that jobs have stopped.</p>
-						</div>
-						<p>This immediately puts the manager into a closing state and just begins
-							to reject new work. After all work in the manager is complete, the
-						manager goes into a <code>Completed</code> state and <code>close()</code> returns.</p>
-						<p>This call is idempotent.</p>
-						<p>If the manager is already closing or closed, <code>finalCleaup</code> is not executed.</p>
-					</div>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
-					<p>The settled results of each still-running job&#39;s promise. If the
-						manager is already closed, this will contain the results as of when the
-					manager&#39;s <code>close()</code> was called in an <code>Open</code> state.</p>
-				</li>
-			</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>handler: <a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="open" class="tsd-anchor"></a>
-			<h3>open</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">open<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/erinleigh90/amplify-js/blob/a9bd459b6/packages/core/src/Util/BackgroundProcessManager.ts#L386">packages/core/src/Util/BackgroundProcessManager.ts:386</a></li>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="onmessagedismissed" class="tsd-anchor"></a>
+			<h3>on<wbr>Message<wbr>Dismissed</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Message<wbr>Dismissed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L33">packages/notifications/src/InAppMessaging/types.ts:33</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Signals the manager to start accepting work (again) and returns once
-							the manager is ready to do so.</p>
-						</div>
-						<p>If the state is already <code>Open</code>, this call is a no-op.</p>
-						<p>If the state is <code>Closed</code>, this call simply updates state and returns.</p>
-						<p>If the state is <code>Closing</code>, this call waits for completion before it
-						updates the state and returns.</p>
-					</div>
-					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-				</li>
-			</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>handler: <a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="onmessagedisplayed" class="tsd-anchor"></a>
+			<h3>on<wbr>Message<wbr>Displayed</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Message<wbr>Displayed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L30">packages/notifications/src/InAppMessaging/types.ts:30</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>handler: <a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="onmessagereceived" class="tsd-anchor"></a>
+			<h3>on<wbr>Message<wbr>Received</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Message<wbr>Received<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L27">packages/notifications/src/InAppMessaging/types.ts:27</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>handler: <a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <a href="eventlistener.html" class="tsd-signature-type">EventListener</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#onmessageinteractioneventhandler" class="tsd-signature-type">OnMessageInteractionEventHandler</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="removepluggable" class="tsd-anchor"></a>
+			<h3>remove<wbr>Pluggable</h3>
+			<div class="tsd-signature tsd-kind-icon">remove<wbr>Pluggable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L22">packages/notifications/src/InAppMessaging/types.ts:22</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>providerName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>providerName: <span class="tsd-signature-type">string</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="setconflicthandler" class="tsd-anchor"></a>
+			<h3>set<wbr>Conflict<wbr>Handler</h3>
+			<div class="tsd-signature tsd-kind-icon">set<wbr>Conflict<wbr>Handler<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L43">packages/notifications/src/InAppMessaging/types.ts:43</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../globals.html#inappmessageconflicthandler" class="tsd-signature-type">InAppMessageConflictHandler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>handler: <a href="../globals.html#inappmessageconflicthandler" class="tsd-signature-type">InAppMessageConflictHandler</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="syncmessages" class="tsd-anchor"></a>
+			<h3>sync<wbr>Messages</h3>
+			<div class="tsd-signature tsd-kind-icon">sync<wbr>Messages<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0d412e099/packages/notifications/src/InAppMessaging/types.ts#L23">packages/notifications/src/InAppMessaging/types.ts:23</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
 	</section>
 	<footer>

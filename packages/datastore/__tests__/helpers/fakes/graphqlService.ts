@@ -94,6 +94,18 @@ export class FakeGraphQLService {
 		const jitteredMs = Math.max(ms + jitter, 0);
 		return pause(jitteredMs);
 	}
+	/**
+	 * Given the plural name of a model, find the singular name
+	 * @param pluralName plural name of model (e.g. "Todos")
+	 * @returns singular name of model (e.g. "Todo")
+	 */
+	private findSingularName(pluralName: string): string {
+		const model = Object.values(this.schema.models).find(
+			m => m.pluralName === pluralName
+		);
+		if (!model) throw new Error(`No model found for plural name ${pluralName}`);
+		return model.name;
+	}
 
 	public parseQuery(query) {
 		const q = (parse(query) as any).definitions[0];
@@ -109,8 +121,13 @@ export class FakeGraphQLService {
 		)[1];
 
 		let table;
+		// `selection` here could be `syncTodos` or `syncCompositePKChildren`
 		if (type === 'sync' || type === 'list') {
-			table = selection.match(/^(create|sync|get|list)(\w+)s$/)[2];
+			// e.g. `Models`
+			const pluralName = selection.match(
+				/^(create|sync|get|list)([A-Za-z]+)$/
+			)[2];
+			table = this.findSingularName(pluralName);
 		} else {
 			table = selection.match(
 				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/

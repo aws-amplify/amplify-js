@@ -830,16 +830,7 @@ describe('DataStore sync engine', () => {
 
 			console.log('c');
 			await waitForSyncQueriesReady();
-
-			console.log('d');
-
-			expect(errorLog).not.toHaveBeenCalledWith(
-				expect.stringMatching(new RegExp('[ERROR].* Hub')),
-				expect.anything()
-			);
-
-			console.log('e');
-			// graphqlService.log = (...all) => console.log(...all);
+			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
 
 			console.log('f');
