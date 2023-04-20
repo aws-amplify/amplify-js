@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-interface FormattedDates {
-	longDate: string;
-	shortDate: string;
-}
+import { FormattedDates } from '../types/signer';
 
 /**
  * Returns expected date strings to be used in signing.

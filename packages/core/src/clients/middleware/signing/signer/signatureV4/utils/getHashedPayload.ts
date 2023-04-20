@@ -27,7 +27,7 @@ export const getHashedPayload = async (
 		return hashedData;
 	}
 
-	// Defined body is not signable. Return unsigned payload  which may or may not be accepted by the service.
+	// Defined body is not signable. Return unsigned payload which may or may not be accepted by the service.
 	return UNSIGNED_PAYLOAD;
 };
 

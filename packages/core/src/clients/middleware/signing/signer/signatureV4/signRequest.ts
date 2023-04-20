@@ -3,13 +3,8 @@
 
 import { HttpRequest } from '../../../../types';
 import { SignRequestOptions } from './types/signer';
-import { getCanonicalRequest } from './utils/getCanonicalRequest';
-import { getCredentialScope } from './utils/getCredentialScope';
-import { getFormattedDates } from './utils/getFormattedDates';
-import { getSigningKey } from './utils/getSigningKey';
 import { getSignedHeaders } from './utils/getSignedHeaders';
-import { getStringToSign } from './utils/getStringToSign';
-import { getHashedDataAsHex } from './utils/dataHashHelpers';
+import { getSigningValues } from './utils/getSigningValues';
 import {
 	AMZ_DATE_HEADER,
 	AUTH_HEADER,
@@ -17,6 +12,7 @@ import {
 	SHA256_ALGORITHM_IDENTIFIER,
 	TOKEN_HEADER,
 } from './constants';
+import { getSignature } from './utils/getSignature';
 
 /**
  * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
@@ -27,58 +23,23 @@ import {
  */
 export const signRequest = async (
 	request: HttpRequest,
-	{
-		credentials,
-		signingDate = new Date(),
-		signingRegion,
-		signingService,
-	}: SignRequestOptions
+	options: SignRequestOptions
 ): Promise<HttpRequest> => {
-	// get properties from credentials
-	const { accessKeyId, secretAccessKey, sessionToken } = credentials;
-	// get formatted dates for signing
-	const { longDate, shortDate } = getFormattedDates(signingDate);
-	// copy header and set signing properties
+	const signingValues = getSigningValues(options);
+	const { accessKeyId, credentialScope, longDate, sessionToken } =
+		signingValues;
+
+	// create the request to sign
 	const headers = { ...request.headers };
 	headers[HOST_HEADER] = request.url.host;
 	headers[AMZ_DATE_HEADER] = longDate;
 	if (sessionToken) {
 		headers[TOKEN_HEADER] = sessionToken;
 	}
-	const signedRequest = { ...request, headers };
+	const requestToSign = { ...request, headers };
 
-	// create a signed AWS API request
-	// https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html
-	// step 1: create a canonical request
-	const canonicalRequest = await getCanonicalRequest(signedRequest);
-
-	// step 2: create a hash of the canonical request
-	const hashedRequest = await getHashedDataAsHex(null, canonicalRequest);
-
-	// step 3: create a string to sign
-	const credentialScope = getCredentialScope(
-		shortDate,
-		signingRegion,
-		signingService
-	);
-	const stringToSign = await getStringToSign(
-		longDate,
-		credentialScope,
-		hashedRequest
-	);
-
-	// step 4: calculate the signature
-	const signature = await getHashedDataAsHex(
-		await getSigningKey(
-			secretAccessKey,
-			shortDate,
-			signingRegion,
-			signingService
-		),
-		stringToSign
-	);
-
-	// step 5: add the signature to the request
+	// calculate and add the signature to the request
+	const signature = await getSignature(requestToSign, signingValues);
 	const credentialEntry = `Credential=${accessKeyId}/${credentialScope}`;
 	const signedHeadersEntry = `SignedHeaders=${getSignedHeaders(headers)}`;
 	const signatureEntry = `Signature=${signature}`;
@@ -86,5 +47,5 @@ export const signRequest = async (
 		AUTH_HEADER
 	] = `${SHA256_ALGORITHM_IDENTIFIER} ${credentialEntry}, ${signedHeadersEntry}, ${signatureEntry}`;
 
-	return signedRequest;
+	return requestToSign;
 };

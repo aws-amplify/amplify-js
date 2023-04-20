@@ -12,7 +12,7 @@ export const SIGNED_HEADERS_QUERY_PARAM = 'X-Amz-SignedHeaders';
 export const TOKEN_QUERY_PARAM = 'X-Amz-Security-Token';
 
 // headers
-export const AUTH_HEADER = 'Authorization';
+export const AUTH_HEADER = 'authorization';
 export const HOST_HEADER = 'host';
 export const AMZ_DATE_HEADER = AMZ_DATE_QUERY_PARAM.toLowerCase();
 export const TOKEN_HEADER = TOKEN_QUERY_PARAM.toLowerCase();

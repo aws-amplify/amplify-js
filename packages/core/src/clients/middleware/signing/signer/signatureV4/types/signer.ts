@@ -17,3 +17,15 @@ export interface PresignUrlOptions extends SignRequestOptions {
 export interface Presignable extends Pick<HttpRequest, 'body' | 'url'> {
 	method?: HttpRequest['method'];
 }
+
+export interface FormattedDates {
+	longDate: string;
+	shortDate: string;
+}
+
+export interface SigningValues
+	extends Credentials,
+		FormattedDates,
+		Pick<SignRequestOptions, 'signingRegion' | 'signingService'> {
+	credentialScope: string;
+}
