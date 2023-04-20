@@ -207,9 +207,9 @@ export class FieldCondition {
 			ge: () => v >= this.operands[0],
 			lt: () => v < this.operands[0],
 			le: () => v <= this.operands[0],
-			contains: () => v.indexOf(this.operands[0]) > -1,
-			notContains: () => v.indexOf(this.operands[0]) === -1,
-			beginsWith: () => v.startsWith(this.operands[0]),
+			contains: () => v?.indexOf(this.operands[0]) > -1,
+			notContains: () => (!v ? true : v.indexOf(this.operands[0]) === -1),
+			beginsWith: () => v?.startsWith(this.operands[0]),
 			between: () => v >= this.operands[0] && v <= this.operands[1],
 		};
 		const operation = operations[this.operator as keyof typeof operations];

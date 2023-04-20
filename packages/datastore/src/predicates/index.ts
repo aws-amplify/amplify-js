@@ -41,6 +41,16 @@ const isGroup = o => {
 };
 
 /**
+ * Determines whether an object specifies no conditions and should match everything,
+ * as would be the case with `Predicates.ALL`.
+ *
+ * @param o The object to test.
+ */
+const isEmpty = o => {
+	return !Array.isArray(o) && Object.keys(o).length === 0;
+};
+
+/**
  * The valid comparison operators that can be used as keys in a predicate comparison object.
  */
 export const comparisonKeys = new Set([
@@ -77,7 +87,7 @@ const isValid = o => {
 	if (Array.isArray(o)) {
 		return o.every(v => isValid(v));
 	} else {
-		return Object.keys(o).length === 1;
+		return Object.keys(o).length <= 1;
 	}
 };
 
@@ -207,7 +217,12 @@ export class ModelPredicateCreator {
 			throw new Error('Invalid GraphQL Condition or subtree: ' + gql);
 		}
 
-		if (isGroup(gql)) {
+		if (isEmpty(gql)) {
+			return {
+				type: 'and',
+				predicates: [],
+			};
+		} else if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
 			const children = this.transformGraphQLFilterNodeToPredicateAST(
 				gql[groupkey]
