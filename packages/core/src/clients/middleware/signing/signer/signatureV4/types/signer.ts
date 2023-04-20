@@ -10,7 +10,7 @@ export interface SignRequestOptions {
 	signingService: string;
 }
 
-export interface SignUrlOptions extends SignRequestOptions {
+export interface PresignUrlOptions extends SignRequestOptions {
 	expiration?: number;
 }
 

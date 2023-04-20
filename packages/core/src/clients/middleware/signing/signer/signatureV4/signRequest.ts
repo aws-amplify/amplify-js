@@ -18,6 +18,13 @@ import {
 	TOKEN_HEADER,
 } from './constants';
 
+/**
+ * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
+ *
+ * @param request `HttpRequest` to be signed.
+ * @param signRequestOptions `SignRequestOptions` object containing values used to construct the signature.
+ * @returns A `HttpRequest` with authentication headers which can grant temporary access to AWS resources.
+ */
 export const signRequest = async (
 	request: HttpRequest,
 	{

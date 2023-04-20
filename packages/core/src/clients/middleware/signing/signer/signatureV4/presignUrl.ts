@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Presignable, SignUrlOptions } from './types';
+import { Presignable, PresignUrlOptions } from './types';
 import { getCanonicalRequest } from './utils/getCanonicalRequest';
 import { getCredentialScope } from './utils/getCredentialScope';
 import { getFormattedDates } from './utils/getFormattedDates';
@@ -20,6 +20,13 @@ import {
 	TOKEN_QUERY_PARAM,
 } from './constants';
 
+/**
+ * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
+ *
+ * @param presignable `Presignable` object containing at least a url to be presigned with authentication query params.
+ * @param presignUrlOptions `PresignUrlOptions` object containing values used to construct the signature.
+ * @returns A `URL` with authentication query params which can grant temporary access to AWS resources.
+ */
 export const presignUrl = async (
 	{ body, method = 'GET', url }: Presignable,
 	{
@@ -28,7 +35,7 @@ export const presignUrl = async (
 		signingDate = new Date(),
 		signingRegion,
 		signingService,
-	}: SignUrlOptions
+	}: PresignUrlOptions
 ): Promise<URL> => {
 	// get properties from credentials
 	const { accessKeyId, secretAccessKey, sessionToken } = credentials;

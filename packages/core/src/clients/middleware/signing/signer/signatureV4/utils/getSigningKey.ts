@@ -7,7 +7,7 @@ import { getHashedData } from './dataHashHelpers';
 /**
  * Returns a signing key to be used for signing requests.
  *
- * @param credentials `Credentials` with which the request will be signed.
+ * @param secretAccessKey AWS secret access key from credentials.
  * @param date Current date in the format 'YYYYMMDD'.
  * @param region AWS region in which the service resides.
  * @param service Service to which the signed request is being sent.
