@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import isNil from 'lodash/isNil';
 import { isArrayBuffer } from '@aws-sdk/is-array-buffer';
 import { SourceData } from '@aws-sdk/types';
 import { HttpRequest } from '../../../../../types';
@@ -18,7 +17,8 @@ import { getHashedDataAsHex } from './dataHashHelpers';
 export const getHashedPayload = async (
 	body: HttpRequest['body']
 ): Promise<string> => {
-	if (isNil(body)) {
+	// return precalculated empty hash if body is undefined or null
+	if (body == null) {
 		return EMPTY_HASH;
 	}
 
