@@ -18,15 +18,7 @@ describe('SignUp API Happy Path Cases:', () => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUpClient')
 			.mockImplementationOnce(async (params: signUpClient.SignUpClientInput) => {
-				return {
-					UserConfirmed: false,
-					UserSub: '1234567890',
-					CodeDeliveryDetails: {
-						AttributeName: 'email',
-						DeliveryMedium: 'EMAIL',
-						Destination: user1.email,
-					},
-				} as SignUpCommandOutput;
+				return authAPITestParams.signUpHttpCallResult as SignUpCommandOutput;
 			});
 	});
 	afterEach(() => {

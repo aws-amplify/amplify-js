@@ -30,17 +30,12 @@ export async function confirmResetPassword(
 		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
 	);
 	const config = Amplify.config;
-	try {
-		const res: ConfirmForgotPasswordCommandOutput = await confirmResetPasswordClient({
-			Username: username,
-			ConfirmationCode: code,
-			Password: password,
-			ClientMetadata: 
-				confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ?? 
-				config.clientMetadata
-		});
-	} catch (error) {
-		assertServiceError(error);
-		throw new AuthError({ name: error.name, message: error.message });
-	}
+	await confirmResetPasswordClient({
+		Username: username,
+		ConfirmationCode: code,
+		Password: password,
+		ClientMetadata: 
+			confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ?? 
+			config.clientMetadata
+	});
 }
