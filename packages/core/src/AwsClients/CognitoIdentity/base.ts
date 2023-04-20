@@ -12,6 +12,7 @@ import {
 	getRetryDecider,
 } from '../../clients/middleware/retry';
 import { parseJsonError } from '../../clients/serde/json';
+import { getAmplifyUserAgent } from '../../Platform';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -58,6 +59,7 @@ export const defaultConfigs = {
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
 	computeDelay: jitteredBackoff,
+	userAgentValue: getAmplifyUserAgent(), // TODO: use getAmplifyUserAgentString() when available.
 };
 
 /**
