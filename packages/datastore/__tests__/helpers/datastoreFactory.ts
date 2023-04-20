@@ -1,3 +1,8 @@
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+	ConnectionState,
+} from '@aws-amplify/pubsub';
 import { PersistentModelConstructor } from '../../src';
 import {
 	initSchema as _initSchema,
@@ -10,6 +15,8 @@ import {
 	Blog,
 	Post,
 	Comment,
+	PostUni,
+	CommentUni,
 	User,
 	Profile,
 	PostComposite,
@@ -104,6 +111,74 @@ export function getDataStore({
 		if (log) console.log('done simulated disconnect.');
 	}
 
+	/**
+	 * Simulate a connection disruption such as iOS Safari force closing a
+	 * websocket.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateDisruption(log = false) {
+		if (log) console.log('starting simulated connection disruption.');
+
+		await graphqlService.simulateDisruption();
+		if (log) console.log('disrupted graphql service');
+
+		const { Hub } = require('@aws-amplify/core');
+		Hub.dispatch(
+			'api',
+			{
+				event: PUBSUB_CONNECTION_STATE_CHANGE,
+				data: {
+					connectionState: ConnectionState.ConnectionDisrupted,
+				},
+			},
+			'PubSub'
+		);
+
+		if (log) console.log('done simulated disruption.');
+	}
+
+	/**
+	 * Simulate reconnect after a connection disruption such as iOS Safari
+	 * force closing a websocket.
+	 *
+	 * All returned fakes/mocks are CONNECTED by default.
+	 *
+	 * `async` to set the precedent. In reality, these functions are
+	 * not actually dependent on any async behavior yet.
+	 */
+	async function simulateDisruptionEnd(log = false) {
+		if (log) console.log('starting simulated connection disruption end.');
+
+		await graphqlService.simulateDisruptionEnd();
+		if (log) console.log('simulated graphql service disruption end');
+		const { Hub } = require('@aws-amplify/core');
+		Hub.dispatch(
+			'api',
+			{
+				event: PUBSUB_CONNECTION_STATE_CHANGE,
+				data: {
+					connectionState: ConnectionState.Connecting,
+				},
+			},
+			'PubSub'
+		);
+		Hub.dispatch(
+			'api',
+			{
+				event: PUBSUB_CONNECTION_STATE_CHANGE,
+				data: {
+					connectionState: ConnectionState.Connected,
+				},
+			},
+			'PubSub'
+		);
+		if (log) console.log('done simulated disruption end.');
+	}
+
 	jest.mock('@aws-amplify/core', () => {
 		const actual = jest.requireActual('@aws-amplify/core');
 		return {
@@ -151,6 +226,8 @@ export function getDataStore({
 		Blog,
 		Post,
 		Comment,
+		PostUni,
+		CommentUni,
 		User,
 		Profile,
 		PostComposite,
@@ -183,6 +260,8 @@ export function getDataStore({
 		Blog: PersistentModelConstructor<Blog>;
 		Post: PersistentModelConstructor<Post>;
 		Comment: PersistentModelConstructor<Comment>;
+		PostUni: PersistentModelConstructor<PostUni>;
+		CommentUni: PersistentModelConstructor<CommentUni>;
 		User: PersistentModelConstructor<User>;
 		Profile: PersistentModelConstructor<Profile>;
 		PostComposite: PersistentModelConstructor<PostComposite>;
@@ -219,10 +298,14 @@ export function getDataStore({
 		graphqlService,
 		simulateConnect,
 		simulateDisconnect,
+		simulateDisruption,
+		simulateDisruptionEnd,
 		ModelWithBoolean,
 		Blog,
 		Post,
 		Comment,
+		PostUni,
+		CommentUni,
 		User,
 		Profile,
 		PostComposite,
