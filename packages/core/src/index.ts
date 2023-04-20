@@ -49,7 +49,7 @@ export {
 	Framework,
 	GeoAction,
 	InteractionsAction,
-	NotificationsAction,
+	InAppMessagingAction,
 	PredictionsAction,
 	PubSubAction,
 	PushNotificationAction,

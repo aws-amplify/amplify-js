@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	Category,
 	ClientDevice,
 	ConsoleLogger,
 	Credentials,
-	getAmplifyUserAgent,
+	CustomUserAgentDetails,
+	getAmplifyUserAgentString,
+	InAppMessagingAction,
+	PushNotificationAction,
 	StorageHelper,
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
@@ -245,10 +249,23 @@ export default abstract class AWSPinpointProviderCommon
 			pinpointClient.destroy();
 		}
 
+		let customUserAgentDetails: CustomUserAgentDetails;
+		if (this.getSubCategory() === 'PushNotification') {
+			customUserAgentDetails = {
+				category: Category.PushNotification,
+				action: PushNotificationAction.None,
+			};
+		} else {
+			customUserAgentDetails = {
+				category: Category.InAppMessaging,
+				action: InAppMessagingAction.None,
+			};
+		}
+
 		this.config.pinpointClient = new PinpointClient({
 			region,
 			credentials,
-			customUserAgent: getAmplifyUserAgent(`/${this.getSubCategory()}`),
+			customUserAgent: getAmplifyUserAgentString(customUserAgentDetails),
 		});
 	};
 
