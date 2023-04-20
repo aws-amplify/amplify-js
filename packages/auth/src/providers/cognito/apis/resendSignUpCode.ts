@@ -2,33 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import type {
-	AttributeType,
-	SignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
-import {
-	AuthSignUpResult,
-	AuthSignUpStep,
-	AuthStandardAttributeKey,
-	DeliveryMedium,
-	SignUpRequest,
-} from '../../../types';
+import type { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
+import { AuthStandardAttributeKey, DeliveryMedium } from '../../../types';
 import {
 	AuthCodeDeliveryDetails,
 	AuthPluginOptions,
 	CognitoResendSignUpCodeOptions,
-	CognitoSignUpOptions,
 	CognitoUserAttributeKey,
-	CustomAttribute,
 	ResendSignUpCodeRequest,
-	ValidationData,
 } from '..';
-import { signUpClient } from '../utils/clients/SignUpClient';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors/service';
+import { resendSignUpConfirmationCodeClient } from '../utils/clients/resendSignUpCodeClient';
 
 /**
  * Creates a user
@@ -42,78 +30,40 @@ import { SignUpException } from '../types/errors/service';
  *
  * TODO: add config errors
  */
-export async function resendSignUpCode<
-	PluginOptions extends AuthPluginOptions = CognitoResendSignUpCodeOptions
->(
-	req: ResendSignUpCodeRequest<PluginOptions>
-): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
-	// const username = signUpRequest.username;
-	// const password = signUpRequest.password;
-	// assertValidationError(
-	// 	!!username,
-	// 	AuthValidationErrorCode.EmptySignUpUsername
-	// );
-	// assertValidationError(
-	// 	!!password,
-	// 	AuthValidationErrorCode.EmptySignUpPassword
-	// );
-	// // TODO: implement autoSignIn
-	// let validationData: AttributeType[] | undefined;
-	// const config = Amplify.config;
-	// if (signUpRequest.options?.serviceOptions?.validationData) {
-	// 	validationData = mapValidationData(
-	// 		signUpRequest.options?.serviceOptions?.validationData
-	// 	);
-	// }
-	// try {
-	// 	const res: SignUpCommandOutput = await signUpClient({
-	// 		Username: username,
-	// 		Password: password,
-	// 		UserAttributes: signUpRequest.options?.userAttributes.map(el => {
-	// 			return { Name: el.userAttributeKey.toString(), Value: el.value };
-	// 		}),
-	// 		ClientMetadata:
-	// 			signUpRequest.options?.serviceOptions?.clientMetadata ??
-	// 			config.clientMetadata,
-	// 		ValidationData: validationData,
-	// 	});
-	// 	const { UserConfirmed, CodeDeliveryDetails } = res;
-	// 	const { DeliveryMedium, Destination, AttributeName } = {
-	// 		...CodeDeliveryDetails,
-	// 	};
-	// 	if (UserConfirmed) {
-	// 		return {
-	// 			isSignUpComplete: true,
-	// 			nextStep: {
-	// 				signUpStep: AuthSignUpStep.DONE,
-	// 			},
-	// 		};
-	// 	} else {
-	// 		return {
-	// 			isSignUpComplete: false,
-	// 			nextStep: {
-	// 				signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
-	// 				codeDeliveryDetails: {
-	// 					deliveryMedium: DeliveryMedium
-	// 						? (DeliveryMedium as DeliveryMedium)
-	// 						: undefined,
-	// 					destination: Destination ? (Destination as string) : undefined,
-	// 					attributeName: AttributeName
-	// 						? (AttributeName as AuthStandardAttributeKey)
-	// 						: undefined,
-	// 				},
-	// 			},
-	// 		};
-	// 	}
-	// } catch (error) {
-	// 	assertServiceError(error);
-	// 	throw new AuthError({ name: error.name, message: error.message });
-	// }
-}
 
-function mapValidationData(data: ValidationData): AttributeType[] {
-	return Object.entries(data).map(([key, value]) => ({
-		Name: key,
-		Value: value,
-	}));
+// TODO(Samaritan1011001): Function type was changed, confirm it's right
+
+export async function resendSignUpCode<
+	PluginOptions extends CognitoResendSignUpCodeOptions = AuthPluginOptions
+>(
+	resendReq: ResendSignUpCodeRequest<PluginOptions>
+): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
+	const username = resendReq.username;
+	assertValidationError(
+		!!username,
+		AuthValidationErrorCode.EmptySignUpUsername
+	);
+	const config = Amplify.config;
+	try {
+		const res: ResendConfirmationCodeCommandOutput =
+			await resendSignUpConfirmationCodeClient({
+				Username: username,
+				ClientMetadata:
+					resendReq.options?.pluginOptions?.clientMetadata ??
+					config.clientMetadata,
+			});
+		const { DeliveryMedium, AttributeName, Destination } = {
+			...res.CodeDeliveryDetails,
+		};
+		return {
+			destination: Destination as string,
+			deliveryMedium: DeliveryMedium as DeliveryMedium,
+			attributeName: AttributeName
+				? (AttributeName as AuthStandardAttributeKey)
+				: undefined,
+		};
+	} catch (error) {
+		assertServiceError(error);
+		throw new AuthError({ name: error.name, message: error.message });
+	}
 }

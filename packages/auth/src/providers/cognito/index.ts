@@ -8,7 +8,7 @@ export { confirmResetPassword } from './apis/confirmResetPassword';
 export { ClientMetadata } from './types/models/ClientMetadata';
 export { CognitoResendSignUpCodeOptions } from './types/models/CognitoResendSignUpCodeOptions';
 export { AuthPluginOptions } from './types/models/AuthPluginOptions';
-export { ResendSignUpCodeRequest } from './types/models/ResendSignUpCodeRequest';
+export { ResendSignUpCodeRequest } from '../../types/requests/ResendSignUpCodeRequest';
 export { AuthCodeDeliveryDetails } from './types/models/AuthCodeDeliveryDetails';
 export type { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
 export { CustomAttribute } from './types/models/CustomAttribute';

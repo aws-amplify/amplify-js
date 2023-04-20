@@ -3,6 +3,7 @@
 
 import { AuthUserAttributeKey, DeliveryMedium } from '../../../../types';
 
+// TODO(Samaritan1011001): Confirm if the values need to be nullable
 export type AuthCodeDeliveryDetails<
 	UserAttributeKey extends AuthUserAttributeKey
 > = {

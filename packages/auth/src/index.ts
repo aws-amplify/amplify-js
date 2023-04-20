@@ -38,3 +38,5 @@ export * from './providers/cognito';
 
 // Category specific types
 export * from './types';
+
+export type { AuthCodeDeliveryDetails } from './providers/cognito/types/models/AuthCodeDeliveryDetails';
