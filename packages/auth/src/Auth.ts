@@ -1590,6 +1590,15 @@ export class AuthClass {
 		);
 	}
 
+	private isPasswordResetRequiredError(
+		err: any
+	): err is { message: 'Password reset required for the user' } {
+		return (
+			this.isErrorWithMessage(err) &&
+			err.message === 'Password reset required for the user'
+		);
+	}
+
 	private isSignedInHostedUI() {
 		return (
 			this._oAuthHandler &&
@@ -1603,7 +1612,8 @@ export class AuthClass {
 			this.isUserDoesNotExistError(err) ||
 			this.isTokenRevokedError(err) ||
 			this.isRefreshTokenRevokedError(err) ||
-			this.isRefreshTokenExpiredError(err)
+			this.isRefreshTokenExpiredError(err) ||
+			this.isPasswordResetRequiredError(err)
 		);
 	}
 
