@@ -773,7 +773,7 @@ describe('DataStore sync engine', () => {
 
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
-			await pause(100);
+			await pause(1);
 
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
