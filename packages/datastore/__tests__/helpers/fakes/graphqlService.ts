@@ -10,6 +10,13 @@ import { validatePredicate, getTimestampFields } from '../../../src/util';
 import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 
+type GraphQLRequest = {
+	query: string;
+	variables: Record<string, any>;
+	authMode: string | undefined | null;
+	authToken: string | undefined | null;
+};
+
 /**
  * Statefully pretends to be AppSync, with minimal built-in asertions with
  * error callbacks and settings to help simulate various conditions.
@@ -30,6 +37,14 @@ export class FakeGraphQLService {
 		string,
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
+
+	/**
+	 * Singleton middleware, basically.
+	 */
+	public intercept: (request: GraphQLRequest, next: () => any) => any = (
+		request,
+		next
+	) => next();
 
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
@@ -382,8 +397,8 @@ export class FakeGraphQLService {
 	 *
 	 * @param param0
 	 */
-	public graphql({ query, variables, authMode, authToken }) {
-		return this.request({ query, variables, authMode, authToken });
+	public graphql(request: GraphQLRequest) {
+		return this.intercept(request, () => this.request(request));
 	}
 
 	public request({ query, variables, authMode, authToken }) {

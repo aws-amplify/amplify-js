@@ -1049,4 +1049,26 @@ describe('DataStore sync engine', () => {
 		`);
 		});
 	});
+
+	describe.only('error handling', () => {
+		test('unauthorized exception', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('syncLegacyJSONComments')) {
+					// e.g., not logged in.
+					// comes back as an HTTP 401, but also includes `errors` array.
+					throw {
+						errors: [
+							{
+								errorType: 'UnauthorizedException',
+								message: 'Valid authorization header not provided.',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+			await waitForDataStoreReady();
+		});
+	});
 });
