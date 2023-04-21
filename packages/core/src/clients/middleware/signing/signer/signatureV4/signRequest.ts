@@ -15,7 +15,7 @@ import {
 import { getSignature } from './utils/getSignature';
 
 /**
- * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
+ * Given a `HttpRequest`, returns a Signature Version 4 signed `HttpRequest`.
  *
  * @param request `HttpRequest` to be signed.
  * @param signRequestOptions `SignRequestOptions` object containing values used to construct the signature.
