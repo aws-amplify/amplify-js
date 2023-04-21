@@ -813,7 +813,10 @@ describe('DataStore sync engine', () => {
 			expect(cloudThirdPost.title).toEqual('a title 3');
 		});
 
-		test.only('does not error when disruption before sync queries start', async () => {
+		test('does not error when disruption before sync queries start', async () => {
+			graphqlService.log = (channel, ...message) => {
+				if (channel.startsWith('API')) console.log(channel, ...message);
+			};
 			console.time('abc');
 			const postPromise = DataStore.save(
 				new Post({
@@ -823,6 +826,7 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 
 			console.log('a');
+			// debugger;
 			await simulateDisruption();
 
 			console.log('b');
@@ -844,6 +848,9 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost.title).toEqual('a title');
 
 			console.log('all done?', table, cloudPost);
+			// debugger;
+			// pause(5000);
+			await waitForSyncQueriesReady();
 		});
 	});
 
