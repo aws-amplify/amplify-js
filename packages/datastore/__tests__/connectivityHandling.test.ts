@@ -831,7 +831,13 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			// TODO:
+			/**
+			 * TODO: See if we can remove this. This was added to get the test
+			 * working again after introducing latency to the fake GraphQL
+			 * service. It seems like sync queries are going out and are not
+			 * playing well with `DataStore.clear()` (which happens in
+			 * `afterEach`), resulting in the test hanging indefinitely.
+			 */
 			await waitForSyncQueriesReady();
 		});
 	});
