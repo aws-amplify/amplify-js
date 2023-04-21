@@ -2549,20 +2549,14 @@ class DataStore {
 		}
 
 		if (syncSubscription && !syncSubscription.closed) {
-			console.log('clear d.a');
 			syncSubscription.unsubscribe();
 		}
 
 		if (this.sync) {
-			console.log('clear e.a');
 			await this.sync.stop();
 		}
 
-		console.log('clear f');
-
 		await this.storage!.clear();
-
-		console.log('clear g');
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
@@ -2570,8 +2564,6 @@ class DataStore {
 		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 
 		await this.runningProcesses.open();
-
-		console.log('clear h');
 		this.state = DataStoreState.NotRunning;
 	}
 

@@ -1,24 +1,8 @@
-import Observable, { ZenObservable } from 'zen-observable-ts';
-import {
-	ModelInit,
-	Schema,
-	InternalSchema,
-	__modelMeta__,
-} from '../../src/types';
-import {
-	MutableModel,
-	DataStore as DS,
-	CompositeIdentifier,
-	CustomIdentifier,
-	ManagedIdentifier,
-	PersistentModel,
-	OptionallyManagedIdentifier,
-	PersistentModelConstructor,
-} from '../../src';
+import { __modelMeta__ } from '../../src/types';
+import { PersistentModel, PersistentModelConstructor } from '../../src';
 import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
-import { v4 as uuid } from 'uuid';
 
 /**
  * Convenience function to wait for a number of ms.

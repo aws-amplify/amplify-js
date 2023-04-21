@@ -87,10 +87,8 @@ describe('DataStore sync engine', () => {
 	});
 
 	afterEach(async () => {
-		console.log('after each outer top');
 		await DataStore.clear();
 		console.warn = (console as any)._warn;
-		console.log('after each outer bottom');
 	});
 
 	describe('basic protocol', () => {
@@ -572,7 +570,6 @@ describe('DataStore sync engine', () => {
 
 		afterEach(async () => {
 			unwarpTime();
-			console.log('after each completed');
 		});
 
 		test('survives online -> offline -> online cycle', async () => {
@@ -814,27 +811,18 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('does not error when disruption before sync queries start', async () => {
-			graphqlService.log = (channel, ...message) => {
-				if (channel.startsWith('API')) console.log(channel, ...message);
-			};
-			console.time('abc');
 			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
 			);
 			const errorLog = jest.spyOn(console, 'error');
-
 			await simulateDisruption();
-
 			await simulateDisruptionEnd();
 
 			await waitForSyncQueriesReady();
 			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
-
-			console.log('f');
-
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
@@ -843,6 +831,7 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
+			// TODO:
 			await waitForSyncQueriesReady();
 		});
 	});

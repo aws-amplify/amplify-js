@@ -313,18 +313,9 @@ class SyncProcessor {
 		);
 	}
 
-	private startcount = 0;
-
 	start(
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
-		this.startcount++;
-		try {
-			if (this.startcount == 2) throw new Error('ha!');
-		} catch (e) {
-			console.error(e);
-		}
-		console.log('sync.ts start!!!');
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
 		const observable = new Observable<SyncModelPage>(observer => {
