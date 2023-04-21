@@ -16,15 +16,11 @@ import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
  * - CredentialScope
  * - HashedCanonicalRequest
  */
-export const getStringToSign = async (
+export const getStringToSign = (
 	date: string,
 	credentialScope: string,
 	hashedRequest: string
-): Promise<string> => {
-	return [
-		SHA256_ALGORITHM_IDENTIFIER,
-		date,
-		credentialScope,
-		hashedRequest,
-	].join('\n');
-};
+): string =>
+	[SHA256_ALGORITHM_IDENTIFIER, date, credentialScope, hashedRequest].join(
+		'\n'
+	);
