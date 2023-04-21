@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { SignRequestOptions } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/types';
 import { HttpRequest } from '../../../../../../../src/clients/types';
 import { credentialsWithToken, signingOptions, url } from './data';
