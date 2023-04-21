@@ -1051,16 +1051,45 @@ describe('DataStore sync engine', () => {
 	});
 
 	describe.only('error handling', () => {
-		test('unauthorized exception', async () => {
+		// test('global UnauthorizedException', async () => {
+		// 	graphqlService.intercept = (request, next) => {
+		// 		if (request.query.includes('syncLegacyJSONComments')) {
+		// 			// e.g., not logged in.
+		// 			// comes back as an HTTP 401, but also includes `errors` array.
+		// 			throw {
+		// 				errors: [
+		// 					{
+		// 						errorType: 'UnauthorizedException',
+		// 						message: 'Valid authorization header not provided.',
+		// 					},
+		// 				],
+		// 			};
+		// 		} else {
+		// 			return next();
+		// 		}
+		// 	};
+		// 	await waitForDataStoreReady();
+		// });
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error', async () => {
 			graphqlService.intercept = (request, next) => {
 				if (request.query.includes('syncLegacyJSONComments')) {
 					// e.g., not logged in.
 					// comes back as an HTTP 401, but also includes `errors` array.
 					throw {
+						data: { syncLegacyJSONComments: null },
 						errors: [
 							{
-								errorType: 'UnauthorizedException',
-								message: 'Valid authorization header not provided.',
+								path: ['syncLegacyJSONComments'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access syncLegacyJSONComments on type Query',
 							},
 						],
 					};
@@ -1069,6 +1098,11 @@ describe('DataStore sync engine', () => {
 				}
 			};
 			await waitForDataStoreReady();
+
+			// TODO: replace with errorHandler check.
+			// possibly make datastore factory create an error handler spy or aggregator
+			// that's passed back through getDatastore();
+			expect(true).toBe(false);
 		});
 	});
 });
