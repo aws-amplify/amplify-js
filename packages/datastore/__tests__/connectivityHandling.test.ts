@@ -825,14 +825,10 @@ describe('DataStore sync engine', () => {
 			);
 			const errorLog = jest.spyOn(console, 'error');
 
-			console.log('a');
-			// debugger;
 			await simulateDisruption();
 
-			console.log('b');
 			await simulateDisruptionEnd();
 
-			console.log('c');
 			await waitForSyncQueriesReady();
 			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
@@ -847,9 +843,6 @@ describe('DataStore sync engine', () => {
 			) as any;
 			expect(cloudPost.title).toEqual('a title');
 
-			console.log('all done?', table, cloudPost);
-			// debugger;
-			// pause(5000);
 			await waitForSyncQueriesReady();
 		});
 	});

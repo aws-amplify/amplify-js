@@ -227,33 +227,6 @@ export function warpTime(multiplier = 20) {
 		jest.advanceTimersByTime(25 * multiplier);
 	}, 25);
 	jest.useFakeTimers();
-
-	// let timeoutCounter = 0;
-	// const timeouts = {};
-	// let totalCalls = 0;
-
-	// var oldTimeout = setTimeout;
-	// // @ts-ignore
-	// window.setTimeout = function (callback, timeout) {
-	// 	console.log(`timeout started`);
-	// 	timeoutCounter++;
-	// 	totalCalls++;
-	// 	console.log('timeoutCounter', timeoutCounter);
-	// 	let id = uuid();
-	// 	timeouts[id] = callback.toString();
-	// 	console.log('total calls', totalCalls);
-	// 	if (totalCalls > 135) {
-	// 		// debugger;
-	// 	}
-	// 	return oldTimeout(function () {
-	// 		console.log('timeout finished');
-	// 		timeoutCounter--;
-	// 		console.log('timeoutCounter', timeoutCounter);
-	// 		delete timeouts[id];
-	// 		console.log(timeouts);
-	// 		callback();
-	// 	}, timeout);
-	// };
 }
 
 /**
@@ -261,7 +234,6 @@ export function warpTime(multiplier = 20) {
  * implementations.
  */
 export function unwarpTime() {
-	// jest.runOnlyPendingTimers();
 	jest.useRealTimers();
 	clearInterval(warpTimeTick);
 }

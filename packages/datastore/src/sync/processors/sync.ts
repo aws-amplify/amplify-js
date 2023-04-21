@@ -126,8 +126,6 @@ class SyncProcessor {
 				);
 			}
 
-			modelDefinition.name === 'Comment' && console.log('trying Comment');
-
 			try {
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
@@ -145,8 +143,6 @@ class SyncProcessor {
 				);
 				return response;
 			} catch (error) {
-				modelDefinition.name === 'Comment' &&
-					console.log('Comment error', error);
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
@@ -351,8 +347,6 @@ class SyncProcessor {
 					([modelDefinition, [namespace, lastSync]]) =>
 						this.runningProcesses.isOpen &&
 						this.runningProcesses.add(async onTerminate => {
-							modelDefinition.name === 'Comment' &&
-								console.log(`starting adding model ${modelDefinition.name}`);
 							let done = false;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
@@ -383,8 +377,6 @@ class SyncProcessor {
 										);
 										return res();
 									}
-
-									modelDefinition.name === 'Comment' && console.log('pang');
 
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
@@ -425,8 +417,6 @@ class SyncProcessor {
 										return res();
 									}
 
-									modelDefinition.name === 'Comment' && console.log('pongo!');
-
 									recordsReceived += items.length;
 
 									done =
@@ -440,7 +430,6 @@ class SyncProcessor {
 										startedAt,
 										isFullSync: !lastSync,
 									});
-									modelDefinition.name === 'Comment' && console.log('pong');
 								} while (!done);
 
 								res();
@@ -451,13 +440,7 @@ class SyncProcessor {
 								promise
 							);
 
-							modelDefinition.name === 'Comment' &&
-								console.log(
-									`awaitting promise adding model ${modelDefinition.name}`
-								);
 							await promise;
-							modelDefinition.name === 'Comment' &&
-								console.log(`done adding model ${modelDefinition.name}`);
 						}, `adding model ${modelDefinition.name}`)
 				);
 
@@ -471,9 +454,7 @@ class SyncProcessor {
 
 	async stop() {
 		logger.debug('stopping sync processor');
-		console.log('sync.ts stop running procs', this.runningProcesses);
 		await this.runningProcesses.close();
-		console.log('sync.ts stop middle');
 		await this.runningProcesses.open();
 		logger.debug('sync processor stopped');
 	}
