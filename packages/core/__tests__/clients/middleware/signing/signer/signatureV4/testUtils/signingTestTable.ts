@@ -182,6 +182,6 @@ export const signingTestTable: TestCase[] = [
 		expectedAuthorization:
 			'AWS4-HMAC-SHA256 Credential=access-key-id/20200918/signing-region/signing-service/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=10fa345ac8828e6350dd55c784b1bfa85c4ae977c62abf522050cb9065d3e61e',
 		expectedUrl:
-			'https://domain.fakeurl/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=access-key-id%2F20200918%2Fsigning-region%2Fsigning-service%2Faws4_request&X-Amz-Date=20200918T181818Z&X-Amz-SignedHeaders=host&X-Amz-Signature=b2bdc8574c553b0652332bf38234b9916ba8f9f44d25635bb817e43a03b4bb75',
+			'https://domain.fakeurl/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=access-key-id%2F20200918%2Fsigning-region%2Fsigning-service%2Faws4_request&X-Amz-Date=20200918T181818Z&X-Amz-SignedHeaders=host&X-Amz-Security-Token=session-token&X-Amz-Signature=14018e6e5b599a4bf0340427309af1c541409409043e2b070725437cb16847b9',
 	},
 ];

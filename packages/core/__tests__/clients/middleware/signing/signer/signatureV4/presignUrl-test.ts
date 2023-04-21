@@ -8,19 +8,23 @@ import { getDefaultRequest, signingOptions } from './testUtils/data';
 
 describe('presignUrl', () => {
 	test.each(
-		signingTestTable.map(({ name, request, queryParams, expectedUrl }) => {
-			const updatedRequest: HttpRequest = {
-				...getDefaultRequest(),
-				...request,
-			};
-			queryParams?.forEach(([key, value]) => {
-				updatedRequest.url?.searchParams.append(key, value);
-			});
-			return [name, updatedRequest, expectedUrl];
-		})
-	)('presigns url with %s', async (_, request, expected) => {
-		expect((await presignUrl(request, signingOptions)).toString()).toBe(
-			expected
-		);
+		signingTestTable.map(
+			({ name, request, queryParams, options, expectedUrl }) => {
+				const updatedRequest: HttpRequest = {
+					...getDefaultRequest(),
+					...request,
+				};
+				queryParams?.forEach(([key, value]) => {
+					updatedRequest.url?.searchParams.append(key, value);
+				});
+				const updatedOptions = {
+					...signingOptions,
+					...options,
+				};
+				return [name, updatedRequest, updatedOptions, expectedUrl];
+			}
+		)
+	)('presigns url with %s', async (_, request, options, expected) => {
+		expect((await presignUrl(request, options)).toString()).toBe(expected);
 	});
 });
