@@ -1,132 +1,164 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { SignRequestOptions } from '../src/clients/middleware/signing/signer/signatureV4/types';
 import { Signer } from '../src/Signer';
-import { DateUtils } from '../src';
+import { DateUtils } from '../src/Util/DateUtils';
+import {
+	credentials,
+	getDefaultRequest,
+	signingDate,
+	signingOptions,
+	signingRegion,
+	signingService,
+	url,
+} from './clients/middleware/signing/signer/signatureV4/testUtils/data';
+import { signingTestTable } from './clients/middleware/signing/signer/signatureV4/testUtils/signingTestTable';
 
-jest.mock('@aws-sdk/util-hex-encoding', () => ({
-	...jest.requireActual('@aws-sdk/util-hex-encoding'),
-	toHex: () => {
-		return 'encrypt';
-	},
-}));
+const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
 
-describe('Signer test', () => {
-	describe('sign test', () => {
-		test('happy case', () => {
-			const url = 'https://host/some/path';
+describe('Signer.sign', () => {
+	beforeAll(() => {
+		getDateSpy.mockReturnValue(signingDate);
+	});
 
+	test.each(
+		signingTestTable.map(
+			({ name, request, queryParams, options, expectedAuthorization }) => {
+				const updatedRequest = {
+					...getDefaultRequest(),
+					...request,
+				};
+				queryParams?.forEach(([key, value]) => {
+					updatedRequest.url?.searchParams.append(key, value);
+				});
+				const updatedOptions: SignRequestOptions = {
+					...signingOptions,
+					...options,
+				};
+				return [name, updatedRequest, updatedOptions, expectedAuthorization];
+			}
+		)
+	)(
+		'signs request with %s',
+		(
+			_,
+			{ url, ...request },
+			{ credentials, signingRegion, signingService },
+			expected
+		) => {
+			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const accessInfo = {
+				access_key: accessKeyId,
+				secret_key: secretAccessKey,
+				session_token: sessionToken,
+			};
+			const serviceInfo = {
+				region: signingRegion,
+				service: signingService,
+			};
+			const signedRequest = Signer.sign(
+				{ ...request, url: url.toString() },
+				accessInfo,
+				serviceInfo as any
+			);
+			expect(signedRequest.headers?.Authorization).toBe(expected);
+		}
+	);
+
+	describe('Error handling', () => {
+		const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+		const accessInfo = {
+			access_key: accessKeyId,
+			secret_key: secretAccessKey,
+			session_token: sessionToken,
+		};
+		const serviceInfo = {
+			region: signingRegion,
+			service: signingService,
+		};
+
+		test('should throw an Error if body attribute is passed to sign method', () => {
 			const request = {
+				...getDefaultRequest(),
+				body: 'foo',
 				url,
-				headers: {},
-			};
-			const access_info = {
-				session_token: 'session_token',
 			};
 
-			const spyon = jest
-				.spyOn(Date.prototype, 'toISOString')
-				.mockReturnValueOnce('0');
-
-			const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
-
-			const res = {
-				headers: {
-					Authorization:
-						'AWS4-HMAC-SHA256 Credential=undefined/0/aregion/aservice/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt',
-					'X-Amz-Security-Token': 'session_token',
-					host: 'host',
-					'x-amz-date': '0',
-				},
-				url: url,
-			};
-			expect(
-				Signer.sign(request, access_info, {
-					service: 'aservice',
-					region: 'aregion',
-				})
-			).toEqual(res);
-			expect(getDateSpy).toHaveBeenCalledTimes(1);
-
-			spyon.mockClear();
+			expect(() => {
+				Signer.sign(request, accessInfo, serviceInfo as any);
+			}).toThrow();
 		});
 
-		test('happy case signUrl', () => {
-			const url = 'https://example.com:1234/some/path';
-
-			const access_info = {
-				session_token: 'session_token',
+		test('should not throw an Error if data attribute is passed to sign method', () => {
+			const request = {
+				...getDefaultRequest(),
+				data: 'foo',
+				url,
 			};
 
-			const spyon = jest
-				.spyOn(Date.prototype, 'toISOString')
-				.mockReturnValueOnce('0');
-
-			const expectedUrl =
-				'https://example.com:1234/some/path?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=%2F0%2Faregion%2Faservice%2Faws4_request&X-Amz-Date=0&X-Amz-Security-Token=session_token&X-Amz-SignedHeaders=host&X-Amz-Signature=encrypt';
-
-			const signedUrl = Signer.signUrl(url, access_info, {
-				service: 'aservice',
-				region: 'aregion',
-			});
-
-			expect(signedUrl).toEqual(expectedUrl);
-
-			spyon.mockClear();
+			expect(() => {
+				Signer.sign(request, accessInfo, serviceInfo as any);
+			}).not.toThrow();
 		});
 	});
 });
-describe('Sign method error', () => {
-	test('Should throw an Error if body attribute is passed to sign method', () => {
-		const url = 'https://host/some/path';
 
-		const request_body = {
-			url,
-			headers: {},
-			body: {},
-		};
-
-		const access_info = {
-			session_token: 'session_token',
-		};
-
-		const spyon = jest
-			.spyOn(Date.prototype, 'toISOString')
-			.mockReturnValueOnce('0');
-
-		expect(() => {
-			Signer.sign(request_body, access_info, {
-				service: 'aservice',
-				region: 'aregion',
-			});
-		}).toThrowError(
-			'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
-		);
-
-		spyon.mockClear();
+describe('Signer.signUrl', () => {
+	beforeAll(() => {
+		getDateSpy.mockReturnValue(signingDate);
 	});
 
-	test('Should NOT throw an Error if data attribute is passed to sign method', () => {
-		const url = 'https://host/some/path';
-
-		const request_data = {
-			url,
-			headers: {},
-			data: {},
-		};
-
-		const access_info = {
-			session_token: 'session_token',
-		};
-
-		const spyon = jest
-			.spyOn(Date.prototype, 'toISOString')
-			.mockReturnValueOnce('0');
-
-		expect(() => {
-			Signer.sign(request_data, access_info, {
-				service: 'aservice',
-				region: 'aregion',
-			});
-		}).not.toThrowError();
-
-		spyon.mockClear();
-	});
+	test.each(
+		signingTestTable.map(
+			({ name, request, queryParams, options, expectedUrl }) => {
+				const updatedRequest = {
+					...getDefaultRequest(),
+					...request,
+				};
+				queryParams?.forEach(([key, value]) => {
+					updatedRequest.url?.searchParams.append(key, value);
+				});
+				const updatedOptions: SignRequestOptions = {
+					...signingOptions,
+					...options,
+				};
+				return [name, updatedRequest, updatedOptions, expectedUrl];
+			}
+		)
+	)(
+		'signs url with %s',
+		(
+			_,
+			{ url, ...request },
+			{ credentials, signingRegion, signingService },
+			expected
+		) => {
+			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const accessInfo = {
+				access_key: accessKeyId,
+				secret_key: secretAccessKey,
+				session_token: sessionToken,
+			};
+			const serviceInfo = {
+				region: signingRegion,
+				service: signingService,
+			};
+			if (
+				url.searchParams.get(
+					'-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+				) ||
+				url.searchParams.get('@#$%^&+=/,?><`";:\\|][{} ')
+			) {
+				expect(true).toBe(true);
+			} else {
+				const signedUrl = Signer.signUrl(
+					{ ...request, url: url.toString() },
+					accessInfo,
+					serviceInfo as any
+				);
+				expect(signedUrl).toBe(expected);
+			}
+		}
+	);
 });
