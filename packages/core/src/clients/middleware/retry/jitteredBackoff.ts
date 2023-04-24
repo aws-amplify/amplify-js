@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import type { RetryOptions } from './middleware';
 // TODO: remove this dependency in v6
 import { jitteredBackoff as jitteredBackoffUtil } from '../../../Util/Retry';
