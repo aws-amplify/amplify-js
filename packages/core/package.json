@@ -64,6 +64,7 @@
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",
 		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
+		"@aws-sdk/is-array-buffer": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
 		"@aws-sdk/util-hex-encoding": "3.6.1",
 		"isomorphic-unfetch": "^3.0.0",
