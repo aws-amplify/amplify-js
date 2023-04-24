@@ -377,12 +377,11 @@ export class FakeGraphQLService {
 		this.stopSubscriptionMessages = false;
 	}
 
-	/**
-	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
-	 *
-	 * @param param0
-	 */
-	public graphql({ query, variables, authMode, authToken }) {
+	private _graphql(
+		{ query, variables, authMode, authToken },
+		additionalHeaders?,
+		customUserAgentDetails?
+	) {
 		return this.request({ query, variables, authMode, authToken });
 	}
 

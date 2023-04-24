@@ -293,14 +293,10 @@ describe('Sync', () => {
 			});
 
 			/* TODO: test with actual DataStore Action */
-			expect(mockGraphQl).toHaveBeenCalledWith(
-				expect.objectContaining({
-					customUserAgentDetails: {
-						category: Category.DataStore,
-						action: DataStoreAction.None,
-					},
-				})
-			);
+			expect(mockGraphQl).toHaveBeenCalledWith(expect.anything(), undefined, {
+				category: Category.DataStore,
+				action: DataStoreAction.None,
+			});
 		});
 	});
 

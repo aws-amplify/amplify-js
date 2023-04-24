@@ -737,7 +737,8 @@ describe('DataStore sync engine', () => {
 
 			// simulate second client creating a new post
 			const secondPostId = '1c49fa30-ef5c-44f5-b503-234af5a0a088';
-			await graphqlService.graphql({
+			// @ts-ignore Use private method to pass user agent details
+			await graphqlService._graphql({
 				query:
 					'mutation operation($input: CreatePostInput!){\n' +
 					'\t\tcreatePost(input: $input){\n' +

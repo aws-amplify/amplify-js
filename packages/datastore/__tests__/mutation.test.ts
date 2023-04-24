@@ -311,7 +311,7 @@ jest.mock('@aws-amplify/api', () => {
 		...actualAPIModule,
 		API: {
 			...actualAPIInstance,
-			graphql: graphqlInstance.graphql.bind(graphqlInstance),
+			_graphql: graphqlInstance._graphql.bind(graphqlInstance),
 		},
 	};
 });
