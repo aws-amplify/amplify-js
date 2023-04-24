@@ -357,8 +357,16 @@ class SyncProcessor {
 								await Promise.all(promises);
 
 								do {
+									/**
+									 * If `runningProcesses` is not open, it means that the sync processor has been
+									 * stopped (for example by calling `DataStore.clear()` upstream) and has not yet
+									 * finished terminating and/or waiting for its background processes to complete.
+									 */
 									if (!this.runningProcesses.isOpen) {
-										return;
+										logger.debug(
+											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
+										);
+										return res();
 									}
 
 									const limit = Math.min(
@@ -366,14 +374,39 @@ class SyncProcessor {
 										syncPageSize
 									);
 
-									({ items, nextToken, startedAt } = await this.retrievePage(
-										modelDefinition,
-										lastSync,
-										nextToken,
-										limit,
-										filter,
-										onTerminate
-									));
+									/**
+									 * It's possible that `retrievePage` will fail.
+									 * If it does fail, continue merging the rest of the data,
+									 * and invoke the error handler for non-applicable data.
+									 */
+									try {
+										({ items, nextToken, startedAt } = await this.retrievePage(
+											modelDefinition,
+											lastSync,
+											nextToken,
+											limit,
+											filter,
+											onTerminate
+										));
+									} catch (error) {
+										try {
+											await this.errorHandler({
+												recoverySuggestion:
+													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+												localModel: null!,
+												message: error.message,
+												model: modelDefinition.name,
+												operation: null!,
+												errorType: getSyncErrorType(error),
+												process: ProcessName.sync,
+												remoteModel: null!,
+												cause: error,
+											});
+										} catch (e) {
+											logger.error('Sync error handler failed with:', e);
+										}
+										return res();
+									}
 
 									recordsReceived += items.length;
 
