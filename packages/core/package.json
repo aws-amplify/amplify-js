@@ -122,6 +122,7 @@
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": ["/testUtils/"],
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
