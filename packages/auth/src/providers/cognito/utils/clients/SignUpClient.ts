@@ -1,29 +1,18 @@
-import type {
-	SignUpCommandInput,
-	SignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
+import type { SignUpCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
 import { UserPoolClient } from './UserPoolClient';
-
-export type SignUpClientInput = Pick<
-	SignUpCommandInput,
-	| 'Username'
-	| 'Password'
-	| 'UserAttributes'
-	| 'ClientMetadata'
-	| 'ValidationData'
->;
+import { SignUpClientInput } from './types/inputs';
 
 export async function signUpClient(
 	params: SignUpClientInput
 ): Promise<SignUpCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
-	const result: SignUpCommandOutput = await client.send<SignUpCommandOutput>(
-		'SignUp',
-		{
+	const result: SignUpCommandOutput = await client.send<SignUpCommandOutput>({
+		operation: 'SignUp',
+		input: {
 			...params,
 			ClientId: UserPoolClient.clientId,
-		}
-	);
+		},
+	});
 	return result;
 }
