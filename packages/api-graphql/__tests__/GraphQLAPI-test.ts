@@ -1303,11 +1303,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, {
-					category: Category.DataStore,
-				})
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1380,11 +1376,7 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(
-				graphqlOperation(GetEvent, variables, authToken, {
-					category: Category.DataStore,
-				})
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
