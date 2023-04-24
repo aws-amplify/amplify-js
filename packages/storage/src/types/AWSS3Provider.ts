@@ -84,6 +84,15 @@ export type ResumableUploadConfig = {
 	errorCallback?: (err: any) => any;
 };
 
+/**
+ * Configuration options for the S3 put function.
+ *
+ * @remarks
+ * The acl parameter may now only be used for S3 buckets with specific Object Owner settings.
+ * Usage of this parameter is not considered a recommended practice:
+ *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
+ *
+ */
 export type S3ProviderPutConfig = CommonStorageOptions &
 	(
 		| _S3ProviderPutConfig
@@ -133,6 +142,15 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
+/**
+ * Configuration options for the S3 copy function.
+ *
+ * @remarks
+ * The acl parameter may now only be used for S3 buckets with specific Object Owner settings.
+ * Usage of this parameter is not considered a recommended practice:
+ *  {@link https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html}
+ *
+ */
 export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	provider?: 'AWSS3';
 	bucket?: CopyObjectRequest['Bucket'];
