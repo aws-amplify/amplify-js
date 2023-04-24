@@ -14,6 +14,13 @@ import {
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
+type GraphQLRequest = {
+	query: string;
+	variables: Record<string, any>;
+	authMode: string | undefined | null;
+	authToken: string | undefined | null;
+};
+
 /**
  * Statefully pretends to be AppSync, with minimal built-in asertions with
  * error callbacks and settings to help simulate various conditions.
@@ -34,6 +41,14 @@ export class FakeGraphQLService {
 		string,
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
+
+	/**
+	 * Singleton middleware, basically.
+	 */
+	public intercept: (request: GraphQLRequest, next: () => any) => any = (
+		request,
+		next
+	) => next();
 
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
@@ -453,13 +468,8 @@ export class FakeGraphQLService {
 		});
 	}
 
-	/**
-	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
-	 *
-	 * @param param0
-	 */
-	public graphql({ query, variables, authMode, authToken }) {
-		return this.request({ query, variables, authMode, authToken });
+	public graphql(request: GraphQLRequest) {
+		return this.intercept(request, () => this.request(request));
 	}
 
 	public request({ query, variables, authMode, authToken }) {

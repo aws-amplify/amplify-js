@@ -1,3 +1,4 @@
+import { Observable, ZenObservable } from 'zen-observable-ts';
 import {
 	CONTROL_MSG as PUBSUB_CONTROL_MSG,
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
@@ -8,6 +9,7 @@ import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
 } from '../../src/datastore/datastore';
+import { SyncError } from '../../src/types';
 import { FakeGraphQLService, FakeDataStoreConnectivity } from './fakes';
 import {
 	testSchema,
@@ -206,8 +208,23 @@ export function getDataStore({
 		DataStore: DataStoreType;
 	} = require('../../src/datastore/datastore');
 
+	let errorHandlerSubscriber: ZenObservable.SubscriptionObserver<
+		SyncError<any>
+	> | null = null;
+
+	const errorHandler = new Observable<SyncError<any>>(subscriber => {
+		errorHandlerSubscriber = subscriber;
+	});
+
+	const _errorHandler: (error: SyncError<any>) => void = error => {
+		if (errorHandlerSubscriber) {
+			errorHandlerSubscriber.next(error);
+		}
+	};
+
 	DataStore.configure({
 		storageAdapter: storageAdapterFactory(),
+		errorHandler: _errorHandler,
 	});
 
 	// private, test-only DI's.
@@ -293,6 +310,7 @@ export function getDataStore({
 
 	return {
 		DataStore,
+		errorHandler,
 		schema,
 		connectivityMonitor,
 		graphqlService,
