@@ -317,7 +317,7 @@ class SyncProcessor {
 							message: error.message,
 							model: modelDefinition.name,
 							operation: opName,
-							errorType: getSyncErrorType(error),
+							errorType: getSyncErrorType(error.errors[0]),
 							process: ProcessName.sync,
 							remoteModel: null!,
 							cause: error,
