@@ -6,6 +6,8 @@ import {
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,
+	warpTime,
+	unwarpTime,
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
@@ -562,6 +564,14 @@ describe('DataStore sync engine', () => {
 	});
 
 	describe('connection state change handling', () => {
+		beforeEach(async () => {
+			warpTime();
+		});
+
+		afterEach(async () => {
+			unwarpTime();
+		});
+
 		test('survives online -> offline -> online cycle', async () => {
 			const post = await DataStore.save(
 				new Post({
@@ -725,7 +735,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost._deleted).toEqual(true);
 		});
 
-		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+		test('survives online -> connection disruption -> online cycle and triggers re-sync', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -764,6 +774,7 @@ describe('DataStore sync engine', () => {
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
 			await pause(1);
+
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
@@ -800,7 +811,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('does not error when disruption before sync queries start', async () => {
-			const post = DataStore.save(
+			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
@@ -808,14 +819,26 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 			await simulateDisruption();
 			await simulateDisruptionEnd();
+
 			await waitForSyncQueriesReady();
 			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
-			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			const cloudPost = table.get(
+				JSON.stringify([(await postPromise).id])
+			) as any;
 			expect(cloudPost.title).toEqual('a title');
+
+			/**
+			 * TODO: See if we can remove this. This was added to get the test
+			 * working again after introducing latency to the fake GraphQL
+			 * service. It seems like sync queries are going out and are not
+			 * playing well with `DataStore.clear()` (which happens in
+			 * `afterEach`), resulting in the test hanging indefinitely.
+			 */
+			await waitForSyncQueriesReady();
 		});
 	});
 
