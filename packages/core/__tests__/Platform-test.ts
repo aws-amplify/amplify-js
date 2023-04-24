@@ -4,7 +4,7 @@ import {
 	Platform,
 } from '../src/Platform';
 import { version } from '../src/Platform/version';
-import { Category, DataStoreAction, Framework } from '../src/Platform/types';
+import { ApiAction, Category, Framework } from '../src/Platform/types';
 
 describe('Platform test', () => {
 	describe('isReactNative test', () => {
@@ -21,16 +21,16 @@ describe('Platform test', () => {
 			]);
 		});
 
-		/* TODO: Replace "DataStoreAction.None" action with actual action */
+		/* TODO: test with actual API action */
 		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgent({
-					category: Category.DataStore,
-					action: DataStoreAction.None,
+					category: Category.API,
+					action: ApiAction.None,
 				})
 			).toStrictEqual([
 				['aws-amplify', version],
-				[Category.DataStore, DataStoreAction.None],
+				[Category.API, ApiAction.None],
 				['framework', Framework.None],
 			]);
 		});
@@ -46,11 +46,11 @@ describe('Platform test', () => {
 		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgentString({
-					category: Category.DataStore,
-					action: DataStoreAction.None,
+					category: Category.API,
+					action: ApiAction.None,
 				})
 			).toBe(
-				`${Platform.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`
+				`${Platform.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`
 			);
 		});
 	});

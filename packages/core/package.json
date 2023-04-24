@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.1.4",
+	"version": "5.1.11",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -47,6 +47,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
+		"@aws-sdk/types": "3.6.1",
 		"@react-native-async-storage/async-storage": "1.15.17",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
@@ -87,7 +88,7 @@
 			"name": "Core (I18n)",
 			"path": "./lib-esm/index.js",
 			"import": "{ I18n }",
-			"limit": "2 kB"
+			"limit": "2.1 kB"
 		},
 		{
 			"name": "Core (Logger)",

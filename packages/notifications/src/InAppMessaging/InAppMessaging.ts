@@ -9,29 +9,31 @@ import {
 	StorageHelper,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
-import { AWSPinpointProvider } from './Providers';
+
 import {
-	addMessageInteractionEventListener,
-	notifyMessageInteractionEventListeners,
-} from './eventListeners';
+	addEventListener,
+	EventListener,
+	notifyEventListeners,
+} from '../common';
+import { UserInfo } from '../types';
+import { AWSPinpointProvider } from './Providers';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
+	InAppMessagingInterface,
 	InAppMessagingConfig,
 	InAppMessageConflictHandler,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
-	NotificationsSubcategory,
+	NotificationsSubCategory,
 	OnMessageInteractionEventHandler,
-	OnMessageInteractionEventListener,
-	UserInfo,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-export default class InAppMessaging {
+export default class InAppMessaging implements InAppMessagingInterface {
 	private config: Record<string, any> = {};
 	private conflictHandler: InAppMessageConflictHandler;
 	private listeningForAnalyticEvents = false;
@@ -39,9 +41,7 @@ export default class InAppMessaging {
 	private storageSynced = false;
 
 	constructor() {
-		this.config = {
-			storage: new StorageHelper().getStorage(),
-		};
+		this.config = { storage: new StorageHelper().getStorage() };
 		this.setConflictHandler(this.defaultConflictHandler);
 	}
 
@@ -77,7 +77,7 @@ export default class InAppMessaging {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): NotificationsSubcategory {
+	getModuleName(): NotificationsSubCategory {
 		return 'InAppMessaging';
 	}
 
@@ -172,9 +172,9 @@ export default class InAppMessaging {
 		const flattenedMessages = flatten(messages);
 
 		if (flattenedMessages.length) {
-			notifyMessageInteractionEventListeners(
-				this.conflictHandler(flattenedMessages),
-				InAppMessageInteractionEvent.MESSAGE_RECEIVED
+			notifyEventListeners(
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED,
+				this.conflictHandler(flattenedMessages)
 			);
 		}
 	};
@@ -193,41 +193,32 @@ export default class InAppMessaging {
 
 	onMessageReceived = (
 		handler: OnMessageInteractionEventHandler
-	): OnMessageInteractionEventListener =>
-		addMessageInteractionEventListener(
-			handler,
-			InAppMessageInteractionEvent.MESSAGE_RECEIVED
-		);
+	): EventListener<OnMessageInteractionEventHandler> =>
+		addEventListener(InAppMessageInteractionEvent.MESSAGE_RECEIVED, handler);
 
 	onMessageDisplayed = (
 		handler: OnMessageInteractionEventHandler
-	): OnMessageInteractionEventListener =>
-		addMessageInteractionEventListener(
-			handler,
-			InAppMessageInteractionEvent.MESSAGE_DISPLAYED
-		);
+	): EventListener<OnMessageInteractionEventHandler> =>
+		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISPLAYED, handler);
 
 	onMessageDismissed = (
 		handler: OnMessageInteractionEventHandler
-	): OnMessageInteractionEventListener =>
-		addMessageInteractionEventListener(
-			handler,
-			InAppMessageInteractionEvent.MESSAGE_DISMISSED
-		);
+	): EventListener<OnMessageInteractionEventHandler> =>
+		addEventListener(InAppMessageInteractionEvent.MESSAGE_DISMISSED, handler);
 
 	onMessageActionTaken = (
 		handler: OnMessageInteractionEventHandler
-	): OnMessageInteractionEventListener =>
-		addMessageInteractionEventListener(
-			handler,
-			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
+	): EventListener<OnMessageInteractionEventHandler> =>
+		addEventListener(
+			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN,
+			handler
 		);
 
 	notifyMessageInteraction = (
 		message: InAppMessage,
-		event: InAppMessageInteractionEvent
+		type: InAppMessageInteractionEvent
 	): void => {
-		notifyMessageInteractionEventListeners(message, event);
+		notifyEventListeners(type, message);
 	};
 
 	setConflictHandler = (handler: InAppMessageConflictHandler): void => {

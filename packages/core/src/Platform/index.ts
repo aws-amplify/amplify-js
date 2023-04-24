@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { CustomUserAgentDetails, Framework } from './types';
+import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework } from './detectFramework';
 import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
@@ -15,13 +16,15 @@ export const Platform = {
 	isReactNative: framework === Framework.ReactNative,
 };
 
-// Rerun framework detection once when getAmplifyUserAgent is called if framework is None:
-// ReactNative framework must be detected initially, however
-// Other frameworks may not be detected in cases where DOM is not yet loaded
+/**
+ * Rerun framework detection once when getAmplifyUserAgent is called if framework is None.
+ * ReactNative framework must be detected initially, however other frameworks may not be
+ * detected in cases where DOM is not yet loaded.
+ */
 const rerunFrameworkDetection = () => {
 	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
-		frameworkHasBeenRerun = true;
 		framework = detectFramework();
+		frameworkHasBeenRerun = true;
 		Platform.framework = framework;
 	}
 };
@@ -34,7 +37,6 @@ export const getAmplifyUserAgent = ({
 	rerunFrameworkDetection();
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
-		/** TODO: add action as second element */
 		userAgent.push([category, action]);
 	}
 	userAgent.push(['framework', framework ? framework : Platform.framework]);
@@ -50,5 +52,5 @@ export const getAmplifyUserAgentString = (
 		.map(([agentKey, agentValue]) => `${agentKey}/${agentValue}`)
 		.join(' ');
 
-	return userAgentString.trimEnd();
+	return userAgentString;
 };

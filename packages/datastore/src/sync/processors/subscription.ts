@@ -461,7 +461,6 @@ class SubscriptionProcessor {
 											variables,
 											...{ authMode },
 											authToken,
-											customUserAgentDetails,
 										}));
 
 										let subscriptionReadyCallback: () => void;

@@ -227,7 +227,6 @@ class SyncProcessor {
 						variables,
 						authMode,
 						authToken,
-						customUserAgentDetails,
 					});
 
 					// TODO: onTerminate.then(() => API.cancel(...))
@@ -236,6 +235,7 @@ class SyncProcessor {
 					const clientOrForbiddenErrorMessage =
 						getClientSideAuthError(error) || getForbiddenError(error);
 					if (clientOrForbiddenErrorMessage) {
+						logger.error('Sync processor retry error:', error);
 						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 

@@ -1113,7 +1113,7 @@ export class AuthClass {
 					return;
 				},
 				associateSecretCode: secretCode => {
-					logger.debug('associateSoftwareToken sucess', secretCode);
+					logger.debug('associateSoftwareToken success', secretCode);
 					res(secretCode);
 					return;
 				},

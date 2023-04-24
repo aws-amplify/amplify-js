@@ -5,6 +5,7 @@ export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
 import { CustomUserAgentDetails } from '@aws-amplify/core';
+import { CustomUserAgentDetails } from '@aws-amplify/core';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
@@ -15,7 +16,6 @@ export interface GraphQLOptions {
 	 * @deprecated This property should not be used
 	 */
 	userAgentSuffix?: string; // TODO: remove in v6
-	customUserAgentDetails?: CustomUserAgentDetails;
 }
 
 export interface GraphQLResult<T = object> {

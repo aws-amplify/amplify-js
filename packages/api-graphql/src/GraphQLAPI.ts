@@ -37,12 +37,12 @@ export const graphqlOperation = (
 	query,
 	variables = {},
 	authToken?: string,
-	customUserAgentDetails?: CustomUserAgentDetails
+	userAgentSuffix?: string
 ) => ({
 	query,
 	variables,
 	authToken,
-	customUserAgentDetails,
+	userAgentSuffix,
 });
 
 /**
@@ -219,13 +219,7 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{
-			query: paramQuery,
-			variables = {},
-			authMode,
-			authToken,
-			customUserAgentDetails,
-		}: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -256,7 +250,7 @@ export class GraphQLAPIClass {
 					withCredentials: this._options.withCredentials,
 				};
 				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode, customUserAgentDetails },
+					{ query, variables, authMode },
 					headers,
 					initParams
 				);
@@ -273,9 +267,10 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode, customUserAgentDetails }: GraphQLOptions,
+		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
-		initParams = {}
+		initParams = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
 		const {
