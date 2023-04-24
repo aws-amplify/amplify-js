@@ -332,7 +332,6 @@ class MutationProcessor {
 					variables,
 					authMode,
 					authToken,
-					customUserAgentDetails,
 				};
 				let attempt = 0;
 
@@ -341,7 +340,12 @@ class MutationProcessor {
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.API.graphql(tryWith)
+							// @ts-ignore Use private method to send internal metrics
+							await this.amplifyContext.API._graphql(
+								tryWith,
+								undefined,
+								customUserAgentDetails
+							)
 						);
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
@@ -409,15 +413,21 @@ class MutationProcessor {
 										this.amplifyConfig
 									);
 
+									// @ts-ignore Use private method to send internal metrics
+									const graphQlResult = this.amplifyContext.API._graphql(
+										{
+											query,
+											variables: { id: variables.input.id },
+											authMode,
+											authToken,
+										},
+										undefined,
+										customUserAgentDetails
+									);
+
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.API.graphql({
-										query,
-										variables: { id: variables.input.id },
-										authMode,
-										authToken,
-										customUserAgentDetails,
-									});
+									>await graphQlResult;
 
 									// onTerminate cancel graphql()
 

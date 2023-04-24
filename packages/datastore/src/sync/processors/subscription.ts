@@ -452,16 +452,23 @@ class SubscriptionProcessor {
 											action: DataStoreAction.None,
 										};
 
+										// @ts-ignore Use private method to send internal metrics
+										const garphQlResult = this.amplifyContext.API._graphql(
+											{
+												query,
+												variables,
+												...{ authMode },
+												authToken,
+											},
+											undefined,
+											customUserAgentDetails
+										);
+
 										const queryObservable = <
 											Observable<{
 												value: GraphQLResult<Record<string, PersistentModel>>;
 											}>
-										>(<unknown>this.amplifyContext.API.graphql({
-											query,
-											variables,
-											...{ authMode },
-											authToken,
-										}));
+										>(<unknown>garphQlResult);
 
 										let subscriptionReadyCallback: () => void;
 

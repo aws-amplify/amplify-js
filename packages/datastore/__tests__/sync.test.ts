@@ -448,7 +448,7 @@ function jitteredRetrySyncProcessorSetup({
 			...actualAPIModule,
 			API: {
 				...actualAPIInstance,
-				graphql: mockGraphQl,
+				_graphql: mockGraphQl,
 			},
 		};
 	});

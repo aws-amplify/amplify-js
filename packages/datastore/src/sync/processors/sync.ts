@@ -222,12 +222,17 @@ class SyncProcessor {
 						action: DataStoreAction.None,
 					};
 
-					return await this.amplifyContext.API.graphql({
-						query,
-						variables,
-						authMode,
-						authToken,
-					});
+					// @ts-ignore Use private method to send internal metrics
+					return await this.amplifyContext.API._graphql(
+						{
+							query,
+							variables,
+							authMode,
+							authToken,
+						},
+						undefined,
+						customUserAgentDetails
+					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
 				} catch (error) {

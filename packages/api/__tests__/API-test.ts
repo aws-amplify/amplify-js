@@ -79,7 +79,7 @@ describe('API test', () => {
 
 	test('graphql', async () => {
 		jest
-			.spyOn(GraphQLAPIClass.prototype, 'graphql')
+			.spyOn(GraphQLAPIClass.prototype as any, '_graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
 		const api = new API(null);
 		expect(await api.graphql({ query: 'query' })).toBe('grapqhqlResponse');

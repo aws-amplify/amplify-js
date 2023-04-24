@@ -14,6 +14,7 @@ import {
 	Framework,
 	ApiAction,
 	DataStoreAction,
+	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
@@ -1303,7 +1304,17 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
+			const customUserAgentDetails: CustomUserAgentDetails = {
+				category: Category.DataStore,
+				action: DataStoreAction.None,
+			};
+
+			// @ts-ignore Use private method to send internal metrics
+			await api._graphql(
+				graphqlOperation(GetEvent, variables, authToken),
+				undefined,
+				customUserAgentDetails
+			);
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1376,7 +1387,17 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
+			const customUserAgentDetails: CustomUserAgentDetails = {
+				category: Category.DataStore,
+				action: DataStoreAction.None,
+			};
+
+			// @ts-ignore Use private method to send internal metrics
+			await api._graphql(
+				graphqlOperation(GetEvent, variables, authToken),
+				undefined,
+				customUserAgentDetails
+			);
 
 			expect(spyon).toBeCalledWith(url, init);
 		});

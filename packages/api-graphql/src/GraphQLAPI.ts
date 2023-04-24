@@ -217,8 +217,16 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
+	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		return this._graphql(options, additionalHeaders);
+	}
+
+	private _graphql<T = any>(
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
@@ -247,10 +255,11 @@ export class GraphQLAPIClass {
 					cancellableToken,
 					withCredentials: this._options.withCredentials,
 				};
-				const responsePromise = this._graphql<T>(
+				const responsePromise = this._graphqlPromise<T>(
 					{ query, variables, authMode },
 					headers,
-					initParams
+					initParams,
+					customUserAgentDetails
 				);
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
@@ -264,10 +273,11 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _graphql<T = any>(
+	private async _graphqlPromise<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
-		initParams = {}
+		initParams = {},
+		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
 		const {
@@ -279,9 +289,10 @@ export class GraphQLAPIClass {
 		} = this._options;
 
 		/* TODO: Send with actual API action */
-		const customUserAgentDetails: CustomUserAgentDetails = {
+		const userAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.None,
+			...customUserAgentDetails,
 		};
 
 		const headers = {
@@ -294,7 +305,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgentString(customUserAgentDetails),
+				[USER_AGENT_HEADER]: getAmplifyUserAgentString(userAgentDetails),
 			}),
 		};
 

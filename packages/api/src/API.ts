@@ -15,6 +15,7 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
+	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 import { GraphQLQuery, GraphQLSubscription } from './types';
@@ -226,7 +227,32 @@ export class APIClass {
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Promise<GraphQLResult<any>> | Observable<object> {
-		return this._graphqlApi.graphql(options, additionalHeaders);
+		return this._graphql(options, additionalHeaders);
+	}
+
+	private _graphql<T>(
+		options: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
+	): T extends GraphQLQuery<T>
+		? Promise<GraphQLResult<T>>
+		: T extends GraphQLSubscription<T>
+		? Observable<{
+				provider: AWSAppSyncRealTimeProvider;
+				value: GraphQLResult<T>;
+		  }>
+		: Promise<GraphQLResult<any>> | Observable<object>;
+	private _graphql<T = any>(
+		options: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string },
+		customUserAgentDetails?: CustomUserAgentDetails
+	): Promise<GraphQLResult<any>> | Observable<object> {
+		// @ts-ignore Use private method to send internal metrics
+		return this._graphqlApi._graphql(
+			options,
+			additionalHeaders,
+			customUserAgentDetails
+		);
 	}
 }
 
