@@ -119,7 +119,8 @@ export type ResourceConfig = {
 	Notifications?: {};
 	Predictions?: {};
 	Storage?: {};
-  
+};
+
 export type ErrorParams = {
 	message: string;
 	name: string;
