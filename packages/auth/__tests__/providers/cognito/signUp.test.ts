@@ -10,6 +10,7 @@ import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors/service';
 import { AmplifyErrorString } from '@aws-amplify/core';
+import { SignUpClientInput } from '../../../src/providers/cognito/utils/clients/types/inputs';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
@@ -17,7 +18,7 @@ describe('SignUp API Happy Path Cases:', () => {
 	beforeEach(() => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementationOnce(async (params: signUpClient.SignUpClientInput) => {
+			.mockImplementationOnce(async (params: SignUpClientInput) => {
 				return {
 					UserConfirmed: false,
 					UserSub: '1234567890',
@@ -101,7 +102,9 @@ describe('SignUp API Error Path Cases:', () => {
 
 	test('SignUp API should expect an unknown error when underlying error is not coming from the service', async () => {
 		expect.assertions(3);
-		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
+		globalMock.fetch = jest.fn(() =>
+			Promise.reject(new Error('unknown error'))
+		);
 		try {
 			await signUp({ username: user1.username, password: user1.password });
 		} catch (error) {
