@@ -36,13 +36,11 @@ const logger = new Logger('GraphQLAPI');
 export const graphqlOperation = (
 	query,
 	variables = {},
-	authToken?: string,
-	userAgentSuffix?: string
+	authToken?: string
 ) => ({
 	query,
 	variables,
 	authToken,
-	userAgentSuffix,
 });
 
 /**
@@ -269,8 +267,7 @@ export class GraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
-		initParams = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		initParams = {}
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
 		const {
@@ -282,10 +279,9 @@ export class GraphQLAPIClass {
 		} = this._options;
 
 		/* TODO: Send with actual API action */
-		const userAgentDetails: CustomUserAgentDetails = {
+		const customUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
 			action: ApiAction.None,
-			...customUserAgentDetails,
 		};
 
 		const headers = {
@@ -298,7 +294,7 @@ export class GraphQLAPIClass {
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
-				[USER_AGENT_HEADER]: getAmplifyUserAgentString(userAgentDetails),
+				[USER_AGENT_HEADER]: getAmplifyUserAgentString(customUserAgentDetails),
 			}),
 		};
 
