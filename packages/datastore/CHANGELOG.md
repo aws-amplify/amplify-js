@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.6...@aws-amplify/datastore@4.1.7) (2023-04-06)
+
+
+### Bug Fixes
+
+* **data:** fix `establishRelationAndKeys` util to not attempt to add duplicate indices for `belongsTo` relationships ([#11187](https://github.com/aws-amplify/amplify-js/issues/11187)) ([#11192](https://github.com/aws-amplify/amplify-js/issues/11192)) ([a9bd459](https://github.com/aws-amplify/amplify-js/commit/a9bd459b6b0d4c4307e10da0a8be39b13c3763f0))
+* query on null fields to not throw error ([#11185](https://github.com/aws-amplify/amplify-js/issues/11185)) ([b0b9b5b](https://github.com/aws-amplify/amplify-js/commit/b0b9b5bddf95fd17ed457ecda4b2f80e19d2e10e))
+* **@aws-amplify/datastore:** Remove extra null fields on create mutations ([#11171](https://github.com/aws-amplify/amplify-js/issues/11171)) ([33810b1](https://github.com/aws-amplify/amplify-js/commit/33810b10b723711fb722dd34e4068cce3e3001cf))
+
+
+
+
+
+## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.5...@aws-amplify/datastore@4.1.6) (2023-04-04)
+
+
+### Bug Fixes
+
+* **datastore:** normalize deleteTraverse ([#11169](https://github.com/aws-amplify/amplify-js/issues/11169)) ([1965964](https://github.com/aws-amplify/amplify-js/commit/1965964fec7026109044b47414c22a65aa984b8f))
+* **datastore:** trigger sync on websocket disruption ([#11100](https://github.com/aws-amplify/amplify-js/issues/11100)) ([589cfbc](https://github.com/aws-amplify/amplify-js/commit/589cfbc2e1eaa4d79a50c95b1b8cf8c59f308e79))
+
+
+
+
+
+## [4.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.4...@aws-amplify/datastore@4.1.5) (2023-03-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** adds serialization for empty predicates ([#11133](https://github.com/aws-amplify/amplify-js/issues/11133)) ([57f8abc](https://github.com/aws-amplify/amplify-js/commit/57f8abcf1c3c43af8e07c40727d224456d8de685))
+* **@aws-amplify/datastore:** mutation hub event drops during reconnect ([#11132](https://github.com/aws-amplify/amplify-js/issues/11132)) ([69a9cf0](https://github.com/aws-amplify/amplify-js/commit/69a9cf078640749d65a7ca5fe61de877089d6a55))
+* **datastore:** normalize deleteTraverse 1:M ([#11160](https://github.com/aws-amplify/amplify-js/issues/11160)) ([6e18be6](https://github.com/aws-amplify/amplify-js/commit/6e18be6a87b3aff03318ab3f4319894950e9ed5b))
+
+
+### Reverts
+
+* Revert "fix(datastore): normalize deleteTraverse 1:M" (#11164) ([a34c36d](https://github.com/aws-amplify/amplify-js/commit/a34c36df5d297ef98f8bdd3b4a19f74b06c748eb)), closes [#11164](https://github.com/aws-amplify/amplify-js/issues/11164) [#11160](https://github.com/aws-amplify/amplify-js/issues/11160)
+
+
+
+
+
+## [4.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.3...@aws-amplify/datastore@4.1.4) (2023-03-23)
+
+
+### Bug Fixes
+
+* **datastore:** stale observeQuery snapshot with sort param ([#11119](https://github.com/aws-amplify/amplify-js/issues/11119)) ([4e3b8fc](https://github.com/aws-amplify/amplify-js/commit/4e3b8fc84a929a7f0d7da9b4e6eb1d420879ce90))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.2...@aws-amplify/datastore@4.1.3) (2023-03-21)
+
+
+### Bug Fixes
+
+* **data:** update SQLite utils to use 'instr' instead of 'like' when constructing WHERE conditions from predicates ([#11108](https://github.com/aws-amplify/amplify-js/issues/11108)) ([42d5328](https://github.com/aws-amplify/amplify-js/commit/42d5328f8e142c15b25c086c9455bcd70987e885))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.1...@aws-amplify/datastore@4.1.2) (2023-03-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.0...@aws-amplify/datastore@4.1.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* **datastore:** add fallback catch case for misc. bad input ([#11061](https://github.com/aws-amplify/amplify-js/issues/11061)) ([268a270](https://github.com/aws-amplify/amplify-js/commit/268a270a2810a43a8361cbe5c6b02cd2a1f419dd))
+* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
+
+
+
+
+
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.0.17...@aws-amplify/datastore@4.1.0) (2023-03-08)
 
 

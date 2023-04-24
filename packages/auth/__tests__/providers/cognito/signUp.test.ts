@@ -6,6 +6,10 @@ import { signUp } from '../../../src/providers/cognito';
 import { AuthSignUpStep } from '../../../src/types';
 import * as signUpClient from '../../../src/providers/cognito/utils/clients/SignUpClient';
 import { authAPITestParams } from './testUtils/authApiTestParams';
+import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
+import { AuthError } from '../../../src/errors/AuthError';
+import { SignUpException } from '../../../src/providers/cognito/types/errors/service';
+import { AmplifyErrorString } from '@aws-amplify/core';
 
 describe('SignUp API Happy Path Cases:', () => {
 	let signUpSpy;
@@ -13,7 +17,7 @@ describe('SignUp API Happy Path Cases:', () => {
 	beforeEach(() => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUpClient')
-			.mockImplementation(async (params: signUpClient.SignUpClientInput) => {
+			.mockImplementationOnce(async (params: signUpClient.SignUpClientInput) => {
 				return {
 					UserConfirmed: false,
 					UserSub: '1234567890',
@@ -58,6 +62,66 @@ describe('SignUp API Happy Path Cases:', () => {
 	});
 });
 
-describe('SignUp API Error Path Cases:', () => {});
+describe('SignUp API Error Path Cases:', () => {
+	const { user1 } = authAPITestParams;
+	const globalMock = global as any;
+
+	test('SignUp API should throw a validation AuthError when username is empty', async () => {
+		expect.assertions(2);
+		try {
+			await signUp({ username: '', password: user1.password });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpUsername);
+		}
+	});
+
+	test('SignUp API should throw a validation AuthError when password is empty', async () => {
+		expect.assertions(2);
+		try {
+			await signUp({ username: user1.username, password: '' });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpPassword);
+		}
+	});
+
+	test('SignUp API should expect a service error', async () => {
+		expect.assertions(2);
+		const serviceError = new Error('service error');
+		serviceError.name = SignUpException.InvalidParameterException;
+		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
+		try {
+			await signUp({ username: user1.username, password: user1.password });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(SignUpException.InvalidParameterException);
+		}
+	});
+
+	test('SignUp API should expect an unknown error when underlying error is not coming from the service', async () => {
+		expect.assertions(3);
+		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
+		try {
+			await signUp({ username: user1.username, password: user1.password });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.underlyingError).toBeInstanceOf(Error);
+		}
+	});
+
+	test('SignUp API should expect an unknown error when the underlying error is null', async () => {
+		expect.assertions(3);
+		globalMock.fetch = jest.fn(() => Promise.reject(null));
+		try {
+			await signUp({ username: user1.username, password: user1.password });
+		} catch (error) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
+			expect(error.underlyingError).toBe(null);
+		}
+	});
+});
 
 describe('SignUp API Edge Cases:', () => {});

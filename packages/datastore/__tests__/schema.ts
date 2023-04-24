@@ -630,6 +630,13 @@ export const newSchema: Schema = {
 					isRequired: false,
 					attributes: [],
 				},
+				age: {
+					name: 'age',
+					isArray: false,
+					type: 'Int',
+					isRequired: false,
+					attributes: [],
+				},
 			},
 		},
 		Team: {

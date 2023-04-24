@@ -1,15 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
-import Notifications from '../src/Notifications';
-import { adhocConfig, awsConfig, notificationsConfig } from '../__mocks__/data';
+
+import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import {
+	adhocConfig,
+	awsConfig,
+	notificationsConfig,
+	userId,
+	userInfo,
+} from '../__mocks__/data';
+import PushNotification from '../src/PushNotification';
 
 jest.mock('@aws-amplify/core');
-jest.mock('../src/InAppMessaging', () =>
-	jest.fn(() => ({ configure: () => {} }))
-);
+jest.mock('../src/InAppMessaging', () => jest.fn(() => mockInAppMessaging));
+jest.mock('../src/PushNotification', () => ({
+	default: jest.fn(() => mockPushNotification),
+}));
+
+const mockInAppMessaging = {
+	configure: jest.fn(),
+	identifyUser: jest.fn(),
+};
+const mockPushNotification = {
+	configure: jest.fn(),
+	identifyUser: jest.fn(),
+};
+const loggerErrorSpy = jest.spyOn(ConsoleLogger.prototype, 'error');
 
 describe('Notifications', () => {
+	let Notifications;
+
+	beforeEach(() => {
+		jest.isolateModules(() => {
+			Notifications = require('../src/Notifications').default;
+		});
+	});
 	test('registers with Amplify', () => {
 		expect(Amplify.register).toBeCalledWith(Notifications);
 	});
@@ -39,6 +64,44 @@ describe('Notifications', () => {
 			const config = Notifications.configure(adhocConfig);
 
 			expect(config).toStrictEqual(adhocConfig.Notifications);
+		});
+
+		test('can be configured with Push', () => {
+			Notifications.configure(awsConfig);
+
+			expect(Notifications.Push).toBeDefined();
+		});
+
+		test('does not crash if Push fails to configure', () => {
+			(PushNotification as any).default.mockImplementationOnce(() => {
+				throw new Error();
+			});
+			Notifications.configure(awsConfig);
+
+			expect(loggerErrorSpy).toBeCalledWith(expect.any(Error));
+		});
+	});
+
+	describe('identifyUser', () => {
+		test('identifies users with subcategoies', async () => {
+			Notifications.configure(awsConfig);
+			await Notifications.identifyUser(userId, userInfo);
+
+			expect(mockInAppMessaging.identifyUser).toBeCalledWith(userId, userInfo);
+			expect(mockPushNotification.identifyUser).toBeCalledWith(
+				userId,
+				userInfo
+			);
+		});
+
+		test('rejects if there is a failure identifying user', async () => {
+			mockInAppMessaging.identifyUser.mockImplementation(() => {
+				throw new Error();
+			});
+
+			await expect(
+				Notifications.identifyUser(userId, userInfo)
+			).rejects.toStrictEqual(expect.any(Error));
 		});
 	});
 });
