@@ -37,7 +37,7 @@ export const parser = {
  * Recursively parses object and populates value is node from
  * "#text" key if it's available
  *
- * ref: https://github.com/aws/aws-sdk-js-v3/blob/6b4bde6f338720abf28b931f8a4506613bd64d3f/packages/smithy-client/src/get-value-from-text-node.ts#L1
+ * Ref: https://github.com/aws/aws-sdk-js-v3/blob/6b4bde6f338720abf28b931f8a4506613bd64d3f/packages/smithy-client/src/get-value-from-text-node.ts#L1
  */
 export const getValueFromTextNode = (obj: any) => {
 	const textNodeName = '#text';
