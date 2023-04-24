@@ -414,11 +414,6 @@ class SyncProcessor {
 											onTerminate
 										));
 									} catch (error) {
-										console.log(
-											'received error',
-											error,
-											getSyncErrorType(error)
-										);
 										try {
 											await this.errorHandler({
 												recoverySuggestion:
@@ -435,6 +430,13 @@ class SyncProcessor {
 										} catch (e) {
 											logger.error('Sync error handler failed with:', e);
 										}
+										/**
+										 * If there's an error, this model fails, but the rest of the sync should
+										 * continue. To facilitate this, we explicitly mark this model as `done`
+										 * with no items and allow the loop to continue organically. This ensures
+										 * all callbacks (subscription messages) happen as normal, so anything
+										 * waiting on them knows the model is as done as it can be.
+										 */
 										done = true;
 										items = [];
 									}

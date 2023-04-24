@@ -26,13 +26,17 @@ async function waitForEmptyOutboxOrError(service) {
 	return await Promise.race([waitForEmptyOutbox(), pendingError]);
 }
 
-function waitForNextErrorHandlerError(
-	errorHandler: Observable<SyncError<any>>
-) {
+/**
+ * Creates a promise to wait for the next subscription message and
+ * returns it when it arrives.
+ *
+ * @param observable Any `Observable`
+ */
+function waitForNextMessage<T>(observable: Observable<T>) {
 	return new Promise(resolve => {
-		const subscription = errorHandler.subscribe(error => {
+		const subscription = observable.subscribe(message => {
 			subscription.unsubscribe();
-			resolve(error);
+			resolve(message);
 		});
 	});
 }
@@ -1100,7 +1104,7 @@ describe('DataStore sync engine', () => {
 				}
 			};
 
-			const error: any = await waitForNextErrorHandlerError(errorHandler);
+			const error: any = await waitForNextMessage(errorHandler);
 			expect(error.errorType).toBe('Unauthorized');
 		});
 
@@ -1134,7 +1138,7 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			const error: any = await waitForNextErrorHandlerError(errorHandler);
+			const error: any = await waitForNextMessage(errorHandler);
 			expect(error.errorType).toBe('Unauthorized');
 		});
 	});
