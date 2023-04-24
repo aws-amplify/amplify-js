@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { ResponseMetadata } from '@aws-sdk/types';
 import { isMetadataBearer } from '../middleware/retry/middleware';
 import { HttpResponse } from '../types/http';

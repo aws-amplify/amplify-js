@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { ServiceClientOptions } from '../types/aws';
 import { TransferHandler, Endpoint } from '../types/core';
 import { HttpRequest, HttpResponse } from '../types/http';
