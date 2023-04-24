@@ -1,5 +1,5 @@
-import { parser as browserParser } from '../../src/common/xmlParser.browser';
-import { parser as nodeParser } from '../../src/common/xmlParser';
+import { parser as browserParser } from '../../src/AwsClients/S3/xmlParser.browser';
+import { parser as nodeParser } from '../../src/AwsClients/S3/xmlParser';
 import cases from './xmlParser-fixture';
 
 describe('xmlParser for browsers', () => {
