@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isArrayBuffer } from '@aws-sdk/is-array-buffer';
 import { SourceData } from '@aws-sdk/types';
 import { HttpRequest } from '../../../../../types';
 import { EMPTY_HASH, UNSIGNED_PAYLOAD } from '../constants';
@@ -33,3 +32,7 @@ export const getHashedPayload = async (
 
 const isSourceData = (body: HttpRequest['body']): body is SourceData =>
 	typeof body === 'string' || ArrayBuffer.isView(body) || isArrayBuffer(body);
+
+const isArrayBuffer = (arg: any): arg is ArrayBuffer =>
+	(typeof ArrayBuffer === 'function' && arg instanceof ArrayBuffer) ||
+	Object.prototype.toString.call(arg) === '[object ArrayBuffer]';

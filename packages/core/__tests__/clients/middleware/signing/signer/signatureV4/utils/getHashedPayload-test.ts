@@ -17,7 +17,9 @@ describe('getHashedPayload', () => {
 		expect(await getHashedPayload('string-body')).toStrictEqual(
 			'f4241e27b103e1a1d7f88a1556541718250245fe31c8e695f3e068d3fe837572'
 		);
+	});
 
+	test('works with ArrayBuffer', async () => {
 		expect(await getHashedPayload(new ArrayBuffer(8))).toStrictEqual(
 			'af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc'
 		);
@@ -30,8 +32,10 @@ describe('getHashedPayload', () => {
 	});
 
 	test('returns unsigned payload if not hashable', async () => {
-		expect(await getHashedPayload(new Blob())).toStrictEqual(
-			'UNSIGNED-PAYLOAD'
-		);
+		for (const scalar of [123.234, true, new Blob()]) {
+			expect(await getHashedPayload(scalar as any)).toStrictEqual(
+				'UNSIGNED-PAYLOAD'
+			);
+		}
 	});
 });
