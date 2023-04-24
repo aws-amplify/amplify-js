@@ -514,7 +514,7 @@ describe('Rest API test', () => {
 				endpoints: [
 					{
 						name: 'url',
-						endpoint: 'endpoint',
+						endpoint: 'https://domain.fakeurl/',
 					},
 				],
 			});
