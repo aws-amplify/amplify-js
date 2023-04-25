@@ -843,8 +843,6 @@ describe('DataStore sync engine', () => {
 		});
 
 		test.only('mutations on poor connection', async () => {
-			// TODO: is fake GraphQL service updating versions?
-
 			// Tracking sequence of mutations by title:
 			const allOriginalTitles = [];
 			const observeTitles = [];
@@ -859,9 +857,6 @@ describe('DataStore sync engine', () => {
 
 			// give thread control back to subscription event handlers.
 			await waitForEmptyOutbox();
-
-			// TODO: may not still be necessary for test to pass:
-			await pause(2000);
 
 			// TODO:
 			// Increase latencies:
@@ -900,9 +895,6 @@ describe('DataStore sync engine', () => {
 			for (let number = 0; number < numberOfUpdates; number++) {
 				const retrieved = await DataStore.query(Post, original.id);
 
-				// TODO: may not still be necessary for test to pass:
-				await pause(2000);
-
 				const newTitle = `post title ${number}`;
 				//@ts-ignore
 				allOriginalTitles.push(newTitle);
@@ -922,7 +914,7 @@ describe('DataStore sync engine', () => {
 						//@ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = newTitle;
-							// updated.blogId = `blog id ${number}`;
+							updated.blogId = `blog id ${number}`;
 						})
 					);
 					// give thread control back to subscription event handlers.
@@ -939,7 +931,7 @@ describe('DataStore sync engine', () => {
 						//@ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = newTitle;
-							// updated.blogId = `blog id ${number}`;
+							updated.blogId = `blog id ${number}`;
 						})
 					);
 					// give thread control back to subscription event handlers.
@@ -1004,7 +996,7 @@ describe('DataStore sync engine', () => {
 			expect(savedItem.title).toEqual('post title 4');
 
 			// TODO:
-			// expect(savedItem.blogId).toEqual('blog id 4');
+			expect(savedItem.blogId).toEqual('blog id 4');
 
 			const queryResult = await DataStore.query(Post, original.id);
 			expect(queryResult?.title).toEqual('post title 4');

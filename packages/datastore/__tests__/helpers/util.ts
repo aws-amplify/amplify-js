@@ -388,7 +388,7 @@ export async function expectIsolation(
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForEmptyOutbox(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
