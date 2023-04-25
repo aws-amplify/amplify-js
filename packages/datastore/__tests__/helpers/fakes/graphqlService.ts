@@ -14,6 +14,13 @@ import {
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
+type FakeLatencies = {
+	request: number;
+	response: number;
+	subscriber: number;
+	jitter: number;
+};
+
 /**
  * Statefully pretends to be AppSync, with minimal built-in asertions with
  * error callbacks and settings to help simulate various conditions.
@@ -34,11 +41,13 @@ export class FakeGraphQLService {
 		string,
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
+	// TODO:
+	public runningMutations = new Map<string, string>();
 
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
 	 */
-	public latencies = {
+	public latencies: FakeLatencies = {
 		/**
 		 * The time it takes a request will take to reach the cloud.
 		 */
@@ -84,6 +93,56 @@ export class FakeGraphQLService {
 		}
 	}
 
+	/**
+	 * TODO: don't forget to reset
+	 * @param latencies
+	 * @returns
+	 */
+	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
+		return (this.latencies = { ...this.latencies, ...latencies });
+	}
+
+	/**
+	 * TODO: use constant for values
+	 * @param latencies
+	 * @returns
+	 */
+	public resetLatencies(): FakeLatencies {
+		return (this.latencies = {
+			/**
+			 * The time it takes a request will take to reach the cloud.
+			 */
+			request: 15,
+
+			/**
+			 * After request processing, the time it takes for the client to
+			 * receive a response.
+			 */
+			response: 15,
+
+			/**
+			 * After request processing, the time it takes for each relevant
+			 * subscriber to receive an event.
+			 */
+			subscriber: 15,
+
+			/**
+			 * The max amount to randomly to +/- from each latency.
+			 */
+			jitter: 5,
+		});
+	}
+
+	/**
+	 *
+	 * @returns
+	 */
+	public getLatencies(): FakeLatencies {
+		return this.latencies;
+	}
+
+	// TODO: reset latencies
+
 	private async jitteredPause(ms) {
 		/**
 		 * "Materialized" jitter from -jitter to +jitter.
@@ -94,6 +153,7 @@ export class FakeGraphQLService {
 		const jitteredMs = Math.max(ms + jitter, 0);
 		return pause(jitteredMs);
 	}
+
 	/**
 	 * Given the plural name of a model, find the singular name
 	 * @param pluralName plural name of model (e.g. "Todos")
@@ -379,6 +439,9 @@ export class FakeGraphQLService {
 
 	private autoMerge(existing, updated) {
 		let merged;
+		// We only get here if we `pause()` in the tests..
+		console.log('AUTO MERGE');
+		// debugger;
 		if (updated._version >= existing._version) {
 			merged = {
 				...this.populatedFields(existing),
@@ -524,10 +587,15 @@ export class FakeGraphQLService {
 					};
 				}
 			} else if (operation === 'mutation') {
+				// a hack, we need something like the background process manager
+				// to know if the service is still processing requests
+				this.runningMutations.set(variables.input.id, type);
+
 				const record = variables.input;
 				const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
+					console.log('CREATE');
 					const existing = table.get(this.getPK(tableName, record));
 					const validationError = this.validate(tableName, 'create', record);
 
@@ -556,6 +624,10 @@ export class FakeGraphQLService {
 						table.set(this.getPK(tableName, record), data[selection]);
 					}
 				} else if (type === 'update') {
+					// We only get here if we `pause()` in the tests
+					// TODO: what about `_version`?
+					// debugger;
+					console.log('UPDATE');
 					// Simulate update using the default (AUTO_MERGE) for now.
 					// NOTE: We're not doing list/set merging. :o
 					const existing = table.get(this.getPK(tableName, record));
@@ -627,6 +699,8 @@ export class FakeGraphQLService {
 				}
 
 				await this.jitteredPause(this.latencies.response);
+				// TODO:
+				this.runningMutations.delete(variables.input.id);
 				this.log('API Response', { data, errors });
 				resolve({
 					data,
