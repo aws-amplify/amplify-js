@@ -1,6 +1,6 @@
+import cases from './xmlParser-fixture';
 import { parser as browserParser } from '../../src/AwsClients/S3/xmlParser.browser';
 import { parser as nodeParser } from '../../src/AwsClients/S3/xmlParser';
-import cases from './xmlParser-fixture';
 
 describe('xmlParser for browsers', () => {
 	cases.forEach(({ spec, xml, expected }) => {

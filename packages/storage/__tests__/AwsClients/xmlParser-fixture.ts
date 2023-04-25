@@ -1,6 +1,8 @@
 /**
- * Adapted from AWS SDK Smithy protocol test: https://github.com/aws/aws-sdk-js-v3/blob/main/private/aws-protocoltests-restxml/test/functional/restxml.spec.ts,
- * which is originated from Smithy test: https://github.com/awslabs/smithy/blob/5948784942e447858bb53025f0ce72e46da9e32e/smithy-aws-protocol-tests/model/restXml
+ * Adapted from AWS SDK Smithy protocol test:
+ * https://github.com/aws/aws-sdk-js-v3/blob/main/private/aws-protocoltests-restxml/test/functional/restxml.spec.ts,
+ * which is originated from Smithy test:
+ * https://github.com/awslabs/smithy/blob/5948784942e447858bb53025f0ce72e46da9e32e/smithy-aws-protocol-tests/model/restXml
  */
 
 const cases = [

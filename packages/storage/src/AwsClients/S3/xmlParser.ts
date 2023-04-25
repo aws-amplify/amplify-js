@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { XMLParser } from 'fast-xml-parser';
 
 /**
@@ -15,7 +18,7 @@ export const parser = {
 			ignoreDeclaration: true,
 			parseTagValue: false,
 			trimValues: false,
-			removeNSPrefix: true, // TODO: fix this in AWS SDK v3
+			removeNSPrefix: true,
 			tagValueProcessor: (_, val) =>
 				val.trim() === '' && val.includes('\n') ? '' : undefined,
 		});
@@ -30,13 +33,11 @@ export const parser = {
 			delete parsedObjToReturn[textNodeName];
 		}
 		return getValueFromTextNode(parsedObjToReturn);
-		// return parsedObjToReturn;
 	},
 };
 
 /**
- * Recursively parses object and populates value is node from
- * "#text" key if it's available
+ * Recursively parses object and populates value is node from "#text" key if it's available
  *
  * Ref: https://github.com/aws/aws-sdk-js-v3/blob/6b4bde6f338720abf28b931f8a4506613bd64d3f/packages/smithy-client/src/get-value-from-text-node.ts#L1
  */
