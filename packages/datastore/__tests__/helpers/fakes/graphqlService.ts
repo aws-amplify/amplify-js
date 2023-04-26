@@ -439,8 +439,7 @@ export class FakeGraphQLService {
 
 	private autoMerge(existing, updated) {
 		let merged;
-		// We only get here if we `pause()` in the tests..
-		console.log('AUTO MERGE');
+		// console.log('AUTO MERGE');
 		// debugger;
 		if (updated._version >= existing._version) {
 			merged = {
@@ -595,7 +594,7 @@ export class FakeGraphQLService {
 				const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
-					console.log('CREATE');
+					// console.log('CREATE');
 					const existing = table.get(this.getPK(tableName, record));
 					const validationError = this.validate(tableName, 'create', record);
 
@@ -627,7 +626,7 @@ export class FakeGraphQLService {
 					// We only get here if we `pause()` in the tests
 					// TODO: what about `_version`?
 					// debugger;
-					console.log('UPDATE');
+					// console.log('UPDATE');
 					// Simulate update using the default (AUTO_MERGE) for now.
 					// NOTE: We're not doing list/set merging. :o
 					const existing = table.get(this.getPK(tableName, record));

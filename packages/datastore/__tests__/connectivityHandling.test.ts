@@ -842,7 +842,34 @@ describe('DataStore sync engine', () => {
 			await waitForSyncQueriesReady();
 		});
 
+		/**
+		 * Notes:
+		 * 0) E2E testing: three consecutive updates consistently result in a single lost update. In
+		 * this test, we currently see the versioning issue (1,1,3). However, the title appears correct.
+		 * Is it possible this is a timestamp issue? Consider adding back timestamps.
+		 * 1) If we use `waitForEmptyOutbox` in the E2E repro app, we never encounter:
+		 * https://github.com/aws-amplify/amplify-js/issues/9979.
+		 * 2) (Expected): If we don't wait for the outbox to clear, the last successful mutation will
+		 * overwrite the previous mutation(s), and the fake service will only receive the last request.
+		 * Meaning, the last request always wins, which we expect, but doesn't repro the consistency issue.
+		 * 3) No increase or combination of artifical latencies result in the consistency issue.
+		 * 4) (Side note): If we increase the subsciption latency, and don't wait for the outbox to clear
+		 * between updates, we'll only receive a single message on "observe".
+		 */
+
 		test.only('mutations on poor connection', async () => {
+			// Number of updates to perform:
+			const numberOfUpdates = 3;
+
+			// i.e. when we don't await the outbox:
+			let overwrittenCalls = 0;
+
+			// For tracking sequence of versions from observe:
+			let prevVersion = 0;
+
+			// For tracking sequence of versioning:
+			const subVersionLog = [];
+
 			// Tracking sequence of mutations by title:
 			const allOriginalTitles = [];
 			const observeTitles = [];
@@ -855,94 +882,103 @@ describe('DataStore sync engine', () => {
 				})
 			);
 
-			// give thread control back to subscription event handlers.
 			await waitForEmptyOutbox();
-
-			// TODO:
-			// Increase latencies:
-			// graphqlService.setLatencies({
-			// 	request: 100,
-			// 	response: 200,
-			// 	subscriber: 100,
-			// 	jitter: 15,
-			// });
 
 			const subscription = await DataStore.observe(Post, original.id).subscribe(
 				({ opType, element }) => {
-					console.log('OPTYPE:', opType);
-					console.log('ELEMENT:', element);
 					// @ts-ignore
 					observeTitles.push(element.title);
-					// debugger;
 					if (opType === 'UPDATE') {
-						// TODO:
-						// FAKE SERVICE DOESN'T UPDATE VERSION???
+						// @ts-ignore
+						console.log('prevVersion', prevVersion);
+						// @ts-ignore
+						console.log('element._version', element._version);
 						//@ts-ignore
-						// if (prevVersion > element._version) {
-						// 	console.log('prevVersion', prevVersion);
-						// 	//@ts-ignore
-						// 	console.log('current version', element._version);
-						// 	debugger;
-						// }
+						subVersionLog.push([element.title, element._version]);
+						//@ts-ignore
+						if (prevVersion > element._version) {
+							// We should never get here:
+							debugger;
+							//@ts-ignore
+						} else if (element._version === undefined) {
+							debugger;
+						}
+						//@ts-ignore
+						prevVersion = element._version;
 					}
 				}
 			);
 
-			// Also used by fake service check:
-			const numberOfUpdates = 5;
+			// Increase latencies:
+			graphqlService.setLatencies({
+				request: 3000,
+				response: 3000,
+				subscriber: 4000,
+				jitter: 500,
+			});
 
 			// region mutate the original record:
 			for (let number = 0; number < numberOfUpdates; number++) {
-				const retrieved = await DataStore.query(Post, original.id);
+				let retrieved = await DataStore.query(Post, original.id);
 
 				const newTitle = `post title ${number}`;
 				//@ts-ignore
 				allOriginalTitles.push(newTitle);
 
-				// TODO: The connection is worse:
-				if (number === 3) {
-					// TODO:
-					// graphqlService.setLatencies({
-					// 	request: 10000,
-					// 	response: 10000,
-					// 	subscriber: 10000,
-					// 	jitter: 50,
-					// });
+				// Experiment with connection updates here:
+				// if (number === numberOfUpdates - 2) {
+				// 	await DataStore.save(
+				// 		//@ts-ignore
+				// 		Post.copyOf(retrieved, updated => {
+				// 			updated.title = newTitle;
+				// 			updated.blogId = `blog id ${number}`;
+				// 		})
+				// 	);
 
-					// Update the record with high latency:
-					await DataStore.save(
-						//@ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = newTitle;
-							updated.blogId = `blog id ${number}`;
-						})
-					);
-					// give thread control back to subscription event handlers.
-					await waitForEmptyOutbox();
+				// Update latencies:
+				// graphqlService.setLatencies({
+				// 	request: 200,
+				// 	response: 200,
+				// 	subscriber: 200,
+				// 	jitter: 50,
+				// });
 
-					// TODO:
-					// connection gets faster again:
-					// graphqlService.resetLatencies();
+				// retrieved = await DataStore.query(Post, original.id);
+				// await DataStore.save(
+				// 	//@ts-ignore
+				// 	Post.copyOf(retrieved, updated => {
+				// 		updated.title = 'blah blah';
+				// 		updated.blogId = `blog id ${number}`;
+				// 	})
+				// );
+				// overwrittenCalls++;
 
-					// const isThisReset = graphqlService.getLatencies();
-					// console.log('isThisReset', isThisReset);
-				} else {
-					await DataStore.save(
-						//@ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = newTitle;
-							updated.blogId = `blog id ${number}`;
-						})
-					);
-					// give thread control back to subscription event handlers.
-					await waitForEmptyOutbox();
-				}
+				// 	retrieved = await DataStore.query(Post, original.id);
+				// 	await DataStore.save(
+				// 		//@ts-ignore
+				// 		Post.copyOf(retrieved, updated => {
+				// 			updated.title = 'blah blah blah';
+				// 			updated.blogId = `blog id ${number}`;
+				// 		})
+				// 	);
+				// 	overwrittenCalls++;
+				// } else {
+				await DataStore.save(
+					//@ts-ignore
+					Post.copyOf(retrieved, updated => {
+						updated.title = newTitle;
+						updated.blogId = `blog id ${number}`;
+					})
+				);
+
+				// await waitForEmptyOutbox();
+				// }
 			}
 			// endregion
 
 			// TODO: may not still be necessary for test to pass:
 			// Wait for everything to complete:
-			await pause(12000);
+			await pause(25000);
 
 			// region: validate that graphqlService has received / finished
 			// processing all updates.
@@ -954,26 +990,36 @@ describe('DataStore sync engine', () => {
 						graphqlService.runningMutations.size
 					);
 
-					// Ensure the service has received all the requests:
+					// Ensure the service has received all the requests.
+					// Note: this ONLY applies when we wait for the outbox to clear.
+					// Otherwise, the final mutation will overwrite the previous mutations.
 					const allUpdatesSent =
 						graphqlService.requests.filter(
 							({ operation, type, tableName }) =>
 								operation === 'mutation' &&
 								type === 'update' &&
 								tableName === 'Post'
-						).length === numberOfUpdates;
+							// ).length === numberOfUpdates;
+						).length ===
+						numberOfUpdates - overwrittenCalls;
 
 					// Ensure all mutations are complete:
 					const allRunningMutationsComplete =
 						graphqlService.runningMutations.size === 0;
 
-					if (allUpdatesSent && allRunningMutationsComplete) {
-						return true;
-					} else {
-						throw new Error(
-							'Fake GraphQL Service did not receive and/or process all updates'
-						);
-					}
+					// If something is broken, check here to see what's happening:
+					console.log('subVersionLog', subVersionLog);
+					debugger;
+
+					// TODO: could be useful for testing observe when waiting for outbox:
+					// if (allUpdatesSent && allRunningMutationsComplete) {
+					// 	return true;
+					// } else {
+					// 	throw new Error(
+					// 		'Fake GraphQL Service did not receive and/or process all updates'
+					// 	);
+					// }
+					return true;
 				},
 				[null],
 				undefined,
@@ -981,11 +1027,15 @@ describe('DataStore sync engine', () => {
 			);
 			// endregion
 
+			// Anything missing, out of order, etc?
+			console.log('observeTitles', observeTitles);
+			debugger;
+
 			// Validate that all updates came through `DataStore.observe`:
-			const titleResult = allOriginalTitles.every(title =>
-				observeTitles.includes(title)
-			);
-			expect(titleResult).toEqual(true);
+			// const titleResult = allOriginalTitles.every(title =>
+			// 	observeTitles.includes(title)
+			// );
+			// expect(titleResult).toEqual(true);
 
 			// Validate that the record was saved to the service:
 			const table = graphqlService.tables.get('Post')!;
@@ -993,13 +1043,20 @@ describe('DataStore sync engine', () => {
 			const savedItem = table.get(JSON.stringify([original.id])) as any;
 
 			// Validate updates were successful:
-			expect(savedItem.title).toEqual('post title 4');
+			expect(savedItem.title).toEqual(
+				`post title ${numberOfUpdates + overwrittenCalls - 1}`
+			);
+			debugger;
 
 			// TODO:
-			expect(savedItem.blogId).toEqual('blog id 4');
+			expect(savedItem.blogId).toEqual(
+				`blog id ${numberOfUpdates + overwrittenCalls - 1}`
+			);
 
 			const queryResult = await DataStore.query(Post, original.id);
-			expect(queryResult?.title).toEqual('post title 4');
+			expect(queryResult?.title).toEqual(
+				`post title ${numberOfUpdates - overwrittenCalls - 1}`
+			);
 
 			// unsubscribe observe:
 			await subscription.unsubscribe();
