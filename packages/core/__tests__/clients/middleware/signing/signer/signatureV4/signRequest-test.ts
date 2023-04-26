@@ -23,9 +23,7 @@ describe('signRequest', () => {
 				return [name, updatedRequest, updatedOptions, expectedAuthorization];
 			}
 		)
-	)('signs request with %s', async (_, request, options, expected) => {
-		expect((await signRequest(request, options)).headers.authorization).toBe(
-			expected
-		);
+	)('signs request with %s', (_, request, options, expected) => {
+		expect(signRequest(request, options).headers.authorization).toBe(expected);
 	});
 });

@@ -14,16 +14,16 @@ import { getHashedData } from './dataHashHelpers';
  *
  * @returns `Uint8Array` calculated from its composite parts.
  */
-export const getSigningKey = async (
+export const getSigningKey = (
 	secretAccessKey: string,
 	date: string,
 	region: string,
 	service: string
-): Promise<Uint8Array> => {
+): Uint8Array => {
 	const key = `${SIGNATURE_IDENTIFIER}${secretAccessKey}`;
-	const dateKey = await getHashedData(key, date);
-	const regionKey = await getHashedData(dateKey, region);
-	const serviceKey = await getHashedData(regionKey, service);
-	const signingKey = await getHashedData(serviceKey, KEY_TYPE_IDENTIFIER);
+	const dateKey = getHashedData(key, date);
+	const regionKey = getHashedData(dateKey, region);
+	const serviceKey = getHashedData(regionKey, service);
+	const signingKey = getHashedData(serviceKey, KEY_TYPE_IDENTIFIER);
 	return signingKey;
 };

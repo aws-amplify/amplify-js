@@ -21,10 +21,10 @@ import { getSignature } from './utils/getSignature';
  * @param signRequestOptions `SignRequestOptions` object containing values used to construct the signature.
  * @returns A `HttpRequest` with authentication headers which can grant temporary access to AWS resources.
  */
-export const signRequest = async (
+export const signRequest = (
 	request: HttpRequest,
 	options: SignRequestOptions
-): Promise<HttpRequest> => {
+): HttpRequest => {
 	const signingValues = getSigningValues(options);
 	const { accessKeyId, credentialScope, longDate, sessionToken } =
 		signingValues;
@@ -39,7 +39,7 @@ export const signRequest = async (
 	const requestToSign = { ...request, headers };
 
 	// calculate and add the signature to the request
-	const signature = await getSignature(requestToSign, signingValues);
+	const signature = getSignature(requestToSign, signingValues);
 	const credentialEntry = `Credential=${accessKeyId}/${credentialScope}`;
 	const signedHeadersEntry = `SignedHeaders=${getSignedHeaders(headers)}`;
 	const signatureEntry = `Signature=${signature}`;
