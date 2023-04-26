@@ -439,8 +439,6 @@ export class FakeGraphQLService {
 
 	private autoMerge(existing, updated) {
 		let merged;
-		// console.log('AUTO MERGE');
-		// debugger;
 		if (updated._version >= existing._version) {
 			merged = {
 				...this.populatedFields(existing),
@@ -458,6 +456,7 @@ export class FakeGraphQLService {
 			};
 		}
 		this.log('automerge', { existing, updated, merged });
+		console.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -623,10 +622,6 @@ export class FakeGraphQLService {
 						table.set(this.getPK(tableName, record), data[selection]);
 					}
 				} else if (type === 'update') {
-					// We only get here if we `pause()` in the tests
-					// TODO: what about `_version`?
-					// debugger;
-					// console.log('UPDATE');
 					// Simulate update using the default (AUTO_MERGE) for now.
 					// NOTE: We're not doing list/set merging. :o
 					const existing = table.get(this.getPK(tableName, record));
