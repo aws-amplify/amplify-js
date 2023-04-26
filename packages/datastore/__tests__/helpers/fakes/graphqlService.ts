@@ -456,7 +456,6 @@ export class FakeGraphQLService {
 			};
 		}
 		this.log('automerge', { existing, updated, merged });
-		// console.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -593,7 +592,6 @@ export class FakeGraphQLService {
 				const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
-					// console.log('CREATE');
 					const existing = table.get(this.getPK(tableName, record));
 					const validationError = this.validate(tableName, 'create', record);
 
