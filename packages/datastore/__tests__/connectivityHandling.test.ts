@@ -842,59 +842,6 @@ describe('DataStore sync engine', () => {
 			await waitForSyncQueriesReady();
 		});
 
-		/**
-		 * Notes:
-		 * 0) E2E testing: three consecutive updates consistently result in a single lost update. In
-		 * this test, we currently see the versioning "issue" (DataStore.query always returns 1, subs return
-		 * 1, 1, then . However, the title appears correct.
-		 * If the updates do not have a pause between them, we eventually get back the sub message
-		 * that it was not successful.
-		 * 2) (Expected): If we don't wait for the outbox to clear, the last successful mutation will
-		 * overwrite the previous mutation(s), and the fake service will only receive the last request.
-		 * Meaning, the last request always wins, which we expect, but doesn't repro the consistency issue.
-		 * 3) No increase or combination of artifical latencies result in the consistency issue in unit
-		 * tests.
-		 * 4) (Side note): If we increase the subsciption latency, and don't wait for the outbox to clear
-		 * between updates, we'll only receive a single message on "observe".
-		 * 5) If we don't make sure the initial create was successful, the version will be `undefined`
-		 * each iteration time, as will the version in the responses from `observe`, and will result
-		 * in breaking behavior.
-		 * `const [retrieved] = await DataStore.query(Todo);`, however,
-		 * will retrieve a version, as will `observe`, and it will
-		 * always update as expected. Is the problematic behavior with the initial query not having
-		 * a version? (ANSWER - YES/NO, this may be a different issue).
-		 * 6) Current available WORKAROUNDS for customers other than switching to optimistic
-		 * concurrency: 1) await outbox after update, 2) query all models and filter, then update, since the version
-		 * is populated here. This applies to an initially successfull create. If the create has not
-		 * gone through, version is `undefined` and there is similar problematic behavior. 3) Query
-		 * for a single model until version is the expected version.
-		 * 7) TODO: test scenario where the query doesn't have a version up front
-		 * 8) Testing E2E, the same behavior can be reproduced on a good connection by
-		 * executing updates rapidly. Ultimately, the final sub message comes back with a title that
-		 * is not updated.
-		 * 9) One a slow connection, we ultimately get 4 total subscription messages. One for each
-		 * update, and the final with the incorrect title. All sub messages show a version of `1`. The
-		 * final sub messages shows a version of `3`, though it should be `4`. This is reproducible both
-		 * E2E and on the unit tests, however, the unit tests do not show the incorrect title.
-		 * 10) E2E - only two messages make it to AppSync:
-		 *     1) payload: description is 0, sent version is 1 (this would be our first or second update)
-		 *         - response: description is 0, received version is 2
-		 *     2) description is 2, sent version is 1 (this would be our final update - we send version 1
-		 *     because that's what is returned from `DataStore.query` prior to the update).
-		 *         - response: description is 0, received version is 3
-		 *     Question - is the issue that we're sending version 1? I'm assuming that the case is that
-		 *     even though we've received the sub message in oberve, the version hasn't made it to local
-		 *     storage on query? The same responses from query / subs happen on the unit tests, but
-		 *     ultimately, the behavior is not the same.
-		 *
-		 *     UNIT TESTS:
-		 *        - First request is the same
-		 *        - NOTE: Second request sends version 2, instead of sending version 1 (for updateTodoInput).
-		 *          This, at least, is taking a look at the service requests themselves. However, the local
-		 *          query prior to update is returning 1. They both ultimately end up with the same final
-		 *          version (3, not 4).
-		 */
-
 		test.only('rapid mutations when initial create is successful', async () => {
 			// Number of updates to perform in this test:
 			const numberOfUpdates = 3;
