@@ -456,7 +456,7 @@ export class FakeGraphQLService {
 			};
 		}
 		this.log('automerge', { existing, updated, merged });
-		console.log('automerge', { existing, updated, merged });
+		// console.log('automerge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -488,6 +488,7 @@ export class FakeGraphQLService {
 	 * @param selection The function/selection name, like "onCreateTodo".
 	 */
 	public async notifySubscribers(tableName, type, data, selection) {
+		console.log('notifySubscribers', [tableName, type, data, selection]);
 		await this.jitteredPause(this.latencies.subscriber);
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
@@ -692,6 +693,7 @@ export class FakeGraphQLService {
 					}
 				}
 
+				this.notifySubscribers(tableName, type, data, selection);
 				await this.jitteredPause(this.latencies.response);
 				// TODO:
 				this.runningMutations.delete(variables.input.id);

@@ -896,6 +896,7 @@ describe('DataStore sync engine', () => {
 		 */
 
 		test.only('mutations on poor connection when initial create is successful', async () => {
+			let currentPost;
 			// Number of updates to perform:
 			const numberOfUpdates = 3;
 
@@ -912,14 +913,6 @@ describe('DataStore sync engine', () => {
 			const allOriginalTitles = [];
 			const observeTitles = [];
 
-			// Set latencies to 0, we want an initial successful create:
-			graphqlService.setLatencies({
-				request: 0,
-				response: 0,
-				subscriber: 0,
-				jitter: 0,
-			});
-
 			// Record to update:
 			const original = await DataStore.save(
 				new Post({
@@ -930,10 +923,15 @@ describe('DataStore sync engine', () => {
 
 			await waitForEmptyOutbox();
 
+			await pause(3000);
+
+			const initialQuery = await DataStore.query(Post, original.id);
+
 			// temp: make sure it was actually saved
 			await pause(10000);
 
-			const subscription = await DataStore.observe(Post, original.id).subscribe(
+			// NOTE: was previously only observing a single post by id!!!
+			const subscription = await DataStore.observe(Post).subscribe(
 				({ opType, element }) => {
 					console.log('SUB TITLE / VERSION:', [
 						element.title,
@@ -945,19 +943,22 @@ describe('DataStore sync engine', () => {
 				}
 			);
 
+			await pause(10000);
+
 			// Increase latencies:
-			// graphqlService.setLatencies({
-			// 	request: 3000,
-			// 	response: 3000,
-			// 	subscriber: 0,
-			// 	jitter: 0,
-			// });
+			graphqlService.setLatencies({
+				request: 1000,
+				response: 1000,
+				subscriber: 1000,
+				jitter: 50,
+			});
 
 			// region mutate the original record:
 			for (let number = 0; number < numberOfUpdates; number++) {
+				await pause(200);
 				console.log(`UPDATE-------------------- ${number}`);
 				console.log(`UPDATE-------------------- ${number}`);
-				let retrieved = await DataStore.query(Post, original.id);
+				const retrieved = await DataStore.query(Post, original.id);
 				// await pause(1000);
 				console.log('RETRIEVED TITLE / VERSION:', [
 					//@ts-ignore
@@ -966,9 +967,9 @@ describe('DataStore sync engine', () => {
 					retrieved?._version,
 				]);
 
-				const newTitle = `post title ${number}`;
+				// const newTitle = `post title ${number}`;
 				//@ts-ignore
-				allOriginalTitles.push(newTitle);
+				// allOriginalTitles.push(newTitle);
 
 				// Experiment with connection updates here:
 				// if (number === numberOfUpdates - 2) {
@@ -1011,8 +1012,7 @@ describe('DataStore sync engine', () => {
 				await DataStore.save(
 					//@ts-ignore
 					Post.copyOf(retrieved, updated => {
-						updated.title = newTitle;
-						updated.blogId = `blog id ${number}`;
+						updated.title = `post title ${number}`;
 					})
 				);
 
@@ -1055,7 +1055,7 @@ describe('DataStore sync engine', () => {
 
 					// If something is broken, check here to see what's happening:
 					console.log('subVersionLog', subVersionLog);
-					console.log(graphqlService.requests);
+					// console.log(graphqlService.requests);
 					debugger;
 
 					// TODO: could be useful for testing observe when waiting for outbox:
