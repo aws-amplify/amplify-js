@@ -23,10 +23,10 @@ import { getSignature } from './utils/getSignature';
  * @param presignUrlOptions `PresignUrlOptions` object containing values used to construct the signature.
  * @returns A `URL` with authentication query params which can grant temporary access to AWS resources.
  */
-export const presignUrl = async (
+export const presignUrl = (
 	{ body, method = 'GET', url }: Presignable,
 	{ expiration, ...options }: PresignUrlOptions
-): Promise<URL> => {
+): URL => {
 	const signingValues = getSigningValues(options);
 	const { accessKeyId, credentialScope, longDate, sessionToken } =
 		signingValues;
@@ -51,7 +51,7 @@ export const presignUrl = async (
 	};
 
 	// calculate and add the signature to the url
-	const signature = await getSignature(requestToSign, signingValues);
+	const signature = getSignature(requestToSign, signingValues);
 	presignedUrl.searchParams.append(SIGNATURE_QUERY_PARAM, signature);
 
 	return presignedUrl;

@@ -13,13 +13,14 @@ import { toHex } from '@aws-sdk/util-hex-encoding';
  * @param data Hashable `SourceData`.
  * @returns `Uint8Array` created from the data as input to a hash function.
  */
-export const getHashedData = async (
+export const getHashedData = (
 	key: SourceData | null,
 	data: SourceData
-): Promise<Uint8Array> => {
+): Uint8Array => {
 	const sha256 = new Sha256(key);
 	sha256.update(data);
-	const hashedData = await sha256.digest();
+	// TODO: V6 flip to async digest
+	const hashedData = sha256.digestSync();
 	return hashedData;
 };
 
@@ -30,10 +31,10 @@ export const getHashedData = async (
  * @param data Hashable `SourceData`.
  * @returns String using lowercase hexadecimal characters created from the data as input to a hash function.
  */
-export const getHashedDataAsHex = async (
+export const getHashedDataAsHex = (
 	key: SourceData | null,
 	data: SourceData
-): Promise<string> => {
-	const hashedData = await getHashedData(key, data);
+): string => {
+	const hashedData = getHashedData(key, data);
 	return toHex(hashedData);
 };

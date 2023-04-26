@@ -20,17 +20,17 @@ import { getSignedHeaders } from './getSignedHeaders';
  * - SignedHeaders
  * - HashedPayload
  */
-export const getCanonicalRequest = async ({
+export const getCanonicalRequest = ({
 	body,
 	headers,
 	method,
 	url,
-}: HttpRequest): Promise<string> =>
+}: HttpRequest): string =>
 	[
 		method,
 		getCanonicalUri(url.pathname),
 		getCanonicalQueryString(url.searchParams),
 		getCanonicalHeaders(headers),
 		getSignedHeaders(headers),
-		await getHashedPayload(body),
+		getHashedPayload(body),
 	].join('\n');

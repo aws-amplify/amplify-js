@@ -4,9 +4,9 @@
 import { getSigningKey } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSigningKey';
 
 describe('getSigningKey', () => {
-	test('returns a signing key', async () => {
+	test('returns a signing key', () => {
 		expect(
-			await getSigningKey('secret-access-key', '20200918', 'region', 'service')
+			getSigningKey('secret-access-key', '20200918', 'region', 'service')
 		).toStrictEqual(
 			new Uint8Array([
 				79, 189, 20, 186, 57, 62, 187, 22, 80, 142, 29, 192, 182, 56, 183, 254,
