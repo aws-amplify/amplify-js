@@ -8,6 +8,7 @@ import type {
 	HttpResponse,
 	Middleware,
 } from '../../clients/types';
+import { getDnsSuffix } from '../../clients/endpoints';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import { unauthenticatedHandler } from '../../clients/handlers/unauthenticated';
 import {
@@ -22,13 +23,12 @@ import { getAmplifyUserAgent } from '../../Platform';
  */
 const SERVICE_NAME = 'cognito-identity';
 
+type EndpointOptions = { region: string };
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = (endpointOptions: { region: string }) => ({
-	url: new URL(
-		`https://cognito-identity.${endpointOptions.region}.amazonaws.com`
-	),
+const endpointResolver = ({ region }: EndpointOptions) => ({
+	url: new URL(`https://cognito-identity.${region}.${getDnsSuffix(region)}`),
 });
 
 /**
