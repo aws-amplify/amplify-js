@@ -24,7 +24,7 @@ describe('presignUrl', () => {
 				return [name, updatedRequest, updatedOptions, expectedUrl];
 			}
 		)
-	)('presigns url with %s', async (_, request, options, expected) => {
-		expect((await presignUrl(request, options)).toString()).toBe(expected);
+	)('presigns url with %s', (_, request, options, expected) => {
+		expect(presignUrl(request, options).toString()).toBe(expected);
 	});
 });

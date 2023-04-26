@@ -16,7 +16,7 @@ import { getStringToSign } from './getStringToSign';
  * @param signRequestOptions `SignRequestOptions` object containing values used to construct the signature.
  * @returns AWS API Signature to sign a request or url with.
  */
-export const getSignature = async (
+export const getSignature = (
 	request: HttpRequest,
 	{
 		credentialScope,
@@ -26,28 +26,23 @@ export const getSignature = async (
 		signingRegion,
 		signingService,
 	}: SigningValues
-): Promise<string> => {
+): string => {
 	// step 1: create a canonical request
-	const canonicalRequest = await getCanonicalRequest(request);
+	const canonicalRequest = getCanonicalRequest(request);
 
 	// step 2: create a hash of the canonical request
-	const hashedRequest = await getHashedDataAsHex(null, canonicalRequest);
+	const hashedRequest = getHashedDataAsHex(null, canonicalRequest);
 
 	// step 3: create a string to sign
-	const stringToSign = await getStringToSign(
+	const stringToSign = getStringToSign(
 		longDate,
 		credentialScope,
 		hashedRequest
 	);
 
 	// step 4: calculate the signature
-	const signature = await getHashedDataAsHex(
-		await getSigningKey(
-			secretAccessKey,
-			shortDate,
-			signingRegion,
-			signingService
-		),
+	const signature = getHashedDataAsHex(
+		getSigningKey(secretAccessKey, shortDate, signingRegion, signingService),
 		stringToSign
 	);
 

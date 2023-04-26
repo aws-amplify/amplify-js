@@ -12,7 +12,7 @@ import {
 import { getSignature } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
 
 describe('getSignature', () => {
-	test('returns signature', async () => {
+	test('returns signature', () => {
 		const { longDate, shortDate } = formattedDates;
 		const signingValues = {
 			...credentials,
@@ -22,9 +22,7 @@ describe('getSignature', () => {
 			signingRegion,
 			signingService,
 		};
-		expect(
-			await getSignature(getDefaultRequest(), signingValues)
-		).toStrictEqual(
+		expect(getSignature(getDefaultRequest(), signingValues)).toStrictEqual(
 			'145191af25230efbe34c7eb79d9d3ce881f7a945d02d0361719107147d0086b3'
 		);
 	});

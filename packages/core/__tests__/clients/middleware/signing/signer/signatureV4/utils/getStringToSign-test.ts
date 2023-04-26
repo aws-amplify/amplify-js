@@ -5,9 +5,9 @@ import { credentialScope, formattedDates } from '../testUtils/data';
 import { getStringToSign } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getStringToSign';
 
 describe('getStringToSign', () => {
-	test('returns signature', async () => {
+	test('returns signature', () => {
 		expect(
-			await getStringToSign(
+			getStringToSign(
 				formattedDates.longDate,
 				credentialScope,
 				'hashed-request'

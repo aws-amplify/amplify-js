@@ -13,16 +13,14 @@ import { getHashedDataAsHex } from './dataHashHelpers';
  * @returns String created using the payload in the body of the HTTP request as input to a hash function. This string
  * uses lowercase hexadecimal characters. If the payload is empty, return precalculated result of an empty hash.
  */
-export const getHashedPayload = async (
-	body: HttpRequest['body']
-): Promise<string> => {
+export const getHashedPayload = (body: HttpRequest['body']): string => {
 	// return precalculated empty hash if body is undefined or null
 	if (body == null) {
 		return EMPTY_HASH;
 	}
 
 	if (isSourceData(body)) {
-		const hashedData = await getHashedDataAsHex(null, body);
+		const hashedData = getHashedDataAsHex(null, body);
 		return hashedData;
 	}
 
