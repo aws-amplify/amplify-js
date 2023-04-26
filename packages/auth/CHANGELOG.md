@@ -3,64 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.2...@aws-amplify/auth@5.2.3) (2023-04-06)
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.2...@aws-amplify/auth@5.3.3) (2023-04-20)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.1...@aws-amplify/auth@5.3.2) (2023-04-18)
 
+**Note:** Version bump only for package @aws-amplify/auth
 
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.0...@aws-amplify/auth@5.3.1) (2023-04-13)
 
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.3...@aws-amplify/auth@5.3.0) (2023-04-12)
+
+### Features
+
+- **auth/cognito:** base directory structure, service clients and signUp API ([#11075](https://github.com/aws-amplify/amplify-js/issues/11075)) ([20ab772](https://github.com/aws-amplify/amplify-js/commit/20ab772e5552610c3fa4b975d9906d01309e848e))
+- **auth:** Add sign up error handling ([#11153](https://github.com/aws-amplify/amplify-js/issues/11153)) ([706a627](https://github.com/aws-amplify/amplify-js/commit/706a627f80bcf1575a7a47fa1c20fcd81b0502a1))
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.2...@aws-amplify/auth@5.2.3) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/auth
 
 ## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.1...@aws-amplify/auth@5.2.2) (2023-04-04)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.0...@aws-amplify/auth@5.2.1) (2023-03-30)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 # [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.15...@aws-amplify/auth@5.2.0) (2023-03-23)
-
 
 ### Features
 
-* **cognito:** remove required domain param when create CookieStorage ([c985454](https://github.com/aws-amplify/amplify-js/commit/c985454b0af9f2205941ab95d6ec8c42748ab63d))
-
-
-
-
+- **cognito:** remove required domain param when create CookieStorage ([c985454](https://github.com/aws-amplify/amplify-js/commit/c985454b0af9f2205941ab95d6ec8c42748ab63d))
 
 ## [5.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.14...@aws-amplify/auth@5.1.15) (2023-03-21)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [5.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.13...@aws-amplify/auth@5.1.14) (2023-03-16)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [5.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.12...@aws-amplify/auth@5.1.13) (2023-03-13)
 
 **Note:** Version bump only for package @aws-amplify/auth
-
-
-
-
 
 ## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.1.11...@aws-amplify/auth@5.1.12) (2023-03-08)
 

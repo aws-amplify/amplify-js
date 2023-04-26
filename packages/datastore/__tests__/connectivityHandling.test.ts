@@ -6,9 +6,11 @@ import {
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,
+	warpTime,
+	unwarpTime,
 } from './helpers';
 import { Predicates } from '../src/predicates';
-import { syncExpression } from '../src/types';
+import { syncExpression, SyncError } from '../src/types';
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
@@ -26,10 +28,26 @@ async function waitForEmptyOutboxOrError(service) {
 	return await Promise.race([waitForEmptyOutbox(), pendingError]);
 }
 
+/**
+ * Creates a promise to wait for the next subscription message and
+ * returns it when it arrives.
+ *
+ * @param observable Any `Observable`
+ */
+function waitForNextMessage<T>(observable: Observable<T>) {
+	return new Promise(resolve => {
+		const subscription = observable.subscribe(message => {
+			subscription.unsubscribe();
+			resolve(message);
+		});
+	});
+}
+
 describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
 		DataStore,
+		errorHandler,
 		schema,
 		connectivityMonitor,
 		Model,
@@ -39,6 +57,7 @@ describe('DataStore sync engine', () => {
 		BasicModel,
 		BasicModelWritableTS,
 		LegacyJSONPost,
+		LegacyJSONComment,
 		Post,
 		Comment,
 		HasOneParent,
@@ -59,6 +78,7 @@ describe('DataStore sync engine', () => {
 
 		({
 			DataStore,
+			errorHandler,
 			schema,
 			connectivityMonitor,
 			Model,
@@ -68,6 +88,7 @@ describe('DataStore sync engine', () => {
 			BasicModel,
 			BasicModelWritableTS,
 			LegacyJSONPost,
+			LegacyJSONComment,
 			Post,
 			Comment,
 			Model,
@@ -562,6 +583,14 @@ describe('DataStore sync engine', () => {
 	});
 
 	describe('connection state change handling', () => {
+		beforeEach(async () => {
+			warpTime();
+		});
+
+		afterEach(async () => {
+			unwarpTime();
+		});
+
 		test('survives online -> offline -> online cycle', async () => {
 			const post = await DataStore.save(
 				new Post({
@@ -725,7 +754,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost._deleted).toEqual(true);
 		});
 
-		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+		test('survives online -> connection disruption -> online cycle and triggers re-sync', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
@@ -764,6 +793,7 @@ describe('DataStore sync engine', () => {
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
 			await pause(1);
+
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
@@ -800,7 +830,7 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('does not error when disruption before sync queries start', async () => {
-			const post = DataStore.save(
+			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
 				})
@@ -808,17 +838,26 @@ describe('DataStore sync engine', () => {
 			const errorLog = jest.spyOn(console, 'error');
 			await simulateDisruption();
 			await simulateDisruptionEnd();
+
 			await waitForSyncQueriesReady();
-			expect(errorLog).not.toHaveBeenCalledWith(
-				expect.stringMatching(new RegExp('[ERROR].* Hub')),
-				expect.anything()
-			);
+			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
-			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			const cloudPost = table.get(
+				JSON.stringify([(await postPromise).id])
+			) as any;
 			expect(cloudPost.title).toEqual('a title');
+
+			/**
+			 * TODO: See if we can remove this. This was added to get the test
+			 * working again after introducing latency to the fake GraphQL
+			 * service. It seems like sync queries are going out and are not
+			 * playing well with `DataStore.clear()` (which happens in
+			 * `afterEach`), resulting in the test hanging indefinitely.
+			 */
+			await waitForSyncQueriesReady();
 		});
 	});
 
@@ -1050,6 +1089,80 @@ describe('DataStore sync engine', () => {
 			  ],
 			}
 		`);
+		});
+	});
+
+	describe('error handling', () => {
+		/**
+		 * NOTE that some of these tests mock sync responses, which are initiated
+		 * in the `beforeEach` one `describe` level up. This should still allow us
+		 * time to intercept sync and subscription queries. If we find that these
+		 * tests are *racing* the sync process, either move this describe block out
+		 * and only `DataStore.start()` in the individual tests, or instantiate
+		 * `errorHandler` listeners up a level.
+		 */
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on sync', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('syncLegacyJSONComments')) {
+					throw {
+						data: { syncLegacyJSONComments: null },
+						errors: [
+							{
+								path: ['syncLegacyJSONComments'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access syncLegacyJSONComments on type Query',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
+		});
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on mutate', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('createLegacyJSONComment')) {
+					throw {
+						data: { createLegacyJSONComment: null },
+						errors: [
+							{
+								path: ['createLegacyJSONComment'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access createLegacyJSONComment on type Mutation',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+			DataStore.save(
+				new LegacyJSONComment({
+					content: 'test content',
+				})
+			);
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
 		});
 	});
 });

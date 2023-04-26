@@ -3,67 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [5.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.7...@aws-amplify/core@5.1.8) (2023-04-06)
+## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.11...@aws-amplify/core@5.1.12) (2023-04-20)
 
 **Note:** Version bump only for package @aws-amplify/core
 
+## [5.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.10...@aws-amplify/core@5.1.11) (2023-04-18)
 
+**Note:** Version bump only for package @aws-amplify/core
 
+## [5.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.9...@aws-amplify/core@5.1.10) (2023-04-13)
 
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.8...@aws-amplify/core@5.1.9) (2023-04-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.7...@aws-amplify/core@5.1.8) (2023-04-06)
+
+**Note:** Version bump only for package @aws-amplify/core
 
 ## [5.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.6...@aws-amplify/core@5.1.7) (2023-04-04)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.5...@aws-amplify/core@5.1.6) (2023-03-30)
-
 
 ### Bug Fixes
 
-* Codescanning alerts ([#11159](https://github.com/aws-amplify/amplify-js/issues/11159)) ([b19e0ba](https://github.com/aws-amplify/amplify-js/commit/b19e0bab948d995b70fb98ad5d935483b3e15d8d))
-
-
-
-
+- Codescanning alerts ([#11159](https://github.com/aws-amplify/amplify-js/issues/11159)) ([b19e0ba](https://github.com/aws-amplify/amplify-js/commit/b19e0bab948d995b70fb98ad5d935483b3e15d8d))
 
 ## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.4...@aws-amplify/core@5.1.5) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.3...@aws-amplify/core@5.1.4) (2023-03-21)
 
 **Note:** Version bump only for package @aws-amplify/core
-
-
-
-
 
 ## [5.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.2...@aws-amplify/core@5.1.3) (2023-03-16)
 
 **Note:** Version bump only for package @aws-amplify/core
 
-
-
-
-
 ## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.1...@aws-amplify/core@5.1.2) (2023-03-13)
-
 
 ### Bug Fixes
 
-* Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
-
-
-
-
+- Run ts coverage check with test ([#11047](https://github.com/aws-amplify/amplify-js/issues/11047)) ([430bedf](https://github.com/aws-amplify/amplify-js/commit/430bedfd0d0618bd0093b488233521356feef787))
 
 ## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.0...@aws-amplify/core@5.1.1) (2023-03-08)
 

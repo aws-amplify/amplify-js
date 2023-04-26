@@ -3,64 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.28...@aws-amplify/geo@2.0.29) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
+## [2.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.27...@aws-amplify/geo@2.0.28) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
+## [2.0.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.26...@aws-amplify/geo@2.0.27) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
+## [2.0.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.25...@aws-amplify/geo@2.0.26) (2023-04-12)
+
+**Note:** Version bump only for package @aws-amplify/geo
+
 ## [2.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.24...@aws-amplify/geo@2.0.25) (2023-04-06)
 
 **Note:** Version bump only for package @aws-amplify/geo
 
-
-
-
-
 ## [2.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.23...@aws-amplify/geo@2.0.24) (2023-04-04)
-
 
 ### Bug Fixes
 
-* **deps:** update AWS SDK clients with fast-xml-parser dependency ([#11181](https://github.com/aws-amplify/amplify-js/issues/11181)) ([a05e1dd](https://github.com/aws-amplify/amplify-js/commit/a05e1dd9da7fb7a65f1ad1c78886e095e21a5c5a))
-
-
-
-
+- **deps:** update AWS SDK clients with fast-xml-parser dependency ([#11181](https://github.com/aws-amplify/amplify-js/issues/11181)) ([a05e1dd](https://github.com/aws-amplify/amplify-js/commit/a05e1dd9da7fb7a65f1ad1c78886e095e21a5c5a))
 
 ## [2.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.22...@aws-amplify/geo@2.0.23) (2023-03-30)
 
 **Note:** Version bump only for package @aws-amplify/geo
 
-
-
-
-
 ## [2.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.21...@aws-amplify/geo@2.0.22) (2023-03-23)
 
 **Note:** Version bump only for package @aws-amplify/geo
-
-
-
-
 
 ## [2.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.20...@aws-amplify/geo@2.0.21) (2023-03-21)
 
 **Note:** Version bump only for package @aws-amplify/geo
 
-
-
-
-
 ## [2.0.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.19...@aws-amplify/geo@2.0.20) (2023-03-16)
 
 **Note:** Version bump only for package @aws-amplify/geo
 
-
-
-
-
 ## [2.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.18...@aws-amplify/geo@2.0.19) (2023-03-13)
 
 **Note:** Version bump only for package @aws-amplify/geo
-
-
-
-
 
 ## [2.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/geo@2.0.17...@aws-amplify/geo@2.0.18) (2023-03-08)
 
