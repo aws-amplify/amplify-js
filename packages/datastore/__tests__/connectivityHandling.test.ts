@@ -890,8 +890,11 @@ describe('DataStore sync engine', () => {
 			// TODO: still necessary?
 			await pause(10000);
 
-			// TODO: still necessary?
-			// Increase latencies:
+			/**
+			 * Note: running this test without increased latencies will still fail,
+			 * however, will need to adjust the `expectedNumberOfUpdates` received by
+			 * the fake service (i.e. the outbox will not merge them).
+			 */
 			graphqlService.setLatencies({
 				request: 1000,
 				response: 1000,
@@ -933,10 +936,11 @@ describe('DataStore sync engine', () => {
 			await jitteredExponentialRetry(
 				() => {
 					/**
-					 * Because we don't wait for the outbox to clear on each mutation,
-					 * the outbox will merge some of the mutations. In this example,
-					 * we expect the number of requests received to be one less than
-					 * the actual number of updates.
+					 * Because we have increased the latency, and don't wait for the outbox
+					 * to clear on each mutation, the outbox will merge some of the mutations.
+					 * In this example, we expect the number of requests received to be one less than
+					 * the actual number of updates. If we were running this test without
+					 * increased latency, we'd expect more requests to be received.
 					 */
 					const expectedNumberOfUpdates = numberOfUpdates - 1;
 
