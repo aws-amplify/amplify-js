@@ -193,7 +193,7 @@ class MutationEventOutbox {
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
 		// TODO: fix
-		// `incomingData` contains all the fields in the record, and`outgoingData`
+		// `incomingData` contains all the fields in the record, and `outgoingData`
 		// only contains updated fields, resulting in an error when doing a comparison
 		// of two equal mutations.
 		if (!valuesEqual(incomingData, outgoingData, true)) {
