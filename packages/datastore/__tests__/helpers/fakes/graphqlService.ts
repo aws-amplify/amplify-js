@@ -26,6 +26,33 @@ type FakeLatencies = {
 };
 
 /**
+ * Default artificial latencies to introduce to the imagined network boundaries.
+ */
+const defaultLatencies: FakeLatencies = {
+	/**
+	 * The time it takes a request will take to reach the cloud.
+	 */
+	request: 15,
+
+	/**
+	 * After request processing, the time it takes for the client to
+	 * receive a response.
+	 */
+	response: 15,
+
+	/**
+	 * After request processing, the time it takes for each relevant
+	 * subscriber to receive an event.
+	 */
+	subscriber: 15,
+
+	/**
+	 * The max amount to randomly to +/- from each latency.
+	 */
+	jitter: 5,
+};
+
+/**
  * Statefully pretends to be AppSync, with minimal built-in assertions with
  * error callbacks and settings to help simulate various conditions.
  */
@@ -59,29 +86,7 @@ export class FakeGraphQLService {
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
 	 */
-	public latencies: FakeLatencies = {
-		/**
-		 * The time it takes a request will take to reach the cloud.
-		 */
-		request: 15,
-
-		/**
-		 * After request processing, the time it takes for the client to
-		 * receive a response.
-		 */
-		response: 15,
-
-		/**
-		 * After request processing, the time it takes for each relevant
-		 * subscriber to receive an event.
-		 */
-		subscriber: 15,
-
-		/**
-		 * The max amount to randomly to +/- from each latency.
-		 */
-		jitter: 5,
-	};
+	public latencies: FakeLatencies = defaultLatencies;
 
 	constructor(public schema: Schema) {
 		for (const model of Object.values(schema.models)) {
@@ -106,54 +111,28 @@ export class FakeGraphQLService {
 	}
 
 	/**
-	 * TODO: don't forget to reset
-	 * @param latencies
-	 * @returns
+	 * NOTE: don't forget to reset these values at the end of your test!
+	 * @param latencies new values for fake latencies
+	 * @returns current values for fake latencies
 	 */
 	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
 		return (this.latencies = { ...this.latencies, ...latencies });
 	}
 
 	/**
-	 * TODO: use constant for values
-	 * @param latencies
-	 * @returns
+	 * @returns current values for fake latencies
 	 */
 	public resetLatencies(): FakeLatencies {
-		return (this.latencies = {
-			/**
-			 * The time it takes a request will take to reach the cloud.
-			 */
-			request: 15,
-
-			/**
-			 * After request processing, the time it takes for the client to
-			 * receive a response.
-			 */
-			response: 15,
-
-			/**
-			 * After request processing, the time it takes for each relevant
-			 * subscriber to receive an event.
-			 */
-			subscriber: 15,
-
-			/**
-			 * The max amount to randomly to +/- from each latency.
-			 */
-			jitter: 5,
-		});
+		return (this.latencies = defaultLatencies);
 	}
 
 	/**
 	 *
-	 * @returns
+	 * @returns current values for fake latencies
 	 */
 	public getLatencies(): FakeLatencies {
 		return this.latencies;
 	}
-
-	// TODO: reset latencies
 
 	private async jitteredPause(ms) {
 		/**
