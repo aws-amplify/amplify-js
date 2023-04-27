@@ -865,9 +865,10 @@ describe('DataStore sync engine', () => {
 			// Number of updates to perform in this test:
 			const numberOfUpdates = 3;
 
+			// Tuple of updated title and version:
 			type SubVersionLogTuple = [string, number];
 
-			// Track sequence of versions / titles observed:
+			// Track sequence of versions and titles returned by `DataStore.observe()`:
 			const subVersionLog: SubVersionLogTuple[] = [];
 
 			// Record to update:
@@ -879,21 +880,18 @@ describe('DataStore sync engine', () => {
 			);
 
 			/**
-			 * TODO: Not waiting for the outbox to clear between save and update results
-			 * in a different issue, which should also be tested (`_version` is `undefined`)
+			 * Make sure the save was successfully sent out. There is a separate test
+			 * for testing an update when the save is still in the outbox (see below).
+			 * Here, `_version` is defined.s
 			 */
 			await waitForEmptyOutbox();
 
-			// TODO: still necessary?
-			await pause(3000);
+			// await pause(3000);
 
-			// TODO: still necessary?
-			const initialQuery = await DataStore.query(Post, original.id);
+			// const initialQuery = await DataStore.query(Post, original.id);
 
-			// TODO: still necessary?
-			await pause(10000);
+			// await pause(10000);
 
-			// TODO: also test observing by `id`
 			const subscription = await DataStore.observe(Post).subscribe(
 				({ opType, element }) => {
 					const response: SubVersionLogTuple = [
@@ -906,13 +904,13 @@ describe('DataStore sync engine', () => {
 				}
 			);
 
-			// TODO: still necessary?
-			await pause(10000);
+			// await pause(10000);
 
 			/**
 			 * Note: running this test without increased latencies will still fail,
-			 * however, will need to adjust the `expectedNumberOfUpdates` received by
-			 * the fake service (i.e. the outbox will not merge them).
+			 * however, the `expectedNumberOfUpdates` received by the fake service
+			 * will be different (i.e. they are not merged in the outbox). See the
+			 * tests following this one.
 			 */
 			graphqlService.setLatencies({
 				request: 1000,
@@ -921,7 +919,7 @@ describe('DataStore sync engine', () => {
 				jitter: 50,
 			});
 
-			// region mutate the original record:
+			// Mutate the original record multiple times:
 			for (let number = 0; number < numberOfUpdates; number++) {
 				await pause(200);
 
@@ -938,13 +936,11 @@ describe('DataStore sync engine', () => {
 				// in other tests, because we want to test concurrent updates
 				// being processed by the outbox.
 			}
-			// endregion
 
 			// Now we wait for the outbox to do what it needs to do:
 			await waitForEmptyOutbox();
 
-			// TODO: still necessary?
-			await pause(10000);
+			// await pause(10000);
 
 			/**
 			 * Validate that fake graphqlService has received / finished processing
@@ -989,7 +985,7 @@ describe('DataStore sync engine', () => {
 			);
 
 			// Validate that `observe` returned the expected updates to
-			// `title` and`version`, in the expected order:
+			// `title` and `version`, in the expected order:
 			// TODO: update to `toEqual` when we fix the issue
 			expect(subVersionLog).not.toEqual([
 				['post title 0', 1],
@@ -1015,9 +1011,9 @@ describe('DataStore sync engine', () => {
 
 			await subscription.unsubscribe();
 		});
-		test('rapid mutations on good connection when initial create is successful', async () => {});
-		test('rapid mutations on poor connection when initial create is unsuccessful', async () => {});
-		test('rapid mutations on good connection when initial create is unsuccessful', async () => {});
+		test('rapid mutations on good connection when initial create is not pending', async () => {});
+		test('rapid mutations on poor connection when initial create is pending', async () => {});
+		test('rapid mutations on good connection when initial create is pending', async () => {});
 		test('observe on poor connection with awaited outbox', async () => {});
 		test('observe on poor connection with unawaited outbox', async () => {});
 		test('observeQuery on poor connection with unawaited outbox', async () => {});
