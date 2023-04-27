@@ -842,7 +842,7 @@ describe('DataStore sync engine', () => {
 			await waitForSyncQueriesReady();
 		});
 
-		test.only('rapid mutations when initial create is successful', async () => {
+		test.only('rapid mutations on poor connection when initial create is successful', async () => {
 			// Number of updates to perform in this test:
 			const numberOfUpdates = 3;
 
@@ -930,9 +930,8 @@ describe('DataStore sync engine', () => {
 			/**
 			 * Validate that fake graphqlService has received / finished processing
 			 * all updates. We retry in the event that the artificial pauses and / or
-			 * latency is updated. Otherwise, we may get false negatives.
+			 * latencies are updated in the future. Otherwise, we may get false negatives.
 			 */
-			// TODO: add tests for `observe` (with latency) when waiting for the outbox.
 			await jitteredExponentialRetry(
 				() => {
 					/**
@@ -997,7 +996,13 @@ describe('DataStore sync engine', () => {
 
 			await subscription.unsubscribe();
 		});
-		test('mutations on poor connection when initial create is successful', async () => {});
+		test('rapid mutations on good connection when initial create is successful', async () => {});
+		test('rapid mutations on poor connection when initial create is unsuccessful', async () => {});
+		test('rapid mutations on good connection when initial create is unsuccessful', async () => {});
+		test('observe on poor connection with awaited outbox', async () => {});
+		test('observe on poor connection with unawaited outbox', async () => {});
+		test('observeQuery on poor connection with unawaited outbox', async () => {});
+		test('observeQuery on poor connection with unawaited outbox', async () => {});
 	});
 
 	describe('selective sync', () => {
