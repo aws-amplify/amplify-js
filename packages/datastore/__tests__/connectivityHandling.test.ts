@@ -893,12 +893,6 @@ describe('DataStore sync engine', () => {
 				 */
 				await waitForEmptyOutbox();
 
-				// await pause(3000);
-
-				// const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
-
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
 						const response: SubVersionLogTuple = [
@@ -911,8 +905,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				/**
 				 * Note: Running this test without increased latencies will still fail,
@@ -947,8 +939,6 @@ describe('DataStore sync engine', () => {
 
 				// Now we wait for the outbox to do what it needs to do:
 				await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
@@ -1052,12 +1042,6 @@ describe('DataStore sync engine', () => {
 				 */
 				await waitForEmptyOutbox();
 
-				// await pause(3000);
-
-				// const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
-
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
 						const response: SubVersionLogTuple = [
@@ -1070,8 +1054,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
@@ -1093,8 +1075,6 @@ describe('DataStore sync engine', () => {
 
 				// Now we wait for the outbox to do what it needs to do:
 				await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
@@ -1194,13 +1174,9 @@ describe('DataStore sync engine', () => {
 				 * for testing an update when the save is still in the outbox (see below).
 				 * Here, `_version` is defined.s
 				 */
-				// await waitForEmptyOutbox();
 
-				// await pause(3000);
-
+				// TODO:
 				const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
@@ -1214,8 +1190,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				/**
 				 * Note: Running this test without increased latencies will still fail,
@@ -1250,8 +1224,6 @@ describe('DataStore sync engine', () => {
 
 				// Now we wait for the outbox to do what it needs to do:
 				await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
@@ -1352,13 +1324,9 @@ describe('DataStore sync engine', () => {
 				 * for testing an update when the save is still in the outbox (see below).
 				 * Here, `_version` is defined.s
 				 */
-				// await waitForEmptyOutbox();
 
-				// await pause(3000);
-
+				// TODO:
 				const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
@@ -1372,8 +1340,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
@@ -1395,8 +1361,6 @@ describe('DataStore sync engine', () => {
 
 				// Now we wait for the outbox to do what it needs to do:
 				await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
@@ -1497,11 +1461,8 @@ describe('DataStore sync engine', () => {
 				 */
 				await waitForEmptyOutbox();
 
-				// await pause(3000);
-
+				// TODO:
 				const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
@@ -1515,8 +1476,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				/**
 				 * Note: Running this test without increased latencies will still fail,
@@ -1549,11 +1508,6 @@ describe('DataStore sync engine', () => {
 					 */
 					await waitForEmptyOutbox();
 				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				// await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
@@ -1654,11 +1608,8 @@ describe('DataStore sync engine', () => {
 				 */
 				await waitForEmptyOutbox();
 
-				// await pause(3000);
-
+				// TODO:
 				const initialQuery = await DataStore.query(Post, original.id);
-
-				// await pause(10000);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
@@ -1672,8 +1623,6 @@ describe('DataStore sync engine', () => {
 						subVersionLog.push(response);
 					}
 				);
-
-				// await pause(10000);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
@@ -1694,11 +1643,6 @@ describe('DataStore sync engine', () => {
 					 */
 					await waitForEmptyOutbox();
 				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				// await waitForEmptyOutbox();
-
-				// await pause(10000);
 
 				/**
 				 * Validate that fake graphqlService has received / finished processing
