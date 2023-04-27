@@ -7,10 +7,7 @@ import {
 	__modelMeta__,
 } from '../../../src/types';
 import { validatePredicate, getTimestampFields } from '../../../src/util';
-import {
-	ModelPredicateCreator,
-	isPredicatesAll,
-} from '../../../src/predicates';
+import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
@@ -594,12 +591,12 @@ export class FakeGraphQLService {
 					};
 				}
 			} else if (operation === 'mutation') {
-				// a hack, we need something like the background process manager
-				// to know if the service is still processing requests
+				// For keeping track of in-flight mutations
 				this.runningMutations.set(variables.input.id, type);
 
 				const record = variables.input;
-				const timestampFields = this.timestampFields.get(tableName);
+				// // TODO: update test expected values and re-enable (currently unused)
+				// const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
 					const existing = table.get(this.getPK(tableName, record));

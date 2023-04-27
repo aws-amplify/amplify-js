@@ -1175,9 +1175,6 @@ describe('DataStore sync engine', () => {
 				 * Here, `_version` is defined.s
 				 */
 
-				// TODO:
-				const initialQuery = await DataStore.query(Post, original.id);
-
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
 						const response: SubVersionLogTuple = [
@@ -1325,9 +1322,6 @@ describe('DataStore sync engine', () => {
 				 * Here, `_version` is defined.s
 				 */
 
-				// TODO:
-				const initialQuery = await DataStore.query(Post, original.id);
-
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
 						const response: SubVersionLogTuple = [
@@ -1460,9 +1454,6 @@ describe('DataStore sync engine', () => {
 				 * Here, `_version` is defined.s
 				 */
 				await waitForEmptyOutbox();
-
-				// TODO:
-				const initialQuery = await DataStore.query(Post, original.id);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
@@ -1607,9 +1598,6 @@ describe('DataStore sync engine', () => {
 				 * Here, `_version` is defined.s
 				 */
 				await waitForEmptyOutbox();
-
-				// TODO:
-				const initialQuery = await DataStore.query(Post, original.id);
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
