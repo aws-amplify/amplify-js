@@ -29,8 +29,7 @@ export type MiddlewareHandler<Input, Output> = (
 ) => Promise<Output>;
 
 /**
- * The context object to store states across the middleware chain and retry
- * attempts if retry middleware exists.
+ * The context object to store states across the middleware chain.
  */
 export type MiddlewareContext = {
 	/**

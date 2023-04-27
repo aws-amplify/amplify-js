@@ -1,9 +1,12 @@
-import { HttpResponse, MiddlewareHandler } from '../../src/clients/types';
-import { composeTransferHandler } from '../../src/clients/internal/composeTransferHandler';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
+import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
 	retryMiddleware,
 	RetryOptions,
-} from '../../src/clients/middleware/retry';
+} from '../../../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');

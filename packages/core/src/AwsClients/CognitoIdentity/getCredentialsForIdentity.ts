@@ -12,7 +12,7 @@ import {
 	defaultConfigs,
 	sharedHeaders,
 } from './base';
-import { composeServiceApi } from '../../clients/internal/composeApiHandler';
+import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
 import {
 	parseJsonBody,
