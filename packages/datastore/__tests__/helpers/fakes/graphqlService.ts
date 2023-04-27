@@ -678,7 +678,8 @@ export class FakeGraphQLService {
 
 				this.notifySubscribers(tableName, type, data, selection);
 				await this.jitteredPause(this.latencies.response);
-				// TODO:
+
+				// Mutation is complete, remove from in-flight mutations
 				this.runningMutations.delete(variables.input.id);
 				this.log('API Response', { data, errors });
 				resolve({
