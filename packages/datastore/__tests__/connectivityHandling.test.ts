@@ -861,12 +861,13 @@ describe('DataStore sync engine', () => {
 			await waitForSyncQueriesReady();
 		});
 		/**
-		 * Test observed rapid mutations with variable connection latencies, as well as
+		 * Test observed rapid single-field mutations with variable connection latencies, as well as
 		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
 		 * as each scenario results in different observed behavior - essentially, whether or not
-		 * the outbox merges updates.
+		 * the outbox merges updates. We are updating a single field to ensure that the outbox's
+		 * `syncOutboxVersionsOnDequeue` does the right value comparison.
 		 */
-		describe('observed rapid mutations with variable connection latencies', () => {
+		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			// Skipping because currently, DataStore ultimately returns the wrong title
 			test.only('rapid mutations on poor connection when initial create is not pending', async () => {
 				// Number of updates to perform in this test:
@@ -1017,7 +1018,7 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore...
-			test.only('rapid mutations on good connection when initial create is not pending', async () => {
+			test('rapid mutations on good connection when initial create is not pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1150,7 +1151,7 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore returns `undefined` versions on each update
-			test.only('rapid mutations on poor connection when initial create is pending', async () => {
+			test('rapid mutations on poor connection when initial create is pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1297,7 +1298,7 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore returns `undefined` versions on each update
-			test.only('rapid mutations on good connection when initial create is pending', async () => {
+			test('rapid mutations on good connection when initial create is pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1430,7 +1431,7 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore...
-			test.only('observe on poor connection with awaited outbox', async () => {
+			test('observe on poor connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1574,7 +1575,7 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore...
-			test.only('observe on good connection with awaited outbox', async () => {
+			test('observe on good connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
