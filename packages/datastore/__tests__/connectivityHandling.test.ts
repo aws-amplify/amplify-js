@@ -29,10 +29,26 @@ async function waitForEmptyOutboxOrError(service) {
 	return await Promise.race([waitForEmptyOutbox(), pendingError]);
 }
 
+/**
+ * Creates a promise to wait for the next subscription message and
+ * returns it when it arrives.
+ *
+ * @param observable Any `Observable`
+ */
+function waitForNextMessage<T>(observable: Observable<T>) {
+	return new Promise(resolve => {
+		const subscription = observable.subscribe(message => {
+			subscription.unsubscribe();
+			resolve(message);
+		});
+	});
+}
+
 describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
 		DataStore,
+		errorHandler,
 		schema,
 		connectivityMonitor,
 		Model,
@@ -42,6 +58,7 @@ describe('DataStore sync engine', () => {
 		BasicModel,
 		BasicModelWritableTS,
 		LegacyJSONPost,
+		LegacyJSONComment,
 		Post,
 		Comment,
 		HasOneParent,
@@ -62,6 +79,7 @@ describe('DataStore sync engine', () => {
 
 		({
 			DataStore,
+			errorHandler,
 			schema,
 			connectivityMonitor,
 			Model,
@@ -71,6 +89,7 @@ describe('DataStore sync engine', () => {
 			BasicModel,
 			BasicModelWritableTS,
 			LegacyJSONPost,
+			LegacyJSONComment,
 			Post,
 			Comment,
 			Model,
@@ -1233,6 +1252,80 @@ describe('DataStore sync engine', () => {
 			  ],
 			}
 		`);
+		});
+	});
+
+	describe('error handling', () => {
+		/**
+		 * NOTE that some of these tests mock sync responses, which are initiated
+		 * in the `beforeEach` one `describe` level up. This should still allow us
+		 * time to intercept sync and subscription queries. If we find that these
+		 * tests are *racing* the sync process, either move this describe block out
+		 * and only `DataStore.start()` in the individual tests, or instantiate
+		 * `errorHandler` listeners up a level.
+		 */
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on sync', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('syncLegacyJSONComments')) {
+					throw {
+						data: { syncLegacyJSONComments: null },
+						errors: [
+							{
+								path: ['syncLegacyJSONComments'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access syncLegacyJSONComments on type Query',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
+		});
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on mutate', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('createLegacyJSONComment')) {
+					throw {
+						data: { createLegacyJSONComment: null },
+						errors: [
+							{
+								path: ['createLegacyJSONComment'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access createLegacyJSONComment on type Mutation',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+			DataStore.save(
+				new LegacyJSONComment({
+					content: 'test content',
+				})
+			);
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
 		});
 	});
 });

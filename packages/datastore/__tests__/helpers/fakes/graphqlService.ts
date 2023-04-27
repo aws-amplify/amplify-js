@@ -14,6 +14,13 @@ import {
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
 import { pause } from '../util';
 
+type GraphQLRequest = {
+	query: string;
+	variables: Record<string, any>;
+	authMode: string | undefined | null;
+	authToken: string | undefined | null;
+};
+
 type FakeLatencies = {
 	request: number;
 	response: number;
@@ -22,7 +29,7 @@ type FakeLatencies = {
 };
 
 /**
- * Statefully pretends to be AppSync, with minimal built-in asertions with
+ * Statefully pretends to be AppSync, with minimal built-in assertions with
  * error callbacks and settings to help simulate various conditions.
  */
 export class FakeGraphQLService {
@@ -43,6 +50,14 @@ export class FakeGraphQLService {
 	>();
 	// TODO:
 	public runningMutations = new Map<string, string>();
+
+	/**
+	 * Singleton middleware, basically.
+	 */
+	public intercept: (request: GraphQLRequest, next: () => any) => any = (
+		request,
+		next
+	) => next();
 
 	/**
 	 * Artificial latencies to introduce to the imagined network boundaries.
@@ -259,7 +274,7 @@ export class FakeGraphQLService {
 		return JSON.stringify(values);
 	}
 
-	private makeConditionalUpateFailedError(selection) {
+	private makeConditionalUpdateFailedError(selection) {
 		// Reponse taken from AppSync console trying to create already existing model.
 		return {
 			path: [selection],
@@ -455,7 +470,7 @@ export class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
-		this.log('automerge', { existing, updated, merged });
+		this.log('auto-merge', { existing, updated, merged });
 		return merged;
 	}
 
@@ -483,7 +498,7 @@ export class FakeGraphQLService {
 	 *
 	 * @param tableName The table name subscribers are looking at.
 	 * @param type The operation type. (Create, Update, Delete).
-	 * @param data The data to sendout.
+	 * @param data The data to send out.
 	 * @param selection The function/selection name, like "onCreateTodo".
 	 */
 	public async notifySubscribers(tableName, type, data, selection) {
@@ -513,13 +528,8 @@ export class FakeGraphQLService {
 		});
 	}
 
-	/**
-	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
-	 *
-	 * @param param0
-	 */
-	public graphql({ query, variables, authMode, authToken }) {
-		return this.request({ query, variables, authMode, authToken });
+	public graphql(request: GraphQLRequest) {
+		return this.intercept(request, () => this.request(request));
 	}
 
 	public request({ query, variables, authMode, authToken }) {
@@ -604,7 +614,7 @@ export class FakeGraphQLService {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else {
 						data = {
 							[selection]: {
@@ -665,14 +675,14 @@ export class FakeGraphQLService {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else if (
 						!this.satisfiesCondition(tableName, existing, variables.condition)
 					) {
 						data = {
 							[selection]: null,
 						};
-						errors = [this.makeConditionalUpateFailedError(selection)];
+						errors = [this.makeConditionalUpdateFailedError(selection)];
 					} else {
 						data = {
 							[selection]: {
