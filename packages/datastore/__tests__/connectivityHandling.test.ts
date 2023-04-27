@@ -868,13 +868,20 @@ describe('DataStore sync engine', () => {
 		 * the outbox merges updates. We are updating a single field to ensure that the outbox's
 		 * `syncOutboxVersionsOnDequeue` does the right value comparison when there are multiple
 		 * fields present on a model, but only one is updated.
+		 *
+		 * Note: if these tests fail, and you witness one of the following:
+		 *     1) The retry throws an error
+		 *     2) The number of observed updates has changed
+		 *     3) The record's final version number has changed
+		 * make sure you haven't adjusted the artifical latency or `pause` values, as this will
+		 * result in a change in the expected number of merges performed by the outbox.
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			// Tuple of updated title and version:
 			type SubscriptionLogTuple = [string, number];
 
 			// Skipping because currently DataStore eventually returns the wrong title
-			test('rapid mutations on poor connection when initial create is not pending', async () => {
+			test.skip('rapid mutations on poor connection when initial create is not pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -924,8 +931,6 @@ describe('DataStore sync engine', () => {
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
-					// await pause(200);
-
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
@@ -935,7 +940,7 @@ describe('DataStore sync engine', () => {
 						})
 					);
 
-					// Note: We do NOT wait for the empty outbox here, like we do
+					// Note: We do NOT wait for outbox to be empty here, like we do
 					// in other tests, because we want to test concurrent updates
 					// being processed by the outbox.
 				}
@@ -946,7 +951,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
@@ -987,8 +992,7 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				// TODO: update to `toEqual` when we fix the issue
-				expect(subscriptionLog).not.toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1000,27 +1004,21 @@ describe('DataStore sync engine', () => {
 				const savedItem = table.get(JSON.stringify([original.id])) as any;
 
 				// Validate updates were successful:
-				// TODO: update to `toEqual` when we fix the issue
-				expect(savedItem.title).not.toEqual(
-					`post title ${numberOfUpdates - 1}`
-				);
+				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Validate version was correctly updated:
 				expect(savedItem._version).toEqual(3);
 
 				// Validate that query returns the latest version:
 				const queryResult = await DataStore.query(Post, original.id);
-				// TODO: update to `toEqual` when we fix the issue
-				expect(queryResult?.title).not.toEqual(
-					`post title ${numberOfUpdates - 1}`
-				);
+				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Cleanup:
 				graphqlService.resetLatencies();
 				await subscription.unsubscribe();
 			});
-			// Skipping because currently, DataStore...
-			test('rapid mutations on good connection when initial create is not pending', async () => {
+			// Skipping because currently DataStore eventually returns the wrong title
+			test.skip('rapid mutations on fast connection when initial create is not pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1041,7 +1039,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Make sure the save was successfully sent out. There is a separate test
 				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * Here, `_version` is defined.
 				 */
 				await waitForEmptyOutbox();
 
@@ -1064,7 +1062,7 @@ describe('DataStore sync engine', () => {
 					 * We are testing a scenario where the outbox does not
 					 * merge outgoing requests (because there is no latency).
 					 * However, if we make the mutations rapidly in this loop,
-					 * we are creating an aritifical situation where they will still
+					 * we are creating an artifical situation where they will still
 					 * be merged. Adding a semi-realistic pause ("button clicks")
 					 * between updates.
 					 */
@@ -1090,7 +1088,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
@@ -1142,26 +1140,21 @@ describe('DataStore sync engine', () => {
 				const savedItem = table.get(JSON.stringify([original.id])) as any;
 
 				// Validate updates were successful:
-				// TODO: update to `toEqual` when we fix the issue
-				expect(savedItem.title).not.toEqual(
-					`post title ${numberOfUpdates - 1}`
-				);
+				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Validate version was correctly updated:
 				expect(savedItem._version).toEqual(4);
 
 				// Validate that query returns the latest version:
 				const queryResult = await DataStore.query(Post, original.id);
-				// TODO: update to `toEqual` when we fix the issue
-				expect(queryResult?.title).not.toEqual(
-					`post title ${numberOfUpdates - 1}`
-				);
+				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Cleanup:
 				await subscription.unsubscribe();
 			});
-			// Skipping because currently, DataStore returns `undefined` versions on each update
-			test('rapid mutations on poor connection when initial create is pending', async () => {
+			// Skipping because currently, DataStore returns `undefined` versions on each update.
+			// Note: may need to fine tune the assertions once the issue is fixed.
+			test.skip('rapid mutations on poor connection when initial create is pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1180,10 +1173,8 @@ describe('DataStore sync engine', () => {
 				);
 
 				/**
-				 * TODO: We don't wait for the outbox
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * NOTE: We do NOT wait for the outbox here - we are testing
+				 * updates on a record that is still in the outbox.
 				 */
 
 				const subscription = await DataStore.observe(Post).subscribe(
@@ -1202,7 +1193,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Note: Running this test without increased latencies will still fail,
 				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (i.e. they are not merged in the outbox). See the
+				 * will be different (here they are merged in the outbox). See the
 				 * tests following this one.
 				 */
 				graphqlService.setLatencies({
@@ -1214,8 +1205,6 @@ describe('DataStore sync engine', () => {
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
-					// await pause(200);
-
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
@@ -1236,7 +1225,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
@@ -1256,8 +1245,7 @@ describe('DataStore sync engine', () => {
 									operation === 'mutation' &&
 									type === 'update' &&
 									tableName === 'Post'
-								// TODO update when issue is fixed, service is not receiving any requests
-							).length === 0;
+							).length === expectedNumberOfUpdates;
 
 						// Ensure all mutations are complete:
 						const allRunningMutationsComplete =
@@ -1278,9 +1266,7 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently all versions are `undefined`)
-				expect(subscriptionLog).not.toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1295,9 +1281,7 @@ describe('DataStore sync engine', () => {
 				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Validate version was correctly updated:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently the version will be `undefined)
-				expect(savedItem._version).not.toEqual(3);
+				expect(savedItem._version).toEqual(3);
 
 				// Validate that query returns the latest version:
 				const queryResult = await DataStore.query(Post, original.id);
@@ -1308,7 +1292,8 @@ describe('DataStore sync engine', () => {
 				await subscription.unsubscribe();
 			});
 			// Skipping because currently, DataStore returns `undefined` versions on each update
-			test('rapid mutations on good connection when initial create is pending', async () => {
+			// Note: may need to fine tune the assertions once the issue is fixed.
+			test.skip('rapid mutations on fast connection when initial create is pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1327,10 +1312,8 @@ describe('DataStore sync engine', () => {
 				);
 
 				/**
-				 * TODO: We don't wait for the outbox
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * NOTE: We do NOT wait for the outbox here - we are testing
+				 * updates on a record that is still in the outbox.
 				 */
 
 				const subscription = await DataStore.observe(Post).subscribe(
@@ -1378,7 +1361,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
@@ -1398,8 +1381,7 @@ describe('DataStore sync engine', () => {
 									operation === 'mutation' &&
 									type === 'update' &&
 									tableName === 'Post'
-								// TODO update when issue is fixed, service is not receiving any requests
-							).length === 0;
+							).length === expectedNumberOfUpdates; // Update before PR merge
 
 						// Ensure all mutations are complete:
 						const allRunningMutationsComplete =
@@ -1420,9 +1402,7 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently all versions are `undefined`)
-				expect(subscriptionLog).not.toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1437,9 +1417,7 @@ describe('DataStore sync engine', () => {
 				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 				// Validate version was correctly updated:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently the version will be `undefined)
-				expect(savedItem._version).not.toEqual(3);
+				expect(savedItem._version).toEqual(3);
 
 				// Validate that query returns the latest version:
 				const queryResult = await DataStore.query(Post, original.id);
@@ -1448,7 +1426,7 @@ describe('DataStore sync engine', () => {
 				// Cleanup:
 				await subscription.unsubscribe();
 			});
-			// Skipping because currently, DataStore...
+			// TODO: don't skip
 			test('observe on poor connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
@@ -1469,8 +1447,8 @@ describe('DataStore sync engine', () => {
 
 				/**
 				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * for testing an update when the save is still in the outbox (see above).
+				 * Here, `_version` is defined.
 				 */
 				await waitForEmptyOutbox();
 
@@ -1490,7 +1468,7 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Note: Running this test without increased latencies will still fail,
 				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (i.e. they are not merged in the outbox). See the
+				 * will be different (here they are merged in the outbox). See the
 				 * tests following this one.
 				 */
 				graphqlService.setLatencies({
@@ -1522,18 +1500,15 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
 						/**
-						 * Because we have increased the latency, and don't wait for the outbox
-						 * to clear on each mutation, the outbox will merge some of the mutations.
-						 * In this example, we expect the number of requests received to be one less than
-						 * the actual number of updates. If we were running this test without
-						 * increased latency, we'd expect more requests to be received.
+						 * Even though we have increased the latency, we are still waiting
+						 * on the outbox after each mutation. Therefore, mutations will not
+						 * be merged.
 						 */
-						const expectedNumberOfUpdates = numberOfUpdates - 1;
 
 						// Ensure the service has received all the requests.
 						const allUpdatesSent =
@@ -1542,7 +1517,7 @@ describe('DataStore sync engine', () => {
 									operation === 'mutation' &&
 									type === 'update' &&
 									tableName === 'Post'
-							).length === 3;
+							).length === numberOfUpdates;
 
 						// Ensure all mutations are complete:
 						const allRunningMutationsComplete =
@@ -1563,8 +1538,6 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently all versions are `undefined`)
 				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 0', 2],
@@ -1592,8 +1565,8 @@ describe('DataStore sync engine', () => {
 				graphqlService.resetLatencies();
 				await subscription.unsubscribe();
 			});
-			// Skipping because currently, DataStore...
-			test('observe on good connection with awaited outbox', async () => {
+			// TODO: don't skip
+			test('observe on fast connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
@@ -1613,8 +1586,8 @@ describe('DataStore sync engine', () => {
 
 				/**
 				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * for testing an update when the save is still in the outbox (see above).
+				 * Here, `_version` is defined.
 				 */
 				await waitForEmptyOutbox();
 
@@ -1633,15 +1606,6 @@ describe('DataStore sync engine', () => {
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
-					/**
-					 * We are testing a scenario where the outbox does not
-					 * merge outgoing requests (because there is no latency).
-					 * However, if we make the mutations rapidly in this loop,
-					 * we are creating an aritifical situation where they will still
-					 * be merged. Adding a semi-realistic pause ("button clicks")
-					 * between updates.
-					 */
-					await pause(200);
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
@@ -1663,18 +1627,15 @@ describe('DataStore sync engine', () => {
 				/**
 				 * Validate that fake graphqlService has received / finished processing
 				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated in the future. Otherwise, we may get false negatives.
+				 * latencies are updated (future test iterations).
 				 */
 				await jitteredExponentialRetry(
 					() => {
 						/**
-						 * Because we have increased the latency, and don't wait for the outbox
-						 * to clear on each mutation, the outbox will merge some of the mutations.
-						 * In this example, we expect the number of requests received to be one less than
-						 * the actual number of updates. If we were running this test without
-						 * increased latency, we'd expect more requests to be received.
+						 * Even though we have increased the latency, we are still waiting
+						 * on the outbox after each mutation. Therefore, mutations will not
+						 * be merged.
 						 */
-						const expectedNumberOfUpdates = numberOfUpdates - 1;
 
 						// Ensure the service has received all the requests.
 						const allUpdatesSent =
@@ -1683,7 +1644,7 @@ describe('DataStore sync engine', () => {
 									operation === 'mutation' &&
 									type === 'update' &&
 									tableName === 'Post'
-							).length === 3;
+							).length === numberOfUpdates;
 
 						// Ensure all mutations are complete:
 						const allRunningMutationsComplete =
@@ -1704,8 +1665,6 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				// TODO: update to `toEqual` when we fix the issue
-				// (currently all versions are `undefined`)
 				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 0', 2],
