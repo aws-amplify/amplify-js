@@ -1426,7 +1426,6 @@ describe('DataStore sync engine', () => {
 				// Cleanup:
 				await subscription.unsubscribe();
 			});
-			// TODO: don't skip
 			test('observe on poor connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
@@ -1565,7 +1564,6 @@ describe('DataStore sync engine', () => {
 				graphqlService.resetLatencies();
 				await subscription.unsubscribe();
 			});
-			// TODO: don't skip
 			test('observe on fast connection with awaited outbox', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
