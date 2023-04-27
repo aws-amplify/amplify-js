@@ -908,7 +908,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -934,7 +934,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
@@ -1048,7 +1048,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -1071,7 +1071,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
@@ -1182,7 +1182,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -1208,7 +1208,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
@@ -1321,7 +1321,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -1344,7 +1344,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
@@ -1457,7 +1457,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -1483,7 +1483,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
@@ -1596,7 +1596,7 @@ describe('DataStore sync engine', () => {
 						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
-							//@ts-ignore
+							// @ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
@@ -1609,7 +1609,7 @@ describe('DataStore sync engine', () => {
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
-						//@ts-ignore
+						// @ts-ignore
 						Post.copyOf(retrieved, updated => {
 							updated.title = `post title ${number}`;
 						})
