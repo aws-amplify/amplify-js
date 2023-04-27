@@ -860,24 +860,26 @@ describe('DataStore sync engine', () => {
 			 */
 			await waitForSyncQueriesReady();
 		});
+
 		/**
 		 * Test observed rapid single-field mutations with variable connection latencies, as well as
 		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
 		 * as each scenario results in different observed behavior - essentially, whether or not
 		 * the outbox merges updates. We are updating a single field to ensure that the outbox's
-		 * `syncOutboxVersionsOnDequeue` does the right value comparison.
+		 * `syncOutboxVersionsOnDequeue` does the right value comparison when there are multiple
+		 * fields present on a model, but only one is updated.
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
-			// Skipping because currently, DataStore ultimately returns the wrong title
-			test.only('rapid mutations on poor connection when initial create is not pending', async () => {
+			// Tuple of updated title and version:
+			type SubscriptionLogTuple = [string, number];
+
+			// Skipping because currently DataStore eventually returns the wrong title
+			test('rapid mutations on poor connection when initial create is not pending', async () => {
 				// Number of updates to perform in this test:
 				const numberOfUpdates = 3;
 
-				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
-
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -889,28 +891,28 @@ describe('DataStore sync engine', () => {
 
 				/**
 				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.s
+				 * for testing an update when the initial save is still in the outbox
+				 * (see below). Here `_version` IS defined.
 				 */
 				await waitForEmptyOutbox();
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
 				/**
 				 * Note: Running this test without increased latencies will still fail,
 				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (i.e. they are not merged in the outbox). See the
+				 * will be different (here they are merged in the outbox). See the
 				 * tests following this one.
 				 */
 				graphqlService.setLatencies({
@@ -922,7 +924,7 @@ describe('DataStore sync engine', () => {
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
-					await pause(200);
+					// await pause(200);
 
 					const retrieved = await DataStore.query(Post, original.id);
 
@@ -986,7 +988,7 @@ describe('DataStore sync engine', () => {
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
 				// TODO: update to `toEqual` when we fix the issue
-				expect(subVersionLog).not.toEqual([
+				expect(subscriptionLog).not.toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1023,10 +1025,10 @@ describe('DataStore sync engine', () => {
 				const numberOfUpdates = 3;
 
 				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
+				type SubscriptionLogTuple = [string, number];
 
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -1045,19 +1047,27 @@ describe('DataStore sync engine', () => {
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
+					/**
+					 * We are testing a scenario where the outbox does not
+					 * merge outgoing requests (because there is no latency).
+					 * However, if we make the mutations rapidly in this loop,
+					 * we are creating an aritifical situation where they will still
+					 * be merged. Adding a semi-realistic pause ("button clicks")
+					 * between updates.
+					 */
 					await pause(200);
 
 					const retrieved = await DataStore.query(Post, original.id);
@@ -1120,7 +1130,7 @@ describe('DataStore sync engine', () => {
 
 				// Validate that `observe` returned the expected updates to
 				// `title` and `version`, in the expected order:
-				expect(subVersionLog).toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 1],
@@ -1156,10 +1166,10 @@ describe('DataStore sync engine', () => {
 				const numberOfUpdates = 3;
 
 				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
+				type SubscriptionLogTuple = [string, number];
 
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -1178,14 +1188,14 @@ describe('DataStore sync engine', () => {
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
@@ -1204,7 +1214,7 @@ describe('DataStore sync engine', () => {
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
-					await pause(200);
+					// await pause(200);
 
 					const retrieved = await DataStore.query(Post, original.id);
 
@@ -1270,7 +1280,7 @@ describe('DataStore sync engine', () => {
 				// `title` and `version`, in the expected order:
 				// TODO: update to `toEqual` when we fix the issue
 				// (currently all versions are `undefined`)
-				expect(subVersionLog).not.toEqual([
+				expect(subscriptionLog).not.toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1303,10 +1313,10 @@ describe('DataStore sync engine', () => {
 				const numberOfUpdates = 3;
 
 				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
+				type SubscriptionLogTuple = [string, number];
 
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -1325,19 +1335,27 @@ describe('DataStore sync engine', () => {
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
+					/**
+					 * We are testing a scenario where the outbox does not
+					 * merge outgoing requests (because there is no latency).
+					 * However, if we make the mutations rapidly in this loop,
+					 * we are creating an aritifical situation where they will still
+					 * be merged. Adding a semi-realistic pause ("button clicks")
+					 * between updates.
+					 */
 					await pause(200);
 
 					const retrieved = await DataStore.query(Post, original.id);
@@ -1404,7 +1422,7 @@ describe('DataStore sync engine', () => {
 				// `title` and `version`, in the expected order:
 				// TODO: update to `toEqual` when we fix the issue
 				// (currently all versions are `undefined`)
-				expect(subVersionLog).not.toEqual([
+				expect(subscriptionLog).not.toEqual([
 					['post title 0', 1],
 					['post title 1', 1],
 					['post title 2', 3],
@@ -1436,10 +1454,10 @@ describe('DataStore sync engine', () => {
 				const numberOfUpdates = 3;
 
 				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
+				type SubscriptionLogTuple = [string, number];
 
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -1458,14 +1476,14 @@ describe('DataStore sync engine', () => {
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
@@ -1547,7 +1565,7 @@ describe('DataStore sync engine', () => {
 				// `title` and `version`, in the expected order:
 				// TODO: update to `toEqual` when we fix the issue
 				// (currently all versions are `undefined`)
-				expect(subVersionLog).toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 0', 2],
 					['post title 1', 2],
@@ -1580,10 +1598,10 @@ describe('DataStore sync engine', () => {
 				const numberOfUpdates = 3;
 
 				// Tuple of updated title and version:
-				type SubVersionLogTuple = [string, number];
+				type SubscriptionLogTuple = [string, number];
 
 				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subVersionLog: SubVersionLogTuple[] = [];
+				const subscriptionLog: SubscriptionLogTuple[] = [];
 
 				// Record to update:
 				const original = await DataStore.save(
@@ -1602,19 +1620,28 @@ describe('DataStore sync engine', () => {
 
 				const subscription = await DataStore.observe(Post).subscribe(
 					({ opType, element }) => {
-						const response: SubVersionLogTuple = [
+						const response: SubscriptionLogTuple = [
 							element.title,
 							// No, TypeScript, there is a version:
 							//@ts-ignore
 							element._version,
 						];
 						// Track sequence of versions and titles
-						subVersionLog.push(response);
+						subscriptionLog.push(response);
 					}
 				);
 
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
+					/**
+					 * We are testing a scenario where the outbox does not
+					 * merge outgoing requests (because there is no latency).
+					 * However, if we make the mutations rapidly in this loop,
+					 * we are creating an aritifical situation where they will still
+					 * be merged. Adding a semi-realistic pause ("button clicks")
+					 * between updates.
+					 */
+					await pause(200);
 					const retrieved = await DataStore.query(Post, original.id);
 
 					await DataStore.save(
@@ -1679,7 +1706,7 @@ describe('DataStore sync engine', () => {
 				// `title` and `version`, in the expected order:
 				// TODO: update to `toEqual` when we fix the issue
 				// (currently all versions are `undefined`)
-				expect(subVersionLog).toEqual([
+				expect(subscriptionLog).toEqual([
 					['post title 0', 1],
 					['post title 0', 2],
 					['post title 1', 2],
