@@ -11,6 +11,8 @@ import { getFormattedDates } from './getFormattedDates';
  *
  * @param options `SignRequestOptions` object containing values used to construct the signature.
  * @returns Common `SigningValues` used for signing.
+ *
+ * @internal
  */
 export const getSigningValues = ({
 	credentials,

@@ -19,6 +19,8 @@ import { getSignedHeaders } from './getSignedHeaders';
  * - CanonicalHeaders
  * - SignedHeaders
  * - HashedPayload
+ *
+ * @internal
  */
 export const getCanonicalRequest = ({
 	body,

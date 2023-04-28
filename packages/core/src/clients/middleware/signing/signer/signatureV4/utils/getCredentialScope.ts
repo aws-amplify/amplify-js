@@ -11,6 +11,8 @@ import { KEY_TYPE_IDENTIFIER } from '../constants';
  * @param service Service to which the signed request is being sent.
  *
  * @returns  A string representing the credential scope with format 'YYYYMMDD/region/service/aws4_request'.
+ *
+ * @internal
  */
 export const getCredentialScope = (
 	date: string,

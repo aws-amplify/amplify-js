@@ -11,6 +11,8 @@ import { HttpRequest } from '../../../../../types';
  * use lowercase characters, must appear in alphabetical order, and must be followed by a colon (:). For the values,
  * trim any leading or trailing spaces, convert sequential spaces to a single space, and separate the values
  * for a multi-value header using commas.
+ *
+ * @internal
  */
 export const getCanonicalHeaders = (headers: HttpRequest['headers']): string =>
 	Object.entries(headers)
