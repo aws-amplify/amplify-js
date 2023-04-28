@@ -25,6 +25,7 @@ export { AuthServiceOptions } from './options/AuthServiceOptions';
 export { AuthSignUpOptions } from './options/AuthSignUpOptions';
 
 // Requests
+export { ConfirmResetPasswordRequest } from './requests/ConfirmResetPasswordRequest';
 export { ResetPasswordRequest } from './requests/ResetPasswordRequest';
 export { SignUpRequest } from './requests/SignUpRequest';
 

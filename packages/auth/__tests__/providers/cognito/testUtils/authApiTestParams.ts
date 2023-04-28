@@ -9,6 +9,18 @@ export const authAPITestParams = {
 		password: 'password1',
 		email: 'test1@test.com',
 	},
+	signUpHttpCallResult: {
+		UserConfirmed: false,
+		UserSub: '1234567890',
+		CodeDeliveryDetails: {
+			AttributeName: 'email',
+			DeliveryMedium: 'EMAIL',
+			Destination: 'test1@test.com',
+		}
+	},
+	resetPasswordRequest: {
+		username: 'username'
+	},
 	resetPasswordResult: {
 		isPasswordReset: false,
 			nextStep: {
@@ -19,6 +31,13 @@ export const authAPITestParams = {
 					attributeName: 'email'
 				}
 			}
+	},
+	resetPasswordHttpCallResult: {
+		CodeDeliveryDetails: {
+			AttributeName: 'email',
+			DeliveryMedium: 'EMAIL',
+			Destination: 'test@email.com'
+		}
 	},
 	resetPasswordRequestWithClientMetadata: {
 		username: 'username',
@@ -34,5 +53,29 @@ export const authAPITestParams = {
 	},
 	configWithClientMetadata: {
 		clientMetadata: {foo: 'bar'}
-	}
+	},
+	confirmResetPasswordHttpCallResult: {
+		$metadata: {}
+	},
+	confirmResetPasswordRequestWithClientMetadata: {
+		username: 'username',
+		newPassword: 'password',
+		confirmationCode: 'code',
+		options: {
+			serviceOptions: {
+				clientMetadata: { foo: 'bar' }
+			}
+		}
+	},
+	confirmForgotPasswordCommandWithClientMetadata: {
+		Username: 'username',
+		Password: 'password',
+		ConfirmationCode: 'code',
+		ClientMetadata: {foo: 'bar'}
+	},
+	confirmResetPasswordRequest: {
+		username: 'username',
+		newPassword: 'password',
+		confirmationCode: 'code'
+	},
 };

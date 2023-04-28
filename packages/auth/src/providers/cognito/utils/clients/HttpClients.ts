@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type {
+	ConfirmForgotPasswordCommandInput,
+	ConfirmForgotPasswordCommandOutput,
 	ForgotPasswordCommandInput,
 	ForgotPasswordCommandOutput,
 	SignUpCommandInput,
@@ -12,9 +14,9 @@ import { assertServiceError } from '../../../../errors/utils/assertServiceError'
 
 const USER_AGENT = 'amplify test';
 
-export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput;
-export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput;
-export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword';
+export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput | ConfirmForgotPasswordCommandInput;
+export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput | ConfirmForgotPasswordCommandOutput;
+export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword' | 'ConfirmForgotPassword';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;

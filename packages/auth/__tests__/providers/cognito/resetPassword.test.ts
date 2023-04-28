@@ -16,13 +16,7 @@ describe('ResetPassword API happy path cases', () => {
 	beforeEach(() => {
 		resetPasswordSpy = jest.spyOn(resetPasswordClient, 'resetPasswordClient')
 			.mockImplementationOnce(async (params: resetPasswordClient.ResetPasswordClientInput) => {
-				return {
-					CodeDeliveryDetails: {
-						AttributeName: 'email',
-						DeliveryMedium: 'EMAIL',
-						Destination: 'test@email.com'
-					},
-				} as ForgotPasswordCommandOutput;
+				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
 			});
 	});
 
@@ -31,7 +25,7 @@ describe('ResetPassword API happy path cases', () => {
 	});
 
 	test('ResetPassword API should call the UserPoolClient and should return a ResetPasswordResult', async () => {
-		const result = await resetPassword({username: 'username'});
+		const result = await resetPassword(authAPITestParams.resetPasswordRequest);
 		expect(result).toEqual(authAPITestParams.resetPasswordResult);
 	});
 
@@ -71,7 +65,7 @@ describe('ResetPassword API error path cases:', () => {
 		serviceError.name = ForgotPasswordException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
 		try {
-			const result = await resetPassword({username: 'username'});
+			await resetPassword(authAPITestParams.resetPasswordRequest);
 		} catch (error) {
 			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
@@ -84,7 +78,7 @@ describe('ResetPassword API error path cases:', () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() => Promise.reject(new Error('unknown error')));
 		try {
-			await resetPassword({username: 'username'});
+			await resetPassword(authAPITestParams.resetPasswordRequest);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
@@ -96,7 +90,7 @@ describe('ResetPassword API error path cases:', () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() => Promise.reject(null));
 		try {
-			await resetPassword({username: 'username'});
+			await resetPassword(authAPITestParams.resetPasswordRequest);
 		} catch (error) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorString.UNKNOWN);
