@@ -15,6 +15,8 @@ import { getStringToSign } from './getStringToSign';
  * @param request `HttpRequest` to be signed.
  * @param signRequestOptions `SignRequestOptions` object containing values used to construct the signature.
  * @returns AWS API Signature to sign a request or url with.
+ *
+ * @internal
  */
 export const getSignature = (
 	request: HttpRequest,

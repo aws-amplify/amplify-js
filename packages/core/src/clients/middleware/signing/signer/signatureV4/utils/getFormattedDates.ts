@@ -10,6 +10,8 @@ import { FormattedDates } from '../types/signer';
  * @returns `FormattedDates` object containing the following:
  * - longDate: A date string in 'YYYYMMDDThhmmssZ' format
  * - shortDate: A date string in 'YYYYMMDD' format
+ *
+ * @internal
  */
 export const getFormattedDates = (date: Date): FormattedDates => {
 	const longDate = date.toISOString().replace(/[:\-]|\.\d{3}/g, '');

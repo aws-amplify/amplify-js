@@ -30,6 +30,8 @@ export const getHashedData = (
  * @param key `SourceData` to be used as hashing key.
  * @param data Hashable `SourceData`.
  * @returns String using lowercase hexadecimal characters created from the data as input to a hash function.
+ *
+ * @internal
  */
 export const getHashedDataAsHex = (
 	key: SourceData | null,

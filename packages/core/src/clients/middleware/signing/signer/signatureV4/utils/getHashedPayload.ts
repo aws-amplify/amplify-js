@@ -12,6 +12,8 @@ import { getHashedDataAsHex } from './dataHashHelpers';
  * @param body `body` (payload) from the request.
  * @returns String created using the payload in the body of the HTTP request as input to a hash function. This string
  * uses lowercase hexadecimal characters. If the payload is empty, return precalculated result of an empty hash.
+ *
+ * @internal
  */
 export const getHashedPayload = (body: HttpRequest['body']): string => {
 	// return precalculated empty hash if body is undefined or null
