@@ -72,7 +72,10 @@ export class FakeGraphQLService {
 		string,
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
-	// TODO:
+	/**
+	 * For keeping track of in-flight mutations (for more reliable
+	 * assertions on subscription updates)
+	 */
 	public runningMutations = new Map<string, string>();
 
 	/**
