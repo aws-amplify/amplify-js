@@ -862,6 +862,10 @@ describe('DataStore sync engine', () => {
 		});
 
 		/**
+		 * NOTE: The following test assertions are based on *existing* behavior, not *correct*
+		 * behavior. Once we have fixed rapid single-field consecutive updates / updates on
+		 * poor connections, we should update these assertions to reflect the *correct* behavior.
+		 *
 		 * Test observed rapid single-field mutations with variable connection latencies, as well as
 		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
 		 * as each scenario results in different observed behavior - essentially, whether or not
@@ -869,7 +873,7 @@ describe('DataStore sync engine', () => {
 		 * `syncOutboxVersionsOnDequeue` does the right value comparison when there are multiple
 		 * fields present on a model, but only one is updated.
 		 *
-		 * Note: if these tests fail, and you witness one of the following:
+		 * NOTE: if these tests fail, and you witness one of the following:
 		 *     1) The retry throws an error
 		 *     2) The number of observed updates has changed
 		 *     3) The record's final version number has changed
@@ -879,815 +883,856 @@ describe('DataStore sync engine', () => {
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			// Tuple of updated title and version:
 			type SubscriptionLogTuple = [string, number];
-
-			// Skipping because currently DataStore eventually returns the wrong title
-			test.skip('rapid mutations on poor connection when initial create is not pending', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the initial save is still in the outbox
-				 * (see below). Here `_version` IS defined.
-				 */
-				await waitForEmptyOutbox();
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
-							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
-					}
-				);
-
-				/**
-				 * Note: Running this test without increased latencies will still fail,
-				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (here they are merged in the outbox). See the
-				 * tests following this one.
-				 */
-				graphqlService.setLatencies({
-					request: 1000,
-					response: 1000,
-					subscriber: 1000,
-					jitter: 50,
-				});
-
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					const retrieved = await DataStore.query(Post, original.id);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					// Note: We do NOT wait for outbox to be empty here, like we do
-					// in other tests, because we want to test concurrent updates
-					// being processed by the outbox.
-				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				await waitForEmptyOutbox();
-
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Because we have increased the latency, and don't wait for the outbox
-						 * to clear on each mutation, the outbox will merge some of the mutations.
-						 * In this example, we expect the number of requests received to be one less than
-						 * the actual number of updates. If we were running this test without
-						 * increased latency, we'd expect more requests to be received.
-						 */
-						const expectedNumberOfUpdates = numberOfUpdates - 1;
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === expectedNumberOfUpdates;
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
-						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
-
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 1', 1],
-					['post title 2', 3],
-				]);
-
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(3);
-
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Cleanup:
-				graphqlService.resetLatencies();
-				await subscription.unsubscribe();
-			});
-			// Skipping because currently DataStore eventually returns the wrong title
-			test.skip('rapid mutations on fast connection when initial create is not pending', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// Tuple of updated title and version:
-				type SubscriptionLogTuple = [string, number];
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see below).
-				 * Here, `_version` is defined.
-				 */
-				await waitForEmptyOutbox();
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
-							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
-					}
-				);
-
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					/**
-					 * We are testing a scenario where the outbox does not
-					 * merge outgoing requests (because there is no latency).
-					 * However, if we make the mutations rapidly in this loop,
-					 * we are creating an artifical situation where they will still
-					 * be merged. Adding a semi-realistic pause ("button clicks")
-					 * between updates.
-					 */
-					await pause(200);
-
-					const retrieved = await DataStore.query(Post, original.id);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					// Note: We do NOT wait for the empty outbox here, like we do
-					// in other tests, because we want to test concurrent updates
-					// being processed by the outbox.
-				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				await waitForEmptyOutbox();
-
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Because we have NOT increased the latency, the outbox will not merge
-						 * the mutations. In this example, we expect the number of requests
-						 * received to be one less the actual number of updates. If we were
-						 * running this test with increased latency, we'd expect less requests
-						 * to be received.
-						 */
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === numberOfUpdates;
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
-						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
-
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 1', 1],
-					['post title 2', 1],
-				]);
-
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(4);
-
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Cleanup:
-				await subscription.unsubscribe();
-			});
-			// Skipping because currently, DataStore returns `undefined` versions on each update.
-			// Note: may need to fine tune the assertions once the issue is fixed.
-			test.skip('rapid mutations on poor connection when initial create is pending', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// Tuple of updated title and version:
-				type SubscriptionLogTuple = [string, number];
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * NOTE: We do NOT wait for the outbox here - we are testing
-				 * updates on a record that is still in the outbox.
-				 */
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
-							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
-					}
-				);
-
-				/**
-				 * Note: Running this test without increased latencies will still fail,
-				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (here they are merged in the outbox). See the
-				 * tests following this one.
-				 */
-				graphqlService.setLatencies({
-					request: 1000,
-					response: 1000,
-					subscriber: 1000,
-					jitter: 50,
-				});
-
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					const retrieved = await DataStore.query(Post, original.id);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					// Note: We do NOT wait for the empty outbox here, like we do
-					// in other tests, because we want to test concurrent updates
-					// being processed by the outbox.
-				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				await waitForEmptyOutbox();
-
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Because we have increased the latency, and don't wait for the outbox
-						 * to clear on each mutation, the outbox will merge some of the mutations.
-						 * In this example, we expect the number of requests received to be one less than
-						 * the actual number of updates. If we were running this test without
-						 * increased latency, we'd expect more requests to be received.
-						 */
-						const expectedNumberOfUpdates = numberOfUpdates - 1;
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === expectedNumberOfUpdates;
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
-						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
-
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 1', 1],
-					['post title 2', 3],
-				]);
-
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(3);
-
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Cleanup:
-				graphqlService.resetLatencies();
-				await subscription.unsubscribe();
-			});
-			// Skipping because currently, DataStore returns `undefined` versions on each update
-			// Note: may need to fine tune the assertions once the issue is fixed.
-			test.skip('rapid mutations on fast connection when initial create is pending', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// Tuple of updated title and version:
-				type SubscriptionLogTuple = [string, number];
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * NOTE: We do NOT wait for the outbox here - we are testing
-				 * updates on a record that is still in the outbox.
-				 */
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
-							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
-					}
-				);
-
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					/**
-					 * We are testing a scenario where the outbox does not
-					 * merge outgoing requests (because there is no latency).
-					 * However, if we make the mutations rapidly in this loop,
-					 * we are creating an aritifical situation where they will still
-					 * be merged. Adding a semi-realistic pause ("button clicks")
-					 * between updates.
-					 */
-					await pause(200);
-
-					const retrieved = await DataStore.query(Post, original.id);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					// Note: We do NOT wait for the empty outbox here, like we do
-					// in other tests, because we want to test concurrent updates
-					// being processed by the outbox.
-				}
-
-				// Now we wait for the outbox to do what it needs to do:
-				await waitForEmptyOutbox();
-
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Because we have increased the latency, and don't wait for the outbox
-						 * to clear on each mutation, the outbox will merge some of the mutations.
-						 * In this example, we expect the number of requests received to be one less than
-						 * the actual number of updates. If we were running this test without
-						 * increased latency, we'd expect more requests to be received.
-						 */
-						const expectedNumberOfUpdates = numberOfUpdates - 1;
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === expectedNumberOfUpdates; // Update before PR merge
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
-						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
-
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 1', 1],
-					['post title 2', 3],
-				]);
-
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(3);
-
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Cleanup:
-				await subscription.unsubscribe();
-			});
-			test('observe on poor connection with awaited outbox', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// Tuple of updated title and version:
-				type SubscriptionLogTuple = [string, number];
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see above).
-				 * Here, `_version` is defined.
-				 */
-				await waitForEmptyOutbox();
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
-							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
-					}
-				);
-
-				/**
-				 * Note: Running this test without increased latencies will still fail,
-				 * however, the `expectedNumberOfUpdates` received by the fake service
-				 * will be different (here they are merged in the outbox). See the
-				 * tests following this one.
-				 */
-				graphqlService.setLatencies({
-					request: 1000,
-					response: 1000,
-					subscriber: 1000,
-					jitter: 50,
-				});
-
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					const retrieved = await DataStore.query(Post, original.id);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
+			describe('single client updates', () => {
+				// Skipping because currently DataStore eventually returns the wrong title
+				test('rapid mutations on poor connection when initial create is not pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
 						})
 					);
 
 					/**
-					 * We wait for the empty outbox on each mutation, because
-					 * we want to test non-concurrent updates (i.e. we want to make
-					 * sure all the updates are going out and are being observed)
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the initial save is still in the outbox
+					 * (see below). Here `_version` IS defined.
 					 */
 					await waitForEmptyOutbox();
-				}
 
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Even though we have increased the latency, we are still waiting
-						 * on the outbox after each mutation. Therefore, mutations will not
-						 * be merged.
-						 */
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === numberOfUpdates;
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
 						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
+					);
 
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 0', 2],
-					['post title 1', 2],
-					['post title 1', 3],
-					['post title 2', 3],
-				]);
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: 1000,
+						response: 1000,
+						subscriber: 1000,
+						jitter: 50,
+					});
 
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						const retrieved = await DataStore.query(Post, original.id);
 
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(4);
-
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-				// Cleanup:
-				graphqlService.resetLatencies();
-				await subscription.unsubscribe();
-			});
-			test('observe on fast connection with awaited outbox', async () => {
-				// Number of updates to perform in this test:
-				const numberOfUpdates = 3;
-
-				// Tuple of updated title and version:
-				type SubscriptionLogTuple = [string, number];
-
-				// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-				const subscriptionLog: SubscriptionLogTuple[] = [];
-
-				// Record to update:
-				const original = await DataStore.save(
-					new Post({
-						title: 'original title',
-						blogId: 'blog id',
-					})
-				);
-
-				/**
-				 * Make sure the save was successfully sent out. There is a separate test
-				 * for testing an update when the save is still in the outbox (see above).
-				 * Here, `_version` is defined.
-				 */
-				await waitForEmptyOutbox();
-
-				const subscription = await DataStore.observe(Post).subscribe(
-					({ opType, element }) => {
-						const response: SubscriptionLogTuple = [
-							element.title,
-							// No, TypeScript, there is a version:
+						await DataStore.save(
 							// @ts-ignore
-							element._version,
-						];
-						// Track sequence of versions and titles
-						subscriptionLog.push(response);
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
+
+						// Note: We do NOT wait for outbox to be empty here, like we do
+						// in other tests, because we want to test concurrent updates
+						// being processed by the outbox.
 					}
-				);
 
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					const retrieved = await DataStore.query(Post, original.id);
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
 
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Because we have increased the latency, and don't wait for the outbox
+							 * to clear on each mutation, the outbox will merge some of the mutations.
+							 * In this example, we expect the number of requests received to be one less than
+							 * the actual number of updates. If we were running this test without
+							 * increased latency, we'd expect more requests to be received.
+							 */
+							const expectedNumberOfUpdates = numberOfUpdates - 1;
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === expectedNumberOfUpdates;
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 3],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(3);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					graphqlService.resetLatencies();
+					await subscription.unsubscribe();
+				});
+				// Skipping because currently DataStore eventually returns the wrong title
+				test.skip('rapid mutations on fast connection when initial create is not pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// Tuple of updated title and version:
+					type SubscriptionLogTuple = [string, number];
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
 						})
 					);
 
 					/**
-					 * We wait for the empty outbox on each mutation, because
-					 * we want to test non-concurrent updates (i.e. we want to make
-					 * sure all the updates are going out, and are being observed -
-					 * additionally, the final version number will be greater).
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see below).
+					 * Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
-				}
 
-				/**
-				 * Validate that fake graphqlService has received / finished processing
-				 * all updates. We retry in the event that the artificial pauses and / or
-				 * latencies are updated (future test iterations).
-				 */
-				await jitteredExponentialRetry(
-					() => {
-						/**
-						 * Even though we have increased the latency, we are still waiting
-						 * on the outbox after each mutation. Therefore, mutations will not
-						 * be merged.
-						 */
-
-						// Ensure the service has received all the requests.
-						const allUpdatesSent =
-							graphqlService.requests.filter(
-								({ operation, type, tableName }) =>
-									operation === 'mutation' &&
-									type === 'update' &&
-									tableName === 'Post'
-							).length === numberOfUpdates;
-
-						// Ensure all mutations are complete:
-						const allRunningMutationsComplete =
-							graphqlService.runningMutations.size === 0;
-
-						if (allUpdatesSent && allRunningMutationsComplete) {
-							return true;
-						} else {
-							throw new Error(
-								'Fake GraphQL Service did not receive and/or process all updates'
-							);
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
 						}
-					},
-					[null],
-					undefined,
-					undefined
-				);
+					);
 
-				// Validate that `observe` returned the expected updates to
-				// `title` and `version`, in the expected order:
-				expect(subscriptionLog).toEqual([
-					['post title 0', 1],
-					['post title 0', 2],
-					['post title 1', 2],
-					['post title 1', 3],
-					['post title 2', 3],
-				]);
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						/**
+						 * We are testing a scenario where the outbox does not
+						 * merge outgoing requests (because there is no latency).
+						 * However, if we make the mutations rapidly in this loop,
+						 * we are creating an artifical situation where they will still
+						 * be merged. Adding a semi-realistic pause ("button clicks")
+						 * between updates.
+						 */
+						await pause(200);
 
-				// Validate that the record was saved to the service:
-				const table = graphqlService.tables.get('Post')!;
-				expect(table.size).toEqual(1);
-				const savedItem = table.get(JSON.stringify([original.id])) as any;
+						const retrieved = await DataStore.query(Post, original.id);
 
-				// Validate updates were successful:
-				expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+						await DataStore.save(
+							// @ts-ignore
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
 
-				// Validate version was correctly updated:
-				expect(savedItem._version).toEqual(4);
+						// Note: We do NOT wait for the empty outbox here, like we do
+						// in other tests, because we want to test concurrent updates
+						// being processed by the outbox.
+					}
 
-				// Validate that query returns the latest version:
-				const queryResult = await DataStore.query(Post, original.id);
-				expect(queryResult?.title).toEqual(`post title ${numberOfUpdates - 1}`);
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
 
-				// Cleanup:
-				await subscription.unsubscribe();
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Because we have NOT increased the latency, the outbox will not merge
+							 * the mutations. In this example, we expect the number of requests
+							 * received to be one less the actual number of updates. If we were
+							 * running this test with increased latency, we'd expect less requests
+							 * to be received.
+							 */
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === numberOfUpdates;
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 1],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(4);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				// Skipping because currently, DataStore returns `undefined` versions on each update.
+				// Note: may need to fine tune the assertions once the issue is fixed.
+				test.skip('rapid mutations on poor connection when initial create is pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// Tuple of updated title and version:
+					type SubscriptionLogTuple = [string, number];
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * NOTE: We do NOT wait for the outbox here - we are testing
+					 * updates on a record that is still in the outbox.
+					 */
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: 1000,
+						response: 1000,
+						subscriber: 1000,
+						jitter: 50,
+					});
+
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						const retrieved = await DataStore.query(Post, original.id);
+
+						await DataStore.save(
+							// @ts-ignore
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
+
+						// Note: We do NOT wait for the empty outbox here, like we do
+						// in other tests, because we want to test concurrent updates
+						// being processed by the outbox.
+					}
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Because we have increased the latency, and don't wait for the outbox
+							 * to clear on each mutation, the outbox will merge some of the mutations.
+							 * In this example, we expect the number of requests received to be one less than
+							 * the actual number of updates. If we were running this test without
+							 * increased latency, we'd expect more requests to be received.
+							 */
+							const expectedNumberOfUpdates = numberOfUpdates - 1;
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === expectedNumberOfUpdates;
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 3],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(3);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					graphqlService.resetLatencies();
+					await subscription.unsubscribe();
+				});
+				// Skipping because currently, DataStore returns `undefined` versions on each update
+				// Note: may need to fine tune the assertions once the issue is fixed.
+				test.skip('rapid mutations on fast connection when initial create is pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// Tuple of updated title and version:
+					type SubscriptionLogTuple = [string, number];
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * NOTE: We do NOT wait for the outbox here - we are testing
+					 * updates on a record that is still in the outbox.
+					 */
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						/**
+						 * We are testing a scenario where the outbox does not
+						 * merge outgoing requests (because there is no latency).
+						 * However, if we make the mutations rapidly in this loop,
+						 * we are creating an aritifical situation where they will still
+						 * be merged. Adding a semi-realistic pause ("button clicks")
+						 * between updates.
+						 */
+						await pause(200);
+
+						const retrieved = await DataStore.query(Post, original.id);
+
+						await DataStore.save(
+							// @ts-ignore
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
+
+						// Note: We do NOT wait for the empty outbox here, like we do
+						// in other tests, because we want to test concurrent updates
+						// being processed by the outbox.
+					}
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Because we have increased the latency, and don't wait for the outbox
+							 * to clear on each mutation, the outbox will merge some of the mutations.
+							 * In this example, we expect the number of requests received to be one less than
+							 * the actual number of updates. If we were running this test without
+							 * increased latency, we'd expect more requests to be received.
+							 */
+							const expectedNumberOfUpdates = numberOfUpdates - 1;
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === expectedNumberOfUpdates; // Update before PR merge
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 3],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(3);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('observe on poor connection with awaited outbox', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// Tuple of updated title and version:
+					type SubscriptionLogTuple = [string, number];
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see above).
+					 * Here, `_version` is defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: 1000,
+						response: 1000,
+						subscriber: 1000,
+						jitter: 50,
+					});
+
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						const retrieved = await DataStore.query(Post, original.id);
+
+						await DataStore.save(
+							// @ts-ignore
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
+
+						/**
+						 * We wait for the empty outbox on each mutation, because
+						 * we want to test non-concurrent updates (i.e. we want to make
+						 * sure all the updates are going out and are being observed)
+						 */
+						await waitForEmptyOutbox();
+					}
+
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Even though we have increased the latency, we are still waiting
+							 * on the outbox after each mutation. Therefore, mutations will not
+							 * be merged.
+							 */
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === numberOfUpdates;
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 0', 2],
+						['post title 1', 2],
+						['post title 1', 3],
+						['post title 2', 3],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(4);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					graphqlService.resetLatencies();
+					await subscription.unsubscribe();
+				});
+				test('observe on fast connection with awaited outbox', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// Tuple of updated title and version:
+					type SubscriptionLogTuple = [string, number];
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see above).
+					 * Here, `_version` is defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					// Mutate the original record multiple times:
+					for (let number = 0; number < numberOfUpdates; number++) {
+						const retrieved = await DataStore.query(Post, original.id);
+
+						await DataStore.save(
+							// @ts-ignore
+							Post.copyOf(retrieved, updated => {
+								updated.title = `post title ${number}`;
+							})
+						);
+
+						/**
+						 * We wait for the empty outbox on each mutation, because
+						 * we want to test non-concurrent updates (i.e. we want to make
+						 * sure all the updates are going out, and are being observed -
+						 * additionally, the final version number will be greater).
+						 */
+						await waitForEmptyOutbox();
+					}
+
+					/**
+					 * Validate that fake graphqlService has received / finished processing
+					 * all updates. We retry in the event that the artificial pauses and / or
+					 * latencies are updated (future test iterations).
+					 */
+					await jitteredExponentialRetry(
+						() => {
+							/**
+							 * Even though we have increased the latency, we are still waiting
+							 * on the outbox after each mutation. Therefore, mutations will not
+							 * be merged.
+							 */
+
+							// Ensure the service has received all the requests.
+							const allUpdatesSent =
+								graphqlService.requests.filter(
+									({ operation, type, tableName }) =>
+										operation === 'mutation' &&
+										type === 'update' &&
+										tableName === 'Post'
+								).length === numberOfUpdates;
+
+							// Ensure all mutations are complete:
+							const allRunningMutationsComplete =
+								graphqlService.runningMutations.size === 0;
+
+							if (allUpdatesSent && allRunningMutationsComplete) {
+								return true;
+							} else {
+								throw new Error(
+									'Fake GraphQL Service did not receive and/or process all updates'
+								);
+							}
+						},
+						[null],
+						undefined,
+						undefined
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 0', 2],
+						['post title 1', 2],
+						['post title 1', 3],
+						['post title 2', 3],
+					]);
+
+					// Validate that the record was saved to the service:
+					const table = graphqlService.tables.get('Post')!;
+					expect(table.size).toEqual(1);
+					const savedItem = table.get(JSON.stringify([original.id])) as any;
+
+					// Validate updates were successful:
+					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
+
+					// Validate version was correctly updated:
+					expect(savedItem._version).toEqual(4);
+
+					// Validate that query returns the latest version:
+					const queryResult = await DataStore.query(Post, original.id);
+					expect(queryResult?.title).toEqual(
+						`post title ${numberOfUpdates - 1}`
+					);
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+			});
+			// TODO:
+			describe.skip('multi-client updates', () => {
+				// simulate second client updating the current post
+				// await graphqlService.graphql({
+				// 	query:
+				// 		'mutation operation($input: UpdatePostInput!){\n' +
+				// 		'\t\tcreatePost(input: $input){\n' +
+				// 		'\t\t\tid\n' +
+				// 		'title\n' +
+				// 		'blogId\n' +
+				// 		'_version\n' +
+				// 		'_lastChangedAt\n' +
+				// 		'_deleted\n' +
+				// 		'\t\t}\n' +
+				// 		'\t}',
+				// 	variables: {
+				// 		input: {
+				// 			id: postId,
+				// 			title: `update from second client`,
+				// 			blogId: null,
+				// 			_version: undefined,
+				// 		},
+				// 	},
+				// 	authMode: undefined,
+				// 	authToken: undefined,
+				// });
+				// await pause(1);
 			});
 		});
 	});

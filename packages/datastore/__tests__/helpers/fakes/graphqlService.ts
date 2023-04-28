@@ -575,11 +575,10 @@ export class FakeGraphQLService {
 					};
 				}
 			} else if (operation === 'mutation') {
-				// For keeping track of in-flight mutations
 				this.runningMutations.set(variables.input.id, type);
 
 				const record = variables.input;
-				// // TODO: update test expected values and re-enable (currently unused)
+				// TODO: update test expected values and re-enable (currently unused)
 				// const timestampFields = this.timestampFields.get(tableName);
 
 				if (type === 'create') {
