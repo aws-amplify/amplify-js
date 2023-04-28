@@ -9,6 +9,8 @@
  * including the space character. Encode names and values separately. If there are empty parameters, append the equals
  * sign to the parameter name before encoding. After encoding, sort the parameters alphabetically by key name. If there
  * is no query string, use an empty string ("").
+ *
+ * @internal
  */
 export const getCanonicalQueryString = (
 	searchParams: URLSearchParams

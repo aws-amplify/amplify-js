@@ -13,6 +13,8 @@ import { getHashedData } from './dataHashHelpers';
  * @param service Service to which the signed request is being sent.
  *
  * @returns `Uint8Array` calculated from its composite parts.
+ *
+ * @internal
  */
 export const getSigningKey = (
 	secretAccessKey: string,

@@ -15,6 +15,8 @@ import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
  * - RequestDateTime
  * - CredentialScope
  * - HashedCanonicalRequest
+ *
+ * @internal
  */
 export const getStringToSign = (
 	date: string,
