@@ -1598,8 +1598,6 @@ jobs:
             git config --global user.name $GITHUB_USER
             git pull origin release
             yarn workspace @aws-amplify/core build
-            git add ./packages/core/src/Platform/version.ts
-            git commit -m "chore(release): update version.ts [ci skip]"
       - run:
           name: 'Update API documentation'
           command: |
