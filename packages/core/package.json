@@ -103,6 +103,12 @@
 			"limit": "11.7 kB"
 		},
 		{
+			"name": "Core (Signer)",
+			"path": "./lib-esm/index.js",
+			"import": "{ Signer }",
+			"limit": "7.08 kB"
+		},
+		{
 			"name": "Custom clients (retry middleware)",
 			"path": "./lib-esm/clients/middleware/retry/middleware.js",
 			"import": "{ retryMiddleware }",
@@ -119,6 +125,18 @@
 			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
 			"limit": "2.75 kB"
+		},
+		{
+			"name": "Custom clients (request signer)",
+			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
+			"import": "{ signRequest }",
+			"limit": "6.13 kB"
+		},
+		{
+			"name": "Custom clients (url presigner)",
+			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
+			"import": "{ presignUrl }",
+			"limit": "6.25 kB"
 		}
 	],
 	"jest": {
