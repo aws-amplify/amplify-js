@@ -116,21 +116,23 @@ export class FakeGraphQLService {
 	/**
 	 * NOTE: don't forget to reset these values at the end of your test!
 	 * @param latencies new values for fake latencies
-	 * @returns current values for fake latencies
+	 * @returns updated values for fake latencies
 	 */
 	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
 		return (this.latencies = { ...this.latencies, ...latencies });
 	}
 
 	/**
-	 * @returns current values for fake latencies
+	 * Resets artificial latencies to default values (should
+	 * be called at the end of each test that modifies them)
+	 * @returns default values for fake latencies
 	 */
 	public resetLatencies(): FakeLatencies {
 		return (this.latencies = defaultLatencies);
 	}
 
 	/**
-	 *
+	 * Helpful for debugging tests that update latencies
 	 * @returns current values for fake latencies
 	 */
 	public getLatencies(): FakeLatencies {
