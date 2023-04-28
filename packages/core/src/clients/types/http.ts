@@ -1,4 +1,4 @@
-import { Request, Response, TransferHandler } from './core';
+import { Request, Response } from './core';
 
 /**
  * Use basic Record interface to workaround fetch Header class not available in Node.js
@@ -28,13 +28,3 @@ export interface HttpResponse extends Response {
 	 */
 	headers: Headers;
 }
-
-export interface HttpTransferOptions {
-	abortSignal?: AbortSignal;
-}
-
-export type HttpTransferHandler = TransferHandler<
-	HttpRequest,
-	HttpResponse,
-	HttpTransferOptions
->;
