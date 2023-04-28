@@ -44,6 +44,38 @@ export const cognitoIdentityHandlerOptions = {
 };
 
 // Pinpoint
+export const mockApplicationId = 'fls189ysample154app128idpdsadk31';
+
+export const mockEndpointId = '41232bb8-1c62-448f-a295-89019bbdce5a';
+
+export const mockEndpointRequest = {
+	Attributes: {
+		hobbies: ['cooking', 'knitting'],
+	},
+	Demographic: {
+		AppVersion: '1.0',
+	},
+	RequestId: mockRequestId,
+};
+
+const mockEventId = '0e8f291b-e0dd-47d8-860a-6b7317bf7eba';
+
+const mockEvent = {
+	EventType: 'event-type',
+	Timestamp: '2023-05-03T16:22:19.597Z',
+};
+
+export const mockEventsRequest = {
+	BatchItem: {
+		[mockEndpointId]: {
+			Endpoint: mockEndpointRequest,
+			Events: {
+				[mockEventId]: mockEvent,
+			},
+		},
+	},
+};
+
 export const pinpointHandlerOptions = {
 	credentials: {
 		accessKeyId: mockCredentials.AccessKeyId,
