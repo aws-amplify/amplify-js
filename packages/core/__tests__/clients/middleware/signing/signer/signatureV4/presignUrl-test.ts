@@ -5,6 +5,7 @@ import { presignUrl } from '../../../../../../src/clients/middleware/signing/sig
 import { HttpRequest } from '../../../../../../src/clients/types';
 import { signingTestTable } from './testUtils/signingTestTable';
 import { getDefaultRequest, signingOptions } from './testUtils/data';
+import { PresignUrlOptions } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/types';
 
 describe('presignUrl', () => {
 	test.each(
@@ -17,7 +18,7 @@ describe('presignUrl', () => {
 				queryParams?.forEach(([key, value]) => {
 					updatedRequest.url?.searchParams.append(key, value);
 				});
-				const updatedOptions = {
+				const updatedOptions: PresignUrlOptions = {
 					...signingOptions,
 					...options,
 				};

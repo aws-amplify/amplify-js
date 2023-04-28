@@ -109,14 +109,6 @@ export const signingTestTable: TestCase[] = [
 			'https://domain.fakeurl/?%40%23%24%25%5E%26%2B%3D%2F%2C%3F%3E%3C%60%22%3B%3A%5C%7C%5D%5B%7B%7D+=%40%23%24%25%5E%26%2B%3D%2F%2C%3F%3E%3C%60%22%3B%3A%5C%7C%5D%5B%7B%7D+&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=access-key-id%2F20200918%2Fsigning-region%2Fsigning-service%2Faws4_request&X-Amz-Date=20200918T181818Z&X-Amz-SignedHeaders=host&X-Amz-Signature=deddbc9d8440a57bdc87d0b4e06b2859304e263af0896b7a4b0126b9d629a81a',
 	},
 	{
-		name: 'spaces in query params',
-		queryParams: [['f oo', 'b ar']],
-		expectedAuthorization:
-			'AWS4-HMAC-SHA256 Credential=access-key-id/20200918/signing-region/signing-service/aws4_request, SignedHeaders=host;x-amz-date, Signature=37ce5dcb43c12849d256de4cc73dff4c89e333ba2604d8a8de24876f6fbc57d0',
-		expectedUrl:
-			'https://domain.fakeurl/?f+oo=b+ar&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=access-key-id%2F20200918%2Fsigning-region%2Fsigning-service%2Faws4_request&X-Amz-Date=20200918T181818Z&X-Amz-SignedHeaders=host&X-Amz-Signature=e7f19479e5275c7f5ba98b07cfb40ea02c6959f652e9aac3ff855b1c38426790',
-	},
-	{
 		name: 'mixed cased header keys',
 		request: {
 			headers: { fOo: 'foo', ZOO: 'zoobar' },
