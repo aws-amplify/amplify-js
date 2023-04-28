@@ -1592,15 +1592,11 @@ jobs:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
-          name: 'Update library version'
+          name: 'Update API documentation'
           command: |
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git pull origin release
-            yarn workspace @aws-amplify/core build
-      - run:
-          name: 'Update API documentation'
-          command: |
             yarn run docs
             git add ./docs/api/
             git commit -m "chore(release): update API docs [ci skip]"
