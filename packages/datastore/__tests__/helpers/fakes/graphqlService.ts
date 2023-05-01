@@ -483,6 +483,7 @@ export class FakeGraphQLService {
 	 * @param selection The function/selection name, like "onCreateTodo".
 	 */
 	public async notifySubscribers(tableName, type, data, selection) {
+		// debugger;
 		await this.jitteredPause(this.latencies.subscriber);
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
@@ -680,6 +681,7 @@ export class FakeGraphQLService {
 					}
 				}
 
+				// debugger
 				this.notifySubscribers(tableName, type, data, selection);
 				await this.jitteredPause(this.latencies.response);
 

@@ -3,6 +3,8 @@ import { PersistentModel, PersistentModelConstructor } from '../../src';
 import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
+import { FakeGraphQLService } from './fakes';
+import { jitteredExponentialRetry } from '@aws-amplify/core';
 
 /**
  * Convenience function to wait for a number of ms.
@@ -443,5 +445,69 @@ export async function waitForSyncQueriesReady(verbose = false) {
 			}
 		};
 		Hub.listen('datastore', hubCallback);
+	});
+}
+
+/**
+ * Validate that fake graphqlService has received / finished processing all
+ * updates, and (TODO) has sent all subscription messages. We retry in the
+ * event that the artificial pauses and / or latencies are updated (future
+ * test iterations).
+ * @param fakeService - the fake graphql service
+ * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
+ * @param modelName - the name of the model we are updating
+ * @returns
+ */
+export async function graphqlServiceSettled(
+	graphqlService: FakeGraphQLService,
+	expectedNumberOfUpdates: number,
+	modelName: String
+): Promise<void> {
+	return new Promise<void>(async resolve => {
+		/**
+		 * Validate that fake graphqlService has received / finished processing
+		 * all updates. We retry in the event that the artificial pauses and / or
+		 * latencies are updated (future test iterations).
+		 */
+		await jitteredExponentialRetry(
+			() => {
+				// Ensure the service has received all the requests.
+				const allUpdatesSent =
+					graphqlService.requests.filter(
+						({ operation, type, tableName }) =>
+							operation === 'mutation' &&
+							type === 'update' &&
+							tableName === modelName
+					).length === expectedNumberOfUpdates;
+
+				// Ensure all mutations are complete:
+				const allRunningMutationsComplete =
+					graphqlService.runningMutations.size === 0;
+
+				// TODO:
+				const allSubscriptionsSent = true;
+
+				// The test should fail if we haven't ended the simulated disruption:
+				const subscriptionMessagesNotStopped =
+					!graphqlService.stopSubscriptionMessages;
+
+				if (
+					allUpdatesSent &&
+					allRunningMutationsComplete &&
+					allSubscriptionsSent &&
+					subscriptionMessagesNotStopped
+				) {
+					resolve();
+					return true;
+				} else {
+					throw new Error(
+						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+					);
+				}
+			},
+			[null],
+			undefined,
+			undefined
+		);
 	});
 }

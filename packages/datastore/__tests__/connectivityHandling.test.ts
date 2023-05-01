@@ -11,7 +11,7 @@ import {
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
-import { jitteredExponentialRetry } from '@aws-amplify/core';
+import { graphqlServiceSettled } from './helpers';
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
@@ -883,8 +883,8 @@ describe('DataStore sync engine', () => {
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			// Tuple of updated title and version:
 			type SubscriptionLogTuple = [string, number];
+
 			describe('single client updates', () => {
-				// Skipping because currently DataStore eventually returns the wrong title
 				test('rapid mutations on poor connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
@@ -953,45 +953,18 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Because we have increased the latency, and don't wait for the outbox
+					 * to clear on each mutation, the outbox will merge some of the mutations.
+					 * In this example, we expect the number of requests received to be one less than
+					 * the actual number of updates. If we were running this test without
+					 * increased latency, we'd expect more requests to be received.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Because we have increased the latency, and don't wait for the outbox
-							 * to clear on each mutation, the outbox will merge some of the mutations.
-							 * In this example, we expect the number of requests received to be one less than
-							 * the actual number of updates. If we were running this test without
-							 * increased latency, we'd expect more requests to be received.
-							 */
-							const expectedNumberOfUpdates = numberOfUpdates - 1;
+					const expectedNumberOfUpdates = numberOfUpdates - 1;
 
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === expectedNumberOfUpdates;
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
+					await graphqlServiceSettled(
+						graphqlService,
+						expectedNumberOfUpdates,
+						'Post'
 					);
 
 					// Validate that `observe` returned the expected updates to
@@ -1023,8 +996,7 @@ describe('DataStore sync engine', () => {
 					graphqlService.resetLatencies();
 					await subscription.unsubscribe();
 				});
-				// Skipping because currently DataStore eventually returns the wrong title
-				test.skip('rapid mutations on fast connection when initial create is not pending', async () => {
+				test('rapid mutations on fast connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
 
@@ -1092,45 +1064,13 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Because we have NOT increased the latency, the outbox will not merge
+					 * the mutations. In this example, we expect the number of requests
+					 * received to be one less the actual number of updates. If we were
+					 * running this test with increased latency, we'd expect less requests
+					 * to be received.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Because we have NOT increased the latency, the outbox will not merge
-							 * the mutations. In this example, we expect the number of requests
-							 * received to be one less the actual number of updates. If we were
-							 * running this test with increased latency, we'd expect less requests
-							 * to be received.
-							 */
-
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === numberOfUpdates;
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
-					);
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1160,9 +1100,8 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				// Skipping because currently, DataStore returns `undefined` versions on each update.
 				// Note: may need to fine tune the assertions once the issue is fixed.
-				test.skip('rapid mutations on poor connection when initial create is pending', async () => {
+				test('rapid mutations on poor connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
 
@@ -1231,45 +1170,18 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Because we have increased the latency, and don't wait for the outbox
+					 * to clear on each mutation, the outbox will merge some of the mutations.
+					 * In this example, we expect the number of requests received to be one less than
+					 * the actual number of updates. If we were running this test without
+					 * increased latency, we'd expect more requests to be received.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Because we have increased the latency, and don't wait for the outbox
-							 * to clear on each mutation, the outbox will merge some of the mutations.
-							 * In this example, we expect the number of requests received to be one less than
-							 * the actual number of updates. If we were running this test without
-							 * increased latency, we'd expect more requests to be received.
-							 */
-							const expectedNumberOfUpdates = numberOfUpdates - 1;
+					const expectedNumberOfUpdates = numberOfUpdates - 1;
 
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === expectedNumberOfUpdates;
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
+					await graphqlServiceSettled(
+						graphqlService,
+						expectedNumberOfUpdates,
+						'Post'
 					);
 
 					// Validate that `observe` returned the expected updates to
@@ -1301,9 +1213,8 @@ describe('DataStore sync engine', () => {
 					graphqlService.resetLatencies();
 					await subscription.unsubscribe();
 				});
-				// Skipping because currently, DataStore returns `undefined` versions on each update
 				// Note: may need to fine tune the assertions once the issue is fixed.
-				test.skip('rapid mutations on fast connection when initial create is pending', async () => {
+				test('rapid mutations on fast connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
 
@@ -1369,45 +1280,18 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Because we have increased the latency, and don't wait for the outbox
+					 * to clear on each mutation, the outbox will merge some of the mutations.
+					 * In this example, we expect the number of requests received to be one less than
+					 * the actual number of updates. If we were running this test without
+					 * increased latency, we'd expect more requests to be received.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Because we have increased the latency, and don't wait for the outbox
-							 * to clear on each mutation, the outbox will merge some of the mutations.
-							 * In this example, we expect the number of requests received to be one less than
-							 * the actual number of updates. If we were running this test without
-							 * increased latency, we'd expect more requests to be received.
-							 */
-							const expectedNumberOfUpdates = numberOfUpdates - 1;
+					const expectedNumberOfUpdates = numberOfUpdates - 1;
 
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === expectedNumberOfUpdates; // Update before PR merge
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
+					await graphqlServiceSettled(
+						graphqlService,
+						expectedNumberOfUpdates,
+						'Post'
 					);
 
 					// Validate that `observe` returned the expected updates to
@@ -1509,43 +1393,11 @@ describe('DataStore sync engine', () => {
 					}
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Even though we have increased the latency, we are still waiting
+					 * on the outbox after each mutation. Therefore, mutations will not
+					 * be merged.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Even though we have increased the latency, we are still waiting
-							 * on the outbox after each mutation. Therefore, mutations will not
-							 * be merged.
-							 */
-
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === numberOfUpdates;
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
-					);
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1637,43 +1489,11 @@ describe('DataStore sync engine', () => {
 					}
 
 					/**
-					 * Validate that fake graphqlService has received / finished processing
-					 * all updates. We retry in the event that the artificial pauses and / or
-					 * latencies are updated (future test iterations).
+					 * Even though we have increased the latency, we are still waiting
+					 * on the outbox after each mutation. Therefore, mutations will not
+					 * be merged.
 					 */
-					await jitteredExponentialRetry(
-						() => {
-							/**
-							 * Even though we have increased the latency, we are still waiting
-							 * on the outbox after each mutation. Therefore, mutations will not
-							 * be merged.
-							 */
-
-							// Ensure the service has received all the requests.
-							const allUpdatesSent =
-								graphqlService.requests.filter(
-									({ operation, type, tableName }) =>
-										operation === 'mutation' &&
-										type === 'update' &&
-										tableName === 'Post'
-								).length === numberOfUpdates;
-
-							// Ensure all mutations are complete:
-							const allRunningMutationsComplete =
-								graphqlService.runningMutations.size === 0;
-
-							if (allUpdatesSent && allRunningMutationsComplete) {
-								return true;
-							} else {
-								throw new Error(
-									'Fake GraphQL Service did not receive and/or process all updates'
-								);
-							}
-						},
-						[null],
-						undefined,
-						undefined
-					);
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1705,34 +1525,6 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-			});
-			// TODO:
-			describe.skip('multi-client updates', () => {
-				// simulate second client updating the current post
-				// await graphqlService.graphql({
-				// 	query:
-				// 		'mutation operation($input: UpdatePostInput!){\n' +
-				// 		'\t\tcreatePost(input: $input){\n' +
-				// 		'\t\t\tid\n' +
-				// 		'title\n' +
-				// 		'blogId\n' +
-				// 		'_version\n' +
-				// 		'_lastChangedAt\n' +
-				// 		'_deleted\n' +
-				// 		'\t\t}\n' +
-				// 		'\t}',
-				// 	variables: {
-				// 		input: {
-				// 			id: postId,
-				// 			title: `update from second client`,
-				// 			blogId: null,
-				// 			_version: undefined,
-				// 		},
-				// 	},
-				// 	authMode: undefined,
-				// 	authToken: undefined,
-				// });
-				// await pause(1);
 			});
 		});
 	});
