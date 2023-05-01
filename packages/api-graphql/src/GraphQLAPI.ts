@@ -255,7 +255,7 @@ export class GraphQLAPIClass {
 					cancellableToken,
 					withCredentials: this._options.withCredentials,
 				};
-				const responsePromise = this._graphqlPromise<T>(
+				const responsePromise = this._graphqlSend<T>(
 					{ query, variables, authMode },
 					headers,
 					initParams,
@@ -273,7 +273,7 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _graphqlPromise<T = any>(
+	private async _graphqlSend<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {},
