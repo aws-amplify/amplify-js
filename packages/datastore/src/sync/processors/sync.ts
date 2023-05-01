@@ -19,6 +19,7 @@ import {
 	getForbiddenError,
 	predicateToGraphQLFilter,
 	getTokenForCustomAuth,
+	getCustomUserAgentDetails,
 } from '../utils';
 import {
 	jitteredExponentialRetry,
@@ -26,8 +27,6 @@ import {
 	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
-	Category,
-	CustomUserAgentDetails,
 	DataStoreAction,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
@@ -216,12 +215,6 @@ class SyncProcessor {
 						this.amplifyConfig
 					);
 
-					/* TODO: send with actual DataStore action */
-					const customUserAgentDetails: CustomUserAgentDetails = {
-						category: Category.DataStore,
-						action: DataStoreAction.None,
-					};
-
 					// @ts-ignore Use private method to send internal metrics
 					return await this.amplifyContext.API._graphql(
 						{
@@ -231,7 +224,7 @@ class SyncProcessor {
 							authToken,
 						},
 						undefined,
-						customUserAgentDetails
+						getCustomUserAgentDetails(DataStoreAction.None)
 					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))

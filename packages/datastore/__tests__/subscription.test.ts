@@ -24,6 +24,7 @@ import {
 	CustomUserAgentDetails,
 	DataStoreAction,
 } from '@aws-amplify/core';
+import { getCustomUserAgentDetails } from '../src/sync/utils';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api', () => {
@@ -663,16 +664,11 @@ describe('error handler', () => {
 						)
 					);
 
-					const customUserAgentDetails: CustomUserAgentDetails = {
-						category: Category.DataStore,
-						action: DataStoreAction.None,
-					};
-
 					/* TODO: test with actual datastore action */
 					expect(mockGraphQL).toHaveBeenCalledWith(
 						expect.anything(),
 						undefined,
-						customUserAgentDetails
+						getCustomUserAgentDetails(DataStoreAction.None)
 					);
 				});
 

@@ -6,8 +6,6 @@ import {
 	Hub,
 	HubCapsule,
 	BackgroundProcessManager,
-	Category,
-	CustomUserAgentDetails,
 	DataStoreAction,
 } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
@@ -38,6 +36,7 @@ import {
 	countFilterCombinations,
 	RTFError,
 	generateRTFRemediation,
+	getCustomUserAgentDetails,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -446,12 +445,6 @@ class SubscriptionProcessor {
 											}`
 										);
 
-										/* TODO: send with actual DataStore action */
-										const customUserAgentDetails: CustomUserAgentDetails = {
-											category: Category.DataStore,
-											action: DataStoreAction.None,
-										};
-
 										// @ts-ignore Use private method to send internal metrics
 										const garphQlResult = this.amplifyContext.API._graphql(
 											{
@@ -461,7 +454,7 @@ class SubscriptionProcessor {
 												authToken,
 											},
 											undefined,
-											customUserAgentDetails
+											getCustomUserAgentDetails(DataStoreAction.None)
 										);
 
 										const queryObservable = <

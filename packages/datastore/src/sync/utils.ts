@@ -1,6 +1,11 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
-import { Logger } from '@aws-amplify/core';
+import {
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	Logger,
+} from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -928,4 +933,14 @@ export function getIdentifierValue(
 	const idOrPk = pkFieldNames.map(f => model[f]).join(IDENTIFIER_KEY_SEPARATOR);
 
 	return idOrPk;
+}
+
+// Returns a CustomUserAgentDetails with the specified DataStore Action
+export function getCustomUserAgentDetails(
+	action: DataStoreAction
+): CustomUserAgentDetails {
+	return {
+		category: Category.DataStore,
+		action,
+	};
 }
