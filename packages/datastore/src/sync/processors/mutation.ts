@@ -330,6 +330,10 @@ class MutationProcessor {
 
 				const opType = this.opTypeFromTransformerOperation(operation);
 
+				const customUserAgentDetails = getCustomUserAgentDetails(
+					DataStoreAction.None
+				);
+
 				do {
 					try {
 						const result = <GraphQLResult<Record<string, PersistentModel>>>(
@@ -337,7 +341,7 @@ class MutationProcessor {
 							await this.amplifyContext.API._graphql(
 								tryWith,
 								undefined,
-								getCustomUserAgentDetails(DataStoreAction.None)
+								customUserAgentDetails
 							)
 						);
 
