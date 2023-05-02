@@ -27,7 +27,9 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
-	Hub,
+	Hub as HubBase,
+	HubClass,
+	GetHubPayloads,
 	StorageHelper,
 	ICredentials,
 	browserOrNode,
@@ -67,6 +69,38 @@ import {
 	IAuthDevice,
 } from './types/Auth';
 
+export type AuthHubChannelMap = {
+	auth: {
+		signIn: any;
+		configured: null;
+		autoSignIn: any;
+		autoSignIn_failure: null;
+		tokenRefresh: undefined;
+		tokenRefresh_failure: Error | undefined;
+		signUp_failure: Error;
+		signUp: ISignUpResult | undefined;
+		confirmSignUp: any;
+		verify: any;
+		completeNewPassword_failure: Error;
+		userDeleted: string;
+		signOut: any;
+		updateUserAttributes_failure: Error;
+		updateUserAttributes: Record<string, string>;
+		forgotPassword_failure: Error;
+		forgotPassword: CognitoUser;
+		forgotPasswordSubmit: CognitoUser;
+		forgotPasswordSubmit_failure: Error;
+		parsingCallbackUrl: { url: string | undefined };
+		cognitoHostedUI: CognitoUser;
+		customOAuthState: string;
+		signIn_failure: Error;
+		cognitoHostedUI_failure: Error;
+		customState_failure: Error;
+	};
+};
+
+const Hub = HubBase as unknown as HubClass<AuthHubChannelMap>;
+
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
@@ -79,9 +113,11 @@ const AMPLIFY_SYMBOL = (
 		: '@@amplify_default'
 ) as Symbol;
 
-const dispatchAuthEvent = (event: string, data: any, message: string) => {
-	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
-};
+function dispatchAuthEvent<
+	Payload extends GetHubPayloads<AuthHubChannelMap, 'auth'>
+>(payload: Payload) {
+	Hub.dispatch('auth', payload, 'Auth', AMPLIFY_SYMBOL);
+}
 
 // Cognito Documentation for max device
 // tslint:disable-next-line:max-line-length
@@ -252,11 +288,11 @@ export class AuthClass {
 			});
 		}
 
-		dispatchAuthEvent(
-			'configured',
-			null,
-			`The Auth category has been configured successfully`
-		);
+		dispatchAuthEvent({
+			event: 'configured',
+			data: null,
+			message: `The Auth category has been configured successfully`,
+		});
 
 		if (
 			!this.autoSignInInitiated &&
@@ -266,11 +302,11 @@ export class AuthClass {
 				'amplify-polling-started'
 			);
 			if (pollingInitiated) {
-				dispatchAuthEvent(
-					'autoSignIn_failure',
-					null,
-					AuthErrorTypes.AutoSignInError
-				);
+				dispatchAuthEvent({
+					event: 'autoSignIn_failure',
+					data: null,
+					message: AuthErrorTypes.AutoSignInError,
+				});
 				this._storage.removeItem('amplify-auto-sign-in');
 			}
 			this._storage.removeItem('amplify-polling-started');
@@ -281,13 +317,17 @@ export class AuthClass {
 	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
 		const wrapped: NodeCallback.Any = (error, data) => {
 			if (data) {
-				dispatchAuthEvent('tokenRefresh', undefined, `New token retrieved`);
+				dispatchAuthEvent({
+					event: 'tokenRefresh',
+					data: undefined,
+					message: `New token retrieved`
+				});
 			} else {
-				dispatchAuthEvent(
-					'tokenRefresh_failure',
-					error,
-					`Failed to retrieve new token`
-				);
+				dispatchAuthEvent({
+					event: 'tokenRefresh_failure',
+					data: error,
+					message: `Failed to retrieve new token`
+				});
 			}
 			return callback(error, data);
 		};
@@ -395,18 +435,18 @@ export class AuthClass {
 				validationData,
 				(err, data) => {
 					if (err) {
-						dispatchAuthEvent(
-							'signUp_failure',
-							err,
-							`${username} failed to signup`
-						);
+						dispatchAuthEvent({
+							event: 'signUp_failure',
+							data: err,
+							message: `${username} failed to signup`,
+						});
 						reject(err);
 					} else {
-						dispatchAuthEvent(
-							'signUp',
+						dispatchAuthEvent({
+							event: 'signUp',
+							message: `${username} has signed up successfully`,
 							data,
-							`${username} has signed up successfully`
-						);
+						});
 						if (autoSignIn.enabled) {
 							this.handleAutoSignIn(
 								username,
@@ -462,11 +502,12 @@ export class AuthClass {
 		const autoSignInPollingIntervalId = setInterval(() => {
 			if (Date.now() - start > MAX_AUTOSIGNIN_POLLING_MS) {
 				clearInterval(autoSignInPollingIntervalId);
-				dispatchAuthEvent(
-					'autoSignIn_failure',
-					null,
-					'Please confirm your account and use your credentials to sign in.'
-				);
+				dispatchAuthEvent({
+					event: 'autoSignIn_failure',
+					data: null,
+					message:
+						'Please confirm your account and use your credentials to sign in.',
+				});
 				this._storage.removeItem('amplify-auto-sign-in');
 			} else {
 				this.signInAfterUserConfirmed(
@@ -490,11 +531,11 @@ export class AuthClass {
 				this.authCallbacks(
 					user,
 					value => {
-						dispatchAuthEvent(
-							'autoSignIn',
-							value,
-							`${authDetails.getUsername()} has signed in successfully`
-						);
+						dispatchAuthEvent({
+							event: 'autoSignIn',
+							data: value,
+							message: `${authDetails.getUsername()} has signed in successfully`,
+						});
 						if (listenEvent) {
 							Hub.remove('auth', listenEvent);
 						}
@@ -557,18 +598,18 @@ export class AuthClass {
 					if (err) {
 						reject(err);
 					} else {
-						dispatchAuthEvent(
-							'confirmSignUp',
+						dispatchAuthEvent({
+							event: 'confirmSignUp',
+							message: `${username} has been confirmed successfully`,
 							data,
-							`${username} has been confirmed successfully`
-						);
+						});
 						const autoSignIn = this.isTrueStorageValue('amplify-auto-sign-in');
 						if (autoSignIn && !this.autoSignInInitiated) {
-							dispatchAuthEvent(
-								'autoSignIn_failure',
-								null,
-								AuthErrorTypes.AutoSignInError
-							);
+							dispatchAuthEvent({
+								event: 'autoSignIn_failure',
+								data: null,
+								message: AuthErrorTypes.AutoSignInError,
+							});
 							this._storage.removeItem('amplify-auto-sign-in');
 						}
 						resolve(data);
@@ -695,11 +736,11 @@ export class AuthClass {
 						// We need to trigger currentUserPoolUser again
 						const currentUser = await this.currentUserPoolUser();
 						that.user = currentUser;
-						dispatchAuthEvent(
-							'signIn',
-							currentUser,
-							`A user ${user.getUsername()} has been signed in`
-						);
+						dispatchAuthEvent({
+							event: 'signIn',
+							data: currentUser,
+							message: `A user ${user.getUsername()} has been signed in`,
+						});
 						resolve(currentUser);
 					} catch (e) {
 						logger.error('Failed to get the signed in user', e);
@@ -709,11 +750,11 @@ export class AuthClass {
 			},
 			onFailure: err => {
 				logger.debug('signIn failure', err);
-				dispatchAuthEvent(
-					'signIn_failure',
-					err,
-					`${user.getUsername()} failed to signin`
-				);
+				dispatchAuthEvent({
+					event: 'signIn_failure',
+					data: err,
+					message: `${user.getUsername()} failed to signin`,
+				});
 				reject(err);
 			},
 			customChallenge: challengeParam => {
@@ -1148,17 +1189,17 @@ export class AuthClass {
 				},
 				onSuccess: data => {
 					if (!isLoggedIn) {
-						dispatchAuthEvent(
-							'signIn',
-							user,
-							`A user ${user.getUsername()} has been signed in`
-						);
+						dispatchAuthEvent({
+							event: 'signIn',
+							data: user,
+							message: `A user ${user.getUsername()} has been signed in`,
+						});
 					}
-					dispatchAuthEvent(
-						'verify',
-						user,
-						`A user ${user.getUsername()} has been verified`
-					);
+					dispatchAuthEvent({
+						event: 'verify',
+						data: user,
+						message: `A user ${user.getUsername()} has been verified`,
+					});
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;
@@ -1203,11 +1244,11 @@ export class AuthClass {
 							} catch (e) {
 								logger.debug('cannot get updated Cognito User', e);
 							}
-							dispatchAuthEvent(
-								'signIn',
-								user,
-								`A user ${user.getUsername()} has been signed in`
-							);
+							dispatchAuthEvent({
+								event: 'signIn',
+								data: user,
+								message: `A user ${user.getUsername()} has been signed in`,
+							});
 							resolve(user);
 						}
 					},
@@ -1248,21 +1289,21 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-							dispatchAuthEvent(
-								'signIn',
-								user,
-								`A user ${user.getUsername()} has been signed in`
-							);
+							dispatchAuthEvent({
+								event: 'signIn',
+								data: user,
+								message: `A user ${user.getUsername()} has been signed in`,
+							});
 							resolve(user);
 						}
 					},
 					onFailure: err => {
 						logger.debug('completeNewPassword failure', err);
-						dispatchAuthEvent(
-							'completeNewPassword_failure',
-							err,
-							`${this.user} failed to complete the new password flow`
-						);
+						dispatchAuthEvent({
+							event: 'completeNewPassword_failure',
+							data: err,
+							message: `${this.user} failed to complete the new password flow`,
+						});
 						reject(err);
 					},
 					mfaRequired: (challengeName, challengeParam) => {
@@ -1385,11 +1426,11 @@ export class AuthClass {
 								if (err) {
 									rej(err);
 								} else {
-									dispatchAuthEvent(
-										'userDeleted',
-										result,
-										'The authenticated user has been deleted.'
-									);
+									dispatchAuthEvent({
+										event: 'userDeleted',
+										data: result,
+										message: 'The authenticated user has been deleted.',
+									});
 									user.signOut();
 									this.user = null;
 									try {
@@ -1402,11 +1443,11 @@ export class AuthClass {
 									if (isSignedInHostedUI) {
 										this.oAuthSignOutRedirect(res, rej);
 									} else {
-										dispatchAuthEvent(
-											'signOut',
-											this.user,
-											`A user has been signed out`
-										);
+										dispatchAuthEvent({
+											event: 'signOut',
+											data: this.user,
+											message: `A user has been signed out`,
+										});
 										res(result);
 									}
 								}
@@ -1448,22 +1489,22 @@ export class AuthClass {
 					attributeList,
 					(err, result, details) => {
 						if (err) {
-							dispatchAuthEvent(
-								'updateUserAttributes_failure',
-								err,
-								'Failed to update attributes'
-							);
+							dispatchAuthEvent({
+								event: 'updateUserAttributes_failure',
+								data: err,
+								message: 'Failed to update attributes',
+							});
 							return reject(err);
 						} else {
 							const attrs = this.createUpdateAttributesResultList(
 								attributes as Record<string, string>,
 								details?.CodeDeliveryDetailsList
 							);
-							dispatchAuthEvent(
-								'updateUserAttributes',
-								attrs,
-								'Attributes successfully updated'
-							);
+							dispatchAuthEvent({
+								event: 'updateUserAttributes',
+								data: attrs,
+								message: 'Attributes successfully updated',
+							});
 							return resolve(result);
 						}
 					},
@@ -1620,7 +1661,11 @@ export class AuthClass {
 				this.oAuthSignOutRedirect(res, rej);
 			});
 		} else {
-			dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
+			dispatchAuthEvent({
+				event: 'signOut',
+				data: this.user,
+				message: `A user has been signed out`,
+			});
 		}
 	}
 
@@ -2157,7 +2202,11 @@ export class AuthClass {
 		 * This is why we need a well structured session object that can be inspected
 		 * and information passed back in the message below for Hub dispatch
 		 */
-		dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
+		dispatchAuthEvent({
+			event: 'signOut',
+			data: this.user,
+			message: `A user has been signed out`,
+		});
 		this.user = null;
 	}
 
@@ -2224,20 +2273,20 @@ export class AuthClass {
 					},
 					onFailure: err => {
 						logger.debug('forgot password failure', err);
-						dispatchAuthEvent(
-							'forgotPassword_failure',
-							err,
-							`${username} forgotPassword failed`
-						);
+						dispatchAuthEvent({
+							event: 'forgotPassword_failure',
+							data: err,
+							message: `${username} forgotPassword failed`,
+						});
 						reject(err);
 						return;
 					},
 					inputVerificationCode: data => {
-						dispatchAuthEvent(
-							'forgotPassword',
-							user,
-							`${username} has initiated forgot password flow`
-						);
+						dispatchAuthEvent({
+							event: 'forgotPassword',
+							data: user,
+							message: `${username} has initiated forgot password flow`,
+						});
 						resolve(data);
 						return;
 					},
@@ -2280,20 +2329,20 @@ export class AuthClass {
 				password,
 				{
 					onSuccess: success => {
-						dispatchAuthEvent(
-							'forgotPasswordSubmit',
-							user,
-							`${username} forgotPasswordSubmit successful`
-						);
+						dispatchAuthEvent({
+							event: 'forgotPasswordSubmit',
+							data: user,
+							message: `${username} forgotPasswordSubmit successful`,
+						});
 						resolve(success);
 						return;
 					},
 					onFailure: err => {
-						dispatchAuthEvent(
-							'forgotPasswordSubmit_failure',
-							err,
-							`${username} forgotPasswordSubmit failed`
-						);
+						dispatchAuthEvent({
+							event: 'forgotPasswordSubmit_failure',
+							data: err,
+							message: `${username} forgotPasswordSubmit failed`,
+						});
 						reject(err);
 						return;
 					},
@@ -2440,11 +2489,11 @@ export class AuthClass {
 				'federation'
 			);
 			const currentUser = await this.currentAuthenticatedUser();
-			dispatchAuthEvent(
-				'signIn',
-				currentUser,
-				`A user ${currentUser.username} has been signed in`
-			);
+			dispatchAuthEvent({
+				event: 'signIn',
+				data: currentUser,
+				message: `A user ${currentUser.username} has been signed in`,
+			});
 			logger.debug('federated sign in credentials', credentials);
 			return credentials;
 		}
@@ -2468,11 +2517,11 @@ export class AuthClass {
 				);
 			}
 
-			dispatchAuthEvent(
-				'parsingCallbackUrl',
-				{ url: URL },
-				`The callback url is being parsed`
-			);
+			dispatchAuthEvent({
+				event: 'parsingCallbackUrl',
+				data: { url: URL },
+				message: `The callback url is being parsed`,
+			});
 
 			const currentUrl =
 				URL || (browserOrNode().isBrowser ? window.location.href : '');
@@ -2537,25 +2586,25 @@ export class AuthClass {
 						);
 					}
 
-					dispatchAuthEvent(
-						'signIn',
-						currentUser,
-						`A user ${currentUser.getUsername()} has been signed in`
-					);
-					dispatchAuthEvent(
-						'cognitoHostedUI',
-						currentUser,
-						`A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`
-					);
+					dispatchAuthEvent({
+						event: 'signIn',
+						data: currentUser,
+						message: `A user ${currentUser.getUsername()} has been signed in`,
+					});
+					dispatchAuthEvent({
+						event: 'cognitoHostedUI',
+						data: currentUser,
+						message: `A user ${currentUser.getUsername()} has been signed in via Cognito Hosted UI`,
+					});
 
 					if (isCustomStateIncluded) {
 						const customState = state.split('-').splice(1).join('-');
 
-						dispatchAuthEvent(
-							'customOAuthState',
-							urlSafeDecode(customState),
-							`State for user ${currentUser.getUsername()}`
-						);
+						dispatchAuthEvent({
+							event: 'customOAuthState',
+							data: urlSafeDecode(customState),
+							message: `State for user ${currentUser.getUsername()}`,
+						});
 					}
 					//#endregion
 
@@ -2573,21 +2622,21 @@ export class AuthClass {
 						);
 					}
 
-					dispatchAuthEvent(
-						'signIn_failure',
-						err,
-						`The OAuth response flow failed`
-					);
-					dispatchAuthEvent(
-						'cognitoHostedUI_failure',
-						err,
-						`A failure occurred when returning to the Cognito Hosted UI`
-					);
-					dispatchAuthEvent(
-						'customState_failure',
-						err,
-						`A failure occurred when returning state`
-					);
+					dispatchAuthEvent({
+						event: 'signIn_failure',
+						data: err,
+						message: `The OAuth response flow failed`,
+					});
+					dispatchAuthEvent({
+						event: 'cognitoHostedUI_failure',
+						data: err,
+						message: `A failure occurred when returning to the Cognito Hosted UI`,
+					});
+					dispatchAuthEvent({
+						event: 'customState_failure',
+						data: err,
+						message: `A failure occurred when returning state`,
+					});
 				}
 			}
 		} finally {
