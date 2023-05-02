@@ -454,7 +454,6 @@ export async function waitForSyncQueriesReady(verbose = false) {
  * @param fakeService - the fake graphql service
  * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
  * @param modelName - the name of the model we are updating
- * @returns
  */
 export async function graphqlServiceSettled(
 	graphqlService: FakeGraphQLService,
@@ -516,5 +515,4 @@ export async function graphqlServiceSettled(
 		undefined,
 		undefined
 	);
-	// });
 }
