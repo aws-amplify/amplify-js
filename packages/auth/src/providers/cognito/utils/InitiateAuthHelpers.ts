@@ -3,7 +3,6 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	InitiateAuthCommandOutput,
 	RespondToAuthChallengeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { ClientMetadata } from 'amazon-cognito-identity-js';
@@ -38,64 +37,6 @@ export async function handleUserSRPAuthFlow(
 			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
 			ClientMetadata: clientMeta,
 		},
-	};
-
-	return await initiateAuthClient(jsonReq);
-}
-
-export async function handleCustomSRPAuthFlow(
-	username: string,
-	clientMetadata: ClientMetadata | undefined
-) {
-	const config = Amplify.config;
-	const userPoolId = config['aws_user_pools_id'];
-	const userPoolName = userPoolId.split('_')[1];
-	const authenticationHelper = new AuthenticationHelper(userPoolName);
-	const clientMeta = clientMetadata ?? config.clientMetadata;
-	const jsonReq = {
-		AuthFlow: 'CUSTOM_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			SRP_A: ((await getLargeAValue(authenticationHelper)) as any).toString(16),
-			CHALLENGE_NAME: 'SRP_A',
-			ClientMetadata: clientMeta,
-		},
-	};
-
-	return await initiateAuthClient(jsonReq);
-}
-
-export async function handleCustomAuthFlowWithoutSRP(
-	username: string,
-	clientMetadata: ClientMetadata | undefined
-) {
-	const config = Amplify.config;
-	const clientMeta = clientMetadata ?? config.clientMetadata;
-	const jsonReq = {
-		AuthFlow: 'CUSTOM_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			ClientMetadata: clientMeta,
-		},
-	};
-
-	return await initiateAuthClient(jsonReq);
-}
-
-export async function handleUserPasswordAuthFlow(
-	username: string,
-	password: string,
-	clientMetadata: ClientMetadata | undefined
-): Promise<InitiateAuthCommandOutput> {
-	const config = Amplify.config;
-	const clientMeta = clientMetadata ?? config.clientMetadata;
-	const jsonReq = {
-		AuthFlow: 'USER_PASSWORD_AUTH',
-		AuthParameters: {
-			USERNAME: username,
-			PASSWORD: password,
-		},
-		ClientMetadata: clientMeta,
 	};
 
 	return await initiateAuthClient(jsonReq);
