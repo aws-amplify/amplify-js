@@ -95,49 +95,43 @@ describe('Signing middleware', () => {
 		);
 	});
 
-	test('should adjust clock offset if server returns skew error', async () => {
+	test.each([
+		['skew error', null],
+		['error with Date header', 'Date'],
+		['error with date header', 'date'],
+	])('should adjust clock offset if server returns %s', async (_, key) => {
 		mockisClockSkewError.mockReturnValue(true);
 		const serverTime = signingDate.toISOString();
-		const nextHandler = jest.fn().mockRejectedValue({ ServerTime: serverTime });
-		const signableHandler = getSignableHandler(nextHandler);
-		const config = { ...defaultSigningOptions };
+		const nextHandler = key
+			? jest.fn().mockRejectedValue({
+					$response: {
+						headers: {
+							[key]: serverTime,
+						},
+					},
+			  })
+			: jest.fn().mockRejectedValue({ ServerTime: serverTime });
+
+		const middlewareFunction = signingMiddleware(defaultSigningOptions)(
+			nextHandler
+		);
 
 		try {
-			await signableHandler(defaultRequest, config);
+			await middlewareFunction(defaultRequest);
 		} catch (error) {
+			expect(mockGetSkewCorrectedDate).toBeCalledWith(0);
 			expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(serverTime, 0);
-			expect(config).toStrictEqual({
-				...defaultSigningOptions,
-				systemClockOffset: updatedOffset,
-			});
-		}
-		expect.assertions(2);
-	});
-
-	test.each(['Date', 'date'])(
-		'should adjust clock offset if server returns error with %s header',
-		async key => {
-			const serverTime = signingDate.toISOString();
-			const nextHandler = jest.fn().mockRejectedValueOnce({
-				$response: {
-					headers: {
-						[key]: serverTime,
-					},
-				},
-			});
-			const signableHandler = getSignableHandler(nextHandler);
-			const config = { ...defaultSigningOptions };
-
+			jest.clearAllMocks();
 			try {
-				await signableHandler(defaultRequest, config);
+				await middlewareFunction(defaultRequest);
 			} catch (error) {
-				expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(serverTime, 0);
-				expect(config).toStrictEqual({
-					...defaultSigningOptions,
-					systemClockOffset: updatedOffset,
-				});
+				expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
+				expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
+					serverTime,
+					updatedOffset
+				);
 			}
-			expect.assertions(2);
 		}
-	);
+		expect.assertions(4);
+	});
 });

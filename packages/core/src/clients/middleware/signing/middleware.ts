@@ -25,32 +25,34 @@ export interface SigningOptions {
 /**
  * Signing middleware
  */
-export const signingMiddleware = (signingOptions: SigningOptions) => {
+export const signingMiddleware = ({
+	credentials,
+	region,
+	service,
+	systemClockOffset = 0,
+}: SigningOptions) => {
+	let currentSystemClockOffset;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function signingMiddleware(request: HttpRequest) {
-			let response: HttpResponse;
-			const { credentials, region, service } = signingOptions;
-			if (signingOptions.systemClockOffset == null) {
-				signingOptions.systemClockOffset = 0;
-			}
+			currentSystemClockOffset = currentSystemClockOffset ?? systemClockOffset;
 			const signRequestOptions = {
 				credentials,
-				signingDate: getSkewCorrectedDate(signingOptions.systemClockOffset),
+				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
 				signingService: service,
 			};
 			const signedRequest = await signRequest(request, signRequestOptions);
 			try {
-				response = await next(signedRequest);
+				const response = await next(signedRequest);
 				return response;
 			} catch (error) {
 				const clockTime = shouldUseServerTime(error)
 					? error.ServerTime
 					: getDateHeader(error.$response);
 				if (clockTime) {
-					signingOptions.systemClockOffset = getUpdatedSystemClockOffset(
+					currentSystemClockOffset = getUpdatedSystemClockOffset(
 						clockTime,
-						signingOptions.systemClockOffset
+						currentSystemClockOffset
 					);
 				}
 				throw error;
