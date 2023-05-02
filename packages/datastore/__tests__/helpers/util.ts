@@ -449,9 +449,10 @@ export async function waitForSyncQueriesReady(verbose = false) {
 }
 
 /**
- * Validate that fake graphqlService has received / finished processing all
- * updates, and has sent all subscription messages.
- * @param fakeService - the fake graphql service
+ * Used for monitoring the fake GraphQL service. Will validate if it has
+ * received and finished processing all updates / sent all subscription
+ * messages for a specific model.
+ * @param fakeService - the fake GraphQL service
  * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
  * @param modelName - the name of the model we are updating
  */
@@ -462,7 +463,7 @@ export async function graphqlServiceSettled(
 ) {
 	/**
 	 * Note: Even though we've marked running mutations / subscriptions as complete
-	 * in the service, it still takes a moment for us to receive the updates.
+	 * in the service, it still takes a moment to receive the updates.
 	 * This pause avoids unnecessary retries.
 	 */
 	await pause(1);
@@ -473,7 +474,11 @@ export async function graphqlServiceSettled(
 	 */
 	await jitteredExponentialRetry(
 		() => {
-			// Ensure the service has received all the requests.
+			// The test should fail if we haven't ended the simulated disruption:
+			const subscriptionMessagesNotStopped =
+				!graphqlService.stopSubscriptionMessages;
+
+			// Ensure the service has received all the requests:
 			const allUpdatesSent =
 				graphqlService.requests.filter(
 					({ operation, type, tableName }) =>
@@ -493,10 +498,6 @@ export async function graphqlServiceSettled(
 						return observerMessageName === `onUpdate${modelName}`;
 					}
 				).length === expectedNumberOfUpdates;
-
-			// The test should fail if we haven't ended the simulated disruption:
-			const subscriptionMessagesNotStopped =
-				!graphqlService.stopSubscriptionMessages;
 
 			if (
 				allUpdatesSent &&

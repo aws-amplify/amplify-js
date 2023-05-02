@@ -862,15 +862,15 @@ describe('DataStore sync engine', () => {
 
 		/**
 		 * NOTE: The following test assertions are based on *existing* behavior, not *correct*
-		 * behavior. Once we have fixed rapid single-field consecutive updates / updates on
-		 * poor connections, we should update these assertions to reflect the *correct* behavior.
+		 * behavior. Once we have fixed rapid single-field consecutive updates, and updates on a
+		 * poor connection, we should update these assertions to reflect the *correct* behavior.
 		 *
 		 * Test observed rapid single-field mutations with variable connection latencies, as well as
 		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
 		 * as each scenario results in different observed behavior - essentially, whether or not
-		 * the outbox merges updates. We are updating a single field to ensure that the outbox's
-		 * `syncOutboxVersionsOnDequeue` does the right value comparison when there are multiple
-		 * fields present on a model, but only one is updated.
+		 * the outbox merges updates. We are updating a single field with each mutation to ensure
+		 * that the outbox's `syncOutboxVersionsOnDequeue` does the right value comparison when
+		 * there are multiple fields present on a model, but only one is updated.
 		 *
 		 * NOTE: if these tests fail, and you witness one of the following:
 		 *     1) The retry throws an error
@@ -884,9 +884,9 @@ describe('DataStore sync engine', () => {
 			type SubscriptionLogTuple = [string, number];
 
 			/**
-			 * Since we're testing race conditions, we want to test the outbox logic
-			 * exactly each time. Minor fluctuations in test runs can cause different
-			 * results, so we set jitter to `0`
+			 * Since we're essentially testing race conditions, we want to test the outbox logic
+			 * exactly the same each time the tests are run. Minor fluctuations in test runs can
+			 * cause different outbox behavior, so we set jitter to `0`.
 			 */
 			const jitter: number = 0;
 			const latency: number = 1000;
@@ -1068,7 +1068,7 @@ describe('DataStore sync engine', () => {
 					/**
 					 * Because we have NOT increased the latency, the outbox will not merge
 					 * the mutations. In this example, we expect the number of requests
-					 * received to be one less the actual number of updates. If we were
+					 * received to be the same as the number of updates. If we were
 					 * running this test with increased latency, we'd expect less requests
 					 * to be received.
 					 */
@@ -1101,7 +1101,6 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				// Note: may need to fine tune the assertions once the issue is fixed.
 				test('rapid mutations on poor connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
@@ -1167,13 +1166,10 @@ describe('DataStore sync engine', () => {
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
 
-					const expectedNumberOfUpdates = 0;
-
-					await graphqlServiceSettled(
-						graphqlService,
-						expectedNumberOfUpdates,
-						'Post'
-					);
+					/**
+					 * Currently, the service does not receive any requests.
+					 */
+					await graphqlServiceSettled(graphqlService, 0, 'Post');
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1202,7 +1198,6 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				// Note: may need to fine tune the assertions once the issue is fixed.
 				test('rapid mutations on fast connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
@@ -1266,14 +1261,8 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Because we have increased the latency, and don't wait for the outbox
-					 * to clear on each mutation, the outbox will merge some of the mutations.
-					 * In this example, we expect the number of requests received to be one less than
-					 * the actual number of updates. If we were running this test without
-					 * increased latency, we'd expect more requests to be received.
+					 * Currently, the service does not receive any requests.
 					 */
-					// const expectedNumberOfUpdates = numberOfUpdates - 1;
-
 					await graphqlServiceSettled(graphqlService, 0, 'Post');
 
 					// Validate that `observe` returned the expected updates to
