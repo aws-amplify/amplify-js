@@ -109,12 +109,6 @@
 			"limit": "7.08 kB"
 		},
 		{
-			"name": "Custom clients (retry middleware)",
-			"path": "./lib-esm/clients/middleware/retry/middleware.js",
-			"import": "{ retryMiddleware }",
-			"limit": "1.24 kB"
-		},
-		{
 			"name": "Custom clients (fetch handler)",
 			"path": "./lib-esm/clients/handlers/fetch.js",
 			"import": "{ fetchTransferHandler }",
@@ -125,6 +119,18 @@
 			"path": "./lib-esm/clients/handlers/unauthenticated.js",
 			"import": "{ unauthenticatedHandler }",
 			"limit": "2.75 kB"
+		},
+		{
+			"name": "Custom clients (retry middleware)",
+			"path": "./lib-esm/clients/middleware/retry/middleware.js",
+			"import": "{ retryMiddleware }",
+			"limit": "1.24 kB"
+		},
+		{
+			"name": "Custom clients (signing middleware)",
+			"path": "./lib-esm/clients/middleware/signing/middleware.js",
+			"import": "{ signingMiddleware }",
+			"limit": "6.77 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
