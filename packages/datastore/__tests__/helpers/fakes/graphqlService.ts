@@ -18,6 +18,13 @@ type GraphQLRequest = {
 	authToken: string | undefined | null;
 };
 
+/**
+ * Artificial latencies to introduce to the imagined network boundaries.
+ * @property request: The time it takes a request will take to reach the cloud.
+ * @property response: After request processing, the time it takes for the client to receive a response.
+ * @property subscriber: After request processing, the time it takes for each relevant subscriber to receive an event.
+ * @property jitter: The max amount to randomly to +/- from each latency.
+ */
 type FakeLatencies = {
 	request: number;
 	response: number;
@@ -25,30 +32,10 @@ type FakeLatencies = {
 	jitter: number;
 };
 
-/**
- * Default artificial latencies to introduce to the imagined network boundaries.
- */
 const defaultLatencies: FakeLatencies = {
-	/**
-	 * The time it takes a request will take to reach the cloud.
-	 */
 	request: 15,
-
-	/**
-	 * After request processing, the time it takes for the client to
-	 * receive a response.
-	 */
 	response: 15,
-
-	/**
-	 * After request processing, the time it takes for each relevant
-	 * subscriber to receive an event.
-	 */
 	subscriber: 15,
-
-	/**
-	 * The max amount to randomly to +/- from each latency.
-	 */
 	jitter: 5,
 };
 
@@ -74,7 +61,7 @@ export class FakeGraphQLService {
 	>();
 	/**
 	 * All in-flight mutations. Used solely for observability in tests.
-	 * When dealing with concurrent mutations or increased latency, 
+	 * When dealing with concurrent mutations or increased latency,
 	 * we should always first verify that there are no in-flight
 	 * mutations prior to making final test assertions.
 	 */
@@ -128,15 +115,6 @@ export class FakeGraphQLService {
 	 */
 	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
 		return (this.latencies = { ...this.latencies, ...latencies });
-	}
-
-	/**
-	 * Resets artificial latencies to default values (should
-	 * be called at the end of each test that modifies them)
-	 * @returns default values for fake latencies
-	 */
-	public resetLatencies(): FakeLatencies {
-		return (this.latencies = defaultLatencies);
 	}
 
 	/**

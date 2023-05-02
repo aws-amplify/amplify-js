@@ -999,7 +999,6 @@ describe('DataStore sync engine', () => {
 					expect(queryResult?.title).toEqual(`post title 0`);
 
 					// Cleanup:
-					graphqlService.resetLatencies();
 					await subscription.unsubscribe();
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
@@ -1201,7 +1200,6 @@ describe('DataStore sync engine', () => {
 					expect(queryResult?.title).toEqual(`post title 2`);
 
 					// Cleanup:
-					graphqlService.resetLatencies();
 					await subscription.unsubscribe();
 				});
 				// Note: may need to fine tune the assertions once the issue is fixed.
@@ -1410,7 +1408,6 @@ describe('DataStore sync engine', () => {
 					);
 
 					// Cleanup:
-					graphqlService.resetLatencies();
 					await subscription.unsubscribe();
 				});
 				test('observe on fast connection with awaited outbox', async () => {
