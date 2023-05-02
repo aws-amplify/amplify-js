@@ -73,8 +73,10 @@ export class FakeGraphQLService {
 		ZenObservable.SubscriptionObserver<any>[]
 	>();
 	/**
-	 * For keeping track of in-flight mutations (for more reliable
-	 * assertions on subscription updates)
+	 * All in-flight mutations. Used solely for observability in tests.
+	 * When dealing with concurrent mutations or increased latency, 
+	 * we should always first verify that there are no in-flight
+	 * mutations prior to making final test assertions.
 	 */
 	public runningMutations = new Map<string, string>();
 
