@@ -12,4 +12,4 @@ export type ClientOutputs =
 	| SignUpCommandOutput
 	| ForgotPasswordCommandOutput
 	| InitiateAuthCommandOutput
-	| ConfirmForgotPasswordCommandOutput
+	| ConfirmForgotPasswordCommandOutput;

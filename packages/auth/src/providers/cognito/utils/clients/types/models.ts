@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 export type ChallengeName =
 	| 'SMS_MFA'
 	| 'SOFTWARE_TOKEN_MFA'

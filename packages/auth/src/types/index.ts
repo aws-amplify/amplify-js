@@ -30,7 +30,7 @@ export { AuthSignUpOptions } from './options/AuthSignUpOptions';
 export { ConfirmResetPasswordRequest } from './requests/ConfirmResetPasswordRequest';
 export { ResetPasswordRequest } from './requests/ResetPasswordRequest';
 export { SignUpRequest } from './requests/SignUpRequest';
-export { SignInRequest } from './requests/SignInRequest'
+export { SignInRequest } from './requests/SignInRequest';
 
 // Results
 export { AuthSignUpResult } from './results/AuthSignUpResult';
