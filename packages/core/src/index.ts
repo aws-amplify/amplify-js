@@ -9,7 +9,15 @@ export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export { invalidParameter, missingConfig } from './Errors';
-export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
+export {
+	Hub,
+	HubCapsule,
+	HubCallback,
+	HubPayload,
+	HubClass,
+	InferHubTypes,
+	GetHubPayloads,
+} from './Hub';
 export { I18n } from './I18n';
 export {
 	browserOrNode,
