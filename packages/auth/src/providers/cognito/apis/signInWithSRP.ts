@@ -20,6 +20,8 @@ import {
 	handleUserSRPAuthFlow,
 } from '../utils/InitiateAuthHelpers';
 import { setActiveLocalSession } from '../utils/localSessionHelpers';
+import { InitiateAuthException, RespondToAuthChallengeException } from '../types/errors/service';
+
 
 /**
  * Signs a user in
