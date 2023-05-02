@@ -28,14 +28,15 @@ describe('aws-amplify', () => {
 			  "Notifications",
 			  "Predictions",
 			  "Logger",
-			  "Hub",
 			  "ClientDevice",
+			  "HubClass",
 			  "Signer",
 			  "I18n",
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
 			  "withSSRContext",
 			  "Geo",
+			  "Hub",
 			]
 		`);
 		});
