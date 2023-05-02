@@ -68,8 +68,11 @@ export class FakeGraphQLService {
 	public runningMutations = new Map<string, string>();
 
 	/**
-	 * For keeping track of in-flight subscription messages
-	 * (for more reliable assertions on subscription messages)
+	 * Number of subscription messages sent. Used solely for observability
+	 * in tests. When dealing with concurrent mutations or increased latency,
+	 * we should always first verify that the number of subscription messages
+	 * sent for a given model is what we expect prior to making final test
+	 * assertions.
 	 */
 	public subscriptionMessagesSent = [] as any[];
 
