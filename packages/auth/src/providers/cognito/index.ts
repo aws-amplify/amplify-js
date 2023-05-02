@@ -12,3 +12,5 @@ export { ValidationData } from './types/models/ValidationData';
 export { CognitoConfirmResetPasswordOptions } from './types/options/CognitoConfirmResetPasswordOptions';
 export { CognitoSignUpOptions } from './types/options/CognitoSignUpOptions';
 export { CognitoResetPasswordOptions } from './types/options/CognitoResetPasswordOptions';
+export { CognitoSignInOptions } from './types/options/CognitoSignInOptions';
+export { AuthFlowType } from './types/models/AuthFlowType';

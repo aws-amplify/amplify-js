@@ -1,22 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
-	ConfirmForgotPasswordCommandInput,
-	ConfirmForgotPasswordCommandOutput,
-	ForgotPasswordCommandInput,
-	ForgotPasswordCommandOutput,
-	SignUpCommandInput,
-	SignUpCommandOutput,
-} from '@aws-sdk/client-cognito-identity-provider';
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
+import { ClientOutputs } from './types/outputs';
+import { SendCognitoHttpClientRequest } from './types/request';
 
 const USER_AGENT = 'amplify test';
-
-export type ClientInputs = SignUpCommandInput | ForgotPasswordCommandInput | ConfirmForgotPasswordCommandInput;
-export type ClientOutputs = SignUpCommandOutput | ForgotPasswordCommandOutput | ConfirmForgotPasswordCommandOutput;
-export type ClientOperations = 'SignUp' | 'ConfirmSignUp' | 'ForgotPassword' | 'ConfirmForgotPassword';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
@@ -31,8 +21,10 @@ export class UserPoolHttpClient {
 	}
 
 	async send<T extends ClientOutputs>(
-		operation: ClientOperations,
-		input: ClientInputs
+		{
+			operation,
+			input,
+		}: SendCognitoHttpClientRequest
 	): Promise<T> {
 		const headers = {
 			...this._headers,
