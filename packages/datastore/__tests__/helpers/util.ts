@@ -450,9 +450,7 @@ export async function waitForSyncQueriesReady(verbose = false) {
 
 /**
  * Validate that fake graphqlService has received / finished processing all
- * updates, and (TODO) has sent all subscription messages. We retry in the
- * event that the artificial pauses and / or latencies are updated (future
- * test iterations).
+ * updates, and has sent all subscription messages.
  * @param fakeService - the fake graphql service
  * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
  * @param modelName - the name of the model we are updating
@@ -462,52 +460,61 @@ export async function graphqlServiceSettled(
 	graphqlService: FakeGraphQLService,
 	expectedNumberOfUpdates: number,
 	modelName: String
-): Promise<void> {
-	return new Promise<void>(async resolve => {
-		/**
-		 * Validate that fake graphqlService has received / finished processing
-		 * all updates. We retry in the event that the artificial pauses and / or
-		 * latencies are updated (future test iterations).
-		 */
-		await jitteredExponentialRetry(
-			() => {
-				// Ensure the service has received all the requests.
-				const allUpdatesSent =
-					graphqlService.requests.filter(
-						({ operation, type, tableName }) =>
-							operation === 'mutation' &&
-							type === 'update' &&
-							tableName === modelName
-					).length === expectedNumberOfUpdates;
+) {
+	/**
+	 * Note: Even though we've marked running mutations / subscriptions as complete
+	 * in the service, it still takes a moment for us to receive the updates.
+	 * This pause avoids unnecessary retries.
+	 */
+	await pause(1);
 
-				// Ensure all mutations are complete:
-				const allRunningMutationsComplete =
-					graphqlService.runningMutations.size === 0;
+	/**
+	 * Due to the addition of artificial latencies, the service may not be
+	 * done, so we retry:
+	 */
+	await jitteredExponentialRetry(
+		() => {
+			// Ensure the service has received all the requests.
+			const allUpdatesSent =
+				graphqlService.requests.filter(
+					({ operation, type, tableName }) =>
+						operation === 'mutation' &&
+						type === 'update' &&
+						tableName === modelName
+				).length === expectedNumberOfUpdates;
 
-				// TODO:
-				const allSubscriptionsSent = true;
+			// Ensure all mutations are complete:
+			const allRunningMutationsComplete =
+				graphqlService.runningMutations.size === 0;
 
-				// The test should fail if we haven't ended the simulated disruption:
-				const subscriptionMessagesNotStopped =
-					!graphqlService.stopSubscriptionMessages;
+			// Ensure we've notified subscribers:
+			const allSubscriptionsSent =
+				graphqlService.subscriptionMessagesSent.filter(
+					([observerMessageName, message]) => {
+						return observerMessageName === `onUpdate${modelName}`;
+					}
+				).length === expectedNumberOfUpdates;
 
-				if (
-					allUpdatesSent &&
-					allRunningMutationsComplete &&
-					allSubscriptionsSent &&
-					subscriptionMessagesNotStopped
-				) {
-					resolve();
-					return true;
-				} else {
-					throw new Error(
-						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
-					);
-				}
-			},
-			[null],
-			undefined,
-			undefined
-		);
-	});
+			// The test should fail if we haven't ended the simulated disruption:
+			const subscriptionMessagesNotStopped =
+				!graphqlService.stopSubscriptionMessages;
+
+			if (
+				allUpdatesSent &&
+				allRunningMutationsComplete &&
+				allSubscriptionsSent &&
+				subscriptionMessagesNotStopped
+			) {
+				return true;
+			} else {
+				throw new Error(
+					'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+				);
+			}
+		},
+		[null],
+		undefined,
+		undefined
+	);
+	// });
 }

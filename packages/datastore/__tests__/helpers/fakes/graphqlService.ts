@@ -79,6 +79,12 @@ export class FakeGraphQLService {
 	public runningMutations = new Map<string, string>();
 
 	/**
+	 * For keeping track of in-flight subscription messages
+	 * (for more reliable assertions on subscription messages)
+	 */
+	public subscriptionMessagesSent = [] as any[];
+
+	/**
 	 * Singleton middleware, basically.
 	 */
 	public intercept: (request: GraphQLRequest, next: () => any) => any = (
@@ -483,7 +489,6 @@ export class FakeGraphQLService {
 	 * @param selection The function/selection name, like "onCreateTodo".
 	 */
 	public async notifySubscribers(tableName, type, data, selection) {
-		// debugger;
 		await this.jitteredPause(this.latencies.subscriber);
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
@@ -505,6 +510,7 @@ export class FakeGraphQLService {
 					observerMessageName,
 					message,
 				});
+				this.subscriptionMessagesSent.push([observerMessageName, message]);
 				observer.next(message);
 			}
 		});
@@ -681,12 +687,9 @@ export class FakeGraphQLService {
 					}
 				}
 
-				// debugger
 				this.notifySubscribers(tableName, type, data, selection);
 				await this.jitteredPause(this.latencies.response);
 
-				// Mutation is complete, remove from in-flight mutations
-				this.runningMutations.delete(variables.input.id);
 				this.log('API Response', { data, errors });
 				resolve({
 					data,
@@ -696,6 +699,10 @@ export class FakeGraphQLService {
 			}
 
 			await this.jitteredPause(this.latencies.response);
+
+			// Mutation is complete, remove from in-flight mutations
+			this.runningMutations.delete(variables?.input?.id);
+
 			this.log('API Response', { data, errors });
 			resolve({
 				data,
