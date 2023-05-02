@@ -18,12 +18,12 @@ export async function signUpClient(
 	params: SignUpClientInput
 ): Promise<SignUpCommandOutput> {
 	const client = new UserPoolHttpClient(UserPoolClient.region);
-	const result: SignUpCommandOutput = await client.send<SignUpCommandOutput>(
-		'SignUp',
-		{
+	const result: SignUpCommandOutput = await client.send<SignUpCommandOutput>({
+		operation: 'SignUp',
+		input: {
 			...params,
 			ClientId: UserPoolClient.clientId,
-		}
-	);
+		},
+	});
 	return result;
 }
