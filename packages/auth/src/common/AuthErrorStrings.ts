@@ -41,6 +41,10 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.EmptySignUpUsername]: {
 		message: 'username is required to signUp',
 	},
+	[AuthValidationErrorCode.CustomAuthSignInPassword]: {
+		message: 'A password is not needed when signing in with CUSTOM_AUTH',
+		recoverySuggestion: 'Do not include a password in your signIn call.',
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.
