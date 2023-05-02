@@ -21,6 +21,18 @@ import {
 } from '../utils/InitiateAuthHelpers';
 import { setActiveLocalSession } from '../utils/localSessionHelpers';
 
+/**
+ * Signs a user in
+ *
+ * @param signInRequest - The SignInRequest object
+ * @returns AuthSignInResult
+ * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException }
+ * Cognito service errors thrown during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown either username or password
+ *  are not defined.
+ *
+ * TODO: add config errors
+ */
 export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {

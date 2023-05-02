@@ -4,6 +4,8 @@
 export { signUp } from './apis/signUp';
 export { resetPassword } from './apis/resetPassword';
 export { confirmResetPassword } from './apis/confirmResetPassword';
+export {signIn} from "./apis/signIn"
+export {signInWithSRP} from "./apis/signInWithSRP"
 
 export { ClientMetadata } from './types/models/ClientMetadata';
 export { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
