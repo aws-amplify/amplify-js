@@ -2,6 +2,7 @@ import { Observable } from 'zen-observable-ts';
 import {
 	pause,
 	getDataStore,
+	graphqlServiceSettled,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,
@@ -10,7 +11,6 @@ import {
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
-import { graphqlServiceSettled } from './helpers';
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
