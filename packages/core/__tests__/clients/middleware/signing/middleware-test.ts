@@ -102,6 +102,7 @@ describe('Signing middleware', () => {
 	])('should adjust clock offset if server returns %s', async (_, key) => {
 		mockisClockSkewError.mockReturnValue(true);
 		const serverTime = signingDate.toISOString();
+		const parsedServerTime = Date.parse(serverTime);
 		const nextHandler = key
 			? jest.fn().mockRejectedValue({
 					$response: {
@@ -120,14 +121,17 @@ describe('Signing middleware', () => {
 			await middlewareFunction(defaultRequest);
 		} catch (error) {
 			expect(mockGetSkewCorrectedDate).toBeCalledWith(0);
-			expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(serverTime, 0);
+			expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
+				parsedServerTime,
+				0
+			);
 			jest.clearAllMocks();
 			try {
 				await middlewareFunction(defaultRequest);
 			} catch (error) {
 				expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
 				expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
-					serverTime,
+					parsedServerTime,
 					updatedOffset
 				);
 			}

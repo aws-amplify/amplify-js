@@ -18,7 +18,7 @@ describe('getUpdatedSystemClockOffset', () => {
 	test('returns the current offset if not skewed', () => {
 		mockIsClockSkewed.mockReturnValue(false);
 		const offset = 1500;
-		expect(getUpdatedSystemClockOffset(signingDate.toISOString(), offset)).toBe(
+		expect(getUpdatedSystemClockOffset(signingDate.getTime(), offset)).toBe(
 			offset
 		);
 	});
@@ -27,7 +27,7 @@ describe('getUpdatedSystemClockOffset', () => {
 		mockIsClockSkewed.mockReturnValue(true);
 		const clockTime = new Date(signingDate);
 		clockTime.setMinutes(signingDate.getMinutes() + 15);
-		expect(getUpdatedSystemClockOffset(clockTime.toISOString(), 0)).toBe(
+		expect(getUpdatedSystemClockOffset(clockTime.getTime(), 0)).toBe(
 			15 * 60 * 1000
 		);
 	});
@@ -36,7 +36,7 @@ describe('getUpdatedSystemClockOffset', () => {
 		mockIsClockSkewed.mockReturnValue(true);
 		const clockTime = new Date(signingDate);
 		clockTime.setMinutes(signingDate.getMinutes() - 15);
-		expect(getUpdatedSystemClockOffset(clockTime.toISOString(), 0)).toBe(
+		expect(getUpdatedSystemClockOffset(clockTime.getTime(), 0)).toBe(
 			-15 * 60 * 1000
 		);
 	});

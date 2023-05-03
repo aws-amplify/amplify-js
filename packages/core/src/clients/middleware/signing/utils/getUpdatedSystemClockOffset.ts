@@ -6,18 +6,17 @@ import { isClockSkewed } from './isClockSkewed';
 /**
  * Returns the difference between clock time and the current system time if clock is skewed.
  *
- * @param clockTime Clock time as a string.
+ * @param clockTimeInMilliseconds Clock time in milliseconds.
  * @param currentSystemClockOffset Current system clock offset in milliseconds.
  *
  * @internal
  */
 export const getUpdatedSystemClockOffset = (
-	clockTime: string,
+	clockTimeInMilliseconds: number,
 	currentSystemClockOffset: number
 ): number => {
-	const clockTimeInMs = Date.parse(clockTime);
-	if (isClockSkewed(clockTimeInMs, currentSystemClockOffset)) {
-		return clockTimeInMs - Date.now();
+	if (isClockSkewed(clockTimeInMilliseconds, currentSystemClockOffset)) {
+		return clockTimeInMilliseconds - Date.now();
 	}
 	return currentSystemClockOffset;
 };

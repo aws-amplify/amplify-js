@@ -19,7 +19,6 @@ export interface SigningOptions {
 	credentials: Credentials;
 	region: string;
 	service: string;
-	systemClockOffset?: number;
 }
 
 /**
@@ -29,12 +28,11 @@ export const signingMiddleware = ({
 	credentials,
 	region,
 	service,
-	systemClockOffset = 0,
 }: SigningOptions) => {
 	let currentSystemClockOffset;
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function signingMiddleware(request: HttpRequest) {
-			currentSystemClockOffset = currentSystemClockOffset ?? systemClockOffset;
+			currentSystemClockOffset = currentSystemClockOffset ?? 0;
 			const signRequestOptions = {
 				credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
@@ -46,12 +44,12 @@ export const signingMiddleware = ({
 				const response = await next(signedRequest);
 				return response;
 			} catch (error) {
-				const clockTime = shouldUseServerTime(error)
+				const dateString = shouldUseServerTime(error)
 					? error.ServerTime
 					: getDateHeader(error.$response);
-				if (clockTime) {
+				if (dateString) {
 					currentSystemClockOffset = getUpdatedSystemClockOffset(
-						clockTime,
+						Date.parse(dateString),
 						currentSystemClockOffset
 					);
 				}
