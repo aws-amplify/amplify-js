@@ -22,104 +22,19 @@ Amplify.configure({
 	aws_user_pools_id: 'us-west-2_80ede80b',
 });
 
-describe('SRP calculation APIs', () => {
-	let initiateAuthSpy;
-	let respondToAuthChallengeSpy;
-	beforeEach(() => {
-		initiateAuthSpy = jest
-			.spyOn(initiateAuthClient, 'initiateAuthClient')
-			.mockImplementationOnce(async (): Promise<InitiateAuthCommandOutput> => {
-				return authAPITestParams.InitiateAuthCommandOutput;
-			});
-
-		respondToAuthChallengeSpy = jest
-			.spyOn(respondToAuthChallengeClient, 'respondToAuthChallengeClient')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					return authAPITestParams.RespondToAuthChallengeCommandOutput;
-				}
-			);
-	});
-
-	afterEach(() => {
-		initiateAuthSpy.mockClear();
-		respondToAuthChallengeSpy.mockClear();
-	});
-
-	test('handleUserSRPAuthFlow should calculate SRP_A value and return InitiateAuthCommandOutput', async () => {
-		const result = await initiateAuthHelpers.handleUserSRPAuthFlow(
-			authAPITestParams.user1.username,
-			{}
-		);
-
-		expect(result).toEqual(authAPITestParams.InitiateAuthCommandOutput);
-	});
-
-	test(`handlePasswordVerifierChallenge should calculate PASSWORD_CLAIM_SIGNATURE
-	      and return RespondToAuthChallengeCommandOutput`, async () => {
-		const userId =
-			authAPITestParams.InitiateAuthCommandOutput.ChallengeParameters
-				.USER_ID_FOR_SRP;
-		const secretBlock =
-			authAPITestParams.InitiateAuthCommandOutput.ChallengeParameters
-				.SECRET_BLOCK;
-		const result = await initiateAuthHelpers.handlePasswordVerifierChallenge(
-			authAPITestParams.user1.password,
-			{
-				USER_ID_FOR_SRP: userId,
-				SECRET_BLOCK: secretBlock,
-			},
-			{}
-		);
-
-		expect(result).toEqual(
-			authAPITestParams.RespondToAuthChallengeCommandOutput
-		);
-	});
-});
-
 describe('signIn API happy path cases', () => {
 	let handleUserSRPAuthflowSpy;
-	let handlePasswordVerifierChallengeSpy;
+	
 	beforeEach(() => {
 		handleUserSRPAuthflowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(async (): Promise<InitiateAuthCommandOutput> => {
-				return {
-					ChallengeName: 'PASSWORD_VERIFIER',
-					ChallengeParameters: {
-						USER_ID_FOR_SRP: '1111112222233333',
-						SECRET_BLOCK: 'zzzzxxxxvvvv',
-					},
-					AuthenticationResult: undefined,
-					Session: 'aaabbbcccddd',
-					$metadata: {},
-				};
+			.mockImplementationOnce(async (): Promise<RespondToAuthChallengeCommandOutput> => {
+				return authAPITestParams.RespondToAuthChallengeCommandOutput
 			});
-
-		handlePasswordVerifierChallengeSpy = jest
-			.spyOn(initiateAuthHelpers, 'handlePasswordVerifierChallenge')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					return {
-						ChallengeName: undefined,
-						ChallengeParameters: {},
-						AuthenticationResult: {
-							AccessToken: 'axxcasfsfsadfqwersdf',
-							ExpiresIn: 1000,
-							IdToken: 'sfsfasqwerqwrsfsfsfd',
-							RefreshToken: 'qwersfsafsfssfasf',
-						},
-						Session: 'aaabbbcccddd',
-						$metadata: {},
-					};
-				}
-			);
 	});
 
 	afterEach(() => {
 		handleUserSRPAuthflowSpy.mockClear();
-		handlePasswordVerifierChallengeSpy.mockClear();
 	});
 
 	test('signIn API invoked with authFlowType should return a SignInResult', async () => {
@@ -169,6 +84,7 @@ describe('signIn API error path cases:', () => {
 		const serviceError = new Error('service error');
 		serviceError.name = InitiateAuthException.InvalidParameterException;
 		globalMock.fetch = jest.fn(() => Promise.reject(serviceError));
+		expect.assertions(3);
 		try {
 			await signIn({
 				username: authAPITestParams.user1.username,
@@ -178,7 +94,6 @@ describe('signIn API error path cases:', () => {
 			expect(fetch).toBeCalled();
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
-			expect.assertions(3);
 		}
 	});
 

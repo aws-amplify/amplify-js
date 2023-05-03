@@ -15,13 +15,13 @@ import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/types/models';
-import {
-	handlePasswordVerifierChallenge,
-	handleUserSRPAuthFlow,
-} from '../utils/InitiateAuthHelpers';
+import { handleUserSRPAuthFlow } from '../utils/InitiateAuthHelpers';
 import { setActiveLocalSession } from '../utils/localSessionHelpers';
-import { InitiateAuthException, RespondToAuthChallengeException } from '../types/errors/service';
-
+import {
+	InitiateAuthException,
+	RespondToAuthChallengeException,
+} from '../types/errors/service';
+import { Amplify } from '@aws-amplify/core';
 
 /**
  * Signs a user in
@@ -39,7 +39,10 @@ export async function signInWithSRP(
 	signInRequest: SignInRequest<CognitoSignInOptions>
 ): Promise<AuthSignInResult> {
 	const { username, password } = signInRequest;
-	const metadata = signInRequest.options?.serviceOptions?.clientMetaData;
+	const config = Amplify.config;
+	const clientMetaData =
+		signInRequest.options?.serviceOptions?.clientMetaData ||
+		config.clientMetadata;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
@@ -50,23 +53,16 @@ export async function signInWithSRP(
 	);
 
 	try {
-		const { ChallengeParameters: challengeParameters, Session: session } =
-			await handleUserSRPAuthFlow(username, metadata);
-
-		// Session used on RespondToAuthChallenge calls
-		setActiveLocalSession(session);
-		const response = await handlePasswordVerifierChallenge(
-			password,
-			challengeParameters as ChallengeParameters,
-			metadata
-		);
-
 		const {
 			ChallengeName,
 			ChallengeParameters,
 			AuthenticationResult,
 			Session,
-		} = response;
+		}= await handleUserSRPAuthFlow(
+			username,
+			password,
+			clientMetaData
+		);
 
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens
@@ -75,10 +71,8 @@ export async function signInWithSRP(
 				nextStep: { signInStep: AuthSignInStep.DONE },
 			};
 		}
-
 		// Session used on RespondToAuthChallenge calls
 		setActiveLocalSession(Session);
-
 		// TODO(israx): set AmplifyUserSession via singleton
 		return getSignInResult({
 			challengeName: ChallengeName as ChallengeName,

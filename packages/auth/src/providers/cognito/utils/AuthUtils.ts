@@ -251,8 +251,8 @@ export function getSignInResult(params: {
 	challengeParameters: ChallengeParameters;
 	secretCode?: string;
 }): AuthSignInResult {
-	// TODO: Check what ChallengeName needs to add an additionalInfo param in its response
 	const { challengeName, challengeParameters, secretCode } = params;
+
 	switch (challengeName) {
 		case 'CUSTOM_CHALLENGE':
 			return {
@@ -324,9 +324,9 @@ export function getSignInResult(params: {
 	}
 
 	throw new AuthError({
-		name: 'UnrecognizedChallengeName',
-		message: `challengeName was not recognized. 
-			 This probably happened due to the underlying service returning a non supported challengeName.`,
+		name: 'UnsupportedChallengeName',
+		message: `challengeName is not supported. 
+			 This probably happened due to the underlying service returning a challengeName that is not supported by Amplify.`,
 	});
 }
 
@@ -348,5 +348,9 @@ export function getSignInResultFromError(
 
 export function parseAttributes(attributes: string | undefined): string[] {
 	if (!attributes) return [];
-	return JSON.parse(attributes);
+	const parsedAttributes = (JSON.parse(attributes) as Array<string>).map(att =>
+		att.includes('userAttributes.') ? att.replace('userAttributes.', '') : att
+	);
+
+	return parsedAttributes;
 }
