@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse, ErrorParser } from '../../types';
+import { isClockSkewError } from '../../utils/isClockSkewError';
 
 /**
  * Get retry decider function
@@ -37,16 +38,6 @@ const THROTTLING_ERROR_CODES = [
 	'TooManyRequestsException',
 ];
 
-const CLOCK_SKEW_ERROR_CODES = [
-	'AuthFailure',
-	'InvalidSignatureException',
-	'RequestExpired',
-	'RequestInTheFuture',
-	'RequestTimeTooSkewed',
-	'SignatureDoesNotMatch',
-	'BadRequestException', // API Gateway
-];
-
 const TIMEOUT_ERROR_CODES = [
 	'TimeoutError',
 	'RequestTimeout',
@@ -57,9 +48,6 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	statusCode === 429 || THROTTLING_ERROR_CODES.includes(errorCode);
 
 const isConnectionError = (error?: Error) => error?.name === 'Network error';
-
-const isClockSkewError = (errorCode?: string) =>
-	CLOCK_SKEW_ERROR_CODES.includes(errorCode);
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
 	[500, 502, 503, 504].includes(statusCode) ||

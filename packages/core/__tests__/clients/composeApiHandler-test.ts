@@ -1,4 +1,7 @@
-import { composeServiceApi } from '../../src/clients/internal/composeApiHandler';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { composeServiceApi } from '../../src/clients/internal/composeServiceApi';
 
 describe(composeServiceApi.name, () => {
 	const defaultRequest = {
