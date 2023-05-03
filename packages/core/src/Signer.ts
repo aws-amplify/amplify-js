@@ -5,7 +5,10 @@ import { DateUtils } from './Util';
 import {
 	presignUrl,
 	signRequest,
+	TOKEN_QUERY_PARAM,
 } from './clients/middleware/signing/signer/signatureV4';
+
+const IOT_SERVICE_NAME = 'iotdevicegateway';
 
 export class Signer {
 	/**
@@ -112,6 +115,15 @@ export class Signer {
 			expiration
 		);
 		const signedUrl = presignUrl(presignable, options);
+		if (
+			accessInfo.session_token &&
+			!sessionTokenRequiredInSigning(options.signingService)
+		) {
+			signedUrl.searchParams.append(
+				TOKEN_QUERY_PARAM,
+				accessInfo.session_token
+			);
+		}
 		return signedUrl.toString();
 	}
 }
@@ -125,7 +137,9 @@ const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
 	const credentials = {
 		accessKeyId: access_key,
 		secretAccessKey: secret_key,
-		sessionToken: session_token,
+		...(sessionTokenRequiredInSigning(service)
+			? { sessionToken: session_token }
+			: {}),
 	};
 	return {
 		credentials,
@@ -136,6 +150,7 @@ const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
 	};
 };
 
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
 const parseServiceInfo = (url: URL) => {
 	const host = url.host;
 	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/) ?? [];
@@ -151,3 +166,9 @@ const parseServiceInfo = (url: URL) => {
 		region: parsed[1],
 	};
 };
+
+// IoT service does not allow the session token in the canonical request
+// https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
+const sessionTokenRequiredInSigning = (service: string) =>
+	service !== IOT_SERVICE_NAME;
