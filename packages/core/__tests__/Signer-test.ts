@@ -102,6 +102,26 @@ describe('Signer.sign', () => {
 			}).not.toThrow();
 		});
 	});
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const {
+			headers: { Authorization },
+		} = Signer.sign(request, accessInfo, undefined);
+		expect(Authorization).toEqual(
+			expect.stringContaining(
+				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'
+			)
+		);
+	});
 });
 
 describe('Signer.signUrl', () => {
@@ -152,4 +172,22 @@ describe('Signer.signUrl', () => {
 			expect(signedUrl).toBe(expected);
 		}
 	);
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const signedUrl = Signer.signUrl(request, accessInfo);
+		expect(signedUrl).toEqual(
+			expect.stringContaining(
+				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request'
+			)
+		);
+	});
 });

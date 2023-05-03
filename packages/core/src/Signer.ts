@@ -59,7 +59,7 @@ export class Signer {
 			url: new URL(request.url as string),
 		};
 
-		const options = getOptions(accessInfo, serviceInfo);
+		const options = getOptions(requestToSign, accessInfo, serviceInfo);
 		const signedRequest: any = signRequest(requestToSign, options);
 		// Prior to using `signRequest`, Signer accepted urls as strings and outputted urls as string. Coerce the property
 		// back to a string so as not to disrupt consumers of Signer.
@@ -105,15 +105,23 @@ export class Signer {
 			url: new URL(urlToSign),
 		};
 
-		const options = getOptions(accessInfo, serviceInfo, expiration);
+		const options = getOptions(
+			presignable,
+			accessInfo,
+			serviceInfo,
+			expiration
+		);
 		const signedUrl = presignUrl(presignable, options);
 		return signedUrl.toString();
 	}
 }
 
-const getOptions = (accessInfo, serviceInfo, expiration?) => {
+const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
 	const { access_key, secret_key, session_token } = accessInfo ?? {};
-	const { region, service } = serviceInfo ?? {};
+	const { region: urlRegion, service: urlService } = parseServiceInfo(
+		request.url
+	);
+	const { region = urlRegion, service = urlService } = serviceInfo ?? {};
 	const credentials = {
 		accessKeyId: access_key,
 		secretAccessKey: secret_key,
@@ -125,5 +133,21 @@ const getOptions = (accessInfo, serviceInfo, expiration?) => {
 		signingRegion: region,
 		signingService: service,
 		...(expiration && { expiration }),
+	};
+};
+
+const parseServiceInfo = (url: URL) => {
+	const host = url.host;
+	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/) ?? [];
+	let parsed = matched.slice(1, 3);
+
+	if (parsed[1] === 'es') {
+		// Elastic Search
+		parsed = parsed.reverse();
+	}
+
+	return {
+		service: parsed[0],
+		region: parsed[1],
 	};
 };
