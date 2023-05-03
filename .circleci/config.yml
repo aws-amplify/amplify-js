@@ -1613,36 +1613,6 @@ jobs:
             git push -f origin required-release
             git push --force-with-lease origin release:main
 
-  rollback_infra_test:
-    executor: build-executor
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
-      - run:
-          name: 'Update roll-back infrastructure'
-          command: |
-            git config --global user.email $GITHUB_EMAIL
-            git config --global user.name $GITHUB_USER
-            git pull origin chore/rollback-infra
-            PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
-            RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
-            if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
-      - run:
-          name: 'Update API documentation'
-          command: |
-            yarn run docs
-            git add ./docs/api/
-            git commit -m "chore(release): update API docs [ci skip]"
-      - run:
-          name: 'Push post release changes'
-          command: |
-            git push origin chore/rollback-infra
-            git push -f origin required-release
-
 # Specifies the branches that can be considered releasable.
 #
 # Listing a branch here has the following effects:
@@ -1655,7 +1625,6 @@ releasable_branches: &releasable_branches
       - release
       - main
       - next
-      - chore/rollback-infra
 
 # List of test browsers that are always used in every E2E test. Tests that aren't expected to interact with browser APIs
 # should use `minimal_browser_list` to keep test execution time low.
@@ -2339,13 +2308,6 @@ workflows:
                 - release
           requires:
             - deploy
-      - rollback_infra_test:
-          filters:
-            branches:
-              only:
-                - chore/rollback-infra
-          requires:
-            - build
   # Scheduled smoke test workflow
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
