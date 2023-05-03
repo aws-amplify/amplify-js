@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script detects duplicated Amplify dependencies in the dependency graph
+# This script detects duplicated Amplify dependencies in the dependency graph (with Yarn)
 duplicatedDependencies=$(
 	yarn list --pattern amplify | 
 	grep -o -e '@\?aws-amplify[^ ]*' | 

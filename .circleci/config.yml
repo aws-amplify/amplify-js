@@ -2512,7 +2512,10 @@ orbs:
               no_output_timeout: 2m
           - run-with-retry:
               label: Install AmplifyJS
-              command: npm i -S aws-amplify && npm i -g wait-on serve
+              command: |
+                npm i -S aws-amplify
+                npm i -g wait-on serve
+                ~/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
               command: |
