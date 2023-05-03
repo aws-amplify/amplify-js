@@ -1613,35 +1613,35 @@ jobs:
             if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git push origin tag required-release; fi
             git push --force-with-lease origin release:main
 
-    rollback_infra_test:
-      executor: build-executor
-      steps:
-        - attach_workspace:
-            at: /root
-        - restore_cache:
-            keys:
-              - amplify-ssh-deps-{{ .Branch }}
-              - amplify-ssh-deps
-        - run:
-            name: 'Update roll-back infrastructure'
-            command: |
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              git pull origin chore/rollback-infra
-              PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
-              RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
-              if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
-        - run:
-            name: 'Update API documentation'
-            command: |
-              yarn run docs
-              git add ./docs/api/
-              git commit -m "chore(release): update API docs [ci skip]"
-        - run:
-            name: 'Push post release changes'
-            command: |
-              git push origin chore/rollback-infra
-              if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git push origin tag required-release; fi
+  rollback_infra_test:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          keys:
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
+      - run:
+          name: 'Update roll-back infrastructure'
+          command: |
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git pull origin chore/rollback-infra
+            PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
+            RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
+            if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
+      - run:
+          name: 'Update API documentation'
+          command: |
+            yarn run docs
+            git add ./docs/api/
+            git commit -m "chore(release): update API docs [ci skip]"
+      - run:
+          name: 'Push post release changes'
+          command: |
+            git push origin chore/rollback-infra
+            if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git push origin tag required-release; fi
 
 # Specifies the branches that can be considered releasable.
 #
