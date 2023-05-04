@@ -4,7 +4,7 @@ on:
   push:
     branches: ["release" ]
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '5 22 * * *'
 
 permissions:
   contents: read
@@ -27,7 +27,9 @@ jobs:
         # Runs Snyk Code (SAST) analysis and uploads result into GitHub.
         # Use || true to not fail the pipeline
       - name: Snyk test
-        run: SNYK_TOKEN=${{secrets.SNYK_TOKEN}} snyk test --sarif | tee snyk-code.sarif # || true
+        env:
+          SNYK_TOKEN: ${{secrets.SNYK_TOKEN}}
+        run: snyk test --sarif | tee snyk-code.sarif # || true
 
         # Push the Snyk Code results into GitHub Code Scanning tab
       - name: Upload result to GitHub Code Scanning
