@@ -1641,13 +1641,6 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
-						if (number === 1) {
-							const testVersion = await DataStore.query(Post, original.id);
-							// @ts-ignore
-							console.log(testVersion._version);
-							debugger;
-						}
-
 						// External update is in the middle of current client updates, no latency
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, 1, true);
@@ -1768,18 +1761,6 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
-						if (number === 1) {
-							const testVersion = await DataStore.query(Post, original.id);
-							// @ts-ignore
-							console.log(testVersion._version);
-							debugger;
-						}
-
 						// External update is in the middle of current client updates, no latency
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, 1, true);
@@ -1894,18 +1875,6 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
-						if (number === 1) {
-							const testVersion = await DataStore.query(Post, original.id);
-							// @ts-ignore
-							console.log(testVersion._version);
-							debugger;
-						}
-
 						// `undefined` because a query here would return `undefined` at this point
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, undefined, true);
@@ -2007,18 +1976,6 @@ describe('DataStore sync engine', () => {
 								updated.title = `post title ${number}`;
 							})
 						);
-
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
-						if (number === 1) {
-							const testVersion = await DataStore.query(Post, original.id);
-							// @ts-ignore
-							console.log(testVersion._version);
-							debugger;
-						}
 
 						// `undefined` because a query here would return `undefined` at this point
 						if (number === 1)
@@ -2135,21 +2092,9 @@ describe('DataStore sync engine', () => {
 						 */
 						await waitForEmptyOutbox();
 
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
-						if (number === 1) {
-							const testVersion = await DataStore.query(Post, original.id);
-							// @ts-ignore
-							console.log(testVersion._version);
-							debugger;
-						}
-
-						// `2` because a query here would return `2` at this point
+						// `3` because a query here would return 3` at this point
 						if (number === 1)
-							await injectExternalClientUpdate(original.id, 2, true);
+							await injectExternalClientUpdate(original.id, 3, true);
 					}
 
 					/**
@@ -2171,7 +2116,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 2],
 						['post title 1', 2],
 						['post title 1', 3],
-						['post title 1', 4],
+						['update from second client', 4],
 						['post title 2', 4],
 						['post title 2', 5],
 					]);
