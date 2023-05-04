@@ -57,7 +57,7 @@ export const cognitoIdentityTransferHandler = composeTransferHandler<
 /**
  * @internal
  */
-export const defaultConfigs = {
+export const defaultConfig = {
 	service: SERVICE_NAME,
 	endpointResolver,
 	retryDecider: getRetryDecider(parseJsonError),
@@ -68,7 +68,7 @@ export const defaultConfigs = {
 /**
  * @internal
  */
-export const sharedHeaders = (operation: string): Headers => ({
+export const getSharedHeaders = (operation: string): Headers => ({
 	'content-type': 'application/x-amz-json-1.1',
 	'x-amz-target': `AWSCognitoIdentityService.${operation}`,
 });

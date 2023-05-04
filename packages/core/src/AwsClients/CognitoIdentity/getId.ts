@@ -8,8 +8,8 @@ import {
 import {
 	buildHttpRpcRequest,
 	cognitoIdentityTransferHandler,
-	defaultConfigs,
-	sharedHeaders,
+	defaultConfig,
+	getSharedHeaders,
 } from './base';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
@@ -19,16 +19,13 @@ import {
 	parseMetadata,
 } from '../../clients/serde';
 
-export type {
-	GetIdCommandInput as GetIdInput,
-	GetIdCommandOutput as GetIdOutput,
-} from '@aws-sdk/client-cognito-identity';
+export type { GetIdInput, GetIdOutput };
 
 const getIdSerializer = (
 	input: GetIdInput,
 	endpoint: Endpoint
 ): HttpRequest => {
-	const headers = sharedHeaders('GetId');
+	const headers = getSharedHeaders('GetId');
 	const body = JSON.stringify(input);
 	return buildHttpRpcRequest(endpoint, headers, body);
 };
@@ -52,5 +49,5 @@ export const getId = composeServiceApi(
 	cognitoIdentityTransferHandler,
 	getIdSerializer,
 	getIdDeserializer,
-	defaultConfigs
+	defaultConfig
 );
