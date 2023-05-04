@@ -98,7 +98,12 @@ class SyncProcessor {
 		limit: number = null!,
 		filter: GraphQLFilter,
 		onTerminate: Promise<void>
-	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
+	): Promise<{
+		nextToken: string;
+		startedAt: number;
+		items: T[];
+		errors?: any[];
+	}> {
 		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
 		const variables = {
@@ -122,7 +127,7 @@ class SyncProcessor {
 		const authModeRetry = async () => {
 			if (!this.runningProcesses.isOpen) {
 				throw new Error(
-					'sync.retreievePage termination was requested. Exiting.'
+					'sync.retrievePage termination was requested. Exiting.'
 				);
 			}
 
@@ -170,7 +175,7 @@ class SyncProcessor {
 			}
 		};
 
-		const { data } = await authModeRetry();
+		const { data, errors } = await authModeRetry();
 
 		const { [opName]: opResult } = data;
 
@@ -180,6 +185,7 @@ class SyncProcessor {
 			nextToken: newNextToken,
 			startedAt,
 			items,
+			errors,
 		};
 	}
 
@@ -364,6 +370,7 @@ class SyncProcessor {
 						this.runningProcesses.isOpen &&
 						this.runningProcesses.add(async onTerminate => {
 							let done = false;
+							let errors: any[] | undefined;
 							let nextToken: string = null!;
 							let startedAt: number = null!;
 							let items: ModelInstanceMetadata[] = null!;
@@ -405,28 +412,45 @@ class SyncProcessor {
 									 * and invoke the error handler for non-applicable data.
 									 */
 									try {
-										({ items, nextToken, startedAt } = await this.retrievePage(
-											modelDefinition,
-											lastSync,
-											nextToken,
-											limit,
-											filter,
-											onTerminate
-										));
-									} catch (error) {
+										({ items, nextToken, startedAt, errors } =
+											await this.retrievePage(
+												modelDefinition,
+												lastSync,
+												nextToken,
+												limit,
+												filter,
+												onTerminate
+											));
+
+										// Terminate syncing this model if the current page has erros, becuase it contains corrupt data
+										if (errors?.length) {
+											throw new AggregateError(errors);
+										}
+
+										recordsReceived += items.length;
+
+										done =
+											nextToken === null || recordsReceived >= maxRecordsToSync;
+									} catch (err) {
+										errors = (err.errors as any[]) || [err];
+
 										try {
-											await this.errorHandler({
-												recoverySuggestion:
-													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-												localModel: null!,
-												message: error.message,
-												model: modelDefinition.name,
-												operation: null!,
-												errorType: getSyncErrorType(error),
-												process: ProcessName.sync,
-												remoteModel: null!,
-												cause: error,
-											});
+											await Promise.all(
+												errors.map(e => {
+													this.errorHandler({
+														recoverySuggestion:
+															'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+														localModel: null!,
+														message: e.message,
+														model: modelDefinition.name,
+														operation: null!,
+														errorType: getSyncErrorType(e),
+														process: ProcessName.sync,
+														remoteModel: null!,
+														cause: e,
+													});
+												})
+											);
 										} catch (e) {
 											logger.error('Sync error handler failed with:', e);
 										}
@@ -436,21 +460,20 @@ class SyncProcessor {
 										 * with no items and allow the loop to continue organically. This ensures
 										 * all callbacks (subscription messages) happen as normal, so anything
 										 * waiting on them knows the model is as done as it can be.
+										 * However, we have also set the errors that caused this model to fail,
+										 * so upper layer knows it failed, leaves its lastSync field empty
+										 * and mark the whole sync process as `finishedWithErrors`
 										 */
 										done = true;
 										items = [];
 									}
-
-									recordsReceived += items.length;
-
-									done =
-										nextToken === null || recordsReceived >= maxRecordsToSync;
 
 									observer.next({
 										namespace,
 										modelDefinition,
 										items,
 										done,
+										errors,
 										startedAt,
 										isFullSync: !lastSync,
 									});
@@ -489,8 +512,21 @@ export type SyncModelPage = {
 	modelDefinition: SchemaModel;
 	items: ModelInstanceMetadata[];
 	startedAt: number;
+	errors?: any[];
 	done: boolean;
 	isFullSync: boolean;
 };
+
+export class AggregateError extends Error {
+	errors: any[];
+
+	constructor(errors: any[]) {
+		super(
+			'One or more errors occurred. Please refer to the errors property for details'
+		);
+
+		this.errors = errors;
+	}
+}
 
 export { SyncProcessor };

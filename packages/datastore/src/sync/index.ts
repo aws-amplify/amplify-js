@@ -100,6 +100,8 @@ export enum ControlMessage {
 	SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED = 'subscriptionsEstablished',
 	SYNC_ENGINE_SYNC_QUERIES_STARTED = 'syncQueriesStarted',
 	SYNC_ENGINE_SYNC_QUERIES_READY = 'syncQueriesReady',
+	SYNC_ENGINE_SYNC_QUERIES_FINSIHED_WITH_ERRORS = 'syncQueriesFinishedWithErrors',
+	SYNC_ENGINE_MODEL_ERROR = 'modelError',
 	SYNC_ENGINE_MODEL_SYNCED = 'modelSynced',
 	SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED = 'outboxMutationEnqueued',
 	SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED = 'outboxMutationProcessed',
@@ -225,12 +227,15 @@ export class SyncEngine {
 
 				// this is awaited at the bottom. so, we don't need to register
 				// this explicitly with the context. it's already contained.
-				const startPromise = new Promise<void>(
+				// Its resolve value might contain errors because these are warnings, not rejections
+				const startPromise = new Promise<any[]>(
 					(doneStarting, failedStarting) => {
 						this.datastoreConnectivity.status().subscribe(
 							async ({ online }) =>
 								this.runningProcesses.isOpen &&
 								this.runningProcesses.add(async onTerminate => {
+									let aggregatedErrors: any[] = [];
+
 									// From offline to online
 									if (online && !this.online) {
 										this.online = online;
@@ -296,33 +301,43 @@ export class SyncEngine {
 
 										//#region Base & Sync queries
 										try {
-											await new Promise<void>((resolve, reject) => {
-												const syncQuerySubscription =
-													this.syncQueriesObservable().subscribe({
-														next: message => {
-															const { type } = message;
+											aggregatedErrors = await new Promise<any[]>(
+												(resolve, reject) => {
+													const syncQuerySubscription =
+														this.syncQueriesObservable().subscribe({
+															next: message => {
+																const { type, data } = message;
 
-															if (
-																type ===
-																ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-															) {
-																resolve();
-															}
+																if (
+																	type ===
+																	ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+																) {
+																	resolve([]);
+																}
 
-															observer.next(message);
-														},
-														complete: () => {
-															resolve();
-														},
-														error: error => {
-															reject(error);
-														},
-													});
+																if (
+																	type ===
+																	ControlMessage.SYNC_ENGINE_SYNC_QUERIES_FINSIHED_WITH_ERRORS
+																) {
+																	// Here `data` will be an array of errors
+																	resolve(data);
+																}
 
-												if (syncQuerySubscription) {
-													subscriptions.push(syncQuerySubscription);
+																observer.next(message);
+															},
+															complete: () => {
+																resolve([]);
+															},
+															error: error => {
+																reject(error);
+															},
+														});
+
+													if (syncQuerySubscription) {
+														subscriptions.push(syncQuerySubscription);
+													}
 												}
-											});
+											);
 										} catch (error) {
 											observer.error(error);
 											failedStarting();
@@ -415,7 +430,7 @@ export class SyncEngine {
 										subscriptions = [];
 									}
 
-									doneStarting();
+									doneStarting(aggregatedErrors);
 								}, 'datastore connectivity event')
 						);
 					}
@@ -490,11 +505,18 @@ export class SyncEngine {
 					},
 				});
 
-				await startPromise;
-
-				observer.next({
-					type: ControlMessage.SYNC_ENGINE_READY,
-				});
+				const errors = await startPromise;
+				// Don't raise the ready event if the engine isn't ready because of errors
+				if (!errors.length) {
+					observer.next({
+						type: ControlMessage.SYNC_ENGINE_READY,
+					});
+				} else {
+					logger.warn(
+						`SyncEngine was started but some models returned with errors`,
+						...errors
+					);
+				}
 			}, 'sync start');
 		});
 	}
@@ -569,6 +591,8 @@ export class SyncEngine {
 						let start: number;
 						let syncDuration: number;
 						let lastStartedAt: number;
+
+						const aggregatedErrors: any[] = [];
 						await new Promise<void>((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
 							onTerminate.then(() => resolve());
@@ -580,6 +604,7 @@ export class SyncEngine {
 										modelDefinition,
 										items,
 										done,
+										errors,
 										startedAt,
 										isFullSync,
 									}) => {
@@ -667,7 +692,19 @@ export class SyncEngine {
 											});
 										});
 
-										if (done) {
+										if (errors) {
+											aggregatedErrors.push(...errors);
+
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_MODEL_ERROR,
+												data: {
+													model: modelConstructor,
+													isFullSync,
+													isDeltaSync: !isFullSync,
+													errors,
+												},
+											});
+										} else if (done) {
 											const { name: modelName } = modelDefinition;
 
 											//#region update last sync for type
@@ -718,15 +755,24 @@ export class SyncEngine {
 													counts,
 												},
 											});
+										}
 
+										if (done) {
 											paginatingModels.delete(modelDefinition);
-
 											if (paginatingModels.size === 0) {
 												syncDuration = getNow() - start;
 												resolve();
-												observer.next({
-													type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
-												});
+
+												const message = aggregatedErrors.length
+													? {
+															type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_FINSIHED_WITH_ERRORS,
+															data: aggregatedErrors,
+													  }
+													: {
+															type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+													  };
+
+												observer.next(message);
 												syncQueriesSubscription.unsubscribe();
 											}
 										}
