@@ -3,11 +3,13 @@
 
 import type {
 	Endpoint,
+	EndpointResolverOptions,
 	Headers,
 	HttpRequest,
 	HttpResponse,
 	Middleware,
 } from '../../clients/types';
+import { getDnsSuffix } from '../../clients/endpoints';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import { unauthenticatedHandler } from '../../clients/handlers/unauthenticated';
 import {
@@ -25,10 +27,8 @@ const SERVICE_NAME = 'cognito-identity';
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = (endpointOptions: { region: string }) => ({
-	url: new URL(
-		`https://cognito-identity.${endpointOptions.region}.amazonaws.com`
-	),
+const endpointResolver = ({ region }: EndpointResolverOptions) => ({
+	url: new URL(`https://cognito-identity.${region}.${getDnsSuffix(region)}`),
 });
 
 /**
