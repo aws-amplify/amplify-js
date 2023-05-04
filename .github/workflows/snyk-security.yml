@@ -4,7 +4,7 @@ on:
   push:
     branches: ["release" ]
   schedule:
-    - cron: '5 22 * * *'
+    - cron: '9 23 * * *'
 
 permissions:
   contents: read
