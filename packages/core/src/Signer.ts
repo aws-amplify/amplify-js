@@ -9,6 +9,8 @@ import {
 } from './clients/middleware/signing/signer/signatureV4';
 
 const IOT_SERVICE_NAME = 'iotdevicegateway';
+// Best practice regex to parse the service and region from an AWS endpoint
+const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
 export class Signer {
 	/**
@@ -153,7 +155,7 @@ const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
 // TODO: V6 investigate whether add to custom clients' general signer implementation.
 const parseServiceInfo = (url: URL) => {
 	const host = url.host;
-	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/) ?? [];
+	const matched = host.match(AWS_ENDPOINT_REGEX) ?? [];
 	let parsed = matched.slice(1, 3);
 
 	if (parsed[1] === 'es') {
