@@ -9,8 +9,12 @@
  *
  * @internal
  */
-export const extendedEncodeURIComponent = (uri: string): string =>
-	encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
+export const extendedEncodeURIComponent = (uri: string): string => {
+	// Match characters normally not encoded by `encodeURIComponent`
+	const extendedCharacters = /[!'()*]/g;
+
+	return encodeURIComponent(uri).replace(extendedCharacters, hexEncode);
+};
 
 const hexEncode = (c: string) =>
 	`%${c.charCodeAt(0).toString(16).toUpperCase()}`;
