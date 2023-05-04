@@ -1526,7 +1526,7 @@ describe('DataStore sync engine', () => {
 			 * and run many permutations (sequence of updates between clients, version numbers sent, whether or not
 			 * the second client is also affected by latency, etc).
 			 */
-			describe('multi-client updates (external update is in the middle of current client updates, NO latency)', () => {
+			describe('multi-client updates to the same field (external update is in the middle of current client updates)', () => {
 				// TODO: update sample app and make sure this is 100% accurate
 				// TODO: Extract to util
 				/**
@@ -1640,6 +1640,13 @@ describe('DataStore sync engine', () => {
 								updated.title = `post title ${number}`;
 							})
 						);
+
+						if (number === 1) {
+							const testVersion = await DataStore.query(Post, original.id);
+							// @ts-ignore
+							console.log(testVersion._version);
+							debugger;
+						}
 
 						// External update is in the middle of current client updates, no latency
 						if (number === 1)
@@ -1766,6 +1773,13 @@ describe('DataStore sync engine', () => {
 						// console.log(testVersion._version);
 						// debugger;
 
+						if (number === 1) {
+							const testVersion = await DataStore.query(Post, original.id);
+							// @ts-ignore
+							console.log(testVersion._version);
+							debugger;
+						}
+
 						// External update is in the middle of current client updates, no latency
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, 1, true);
@@ -1885,6 +1899,13 @@ describe('DataStore sync engine', () => {
 						// console.log(testVersion._version);
 						// debugger;
 
+						if (number === 1) {
+							const testVersion = await DataStore.query(Post, original.id);
+							// @ts-ignore
+							console.log(testVersion._version);
+							debugger;
+						}
+
 						// `undefined` because a query here would return `undefined` at this point
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, undefined, true);
@@ -1992,6 +2013,13 @@ describe('DataStore sync engine', () => {
 						// console.log(testVersion._version);
 						// debugger;
 
+						if (number === 1) {
+							const testVersion = await DataStore.query(Post, original.id);
+							// @ts-ignore
+							console.log(testVersion._version);
+							debugger;
+						}
+
 						// `undefined` because a query here would return `undefined` at this point
 						if (number === 1)
 							await injectExternalClientUpdate(original.id, undefined, true);
@@ -2041,7 +2069,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.only('observe on poor connection with awaited outbox', async () => {
+				test('observe on poor connection with awaited outbox', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -2100,17 +2128,28 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
 						/**
 						 * We wait for the empty outbox on each mutation, because
 						 * we want to test non-concurrent updates (i.e. we want to make
 						 * sure all the updates are going out and are being observed)
 						 */
 						await waitForEmptyOutbox();
+
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
+
+						if (number === 1) {
+							const testVersion = await DataStore.query(Post, original.id);
+							// @ts-ignore
+							console.log(testVersion._version);
+							debugger;
+						}
+
+						// `2` because a query here would return `2` at this point
+						if (number === 1)
+							await injectExternalClientUpdate(original.id, 2, true);
 					}
 
 					/**
@@ -2132,8 +2171,9 @@ describe('DataStore sync engine', () => {
 						['post title 0', 2],
 						['post title 1', 2],
 						['post title 1', 3],
-						['post title 2', 3],
+						['post title 1', 4],
 						['post title 2', 4],
+						['post title 2', 5],
 					]);
 
 					// Validate that the record was saved to the service:
@@ -2145,7 +2185,7 @@ describe('DataStore sync engine', () => {
 					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
+					expect(savedItem._version).toEqual(5);
 
 					// Validate that query returns the latest version:
 					const queryResult = await DataStore.query(Post, original.id);
@@ -2153,12 +2193,12 @@ describe('DataStore sync engine', () => {
 						`post title ${numberOfUpdates - 1}`
 					);
 					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					expect(queryResult?._version).toEqual(5);
 
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.skip('observe on fast connection with awaited outbox', async () => {
+				test('observe on fast connection with awaited outbox', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -2204,11 +2244,6 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
-						// const testVersion = await DataStore.query(Post, original.id);
-						// // @ts-ignore
-						// console.log(testVersion._version);
-						// debugger;
-
 						/**
 						 * We wait for the empty outbox on each mutation, because
 						 * we want to test non-concurrent updates (i.e. we want to make
@@ -2216,6 +2251,10 @@ describe('DataStore sync engine', () => {
 						 * additionally, the final version number will be greater).
 						 */
 						await waitForEmptyOutbox();
+
+						// `3` because a query here would return `3` at this point
+						if (number === 1)
+							await injectExternalClientUpdate(original.id, 3, true);
 					}
 
 					/**
@@ -2237,8 +2276,9 @@ describe('DataStore sync engine', () => {
 						['post title 0', 2],
 						['post title 1', 2],
 						['post title 1', 3],
-						['post title 2', 3],
+						['update from second client', 4],
 						['post title 2', 4],
+						['post title 2', 5],
 					]);
 
 					// Validate that the record was saved to the service:
@@ -2250,7 +2290,7 @@ describe('DataStore sync engine', () => {
 					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
 
 					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
+					expect(savedItem._version).toEqual(5);
 
 					// Validate that query returns the latest version:
 					const queryResult = await DataStore.query(Post, original.id);
@@ -2258,16 +2298,18 @@ describe('DataStore sync engine', () => {
 						`post title ${numberOfUpdates - 1}`
 					);
 					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					expect(queryResult?._version).toEqual(5);
 
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
 			});
 			// TODO:
-			// describe.skip('multi-client updates (external update is in the middle of current client updates, WITH latency)', () => {
-			// describe.skip('multi-client updates (external update is the LAST update)', () => {
-			// describe.skip('multi-client updates (all of the above, but different fields)', () => {
+			// describe.skip('multi-client updates', () => {});
+			// sub - same field
+			// sub - different
+			// sub sub - external update is in the middle of current client updates
+			// sub sub - external update is the LAST update
 		});
 	});
 
