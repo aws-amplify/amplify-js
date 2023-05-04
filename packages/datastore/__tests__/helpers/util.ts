@@ -504,7 +504,7 @@ export async function graphqlServiceSettled(
 				).length ===
 				expectedNumberOfUpdates + externalNumberOfUpdates;
 
-			// debugger;
+			debugger;
 
 			if (
 				allUpdatesSent &&

@@ -1537,7 +1537,7 @@ describe('DataStore sync engine', () => {
 				 */
 				const injectExternalClientUpdate = async (
 					originalPostId: string,
-					version: number,
+					version: number | undefined,
 					latencyOverride: boolean = false
 				) => {
 					// await pause(1);
@@ -1573,6 +1573,7 @@ describe('DataStore sync engine', () => {
 					// TODO: still needed?
 					// await pause(1);
 				};
+
 				/**
 				 * TODO: outdated description below. We need a few permutations on this.
 				 * What is broken: We never get the second client title in the subscription.
@@ -1652,7 +1653,7 @@ describe('DataStore sync engine', () => {
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
 
-					await pause(21000);
+					// await pause(21000);
 
 					// debugger;
 
@@ -1704,7 +1705,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.skip('rapid mutations on fast connection when initial create is not pending', async () => {
+				test('rapid mutations on fast connection when initial create is not pending', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -1760,6 +1761,15 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
+
+						// External update is in the middle of current client updates, no latency
+						if (number === 1)
+							await injectExternalClientUpdate(original.id, 1, true);
+
 						// Note: We do NOT wait for the empty outbox here, like we do
 						// in other tests, because we want to test concurrent updates
 						// being processed by the outbox.
@@ -1778,9 +1788,11 @@ describe('DataStore sync engine', () => {
 					await graphqlServiceSettled(
 						graphqlService,
 						numberOfUpdates,
-						0,
+						1,
 						'Post'
 					);
+
+					// debugger;
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
@@ -1788,7 +1800,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
-						['post title 0', 4],
+						['post title 0', 5],
 					]);
 
 					// Validate that the record was saved to the service:
@@ -1800,18 +1812,18 @@ describe('DataStore sync engine', () => {
 					expect(savedItem.title).toEqual(`post title 0`);
 
 					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
+					expect(savedItem._version).toEqual(5);
 
 					// Validate that query returns the latest version:
 					const queryResult = await DataStore.query(Post, original.id);
 					expect(queryResult?.title).toEqual(`post title 0`);
 					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					expect(queryResult?._version).toEqual(5);
 
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.skip('rapid mutations on poor connection when initial create is pending', async () => {
+				test('rapid mutations on poor connection when initial create is pending', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -1868,6 +1880,15 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
+
+						// `undefined` because a query here would return `undefined` at this point
+						if (number === 1)
+							await injectExternalClientUpdate(original.id, undefined, true);
+
 						// Note: We do NOT wait for the empty outbox here, like we do
 						// in other tests, because we want to test concurrent updates
 						// being processed by the outbox.
@@ -1877,12 +1898,14 @@ describe('DataStore sync engine', () => {
 					await waitForEmptyOutbox();
 
 					/**
-					 * Currently, the service does not receive any requests.
+					 * Currently, the service does not receive any requests for primary client,
+					 * only the one for the direct call from second client
 					 */
-					await graphqlServiceSettled(graphqlService, 0, 0, 'Post');
+					await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
+					// External client has no affect here
 					expect(subscriptionLog).toEqual([
 						['post title 0', undefined],
 						['post title 1', undefined],
@@ -1910,7 +1933,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.skip('rapid mutations on fast connection when initial create is pending', async () => {
+				test('rapid mutations on fast connection when initial create is pending', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -1964,6 +1987,15 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
+
+						// `undefined` because a query here would return `undefined` at this point
+						if (number === 1)
+							await injectExternalClientUpdate(original.id, undefined, true);
+
 						// Note: We do NOT wait for the empty outbox here, like we do
 						// in other tests, because we want to test concurrent updates
 						// being processed by the outbox.
@@ -1974,6 +2006,7 @@ describe('DataStore sync engine', () => {
 
 					/**
 					 * Currently, the service does not receive any requests.
+					 * Except external client
 					 */
 					await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
@@ -2008,7 +2041,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.skip('observe on poor connection with awaited outbox', async () => {
+				test.only('observe on poor connection with awaited outbox', async () => {
 					// Number of updates from the original client:
 					const numberOfUpdates = 3;
 
@@ -2066,6 +2099,11 @@ describe('DataStore sync engine', () => {
 								updated.title = `post title ${number}`;
 							})
 						);
+
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
 
 						/**
 						 * We wait for the empty outbox on each mutation, because
@@ -2166,6 +2204,11 @@ describe('DataStore sync engine', () => {
 							})
 						);
 
+						// const testVersion = await DataStore.query(Post, original.id);
+						// // @ts-ignore
+						// console.log(testVersion._version);
+						// debugger;
+
 						/**
 						 * We wait for the empty outbox on each mutation, because
 						 * we want to test non-concurrent updates (i.e. we want to make
@@ -2224,6 +2267,7 @@ describe('DataStore sync engine', () => {
 			// TODO:
 			// describe.skip('multi-client updates (external update is in the middle of current client updates, WITH latency)', () => {
 			// describe.skip('multi-client updates (external update is the LAST update)', () => {
+			// describe.skip('multi-client updates (all of the above, but different fields)', () => {
 		});
 	});
 
