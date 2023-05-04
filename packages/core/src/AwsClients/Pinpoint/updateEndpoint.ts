@@ -5,7 +5,7 @@ import type {
 	UpdateEndpointCommandInput as UpdateEndpointInput,
 	UpdateEndpointCommandOutput as UpdateEndpointOutput,
 } from '@aws-sdk/client-pinpoint';
-import { signedHandler } from '../../clients/handlers/signed';
+import { authenticatedHandler } from '../../clients/handlers/authenticated';
 import { composeServiceApi } from '../../clients/internal/composeServiceApi';
 import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
 import {
@@ -50,7 +50,7 @@ const updateEndpointDeserializer = async (
 };
 
 export const updateEndpoint = composeServiceApi(
-	signedHandler,
+	authenticatedHandler,
 	updateEndpointSerializer,
 	updateEndpointDeserializer,
 	defaultConfig

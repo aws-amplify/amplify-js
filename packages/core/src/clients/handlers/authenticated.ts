@@ -8,7 +8,7 @@ import { composeTransferHandler } from '../internal/composeTransferHandler';
 import { fetchTransferHandler } from './fetch';
 import { HttpRequest, HttpResponse } from '../types';
 
-export const signedHandler = composeTransferHandler<
+export const authenticatedHandler = composeTransferHandler<
 	[UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
 	HttpRequest,
 	HttpResponse
