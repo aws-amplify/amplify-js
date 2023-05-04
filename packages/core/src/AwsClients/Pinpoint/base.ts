@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { getDnsSuffix } from '../../clients/endpoints';
 import {
 	jitteredBackoff,
 	getRetryDecider,
 } from '../../clients/middleware/retry';
 import { parseJsonError } from '../../clients/serde/json';
-import type { Headers } from '../../clients/types';
+import type { EndpointResolverOptions, Headers } from '../../clients/types';
 import { getAmplifyUserAgent } from '../../Platform';
 
 /**
@@ -17,8 +18,8 @@ const SERVICE_NAME = 'mobiletargeting';
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = (endpointOptions: { region: string }) => ({
-	url: new URL(`https://pinpoint.${endpointOptions.region}.amazonaws.com`),
+const endpointResolver = ({ region }: EndpointResolverOptions) => ({
+	url: new URL(`https://pinpoint.${region}.${getDnsSuffix(region)}`),
 });
 
 /**
