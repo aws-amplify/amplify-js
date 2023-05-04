@@ -9,7 +9,7 @@
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
 		"test:size": "lerna run test:size",
-		"test:duplicates": "./scripts/duplicates.sh",
+		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"cypress": "lerna run cypress",
 		"cypress:open": "lerna run cypress:open",
 		"coverage": "codecov || exit 0",
