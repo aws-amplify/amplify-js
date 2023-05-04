@@ -1,4 +1,7 @@
-import partitionsInfo from './partitions';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { defaultPartition, partitionsInfo } from './partitions';
 
 /**
  * Get the AWS Services endpoint URL's DNS suffix for a given region. A typical AWS regional service endpoint URL will
@@ -18,9 +21,5 @@ export const getDnsSuffix = (region: string): string => {
 			return outputs.dnsSuffix;
 		}
 	}
-
-	const defaultPartition = partitions.find(
-		partition => partition.id === 'aws'
-	)!;
 	return defaultPartition.outputs.dnsSuffix;
 };

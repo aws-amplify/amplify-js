@@ -3,6 +3,7 @@
 
 import type {
 	Endpoint,
+	EndpointResolverOptions,
 	Headers,
 	HttpRequest,
 	HttpResponse,
@@ -23,11 +24,10 @@ import { getAmplifyUserAgent } from '../../Platform';
  */
 const SERVICE_NAME = 'cognito-identity';
 
-type EndpointOptions = { region: string };
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = ({ region }: EndpointOptions) => ({
+const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 	url: new URL(`https://cognito-identity.${region}.${getDnsSuffix(region)}`),
 });
 

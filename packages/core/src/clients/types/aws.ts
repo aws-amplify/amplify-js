@@ -8,9 +8,14 @@ export type { Credentials } from '@aws-sdk/types';
 
 export type SourceData = string | ArrayBuffer | ArrayBufferView;
 
+/**
+ * Basic option type for endpoint resolvers. It contains region only.
+ */
+export type EndpointResolverOptions = { region: string };
+
 export interface ServiceClientOptions {
 	region: string;
-	endpointResolver: (input: { region: string }) => Endpoint;
+	endpointResolver: (options: EndpointResolverOptions) => Endpoint;
 }
 
 /**
