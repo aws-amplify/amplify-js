@@ -6,3 +6,4 @@ export {
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
 } from './updateEndpoint';
+export { putEvents, PutEventsInput, PutEventsOutput } from './putEvents';
