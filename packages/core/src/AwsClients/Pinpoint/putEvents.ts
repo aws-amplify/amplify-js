@@ -44,6 +44,9 @@ const putEventsDeserializer = async (
 	}
 };
 
+/**
+ * @internal
+ */
 export const putEvents = composeServiceApi(
 	authenticatedHandler,
 	putEventsSerializer,
