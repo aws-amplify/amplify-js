@@ -49,6 +49,9 @@ const updateEndpointDeserializer = async (
 	}
 };
 
+/**
+ * @internal
+ */
 export const updateEndpoint = composeServiceApi(
 	authenticatedHandler,
 	updateEndpointSerializer,

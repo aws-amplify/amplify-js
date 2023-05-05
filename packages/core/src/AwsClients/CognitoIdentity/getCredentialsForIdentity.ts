@@ -41,19 +41,22 @@ const getCredentialsForIdentityDeserializer = async (
 		const body = await parseJsonBody(response);
 		return {
 			IdentityId: body.IdentityId,
-			Credentials: de_Credentials(body.Credentials),
+			Credentials: deserializeCredentials(body.Credentials),
 			$metadata: parseMetadata(response),
 		};
 	}
 };
 
-const de_Credentials = (output: unknown = {}): Credentials => ({
+const deserializeCredentials = (output: unknown = {}): Credentials => ({
 	AccessKeyId: output['AccessKeyId'] as string,
 	SecretKey: output['SecretKey'] as string,
 	SessionToken: output['SessionToken'] as string,
 	Expiration: new Date((output['Expiration'] as number) * 1000),
 });
 
+/**
+ * @internal
+ */
 export const getCredentialsForIdentity = composeServiceApi(
 	cognitoIdentityTransferHandler,
 	getCredentialsForIdentitySerializer,

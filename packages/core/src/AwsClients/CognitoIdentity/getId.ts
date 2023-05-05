@@ -45,6 +45,9 @@ const getIdDeserializer = async (
 	}
 };
 
+/**
+ * @internal
+ */
 export const getId = composeServiceApi(
 	cognitoIdentityTransferHandler,
 	getIdSerializer,
