@@ -1592,14 +1592,14 @@ jobs:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
-          name: 'Update library version'
+          name: 'Update roll-back infrastructure'
           command: |
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git pull origin release
-            yarn workspace @aws-amplify/core build
-            git add ./packages/core/src/Platform/version.ts
-            git commit -m "chore(release): update version.ts [ci skip]"
+            PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
+            RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
+            if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release $PUBLISH_COMMIT_HASH; fi
       - run:
           name: 'Update API documentation'
           command: |
@@ -1610,6 +1610,7 @@ jobs:
           name: 'Push post release changes'
           command: |
             git push origin release
+            git push -f origin required-release
             git push --force-with-lease origin release:main
 
 # Specifies the branches that can be considered releasable.
@@ -2518,7 +2519,10 @@ orbs:
               no_output_timeout: 2m
           - run-with-retry:
               label: Install AmplifyJS
-              command: npm i -S aws-amplify && npm i -g wait-on serve
+              command: |
+                npm i -S aws-amplify
+                npm i -g wait-on serve
+                ~/amplify-js/.circleci/duplicates-npm.sh
           - run:
               name: Call Amplify library in code
               command: |

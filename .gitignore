@@ -20,6 +20,9 @@ package-lock.json
 packages/*/.watchmanconfig
 dual-publish-tmp
 
+### Version file - core build artifact
+packages/core/src/Platform/version.ts
+
 ### Gradle ###
 .gradle/
 local.properties
