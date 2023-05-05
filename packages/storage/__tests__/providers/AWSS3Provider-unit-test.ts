@@ -692,6 +692,31 @@ describe('StorageProvider test', () => {
 			});
 		});
 
+		test('put object with private and contentMd5 specified', async () => {
+			expect.assertions(2);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({
+						identityId: 'id',
+					});
+				});
+			});
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			expect(
+				await storage.put('key', 'object', {
+					level: 'private',
+					contentMd5: 'zYaSxCl62qjqjbLjF1pIoA==',
+				})
+			).toEqual({ key: 'key' });
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Body: 'object',
+				Bucket: 'bucket',
+				ContentMD5: 'zYaSxCl62qjqjbLjF1pIoA==',
+				ContentType: 'binary/octet-stream',
+				Key: 'key',
+			});
+		});
+
 		test('put object with extra config passed to s3 calls', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, _rej) => {
