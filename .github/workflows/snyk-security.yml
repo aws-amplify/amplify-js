@@ -2,9 +2,9 @@ name: 'Snyk Security'
 
 on:
   push:
-    branches: ["main" ]
+    branches: ["release" ]
   schedule:
-    - cron: '9 23 * * *'
+    - cron: '0 0 * * *' # run daily at midnight GMT
 
 permissions:
   contents: read
