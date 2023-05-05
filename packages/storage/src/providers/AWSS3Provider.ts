@@ -449,7 +449,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (validateObjectExistence) {
 			const headObjectCommand = new HeadObjectCommand(params);
-			
+
 			try {
 				await s3.send(headObjectCommand);
 			} catch (error) {
@@ -529,6 +529,7 @@ export class AWSS3Provider implements StorageProvider {
 			SSECustomerKey,
 			SSECustomerKeyMD5,
 			SSEKMSKeyId,
+			contentMd5,
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
@@ -571,7 +572,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (SSEKMSKeyId) {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
-
+		if (contentMd5) {
+			params.ContentMD5 = contentMd5;
+		}
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 
