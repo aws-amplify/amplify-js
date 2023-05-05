@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  if: github.repository == 'stocaaro/amplify-js'
   snyk:
+    if: github.repository == 'stocaaro/amplify-js'
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
