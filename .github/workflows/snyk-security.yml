@@ -2,7 +2,7 @@ name: 'Snyk Security'
 
 on:
   push:
-    branches: ["release" ]
+    branches: ["main" ]
   schedule:
     - cron: '0 0 * * *' # run daily at midnight GMT
 
@@ -10,6 +10,7 @@ permissions:
   contents: read
 
 jobs:
+  if: github.repository == 'stocaaro/amplify-js'
   snyk:
     permissions:
       contents: read # for actions/checkout to fetch code
