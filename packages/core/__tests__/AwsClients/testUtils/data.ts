@@ -76,6 +76,18 @@ export const mockEventsRequest = {
 	},
 };
 
+export const mockFailureResponse = {
+	status: 400,
+	headers: {
+		'x-amzn-requestid': mockRequestId,
+		'x-amzn-errortype': 'ForbiddenException',
+	},
+	body: {
+		__type: 'ForbiddenException',
+		message: `Forbidden`,
+	},
+};
+
 export const pinpointHandlerOptions = {
 	credentials: {
 		accessKeyId: mockCredentials.AccessKeyId,

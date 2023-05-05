@@ -3,13 +3,13 @@
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
-	putEvents,
-	PutEventsInput,
-	PutEventsOutput,
+	getInAppMessages,
+	GetInAppMessagesInput,
+	GetInAppMessagesOutput,
 } from '../../../src/AwsClients/Pinpoint';
 import {
 	mockApplicationId,
-	mockEventsRequest,
+	mockEndpointId,
 	mockFailureResponse,
 	mockJsonResponse,
 	mockRequestId,
@@ -18,38 +18,39 @@ import {
 
 jest.mock('../../../src/clients/handlers/fetch');
 
-// API reference: https://docs.aws.amazon.com/pinpoint/latest/apireference/apps-application-id-events.html#PutEvents
-describe('Pinpoint - putEvents', () => {
-	const EventsResponse = { Results: {} };
-	const params: PutEventsInput = {
+// API reference: https://docs.aws.amazon.com/pinpoint/latest/apireference/apps-application-id-endpoints-endpoint-id-inappmessages.html#GetInAppMessages
+describe('Pinpoint - getInAppMessages', () => {
+	const InAppMessagesResponse = {
+		InAppMessageCampaigns: [],
+	};
+	const params: GetInAppMessagesInput = {
 		ApplicationId: mockApplicationId,
-		EventsRequest: mockEventsRequest,
+		EndpointId: mockEndpointId,
 	};
 
 	test('happy case', async () => {
 		const expectedRequest = expect.objectContaining({
 			url: expect.objectContaining({
-				href: `https://pinpoint.us-east-1.amazonaws.com/v1/apps/${mockApplicationId}/events`,
+				href: `https://pinpoint.us-east-1.amazonaws.com/v1/apps/${mockApplicationId}/endpoints/${mockEndpointId}/inappmessages`,
 			}),
-			method: 'POST',
+			method: 'GET',
 			headers: expect.objectContaining({
 				authorization: expect.stringContaining('Signature'),
 				'content-type': 'application/json',
 				host: 'pinpoint.us-east-1.amazonaws.com',
-				'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
+				'x-amz-date': expect.anything(),
 				'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 			}),
-			body: JSON.stringify(mockEventsRequest),
 		});
 		const successfulResponse = {
 			status: 200,
 			headers: {
 				'x-amzn-requestid': mockRequestId,
 			},
-			body: { ...EventsResponse },
+			body: { ...InAppMessagesResponse },
 		};
-		const expectedOutput: PutEventsOutput = {
-			EventsResponse,
+		const expectedOutput: GetInAppMessagesOutput = {
+			InAppMessagesResponse,
 			$metadata: expect.objectContaining({
 				attempts: 1,
 				requestId: mockRequestId,
@@ -59,7 +60,7 @@ describe('Pinpoint - putEvents', () => {
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
 			mockJsonResponse(successfulResponse)
 		);
-		const response = await putEvents(pinpointHandlerOptions, params);
+		const response = await getInAppMessages(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toBeCalledWith(
 			expectedRequest,
@@ -77,7 +78,7 @@ describe('Pinpoint - putEvents', () => {
 		);
 		expect.assertions(1);
 		try {
-			await putEvents(pinpointHandlerOptions, params);
+			await getInAppMessages(pinpointHandlerOptions, params);
 			fail('test should fail');
 		} catch (e) {
 			expect(e).toEqual(expect.objectContaining(expectedError));
