@@ -3,6 +3,7 @@ import { Framework } from '../types';
 import { reactWebDetect, reactSSRDetect } from './React';
 import { vueWebDetect, vueSSRDetect } from './Vue';
 import { svelteWebDetect, svelteSSRDetect } from './Svelte';
+import { astroWebDetect, astroSSRDetect } from './Astro';
 import { solidWebDetect, solidSSRDetect } from './Solid';
 import { nextWebDetect, nextSSRDetect } from './Next';
 import { nuxtWebDetect, nuxtSSRDetect } from './Nuxt';
@@ -27,6 +28,7 @@ export const detectionMap: PlatformDetectionEntry[] = [
 	{ platform: Framework.VueJs, detectionMethod: vueWebDetect },
 	{ platform: Framework.Angular, detectionMethod: angularWebDetect },
 	{ platform: Framework.Svelte, detectionMethod: svelteWebDetect },
+	{ platform: Framework.Astro, detectionMethod: astroWebDetect },
 	{ platform: Framework.SolidJs, detectionMethod: solidWebDetect },
 	{ platform: Framework.WebUnknown, detectionMethod: webDetect },
 	{ platform: Framework.NextJs, detectionMethod: nextSSRDetect },
@@ -35,5 +37,6 @@ export const detectionMap: PlatformDetectionEntry[] = [
 	{ platform: Framework.VueJsSSR, detectionMethod: vueSSRDetect },
 	{ platform: Framework.AngularSSR, detectionMethod: angularSSRDetect },
 	{ platform: Framework.SvelteSSR, detectionMethod: svelteSSRDetect },
+	{ platform: Framework.AstroSSR, detectionMethod: astroSSRDetect },
 	{ platform: Framework.SolidJsSSR, detectionMethod: solidSSRDetect },
 ];

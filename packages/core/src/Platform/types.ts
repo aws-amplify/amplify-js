@@ -8,6 +8,7 @@ export enum Framework {
 	Nuxt = '5',
 	Svelte = '6',
 	SolidJs = '7',
+	Astro = '8',
 
 	// 100s - Server side frameworks
 	ServerSideUnknown = '100',
@@ -18,6 +19,7 @@ export enum Framework {
 	NuxtSSR = '105',
 	SvelteSSR = '106',
 	SolidJsSSR = '107',
+	AstroSSR = '108',
 
 	// 200s - Mobile framework
 	ReactNative = '201',
