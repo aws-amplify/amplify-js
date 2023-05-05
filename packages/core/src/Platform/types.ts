@@ -1,6 +1,27 @@
 export enum Framework {
-	None = '0',
-	ReactNative = '1',
+	// < 100 - Web frameworks
+	WebUnknown = '0',
+	React = '1',
+	NextJs = '2',
+	Angular = '3',
+	VueJs = '4',
+	Nuxt = '5',
+	Svelte = '6',
+	SolidJs = '7',
+
+	// 100s - Server side frameworks
+	ServerSideUnknown = '100',
+	ReactSSR = '101',
+	NextJsSSR = '102',
+	AngularSSR = '103',
+	VueJsSSR = '104',
+	NuxtSSR = '105',
+	SvelteSSR = '106',
+	SolidJsSSR = '107',
+
+	// 200s - Mobile framework
+	ReactNative = '201',
+	Expo = '202',
 }
 
 export enum Category {
