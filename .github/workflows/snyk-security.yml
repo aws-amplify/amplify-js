@@ -2,7 +2,7 @@ name: 'Snyk Security'
 
 on:
   push:
-    branches: ["main"]
+    branches: ["release"]
   schedule:
     - cron: '0 0 * * *' # run daily at midnight GMT
 
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   snyk:
-    if: github.repository == 'stocaaro/amplify-js'
+    if: github.repository == 'aws-amplify/amplify-js'
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
