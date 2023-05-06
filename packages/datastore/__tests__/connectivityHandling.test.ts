@@ -891,6 +891,92 @@ describe('DataStore sync engine', () => {
 			const jitter: number = 0;
 			const latency: number = 1000;
 
+			/**
+			 * Helper function to perform consecutive updates on a record given it's `id`.
+			 * As explained in detail below, config options are important here, as they will affect
+			 * whether or not the outbox will merge updates.
+			 * @param originalPostId `id` of the record to update
+			 * @param numberOfUpdates number of primary client updates to perform (excludes external client updates)
+			 * @param waitOnOutbox whether or not to wait for the outbox to be empty after each update
+			 * @param pauseBeforeMutation whether or not to pause prior to the mutation
+			 */
+			const performConsecutiveUpdates = async (
+				originalPostId: string,
+				numberOfUpdates: number,
+				waitOnOutbox: boolean,
+				pauseBeforeMutation: boolean
+			) => {
+				// Mutate the original record multiple times:
+				for (let number = 0; number < numberOfUpdates; number++) {
+					/**
+					 * When we want to test a scenario where the outbox does not
+					 * necessarily merge all outgoing requests (for instance, when
+					 * we do not add artifical latency to the connection), we make
+					 * the mutations rapidly in this loop. However, because of how
+					 * rapidly this loop executes, we are creating an artifical situation
+					 * where mutations will always be merged. Setting `pauseBeforeMutation`
+					 * to `true` will adding a semi-realistic pause ("button clicks")
+					 * between updates.
+					 * Not required when awaiting the outbox after each mutation.
+					 * Additionally not required if we are intentionally testing
+					 * rapid updates, such as when the initial save is still pending.
+					 */
+					if (pauseBeforeMutation) {
+						await pause(200);
+					}
+
+					const retrieved = await DataStore.query(Post, originalPostId);
+
+					await DataStore.save(
+						// @ts-ignore
+						Post.copyOf(retrieved, updated => {
+							updated.title = `post title ${number}`;
+						})
+					);
+
+					/**
+					 * When we want to test a scenario where the user is waiting for a long
+					 * period of time between each mutation (non-concurrent updates), we wait
+					 * for an empty outbox after each mutation. This ensures each mutation
+					 * completes a full cycle before the next mutation begins. This guarantees
+					 * that there will NEVER be concurrent updates being processed by the outbox.
+					 * For use with variable latencies.
+					 */
+					if (waitOnOutbox) {
+						await waitForEmptyOutbox();
+					}
+				}
+			};
+
+			/**
+			 *
+			 * @param originalPostId `id` of the record that was updated
+			 * @param expectedFinalVersion expected final `_version` of the record after all updates are complete
+			 * @param expectedFinalTitle expected final `title` of the record after all updates are complete
+			 */
+			const commonAssertions = async (
+				originalPostId: string,
+				expectedFinalVersion: number,
+				expectedFinalTitle: string
+			) => {
+				// Validate that the record was saved to the service:
+				const table = graphqlService.tables.get('Post')!;
+				expect(table.size).toEqual(1);
+
+				// Validate that the title was updated successfully:
+				const savedItem = table.get(JSON.stringify([originalPostId])) as any;
+				expect(savedItem.title).toEqual(expectedFinalTitle);
+
+				// Validate that the `_version` was incremented correctly:
+				expect(savedItem._version).toEqual(expectedFinalVersion);
+
+				// Validate that `query` returns the latest `title` and `_version`:
+				const queryResult = await DataStore.query(Post, originalPostId);
+				expect(queryResult?.title).toEqual(expectedFinalTitle);
+				//@ts-ignore
+				expect(queryResult?._version).toEqual(expectedFinalVersion);
+			};
+
 			describe('single client updates', () => {
 				test('rapid mutations on poor connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
@@ -940,21 +1026,14 @@ describe('DataStore sync engine', () => {
 						jitter,
 					});
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						// Note: We do NOT wait for outbox to be empty here, like we do
-						// in other tests, because we want to test concurrent updates
-						// being processed by the outbox.
-					}
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						false,
+						false
+					);
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -983,20 +1062,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 3],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title 0`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(3);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(`post title 0`);
+					await commonAssertions(original.id, 3, 'post title 0');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1036,31 +1102,14 @@ describe('DataStore sync engine', () => {
 						}
 					);
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						/**
-						 * We are testing a scenario where the outbox does not
-						 * merge outgoing requests (because there is no latency).
-						 * However, if we make the mutations rapidly in this loop,
-						 * we are creating an artifical situation where they will still
-						 * be merged. Adding a semi-realistic pause ("button clicks")
-						 * between updates.
-						 */
-						await pause(200);
-
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						// Note: We do NOT wait for the empty outbox here, like we do
-						// in other tests, because we want to test concurrent updates
-						// being processed by the outbox.
-					}
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						false,
+						true
+					);
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1097,6 +1146,8 @@ describe('DataStore sync engine', () => {
 					// Validate that query returns the latest version:
 					const queryResult = await DataStore.query(Post, original.id);
 					expect(queryResult?.title).toEqual(`post title 0`);
+					//@ts-ignore
+					expect(queryResult?._version).toEqual(4);
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1147,21 +1198,14 @@ describe('DataStore sync engine', () => {
 						jitter,
 					});
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						// Note: We do NOT wait for the empty outbox here, like we do
-						// in other tests, because we want to test concurrent updates
-						// being processed by the outbox.
-					}
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						false,
+						false // no pause here, unlike other tests! because we want to test when save is pending.
+					);
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1194,6 +1238,8 @@ describe('DataStore sync engine', () => {
 					// Validate that query returns the latest version:
 					const queryResult = await DataStore.query(Post, original.id);
 					expect(queryResult?.title).toEqual(`post title 2`);
+					//@ts-ignore
+					expect(queryResult?._version).toEqual(1);
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1231,31 +1277,14 @@ describe('DataStore sync engine', () => {
 						}
 					);
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						/**
-						 * We are testing a scenario where the outbox does not
-						 * merge outgoing requests (because there is no latency).
-						 * However, if we make the mutations rapidly in this loop,
-						 * we are creating an aritifical situation where they will still
-						 * be merged. Adding a semi-realistic pause ("button clicks")
-						 * between updates.
-						 */
-						await pause(200);
-
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						// Note: We do NOT wait for the empty outbox here, like we do
-						// in other tests, because we want to test concurrent updates
-						// being processed by the outbox.
-					}
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						false,
+						true
+					);
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1290,6 +1319,8 @@ describe('DataStore sync engine', () => {
 					expect(queryResult?.title).toEqual(
 						`post title ${numberOfUpdates - 1}`
 					);
+					//@ts-ignore
+					expect(queryResult?._version).toEqual(1);
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1342,24 +1373,17 @@ describe('DataStore sync engine', () => {
 						jitter,
 					});
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						/**
-						 * We wait for the empty outbox on each mutation, because
-						 * we want to test non-concurrent updates (i.e. we want to make
-						 * sure all the updates are going out and are being observed)
-						 */
-						await waitForEmptyOutbox();
-					}
+					/**
+					 * We wait for the empty outbox on each mutation, because
+					 * we want to test non-concurrent updates (i.e. we want to make
+					 * sure all the updates are going out and are being observed)
+					 */
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						true,
+						false
+					);
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1395,6 +1419,8 @@ describe('DataStore sync engine', () => {
 					expect(queryResult?.title).toEqual(
 						`post title ${numberOfUpdates - 1}`
 					);
+					//@ts-ignore
+					expect(queryResult?._version).toEqual(4);
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1434,25 +1460,17 @@ describe('DataStore sync engine', () => {
 						}
 					);
 
-					// Mutate the original record multiple times:
-					for (let number = 0; number < numberOfUpdates; number++) {
-						const retrieved = await DataStore.query(Post, original.id);
-
-						await DataStore.save(
-							// @ts-ignore
-							Post.copyOf(retrieved, updated => {
-								updated.title = `post title ${number}`;
-							})
-						);
-
-						/**
-						 * We wait for the empty outbox on each mutation, because
-						 * we want to test non-concurrent updates (i.e. we want to make
-						 * sure all the updates are going out, and are being observed -
-						 * additionally, the final version number will be greater).
-						 */
-						await waitForEmptyOutbox();
-					}
+					/**
+					 * We wait for the empty outbox on each mutation, because
+					 * we want to test non-concurrent updates (i.e. we want to make
+					 * sure all the updates are going out and are being observed)
+					 */
+					await performConsecutiveUpdates(
+						original.id,
+						numberOfUpdates,
+						true,
+						false
+					);
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1488,6 +1506,8 @@ describe('DataStore sync engine', () => {
 					expect(queryResult?.title).toEqual(
 						`post title ${numberOfUpdates - 1}`
 					);
+					//@ts-ignore
+					expect(queryResult?._version).toEqual(4);
 
 					// Cleanup:
 					await subscription.unsubscribe();
