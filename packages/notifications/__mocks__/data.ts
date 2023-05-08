@@ -1,12 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Alignment,
-	ButtonAction,
-	DimensionType,
+import type {
 	Event,
-	FilterType,
 	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-sdk/client-pinpoint';
 import { InAppMessage, InAppMessagingEvent } from '../src/InAppMessaging';
@@ -139,12 +135,12 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 			{
 				BackgroundColor: '#FFFF88',
 				BodyConfig: {
-					Alignment: Alignment.LEFT,
+					Alignment: 'LEFT',
 					Body: 'Body content',
 					TextColor: '#FF8888',
 				},
 				HeaderConfig: {
-					Alignment: Alignment.CENTER,
+					Alignment: 'CENTER',
 					Header: 'Header content',
 					TextColor: '#88FF88',
 				},
@@ -153,7 +149,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 					DefaultConfig: {
 						BackgroundColor: '#8888FF',
 						BorderRadius: 4,
-						ButtonAction: ButtonAction.CLOSE,
+						ButtonAction: 'CLOSE',
 						Link: undefined,
 						Text: 'Close button',
 						TextColor: '#FF88FF',
@@ -163,7 +159,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 					DefaultConfig: {
 						BackgroundColor: '#88FFFF',
 						BorderRadius: 4,
-						ButtonAction: ButtonAction.LINK,
+						ButtonAction: 'LINK',
 						Link: 'http://link.fakeurl',
 						Text: 'Link button',
 						TextColor: '#FFFFFF',
@@ -178,11 +174,11 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	Schedule: {
 		EndDate: '2021-01-01T00:00:00Z',
 		EventFilter: {
-			FilterType: FilterType.SYSTEM,
+			FilterType: 'SYSTEM',
 			Dimensions: {
 				Attributes: {},
 				EventType: {
-					DimensionType: DimensionType.INCLUSIVE,
+					DimensionType: 'INCLUSIVE',
 					Values: ['clicked', 'swiped'],
 				},
 				Metrics: {},

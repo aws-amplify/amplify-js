@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Event as AWSPinpointAnalyticsEvent } from '@aws-sdk/client-pinpoint';
+import type { Event as AWSPinpointAnalyticsEvent } from '@aws-sdk/client-pinpoint';
 import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '../../../common';
 import { PushNotificationMessage } from '../../types';

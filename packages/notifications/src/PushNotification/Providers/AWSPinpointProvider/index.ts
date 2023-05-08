@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ChannelType } from '@aws-sdk/client-pinpoint';
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
+import { ChannelType } from '../../../common/AWSPinpointProviderCommon/types';
 import PlatformNotSupportedError from '../../PlatformNotSupportedError';
 import { Platform } from '../../Platform';
 import {
@@ -108,11 +108,11 @@ export default class AWSPinpointProvider
 		switch (Platform.OS) {
 			case 'android': {
 				// FCM was previously known as GCM and continues to be the channel type in Pinpoint
-				return ChannelType.GCM;
+				return 'GCM';
 			}
 			case 'ios': {
 				// If building in debug mode, use the APNs sandbox
-				return global['__DEV__'] ? ChannelType.APNS_SANDBOX : ChannelType.APNS;
+				return global['__DEV__'] ? 'APNS_SANDBOX' : 'APNS';
 			}
 			default: {
 				throw new PlatformNotSupportedError();

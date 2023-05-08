@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import {
-	ChannelType,
-	GetInAppMessagesCommand,
-	GetInAppMessagesCommandInput,
-	InAppMessageCampaign as PinpointInAppMessage,
-} from '@aws-sdk/client-pinpoint';
+	getInAppMessages,
+	GetInAppMessagesInput,
+	GetInAppMessagesOutput,
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint';
 
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import SessionTracker, {
@@ -69,7 +69,7 @@ export default class AWSPinpointProvider
 	configure = (config = {}): Record<string, any> => {
 		this.config = {
 			...super.configure(config),
-			endpointInfo: { channelType: ChannelType.IN_APP },
+			endpointInfo: { channelType: 'IN_APP' },
 		};
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
@@ -121,16 +121,16 @@ export default class AWSPinpointProvider
 		clearMemo();
 		try {
 			await this.updateEndpoint();
-			const { appId, endpointId, pinpointClient } = this.config;
-			const input: GetInAppMessagesCommandInput = {
+			const { appId, credentials, endpointId, region } = this.config;
+			const input: GetInAppMessagesInput = {
 				ApplicationId: appId,
 				EndpointId: endpointId,
 			};
-			const command: GetInAppMessagesCommand = new GetInAppMessagesCommand(
+			this.logger.debug('getting in-app messages');
+			const response: GetInAppMessagesOutput = await getInAppMessages(
+				{ credentials, region },
 				input
 			);
-			this.logger.debug('getting in-app messages');
-			const response = await pinpointClient.send(command);
 			const { InAppMessageCampaigns: messages } =
 				response.InAppMessagesResponse;
 			dispatchInAppMessagingEvent('getInAppMessages', messages);

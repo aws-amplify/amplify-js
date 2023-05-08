@@ -51,9 +51,12 @@
 	"dependencies": {
 		"@aws-amplify/cache": "5.0.25",
 		"@aws-amplify/core": "5.1.8",
-		"@aws-sdk/client-pinpoint": "3.186.1",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
+	},
+	"devDependencies": {
+		"@aws-amplify/rtn-push-notification": "1.0.0",
+		"@aws-sdk/client-pinpoint": "3.186.1"
 	},
 	"size-limit": [
 		{
@@ -68,8 +71,5 @@
 			"import": "{ Amplify, Notifications, Analytics }",
 			"limit": "59.3 kB"
 		}
-	],
-	"devDependencies": {
-		"@aws-amplify/rtn-push-notification": "1.0.0"
-	}
+	]
 }
