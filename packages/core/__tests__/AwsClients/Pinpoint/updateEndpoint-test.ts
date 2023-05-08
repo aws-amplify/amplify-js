@@ -11,6 +11,7 @@ import {
 	mockApplicationId,
 	mockEndpointId,
 	mockEndpointRequest,
+	mockFailureResponse,
 	mockJsonResponse,
 	mockRequestId,
 	pinpointHandlerOptions,
@@ -72,23 +73,12 @@ describe('Pinpoint - updateEndpoint', () => {
 	});
 
 	test('error case', async () => {
-		const failureResponse = {
-			status: 400,
-			headers: {
-				'x-amzn-requestid': mockRequestId,
-				'x-amzn-errortype': 'ForbiddenException',
-			},
-			body: {
-				__type: 'ForbiddenException',
-				message: `Forbidden`,
-			},
-		};
 		const expectedError = {
 			name: 'ForbiddenException',
-			message: failureResponse.body.message,
+			message: mockFailureResponse.body.message,
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(failureResponse)
+			mockJsonResponse(mockFailureResponse)
 		);
 		expect.assertions(1);
 		try {
