@@ -5,6 +5,36 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"typesVersions": {
+		">=3.8": {
+			".": [
+        "./lib-esm/index.d.ts"
+      ],
+			"internal-client-utils": [
+				"./lib-esm/clients/index.d.ts"
+			],
+			"internal-pinpoint-client": [
+				"./lib-esm/AwsClients/Pinpoint/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./lib-esm/index.d.ts",
+			"import": "./lib-esm/index.js",
+			"require": "./lib/index.js"
+		},
+		"./internal-clients-utils": {
+			"types": "./lib-esm/clients/index.d.ts",
+			"import": "./lib-esm/clients/index.js",
+			"require": "./lib/clients/index.js"
+		},
+		"./internal-pinpoint-client": {
+			"types": "./lib-esm/AwsClients/Pinpoint/index.d.ts",
+			"import": "./lib-esm/AwsClients/Pinpoint/index.js",
+			"require": "./lib/AwsClients/Pinpoint/index.js"
+		}
+	},
 	"publishConfig": {
 		"access": "public"
 	},

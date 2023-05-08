@@ -11,13 +11,15 @@ import {
 	defaultConfig,
 	getSharedHeaders,
 } from './base';
-import { composeServiceApi } from '../../clients/internal/composeServiceApi';
-import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
 import {
+	Endpoint,
+	HttpRequest,
+	HttpResponse,
+	composeServiceApi,
 	parseJsonBody,
 	parseJsonError,
 	parseMetadata,
-} from '../../clients/serde';
+} from '../../clients';
 
 export type { GetIdInput, GetIdOutput };
 
