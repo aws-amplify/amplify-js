@@ -77,7 +77,7 @@ export const mockEventsRequest = {
 };
 
 export const mockFailureResponse = {
-	status: 400,
+	status: 403,
 	headers: {
 		'x-amzn-requestid': mockRequestId,
 		'x-amzn-errortype': 'ForbiddenException',

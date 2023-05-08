@@ -38,7 +38,7 @@ describe('Pinpoint - getInAppMessages', () => {
 				authorization: expect.stringContaining('Signature'),
 				'content-type': 'application/json',
 				host: 'pinpoint.us-east-1.amazonaws.com',
-				'x-amz-date': expect.anything(),
+				'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
 				'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 			}),
 		});
