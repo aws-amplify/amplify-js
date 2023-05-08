@@ -9,7 +9,7 @@ import { detectFramework } from './detectFramework';
 const BASE_USER_AGENT = `aws-amplify/${version}`;
 
 let framework = detectFramework();
-let frameworkHasBeenRerun = false;
+let frameworkDetectionHasBeenRerun = false;
 export const Platform = {
 	userAgent: BASE_USER_AGENT,
 	framework,
