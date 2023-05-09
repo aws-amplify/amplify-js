@@ -2327,16 +2327,18 @@ workflows:
       - getting-started-smoke-test/web:
           name: Next.js - latest
           npx-command: create-next-app
+          npx-post: --use-npm --ts --tailwind --no-eslint --no-src-dir --no-app --import-alias "@/*"`
           framework: nextjs
-          main-file-path: pages/_app.js
+          main-file-path: pages/_app.tsx
           dev-start: dev
           build-dir: build
           ssr: true
       - getting-started-smoke-test/web:
           name: Next.js - next
           npx-command: create-next-app@canary
+          npx-post: --use-npm --ts --tailwind --no-eslint --no-src-dir --no-app --import-alias "@/*"`
           framework: nextjs
-          main-file-path: pages/_app.js
+          main-file-path: pages/_app.tsx
           dev-start: dev
           build-dir: build
           ssr: true
