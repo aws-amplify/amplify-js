@@ -6,7 +6,6 @@ import {
 	ResendConfirmationCodeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { UserPoolHttpClient } from './HttpClients';
-import { Amplify } from '@aws-amplify/core';
 import { UserPoolClient } from './UserPoolClient';
 
 export type ResendConfirmationCodeClientInput = Pick<
