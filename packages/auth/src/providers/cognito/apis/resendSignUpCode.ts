@@ -23,13 +23,11 @@ import { resendSignUpConfirmationCodeClient } from '../utils/clients/resendSignU
  *
  * @param resendRequest - The resendRequest object
  * @returns AuthCodeDeliveryDetails
- * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- *
+ * @throws service: {@link ResendConfirmationException } - Cognito service errors thrown when resendign the confirmation code.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username are not defined.
  *
  * TODO: add config errors
  */
-
-// TODO(Samaritan1011001): Function type was changed, may need API change in doc
 
 export async function resendSignUpCode<
 	ServiceOptions extends AuthServiceOptions
