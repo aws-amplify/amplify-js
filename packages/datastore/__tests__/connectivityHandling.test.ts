@@ -973,7 +973,7 @@ describe('DataStore sync engine', () => {
 				// Validate that `query` returns the latest `title` and `_version`:
 				const queryResult = await DataStore.query(Post, originalPostId);
 				expect(queryResult?.title).toEqual(expectedFinalTitle);
-				//@ts-ignore
+				// @ts-ignore
 				expect(queryResult?._version).toEqual(expectedFinalVersion);
 			};
 
@@ -1132,22 +1132,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 4],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title 0`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(`post title 0`);
-					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					await commonAssertions(original.id, 4, 'post title 0');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1224,22 +1209,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title 2`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(1);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(`post title 2`);
-					//@ts-ignore
-					expect(queryResult?._version).toEqual(1);
+					await commonAssertions(original.id, 1, 'post title 2s');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1303,24 +1273,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(1);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(
-						`post title ${numberOfUpdates - 1}`
-					);
-					//@ts-ignore
-					expect(queryResult?._version).toEqual(1);
+					await commonAssertions(original.id, 1, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1403,24 +1356,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(
-						`post title ${numberOfUpdates - 1}`
-					);
-					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					await commonAssertions(original.id, 4, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1490,24 +1426,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					// Validate that the record was saved to the service:
-					const table = graphqlService.tables.get('Post')!;
-					expect(table.size).toEqual(1);
-					const savedItem = table.get(JSON.stringify([original.id])) as any;
-
-					// Validate updates were successful:
-					expect(savedItem.title).toEqual(`post title ${numberOfUpdates - 1}`);
-
-					// Validate version was correctly updated:
-					expect(savedItem._version).toEqual(4);
-
-					// Validate that query returns the latest version:
-					const queryResult = await DataStore.query(Post, original.id);
-					expect(queryResult?.title).toEqual(
-						`post title ${numberOfUpdates - 1}`
-					);
-					//@ts-ignore
-					expect(queryResult?._version).toEqual(4);
+					await commonAssertions(original.id, 4, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
