@@ -1209,7 +1209,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					await commonAssertions(original.id, 1, 'post title 2s');
+					await commonAssertions(original.id, 1, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
