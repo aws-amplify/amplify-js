@@ -31,7 +31,7 @@ export type ClientOperations =
 	| 'ConfirmSignUp'
 	| 'ForgotPassword'
 	| 'ConfirmForgotPassword'
-	| 'ResendSignUpConfirmationCode';
+	| 'ResendConfirmationCode';
 
 export class UserPoolHttpClient {
 	private _endpoint: string;
