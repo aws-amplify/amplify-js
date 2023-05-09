@@ -954,10 +954,10 @@ describe('DataStore sync engine', () => {
 			 * @param expectedFinalVersion expected final `_version` of the record after all updates are complete
 			 * @param expectedFinalTitle expected final `title` of the record after all updates are complete
 			 */
-			const commonAssertions = async (
-				originalPostId: string,
-				expectedFinalVersion: number,
-				expectedFinalTitle: string
+			const expectFinalRecordsToMatch = async (
+				postId: string,
+				version: number,
+				title: string
 			) => {
 				// Validate that the record was saved to the service:
 				const table = graphqlService.tables.get('Post')!;
