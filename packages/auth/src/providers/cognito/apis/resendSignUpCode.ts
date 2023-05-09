@@ -5,17 +5,13 @@ import { Amplify } from '@aws-amplify/core';
 import type { ResendConfirmationCodeCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
 import {
 	AuthCodeDeliveryDetails,
-	AuthServiceOptions,
 	AuthStandardAttributeKey,
 	DeliveryMedium,
 	ResendSignUpCodeRequest,
 } from '../../../types';
 import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '..';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { AuthError } from '../../../errors/AuthError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { SignUpException } from '../types/errors/service';
 import { resendSignUpConfirmationCodeClient } from '../utils/clients/resendSignUpCodeClient';
 
 /**
@@ -29,9 +25,7 @@ import { resendSignUpConfirmationCodeClient } from '../utils/clients/resendSignU
  * TODO: add config errors
  */
 
-export async function resendSignUpCode<
-	ServiceOptions extends AuthServiceOptions
->(
+export async function resendSignUpCode(
 	resendRequest: ResendSignUpCodeRequest<CognitoResendSignUpCodeOptions>
 ): Promise<AuthCodeDeliveryDetails<CognitoUserAttributeKey>> {
 	const username = resendRequest.username;
@@ -40,7 +34,6 @@ export async function resendSignUpCode<
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
 	const config = Amplify.config;
-
 	const res: ResendConfirmationCodeCommandOutput =
 		await resendSignUpConfirmationCodeClient({
 			Username: username,
