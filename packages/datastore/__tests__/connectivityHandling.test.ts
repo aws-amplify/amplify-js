@@ -1077,7 +1077,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test.only('rapid mutations on fast connection when initial create is not pending', async () => {
+				test('rapid mutations on fast connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
 
@@ -1466,7 +1466,6 @@ describe('DataStore sync engine', () => {
 			 */
 			describe('Multi-client updates', () => {
 				/**
-				 * TODO: move to utils?
 				 * Simulate a second client updating the original post
 				 * @param originalPostId id of the post to update
 				 * @param updatedFields field(s) to update
