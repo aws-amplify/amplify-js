@@ -470,7 +470,7 @@ export class FakeGraphQLService {
 	 * @param type The operation type. (Create, Update, Delete).
 	 * @param data The data to send out.
 	 * @param selection The function/selection name, like "onCreateTodo".
-	 * @param latencyOverride Used for exact control of the timing of the request / response, while still
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
 	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
 	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
@@ -479,9 +479,9 @@ export class FakeGraphQLService {
 		type,
 		data,
 		selection,
-		latencyOverride = false
+		ignoreLatency = false
 	) {
-		!latencyOverride && (await this.jitteredPause(this.latencies.subscriber));
+		!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
 		const observers = this.getObservers(tableName, type);
 		const typeName = {
 			create: 'Create',
@@ -511,19 +511,17 @@ export class FakeGraphQLService {
 	/**
 	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients)
 	 * @param request the GraphQL request
-	 * @param latencyOverride Used for exact control of the timing of the request / response, while still
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
 	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
 	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public graphql(request: GraphQLRequest, latencyOverride: boolean = false) {
-		return this.intercept(request, () =>
-			this.request(request, latencyOverride)
-		);
+	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
+		return this.intercept(request, () => this.request(request, ignoreLatency));
 	}
 
 	public request(
 		{ query, variables, authMode, authToken },
-		latencyOverride = false
+		ignoreLatency = false
 	) {
 		this.log('API Request', {
 			query,
@@ -568,7 +566,7 @@ export class FakeGraphQLService {
 		}
 
 		return new Promise(async resolve => {
-			!latencyOverride && (await this.jitteredPause(this.latencies.request));
+			!ignoreLatency && (await this.jitteredPause(this.latencies.request));
 
 			if (operation === 'query') {
 				if (type === 'get') {
@@ -691,15 +689,9 @@ export class FakeGraphQLService {
 					}
 				}
 
-				this.notifySubscribers(
-					tableName,
-					type,
-					data,
-					selection,
-					latencyOverride
-				);
+				this.notifySubscribers(tableName, type, data, selection, ignoreLatency);
 
-				!latencyOverride && (await this.jitteredPause(this.latencies.response));
+				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
 				this.log('API Response', { data, errors });
 				resolve({
@@ -709,7 +701,7 @@ export class FakeGraphQLService {
 				});
 			}
 
-			!latencyOverride && (await this.jitteredPause(this.latencies.response));
+			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
 			// Mutation is complete, remove from in-flight mutations
 			this.runningMutations.delete(variables?.input?.id);

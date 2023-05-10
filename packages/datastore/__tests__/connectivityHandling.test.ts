@@ -892,20 +892,29 @@ describe('DataStore sync engine', () => {
 			const latency: number = 1000;
 
 			/**
+			 * @property originalId `id` of the record to update
+			 * @property numberOfUpdates number of primary client updates to perform (excludes external client updates)
+			 * @property waitOnOutbox whether or not to wait for the outbox to be empty after each update
+			 * @property pauseBeforeMutation whether or not to pause prior to the mutation
+			 */
+			type ConsecutiveUpdatesParams = {
+				originalId: string;
+				numberOfUpdates: number;
+				waitOnOutbox: boolean;
+				pauseBeforeMutation: boolean;
+			};
+
+			/**
 			 * Helper function to perform consecutive updates on a record given it's `id`.
 			 * As explained in detail below, config options are important here, as they will affect
 			 * whether or not the outbox will merge updates.
-			 * @param originalPostId `id` of the record to update
-			 * @param numberOfUpdates number of primary client updates to perform (excludes external client updates)
-			 * @param waitOnOutbox whether or not to wait for the outbox to be empty after each update
-			 * @param pauseBeforeMutation whether or not to pause prior to the mutation
 			 */
-			const performConsecutiveUpdates = async (
-				originalPostId: string,
-				numberOfUpdates: number,
-				waitOnOutbox: boolean,
-				pauseBeforeMutation: boolean
-			) => {
+			const performConsecutiveUpdates = async ({
+				originalId,
+				numberOfUpdates,
+				waitOnOutbox,
+				pauseBeforeMutation,
+			}: ConsecutiveUpdatesParams) => {
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
 					/**
@@ -925,7 +934,7 @@ describe('DataStore sync engine', () => {
 						await pause(200);
 					}
 
-					const retrieved = await DataStore.query(Post, originalPostId);
+					const retrieved = await DataStore.query(Post, originalId);
 
 					await DataStore.save(
 						// @ts-ignore
@@ -950,7 +959,7 @@ describe('DataStore sync engine', () => {
 
 			/**
 			 *
-			 * @param originalPostId `id` of the record that was updated
+			 * @param originalId `id` of the record that was updated
 			 * @param expectedFinalVersion expected final `_version` of the record after all updates are complete
 			 * @param expectedFinalTitle expected final `title` of the record after all updates are complete
 			 */
@@ -964,17 +973,17 @@ describe('DataStore sync engine', () => {
 				expect(table.size).toEqual(1);
 
 				// Validate that the title was updated successfully:
-				const savedItem = table.get(JSON.stringify([originalPostId])) as any;
-				expect(savedItem.title).toEqual(expectedFinalTitle);
+				const savedItem = table.get(JSON.stringify([postId])) as any;
+				expect(savedItem.title).toEqual(title);
 
 				// Validate that the `_version` was incremented correctly:
-				expect(savedItem._version).toEqual(expectedFinalVersion);
+				expect(savedItem._version).toEqual(version);
 
 				// Validate that `query` returns the latest `title` and `_version`:
-				const queryResult = await DataStore.query(Post, originalPostId);
-				expect(queryResult?.title).toEqual(expectedFinalTitle);
+				const queryResult = await DataStore.query(Post, postId);
+				expect(queryResult?.title).toEqual(title);
 				// @ts-ignore
-				expect(queryResult?._version).toEqual(expectedFinalVersion);
+				expect(queryResult?._version).toEqual(version);
 			};
 
 			describe('single client updates', () => {
@@ -1028,12 +1037,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						false,
-						false
-					);
+						waitOnOutbox: false,
+						pauseBeforeMutation: false,
+					});
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1062,7 +1071,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 3],
 					]);
 
-					await commonAssertions(original.id, 3, 'post title 0');
+					await expectFinalRecordsToMatch(original.id, 3, 'post title 0');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1104,12 +1113,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						false,
-						true
-					);
+						waitOnOutbox: false,
+						pauseBeforeMutation: true,
+					});
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1132,7 +1141,7 @@ describe('DataStore sync engine', () => {
 						['post title 0', 4],
 					]);
 
-					await commonAssertions(original.id, 4, 'post title 0');
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 0');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1185,12 +1194,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						false,
-						false // no pause here, unlike other tests! because we want to test when save is pending.
-					);
+						waitOnOutbox: false,
+						pauseBeforeMutation: false, // no pause here, unlike other tests! because we want to test when save is pending.
+					});
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1209,7 +1218,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					await commonAssertions(original.id, 1, 'post title 2');
+					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1249,12 +1258,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						false,
-						true
-					);
+						waitOnOutbox: false,
+						pauseBeforeMutation: true,
+					});
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1273,7 +1282,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					await commonAssertions(original.id, 1, 'post title 2');
+					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1331,12 +1340,12 @@ describe('DataStore sync engine', () => {
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						true,
-						false
-					);
+						waitOnOutbox: true,
+						pauseBeforeMutation: false,
+					});
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1356,7 +1365,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					await commonAssertions(original.id, 4, 'post title 2');
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
@@ -1401,12 +1410,12 @@ describe('DataStore sync engine', () => {
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates(
-						original.id,
+					await performConsecutiveUpdates({
+						originalId: original.id,
 						numberOfUpdates,
-						true,
-						false
-					);
+						waitOnOutbox: true,
+						pauseBeforeMutation: false,
+					});
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1426,7 +1435,7 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					await commonAssertions(original.id, 4, 'post title 2');
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
 
 					// Cleanup:
 					await subscription.unsubscribe();
