@@ -13,6 +13,8 @@ import {
 	Category,
 	Framework,
 	ApiAction,
+	DataStoreAction,
+	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
 import { Cache } from '@aws-amplify/cache';
@@ -61,6 +63,7 @@ const getEventQuery = print(getEventDoc);
 
 /* TODO: Test with actual actions */
 const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
+const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -1282,7 +1285,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentDataStore,
 			};
 
 			const body = {
@@ -1301,7 +1304,17 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
+			const customUserAgentDetails: CustomUserAgentDetails = {
+				category: Category.DataStore,
+				action: DataStoreAction.None,
+			};
+
+			// @ts-ignore Use private method to send internal metrics
+			await api._graphql(
+				graphqlOperation(GetEvent, variables, authToken),
+				undefined,
+				customUserAgentDetails
+			);
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1354,7 +1367,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentDataStore,
 			};
 
 			const body = {
@@ -1374,7 +1387,17 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
+			const customUserAgentDetails: CustomUserAgentDetails = {
+				category: Category.DataStore,
+				action: DataStoreAction.None,
+			};
+
+			// @ts-ignore Use private method to send internal metrics
+			await api._graphql(
+				graphqlOperation(GetEvent, variables, authToken),
+				undefined,
+				customUserAgentDetails
+			);
 
 			expect(spyon).toBeCalledWith(url, init);
 		});

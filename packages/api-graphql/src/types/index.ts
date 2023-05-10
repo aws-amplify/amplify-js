@@ -1,10 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Source, DocumentNode, GraphQLError } from 'graphql';
+import { Source, DocumentNode, GraphQLError, OperationTypeNode } from 'graphql';
 export { OperationTypeNode } from 'graphql';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
+import { Auth, GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
-import { CustomUserAgentDetails } from '@aws-amplify/core';
+import { Credentials } from '@aws-amplify/core';
+import { Cache } from '@aws-amplify/cache';
+import Observable from 'zen-observable-ts';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
@@ -38,3 +40,24 @@ export enum GraphQLAuthError {
  * @see: https://graphql.org/graphql-js/language/#parse
  */
 export type GraphQLOperation = Source | string;
+
+export interface GraphQLAPIInterface {
+	Auth: typeof Auth;
+	Cache: typeof Cache;
+	Credentials: typeof Credentials;
+
+	getModuleName: () => string;
+	configure: (options: object) => object;
+	createInstance: () => Promise<string> | boolean;
+	getGraphqlOperationType: (operation: GraphQLOperation) => OperationTypeNode;
+
+	graphql: <T = any>(
+		options: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
+	) => Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>>;
+
+	createInstanceIfNotCreated: () => void;
+	isCancel: (error) => boolean;
+	cancel: (request: Promise<any>, message?: string) => boolean;
+	hasCancelToken: (request: Promise<any>) => boolean;
+}
