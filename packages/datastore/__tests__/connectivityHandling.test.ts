@@ -1077,7 +1077,7 @@ describe('DataStore sync engine', () => {
 					// Cleanup:
 					await subscription.unsubscribe();
 				});
-				test('rapid mutations on fast connection when initial create is not pending', async () => {
+				test.only('rapid mutations on fast connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
 					const numberOfUpdates = 3;
 
@@ -1471,13 +1471,13 @@ describe('DataStore sync engine', () => {
 				 * @param originalPostId id of the post to update
 				 * @param updatedFields field(s) to update
 				 * @param version version number to be sent with the request
-				 * @param latencyOverride whether or not to override the latencies for only this request
+				 * @param ignoreLatency whether or not to override the latencies for only this request
 				 */
 				const injectExternalClientPostUpdate = async (
 					originalPostId: string,
 					updatedFields: Partial<any> = {},
 					version: number | undefined,
-					latencyOverride: boolean = false
+					ignoreLatency: boolean = false
 				) => {
 					await graphqlService.graphql(
 						{
@@ -1505,7 +1505,7 @@ describe('DataStore sync engine', () => {
 							authMode: undefined,
 							authToken: undefined,
 						},
-						latencyOverride
+						ignoreLatency
 					);
 				};
 				describe('Same field updates', () => {
@@ -1995,17 +1995,12 @@ describe('DataStore sync engine', () => {
 					});
 					describe.skip('External update is after primary client updates', () => {});
 				});
+				// TODO: will be included in next PR
 				describe.skip('Different field updates', () => {
 					describe.skip('External update is in the middle of primary client updates', () => {});
 					describe.skip('External update is after primary client updates', () => {});
 				});
 			});
-			// TODO:
-			// describe.skip('multi-client updates', () => {});
-			// sub - same field
-			// sub - different
-			// sub sub - external update is in the middle of current client updates
-			// sub sub - external update is the LAST update
 		});
 	});
 

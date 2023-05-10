@@ -1627,13 +1627,13 @@ describe('DataStore sync engine', () => {
 				 * @param originalPostId id of the post to update
 				 * @param updatedFields field(s) to update
 				 * @param version version number to be sent with the request
-				 * @param latencyOverride whether or not to override the latencies for only this request
+				 * @param ignoreLatency whether or not to override the latencies for only this request
 				 */
 				const injectExternalClientPostUpdate = async (
 					originalPostId: string,
 					updatedFields: Partial<any> = {},
 					version: number | undefined,
-					latencyOverride: boolean = false
+					ignoreLatency: boolean = false
 				) => {
 					await graphqlService.graphql(
 						{
@@ -1661,7 +1661,7 @@ describe('DataStore sync engine', () => {
 							authMode: undefined,
 							authToken: undefined,
 						},
-						latencyOverride
+						ignoreLatency
 					);
 				};
 				describe('Same field updates', () => {

@@ -693,8 +693,6 @@ export class FakeGraphQLService {
 
 				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
-				!latencyOverride && (await this.jitteredPause(this.latencies.response));
-
 				// debugger;
 				this.log('API Response', { data, errors });
 				resolve({
