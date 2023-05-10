@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.1.13",
+	"version": "5.2.0",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -123,6 +123,7 @@
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": ["/testUtils/"],
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
