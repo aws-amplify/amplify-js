@@ -1057,7 +1057,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1147,7 +1147,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1222,7 +1222,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1299,7 +1299,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1363,7 +1363,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1451,7 +1451,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'original blog id',
+							blogId: 'blog id',
 						})
 					);
 
@@ -1532,7 +1532,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
@@ -1602,7 +1602,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
@@ -1659,7 +1659,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
@@ -1716,7 +1716,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
@@ -1766,7 +1766,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
@@ -1831,7 +1831,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'original blog id',
+								blogId: 'blog id',
 							})
 						);
 
