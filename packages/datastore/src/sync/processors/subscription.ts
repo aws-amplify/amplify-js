@@ -1,4 +1,5 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internal';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
@@ -79,7 +80,11 @@ class SubscriptionProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly amplifyContext: AmplifyContext = { Auth, API, Cache }
+		private readonly amplifyContext: AmplifyContext = {
+			Auth,
+			API: InternalAPI,
+			Cache,
+		}
 	) {}
 
 	private buildSubscription(
