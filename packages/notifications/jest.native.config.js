@@ -16,4 +16,7 @@ module.exports = {
 			functions: 95,
 		},
 	},
+	transformIgnorePatterns: [
+		'node_modules/(?!react-native-url-polyfill|@react-native|react-native)',
+	],
 };
