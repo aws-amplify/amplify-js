@@ -895,15 +895,13 @@ describe('DataStore sync engine', () => {
 			 * Simulate a second client updating the original post
 			 * @param originalPostId id of the post to update
 			 * @param updatedFields field(s) to update
-			 * @param version version number to be sent with the request
-			 * @param ignoreLatency whether or not to override the latencies for only this request
+			 * @param version version number to be sent with the request (what would have been
+			 * returned from a query prior to update)
 			 */
-			// TODO rename:
-			const injectExternalClientPostUpdate = async (
+			const externalPostUpdate = async (
 				originalPostId: string,
 				updatedFields: Partial<any> = {},
-				version: number | undefined,
-				ignoreLatency: boolean = false
+				version: number | undefined
 			) => {
 				await graphqlService.graphql(
 					{
@@ -931,7 +929,7 @@ describe('DataStore sync engine', () => {
 						authMode: undefined,
 						authToken: undefined,
 					},
-					ignoreLatency
+					true // we always ignore latency for external mutations
 				);
 			};
 
@@ -940,14 +938,14 @@ describe('DataStore sync engine', () => {
 			 * @property numberOfUpdates number of primary client updates to perform (excludes external client updates)
 			 * @property waitOnOutbox whether or not to wait for the outbox to be empty after each update
 			 * @property pauseBeforeMutation whether or not to pause prior to the mutation
-			 * @property injectExternalClientMutation whether or not to inject an external client mutation
+			 * @property externalClientMutation whether or not to inject an external client mutation
 			 */
 			type ConsecutiveUpdatesParams = {
 				originalId: string;
 				numberOfUpdates: number;
 				waitOnOutbox: boolean;
 				pauseBeforeMutation: boolean;
-				injectExternalClientMutation?: boolean;
+				externalClientMutation?: any;
 			};
 
 			/**
@@ -960,7 +958,7 @@ describe('DataStore sync engine', () => {
 				numberOfUpdates,
 				waitOnOutbox,
 				pauseBeforeMutation,
-				injectExternalClientMutation = false,
+				externalClientMutation = false,
 			}: ConsecutiveUpdatesParams) => {
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
@@ -1004,13 +1002,8 @@ describe('DataStore sync engine', () => {
 
 					// External update is in the middle of current client updates, no latency
 					// Update is same field as primary client
-					if (injectExternalClientMutation && number === 1)
-						await injectExternalClientPostUpdate(
-							originalId,
-							{ title: 'update from second client' },
-							1,
-							true
-						);
+					if (externalClientMutation && number === 1)
+						await externalClientMutation();
 				}
 			};
 
@@ -1554,26 +1547,39 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							const retrieved = await DataStore.query(Post, original.id);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							// External update is in the middle of current client updates, no latency
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// External update is in the middle of current client updates, no latency
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			1,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: false,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									1,
-									true
-								);
-						}
+									1
+								),
+						});
 
 						await waitForEmptyOutbox();
 
@@ -1625,28 +1631,41 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							await pause(200);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	await pause(200);
 
-							const retrieved = await DataStore.query(Post, original.id);
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							// External update is in the middle of current client updates, no latency
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// External update is in the middle of current client updates, no latency
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			1,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: true,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									1,
-									true
-								);
-						}
+									1
+								),
+						});
 
 						await waitForEmptyOutbox();
 
@@ -1697,26 +1716,39 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							const retrieved = await DataStore.query(Post, original.id);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							// `undefined` because a query here would return `undefined` at this point
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// `undefined` because a query here would return `undefined` at this point
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			undefined,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: false,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									undefined,
-									true
-								);
-						}
+									undefined
+								),
+						});
 
 						await waitForEmptyOutbox();
 
@@ -1755,28 +1787,41 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							await pause(200);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	await pause(200);
 
-							const retrieved = await DataStore.query(Post, original.id);
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							// `undefined` because a query here would return `undefined` at this point
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// `undefined` because a query here would return `undefined` at this point
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			undefined,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: true,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									undefined,
-									true
-								);
-						}
+									undefined
+								),
+						});
 
 						await waitForEmptyOutbox();
 
@@ -1824,28 +1869,41 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							const retrieved = await DataStore.query(Post, original.id);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							await waitForEmptyOutbox();
+						// 	await waitForEmptyOutbox();
 
-							// `3` because a query here would return 3` at this point
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// `3` because a query here would return 3` at this point
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			3,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: true,
+							pauseBeforeMutation: false,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									3,
-									true
-								);
-						}
+									3
+								),
+						});
 
 						await graphqlServiceSettled(
 							graphqlService,
@@ -1892,28 +1950,41 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						for (let number = 0; number < numberOfUpdates; number++) {
-							const retrieved = await DataStore.query(Post, original.id);
+						// for (let number = 0; number < numberOfUpdates; number++) {
+						// 	const retrieved = await DataStore.query(Post, original.id);
 
-							await DataStore.save(
-								// @ts-ignore
-								Post.copyOf(retrieved, updated => {
-									updated.title = `post title ${number}`;
-								})
-							);
+						// 	await DataStore.save(
+						// 		// @ts-ignore
+						// 		Post.copyOf(retrieved, updated => {
+						// 			updated.title = `post title ${number}`;
+						// 		})
+						// 	);
 
-							await waitForEmptyOutbox();
+						// 	await waitForEmptyOutbox();
 
-							// `3` because a query here would return `3` at this point
-							// Update is same field as primary client
-							if (number === 1)
-								await injectExternalClientPostUpdate(
+						// 	// `3` because a query here would return `3` at this point
+						// 	// Update is same field as primary client
+						// 	if (number === 1)
+						// 		await externalPostUpdate(
+						// 			original.id,
+						// 			{ title: 'update from second client' },
+						// 			3,
+						// 			true
+						// 		);
+						// }
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: true,
+							pauseBeforeMutation: false,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
 									original.id,
 									{ title: 'update from second client' },
-									3,
-									true
-								);
-						}
+									3
+								),
+						});
 
 						await graphqlServiceSettled(
 							graphqlService,
