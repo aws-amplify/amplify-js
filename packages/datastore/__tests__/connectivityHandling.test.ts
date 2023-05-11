@@ -1517,11 +1517,12 @@ describe('DataStore sync engine', () => {
 				});
 			});
 			/**
-			 * The only comments in these tests relate to multi-client specific explanations, as these are
-			 * almost the same tests as the single-client tests, but with an injected second client and many
-			 * additional permutations on essentially the same pattern, and updated
-			 * assertions. For a complete understanding of how these tests work (why / when we await the outbox,
-			 * pause, wait for the service to settle, etc), refer to the single-field tests.
+			 * The following multi-client tests are almost identical to the single-client tests above:
+			 * as a result, the comments in these tests relate specifically to multi-client operations only.
+			 * The primary differences are that we inject external client updates, and add many permutations
+			 * on essentially the same patterns. For a complete understanding of how these tests work (why /
+			 * when we await the outbox, pause, wait for the service to settle, etc), refer to the
+			 * single-field tests.
 			 */
 			describe('Multi-client updates', () => {
 				describe('Updates to the same field', () => {
@@ -2344,7 +2345,6 @@ describe('DataStore sync engine', () => {
 							'update from second client'
 						);
 
-						// Cleanup:
 						await subscription.unsubscribe();
 					});
 				});
