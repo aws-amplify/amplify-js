@@ -693,7 +693,6 @@ export class FakeGraphQLService {
 
 				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
-				// debugger;
 				this.log('API Response', { data, errors });
 				resolve({
 					data,
@@ -704,7 +703,6 @@ export class FakeGraphQLService {
 
 			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
-			// debugger;
 			// Mutation is complete, remove from in-flight mutations
 			this.runningMutations.delete(variables?.input?.id);
 

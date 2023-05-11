@@ -454,7 +454,7 @@ export async function waitForSyncQueriesReady(verbose = false) {
  * messages for a specific model.
  * @param fakeService - the fake GraphQL service
  * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
- * @param externalNumberOfUpdates - TODO: may just updated `expected` to include external updates
+ * @param externalNumberOfUpdates - the number of external updates we expect to receive
  * @param modelName - the name of the model we are updating
  */
 export async function graphqlServiceSettled(
@@ -490,7 +490,6 @@ export async function graphqlServiceSettled(
 				).length ===
 				expectedNumberOfUpdates + externalNumberOfUpdates;
 
-			// TODO: doesn't clear up external mutations:
 			// Ensure all mutations are complete:
 			const allRunningMutationsComplete =
 				graphqlService.runningMutations.size === 0;
@@ -503,8 +502,6 @@ export async function graphqlServiceSettled(
 					}
 				).length ===
 				expectedNumberOfUpdates + externalNumberOfUpdates;
-
-			// debugger;
 
 			if (
 				allUpdatesSent &&
