@@ -1,6 +1,6 @@
 import {
-	InternalGraphQLAPIClass,
 	InternalGraphQLAPI,
+	InternalGraphQLAPIClass,
 } from './InternalGraphQLAPI';
 
-export { InternalGraphQLAPIClass, InternalGraphQLAPI };
+export { InternalGraphQLAPI, InternalGraphQLAPIClass };
