@@ -5,7 +5,6 @@ module.exports = {
 	externals: ['react-native', {
 		'@aws-amplify/cache': 'aws_amplify_cache',
 		'@aws-amplify/core': 'aws_amplify_core',
-		'crypto': 'crypto'
 	}],
 	output: {
 		filename: '[name].js',

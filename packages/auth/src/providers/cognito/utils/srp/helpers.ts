@@ -79,8 +79,6 @@ const getAtob = () => {
 
 	if (typeof window !== 'undefined' && window.atob) {
 		atob = window.atob;
-	} else if (typeof global !== 'undefined' && (global as any).atob) {
-		atob = (global as any).atob;
 	}
 
 	return atob;
@@ -91,8 +89,6 @@ const getBtoa = () => {
 
 	if (typeof window !== 'undefined' && window.btoa) {
 		btoa = window.btoa;
-	} else if (typeof global !== 'undefined' && (global as any).btoa) {
-		btoa = (global as any).btoa;
 	}
 
 	return btoa;

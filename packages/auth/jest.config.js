@@ -1,4 +1,9 @@
+
 module.exports = {
+	testPathIgnorePatterns: [
+		'__tests__/utils/*',
+		'__tests__/providers/cognito/testUtils/*'
+	],
 	setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 	clearMocks: true,
 	collectCoverage: true,
@@ -15,8 +20,8 @@ module.exports = {
 	transform: {
 		'^.+\\.(js|jsx|ts|tsx)$': 'ts-jest',
 	},
-	preset: 'ts-jest',
 	testRegex: ['(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$'],
+	preset: 'ts-jest',
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'jsx'],
-	testEnvironment: 'jsdom',
+	testEnvironment: 'jsdom'
 };
