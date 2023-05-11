@@ -1,9 +1,16 @@
+import { processExists, windowExists } from './helpers';
+
 export function angularWebDetect() {
-	// TODO add detection implementation
-	return false;
+	return (
+		windowExists() && window['ng'] && window['ng'].probe instanceof Function
+	);
 }
 
 export function angularSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return (
+		(processExists() &&
+			typeof process.env === 'object' &&
+			process.env['npm_lifecycle_script']?.startsWith('ng ')) ||
+		false
+	);
 }

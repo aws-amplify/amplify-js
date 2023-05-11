@@ -1,3 +1,5 @@
+import { windowExists } from './helpers';
+
 export function webDetect() {
-	return typeof document != 'undefined';
+	return windowExists();
 }

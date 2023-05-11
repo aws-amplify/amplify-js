@@ -21,7 +21,10 @@ export const Platform = {
  * detected in cases where DOM is not yet loaded.
  */
 const rerunFrameworkDetection = () => {
-	if (Platform.framework === Framework.None && !frameworkHasBeenRerun) {
+	if (
+		Platform.framework === Framework.ServerSideUnknown &&
+		!frameworkHasBeenRerun
+	) {
 		framework = detectFramework();
 		frameworkHasBeenRerun = true;
 		Platform.framework = framework;

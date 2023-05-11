@@ -1,9 +1,13 @@
+import { documentExists, globalExists } from './helpers';
+
 export function astroWebDetect() {
-	// TODO add detection implementation
-	return false;
+	return (
+		documentExists() &&
+		typeof document.querySelectorAll === 'function' &&
+		document.querySelectorAll('[class*="astro-"]').length > 0
+	);
 }
 
 export function astroSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return globalExists() && global['@astrojs/compiler'] !== undefined;
 }

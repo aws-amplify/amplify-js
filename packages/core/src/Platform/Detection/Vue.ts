@@ -1,8 +1,8 @@
+import { globalExists, windowExists } from './helpers';
+
 export function vueWebDetect() {
-	// TODO add detection implementation
-	return false;
+	return windowExists() && window['__VUE__'] !== undefined;
 }
 export function vueSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return globalExists() && global['__VUE_SSR_CONTEXT__'] !== undefined;
 }

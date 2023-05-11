@@ -1,9 +1,9 @@
+import { packageExists, windowExists } from './helpers';
+
 export function solidWebDetect() {
-	// TODO add detection implementation
-	return false;
+	return windowExists() && window['Solid$$'] !== undefined;
 }
 
 export function solidSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return packageExists('solid-js');
 }

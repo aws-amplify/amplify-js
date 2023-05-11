@@ -1,10 +1,12 @@
+import { globalExists, keyPrefixMatch } from './helpers';
+
 export function nextWebDetect() {
-	return (
-		window && window['__NEXT_DATA__'] && window['__NEXT_DATA__']['buildId']
-	);
+	return window && window['next'] && typeof window['next'] === 'object';
 }
 
 export function nextSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return (
+		globalExists() &&
+		(keyPrefixMatch(global, '__next') || keyPrefixMatch(global, '__NEXT'))
+	);
 }

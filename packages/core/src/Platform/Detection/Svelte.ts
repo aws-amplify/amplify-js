@@ -1,9 +1,9 @@
+import { keyPrefixMatch, packageExists, windowExists } from './helpers';
+
 export function svelteWebDetect() {
-	// TODO add detection implementation
-	return false;
+	return windowExists() && keyPrefixMatch(window, '__SVELTE');
 }
 
 export function svelteSSRDetect() {
-	// TODO add detection implementation
-	return false;
+	return packageExists('svelte');
 }

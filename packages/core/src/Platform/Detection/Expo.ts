@@ -1,4 +1,5 @@
+import { globalExists } from './helpers';
+
 export function expoDetect() {
-	// TODO add detection implementation
-	return false;
+	return globalExists() && global['expo'] !== undefined;
 }

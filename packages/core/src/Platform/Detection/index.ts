@@ -22,6 +22,7 @@ export const detectionMap: PlatformDetectionEntry[] = [
 	// Detect mobile first
 	{ platform: Framework.ReactNative, detectionMethod: reactNativeDetect },
 	{ platform: Framework.Expo, detectionMethod: expoDetect },
+	// Next detect web frameworks
 	{ platform: Framework.NextJs, detectionMethod: nextWebDetect },
 	{ platform: Framework.Nuxt, detectionMethod: nuxtWebDetect },
 	{ platform: Framework.React, detectionMethod: reactWebDetect },
@@ -31,6 +32,7 @@ export const detectionMap: PlatformDetectionEntry[] = [
 	{ platform: Framework.Astro, detectionMethod: astroWebDetect },
 	{ platform: Framework.SolidJs, detectionMethod: solidWebDetect },
 	{ platform: Framework.WebUnknown, detectionMethod: webDetect },
+	// Last detect ssr frameworks
 	{ platform: Framework.NextJs, detectionMethod: nextSSRDetect },
 	{ platform: Framework.NuxtSSR, detectionMethod: nuxtSSRDetect },
 	{ platform: Framework.ReactSSR, detectionMethod: reactSSRDetect },
