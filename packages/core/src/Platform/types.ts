@@ -19,7 +19,7 @@ export enum Category {
 // Actions
 /* TODO: Replace 'None' with all expected Actions */
 export enum ApiAction {
-	None = '0',
+	GraphQl = '1',
 }
 export enum AuthAction {
 	None = '0',
