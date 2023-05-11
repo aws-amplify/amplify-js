@@ -16,6 +16,8 @@ module.exports = {
 			functions: 95,
 		},
 	},
+	// Fix react native url polyfill transform issue of import statement.
+	// See: https://thymikee.github.io/jest-preset-angular/docs/11.0/guides/troubleshooting/#unexpected-token-importexportother
 	transformIgnorePatterns: [
 		'node_modules/(?!react-native-url-polyfill|@react-native|react-native)',
 	],
