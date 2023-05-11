@@ -243,3 +243,5 @@ export class InternalAPIClass {
 		);
 	}
 }
+
+export const InternalAPI = new InternalAPIClass(null);

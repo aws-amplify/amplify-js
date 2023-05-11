@@ -10,8 +10,28 @@
 			"lib-esm/index.d.ts": [
 				"index.v37.d.ts"
 			]
-		}
+		},
+		">=3.8": {
+      "*": [
+        "./lib-esm/index.d.ts"
+      ],
+      "internal": [
+        "./lib-esm/internal/index.d.ts"
+      ]
+    }
 	},
+  "exports": {
+    ".": {
+      "types": "./lib-esm/index.d.ts",
+      "import": "./lib-esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./internal": {
+      "types": "./lib-esm/internal/index.d.ts",
+      "import": "./lib-esm/internal/index.js",
+      "require": "./lib/internal/index.js"
+    }
+  },
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
