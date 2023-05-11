@@ -1015,13 +1015,13 @@ describe('DataStore sync engine', () => {
 			 * @param postId `id` of the record that was updated
 			 * @param version expected final `_version` of the record after all updates are complete
 			 * @param title expected final `title` of the record after all updates are complete
-			 * @param blogId expected final `title` of the record after all updates are complete
+			 * @param blogId expected final `blogId` of the record after all updates are complete
 			 */
 			const expectFinalRecordsToMatch = async (
 				postId: string,
 				version: number,
 				title: string,
-				blogId?: string
+				blogId?: string | null
 			) => {
 				// Validate that the record was saved to the service:
 				const table = graphqlService.tables.get('Post')!;
@@ -1057,7 +1057,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1147,7 +1147,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1222,7 +1222,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1299,7 +1299,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1363,7 +1363,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1451,7 +1451,7 @@ describe('DataStore sync engine', () => {
 					const original = await DataStore.save(
 						new Post({
 							title: 'original title',
-							blogId: 'blog id',
+							blogId: 'original blog id',
 						})
 					);
 
@@ -1532,7 +1532,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1602,7 +1602,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1659,7 +1659,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1716,7 +1716,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1766,7 +1766,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1831,7 +1831,7 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blog id',
 							})
 						);
 
@@ -1885,14 +1885,13 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				describe('Updates to different fields', () => {
-					test.only('rapid mutations on poor connection when initial create is not pending', async () => {
+					test('rapid mutations on poor connection when initial create is not pending', async () => {
 						const numberOfUpdates = 3;
 						const subscriptionLog: SubscriptionLogMultiField[] = [];
 
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
 							})
 						);
 
@@ -1926,7 +1925,7 @@ describe('DataStore sync engine', () => {
 							externalClientMutation: async () =>
 								await externalPostUpdate(
 									original.id,
-									// Updating a field different from primary updates
+									// External client performs a mutation against a different field:
 									{ blogId: 'update from second client' },
 									1
 								),
@@ -1943,12 +1942,15 @@ describe('DataStore sync engine', () => {
 							'Post'
 						);
 
-						debugger;
-
+						/**
+						 * NOTE: Even though the primary client is updating `title`, the
+						 * second client's update to `blogId` reverts the primary client's
+						 * changes.
+						 */
 						expect(subscriptionLog).toEqual([
-							['post title 0', 'blog id', 1],
-							['post title 1', 'blog id', 1],
-							['post title 2', 'blog id', 1],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
 							['original title', 'update from second client', 4],
 						]);
 
@@ -1961,14 +1963,13 @@ describe('DataStore sync engine', () => {
 
 						await subscription.unsubscribe();
 					});
-					test('rapid mutations on fast connection when initial create is not pending', async () => {
+					test('rapid mutations on fast connection when initial create is not pending (second field is `null`)', async () => {
 						const numberOfUpdates = 3;
 						const subscriptionLog: SubscriptionLogMultiField[] = [];
 
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
 							})
 						);
 
@@ -1976,8 +1977,10 @@ describe('DataStore sync engine', () => {
 
 						const subscription = await DataStore.observe(Post).subscribe(
 							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
+								const response: SubscriptionLogMultiField = [
 									element.title,
+									// @ts-ignore
+									element.blogId,
 									// @ts-ignore
 									element._version,
 								];
@@ -1993,7 +1996,8 @@ describe('DataStore sync engine', () => {
 							externalClientMutation: async () =>
 								await externalPostUpdate(
 									original.id,
-									{ title: 'update from second client' },
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
 									1
 								),
 						});
@@ -2008,88 +2012,46 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
-							['post title 0', 1],
-							['post title 1', 1],
-							['post title 2', 1],
-							['post title 0', 5],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
+							['post title 0', 'update from second client', 5],
 						]);
 
-						expectFinalRecordsToMatch(original.id, 5, 'post title 0');
+						expectFinalRecordsToMatch(
+							original.id,
+							5,
+							'post title 0',
+							'update from second client'
+						);
 
 						await subscription.unsubscribe();
 					});
-					test('rapid mutations on poor connection when initial create is pending', async () => {
+					/**
+					 * All other multi-client tests begin with a `null` value to the field that is being
+					 * updated by the external client (`blogId`).
+					 * This is the only scenario where providing an inital value to `blogId` will result
+					 * in different behavior.
+					 */
+					test('rapid mutations on fast connection when initial create is not pending (second field has initial value)', async () => {
 						const numberOfUpdates = 3;
 						const subscriptionLog: SubscriptionLogMultiField[] = [];
 
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
+								blogId: 'original blogId',
 							})
 						);
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
-
-						graphqlService.setLatencies({
-							request: latency,
-							response: latency,
-							subscriber: latency,
-							jitter,
-						});
-
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									undefined
-								),
-						});
 
 						await waitForEmptyOutbox();
 
-						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
-
-						expect(subscriptionLog).toEqual([
-							['post title 0', undefined],
-							['post title 1', undefined],
-							['post title 2', undefined],
-							['post title 2', 1],
-						]);
-
-						expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-						await subscription.unsubscribe();
-					});
-					test('rapid mutations on fast connection when initial create is pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
-						const original = await DataStore.save(
-							new Post({
-								title: 'original title',
-								blogId: 'blog id',
-							})
-						);
-
 						const subscription = await DataStore.observe(Post).subscribe(
 							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
+								const response: SubscriptionLogMultiField = [
 									element.title,
+									// @ts-ignore
+									element.blogId,
 									// @ts-ignore
 									element._version,
 								];
@@ -2105,7 +2067,77 @@ describe('DataStore sync engine', () => {
 							externalClientMutation: async () =>
 								await externalPostUpdate(
 									original.id,
-									{ title: 'update from second client' },
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
+									1
+								),
+						});
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled(
+							graphqlService,
+							numberOfUpdates,
+							1,
+							'Post'
+						);
+
+						expect(subscriptionLog).toEqual([
+							['post title 0', 'original blogId', 1],
+							['post title 1', 'original blogId', 1],
+							['post title 2', 'original blogId', 1],
+							['post title 0', 'original blogId', 5],
+						]);
+
+						expectFinalRecordsToMatch(
+							original.id,
+							5,
+							'post title 0',
+							'original blogId'
+						);
+
+						await subscription.unsubscribe();
+					});
+					test('rapid mutations on poor connection when initial create is pending', async () => {
+						const numberOfUpdates = 3;
+						const subscriptionLog: SubscriptionLogMultiField[] = [];
+
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						const subscription = await DataStore.observe(Post).subscribe(
+							({ opType, element }) => {
+								const response: SubscriptionLogMultiField = [
+									element.title,
+									// @ts-ignore
+									element.blogId,
+									// @ts-ignore
+									element._version,
+								];
+								subscriptionLog.push(response);
+							}
+						);
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: false,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
+									original.id,
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
 									undefined
 								),
 						});
@@ -2115,13 +2147,65 @@ describe('DataStore sync engine', () => {
 						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 						expect(subscriptionLog).toEqual([
-							['post title 0', undefined],
-							['post title 1', undefined],
-							['post title 2', undefined],
-							['post title 2', 1],
+							['post title 0', null, undefined],
+							['post title 1', null, undefined],
+							['post title 2', null, undefined],
+							['post title 2', null, 1],
 						]);
 
-						expectFinalRecordsToMatch(original.id, 1, 'post title 2');
+						expectFinalRecordsToMatch(original.id, 1, 'post title 2', null);
+
+						await subscription.unsubscribe();
+					});
+					test('rapid mutations on fast connection when initial create is pending', async () => {
+						const numberOfUpdates = 3;
+						const subscriptionLog: SubscriptionLogMultiField[] = [];
+
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						const subscription = await DataStore.observe(Post).subscribe(
+							({ opType, element }) => {
+								const response: SubscriptionLogMultiField = [
+									element.title,
+									// @ts-ignore
+									element.blogId,
+									// @ts-ignore
+									element._version,
+								];
+								subscriptionLog.push(response);
+							}
+						);
+
+						performConsecutiveUpdates({
+							originalId: original.id,
+							numberOfUpdates,
+							waitOnOutbox: false,
+							pauseBeforeMutation: true,
+							externalClientMutation: async () =>
+								await externalPostUpdate(
+									original.id,
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
+									undefined
+								),
+						});
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
+
+						expect(subscriptionLog).toEqual([
+							['post title 0', null, undefined],
+							['post title 1', null, undefined],
+							['post title 2', null, undefined],
+							['post title 2', null, 1],
+						]);
+
+						expectFinalRecordsToMatch(original.id, 1, 'post title 2', null);
 
 						await subscription.unsubscribe();
 					});
@@ -2132,7 +2216,6 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
 							})
 						);
 
@@ -2140,8 +2223,10 @@ describe('DataStore sync engine', () => {
 
 						const subscription = await DataStore.observe(Post).subscribe(
 							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
+								const response: SubscriptionLogMultiField = [
 									element.title,
+									// @ts-ignore
+									element.blogId,
 									// @ts-ignore
 									element._version,
 								];
@@ -2164,7 +2249,8 @@ describe('DataStore sync engine', () => {
 							externalClientMutation: async () =>
 								await externalPostUpdate(
 									original.id,
-									{ title: 'update from second client' },
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
 									3
 								),
 						});
@@ -2177,16 +2263,21 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
-							['post title 0', 1],
-							['post title 0', 2],
-							['post title 1', 2],
-							['post title 1', 3],
-							['update from second client', 4],
-							['post title 2', 4],
-							['post title 2', 5],
+							['post title 0', null, 1],
+							['post title 0', null, 2],
+							['post title 1', null, 2],
+							['post title 1', null, 3],
+							['post title 1', 'update from second client', 4],
+							['post title 2', 'update from second client', 4],
+							['post title 2', 'update from second client', 5],
 						]);
 
-						expectFinalRecordsToMatch(original.id, 5, 'post title 2');
+						expectFinalRecordsToMatch(
+							original.id,
+							5,
+							'post title 2',
+							'update from second client'
+						);
 
 						await subscription.unsubscribe();
 					});
@@ -2197,7 +2288,6 @@ describe('DataStore sync engine', () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
-								blogId: 'blog id',
 							})
 						);
 
@@ -2205,8 +2295,10 @@ describe('DataStore sync engine', () => {
 
 						const subscription = await DataStore.observe(Post).subscribe(
 							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
+								const response: SubscriptionLogMultiField = [
 									element.title,
+									// @ts-ignore
+									element.blogId,
 									// @ts-ignore
 									element._version,
 								];
@@ -2222,7 +2314,8 @@ describe('DataStore sync engine', () => {
 							externalClientMutation: async () =>
 								await externalPostUpdate(
 									original.id,
-									{ title: 'update from second client' },
+									// External client performs a mutation against a different field:
+									{ blogId: 'update from second client' },
 									3
 								),
 						});
@@ -2235,16 +2328,21 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
-							['post title 0', 1],
-							['post title 0', 2],
-							['post title 1', 2],
-							['post title 1', 3],
-							['update from second client', 4],
-							['post title 2', 4],
-							['post title 2', 5],
+							['post title 0', null, 1],
+							['post title 0', null, 2],
+							['post title 1', null, 2],
+							['post title 1', null, 3],
+							['post title 1', 'update from second client', 4],
+							['post title 2', 'update from second client', 4],
+							['post title 2', 'update from second client', 5],
 						]);
 
-						expectFinalRecordsToMatch(original.id, 5, 'post title 2');
+						expectFinalRecordsToMatch(
+							original.id,
+							5,
+							'post title 2',
+							'update from second client'
+						);
 
 						// Cleanup:
 						await subscription.unsubscribe();
