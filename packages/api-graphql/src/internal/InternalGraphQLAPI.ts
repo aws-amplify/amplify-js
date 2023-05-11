@@ -46,7 +46,7 @@ export const graphqlOperation = (
 /**
  * Export Cloud Logic APIs
  */
-export class InternalGraphQLAPIClass implements GraphQLAPIInterface {
+export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */

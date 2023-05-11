@@ -1,5 +1,5 @@
 import { Amplify } from '@aws-amplify/core';
-import { GraphQLAPIInterface, GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internal';
 import Observable from 'zen-observable-ts';
 
@@ -16,10 +16,7 @@ export const graphqlOperation = (
 /**
  * Export Cloud Logic APIs
  */
-export class GraphQLAPIClass
-	extends InternalGraphQLAPIClass
-	implements GraphQLAPIInterface
-{
+export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
