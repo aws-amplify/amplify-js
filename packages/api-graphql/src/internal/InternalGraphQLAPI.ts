@@ -10,8 +10,6 @@ import {
 } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
-	ApiAction,
-	Category,
 	ConsoleLogger as Logger,
 	Credentials,
 	CustomUserAgentDetails,
@@ -250,7 +248,8 @@ export class InternalGraphQLAPIClass {
 				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
-					initParams
+					initParams,
+					customUserAgentDetails
 				);
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
@@ -267,7 +266,8 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
-		initParams = {}
+		initParams = {},
+		customUserAgentDetails
 	): Promise<GraphQLResult<T>> {
 		this.createInstanceIfNotCreated();
 		const {
@@ -277,12 +277,6 @@ export class InternalGraphQLAPIClass {
 			graphql_endpoint: customGraphqlEndpoint,
 			graphql_endpoint_iam_region: customEndpointRegion,
 		} = this._options;
-
-		/* TODO: Send with actual API action */
-		const customUserAgentDetails: CustomUserAgentDetails = {
-			category: Category.API,
-			action: ApiAction.None,
-		};
 
 		const headers = {
 			...(!customGraphqlEndpoint &&
