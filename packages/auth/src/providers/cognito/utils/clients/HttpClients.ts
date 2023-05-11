@@ -14,6 +14,7 @@ import type {
 import { AuthError } from '../../../../errors/AuthError';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
+// TODO: Update the user-agent value
 const USER_AGENT = 'amplify test';
 
 export type ClientInputs =
