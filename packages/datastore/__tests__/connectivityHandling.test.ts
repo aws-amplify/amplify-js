@@ -1579,17 +1579,11 @@ describe('DataStore sync engine', () => {
 								['update from second client', 4],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual('update from second client');
-							expect(savedItem._version).toEqual(4);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual('update from second client');
-							//@ts-ignore
-							expect(queryResult._version).toEqual(4);
+							expectFinalRecordsToMatch(
+								original.id,
+								4,
+								'update from second client'
+							);
 
 							await subscription.unsubscribe();
 						});
@@ -1656,17 +1650,7 @@ describe('DataStore sync engine', () => {
 								['post title 0', 5],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual(`post title 0`);
-							expect(savedItem._version).toEqual(5);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual(`post title 0`);
-							//@ts-ignore
-							expect(queryResult?._version).toEqual(5);
+							expectFinalRecordsToMatch(original.id, 5, 'post title 0');
 
 							await subscription.unsubscribe();
 						});
@@ -1731,17 +1715,7 @@ describe('DataStore sync engine', () => {
 								['post title 2', 1],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual(`post title 2`);
-							expect(savedItem._version).toEqual(1);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual(`post title 2`);
-							//@ts-ignore
-							expect(queryResult?._version).toEqual(1);
+							expectFinalRecordsToMatch(original.id, 1, 'post title 2');
 
 							await subscription.unsubscribe();
 						});
@@ -1801,21 +1775,7 @@ describe('DataStore sync engine', () => {
 								['post title 2', 1],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							expect(savedItem._version).toEqual(1);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							//@ts-ignore
-							expect(queryResult?._version).toEqual(1);
+							expectFinalRecordsToMatch(original.id, 1, 'post title 2');
 
 							await subscription.unsubscribe();
 						});
@@ -1890,21 +1850,7 @@ describe('DataStore sync engine', () => {
 								['post title 2', 5],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							expect(savedItem._version).toEqual(5);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							//@ts-ignore
-							expect(queryResult?._version).toEqual(5);
+							expectFinalRecordsToMatch(original.id, 5, 'post title 2');
 
 							await subscription.unsubscribe();
 						});
@@ -1972,21 +1918,7 @@ describe('DataStore sync engine', () => {
 								['post title 2', 5],
 							]);
 
-							const table = graphqlService.tables.get('Post')!;
-							expect(table.size).toEqual(1);
-
-							const savedItem = table.get(JSON.stringify([original.id])) as any;
-							expect(savedItem.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							expect(savedItem._version).toEqual(5);
-
-							const queryResult = await DataStore.query(Post, original.id);
-							expect(queryResult?.title).toEqual(
-								`post title ${numberOfUpdates - 1}`
-							);
-							//@ts-ignore
-							expect(queryResult?._version).toEqual(5);
+							expectFinalRecordsToMatch(original.id, 5, 'post title 2');
 
 							// Cleanup:
 							await subscription.unsubscribe();
