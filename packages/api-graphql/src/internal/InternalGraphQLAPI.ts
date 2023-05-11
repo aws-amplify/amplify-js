@@ -26,7 +26,6 @@ import {
 	GraphQLOptions,
 	GraphQLResult,
 	GraphQLOperation,
-	GraphQLAPIInterface,
 } from '../types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
