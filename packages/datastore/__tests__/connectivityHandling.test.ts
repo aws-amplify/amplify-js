@@ -880,10 +880,10 @@ describe('DataStore sync engine', () => {
 		 * result in a change in the expected number of merges performed by the outbox.
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
-			// Tuple of updated title and version:
+			// Tuple of updated `title` and `_version`:
 			type SubscriptionLogTuple = [string, number];
 
-			// Tuple of updated title and version:
+			// updated `title`, `blogId`, and `_version`:
 			type SubscriptionLogMultiField = [string, string, number];
 
 			/**
@@ -932,7 +932,8 @@ describe('DataStore sync engine', () => {
 						authMode: undefined,
 						authToken: undefined,
 					},
-					true // we always ignore latency for external mutations
+					// For now we always ignore latency for external mutations. This could be a param if needed.
+					true
 				);
 			};
 
@@ -948,7 +949,7 @@ describe('DataStore sync engine', () => {
 				numberOfUpdates: number;
 				waitOnOutbox: boolean;
 				pauseBeforeMutation: boolean;
-				externalClientMutation?: any;
+				externalClientMutation?: Function;
 			};
 
 			/**
@@ -961,7 +962,7 @@ describe('DataStore sync engine', () => {
 				numberOfUpdates,
 				waitOnOutbox,
 				pauseBeforeMutation,
-				externalClientMutation = false,
+				externalClientMutation,
 			}: ConsecutiveUpdatesParams) => {
 				// Mutate the original record multiple times:
 				for (let number = 0; number < numberOfUpdates; number++) {
@@ -1003,8 +1004,7 @@ describe('DataStore sync engine', () => {
 						await waitForEmptyOutbox();
 					}
 
-					// External update is in the middle of current client updates, no latency
-					// Update is same field as primary client
+					// External update is in the middle of current client updates
 					if (externalClientMutation && number === 1)
 						await externalClientMutation();
 				}
