@@ -3,7 +3,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
+} from '@aws-amplify/core/internal-pinpoint-client';
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
 

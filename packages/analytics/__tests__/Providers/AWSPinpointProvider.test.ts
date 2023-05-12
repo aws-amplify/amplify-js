@@ -1,6 +1,8 @@
 import { Credentials, ClientDevice } from '@aws-amplify/core';
-import { putEvents } from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint/putEvents';
-import { updateEndpoint } from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint/updateEndpoint';
+import {
+	putEvents,
+	updateEndpoint,
+} from '@aws-amplify/core/internal-pinpoint-client';
 import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 
 const endpointConfigure = {
@@ -146,8 +148,7 @@ let reject = null;
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/putEvents');
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/updateEndpoint');
+jest.mock('@aws-amplify/core/internal-pinpoint-client');
 
 const mockPutEvents = putEvents as jest.Mock;
 const mockUpdateEndpoint = updateEndpoint as jest.Mock;

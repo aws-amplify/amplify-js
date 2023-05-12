@@ -5,6 +5,11 @@ module.exports = {
 		'^.+\\.(ts|tsx)$': 'ts-jest',
 	},
 	testMatch: ['**/__tests__/**/*.native.+(test|spec).[jt]s'],
+	// TODO: remove this after bumping to Jest 28+
+	moduleNameMapper: {
+		'^@aws-amplify/core/internal-pinpoint-client$':
+			'@aws-amplify/core/lib-esm/AWSClients/Pinpoint',
+	},
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 	testEnvironment: 'jsdom',
 	collectCoverageFrom: ['**/src/**/*.native.*'],
