@@ -18,7 +18,7 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint';
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 
 import {
 	AnalyticsProvider,
@@ -297,15 +297,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
 				logger.debug('record event success. ', data);
 				return handlers.resolve(data);
+			} else if (StatusCode && RETRYABLE_CODES.includes(StatusCode)) {
+				// TODO: v6 integrate retry to the service handler retryDecider
+				this._retry(params, handlers);
 			} else {
-				if (StatusCode && RETRYABLE_CODES.includes(StatusCode)) {
-					this._retry(params, handlers);
-				} else {
-					logger.error(
-						`Event ${eventId} is not accepted, the error is ${Message}`
-					);
-					return handlers.reject(data);
-				}
+				logger.error(
+					`Event ${eventId} is not accepted, the error is ${Message}`
+				);
+				return handlers.reject(data);
 			}
 		} catch (err) {
 			this._eventError(err);

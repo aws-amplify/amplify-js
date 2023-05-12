@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { putEvents } from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint/putEvents';
-import { updateEndpoint } from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint/updateEndpoint';
+import {
+	putEvents,
+	updateEndpoint,
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 
 import { AWSPinpointProviderCommon } from '../../../src/common';
 

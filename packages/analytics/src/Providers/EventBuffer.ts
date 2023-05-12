@@ -3,7 +3,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint';
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
 
@@ -170,6 +170,10 @@ export default class EventsBuffer {
 
 			Object.entries(responses).forEach(([eventId, eventValues]) => {
 				const eventObject = eventMap[eventId];
+				if (!eventObject) {
+					return;
+				}
+
 				const { StatusCode, Message } = eventValues ?? {};
 
 				// manually crafting handlers response to keep API consistant

@@ -15,7 +15,7 @@ import {
 	PutEventsInput,
 	updateEndpoint,
 	UpdateEndpointInput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint';
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 import { v4 as uuid } from 'uuid';
 
 import {

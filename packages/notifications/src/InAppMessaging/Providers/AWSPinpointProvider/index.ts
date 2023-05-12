@@ -6,7 +6,7 @@ import {
 	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint';
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import SessionTracker, {
