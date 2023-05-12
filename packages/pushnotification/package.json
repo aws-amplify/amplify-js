@@ -76,6 +76,10 @@
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleNameMapper": {
+			"^@aws-amplify/core/internal-pinpoint-client$":
+				"@aws-amplify/core/lib-esm/AWSClients/Pinpoint"
+		},
     "moduleFileExtensions": [
       "ts",
       "tsx",
