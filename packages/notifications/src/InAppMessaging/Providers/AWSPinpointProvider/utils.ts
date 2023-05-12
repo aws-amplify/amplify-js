@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-import {
-	InAppMessageCampaign as PinpointInAppMessage,
-	Layout as PinpointInAppMessageLayout,
-} from '@aws-sdk/client-pinpoint';
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import { AMPLIFY_SYMBOL } from '../../../common';
 import {
@@ -218,11 +215,11 @@ export const clearMemo = () => {
 export const interpretLayout = (
 	layout: PinpointInAppMessage['InAppMessage']['Layout']
 ): InAppMessageLayout => {
-	if (layout === PinpointInAppMessageLayout.MOBILE_FEED) {
+	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
 	}
 
-	if (layout === PinpointInAppMessageLayout.OVERLAYS) {
+	if (layout === 'OVERLAYS') {
 		return 'FULL_SCREEN';
 	}
 

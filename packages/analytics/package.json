@@ -53,24 +53,26 @@
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",
-		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
 		"tslib": "^1.8.0",
 		"uuid": "^3.2.1"
+	},
+	"devDependencies": {
+		"@aws-sdk/client-pinpoint": "3.186.1"
 	},
 	"size-limit": [
 		{
 			"name": "Analytics (Pinpoint)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSPinpointProvider }",
-			"limit": "54.7 kB"
+			"limit": "29.45 kB"
 		},
 		{
 			"name": "Analytics (Kinesis)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "68.5 kB"
+			"limit": "57.91 kB"
 		}
 	],
 	"jest": {

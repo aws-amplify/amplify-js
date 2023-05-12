@@ -5,19 +5,17 @@ import {
 	ClientDevice,
 	ConsoleLogger,
 	Credentials,
-	getAmplifyUserAgent,
 	StorageHelper,
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import { Cache } from '@aws-amplify/cache';
+import type { Event as AWSPinpointAnalyticsEvent } from '@aws-sdk/client-pinpoint';
 import {
-	Event as AWSPinpointAnalyticsEvent,
-	UpdateEndpointCommand,
-	UpdateEndpointCommandInput,
-	PinpointClient,
-	PutEventsCommand,
-	PutEventsCommandInput,
-} from '@aws-sdk/client-pinpoint';
+	putEvents,
+	PutEventsInput,
+	updateEndpoint,
+	UpdateEndpointInput,
+} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
 import { v4 as uuid } from 'uuid';
 
 import {
@@ -107,23 +105,15 @@ export default abstract class AWSPinpointProviderCommon
 	protected recordAnalyticsEvent = async (
 		event: AWSPinpointAnalyticsEvent
 	): Promise<void> => {
-		const { appId, credentials, endpointId, pinpointClient } = this.config;
-		const currentCredentials = await this.getCredentials();
-		// Shallow compare to determine if credentials stored here are outdated
-		const credentialsUpdated =
-			!credentials ||
-			Object.keys(currentCredentials).some(
-				key => currentCredentials[key] !== credentials[key]
-			);
 		// Update credentials
-		this.config.credentials = currentCredentials;
+		this.config.credentials = await this.getCredentials();
+		// Assert required configuration properties to make `putEvents` request are present
+		this.assertValidConfiguration();
+		const { appId, credentials, endpointId, region } = this.config;
+
 		try {
-			// Initialize a new pinpoint client if one isn't already configured or if credentials changed
-			if (!pinpointClient || credentialsUpdated) {
-				await this.initPinpointClient();
-			}
 			// Create the PutEvents input
-			const input: PutEventsCommandInput = {
+			const input: PutEventsInput = {
 				ApplicationId: appId,
 				EventsRequest: {
 					BatchItem: {
@@ -136,9 +126,8 @@ export default abstract class AWSPinpointProviderCommon
 					},
 				},
 			};
-			const command: PutEventsCommand = new PutEventsCommand(input);
 			this.logger.debug('recording analytics event');
-			await this.config.pinpointClient.send(command);
+			await putEvents({ credentials, region }, input);
 		} catch (err) {
 			this.logger.error('Error recording analytics event', err);
 			throw err;
@@ -149,19 +138,12 @@ export default abstract class AWSPinpointProviderCommon
 		userId: string = null,
 		userInfo: AWSPinpointUserInfo = null
 	): Promise<void> => {
-		const {
-			appId,
-			credentials,
-			endpointId,
-			endpointInfo = {},
-			pinpointClient,
-		} = this.config;
-		const currentCredentials = await this.getCredentials();
+		const credentials = await this.getCredentials();
 		// Shallow compare to determine if credentials stored here are outdated
 		const credentialsUpdated =
-			!credentials ||
-			Object.keys(currentCredentials).some(
-				key => currentCredentials[key] !== credentials[key]
+			!this.config.credentials ||
+			Object.keys(credentials).some(
+				key => credentials[key] !== this.config.credentials[key]
 			);
 		// If endpoint is already initialized, and nothing else is changing, just early return
 		if (
@@ -173,18 +155,17 @@ export default abstract class AWSPinpointProviderCommon
 			return;
 		}
 		// Update credentials
-		this.config.credentials = currentCredentials;
+		this.config.credentials = credentials;
+		// Assert required configuration properties to make `updateEndpoint` request are present
+		this.assertValidConfiguration();
+		const { appId, endpointId, endpointInfo = {}, region } = this.config;
 		try {
-			// Initialize a new pinpoint client if one isn't already configured or if credentials changed
-			if (!pinpointClient || credentialsUpdated) {
-				this.initPinpointClient();
-			}
 			const { address, attributes, demographic, location, metrics, optOut } =
 				userInfo ?? {};
 			const { appVersion, make, model, platform, version } = this.clientInfo;
 			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
 			// defaults (if any) obtained from the config
-			const input: UpdateEndpointCommandInput = {
+			const input: UpdateEndpointInput = {
 				ApplicationId: appId,
 				EndpointId: endpointId,
 				EndpointRequest: {
@@ -217,39 +198,17 @@ export default abstract class AWSPinpointProviderCommon
 					},
 					OptOut: optOut ?? endpointInfo.optOut,
 					User: {
-						UserId:
-							userId ?? endpointInfo.userId ?? currentCredentials.identityId,
+						UserId: userId ?? endpointInfo.userId ?? credentials.identityId,
 						UserAttributes: attributes ?? endpointInfo.userAttributes,
 					},
 				},
 			};
-			const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
 			this.logger.debug('updating endpoint');
-			await this.config.pinpointClient.send(command);
+			await updateEndpoint({ credentials, region }, input);
 			this.endpointInitialized = true;
 		} catch (err) {
 			throw err;
 		}
-	};
-
-	private initPinpointClient = (): void => {
-		const { appId, credentials, pinpointClient, region } = this.config;
-
-		if (!appId || !credentials || !region) {
-			throw new Error(
-				'One or more of credentials, appId or region is not configured'
-			);
-		}
-
-		if (pinpointClient) {
-			pinpointClient.destroy();
-		}
-
-		this.config.pinpointClient = new PinpointClient({
-			region,
-			credentials,
-			customUserAgent: getAmplifyUserAgent(`/${this.getSubCategory()}`),
-		});
 	};
 
 	private getEndpointId = async (): Promise<string> => {
@@ -290,6 +249,15 @@ export default abstract class AWSPinpointProviderCommon
 		} catch (err) {
 			this.logger.error('Error getting credentials:', err);
 			return null;
+		}
+	};
+
+	private assertValidConfiguration = () => {
+		const { appId, credentials, region } = this.config;
+		if (!appId || !credentials || !region) {
+			throw new Error(
+				'One or more of credentials, appId or region is not configured'
+			);
 		}
 	};
 }

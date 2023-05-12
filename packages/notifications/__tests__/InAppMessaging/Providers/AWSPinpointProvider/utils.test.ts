@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
 import cloneDeep from 'lodash/cloneDeep';
 
