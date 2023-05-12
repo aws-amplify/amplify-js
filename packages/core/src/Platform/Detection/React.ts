@@ -1,9 +1,10 @@
-import { packageExists } from './helpers';
+import { documentExists, packageExists, windowExists } from './helpers';
 
 export function reactWebDetect() {
 	const reactDevTools = () =>
-		typeof window !== 'undefined' && window['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
-	const reactRootElement = () => document.getElementById('react-root');
+		windowExists() && window['__REACT_DEVTOOLS_GLOBAL_HOOK__'];
+	const reactRootElement = () =>
+		documentExists() && document.getElementById('react-root');
 	return reactDevTools() || reactRootElement();
 }
 

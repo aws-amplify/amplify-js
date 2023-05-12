@@ -7,6 +7,7 @@ import { detectionMap } from './Detection';
 // We want to cache detection since the framework won't change
 let frameworkCache: Framework;
 
+// TODO on client - maybe caching always won't work because the js hasn't hydrated dom or filled in globals yet.
 export const detectFramework = (): Framework => {
 	if (!frameworkCache) {
 		frameworkCache =

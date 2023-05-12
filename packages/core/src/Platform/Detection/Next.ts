@@ -1,7 +1,7 @@
-import { globalExists, keyPrefixMatch } from './helpers';
+import { globalExists, keyPrefixMatch, windowExists } from './helpers';
 
 export function nextWebDetect() {
-	return window && window['next'] && typeof window['next'] === 'object';
+	return windowExists() && window['next'] && typeof window['next'] === 'object';
 }
 
 export function nextSSRDetect() {

@@ -11,7 +11,7 @@ export const documentExists = () => {
 };
 
 export const processExists = () => {
-	return typeof global !== 'undefined';
+	return typeof process !== 'undefined';
 };
 
 export const keyPrefixMatch = (object, key) => {
