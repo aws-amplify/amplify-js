@@ -92,6 +92,9 @@
       "json",
       "jsx"
     ],
+		"moduleNameMapper": {
+			"^@aws-amplify/core/internal-pinpoint-client": "@aws-amplify/core/lib-esm/AWSClients/Pinpoint"
+		},
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/",
     "coverageThreshold": {

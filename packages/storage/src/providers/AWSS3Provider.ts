@@ -8,6 +8,7 @@ import {
 	Hub,
 	parseAWSExports,
 } from '@aws-amplify/core';
+import { updateEndpoint } from '@aws-amplify/core/internal-pinpoint-client';
 import {
 	S3Client,
 	GetObjectCommand,
@@ -95,6 +96,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {Object} config - Configuration object for storage
 	 */
 	constructor(config?: StorageOptions) {
+		console.log('HEY PinPoint', updateEndpoint);
 		this._config = config ? config : {};
 		this._storage = new StorageHelper().getStorage();
 		Hub.listen('auth', data => {
