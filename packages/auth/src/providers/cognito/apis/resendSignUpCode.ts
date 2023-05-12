@@ -34,7 +34,7 @@ export async function resendSignUpCode(
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
 	const config = Amplify.config;
-	const res: ResendConfirmationCodeCommandOutput =
+	const { CodeDeliveryDetails }: ResendConfirmationCodeCommandOutput =
 		await resendSignUpConfirmationCodeClient({
 			Username: username,
 			ClientMetadata:
@@ -42,7 +42,7 @@ export async function resendSignUpCode(
 				config.clientMetadata,
 		});
 	const { DeliveryMedium, AttributeName, Destination } = {
-		...res.CodeDeliveryDetails,
+		...CodeDeliveryDetails,
 	};
 	return {
 		destination: Destination as string,
