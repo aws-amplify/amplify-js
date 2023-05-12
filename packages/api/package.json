@@ -116,6 +116,9 @@
 			"json",
 			"jsx"
 		],
+		"moduleNameMapper": {
+			"@aws-amplify/api-graphql/internal": "@aws-amplify/api-graphql/lib-esm/internal/index.js"
+		},
 		"testEnvironment": "jsdom",
 		"testURL": "http://localhost/",
 		"coverageThreshold": {
