@@ -588,6 +588,13 @@ jobs:
           spec: auth-ssr
           browser: << parameters.browser >>
       - integ_test_js:
+          test_name: 'Authenticator and RSC page'
+          framework: next
+          category: auth
+          sample_name: auth-rsc
+          spec: auth-rsc
+          browser: << parameters.browser >>
+      - integ_test_js:
           test_name: 'NextJS Auth Custom Implementation with SSR'
           framework: next
           category: auth
