@@ -457,12 +457,19 @@ export async function waitForSyncQueriesReady(verbose = false) {
  * @param externalNumberOfUpdates - the number of external updates we expect to receive
  * @param modelName - the name of the model we are updating
  */
-export async function graphqlServiceSettled(
-	graphqlService: FakeGraphQLService,
-	expectedNumberOfUpdates: number,
-	externalNumberOfUpdates: number,
-	modelName: String
-) {
+type GraphQLServiceSettledParams = {
+	graphqlService: any;
+	expectedNumberOfUpdates: number;
+	externalNumberOfUpdates: number;
+	modelName: string;
+};
+
+export async function graphqlServiceSettled({
+	graphqlService,
+	expectedNumberOfUpdates,
+	externalNumberOfUpdates,
+	modelName,
+}: GraphQLServiceSettledParams) {
 	/**
 	 * Note: Even though we've marked running mutations / subscriptions as complete
 	 * in the service, it still takes a moment to receive the updates.
