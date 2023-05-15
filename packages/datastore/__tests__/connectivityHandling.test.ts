@@ -878,6 +878,30 @@ describe('DataStore sync engine', () => {
 		 *     3) The record's final version number has changed
 		 * make sure you haven't adjusted the artifical latency or `pause` values, as this will
 		 * result in a change in the expected number of merges performed by the outbox.
+		 *
+		 * TODO: explain why we don't loop, and why we don't use a helper util for consecutive updates
+		 *
+		 * About consecutive updates:
+		 *
+		 * When we want to test a scenario where the outbox does not
+		 * necessarily merge all outgoing requests (for instance, when
+		 * we do not add artifical latency to the connection), we make
+		 * the mutations rapidly in this loop. However, because of how
+		 * rapidly this loop executes, we are creating an artifical situation
+		 * where mutations will always be merged. Setting `pauseBeforeMutation`
+		 * to `true` will adding a semi-realistic pause ("button clicks")
+		 * between updates.
+		 * Not required when awaiting the outbox after each mutation.
+		 * Additionally not required if we are intentionally testing
+		 * rapid updates, such as when the initial save is still pending.
+		 *
+		 * When we want to test a scenario where the user is waiting for a long
+		 * period of time between each mutation (non-concurrent updates), we wait
+		 * for an empty outbox after each mutation. This ensures each mutation
+		 * completes a full cycle before the next mutation begins. This guarantees
+		 * that there will NEVER be concurrent updates being processed by the outbox.
+		 * For use with variable latencies.
+		 *
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			// Tuple of updated `title` and `_version`:
@@ -954,61 +978,19 @@ describe('DataStore sync engine', () => {
 			};
 
 			/**
-			 * Helper function to perform consecutive updates on a record given it's `id`.
-			 * As explained in detail below, config options are important here, as they will affect
-			 * whether or not the outbox will merge updates.
+			 * Retrieve post, then update
+			 * @param postId - id of the post to update
+			 * @param updatedTitle - title to update the post with
 			 */
-			const performConsecutiveUpdates = async ({
-				originalId,
-				numberOfUpdates,
-				waitOnOutbox,
-				pauseBeforeMutation,
-				externalClientMutation,
-			}: ConsecutiveUpdatesParams) => {
-				// Mutate the original record multiple times:
-				for (let number = 0; number < numberOfUpdates; number++) {
-					/**
-					 * When we want to test a scenario where the outbox does not
-					 * necessarily merge all outgoing requests (for instance, when
-					 * we do not add artifical latency to the connection), we make
-					 * the mutations rapidly in this loop. However, because of how
-					 * rapidly this loop executes, we are creating an artifical situation
-					 * where mutations will always be merged. Setting `pauseBeforeMutation`
-					 * to `true` will adding a semi-realistic pause ("button clicks")
-					 * between updates.
-					 * Not required when awaiting the outbox after each mutation.
-					 * Additionally not required if we are intentionally testing
-					 * rapid updates, such as when the initial save is still pending.
-					 */
-					if (pauseBeforeMutation) {
-						await pause(200);
-					}
+			const revPost = async (postId: string, updatedTitle: string) => {
+				const retrieved = await DataStore.query(Post, postId);
 
-					const retrieved = await DataStore.query(Post, originalId);
-
-					await DataStore.save(
-						// @ts-ignore
-						Post.copyOf(retrieved, updated => {
-							updated.title = `post title ${number}`;
-						})
-					);
-
-					/**
-					 * When we want to test a scenario where the user is waiting for a long
-					 * period of time between each mutation (non-concurrent updates), we wait
-					 * for an empty outbox after each mutation. This ensures each mutation
-					 * completes a full cycle before the next mutation begins. This guarantees
-					 * that there will NEVER be concurrent updates being processed by the outbox.
-					 * For use with variable latencies.
-					 */
-					if (waitOnOutbox) {
-						await waitForEmptyOutbox();
-					}
-
-					// External update is in the middle of current client updates
-					if (externalClientMutation && number === 1)
-						await externalClientMutation();
-				}
+				await DataStore.save(
+					// @ts-ignore
+					Post.copyOf(retrieved, updated => {
+						updated.title = updatedTitle;
+					})
+				);
 			};
 
 			/**
@@ -1097,12 +1079,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await revPost(original.id, 'post title 1');
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1174,12 +1156,17 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: true,
-					});
+
+					//region perform consecutive updates
+					await pause(200);
+					await revPost(original.id, 'post title 0');
+
+					await pause(200);
+					await revPost(original.id, 'post title 1');
+
+					await pause(200);
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1260,12 +1247,12 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: false, // no pause here, unlike other tests! because we want to test when save is pending.
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await revPost(original.id, 'post title 1');
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1324,12 +1311,17 @@ describe('DataStore sync engine', () => {
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: false,
-						pauseBeforeMutation: true,
-					});
+
+					//region perform consecutive updates
+					await pause(200);
+					await revPost(original.id, 'post title 0');
+
+					await pause(200);
+					await revPost(original.id, 'post title 1');
+
+					await pause(200);
+					await revPost(original.id, 'post title 2');
+					//endregion
 
 					// Now we wait for the outbox to do what it needs to do:
 					await waitForEmptyOutbox();
@@ -1406,12 +1398,17 @@ describe('DataStore sync engine', () => {
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: true,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 1');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 2');
+					await waitForEmptyOutbox();
+					//endregion
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1481,12 +1478,17 @@ describe('DataStore sync engine', () => {
 					 * we want to test non-concurrent updates (i.e. we want to make
 					 * sure all the updates are going out and are being observed)
 					 */
-					await performConsecutiveUpdates({
-						originalId: original.id,
-						numberOfUpdates,
-						waitOnOutbox: true,
-						pauseBeforeMutation: false,
-					});
+
+					//region perform consecutive updates
+					await revPost(original.id, 'post title 0');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 1');
+					await waitForEmptyOutbox();
+
+					await revPost(original.id, 'post title 2');
+					await waitForEmptyOutbox();
+					//endregion
 
 					/**
 					 * Even though we have increased the latency, we are still waiting
@@ -1558,18 +1560,19 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									1
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							1
+						);
+
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -1621,18 +1624,21 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: true,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									1
-								),
-						});
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							1
+						);
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -1683,18 +1689,16 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									undefined
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							undefined
+						);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -1733,18 +1737,22 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: true,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									undefined
-								),
-						});
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							undefined
+						);
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -1792,18 +1800,22 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: true,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									3
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							3
+						);
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
 
 						await graphqlServiceSettled(
 							graphqlService,
@@ -1850,18 +1862,22 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: true,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									{ title: 'update from second client' },
-									3
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate(
+							original.id,
+							{ title: 'update from second client' },
+							3
+						);
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
 
 						await graphqlServiceSettled(
 							graphqlService,
@@ -1919,19 +1935,17 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									1
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							1
+						);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -1990,19 +2004,22 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: true,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									1
-								),
-						});
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							1
+						);
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -2061,19 +2078,22 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: true,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									1
-								),
-						});
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							1
+						);
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -2130,19 +2150,17 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									undefined
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await revPost(original.id, 'post title 1');
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							undefined
+						);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -2182,19 +2200,23 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: false,
-							pauseBeforeMutation: true,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									undefined
-								),
-						});
+						//region perform consecutive updates
+						await pause(200);
+						await revPost(original.id, 'post title 0');
+
+						await pause(200);
+						await revPost(original.id, 'post title 1');
+
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							undefined
+						);
+
+						await pause(200);
+						await revPost(original.id, 'post title 2');
+						//endregion
 
 						await waitForEmptyOutbox();
 
@@ -2243,19 +2265,23 @@ describe('DataStore sync engine', () => {
 							jitter,
 						});
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: true,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									3
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							undefined
+						);
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
 
 						await graphqlServiceSettled(
 							graphqlService,
@@ -2308,19 +2334,23 @@ describe('DataStore sync engine', () => {
 							}
 						);
 
-						performConsecutiveUpdates({
-							originalId: original.id,
-							numberOfUpdates,
-							waitOnOutbox: true,
-							pauseBeforeMutation: false,
-							externalClientMutation: async () =>
-								await externalPostUpdate(
-									original.id,
-									// External client performs a mutation against a different field:
-									{ blogId: 'update from second client' },
-									3
-								),
-						});
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+						await waitForEmptyOutbox();
+
+						await revPost(original.id, 'post title 1');
+						await waitForEmptyOutbox();
+
+						await externalPostUpdate(
+							original.id,
+							// External client performs a mutation against a different field:
+							{ blogId: 'update from second client' },
+							3
+						);
+
+						await revPost(original.id, 'post title 2');
+						await waitForEmptyOutbox();
+						//endregion
 
 						await graphqlServiceSettled(
 							graphqlService,
