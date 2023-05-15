@@ -1507,8 +1507,8 @@ describe('DataStore sync engine', () => {
 
 						await graphqlServiceSettled({
 							graphqlService,
-							expectedNumberOfUpdates,
-							externalNumberOfUpdates: 0,
+							expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
+							externalNumberOfUpdates: 1,
 							modelName: 'Post',
 						});
 
@@ -1746,8 +1746,8 @@ describe('DataStore sync engine', () => {
 
 						await graphqlServiceSettled({
 							graphqlService,
-							expectedNumberOfUpdates,
-							externalNumberOfUpdates: 0,
+							expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
+							externalNumberOfUpdates: 1,
 							modelName: 'Post',
 						});
 
