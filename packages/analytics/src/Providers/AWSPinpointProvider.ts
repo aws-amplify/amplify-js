@@ -18,7 +18,7 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import {
 	AnalyticsProvider,

@@ -3,7 +3,7 @@ import {
 	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { EventBuffer, EventObject, EventMap } from '../types';
 import { isAppInForeground } from '../utils/AppUtils';
 

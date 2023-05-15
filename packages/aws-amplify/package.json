@@ -77,9 +77,6 @@
     "testMatch": [
       "**/__tests__/**/*-test.[jt]s?(x)"
     ],
-		"moduleNameMapper": {
-			"^@aws-amplify/core/internal-pinpoint-client$": "@aws-amplify/core/lib-esm/AWSClients/Pinpoint"
-		},
     "moduleFileExtensions": [
       "ts",
       "tsx",

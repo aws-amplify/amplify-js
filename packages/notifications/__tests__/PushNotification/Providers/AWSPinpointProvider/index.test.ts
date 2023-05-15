@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { updateEndpoint } from '@aws-amplify/core/internal-pinpoint-client';
+import { updateEndpoint } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
 import { Platform } from '../../../../src/PushNotification/Platform';
@@ -24,7 +24,7 @@ import {
 import { mockStorage } from '../../../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/internal-pinpoint-client');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/PushNotification/Platform');
 jest.mock(

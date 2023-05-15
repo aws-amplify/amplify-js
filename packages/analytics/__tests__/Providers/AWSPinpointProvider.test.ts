@@ -2,7 +2,7 @@ import { Credentials, ClientDevice } from '@aws-amplify/core';
 import {
 	putEvents,
 	updateEndpoint,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { AWSPinpointProvider as AnalyticsProvider } from '../../src/Providers/AWSPinpointProvider';
 
 const endpointConfigure = {
@@ -148,7 +148,7 @@ let reject = null;
 jest.mock('uuid', () => {
 	return { v1: () => 'uuid' };
 });
-jest.mock('@aws-amplify/core/internal-pinpoint-client');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 
 const mockPutEvents = putEvents as jest.Mock;
 const mockUpdateEndpoint = updateEndpoint as jest.Mock;

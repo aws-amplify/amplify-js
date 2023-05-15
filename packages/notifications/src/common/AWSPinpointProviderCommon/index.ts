@@ -15,7 +15,7 @@ import {
 	PutEventsInput,
 	updateEndpoint,
 	UpdateEndpointInput,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { v4 as uuid } from 'uuid';
 
 import {

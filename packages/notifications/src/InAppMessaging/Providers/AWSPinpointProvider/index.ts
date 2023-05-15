@@ -6,7 +6,7 @@ import {
 	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { addEventListener, AWSPinpointProviderCommon } from '../../../common';
 import SessionTracker, {

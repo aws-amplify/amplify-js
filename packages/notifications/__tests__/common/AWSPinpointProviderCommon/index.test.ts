@@ -5,7 +5,7 @@ import { Credentials, StorageHelper } from '@aws-amplify/core';
 import {
 	putEvents,
 	updateEndpoint,
-} from '@aws-amplify/core/internal-pinpoint-client';
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { AWSPinpointProviderCommon } from '../../../src/common';
 
@@ -20,7 +20,7 @@ import { mockLogger, mockStorage } from '../../../__mocks__/mocks';
 import { NotificationsSubCategory } from '../../../src/types';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/internal-pinpoint-client');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../src/common/eventListeners');
 
 const SUB_CATEGORY = 'SubCategory';
