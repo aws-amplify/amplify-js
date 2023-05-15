@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthResetPasswordStep } from "../../../../src/types";
+import {
+	AuthResetPasswordStep,
+	AuthSignInResult,
+	AuthSignInStep,
+} from '../../../../src/types';
 
 export const authAPITestParams = {
 	user1: {
@@ -16,46 +20,46 @@ export const authAPITestParams = {
 			AttributeName: 'email',
 			DeliveryMedium: 'EMAIL',
 			Destination: 'test1@test.com',
-		}
+		},
 	},
 	resetPasswordRequest: {
-		username: 'username'
+		username: 'username',
 	},
 	resetPasswordResult: {
 		isPasswordReset: false,
-			nextStep: {
-				resetPasswordStep: AuthResetPasswordStep.CONFIRM_RESET_PASSWORD_WITH_CODE,
-				codeDeliveryDetails: {
-					destination: 'test@email.com',
-					deliveryMedium: 'EMAIL',
-					attributeName: 'email'
-				}
-			}
+		nextStep: {
+			resetPasswordStep: AuthResetPasswordStep.CONFIRM_RESET_PASSWORD_WITH_CODE,
+			codeDeliveryDetails: {
+				destination: 'test@email.com',
+				deliveryMedium: 'EMAIL',
+				attributeName: 'email',
+			},
+		},
 	},
 	resetPasswordHttpCallResult: {
 		CodeDeliveryDetails: {
 			AttributeName: 'email',
 			DeliveryMedium: 'EMAIL',
-			Destination: 'test@email.com'
-		}
+			Destination: 'test@email.com',
+		},
 	},
 	resetPasswordRequestWithClientMetadata: {
 		username: 'username',
 		options: {
 			serviceOptions: {
-				clientMetadata: { foo: 'bar' }
-			}
-		}
+				clientMetadata: { foo: 'bar' },
+			},
+		},
 	},
 	forgotPasswordCommandWithClientMetadata: {
 		Username: 'username',
-		ClientMetadata: {foo: 'bar'}
+		ClientMetadata: { foo: 'bar' },
 	},
 	configWithClientMetadata: {
-		clientMetadata: {foo: 'bar'}
+		clientMetadata: { foo: 'bar' },
 	},
 	confirmResetPasswordHttpCallResult: {
-		$metadata: {}
+		$metadata: {},
 	},
 	confirmResetPasswordRequestWithClientMetadata: {
 		username: 'username',
@@ -63,19 +67,49 @@ export const authAPITestParams = {
 		confirmationCode: 'code',
 		options: {
 			serviceOptions: {
-				clientMetadata: { foo: 'bar' }
-			}
-		}
+				clientMetadata: { foo: 'bar' },
+			},
+		},
 	},
 	confirmForgotPasswordCommandWithClientMetadata: {
 		Username: 'username',
 		Password: 'password',
 		ConfirmationCode: 'code',
-		ClientMetadata: {foo: 'bar'}
+		ClientMetadata: { foo: 'bar' },
 	},
 	confirmResetPasswordRequest: {
 		username: 'username',
 		newPassword: 'password',
-		confirmationCode: 'code'
+		confirmationCode: 'code',
+	},
+	InitiateAuthCommandOutput: {
+		ChallengeName: 'PASSWORD_VERIFIER',
+		ChallengeParameters: {
+			USER_ID_FOR_SRP: '1111112222233333',
+			SECRET_BLOCK: 'zzzzxxxxvvvv',
+		},
+		AuthenticationResult: undefined,
+		Session: 'aaabbbcccddd',
+		$metadata: {},
+	},
+	RespondToAuthChallengeCommandOutput: {
+		ChallengeName: undefined,
+		ChallengeParameters: {},
+		AuthenticationResult: {
+			AccessToken: 'axxcasfsfsadfqwersdf',
+			ExpiresIn: 1000,
+			IdToken: 'sfsfasqwerqwrsfsfsfd',
+			RefreshToken: 'qwersfsafsfssfasf',
+		},
+		Session: 'aaabbbcccddd',
+		$metadata: {},
+	},
+	signInResult: (): AuthSignInResult => {
+		return {
+			isSignedIn: true,
+			nextStep: {
+				signInStep: AuthSignInStep.DONE,
+			},
+		};
 	},
 };
