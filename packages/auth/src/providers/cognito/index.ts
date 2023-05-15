@@ -9,6 +9,8 @@ export { ClientMetadata } from './types/models/ClientMetadata';
 export { CognitoUserAttributeKey } from './types/models/CognitoUserAttributeKey';
 export { CustomAttribute } from './types/models/CustomAttribute';
 export { ValidationData } from './types/models/ValidationData';
+export { AuthFlowType } from './types/models/AuthFlowType';
 export { CognitoConfirmResetPasswordOptions } from './types/options/CognitoConfirmResetPasswordOptions';
 export { CognitoSignUpOptions } from './types/options/CognitoSignUpOptions';
 export { CognitoResetPasswordOptions } from './types/options/CognitoResetPasswordOptions';
+export { CognitoSignInOptions } from './types/options/CognitoSignInOptions';
