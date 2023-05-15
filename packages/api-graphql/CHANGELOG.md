@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@3.1.19...@aws-amplify/api-graphql@3.2.0) (2023-05-12)
+
+### Features
+
+- **core:** refactor signer implementation to remove polyfill ([#11319](https://github.com/aws-amplify/amplify-js/issues/11319)) ([1603af3](https://github.com/aws-amplify/amplify-js/commit/1603af38ea7faa163f7fcb92fd09c056454c8a0a)), closes [#11273](https://github.com/aws-amplify/amplify-js/issues/11273) [#11307](https://github.com/aws-amplify/amplify-js/issues/11307) [#11310](https://github.com/aws-amplify/amplify-js/issues/11310) [#11120](https://github.com/aws-amplify/amplify-js/issues/11120) [#11320](https://github.com/aws-amplify/amplify-js/issues/11320)
+
+## [3.1.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@3.1.18...@aws-amplify/api-graphql@3.1.19) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## [3.1.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@3.1.17...@aws-amplify/api-graphql@3.1.18) (2023-04-27)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

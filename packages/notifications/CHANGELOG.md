@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.5...@aws-amplify/notifications@1.1.6) (2023-05-12)
+
+### Bug Fixes
+
+- **core:** add URL polyfill for signer in react native ([#11362](https://github.com/aws-amplify/amplify-js/issues/11362)) ([720ac60](https://github.com/aws-amplify/amplify-js/commit/720ac606dede7d243f3d5ce08395fc6387a6f35d))
+
+## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.4...@aws-amplify/notifications@1.1.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.1.3...@aws-amplify/notifications@1.1.4) (2023-04-27)
 
 **Note:** Version bump only for package @aws-amplify/notifications

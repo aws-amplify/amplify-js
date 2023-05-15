@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
-  "version": "3.0.30",
+  "version": "3.1.0",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -46,7 +46,7 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/core": "5.1.13",
+    "@aws-amplify/core": "5.3.0",
     "axios": "0.26.0",
     "tslib": "^1.8.0"
   },
@@ -55,7 +55,7 @@
       "name": "API (rest client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, RestAPI }",
-      "limit": "47.5 kB"
+      "limit": "47.9 kB"
     }
   ],
   "jest": {

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.1...@aws-amplify/datastore@4.3.0) (2023-05-12)
+
+### Features
+
+- **data:** refactor single-client consecutive update unit tests; fake GraphQL service updates ([#11349](https://github.com/aws-amplify/amplify-js/issues/11349)) ([1b3a4bb](https://github.com/aws-amplify/amplify-js/commit/1b3a4bb9739e2db6e08e73d95c2233a092c6edc3))
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.0...@aws-amplify/datastore@4.2.1) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 # [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.11...@aws-amplify/datastore@4.2.0) (2023-04-27)
 
 ### Bug Fixes

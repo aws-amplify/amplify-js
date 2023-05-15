@@ -1,8 +1,8 @@
 import { Observable } from 'zen-observable-ts';
-import { parse } from 'graphql';
 import {
 	pause,
 	getDataStore,
+	graphqlServiceSettled,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,
@@ -10,7 +10,7 @@ import {
 	unwarpTime,
 } from './helpers';
 import { Predicates } from '../src/predicates';
-import { syncExpression, SyncError } from '../src/types';
+import { syncExpression } from '../src/types';
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
@@ -858,6 +858,589 @@ describe('DataStore sync engine', () => {
 			 * `afterEach`), resulting in the test hanging indefinitely.
 			 */
 			await waitForSyncQueriesReady();
+		});
+
+		/**
+		 * NOTE: The following test assertions are based on *existing* behavior, not *correct*
+		 * behavior. Once we have fixed rapid single-field consecutive updates, and updates on a
+		 * poor connection, we should update these assertions to reflect the *correct* behavior.
+		 *
+		 * Test observed rapid single-field mutations with variable connection latencies, as well as
+		 * waiting / not waiting on the outbox between mutations. All permutations are necessary,
+		 * as each scenario results in different observed behavior - essentially, whether or not
+		 * the outbox merges updates. We are updating a single field with each mutation to ensure
+		 * that the outbox's `syncOutboxVersionsOnDequeue` does the right value comparison when
+		 * there are multiple fields present on a model, but only one is updated.
+		 *
+		 * NOTE: if these tests fail, and you witness one of the following:
+		 *     1) The retry throws an error
+		 *     2) The number of observed updates has changed
+		 *     3) The record's final version number has changed
+		 * make sure you haven't adjusted the artifical latency or `pause` values, as this will
+		 * result in a change in the expected number of merges performed by the outbox.
+		 */
+		describe('observed rapid single-field mutations with variable connection latencies', () => {
+			// Tuple of updated title and version:
+			type SubscriptionLogTuple = [string, number];
+
+			/**
+			 * Since we're essentially testing race conditions, we want to test the outbox logic
+			 * exactly the same each time the tests are run. Minor fluctuations in test runs can
+			 * cause different outbox behavior, so we set jitter to `0`.
+			 */
+			const jitter: number = 0;
+			const latency: number = 1000;
+
+			/**
+			 * @property originalId `id` of the record to update
+			 * @property numberOfUpdates number of primary client updates to perform (excludes external client updates)
+			 * @property waitOnOutbox whether or not to wait for the outbox to be empty after each update
+			 * @property pauseBeforeMutation whether or not to pause prior to the mutation
+			 */
+			type ConsecutiveUpdatesParams = {
+				originalId: string;
+				numberOfUpdates: number;
+				waitOnOutbox: boolean;
+				pauseBeforeMutation: boolean;
+			};
+
+			/**
+			 * Helper function to perform consecutive updates on a record given it's `id`.
+			 * As explained in detail below, config options are important here, as they will affect
+			 * whether or not the outbox will merge updates.
+			 */
+			const performConsecutiveUpdates = async ({
+				originalId,
+				numberOfUpdates,
+				waitOnOutbox,
+				pauseBeforeMutation,
+			}: ConsecutiveUpdatesParams) => {
+				// Mutate the original record multiple times:
+				for (let number = 0; number < numberOfUpdates; number++) {
+					/**
+					 * When we want to test a scenario where the outbox does not
+					 * necessarily merge all outgoing requests (for instance, when
+					 * we do not add artifical latency to the connection), we make
+					 * the mutations rapidly in this loop. However, because of how
+					 * rapidly this loop executes, we are creating an artifical situation
+					 * where mutations will always be merged. Setting `pauseBeforeMutation`
+					 * to `true` will adding a semi-realistic pause ("button clicks")
+					 * between updates.
+					 * Not required when awaiting the outbox after each mutation.
+					 * Additionally not required if we are intentionally testing
+					 * rapid updates, such as when the initial save is still pending.
+					 */
+					if (pauseBeforeMutation) {
+						await pause(200);
+					}
+
+					const retrieved = await DataStore.query(Post, originalId);
+
+					await DataStore.save(
+						// @ts-ignore
+						Post.copyOf(retrieved, updated => {
+							updated.title = `post title ${number}`;
+						})
+					);
+
+					/**
+					 * When we want to test a scenario where the user is waiting for a long
+					 * period of time between each mutation (non-concurrent updates), we wait
+					 * for an empty outbox after each mutation. This ensures each mutation
+					 * completes a full cycle before the next mutation begins. This guarantees
+					 * that there will NEVER be concurrent updates being processed by the outbox.
+					 * For use with variable latencies.
+					 */
+					if (waitOnOutbox) {
+						await waitForEmptyOutbox();
+					}
+				}
+			};
+
+			/**
+			 *
+			 * @param originalId `id` of the record that was updated
+			 * @param expectedFinalVersion expected final `_version` of the record after all updates are complete
+			 * @param expectedFinalTitle expected final `title` of the record after all updates are complete
+			 */
+			const expectFinalRecordsToMatch = async (
+				postId: string,
+				version: number,
+				title: string
+			) => {
+				// Validate that the record was saved to the service:
+				const table = graphqlService.tables.get('Post')!;
+				expect(table.size).toEqual(1);
+
+				// Validate that the title was updated successfully:
+				const savedItem = table.get(JSON.stringify([postId])) as any;
+				expect(savedItem.title).toEqual(title);
+
+				// Validate that the `_version` was incremented correctly:
+				expect(savedItem._version).toEqual(version);
+
+				// Validate that `query` returns the latest `title` and `_version`:
+				const queryResult = await DataStore.query(Post, postId);
+				expect(queryResult?.title).toEqual(title);
+				// @ts-ignore
+				expect(queryResult?._version).toEqual(version);
+			};
+
+			describe('single client updates', () => {
+				test('rapid mutations on poor connection when initial create is not pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the initial save is still in the outbox
+					 * (see below). Here `_version` IS defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: latency,
+						response: latency,
+						subscriber: latency,
+						jitter,
+					});
+
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: false,
+						pauseBeforeMutation: false,
+					});
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Because we have increased the latency, and don't wait for the outbox
+					 * to clear on each mutation, the outbox will merge some of the mutations.
+					 * In this example, we expect the number of requests received to be one less than
+					 * the actual number of updates. If we were running this test without
+					 * increased latency, we'd expect more requests to be received.
+					 */
+					const expectedNumberOfUpdates = numberOfUpdates - 1;
+
+					await graphqlServiceSettled(
+						graphqlService,
+						expectedNumberOfUpdates,
+						'Post'
+					);
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 1],
+						['post title 0', 3],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 3, 'post title 0');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('rapid mutations on fast connection when initial create is not pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see below).
+					 * Here, `_version` is defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: false,
+						pauseBeforeMutation: true,
+					});
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Because we have NOT increased the latency, the outbox will not merge
+					 * the mutations. In this example, we expect the number of requests
+					 * received to be the same as the number of updates. If we were
+					 * running this test with increased latency, we'd expect less requests
+					 * to be received.
+					 */
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 1', 1],
+						['post title 2', 1],
+						['post title 0', 4],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 0');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('rapid mutations on poor connection when initial create is pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * NOTE: We do NOT wait for the outbox here - we are testing
+					 * updates on a record that is still in the outbox.
+					 */
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: latency,
+						response: latency,
+						subscriber: latency,
+						jitter,
+					});
+
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: false,
+						pauseBeforeMutation: false, // no pause here, unlike other tests! because we want to test when save is pending.
+					});
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Currently, the service does not receive any requests.
+					 */
+					await graphqlServiceSettled(graphqlService, 0, 'Post');
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', undefined],
+						['post title 1', undefined],
+						['post title 2', undefined],
+						['post title 2', 1],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('rapid mutations on fast connection when initial create is pending', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * NOTE: We do NOT wait for the outbox here - we are testing
+					 * updates on a record that is still in the outbox.
+					 */
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					// Note: We do NOT wait for the outbox to be empty here, because
+					// we want to test concurrent updates being processed by the outbox.
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: false,
+						pauseBeforeMutation: true,
+					});
+
+					// Now we wait for the outbox to do what it needs to do:
+					await waitForEmptyOutbox();
+
+					/**
+					 * Currently, the service does not receive any requests.
+					 */
+					await graphqlServiceSettled(graphqlService, 0, 'Post');
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', undefined],
+						['post title 1', undefined],
+						['post title 2', undefined],
+						['post title 2', 1],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('observe on poor connection with awaited outbox', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see above).
+					 * Here, `_version` is defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * Note: Running this test without increased latencies will still fail,
+					 * however, the `expectedNumberOfUpdates` received by the fake service
+					 * will be different (here they are merged in the outbox). See the
+					 * tests following this one.
+					 */
+					graphqlService.setLatencies({
+						request: latency,
+						response: latency,
+						subscriber: latency,
+						jitter,
+					});
+
+					/**
+					 * We wait for the empty outbox on each mutation, because
+					 * we want to test non-concurrent updates (i.e. we want to make
+					 * sure all the updates are going out and are being observed)
+					 */
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: true,
+						pauseBeforeMutation: false,
+					});
+
+					/**
+					 * Even though we have increased the latency, we are still waiting
+					 * on the outbox after each mutation. Therefore, mutations will not
+					 * be merged.
+					 */
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 0', 2],
+						['post title 1', 2],
+						['post title 1', 3],
+						['post title 2', 3],
+						['post title 2', 4],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+				test('observe on fast connection with awaited outbox', async () => {
+					// Number of updates to perform in this test:
+					const numberOfUpdates = 3;
+
+					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
+					const subscriptionLog: SubscriptionLogTuple[] = [];
+
+					// Record to update:
+					const original = await DataStore.save(
+						new Post({
+							title: 'original title',
+							blogId: 'blog id',
+						})
+					);
+
+					/**
+					 * Make sure the save was successfully sent out. There is a separate test
+					 * for testing an update when the save is still in the outbox (see above).
+					 * Here, `_version` is defined.
+					 */
+					await waitForEmptyOutbox();
+
+					const subscription = await DataStore.observe(Post).subscribe(
+						({ opType, element }) => {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					);
+
+					/**
+					 * We wait for the empty outbox on each mutation, because
+					 * we want to test non-concurrent updates (i.e. we want to make
+					 * sure all the updates are going out and are being observed)
+					 */
+					await performConsecutiveUpdates({
+						originalId: original.id,
+						numberOfUpdates,
+						waitOnOutbox: true,
+						pauseBeforeMutation: false,
+					});
+
+					/**
+					 * Even though we have increased the latency, we are still waiting
+					 * on the outbox after each mutation. Therefore, mutations will not
+					 * be merged.
+					 */
+					await graphqlServiceSettled(graphqlService, numberOfUpdates, 'Post');
+
+					// Validate that `observe` returned the expected updates to
+					// `title` and `version`, in the expected order:
+					expect(subscriptionLog).toEqual([
+						['post title 0', 1],
+						['post title 0', 2],
+						['post title 1', 2],
+						['post title 1', 3],
+						['post title 2', 3],
+						['post title 2', 4],
+					]);
+
+					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
+
+					// Cleanup:
+					await subscription.unsubscribe();
+				});
+			});
 		});
 	});
 
