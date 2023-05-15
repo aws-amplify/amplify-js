@@ -908,19 +908,20 @@ describe('DataStore sync engine', () => {
 			) => {
 				await graphqlService.graphql(
 					{
-						query:
-							'mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput){\n' +
-							'\t\tupdatePost(input: $input, condition: $condition){\n' +
-							'\t\t\tid\n' +
-							'title\n' +
-							'blogId\n' +
-							'updatedAt\n' +
-							'createdAt\n' +
-							'_version\n' +
-							'_lastChangedAt\n' +
-							'_deleted\n' +
-							'\t\t}\n' +
-							'\t}',
+						query: `
+							mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
+								updatePost(input: $input, condition: $condition) {
+									id
+									title
+									blogId
+									updatedAt
+									createdAt
+									_version
+									_lastChangedAt
+									_deleted
+								}
+							}
+						`,
 						variables: {
 							input: {
 								id: originalPostId,
