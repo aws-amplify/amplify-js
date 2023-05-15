@@ -902,6 +902,9 @@ describe('DataStore sync engine', () => {
 			// Number of primary client updates:
 			const numberOfUpdates = 3;
 
+			// Incremented after each update:
+			let expectedNumberOfUpdates = 0;
+
 			// Tuple of updated `title` and `_version`:
 			type SubscriptionLogTuple = [string, number];
 
@@ -961,7 +964,7 @@ describe('DataStore sync engine', () => {
 			};
 
 			/**
-			 * Retrieve post, then update.
+			 * Query post, update, then increment counter.
 			 * @param postId - id of the post to update
 			 * @param updatedTitle - title to update the post with
 			 */
@@ -974,6 +977,8 @@ describe('DataStore sync engine', () => {
 						updated.title = updatedTitle;
 					})
 				);
+
+				expectedNumberOfUpdates++;
 			};
 
 			/**
@@ -1040,6 +1045,7 @@ describe('DataStore sync engine', () => {
 				});
 
 				afterEach(async () => {
+					expectedNumberOfUpdates = 0;
 					subscriptionLog = [];
 				});
 
@@ -1089,11 +1095,9 @@ describe('DataStore sync engine', () => {
 					 * the actual number of updates. If we were running this test without
 					 * increased latency, we'd expect more requests to be received.
 					 */
-					const expectedNumberOfUpdates = numberOfUpdates - 1;
-
 					await graphqlServiceSettled({
 						graphqlService,
-						expectedNumberOfUpdates,
+						expectedNumberOfUpdates: expectedNumberOfUpdates - 1,
 						externalNumberOfUpdates: 0,
 						modelName: 'Post',
 					});
@@ -1464,6 +1468,7 @@ describe('DataStore sync engine', () => {
 					});
 
 					afterEach(async () => {
+						expectedNumberOfUpdates = 0;
 						subscriptionLog = [];
 					});
 
@@ -1499,8 +1504,6 @@ describe('DataStore sync engine', () => {
 						//endregion
 
 						await waitForEmptyOutbox();
-
-						const expectedNumberOfUpdates = numberOfUpdates;
 
 						await graphqlServiceSettled({
 							graphqlService,
@@ -1802,6 +1805,7 @@ describe('DataStore sync engine', () => {
 					});
 
 					afterEach(async () => {
+						expectedNumberOfUpdates = 0;
 						subscriptionLog = [];
 					});
 
@@ -1837,8 +1841,6 @@ describe('DataStore sync engine', () => {
 						//endregion
 
 						await waitForEmptyOutbox();
-
-						const expectedNumberOfUpdates = numberOfUpdates;
 
 						await graphqlServiceSettled({
 							graphqlService,
