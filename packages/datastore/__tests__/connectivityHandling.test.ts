@@ -879,9 +879,11 @@ describe('DataStore sync engine', () => {
 		 * make sure you haven't adjusted the artifical latency or `pause` values, as this will
 		 * result in a change in the expected number of merges performed by the outbox.
 		 *
-		 * TODO: explain why we don't loop, and why we don't use a helper util for consecutive updates
+		 * ABOUT HOW WE PERFORM THE CONSECUTIVE UPDATES:
 		 *
-		 * About consecutive updates:
+		 * After a few PR iterations on how we perform consecutive updates (loops, util helpers),
+		 * it was decided to favor writing out each query / update one-by-one for improved
+		 * readability / debuggability.
 		 *
 		 * When we want to test a scenario where the outbox does not
 		 * necessarily merge all outgoing requests (for instance, when
@@ -960,21 +962,6 @@ describe('DataStore sync engine', () => {
 					// For now we always ignore latency for external mutations. This could be a param if needed.
 					true
 				);
-			};
-
-			/**
-			 * @property originalId `id` of the record to update
-			 * @property numberOfUpdates number of primary client updates to perform (excludes external client updates)
-			 * @property waitOnOutbox whether or not to wait for the outbox to be empty after each update
-			 * @property pauseBeforeMutation whether or not to pause prior to the mutation
-			 * @property externalClientMutation whether or not to inject an external client mutation
-			 */
-			type ConsecutiveUpdatesParams = {
-				originalId: string;
-				numberOfUpdates: number;
-				waitOnOutbox: boolean;
-				pauseBeforeMutation: boolean;
-				externalClientMutation?: Function;
 			};
 
 			/**
