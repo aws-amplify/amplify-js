@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -40,18 +40,18 @@
     "src"
   ],
   "dependencies": {
-    "@aws-amplify/analytics": "6.0.31",
-    "@aws-amplify/api": "5.0.31",
-    "@aws-amplify/auth": "5.3.5",
-    "@aws-amplify/cache": "5.0.31",
-    "@aws-amplify/core": "5.2.0",
-    "@aws-amplify/datastore": "4.2.1",
-    "@aws-amplify/geo": "2.0.31",
-    "@aws-amplify/interactions": "5.0.31",
-    "@aws-amplify/notifications": "1.1.5",
-    "@aws-amplify/predictions": "5.1.5",
-    "@aws-amplify/pubsub": "5.1.14",
-    "@aws-amplify/storage": "5.2.5",
+    "@aws-amplify/analytics": "6.1.0",
+    "@aws-amplify/api": "5.1.0",
+    "@aws-amplify/auth": "5.3.6",
+    "@aws-amplify/cache": "5.0.32",
+    "@aws-amplify/core": "5.3.0",
+    "@aws-amplify/datastore": "4.3.0",
+    "@aws-amplify/geo": "2.0.32",
+    "@aws-amplify/interactions": "5.0.32",
+    "@aws-amplify/notifications": "1.1.6",
+    "@aws-amplify/predictions": "5.1.6",
+    "@aws-amplify/pubsub": "5.1.15",
+    "@aws-amplify/storage": "5.2.6",
     "tslib": "^2.0.0"
   },
   "jest": {

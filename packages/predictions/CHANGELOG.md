@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.5...@aws-amplify/predictions@5.1.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
 ## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.4...@aws-amplify/predictions@5.1.5) (2023-05-04)
 
 **Note:** Version bump only for package @aws-amplify/predictions
