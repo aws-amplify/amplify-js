@@ -906,6 +906,8 @@ describe('DataStore sync engine', () => {
 		 *
 		 */
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
+			const numberOfUpdates = 3;
+
 			// Tuple of updated `title` and `_version`:
 			type SubscriptionLogTuple = [string, number];
 
@@ -1016,12 +1018,32 @@ describe('DataStore sync engine', () => {
 			};
 
 			describe('single client updates', () => {
+				/**
+				 * All observed updates. Also includes "updates" from initial record creation,
+				 * since we start the subscription in the `beforeEach` block.
+				 */
+				let subscriptionLog: SubscriptionLogTuple[] = [];
+
+				beforeEach(async () => {
+					await DataStore.observe(Post).subscribe(({ opType, element }) => {
+						if (opType === 'UPDATE') {
+							const response: SubscriptionLogTuple = [
+								element.title,
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
+							];
+							// Track sequence of versions and titles
+							subscriptionLog.push(response);
+						}
+					});
+				});
+
+				afterEach(async () => {
+					subscriptionLog = [];
+				});
 				test('rapid mutations on poor connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1037,19 +1059,6 @@ describe('DataStore sync engine', () => {
 					 * (see below). Here `_version` IS defined.
 					 */
 					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1095,6 +1104,7 @@ describe('DataStore sync engine', () => {
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
@@ -1102,16 +1112,9 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 3, 'post title 0');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1127,19 +1130,6 @@ describe('DataStore sync engine', () => {
 					 * Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
@@ -1175,6 +1165,7 @@ describe('DataStore sync engine', () => {
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
@@ -1182,16 +1173,9 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 4, 'post title 0');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 				test('rapid mutations on poor connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1205,19 +1189,6 @@ describe('DataStore sync engine', () => {
 					 * NOTE: We do NOT wait for the outbox here - we are testing
 					 * updates on a record that is still in the outbox.
 					 */
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1259,16 +1230,9 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 				test('rapid mutations on fast connection when initial create is pending', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1282,19 +1246,6 @@ describe('DataStore sync engine', () => {
 					 * NOTE: We do NOT wait for the outbox here - we are testing
 					 * updates on a record that is still in the outbox.
 					 */
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
@@ -1328,16 +1279,9 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 				test('observe on poor connection with awaited outbox', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1353,19 +1297,6 @@ describe('DataStore sync engine', () => {
 					 * Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * Note: Running this test without increased latencies will still fail,
@@ -1412,6 +1343,7 @@ describe('DataStore sync engine', () => {
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 0', 2],
 						['post title 1', 2],
@@ -1421,16 +1353,9 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 				test('observe on fast connection with awaited outbox', async () => {
 					// Number of updates to perform in this test:
-					const numberOfUpdates = 3;
-
-					// For tracking sequence of versions and titles returned by `DataStore.observe()`:
-					const subscriptionLog: SubscriptionLogTuple[] = [];
 
 					// Record to update:
 					const original = await DataStore.save(
@@ -1446,19 +1371,6 @@ describe('DataStore sync engine', () => {
 					 * Here, `_version` is defined.
 					 */
 					await waitForEmptyOutbox();
-
-					const subscription = await DataStore.observe(Post).subscribe(
-						({ opType, element }) => {
-							const response: SubscriptionLogTuple = [
-								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
-							];
-							// Track sequence of versions and titles
-							subscriptionLog.push(response);
-						}
-					);
 
 					/**
 					 * We wait for the empty outbox on each mutation, because
@@ -1492,6 +1404,7 @@ describe('DataStore sync engine', () => {
 					// Validate that `observe` returned the expected updates to
 					// `title` and `version`, in the expected order:
 					expect(subscriptionLog).toEqual([
+						['original title', 1],
 						['post title 0', 1],
 						['post title 0', 2],
 						['post title 1', 2],
@@ -1501,9 +1414,6 @@ describe('DataStore sync engine', () => {
 					]);
 
 					await expectFinalRecordsToMatch(original.id, 4, 'post title 2');
-
-					// Cleanup:
-					await subscription.unsubscribe();
 				});
 			});
 			/**
@@ -1516,10 +1426,31 @@ describe('DataStore sync engine', () => {
 			 */
 			describe('Multi-client updates', () => {
 				describe('Updates to the same field', () => {
-					test('rapid mutations on poor connection when initial create is not pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
+					/**
+					 * All observed updates. Also includes "updates" from initial record creation,
+					 * since we start the subscription in the `beforeEach` block.
+					 */
+					let subscriptionLog: SubscriptionLogTuple[] = [];
 
+					beforeEach(async () => {
+						await DataStore.observe(Post).subscribe(({ opType, element }) => {
+							if (opType === 'UPDATE') {
+								const response: SubscriptionLogTuple = [
+									element.title,
+									// No, TypeScript, there is a version:
+									// @ts-ignore
+									element._version,
+								];
+								// Track sequence of versions and titles
+								subscriptionLog.push(response);
+							}
+						});
+					});
+
+					afterEach(async () => {
+						subscriptionLog = [];
+					});
+					test('rapid mutations on poor connection when initial create is not pending', async () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1528,17 +1459,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						graphqlService.setLatencies({
 							request: latency,
@@ -1573,6 +1493,7 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', 1],
 							['post title 0', 1],
 							['post title 1', 1],
 							['post title 2', 1],
@@ -1584,13 +1505,8 @@ describe('DataStore sync engine', () => {
 							4,
 							'update from second client'
 						);
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on fast connection when initial create is not pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1599,17 +1515,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						//region perform consecutive updates
 						await pause(200);
@@ -1637,6 +1542,7 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', 1],
 							['post title 0', 1],
 							['post title 1', 1],
 							['post title 2', 1],
@@ -1644,29 +1550,13 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 5, 'post title 0');
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on poor connection when initial create is pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
 								blogId: 'blog id',
 							})
-						);
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
 						);
 
 						graphqlService.setLatencies({
@@ -1692,6 +1582,7 @@ describe('DataStore sync engine', () => {
 						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 						expect(subscriptionLog).toEqual([
+							// ['original title', 1],
 							['post title 0', undefined],
 							['post title 1', undefined],
 							['post title 2', undefined],
@@ -1699,29 +1590,13 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on fast connection when initial create is pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
 								blogId: 'blog id',
 							})
-						);
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
 						);
 
 						//region perform consecutive updates
@@ -1746,6 +1621,7 @@ describe('DataStore sync engine', () => {
 						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 						expect(subscriptionLog).toEqual([
+							// ['original title', undefined],
 							['post title 0', undefined],
 							['post title 1', undefined],
 							['post title 2', undefined],
@@ -1753,13 +1629,8 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 1, 'post title 2');
-
-						await subscription.unsubscribe();
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1768,17 +1639,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						graphqlService.setLatencies({
 							request: latency,
@@ -1812,6 +1672,7 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', 1],
 							['post title 0', 1],
 							['post title 0', 2],
 							['post title 1', 2],
@@ -1822,13 +1683,8 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 5, 'post title 2');
-
-						await subscription.unsubscribe();
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogTuple[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1837,17 +1693,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogTuple = [
-									element.title,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						//region perform consecutive updates
 						await revPost(original.id, 'post title 0');
@@ -1874,6 +1719,7 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', 1],
 							['post title 0', 1],
 							['post title 0', 2],
 							['post title 1', 2],
@@ -1884,16 +1730,33 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 5, 'post title 2');
-
-						// Cleanup:
-						await subscription.unsubscribe();
 					});
 				});
 				describe('Updates to different fields', () => {
-					test('rapid mutations on poor connection when initial create is not pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
+					/**
+					 * All observed updates. Also includes "updates" from initial record creation,
+					 * since we start the subscription in the `beforeEach` block.
+					 */
+					let subscriptionLog: SubscriptionLogMultiField[] = [];
 
+					beforeEach(async () => {
+						await DataStore.observe(Post).subscribe(({ opType, element }) => {
+							const response: SubscriptionLogMultiField = [
+								element.title,
+								// @ts-ignore
+								element.blogId,
+								// @ts-ignore
+								element._version,
+							];
+							subscriptionLog.push(response);
+						});
+					});
+
+					afterEach(async () => {
+						subscriptionLog = [];
+					});
+
+					test('rapid mutations on poor connection when initial create is not pending', async () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1901,19 +1764,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						graphqlService.setLatencies({
 							request: latency,
@@ -1951,6 +1801,8 @@ describe('DataStore sync engine', () => {
 						 * changes.
 						 */
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
 							['post title 0', null, 1],
 							['post title 1', null, 1],
 							['post title 2', null, 1],
@@ -1963,13 +1815,8 @@ describe('DataStore sync engine', () => {
 							'original title',
 							'update from second client'
 						);
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on fast connection when initial create is not pending (second field is `null`)', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1977,19 +1824,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						//region perform consecutive updates
 						await pause(200);
@@ -2018,6 +1852,8 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
 							['post title 0', null, 1],
 							['post title 1', null, 1],
 							['post title 2', null, 1],
@@ -2030,8 +1866,6 @@ describe('DataStore sync engine', () => {
 							'post title 0',
 							'update from second client'
 						);
-
-						await subscription.unsubscribe();
 					});
 					/**
 					 * All other multi-client tests begin with a `null` value to the field that is being
@@ -2040,9 +1874,6 @@ describe('DataStore sync engine', () => {
 					 * in different behavior.
 					 */
 					test('rapid mutations on fast connection when initial create is not pending (second field has initial value)', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -2051,19 +1882,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						//region perform consecutive updates
 						await pause(200);
@@ -2092,6 +1910,8 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', 'original blogId', undefined],
+							['original title', 'original blogId', 1],
 							['post title 0', 'original blogId', 1],
 							['post title 1', 'original blogId', 1],
 							['post title 2', 'original blogId', 1],
@@ -2104,30 +1924,12 @@ describe('DataStore sync engine', () => {
 							'post title 0',
 							'original blogId'
 						);
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on poor connection when initial create is pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
 							})
-						);
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
 						);
 
 						graphqlService.setLatencies({
@@ -2154,6 +1956,7 @@ describe('DataStore sync engine', () => {
 						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
 							['post title 0', null, undefined],
 							['post title 1', null, undefined],
 							['post title 2', null, undefined],
@@ -2161,30 +1964,12 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 1, 'post title 2', null);
-
-						await subscription.unsubscribe();
 					});
 					test('rapid mutations on fast connection when initial create is pending', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
 							})
-						);
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
 						);
 
 						//region perform consecutive updates
@@ -2210,6 +1995,7 @@ describe('DataStore sync engine', () => {
 						await graphqlServiceSettled(graphqlService, 0, 1, 'Post');
 
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
 							['post title 0', null, undefined],
 							['post title 1', null, undefined],
 							['post title 2', null, undefined],
@@ -2217,13 +2003,8 @@ describe('DataStore sync engine', () => {
 						]);
 
 						expectFinalRecordsToMatch(original.id, 1, 'post title 2', null);
-
-						await subscription.unsubscribe();
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -2231,19 +2012,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						graphqlService.setLatencies({
 							request: latency,
@@ -2278,6 +2046,8 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
 							['post title 0', null, 1],
 							['post title 0', null, 2],
 							['post title 1', null, 2],
@@ -2293,13 +2063,8 @@ describe('DataStore sync engine', () => {
 							'post title 2',
 							'update from second client'
 						);
-
-						await subscription.unsubscribe();
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						const numberOfUpdates = 3;
-						const subscriptionLog: SubscriptionLogMultiField[] = [];
-
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -2307,19 +2072,6 @@ describe('DataStore sync engine', () => {
 						);
 
 						await waitForEmptyOutbox();
-
-						const subscription = await DataStore.observe(Post).subscribe(
-							({ opType, element }) => {
-								const response: SubscriptionLogMultiField = [
-									element.title,
-									// @ts-ignore
-									element.blogId,
-									// @ts-ignore
-									element._version,
-								];
-								subscriptionLog.push(response);
-							}
-						);
 
 						//region perform consecutive updates
 						await revPost(original.id, 'post title 0');
@@ -2347,6 +2099,8 @@ describe('DataStore sync engine', () => {
 						);
 
 						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
 							['post title 0', null, 1],
 							['post title 0', null, 2],
 							['post title 1', null, 2],
@@ -2362,8 +2116,6 @@ describe('DataStore sync engine', () => {
 							'post title 2',
 							'update from second client'
 						);
-
-						await subscription.unsubscribe();
 					});
 				});
 			});
