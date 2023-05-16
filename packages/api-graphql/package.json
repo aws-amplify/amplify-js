@@ -5,28 +5,6 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
-  "typesVersions": {
-    ">=3.8": {
-      "*": [
-        "./lib-esm/index.d.ts"
-      ],
-      "internal": [
-        "./lib-esm/internal/index.d.ts"
-      ]
-    }
-  },
-  "exports": {
-    ".": {
-      "types": "./lib-esm/index.d.ts",
-      "import": "./lib-esm/index.js",
-      "require": "./lib/index.js"
-    },
-    "./internal": {
-      "types": "./lib-esm/internal/index.d.ts",
-      "import": "./lib-esm/internal/index.js",
-      "require": "./lib/internal/index.js"
-    }
-  },
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
@@ -68,7 +46,8 @@
   "files": [
     "lib",
     "lib-esm",
-    "src"
+    "src",
+    "internal"
   ],
   "dependencies": {
     "@aws-amplify/api-rest": "3.0.21",
