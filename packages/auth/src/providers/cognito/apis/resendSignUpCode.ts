@@ -9,10 +9,12 @@ import {
 	DeliveryMedium,
 	ResendSignUpCodeRequest,
 } from '../../../types';
-import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '..';
+// import { CognitoResendSignUpCodeOptions, CognitoUserAttributeKey } from '..';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignUpCodeClient';
+import type { CognitoResendSignUpCodeOptions } from '../types/options/CognitoResendSignUpCodeOptions';
+import type { CognitoUserAttributeKey } from '../types/models/CognitoUserAttributeKey';
 
 /**
  * Resend the confirmation code while signing up

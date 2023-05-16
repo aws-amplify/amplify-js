@@ -3,13 +3,13 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { ConfirmForgotPasswordCommandOutput } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoConfirmResetPasswordOptions } from '..';
 import { AuthError } from '../../../errors/AuthError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmResetPasswordRequest } from '../../../types';
 import { confirmResetPasswordClient } from '../utils/clients/ConfirmResetPasswordClient';
+import { CognitoConfirmResetPasswordOptions } from '../types/options/CognitoConfirmResetPasswordOptions';
 
 export async function confirmResetPassword(
 	confirmResetPasswordRequest: ConfirmResetPasswordRequest<CognitoConfirmResetPasswordOptions>
@@ -34,8 +34,8 @@ export async function confirmResetPassword(
 		Username: username,
 		ConfirmationCode: code,
 		Password: password,
-		ClientMetadata: 
-			confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ?? 
-			config.clientMetadata
+		ClientMetadata:
+			confirmResetPasswordRequest.options?.serviceOptions?.clientMetadata ??
+			config.clientMetadata,
 	});
 }
