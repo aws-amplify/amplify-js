@@ -40,7 +40,7 @@ export enum PredictionsAction {
 	None = '0',
 }
 export enum PubSubAction {
-	None = '0',
+	Subscribe = '1',
 }
 export enum PushNotificationAction {
 	None = '0',
