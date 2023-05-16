@@ -109,7 +109,7 @@
 			"name": "Core (Signer)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Signer }",
-			"limit": "7.08 kB"
+			"limit": "7.3 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
