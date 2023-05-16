@@ -1,4 +1,5 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internal';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -53,7 +54,7 @@ class SyncProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		amplifyContext.API = amplifyContext.API || API;
+		amplifyContext.API = amplifyContext.API || InternalAPI;
 		this.generateQueries();
 	}
 

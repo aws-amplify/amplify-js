@@ -1,4 +1,5 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internal';
 import {
 	ConsoleLogger as Logger,
 	jitteredBackoff,
@@ -73,7 +74,7 @@ class MutationProcessor {
 		private readonly conflictHandler: ConflictHandler,
 		private readonly amplifyContext: AmplifyContext
 	) {
-		this.amplifyContext.API = this.amplifyContext.API || API;
+		this.amplifyContext.API = this.amplifyContext.API || InternalAPI;
 		this.generateQueries();
 	}
 

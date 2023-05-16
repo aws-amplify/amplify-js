@@ -1,4 +1,4 @@
-import { API } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internal';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
@@ -1351,7 +1351,7 @@ enum DataStoreState {
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
 	private Auth = Auth;
-	private API = API;
+	private API = InternalAPI;
 	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
