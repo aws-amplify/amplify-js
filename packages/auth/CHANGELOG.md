@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.5...@aws-amplify/auth@5.3.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.4...@aws-amplify/auth@5.3.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.3...@aws-amplify/auth@5.3.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.2...@aws-amplify/auth@5.3.3) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.1...@aws-amplify/auth@5.3.2) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.3.0...@aws-amplify/auth@5.3.1) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.3...@aws-amplify/auth@5.3.0) (2023-04-12)
+
+### Features
+
+- **auth/cognito:** base directory structure, service clients and signUp API ([#11075](https://github.com/aws-amplify/amplify-js/issues/11075)) ([20ab772](https://github.com/aws-amplify/amplify-js/commit/20ab772e5552610c3fa4b975d9906d01309e848e))
+- **auth:** Add sign up error handling ([#11153](https://github.com/aws-amplify/amplify-js/issues/11153)) ([706a627](https://github.com/aws-amplify/amplify-js/commit/706a627f80bcf1575a7a47fa1c20fcd81b0502a1))
+
 ## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@5.2.2...@aws-amplify/auth@5.2.3) (2023-04-06)
 
 **Note:** Version bump only for package @aws-amplify/auth

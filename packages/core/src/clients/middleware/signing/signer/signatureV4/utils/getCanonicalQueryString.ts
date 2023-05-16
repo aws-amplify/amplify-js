@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { extendedEncodeURIComponent } from '../../../utils/extendedEncodeURIComponent';
-
 /**
  * Returns a canonical query string.
  *
@@ -24,8 +22,11 @@ export const getCanonicalQueryString = (
 			}
 			return keyA < keyB ? -1 : 1;
 		})
-		.map(
-			([key, val]) =>
-				`${extendedEncodeURIComponent(key)}=${extendedEncodeURIComponent(val)}`
-		)
+		.map(([key, val]) => `${escapeUri(key)}=${escapeUri(val)}`)
 		.join('&');
+
+const escapeUri = (uri: string): string =>
+	encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
+
+const hexEncode = (c: string) =>
+	`%${c.charCodeAt(0).toString(16).toUpperCase()}`;

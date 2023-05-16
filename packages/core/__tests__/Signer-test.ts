@@ -4,8 +4,10 @@
 import { SignRequestOptions } from '../src/clients/middleware/signing/signer/signatureV4/types';
 import { Signer } from '../src/Signer';
 import { DateUtils } from '../src/Util/DateUtils';
+import * as getSignatureModule from '../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
 import {
 	credentials,
+	credentialsWithToken,
 	getDefaultRequest,
 	signingDate,
 	signingOptions,
@@ -16,6 +18,7 @@ import {
 import { signingTestTable } from './clients/middleware/signing/signer/signatureV4/testUtils/signingTestTable';
 
 const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
+const getSignatureSpy = jest.spyOn(getSignatureModule, 'getSignature');
 
 describe('Signer.sign', () => {
 	beforeAll(() => {
@@ -102,6 +105,26 @@ describe('Signer.sign', () => {
 			}).not.toThrow();
 		});
 	});
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const {
+			headers: { Authorization },
+		} = Signer.sign(request, accessInfo, undefined);
+		expect(Authorization).toEqual(
+			expect.stringContaining(
+				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'
+			)
+		);
+	});
 });
 
 describe('Signer.signUrl', () => {
@@ -152,4 +175,44 @@ describe('Signer.signUrl', () => {
 			expect(signedUrl).toBe(expected);
 		}
 	);
+
+	test('should populate signing region and service from url', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://foo.us-east-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentials.accessKeyId,
+			secret_key: credentials.secretAccessKey,
+			session_token: credentials.sessionToken,
+		};
+		const signedUrl = Signer.signUrl(request, accessInfo);
+		expect(signedUrl).toEqual(
+			expect.stringContaining(
+				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request'
+			)
+		);
+	});
+
+	test('should not use session token in signature for IoT gateway service', () => {
+		const request = {
+			...getDefaultRequest(),
+			url: new URL('https://abc-ats.iot.us-foo-1.amazonaws.com'),
+		};
+		const accessInfo = {
+			access_key: credentialsWithToken.accessKeyId,
+			secret_key: credentialsWithToken.secretAccessKey,
+			session_token: credentialsWithToken.sessionToken,
+		};
+		const serviceInfo = {
+			region: 'us-foo-1',
+			service: 'iotdevicegateway',
+		};
+		const signedUrl = Signer.signUrl(request, accessInfo, serviceInfo);
+		expect(signedUrl).toEqual(expect.stringContaining('X-Amz-Security-Token'));
+		expect(getSignatureSpy).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({ sessionToken: undefined })
+		);
+	});
 });

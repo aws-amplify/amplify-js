@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.5...@aws-amplify/predictions@5.1.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.4...@aws-amplify/predictions@5.1.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.3...@aws-amplify/predictions@5.1.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.2...@aws-amplify/predictions@5.1.3) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.1...@aws-amplify/predictions@5.1.2) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.1.0...@aws-amplify/predictions@5.1.1) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.25...@aws-amplify/predictions@5.1.0) (2023-04-12)
+
+### Features
+
+- **storage:** add validateObjectExistence option in Get API ([#11154](https://github.com/aws-amplify/amplify-js/issues/11154)) ([8005225](https://github.com/aws-amplify/amplify-js/commit/8005225b929a2cef50fd55d6e67b9057f58868fc))
+
 ## [5.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@5.0.24...@aws-amplify/predictions@5.0.25) (2023-04-06)
 
 **Note:** Version bump only for package @aws-amplify/predictions

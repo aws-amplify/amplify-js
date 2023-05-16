@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.5...@aws-amplify/storage@5.2.6) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.4...@aws-amplify/storage@5.2.5) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.3...@aws-amplify/storage@5.2.4) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.2...@aws-amplify/storage@5.2.3) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.1...@aws-amplify/storage@5.2.2) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.0...@aws-amplify/storage@5.2.1) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.15...@aws-amplify/storage@5.2.0) (2023-04-12)
+
+### Features
+
+- **storage:** add validateObjectExistence option in Get API ([#11154](https://github.com/aws-amplify/amplify-js/issues/11154)) ([8005225](https://github.com/aws-amplify/amplify-js/commit/8005225b929a2cef50fd55d6e67b9057f58868fc))
+
 ## [5.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.1.14...@aws-amplify/storage@5.1.15) (2023-04-06)
 
 **Note:** Version bump only for package @aws-amplify/storage

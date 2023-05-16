@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.1...@aws-amplify/datastore@4.3.0) (2023-05-12)
+
+### Features
+
+- **data:** refactor single-client consecutive update unit tests; fake GraphQL service updates ([#11349](https://github.com/aws-amplify/amplify-js/issues/11349)) ([1b3a4bb](https://github.com/aws-amplify/amplify-js/commit/1b3a4bb9739e2db6e08e73d95c2233a092c6edc3))
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.2.0...@aws-amplify/datastore@4.2.1) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.11...@aws-amplify/datastore@4.2.0) (2023-04-27)
+
+### Bug Fixes
+
+- **datastore:** add missing errorHandler errors for sync and mutation unauth responses ([#11290](https://github.com/aws-amplify/amplify-js/issues/11290)) ([0197e92](https://github.com/aws-amplify/amplify-js/commit/0197e92888f9aeb142aefb23c31c8831a296ce51))
+- **data:** sync processor fixes ([#11262](https://github.com/aws-amplify/amplify-js/issues/11262)) ([43d494b](https://github.com/aws-amplify/amplify-js/commit/43d494bba021c7cf2578bee7a9ce77a92516f3c6))
+
+### Features
+
+- **data:** add simulated cloud latency to fake GraphQL service; sync processor updates ([#11286](https://github.com/aws-amplify/amplify-js/issues/11286)) ([3af9672](https://github.com/aws-amplify/amplify-js/commit/3af9672bfcb08a40b7b0488ff40ee5580ac4b261))
+
+## [4.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.10...@aws-amplify/datastore@4.1.11) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.9...@aws-amplify/datastore@4.1.10) (2023-04-18)
+
+### Bug Fixes
+
+- **data:** sync processor, fake GraphQL service, and unit test fixes. Update sync processor to log errors on retry; update fake GraphQL service to extract singular name of model when parsing queries, and update broken RegEx; update connectivity handling unit test to fail on all errors ([#11261](https://github.com/aws-amplify/amplify-js/issues/11261)) ([992b7eb](https://github.com/aws-amplify/amplify-js/commit/992b7eb3a338c92e356f5c1395f3d719ace5c646))
+
+## [4.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.8...@aws-amplify/datastore@4.1.9) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+## [4.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.7...@aws-amplify/datastore@4.1.8) (2023-04-12)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 ## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@4.1.6...@aws-amplify/datastore@4.1.7) (2023-04-06)
 
 ### Bug Fixes

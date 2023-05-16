@@ -32,6 +32,7 @@ export const presignUrl = (
 		signingValues;
 
 	// create the request to sign
+	// @ts-ignore URL constructor accepts a URL object
 	const presignedUrl = new URL(url);
 	Object.entries({
 		[ALGORITHM_QUERY_PARAM]: SHA256_ALGORITHM_IDENTIFIER,

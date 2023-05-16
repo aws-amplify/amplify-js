@@ -5,7 +5,12 @@ import { DateUtils } from './Util';
 import {
 	presignUrl,
 	signRequest,
+	TOKEN_QUERY_PARAM,
 } from './clients/middleware/signing/signer/signatureV4';
+
+const IOT_SERVICE_NAME = 'iotdevicegateway';
+// Best practice regex to parse the service and region from an AWS endpoint
+const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
 export class Signer {
 	/**
@@ -59,7 +64,7 @@ export class Signer {
 			url: new URL(request.url as string),
 		};
 
-		const options = getOptions(accessInfo, serviceInfo);
+		const options = getOptions(requestToSign, accessInfo, serviceInfo);
 		const signedRequest: any = signRequest(requestToSign, options);
 		// Prior to using `signRequest`, Signer accepted urls as strings and outputted urls as string. Coerce the property
 		// back to a string so as not to disrupt consumers of Signer.
@@ -105,19 +110,38 @@ export class Signer {
 			url: new URL(urlToSign),
 		};
 
-		const options = getOptions(accessInfo, serviceInfo, expiration);
+		const options = getOptions(
+			presignable,
+			accessInfo,
+			serviceInfo,
+			expiration
+		);
 		const signedUrl = presignUrl(presignable, options);
+		if (
+			accessInfo.session_token &&
+			!sessionTokenRequiredInSigning(options.signingService)
+		) {
+			signedUrl.searchParams.append(
+				TOKEN_QUERY_PARAM,
+				accessInfo.session_token
+			);
+		}
 		return signedUrl.toString();
 	}
 }
 
-const getOptions = (accessInfo, serviceInfo, expiration?) => {
+const getOptions = (request, accessInfo, serviceInfo, expiration?) => {
 	const { access_key, secret_key, session_token } = accessInfo ?? {};
-	const { region, service } = serviceInfo ?? {};
+	const { region: urlRegion, service: urlService } = parseServiceInfo(
+		request.url
+	);
+	const { region = urlRegion, service = urlService } = serviceInfo ?? {};
 	const credentials = {
 		accessKeyId: access_key,
 		secretAccessKey: secret_key,
-		sessionToken: session_token,
+		...(sessionTokenRequiredInSigning(service)
+			? { sessionToken: session_token }
+			: {}),
 	};
 	return {
 		credentials,
@@ -127,3 +151,26 @@ const getOptions = (accessInfo, serviceInfo, expiration?) => {
 		...(expiration && { expiration }),
 	};
 };
+
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
+const parseServiceInfo = (url: URL) => {
+	const host = url.host;
+	const matched = host.match(AWS_ENDPOINT_REGEX) ?? [];
+	let parsed = matched.slice(1, 3);
+
+	if (parsed[1] === 'es') {
+		// Elastic Search
+		parsed = parsed.reverse();
+	}
+
+	return {
+		service: parsed[0],
+		region: parsed[1],
+	};
+};
+
+// IoT service does not allow the session token in the canonical request
+// https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+// TODO: V6 investigate whether add to custom clients' general signer implementation.
+const sessionTokenRequiredInSigning = (service: string) =>
+	service !== IOT_SERVICE_NAME;
