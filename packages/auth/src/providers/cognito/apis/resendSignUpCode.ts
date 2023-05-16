@@ -19,7 +19,7 @@ import { resendSignUpConfirmationCodeClient } from '../utils/clients/ResendSignU
  *
  * @param resendRequest - The resendRequest object
  * @returns AuthCodeDeliveryDetails
- * @throws service: {@link ResendConfirmationException } - Cognito service errors thrown when resendign the confirmation code.
+ * @throws service: {@link ResendConfirmationException } - Cognito service errors thrown when resending the code.
  * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username are not defined.
  *
  * TODO: add config errors
