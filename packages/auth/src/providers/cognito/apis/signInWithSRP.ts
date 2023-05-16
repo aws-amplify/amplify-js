@@ -24,7 +24,7 @@ import {
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
 } from '../utils/signInHelpers';
-import { setInternalAuthSession } from '../utils/internalAuthSession';
+import { setActiveSignInSession } from '../utils/activeSignInSession';
 
 /**
  * Signs a user in
@@ -64,7 +64,7 @@ export async function signInWithSRP(
 		} = await handleUserSRPAuthFlow(username, password, clientMetaData);
 
 		// Session used on RespondToAuthChallenge requests.
-		setInternalAuthSession(Session);
+		setActiveSignInSession(Session);
 		if (AuthenticationResult) {
 			// TODO(israx): cache tokens
 			return {
@@ -79,7 +79,7 @@ export async function signInWithSRP(
 			challengeParameters: ChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		setInternalAuthSession(undefined);
+		setActiveSignInSession(undefined);
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
