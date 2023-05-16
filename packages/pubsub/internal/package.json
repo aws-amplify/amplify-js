@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/pubsub/internal",
+	"types": "../lib-esm/internal/index.d.ts",
+	"main": "../lib/internal/index.js",
+	"module": "../lib-esm/intternal/index.js",
+	"sideEffects": false
+}

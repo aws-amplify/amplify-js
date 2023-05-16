@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // import '../Common/Polyfills';
 import {
+	Amplify,
 	browserOrNode,
 	Category,
 	ConsoleLogger as Logger,
@@ -57,7 +58,7 @@ export class InternalPubSubClass {
 	}
 
 	public getModuleName() {
-		return 'PubSub';
+		return 'InternalPubSub';
 	}
 
 	/**
@@ -183,3 +184,4 @@ export class InternalPubSubClass {
 }
 
 export const InternalPubSub = new InternalPubSubClass();
+Amplify.register(InternalPubSub);

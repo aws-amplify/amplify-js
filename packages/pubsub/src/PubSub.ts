@@ -17,6 +17,10 @@ type PubSubObservable = {
 };
 
 export class PubSubClass extends InternalPubSubClass {
+	public getModuleName() {
+		return 'PubSub';
+	}
+
 	subscribe(
 		topics: string[] | string,
 		options?: ProviderOptions
