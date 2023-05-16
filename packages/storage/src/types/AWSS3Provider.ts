@@ -70,7 +70,7 @@ type _S3ProviderPutConfig = {
 	contentDisposition?: PutObjectRequest['ContentDisposition'];
 	contentEncoding?: PutObjectRequest['ContentEncoding'];
 	contentType?: PutObjectRequest['ContentType'];
-	contentMd5?: PutObjectRequest['ContentMD5'];
+	encodeContentMd5?: PutObjectRequest['ContentMD5'];
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];

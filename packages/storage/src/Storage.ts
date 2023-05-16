@@ -312,7 +312,7 @@ export class Storage {
 	 * @param key - key of the object
 	 * @param object - File to be put in bucket
 	 * @param [config] - { level : private|protected|public, contentType: MIME Types,
-	 *  progressCallback: function }
+	 * encodedContentMD5: string, progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
 	public put<T extends Record<string, any>>(
