@@ -74,6 +74,23 @@ describe('CognitoUser constructor', () => {
 
 		expect(spyon).toBeCalled();
 	});
+
+	describe('storage', () => {
+		test('inherit from pool', () => {
+			const user = new CognitoUser({ ...userDefaults });
+			expect(user.storage).toBe(userDefaults.Pool.storage);
+		});
+
+		test('allow modification', () => {
+			class TempStorage {
+				constructor() {}
+			}
+			const store = new TempStorage();
+			const user = new CognitoUser({ ...userDefaults, Storage: store });
+			expect(user.storage).toBe(store);
+			expect(user.storage).not.toBe(userDefaults.Pool.storage);
+		});
+	});
 });
 
 describe('getters and setters', () => {
@@ -1660,36 +1677,34 @@ describe('refreshSession()', () => {
 
 	test('update attributes usage of three out of three parameters in callback', () => {
 		const codeDeliverDetailsResult = {
-			'CodeDeliveryDetailsList': [ 
-			   { 
-				  'AttributeName': 'email',
-				  'DeliveryMedium': 'EMAIL',
-				  'Destination': 'e***@e***'
-			   }
-			]
+			CodeDeliveryDetailsList: [
+				{
+					AttributeName: 'email',
+					DeliveryMedium: 'EMAIL',
+					Destination: 'e***@e***',
+				},
+			],
 		};
-		const spyon = jest.spyOn(CognitoUser.prototype, 'updateAttributes')
+		const spyon = jest
+			.spyOn(CognitoUser.prototype, 'updateAttributes')
 			.mockImplementationOnce((attrs, callback) => {
 				callback(null, 'SUCCESS', codeDeliverDetailsResult);
-		});
+			});
 		const attrs = [
 			{
 				Name: 'email',
-				Value: 'email@email.com'
+				Value: 'email@email.com',
 			},
 			{
 				Name: 'family_name',
-				Value: 'familyName'
-			}
+				Value: 'familyName',
+			},
 		];
-		cognitoUser.updateAttributes(
-			attrs,
-			(err, result, details) => {
-				expect(err).toBe(null);
-				expect(result).toBe('SUCCESS');
-				expect(details).toBe(codeDeliverDetailsResult);
-			} 
-		);
+		cognitoUser.updateAttributes(attrs, (err, result, details) => {
+			expect(err).toBe(null);
+			expect(result).toBe('SUCCESS');
+			expect(details).toBe(codeDeliverDetailsResult);
+		});
 		spyon.mockClear();
 	});
 });
