@@ -16,9 +16,9 @@ jobs:
           issue-lock-comment: |
             This issue has been automatically locked since there hasn't been any recent activity after it was closed. Please open a [new issue](https://github.com/aws-amplify/amplify-js/issues/new?assignees=&labels=&template=1.bug_report.yaml) for related bugs.
 
-            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `*-help` channels or [Discussions](https://github.com/aws-amplify/amplify-js/discussions) for those types of questions.
+            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `amplify-help` forum.
 
           pr-lock-comment: |
             This pull request has been automatically locked since there hasn't been any recent activity after it was closed. Please open a [new issue](https://github.com/aws-amplify/amplify-js/issues/new?assignees=&labels=&template=1.bug_report.yaml) for related bugs.
 
-            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `*-help` channels or [Discussions](https://github.com/aws-amplify/amplify-js/discussions) for those types of questions.
+            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `amplify-help` forum.

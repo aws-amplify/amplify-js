@@ -8,8 +8,8 @@ export enum Category {
 	Auth = 'auth',
 	DataStore = 'datastore',
 	Geo = 'geo',
+	InAppMessaging = 'inappmessaging',
 	Interactions = 'interactions',
-	Notifications = 'notifications',
 	Predictions = 'predictions',
 	PubSub = 'pubsub',
 	PushNotification = 'pushnotification',
@@ -30,10 +30,10 @@ export enum DataStoreAction {
 export enum GeoAction {
 	None = '0',
 }
-export enum InteractionsAction {
+export enum InAppMessagingAction {
 	None = '0',
 }
-export enum NotificationsAction {
+export enum InteractionsAction {
 	None = '0',
 }
 export enum PredictionsAction {
@@ -54,8 +54,8 @@ type ActionMap = {
 	[Category.API]: ApiAction;
 	[Category.DataStore]: DataStoreAction;
 	[Category.Geo]: GeoAction;
+	[Category.InAppMessaging]: InAppMessagingAction;
 	[Category.Interactions]: InteractionsAction;
-	[Category.Notifications]: NotificationsAction;
 	[Category.Predictions]: PredictionsAction;
 	[Category.PubSub]: PubSubAction;
 	[Category.PushNotification]: PushNotificationAction;
@@ -79,7 +79,7 @@ export type CustomUserAgentDetails =
 	| UserAgentDetailsWithCategory<Category.DataStore>
 	| UserAgentDetailsWithCategory<Category.Geo>
 	| UserAgentDetailsWithCategory<Category.Interactions>
-	| UserAgentDetailsWithCategory<Category.Notifications>
+	| UserAgentDetailsWithCategory<Category.InAppMessaging>
 	| UserAgentDetailsWithCategory<Category.Predictions>
 	| UserAgentDetailsWithCategory<Category.PubSub>
 	| UserAgentDetailsWithCategory<Category.PushNotification>

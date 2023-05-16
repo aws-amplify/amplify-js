@@ -13,7 +13,6 @@ import {
 	Category,
 	Framework,
 	ApiAction,
-	DataStoreAction,
 	CustomUserAgentDetails,
 } from '@aws-amplify/core';
 import { PubSub } from '@aws-amplify/pubsub';
@@ -1325,12 +1324,6 @@ describe('API test', () => {
 			};
 			let authToken: undefined;
 
-			const customUserAgentDetails: CustomUserAgentDetails = {
-				category: Category.DataStore,
-				action: DataStoreAction.None,
-			};
-
-			// @ts-ignore Use private method to send internal metrics
 			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);

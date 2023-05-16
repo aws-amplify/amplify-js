@@ -12,15 +12,12 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
-	RelationType,
 } from '../../types';
 import {
-	getIndex,
 	isPrivateMode,
 	traverseModel,
 	validatePredicate,
 	inMemoryPagination,
-	NAMESPACES,
 	keysEqual,
 	getStorename,
 	isSafariCompatabilityMode,
@@ -384,7 +381,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	}
 
 	protected async deleteItem<T extends PersistentModel>(
-		deleteQueue?: {
+		deleteQueue: {
 			storeName: string;
 			items: T[] | IDBValidKey[];
 		}[]
@@ -418,112 +415,6 @@ class IndexedDBAdapter extends StorageAdapterBase {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Gets related Has One record for `model`
-	 *
-	 * @param model
-	 * @param srcModel
-	 * @param namespace
-	 * @param rel
-	 * @returns
-	 */
-	protected async getHasOneChild<T extends PersistentModel>(
-		model: T,
-		srcModel: string,
-		namespace: NAMESPACES,
-		rel: RelationType
-	) {
-		const hasOneIndex = 'byPk';
-		const { modelName, targetNames } = rel;
-		const storeName = getStorename(namespace, modelName);
-
-		const values = targetNames!
-			.filter(targetName => model[targetName] ?? false)
-			.map(targetName => model[targetName]);
-
-		if (values.length === 0) return;
-
-		const recordToDelete = <T>(
-			await this.db
-				.transaction(storeName, 'readwrite')
-				.objectStore(storeName)
-				.index(hasOneIndex)
-				.get(this.canonicalKeyPath(values))
-		);
-
-		return recordToDelete;
-	}
-
-	/**
-	 * Backwards compatability for pre-CPK codegen
-	 * TODO - deprecate this in v6; will need to re-gen MIPR for older unit
-	 * tests that hit this path
-	 */
-	protected async getHasOneChildLegacy<T extends PersistentModel>(
-		model: T,
-		srcModel: string,
-		namespace: NAMESPACES,
-		rel: RelationType
-	) {
-		const hasOneIndex = 'byPk';
-		const { modelName, targetName } = rel;
-		const storeName = getStorename(namespace, modelName);
-
-		let index;
-		let values: string[];
-
-		if (targetName && targetName in model) {
-			index = hasOneIndex;
-			const value = model[targetName];
-			if (value === null) {
-				return;
-			}
-			values = [value];
-		} else {
-			// backwards compatability for older versions of codegen that did not emit targetName for HAS_ONE relations
-			index = getIndex(
-				this.schema.namespaces[namespace].relationships![modelName]
-					.relationTypes,
-				srcModel
-			);
-			values = this.getIndexKeyValuesFromModel(model);
-		}
-
-		if (!values || !index) return;
-
-		const recordToDelete = <T>(
-			await this.db
-				.transaction(storeName, 'readwrite')
-				.objectStore(storeName)
-				.index(index)
-				.get(this.canonicalKeyPath(values))
-		);
-
-		return recordToDelete;
-	}
-
-	/**
-	 * Gets related Has Many records by given `storeName`, `index`, and `keyValues`
-	 *
-	 * @param storeName
-	 * @param index
-	 * @param keyValues
-	 * @returns
-	 */
-	protected async getHasManyChildren<T extends PersistentModel>(
-		storeName: string,
-		index: string,
-		keyValues: string[]
-	): Promise<T[]> {
-		const childRecords = await this.db
-			.transaction(storeName, 'readwrite')
-			.objectStore(storeName)
-			.index(index as string)
-			.getAll(this.canonicalKeyPath(keyValues));
-
-		return childRecords;
 	}
 
 	//#region platform-specific helper methods

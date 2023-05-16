@@ -4,6 +4,7 @@ import { Source, DocumentNode, GraphQLError, OperationTypeNode } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
 export { GRAPHQL_AUTH_MODE };
+import { CustomUserAgentDetails } from '@aws-amplify/core';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
