@@ -44,6 +44,10 @@ class TestCustomProvider implements StorageProvider {
 		return Promise.resolve({ newKey: 'get' });
 	}
 
+	getProperties(key: string, options?: CustomProviderConfig) {
+		return Promise.resolve({ newKey: 'getProperties' });
+	}
+
 	put(key: string, object: any, config: CustomProviderConfig) {
 		return Promise.resolve({ newKey: 'put' });
 	}
