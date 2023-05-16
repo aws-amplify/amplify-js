@@ -14,6 +14,10 @@ const logger = new Logger('API');
  * Export Cloud Logic APIs
  */
 export class APIClass extends InternalAPIClass {
+	public getModuleName() {
+		return 'API';
+	}
+
 	/**
 	 * Executes a GraphQL operation
 	 *

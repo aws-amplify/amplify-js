@@ -11,6 +11,7 @@ import { RestAPIClass } from '@aws-amplify/api-rest';
 import { Auth } from '@aws-amplify/auth';
 import { Cache } from '@aws-amplify/cache';
 import {
+	Amplify,
 	ApiAction,
 	Category,
 	Credentials,
@@ -52,7 +53,7 @@ export class InternalAPIClass {
 	}
 
 	public getModuleName() {
-		return 'API';
+		return 'InternalAPI';
 	}
 
 	/**
@@ -245,3 +246,4 @@ export class InternalAPIClass {
 }
 
 export const InternalAPI = new InternalAPIClass(null);
+Amplify.register(InternalAPI);
