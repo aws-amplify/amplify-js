@@ -1,12 +1,12 @@
 import { Auth } from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
+import { InternalGraphQLAPIClass as InternalAPI } from '../src/internal';
 import { graphqlOperation } from '../src/GraphQLAPI';
 import { GRAPHQL_AUTH_MODE, GraphQLAuthError } from '../src/types';
 import { RestClient } from '@aws-amplify/api-rest';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import {
-	Signer,
 	Credentials,
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
@@ -28,11 +28,11 @@ axios.isCancel = (value: any): boolean => {
 	return false;
 };
 
-let isCancelSpy = null;
-let cancelTokenSpy = null;
-let cancelMock = null;
-let tokenMock = null;
-let mockCancellableToken = null;
+let isCancelSpy;
+let cancelTokenSpy;
+let cancelMock;
+let tokenMock;
+let mockCancellableToken;
 jest.mock('axios');
 
 const config = {
@@ -62,8 +62,12 @@ const getEventDoc = parse(GetEvent);
 const getEventQuery = print(getEventDoc);
 
 /* TODO: Test with actual actions */
-const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.None} framework/${Framework.None}`;
-const expectedUserAgentDataStore = `${Constants.userAgent} ${Category.DataStore}/${DataStoreAction.None} framework/${Framework.None}`;
+const expectedUserAgentFrameworkOnly = `${Constants.userAgent} framework/${Framework.None}`;
+const customUserAgentDetailsAPI: CustomUserAgentDetails = {
+	category: Category.API,
+	action: ApiAction.GraphQl,
+};
+const expectedUserAgentAPI = `${Constants.userAgent} ${Category.API}/${ApiAction.GraphQl} framework/${Framework.None}`;
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -114,7 +118,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -169,7 +173,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -237,7 +241,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -308,7 +312,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'id_token',
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -390,7 +394,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -436,7 +440,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 				Authorization: 'myAuthToken',
 			};
 
@@ -483,7 +487,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 				Authorization: 'myAuthToken',
 			};
 
@@ -547,7 +551,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': 'secret-api-key',
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -595,7 +599,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -643,7 +647,7 @@ describe('API test', () => {
 			});
 
 			const headers = {
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 				Authorization: 'myAuthToken',
 			};
 
@@ -705,7 +709,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'oidc_token',
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -901,7 +905,7 @@ describe('API test', () => {
 
 			const headers = {
 				Authorization: 'Secret-Token',
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -1154,7 +1158,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -1214,7 +1218,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentAPI,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -1251,72 +1255,6 @@ describe('API test', () => {
 					someOtherHeaderSetAtConfig: 'expectedValue',
 				},
 			});
-		});
-
-		test('sends customUserAgent with api category and action in request', async () => {
-			const spyonAuth = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return new Promise((res, rej) => {
-						res('cred');
-					});
-				});
-
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'post')
-				.mockImplementationOnce((url, init) => {
-					return new Promise((res, rej) => {
-						res({});
-					});
-				});
-
-			const api = new API(config);
-			const url = 'https://appsync.amazonaws.com',
-				region = 'us-east-2',
-				apiKey = 'secret_api_key',
-				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-			api.configure({
-				aws_appsync_graphqlEndpoint: url,
-				aws_appsync_region: region,
-				aws_appsync_authenticationType: 'API_KEY',
-				aws_appsync_apiKey: apiKey,
-			});
-
-			const headers = {
-				Authorization: null,
-				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentDataStore,
-			};
-
-			const body = {
-				query: getEventQuery,
-				variables,
-			};
-
-			const init = {
-				headers,
-				body,
-				signerServiceInfo: {
-					service: 'appsync',
-					region,
-				},
-				cancellableToken: mockCancellableToken,
-			};
-			let authToken: undefined;
-
-			const customUserAgentDetails: CustomUserAgentDetails = {
-				category: Category.DataStore,
-				action: DataStoreAction.None,
-			};
-
-			// @ts-ignore Use private method to send internal metrics
-			await api._graphql(
-				graphqlOperation(GetEvent, variables, authToken),
-				undefined,
-				customUserAgentDetails
-			);
-
-			expect(spyon).toBeCalledWith(url, init);
 		});
 
 		test('call isInstanceCreated', () => {
@@ -1367,7 +1305,7 @@ describe('API test', () => {
 			const headers = {
 				Authorization: null,
 				'X-Api-Key': apiKey,
-				'x-amz-user-agent': expectedUserAgentDataStore,
+				'x-amz-user-agent': expectedUserAgentFrameworkOnly,
 			};
 
 			const body = {
@@ -1393,11 +1331,7 @@ describe('API test', () => {
 			};
 
 			// @ts-ignore Use private method to send internal metrics
-			await api._graphql(
-				graphqlOperation(GetEvent, variables, authToken),
-				undefined,
-				customUserAgentDetails
-			);
+			await api.graphql(graphqlOperation(GetEvent, variables, authToken));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -1447,6 +1381,214 @@ describe('API test', () => {
 				header: {},
 				region: 'api-region',
 			});
+		});
+	});
+});
+
+describe('Internal API customUserAgent test', () => {
+	beforeEach(() => {
+		cancelMock = jest.fn();
+		tokenMock = jest.fn();
+		mockCancellableToken = { token: tokenMock, cancel: cancelMock };
+		isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
+		cancelTokenSpy = jest
+			.spyOn(axios.CancelToken, 'source')
+			.mockImplementation(() => {
+				return mockCancellableToken;
+			});
+	});
+	describe('graphql test', () => {
+		test('happy case mutation', async () => {
+			const spyonAuth = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+			const internalApi = new InternalAPI(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = {
+					id: '809392da-ec91-4ef0-b219-5238a8f942b2',
+					content: 'lalala',
+					createdAt: new Date().toISOString(),
+				};
+			internalApi.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+			const AddComment = `mutation AddComment($eventId: ID!, $content: String!, $createdAt: String!) {
+				commentOnEvent(eventId: $eventId, content: $content, createdAt: $createdAt) {
+					eventId
+					content
+					createdAt
+				}
+			}`;
+
+			const doc = parse(AddComment);
+			const query = print(doc);
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': expectedUserAgentAPI,
+			};
+
+			const body = {
+				query,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await internalApi.graphql(
+				graphqlOperation(AddComment, variables),
+				undefined,
+				customUserAgentDetailsAPI
+			);
+
+			expect(spyon).toBeCalledWith(url, init);
+		});
+
+		test('happy-case-subscription', async done => {
+			jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementation(async (url, init) => ({
+					extensions: {
+						subscription: {
+							newSubscriptions: {},
+						},
+					},
+				}));
+
+			const internalApi = new InternalAPI(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			internalApi.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+
+			PubSub.subscribe = jest.fn(() => Observable.of({}));
+
+			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
+
+			const doc = parse(SubscribeToEventComments);
+			const query = print(doc);
+
+			const observable = (
+				internalApi.graphql(
+					graphqlOperation(query, variables),
+					undefined,
+					customUserAgentDetailsAPI
+				) as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
+					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
+					expect(subscribeOptions.provider).toBe(
+						INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
+					);
+					done();
+				},
+			});
+
+			expect(observable).not.toBe(undefined);
+		});
+
+		test('happy case mutation', async () => {
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+			const internalApi = new InternalAPI(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = {
+					id: '809392da-ec91-4ef0-b219-5238a8f942b2',
+					content: 'lalala',
+					createdAt: new Date().toISOString(),
+				};
+			internalApi.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+			const AddComment = `mutation AddComment($eventId: ID!, $content: String!, $createdAt: String!) {
+				commentOnEvent(eventId: $eventId, content: $content, createdAt: $createdAt) {
+					eventId
+					content
+					createdAt
+				}
+			}`;
+
+			const doc = parse(AddComment);
+			const query = print(doc);
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': expectedUserAgentAPI,
+			};
+
+			const body = {
+				query,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await internalApi.graphql(
+				graphqlOperation(AddComment, variables),
+				undefined,
+				customUserAgentDetailsAPI
+			);
+
+			expect(spyon).toBeCalledWith(url, init);
 		});
 	});
 });
