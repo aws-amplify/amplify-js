@@ -28,9 +28,10 @@ export default UserAgent;
 
 export const getAmplifyUserAgentString = ({ action, framework } = {}) => {
 	rerunFrameworkDetection();
-	const userAgent = `${UserAgent.prototype.userAgent} ${category}/${
-		action ? action : AuthAction.None
-	} framework/${framework ? framework : Platform.framework}`;
+	const uaAction = action ?? AuthAction.None;
+	const uaFramework = framework ?? Platform.framework;
+
+	const userAgent = `${UserAgent.prototype.userAgent} ${category}/${uaAction} framework/${uaFramework}`;
 
 	return userAgent;
 };
