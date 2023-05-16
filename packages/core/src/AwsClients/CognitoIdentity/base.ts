@@ -1,22 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import type {
+import {
 	Endpoint,
 	EndpointResolverOptions,
 	Headers,
 	HttpRequest,
 	HttpResponse,
 	Middleware,
-} from '../../clients/types';
-import { getDnsSuffix } from '../../clients/endpoints';
+	getDnsSuffix,
+	unauthenticatedHandler,
+	parseJsonError,
+} from '../../clients';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
-import { unauthenticatedHandler } from '../../clients/handlers/unauthenticated';
 import {
 	jitteredBackoff,
 	getRetryDecider,
 } from '../../clients/middleware/retry';
-import { parseJsonError } from '../../clients/serde/json';
 import { getAmplifyUserAgent } from '../../Platform';
 
 /**

@@ -18,7 +18,7 @@ import {
 	updateEndpoint,
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import {
 	AnalyticsProvider,

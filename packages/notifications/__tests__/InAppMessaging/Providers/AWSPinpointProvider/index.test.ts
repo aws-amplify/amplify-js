@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
-import { getInAppMessages } from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint/getInAppMessages';
+import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { addEventListener } from '../../../../src/common/eventListeners';
@@ -29,8 +29,7 @@ import {
 import { mockStorage } from '../../../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/getInAppMessages');
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/updateEndpoint');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../../src/common/eventListeners');
 jest.mock('../../../../src/InAppMessaging/Providers/AWSPinpointProvider/utils');
 jest.mock(

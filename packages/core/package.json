@@ -61,7 +61,8 @@
 		"lib",
 		"lib-esm",
 		"src",
-		"typings.d.ts"
+		"typings.d.ts",
+		"internals"
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.2.2",

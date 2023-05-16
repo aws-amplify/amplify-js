@@ -5,7 +5,7 @@ import { Credentials, StorageHelper } from '@aws-amplify/core';
 import {
 	putEvents,
 	updateEndpoint,
-} from '@aws-amplify/core/lib-esm/AwsClients/Pinpoint'; // TODO: convert to subpath import from core
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 
 import { AWSPinpointProviderCommon } from '../../../src/common';
 
@@ -20,8 +20,7 @@ import { mockLogger, mockStorage } from '../../../__mocks__/mocks';
 import { NotificationsSubCategory } from '../../../src/types';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/putEvents');
-jest.mock('@aws-amplify/core/lib-esm/AwsClients/Pinpoint/updateEndpoint');
+jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('../../../src/common/eventListeners');
 
 const SUB_CATEGORY = 'SubCategory';

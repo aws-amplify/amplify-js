@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
+// TODO: [v6] do not leak AWS SDK types to public so we can remove it from runtime dependencies.
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import { AMPLIFY_SYMBOL } from '../../../common';
