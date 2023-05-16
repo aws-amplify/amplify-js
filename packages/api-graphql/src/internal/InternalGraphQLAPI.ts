@@ -10,6 +10,7 @@ import {
 } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
+	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
 	CustomUserAgentDetails,
@@ -64,7 +65,7 @@ export class InternalGraphQLAPIClass {
 	}
 
 	public getModuleName() {
-		return 'GraphQLAPI';
+		return 'InternalGraphQLAPI';
 	}
 
 	/**
@@ -436,3 +437,4 @@ export class InternalGraphQLAPIClass {
 }
 
 export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
+Amplify.register(InternalGraphQLAPI);
