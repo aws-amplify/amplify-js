@@ -173,6 +173,14 @@ export type S3ProviderCopyOutput = {
 	key: string;
 };
 
+export type S3ProviderGetPropertiesOutput = {
+	contentType: string;
+	contentLength: number;
+	eTag: string;
+	lastModified: Date;
+	metaData: Record<string, string>;
+};
+
 export type PutResult = {
 	key: string;
 };
