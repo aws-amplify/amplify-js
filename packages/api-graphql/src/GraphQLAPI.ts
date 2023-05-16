@@ -17,6 +17,10 @@ export const graphqlOperation = (
  * Export Cloud Logic APIs
  */
 export class GraphQLAPIClass extends InternalGraphQLAPIClass {
+	public getModuleName() {
+		return 'GraphQLAPI';
+	}
+
 	/**
 	 * Executes a GraphQL operation
 	 *
