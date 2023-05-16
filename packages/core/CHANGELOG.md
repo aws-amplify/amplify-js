@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.2.0...@aws-amplify/core@5.3.0) (2023-05-12)
+
+### Bug Fixes
+
+- **core:** add URL polyfill for signer in react native ([#11362](https://github.com/aws-amplify/amplify-js/issues/11362)) ([720ac60](https://github.com/aws-amplify/amplify-js/commit/720ac606dede7d243f3d5ce08395fc6387a6f35d))
+
+### Features
+
+- **core:** refactor signer implementation to remove polyfill ([#11319](https://github.com/aws-amplify/amplify-js/issues/11319)) ([1603af3](https://github.com/aws-amplify/amplify-js/commit/1603af38ea7faa163f7fcb92fd09c056454c8a0a)), closes [#11273](https://github.com/aws-amplify/amplify-js/issues/11273) [#11307](https://github.com/aws-amplify/amplify-js/issues/11307) [#11310](https://github.com/aws-amplify/amplify-js/issues/11310) [#11120](https://github.com/aws-amplify/amplify-js/issues/11120) [#11320](https://github.com/aws-amplify/amplify-js/issues/11320)
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.13...@aws-amplify/core@5.2.0) (2023-05-04)
+
+### Features
+
+- **core:** Use lerna prepublishOnly version npm publish and use the … ([#11301](https://github.com/aws-amplify/amplify-js/issues/11301)) ([c682c5e](https://github.com/aws-amplify/amplify-js/commit/c682c5eb5189bd90ac3b05305056aeb91fe69176))
+
+## [5.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.12...@aws-amplify/core@5.1.13) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.11...@aws-amplify/core@5.1.12) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.10...@aws-amplify/core@5.1.11) (2023-04-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.9...@aws-amplify/core@5.1.10) (2023-04-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [5.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.8...@aws-amplify/core@5.1.9) (2023-04-12)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## [5.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@5.1.7...@aws-amplify/core@5.1.8) (2023-04-06)
 
 **Note:** Version bump only for package @aws-amplify/core

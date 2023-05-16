@@ -4,3 +4,4 @@
 // TODO: V6 replace Signer
 export { signRequest } from './signRequest';
 export { presignUrl } from './presignUrl';
+export { TOKEN_QUERY_PARAM } from './constants';

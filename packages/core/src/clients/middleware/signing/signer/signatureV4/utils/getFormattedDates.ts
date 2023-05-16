@@ -14,10 +14,7 @@ import { FormattedDates } from '../types/signer';
  * @internal
  */
 export const getFormattedDates = (date: Date): FormattedDates => {
-	// Match unneeded ISO 8601 characters and the sub-second digits
-	const unneededCharacters = /[:\-]|\.\d{3}/g;
-
-	const longDate = date.toISOString().replace(unneededCharacters, '');
+	const longDate = date.toISOString().replace(/[:\-]|\.\d{3}/g, '');
 	return {
 		longDate,
 		shortDate: longDate.slice(0, 8),
