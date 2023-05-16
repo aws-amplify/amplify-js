@@ -72,7 +72,7 @@ describe('ResendSignUp API Error Path Cases:', () => {
 		}
 	});
 
-	test('ResendSignUp API should expect an unknown error when underlying error is not coming from the service', async () => {
+	test('ResendSignUp API should throw an unknown error when underlying error is not from the service', async () => {
 		expect.assertions(3);
 		globalMock.fetch = jest.fn(() =>
 			Promise.reject(new Error('unknown error'))
