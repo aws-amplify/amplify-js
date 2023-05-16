@@ -8,7 +8,7 @@ import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors/service';
 import { AmplifyErrorString } from '@aws-amplify/core';
-import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/resendSignUpCodeClient';
+import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/ResendSignUpCodeClient';
 
 describe('ResendSignUp API Happy Path Cases:', () => {
 	let resendSignUpSpy;
