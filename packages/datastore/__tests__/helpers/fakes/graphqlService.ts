@@ -508,6 +508,10 @@ export class FakeGraphQLService {
 		});
 	}
 
+	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
+		return this.intercept(request, () => this.request(request, ignoreLatency));
+	}
+
 	/**
 	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients)
 	 * @param request the GraphQL request
@@ -515,8 +519,12 @@ export class FakeGraphQLService {
 	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
 	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
-		return this.intercept(request, () => this.request(request, ignoreLatency));
+	public externalGraphql(request: GraphQLRequest, ignoreLatency = false) {
+		this.log('External GraphQL Request', {
+			request,
+			ignoreLatency,
+		});
+		return this.graphql(request, ignoreLatency);
 	}
 
 	public request(

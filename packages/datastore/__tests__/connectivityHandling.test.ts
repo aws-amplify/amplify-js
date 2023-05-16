@@ -926,12 +926,18 @@ describe('DataStore sync engine', () => {
 			 * @param version version number to be sent with the request (what would have been
 			 * returned from a query prior to update)
 			 */
-			const externalPostUpdate = async (
-				originalPostId: string,
-				updatedFields: Partial<any> = {},
-				version: number | undefined
-			) => {
-				await graphqlService.graphql(
+			type ExternalPostUpdateParams = {
+				originalPostId: string;
+				updatedFields: Partial<any>;
+				version: number | undefined;
+			};
+
+			const externalPostUpdate = async ({
+				originalPostId,
+				updatedFields,
+				version,
+			}: ExternalPostUpdateParams) => {
+				await graphqlService.externalGraphql(
 					{
 						query: `
 							mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
@@ -1494,11 +1500,11 @@ describe('DataStore sync engine', () => {
 
 						await revPost(original.id, 'post title 1');
 
-						await externalPostUpdate(
-							original.id,
-							{ title: 'update from second client' },
-							1
-						);
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 1,
+						});
 
 						await revPost(original.id, 'post title 2');
 						//endregion
@@ -1543,11 +1549,11 @@ describe('DataStore sync engine', () => {
 						await pause(200);
 						await revPost(original.id, 'post title 1');
 
-						await externalPostUpdate(
-							original.id,
-							{ title: 'update from second client' },
-							1
-						);
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 1,
+						});
 
 						await pause(200);
 						await revPost(original.id, 'post title 2');
@@ -1600,11 +1606,11 @@ describe('DataStore sync engine', () => {
 						await revPost(original.id, 'post title 1');
 						await waitForEmptyOutbox();
 
-						await externalPostUpdate(
-							original.id,
-							{ title: 'update from second client' },
-							3
-						);
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 3,
+						});
 
 						await revPost(original.id, 'post title 2');
 						await waitForEmptyOutbox();
@@ -1651,11 +1657,11 @@ describe('DataStore sync engine', () => {
 						await revPost(original.id, 'post title 1');
 						await waitForEmptyOutbox();
 
-						await externalPostUpdate(
-							original.id,
-							{ title: 'update from second client' },
-							3
-						);
+						await externalPostUpdate({
+							originalPostId: original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 3,
+						});
 
 						await revPost(original.id, 'post title 2');
 						await waitForEmptyOutbox();
@@ -1711,7 +1717,19 @@ describe('DataStore sync engine', () => {
 						subscriptionLog = [];
 					});
 
-					test('rapid mutations on poor connection when initial create is not pending', async () => {
+					/**
+					 * NOTE: Even though the primary client is updating `title`,
+					 * the second client's update to `blogId` "reverts" the primary
+					 * client's changes. This is because the external update takes
+					 * effect while the primary client's updates are still in flight.
+					 * By the time the primary client's update reaches the service,
+					 * the `_version` has changed. As a result, auto-merge chooses
+					 * the existing server-side `title` over the proposed updated
+					 * `title`. The following two tests demonstrate this behavior,
+					 * with a difference in the timing of the external request,
+					 * ultimately resulting in different final states.
+					 */
+					test('poor connection, initial create is not pending, external request is first received update', async () => {
 						const original = await DataStore.save(
 							new Post({
 								title: 'original title',
@@ -1732,12 +1750,12 @@ describe('DataStore sync engine', () => {
 
 						await revPost(original.id, 'post title 1');
 
-						await externalPostUpdate(
-							original.id,
+						await externalPostUpdate({
+							originalPostId: original.id,
 							// External client performs a mutation against a different field:
-							{ blogId: 'update from second client' },
-							1
-						);
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
 
 						await revPost(original.id, 'post title 2');
 						//endregion
@@ -1751,11 +1769,6 @@ describe('DataStore sync engine', () => {
 							modelName: 'Post',
 						});
 
-						/**
-						 * NOTE: Even though the primary client is updating `title`, the
-						 * second client's update to `blogId` reverts the primary client's
-						 * changes.
-						 */
 						expect(subscriptionLog).toEqual([
 							['original title', null, undefined],
 							['original title', null, 1],
@@ -1763,6 +1776,68 @@ describe('DataStore sync engine', () => {
 							['post title 1', null, 1],
 							['post title 2', null, 1],
 							['original title', 'update from second client', 4],
+						]);
+
+						expectFinalRecordsToMatch({
+							postId: original.id,
+							version: 4,
+							title: 'original title',
+							blogId: 'update from second client',
+						});
+					});
+					test('poor connection, initial create is not pending, external request is second received update', async () => {
+						const original = await DataStore.save(
+							new Post({
+								title: 'original title',
+							})
+						);
+
+						await waitForEmptyOutbox();
+
+						graphqlService.setLatencies({
+							request: latency,
+							response: latency,
+							subscriber: latency,
+							jitter,
+						});
+
+						//region perform consecutive updates
+						await revPost(original.id, 'post title 0');
+
+						await revPost(original.id, 'post title 1');
+
+						/**
+						 * Ensure that the external update is received after the
+						 * primary client's first update.
+						 */
+						await pause(3000);
+
+						await externalPostUpdate({
+							originalPostId: original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
+
+						await revPost(original.id, 'post title 2');
+						//endregion
+
+						await waitForEmptyOutbox();
+
+						await graphqlServiceSettled({
+							graphqlService,
+							expectedNumberOfUpdates,
+							externalNumberOfUpdates: 1,
+							modelName: 'Post',
+						});
+
+						expect(subscriptionLog).toEqual([
+							['original title', null, undefined],
+							['original title', null, 1],
+							['post title 0', null, 1],
+							['post title 1', null, 1],
+							['post title 2', null, 1],
+							['post title 0', 'update from second client', 5],
 						]);
 
 						expectFinalRecordsToMatch({
@@ -1788,12 +1863,12 @@ describe('DataStore sync engine', () => {
 						await pause(200);
 						await revPost(original.id, 'post title 1');
 
-						await externalPostUpdate(
-							original.id,
+						await externalPostUpdate({
+							originalPostId: original.id,
 							// External client performs a mutation against a different field:
-							{ blogId: 'update from second client' },
-							1
-						);
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
 
 						await pause(200);
 						await revPost(original.id, 'post title 2');
@@ -1847,12 +1922,12 @@ describe('DataStore sync engine', () => {
 						await pause(200);
 						await revPost(original.id, 'post title 1');
 
-						await externalPostUpdate(
-							original.id,
+						await externalPostUpdate({
+							originalPostId: original.id,
 							// External client performs a mutation against a different field:
-							{ blogId: 'update from second client' },
-							1
-						);
+							updatedFields: { blogId: 'update from second client' },
+							version: 1,
+						});
 
 						await pause(200);
 						await revPost(original.id, 'post title 2');
@@ -1906,12 +1981,12 @@ describe('DataStore sync engine', () => {
 						await revPost(original.id, 'post title 1');
 						await waitForEmptyOutbox();
 
-						await externalPostUpdate(
-							original.id,
+						await externalPostUpdate({
+							originalPostId: original.id,
 							// External client performs a mutation against a different field:
-							{ blogId: 'update from second client' },
-							undefined
-						);
+							updatedFields: { blogId: 'update from second client' },
+							version: undefined,
+						});
 
 						await revPost(original.id, 'post title 2');
 						await waitForEmptyOutbox();
@@ -1959,12 +2034,12 @@ describe('DataStore sync engine', () => {
 						await revPost(original.id, 'post title 1');
 						await waitForEmptyOutbox();
 
-						await externalPostUpdate(
-							original.id,
+						await externalPostUpdate({
+							originalPostId: original.id,
 							// External client performs a mutation against a different field:
-							{ blogId: 'update from second client' },
-							3
-						);
+							updatedFields: { blogId: 'update from second client' },
+							version: 3,
+						});
 
 						await revPost(original.id, 'post title 2');
 						await waitForEmptyOutbox();
